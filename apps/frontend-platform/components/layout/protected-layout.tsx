@@ -1,13 +1,13 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/auth-context';
 import { MainNav } from '@/components/navigation/main-nav';
 import Link from 'next/link';
 
 type ProtectedLayoutProps = {
-    children: ReactNode;
+    children: React.ReactNode;
     requireRoles?: string[]; // Optional specific role requirements
 };
 
@@ -148,8 +148,11 @@ export const ProtectedLayout = ({
                                 </svg>
                             </button>
 
-                            <Link href="/dashboard" className="text-xl font-bold">
-                                Carmen Platform
+                            {/* @ts-ignore - Next.js 14 Link type issue */}
+                            <Link href="/dashboard" legacyBehavior>
+                                <a className="text-xl font-bold cursor-pointer">
+                                    Carmen Platform
+                                </a>
                             </Link>
                         </div>
 

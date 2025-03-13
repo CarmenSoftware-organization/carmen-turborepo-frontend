@@ -1,6 +1,13 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    ReactNode,
+    FC
+} from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 type User = {
@@ -43,16 +50,15 @@ type AuthContextType = {
     error: string | null;
 };
 
-// Create the auth context
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Create a context with a null initial value
+const AuthContext = createContext<AuthContextType | null>(null);
 
-// Auth provider props
 type AuthProviderProps = {
     children: ReactNode;
 };
 
 // Create the auth provider component
-export const AuthProvider = ({ children }: AuthProviderProps) => {
+export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [user, setUser] = useState<User | null>(null);
@@ -160,7 +166,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const isAuthenticated = !!token && !!user;
 
     // Context value
-    const value = {
+    const value: AuthContextType = {
         user,
         token,
         refreshToken,
@@ -171,13 +177,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         error,
     };
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 // Custom hook to use the auth context
-export const useAuth = () => {
+export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
-    if (context === undefined) {
+    if (context === null) {
         throw new Error('useAuth must be used within an AuthProvider');
     }
     return context;

@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import {
     Sidebar,
     SidebarContent,
@@ -117,15 +118,11 @@ export const AppSidebar = () => {
                                                             "transform transition-all duration-200 ease-in-out",
                                                             expandedItems.includes(item.title)
                                                                 ? "translate-y-0 opacity-100"
-                                                                : "-translate-y-2 opacity-0",
-                                                            {
-                                                                "delay-[50ms]": index === 0,
-                                                                "delay-[100ms]": index === 1,
-                                                                "delay-[150ms]": index === 2,
-                                                                "delay-[200ms]": index === 3,
-                                                                "delay-[250ms]": index >= 4,
-                                                            }
+                                                                : "-translate-y-2 opacity-0"
                                                         )}
+                                                        style={{
+                                                            transitionDelay: `${(index + 1) * 50}ms`
+                                                        }}
                                                     >
                                                         <SidebarMenuItem>
                                                             <SidebarMenuButton asChild>
