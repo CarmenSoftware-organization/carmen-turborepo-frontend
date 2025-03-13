@@ -9,6 +9,18 @@ import React, {
     FC
 } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { z } from 'zod';
+import { useForm, UseFormRegister, UseFormHandleSubmit, UseFormReset, UseFormTrigger, FormState } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+// Define Zod schemas for validation
+export const loginSchema = z.object({
+    email: z.string().email('Please enter a valid email address'),
+    password: z.string().min(6, 'Password must be at least 6 characters'),
+    rememberMe: z.boolean().default(false)
+});
+
+export type LoginFormData = z.infer<typeof loginSchema>;
 
 type User = {
     id: string;
@@ -44,10 +56,17 @@ type AuthContextType = {
     token: string | null;
     refreshToken: string | null;
     isAuthenticated: boolean;
-    login: (username: string, password: string, rememberMe: boolean) => Promise<void>;
+    login: (data: LoginFormData) => Promise<void>;
     logout: () => void;
     loading: boolean;
     error: string | null;
+    getLoginForm: () => {
+        register: UseFormRegister<LoginFormData>;
+        handleSubmit: UseFormHandleSubmit<LoginFormData>;
+        formState: FormState<LoginFormData>;
+        reset: UseFormReset<LoginFormData>;
+        trigger: UseFormTrigger<LoginFormData>;
+    };
 };
 
 // Create a context with a null initial value
@@ -66,6 +85,16 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     const [refreshToken, setRefreshToken] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    // Initialize react-hook-form with zod validation
+    const loginForm = useForm<LoginFormData>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+            rememberMe: false
+        }
+    });
 
     // Check for existing auth on mount
     useEffect(() => {
@@ -91,8 +120,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         initializeAuth();
     }, []);
 
-    // Login function
-    const login = async (email: string, password: string, rememberMe: boolean) => {
+    // Login function - updated to accept validated form data
+    const login = async (data: LoginFormData) => {
         setLoading(true);
         setError(null);
 
@@ -102,28 +131,35 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({
+                    email: data.email,
+                    password: data.password
+                }),
             });
 
             if (!response.ok) {
-                throw new Error('Login failed');
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || 'Login failed');
             }
 
-            const data = await response.json();
+            const responseData = await response.json();
 
             // Store auth data in the appropriate storage
-            const storageType = rememberMe ? localStorage : sessionStorage;
-            storageType.setItem('auth_token', data.token);
-            storageType.setItem('refresh_token', data.refresh_token);
-            storageType.setItem('user', JSON.stringify(data.user));
+            const storageType = data.rememberMe ? localStorage : sessionStorage;
+            storageType.setItem('auth_token', responseData.token);
+            storageType.setItem('refresh_token', responseData.refresh_token);
+            storageType.setItem('user', JSON.stringify(responseData.user));
 
             // Also set a cookie for the middleware to access
-            document.cookie = `auth_token=${data.token}; path=/; max-age=${rememberMe ? 30 * 24 * 60 * 60 : 1 * 24 * 60 * 60}`;
+            document.cookie = `auth_token=${responseData.token}; path=/; max-age=${data.rememberMe ? 30 * 24 * 60 * 60 : 1 * 24 * 60 * 60}`;
 
             // Update state
-            setToken(data.token);
-            setRefreshToken(data.refresh_token);
-            setUser(data.user);
+            setToken(responseData.token);
+            setRefreshToken(responseData.refresh_token);
+            setUser(responseData.user);
+
+            // Reset form after successful login
+            loginForm.reset();
 
             // Check for callback URL and redirect accordingly
             const callbackUrl = searchParams.get('callbackUrl');
@@ -132,8 +168,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
             } else {
                 router.replace('/dashboard');
             }
-        } catch (err) {
-            setError('Login failed. Please check your credentials and try again.');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Login failed. Please check your credentials and try again.';
+            setError(errorMessage);
             console.error('Login error:', err);
         } finally {
             setLoading(false);
@@ -158,8 +195,22 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         setRefreshToken(null);
         setUser(null);
 
+        // Reset form
+        loginForm.reset();
+
         // Redirect to login page
         router.push('/auth');
+    };
+
+    // Function to provide access to the form methods
+    const getLoginForm = () => {
+        return {
+            register: loginForm.register,
+            handleSubmit: loginForm.handleSubmit,
+            formState: loginForm.formState,
+            reset: loginForm.reset,
+            trigger: loginForm.trigger
+        };
     };
 
     // Compute isAuthenticated
@@ -175,6 +226,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         logout,
         loading,
         error,
+        getLoginForm
     };
 
     return (

@@ -21,7 +21,7 @@ const HomeComponent = () => {
                 <div className="mt-8 flex animate-fade-up items-center justify-center gap-4">
 
                     <Button size="lg" asChild>
-                        <Link href="/admin/dashboard">
+                        <Link href="/auth">
                             Get Started
                             <ArrowRight />
                         </Link>
