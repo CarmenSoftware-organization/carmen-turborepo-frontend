@@ -1,18 +1,17 @@
 'use client'
 
-import React from 'react'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-type ErrorProps = {
+type ErrorProps = Readonly<{
     error: Error & { digest?: string }
     reset: () => void
-}
+}>
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function ErrorPage({ error, reset }: ErrorProps) {
+
     useEffect(() => {
-        // Log the error to an error reporting service
         console.error('Application error:', error)
     }, [error])
 

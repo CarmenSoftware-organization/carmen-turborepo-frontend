@@ -13,7 +13,6 @@ type ProtectedRouteProps = {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const { user, isAuthenticated, loading } = useAuth();
     const pathname = usePathname();
-
     // Show loading state while checking authentication
     if (loading) {
         return (
@@ -25,7 +24,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     // If not authenticated, the auth middleware should handle redirection
     if (!isAuthenticated || !user) {
-        return null;
+        window.location.href = '/auth';
     }
 
     // Helper function to check if user has access to current path
@@ -61,7 +60,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         return true;
     };
 
-    const hasAccess = checkAccess(pathname, user.role_user);
+    const hasAccess = checkAccess(pathname, user?.role_user ?? '');
 
     // If user doesn't have access, show the access denied component
     if (!hasAccess) {

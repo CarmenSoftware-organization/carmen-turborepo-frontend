@@ -6,7 +6,9 @@ import React, {
     useState,
     useEffect,
     ReactNode,
-    FC
+    FC,
+    useMemo,
+    useCallback
 } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
@@ -56,8 +58,8 @@ type AuthContextType = {
     token: string | null;
     refreshToken: string | null;
     isAuthenticated: boolean;
-    login: (data: LoginFormData) => Promise<void>;
-    logout: () => void;
+    loginContext: (data: LoginFormData) => Promise<void>;
+    logoutContext: () => void;
     loading: boolean;
     error: string | null;
     getLoginForm: () => {
@@ -101,9 +103,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         const initializeAuth = () => {
             try {
                 // Try to get auth data from sessionStorage first, then localStorage
-                const storedToken = sessionStorage.getItem('auth_token') || localStorage.getItem('auth_token');
-                const storedRefreshToken = sessionStorage.getItem('refresh_token') || localStorage.getItem('refresh_token');
-                const storedUser = sessionStorage.getItem('user') || localStorage.getItem('user');
+                const storedToken = sessionStorage.getItem('auth_token') ?? localStorage.getItem('auth_token');
+                const storedRefreshToken = sessionStorage.getItem('refresh_token') ?? localStorage.getItem('refresh_token');
+                const storedUser = sessionStorage.getItem('user') ?? localStorage.getItem('user');
 
                 if (storedToken && storedRefreshToken && storedUser) {
                     setToken(storedToken);
@@ -120,8 +122,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         initializeAuth();
     }, []);
 
-    // Login function - updated to accept validated form data
-    const login = async (data: LoginFormData) => {
+
+    const loginContext = useCallback(async (data: LoginFormData) => {
         setLoading(true);
         setError(null);
 
@@ -175,10 +177,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [loginForm, router, searchParams, setError, setLoading, setRefreshToken, setToken, setUser]);
 
     // Logout function
-    const logout = () => {
+    const logoutContext = useCallback(() => {
         // Clear auth data from storage
         sessionStorage.removeItem('auth_token');
         sessionStorage.removeItem('refresh_token');
@@ -200,10 +202,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
         // Redirect to login page
         router.push('/auth');
-    };
+    }, [loginForm, router, setToken, setRefreshToken, setUser]);
 
     // Function to provide access to the form methods
-    const getLoginForm = () => {
+    const getLoginForm = useCallback(() => {
         return {
             register: loginForm.register,
             handleSubmit: loginForm.handleSubmit,
@@ -211,23 +213,23 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
             reset: loginForm.reset,
             trigger: loginForm.trigger
         };
-    };
+    }, [loginForm]);
 
     // Compute isAuthenticated
     const isAuthenticated = !!token && !!user;
 
     // Context value
-    const value: AuthContextType = {
+    const value = useMemo<AuthContextType>(() => ({
         user,
         token,
         refreshToken,
         isAuthenticated,
-        login,
-        logout,
+        loginContext,
+        logoutContext,
         loading,
         error,
         getLoginForm
-    };
+    }), [user, token, refreshToken, isAuthenticated, loading, error, getLoginForm, loginContext, logoutContext]);
 
     return (
         <AuthContext.Provider value={value}>

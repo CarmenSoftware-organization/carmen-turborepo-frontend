@@ -7,7 +7,7 @@ import { Loader, Eye, EyeOff } from 'lucide-react';
 
 const SignInComponent = () => {
     const formId = useId();
-    const { login, loading, error: authError, getLoginForm } = useAuth();
+    const { loginContext, loading, error: authError, getLoginForm } = useAuth();
     const { register, handleSubmit, formState: { errors, isSubmitting } } = getLoginForm();
     const [isPending, startTransition] = useTransition();
 
@@ -17,7 +17,7 @@ const SignInComponent = () => {
         // Use React 19's useTransition to improve UI responsiveness during login
         startTransition(async () => {
             try {
-                await login(data);
+                await loginContext(data);
             } catch (err) {
                 console.error('Login error:', err);
             }
@@ -46,7 +46,7 @@ const SignInComponent = () => {
 
                     {(authError || hasFormErrors) && (
                         <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 text-red-500" role="alert">
-                            {authError || emailError || passwordError}
+                            {authError ?? emailError ?? passwordError}
                         </div>
                     )}
 
@@ -137,7 +137,7 @@ const SignInComponent = () => {
                         <button
                             type="submit"
                             disabled={isSubmittingForm}
-                            className="w-full font-medium py-2.5 px-4 rounded-lg flex justify-center items-center border border-primary hover:bg-primary/90 focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none transition disabled:opacity-50 disabled:pointer-events-none"
+                            className="cursor-pointer w-full font-medium py-2.5 px-4 rounded-lg flex justify-center items-center border border-primary hover:bg-primary/90 focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:outline-none transition disabled:opacity-50 disabled:pointer-events-none"
                             aria-busy={isSubmittingForm}
                         >
                             {isSubmittingForm ? (
