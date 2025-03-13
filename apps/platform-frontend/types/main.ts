@@ -3,8 +3,10 @@ export interface SidebarItem {
     href: string
     icon?: React.ComponentType<{ className?: string }>
     matchPath?: string
+    allowedRoles?: string[]
     children?: {
         title: string
         href: string
+        allowedRoles?: string[]
     }[]
 }

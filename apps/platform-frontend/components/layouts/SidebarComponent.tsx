@@ -17,10 +17,12 @@ import { sidebarItems } from '@/constants/menu'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
+import { useAuth } from '@/contexts/auth-context';
 
 const SidebarComponent = () => {
     const pathname = usePathname()
     const [expandedItems, setExpandedItems] = useState<string[]>([])
+    const { user } = useAuth();
 
     const isActiveRoute = (href: string) => pathname === href
 
@@ -28,8 +30,32 @@ const SidebarComponent = () => {
         return item.children?.some(child => child.href === pathname) || false
     }
 
+    // กรองเมนูตามบทบาทของผู้ใช้
+    const filteredSidebarItems = sidebarItems.filter(item => {
+        // ถ้าไม่มีการกำหนด allowedRoles หรือผู้ใช้ไม่มี role_user ให้แสดงเมนูนั้น
+        if (!item.allowedRoles || !user?.role_user) return true;
+
+        // แสดงเฉพาะเมนูที่ผู้ใช้มีสิทธิ์เข้าถึงเท่านั้น
+        return item.allowedRoles.includes(user.role_user);
+    }).map(item => {
+        // กรองเมนูย่อยด้วยเช่นกัน
+        if (item.children) {
+            const filteredChildren = item.children.filter(child => {
+                if (!child.allowedRoles || !user?.role_user) return true;
+                return child.allowedRoles.includes(user.role_user);
+            });
+
+            return {
+                ...item,
+                children: filteredChildren
+            };
+        }
+
+        return item;
+    });
+
     useEffect(() => {
-        const defaultExpanded = sidebarItems
+        const defaultExpanded = filteredSidebarItems
             .filter(item => isParentOfActiveRoute(item))
             .map(item => item.title)
         setExpandedItems(defaultExpanded)
@@ -56,7 +82,7 @@ const SidebarComponent = () => {
                     </div>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {sidebarItems.map((item) => (
+                            {filteredSidebarItems.map((item) => (
                                 <div key={item.title}>
                                     <SidebarMenuItem>
                                         <SidebarMenuButton
