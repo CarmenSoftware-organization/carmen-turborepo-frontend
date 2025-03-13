@@ -6,7 +6,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <ProtectedRoute>
             <SidebarProvider>

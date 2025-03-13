@@ -7,6 +7,7 @@ export interface SidebarItem {
     children?: {
         title: string
         href: string
+        icon?: React.ComponentType<{ className?: string }>
         allowedRoles?: string[]
     }[]
 }
