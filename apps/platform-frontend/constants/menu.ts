@@ -13,17 +13,17 @@ export const sidebarItems: SidebarItem[] = [
     },
     {
         title: 'Platforms',
-        href: '/platforms',
+        href: '/platform',
         icon: FileText,
     },
     {
         title: 'Clusters',
-        href: '/clusters',
+        href: '/cluster',
         icon: FolderTree,
     },
     {
         title: 'Business Units',
-        href: '/business-units',
+        href: '/business-unit',
         icon: Users,
     },
 ]
