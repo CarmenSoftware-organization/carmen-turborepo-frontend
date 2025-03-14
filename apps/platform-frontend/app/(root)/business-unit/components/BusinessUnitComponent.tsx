@@ -3,6 +3,7 @@ import { getBusinessUnits } from '@/services/bu.service'
 import { Button } from '@/components/ui/button';
 import BuFilter from './BuFilter';
 import BuList from './BuList';
+import Link from 'next/link';
 
 const BusinessUnitComponent = async () => {
     const businessUnits = await getBusinessUnits();
@@ -15,7 +16,9 @@ const BusinessUnitComponent = async () => {
                         Manage all hotels and properties in the system
                     </p>
                 </div>
-                <Button>Add Business Unit</Button>
+                <Button asChild>
+                    <Link href="/business-unit/add">Add Business Unit</Link>
+                </Button>
             </div>
             <BuFilter />
             <BuList businessUnits={businessUnits} />
