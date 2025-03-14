@@ -1,13 +1,12 @@
 // Define the routes configuration with role-based access control
 export type Route = {
-    path: string;
+    path?: string;
     title: string;
     allowedRoles: string[];
     icon?: string;
     children?: Route[];
 };
 
-// Main routes
 export const appRoutes: Route[] = [
     {
         path: '/dashboard',
@@ -16,13 +15,12 @@ export const appRoutes: Route[] = [
         icon: 'dashboard',
     },
     {
-        path: '/platform',
         title: 'Platforms',
         allowedRoles: ['is_platform'],
         icon: 'settings',
         children: [
             {
-                path: '/platform/settings',
+                path: '/platform',
                 title: 'Platform Settings',
                 allowedRoles: ['is_platform'],
             },
@@ -34,14 +32,13 @@ export const appRoutes: Route[] = [
         ],
     },
     {
-        path: '/cluster',
         title: 'Clusters',
         allowedRoles: ['is_platform', 'is_cluster'],
         icon: 'clusters',
         children: [
             {
-                path: '/cluster/overview',
-                title: 'Cluster Overview',
+                path: '/cluster',
+                title: 'Cluster',
                 allowedRoles: ['is_platform', 'is_cluster'],
             },
             {
@@ -52,14 +49,13 @@ export const appRoutes: Route[] = [
         ],
     },
     {
-        path: '/business-unit',
         title: 'Business Units',
         allowedRoles: ['is_platform', 'is_business_unit'],
         icon: 'business',
         children: [
             {
-                path: '/business-unit/overview',
-                title: 'Business Unit Overview',
+                path: '/business-unit',
+                title: 'Business Unit',
                 allowedRoles: ['is_platform', 'is_business_unit'],
             },
             {
