@@ -1,5 +1,9 @@
 import React from 'react'
 import DashboardStatus from './DashboardStatus'
+import RecentActivity from './RecentActivity'
+import ReportsOverview from './ReportsOverview'
+import HotelsOverview from './HotelsOverview'
+import ClusterDashboard from './ClusterDashboard'
 
 const DashboardComponent = () => {
     return (
@@ -11,6 +15,16 @@ const DashboardComponent = () => {
                 </p>
             </div>
             <DashboardStatus />
+            <div className="grid gap-6 lg:grid-cols-2">
+                <div className='space-y-6'>
+                    <ReportsOverview />
+                    <HotelsOverview />
+                </div>
+                <div className='space-y-6'>
+                    <ClusterDashboard />
+                    <RecentActivity />
+                </div>
+            </div>
         </>
 
     )
