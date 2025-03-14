@@ -1,4 +1,4 @@
-import { ClusterOverview, RecentActivity, ReportOverview, StatusDashboard } from "@/dto/dashboard";
+import { ClusterOverview, RecentActivityType, ReportOverview, StatusDashboard } from "@/dto/dashboard";
 
 export const statusDashboard: StatusDashboard[] = [
     {
@@ -62,7 +62,7 @@ export const clusterOverview: ClusterOverview[] = [
 ];
 
 
-export const recentActivity: RecentActivity[] = [
+export const recentActivity: RecentActivityType[] = [
     {
         title: "New Report",
         description: "Generated this month",

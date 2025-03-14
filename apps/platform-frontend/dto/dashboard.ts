@@ -20,7 +20,7 @@ export interface ClusterOverview {
     status: string;
 }
 
-export interface RecentActivity {
+export interface RecentActivityType {
     title: string;
     description: string;
     cluster: string;
