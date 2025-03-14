@@ -2,7 +2,7 @@ export interface BusinessUnitTableDto {
     id: string;
     name: string;
     cluster: string;
-    branch: string;
+    brand: string;
     location: string;
     rooms: number;
     status: string;
