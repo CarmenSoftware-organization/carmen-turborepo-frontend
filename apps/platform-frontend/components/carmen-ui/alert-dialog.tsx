@@ -2,15 +2,18 @@
 
 import * as React from "react"
 import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/button"
+import { buttonVariants } from "@/components/carmen-ui/button"
 
 // AlertDialog Context
 interface AlertDialogContextValue {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
 }
 
-const AlertDialogContext = React.createContext<AlertDialogContextValue>({})
+const AlertDialogContext = React.createContext<AlertDialogContextValue>({
+  open: false,
+  onOpenChange: () => null,
+})
 
 // Root component
 interface AlertDialogProps {
@@ -19,16 +22,48 @@ interface AlertDialogProps {
   children?: React.ReactNode
 }
 
-const AlertDialog = ({ children, open, onOpenChange }: AlertDialogProps) => {
+const AlertDialog = ({ children, open: controlledOpen, onOpenChange }: AlertDialogProps) => {
+  // Internal state for uncontrolled usage
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+
+  // Determine if we're in controlled or uncontrolled mode
+  const isControlled = controlledOpen !== undefined
+  const open = isControlled ? controlledOpen : uncontrolledOpen
+
+  // Handle open state changes
+  const handleOpenChange = React.useCallback((value: boolean) => {
+    if (!isControlled) {
+      setUncontrolledOpen(value)
+    }
+    onOpenChange?.(value)
+  }, [isControlled, onOpenChange])
+
+  // Handle escape key for the entire dialog
+  React.useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (open && e.key === "Escape") {
+        handleOpenChange(false)
+      }
+    }
+
+    // Add global event listener
+    document.addEventListener("keydown", handleEscapeKey)
+
+    // Clean up
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey)
+    }
+  }, [open, handleOpenChange])
+
   // Memoize context value to prevent unnecessary re-renders
   const contextValue = React.useMemo(
-    () => ({ open, onOpenChange }),
-    [open, onOpenChange]
+    () => ({ open, onOpenChange: handleOpenChange }),
+    [open, handleOpenChange]
   )
 
   return (
     <AlertDialogContext.Provider value={contextValue}>
-      <div data-slot="alert-dialog">{children}</div>
+      {children}
     </AlertDialogContext.Provider>
   )
 }
@@ -39,12 +74,18 @@ type AlertDialogTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement>
 const AlertDialogTrigger = React.forwardRef<HTMLButtonElement, AlertDialogTriggerProps>(
   ({ className, children, ...props }, ref) => {
     const { onOpenChange } = React.useContext(AlertDialogContext)
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (props.onClick) props.onClick(e)
+      onOpenChange(true)
+    }
+
     return (
       <button
         ref={ref}
         type="button"
         data-slot="alert-dialog-trigger"
-        onClick={() => onOpenChange?.(true)}
+        onClick={handleClick}
         className={className}
         {...props}
       >
@@ -58,71 +99,110 @@ AlertDialogTrigger.displayName = "AlertDialogTrigger"
 // Portal component
 interface AlertDialogPortalProps {
   children?: React.ReactNode
+  className?: string
 }
 
-const AlertDialogPortal = ({ children }: AlertDialogPortalProps) => {
+const AlertDialogPortal = ({ children, className }: AlertDialogPortalProps) => {
   const { open } = React.useContext(AlertDialogContext)
+
   if (!open) return null
 
   return (
-    <div data-slot="alert-dialog-portal">
+    <div
+      data-slot="alert-dialog-portal"
+      data-state={open ? "open" : "closed"}
+      className={className}
+    >
       {children}
     </div>
   )
 }
 
-// Overlay component
-type AlertDialogOverlayProps = React.HTMLAttributes<HTMLDivElement>
+// Backdrop component (renamed from Overlay for semantic clarity)
+type AlertDialogBackdropProps = React.HTMLAttributes<HTMLDivElement>
 
-const AlertDialogOverlay = React.forwardRef<HTMLDivElement, AlertDialogOverlayProps>(
+const AlertDialogBackdrop = React.forwardRef<HTMLDivElement, AlertDialogBackdropProps>(
   ({ className, ...props }, ref) => {
-    const { onOpenChange } = React.useContext(AlertDialogContext)
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onOpenChange?.(false)
-      }
-    }
-
     return (
       <div
         ref={ref}
-        data-slot="alert-dialog-overlay"
+        data-slot="alert-dialog-backdrop"
+        aria-hidden="true"
         className={cn(
           "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80",
           className
         )}
-        onClick={() => onOpenChange?.(false)}
-        onKeyDown={handleKeyDown}
-        tabIndex={-1}
-        aria-hidden="true"
         {...props}
       />
     )
   }
 )
-AlertDialogOverlay.displayName = "AlertDialogOverlay"
+AlertDialogBackdrop.displayName = "AlertDialogBackdrop"
 
 // Content component
 type AlertDialogContentProps = React.HTMLAttributes<HTMLDivElement>
 
 const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogContentProps>(
   ({ className, children, ...props }, ref) => {
+    const { open, onOpenChange } = React.useContext(AlertDialogContext)
+    const contentRef = React.useRef<HTMLDivElement>(null)
+
+    // Focus the first focusable element when dialog opens
+    React.useEffect(() => {
+      if (open && contentRef.current) {
+        const focusableElements = contentRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+
+        if (focusableElements.length > 0) {
+          (focusableElements[0] as HTMLElement).focus()
+        }
+      }
+    }, [open])
+
+    // Close when backdrop is clicked (without attaching listener to backdrop)
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      // If the click was directly on the parent element (backdrop), close the dialog
+      if (e.target === e.currentTarget) {
+        onOpenChange(false)
+      }
+    }
+
     return (
       <AlertDialogPortal>
-        <AlertDialogOverlay />
         <div
-          ref={ref}
-          role="alertdialog"
-          aria-modal="true"
-          data-slot="alert-dialog-content"
-          className={cn(
-            "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
-            className
-          )}
-          {...props}
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          onClick={handleBackdropClick}
+          aria-hidden="true"
+          data-overlay="true"
         >
-          {children}
+          <AlertDialogBackdrop />
+          <div
+            ref={React.useMemo(() => {
+              // Merge the refs
+              return (node: HTMLDivElement) => {
+                if (ref) {
+                  if (typeof ref === 'function') ref(node)
+                  else ref.current = node
+                }
+                contentRef.current = node
+              }
+            }, [ref])}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+            data-state={open ? "open" : "closed"}
+            data-slot="alert-dialog-content"
+            tabIndex={-1}
+            className={cn(
+              "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 relative z-50 grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
+              className
+            )}
+            {...props}
+          >
+            {children}
+          </div>
         </div>
       </AlertDialogPortal>
     )
@@ -200,6 +280,7 @@ const AlertDialogDescription = React.forwardRef<HTMLParagraphElement, AlertDialo
       <p
         ref={ref}
         data-slot="alert-dialog-description"
+        id="alert-dialog-description"
         className={cn("text-muted-foreground text-sm", className)}
         {...props}
       />
@@ -212,13 +293,19 @@ AlertDialogDescription.displayName = "AlertDialogDescription"
 type AlertDialogActionProps = React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const AlertDialogAction = React.forwardRef<HTMLButtonElement, AlertDialogActionProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, onClick, ...props }, ref) => {
     const { onOpenChange } = React.useContext(AlertDialogContext)
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (onClick) onClick(e)
+      onOpenChange(false)
+    }
+
     return (
       <button
         ref={ref}
         type="button"
-        onClick={() => onOpenChange?.(false)}
+        onClick={handleClick}
         className={cn(buttonVariants(), className)}
         {...props}
       />
@@ -231,13 +318,19 @@ AlertDialogAction.displayName = "AlertDialogAction"
 type AlertDialogCancelProps = React.ButtonHTMLAttributes<HTMLButtonElement>
 
 const AlertDialogCancel = React.forwardRef<HTMLButtonElement, AlertDialogCancelProps>(
-  ({ className, ...props }, ref) => {
+  ({ className, onClick, ...props }, ref) => {
     const { onOpenChange } = React.useContext(AlertDialogContext)
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (onClick) onClick(e)
+      onOpenChange(false)
+    }
+
     return (
       <button
         ref={ref}
         type="button"
-        onClick={() => onOpenChange?.(false)}
+        onClick={handleClick}
         className={cn(buttonVariants({ variant: "outline" }), className)}
         {...props}
       />
@@ -249,7 +342,7 @@ AlertDialogCancel.displayName = "AlertDialogCancel"
 export {
   AlertDialog,
   AlertDialogPortal,
-  AlertDialogOverlay,
+  AlertDialogBackdrop,
   AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
