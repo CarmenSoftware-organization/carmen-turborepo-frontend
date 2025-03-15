@@ -1,8 +1,21 @@
 "use client"
 
-import * as React from "react"
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/carmen-ui/button"
+import {
+  ButtonHTMLAttributes,
+  createContext,
+  forwardRef,
+  type ReactNode,
+  type MouseEvent,
+  type HTMLAttributes,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react"
 
 // AlertDialog Context
 interface AlertDialogContextValue {
@@ -10,7 +23,7 @@ interface AlertDialogContextValue {
   onOpenChange: (open: boolean) => void
 }
 
-const AlertDialogContext = React.createContext<AlertDialogContextValue>({
+const AlertDialogContext = createContext<AlertDialogContextValue>({
   open: false,
   onOpenChange: () => null,
 })
@@ -19,19 +32,19 @@ const AlertDialogContext = React.createContext<AlertDialogContextValue>({
 interface AlertDialogProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
-  children?: React.ReactNode
+  children?: ReactNode
 }
 
 const AlertDialog = ({ children, open: controlledOpen, onOpenChange }: AlertDialogProps) => {
   // Internal state for uncontrolled usage
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(false)
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false)
 
   // Determine if we're in controlled or uncontrolled mode
   const isControlled = controlledOpen !== undefined
   const open = isControlled ? controlledOpen : uncontrolledOpen
 
   // Handle open state changes
-  const handleOpenChange = React.useCallback((value: boolean) => {
+  const handleOpenChange = useCallback((value: boolean) => {
     if (!isControlled) {
       setUncontrolledOpen(value)
     }
@@ -39,7 +52,7 @@ const AlertDialog = ({ children, open: controlledOpen, onOpenChange }: AlertDial
   }, [isControlled, onOpenChange])
 
   // Handle escape key for the entire dialog
-  React.useEffect(() => {
+  useEffect(() => {
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (open && e.key === "Escape") {
         handleOpenChange(false)
@@ -56,7 +69,7 @@ const AlertDialog = ({ children, open: controlledOpen, onOpenChange }: AlertDial
   }, [open, handleOpenChange])
 
   // Memoize context value to prevent unnecessary re-renders
-  const contextValue = React.useMemo(
+  const contextValue = useMemo(
     () => ({ open, onOpenChange: handleOpenChange }),
     [open, handleOpenChange]
   )
@@ -69,13 +82,13 @@ const AlertDialog = ({ children, open: controlledOpen, onOpenChange }: AlertDial
 }
 
 // Trigger component
-type AlertDialogTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement>
+type AlertDialogTriggerProps = ButtonHTMLAttributes<HTMLButtonElement>
 
-const AlertDialogTrigger = React.forwardRef<HTMLButtonElement, AlertDialogTriggerProps>(
+const AlertDialogTrigger = forwardRef<HTMLButtonElement, AlertDialogTriggerProps>(
   ({ className, children, ...props }, ref) => {
-    const { onOpenChange } = React.useContext(AlertDialogContext)
+    const { onOpenChange } = useContext(AlertDialogContext)
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
       if (props.onClick) props.onClick(e)
       onOpenChange(true)
     }
@@ -98,12 +111,12 @@ AlertDialogTrigger.displayName = "AlertDialogTrigger"
 
 // Portal component
 interface AlertDialogPortalProps {
-  children?: React.ReactNode
+  children?: ReactNode
   className?: string
 }
 
 const AlertDialogPortal = ({ children, className }: AlertDialogPortalProps) => {
-  const { open } = React.useContext(AlertDialogContext)
+  const { open } = useContext(AlertDialogContext)
 
   if (!open) return null
 
@@ -119,9 +132,9 @@ const AlertDialogPortal = ({ children, className }: AlertDialogPortalProps) => {
 }
 
 // Backdrop component (renamed from Overlay for semantic clarity)
-type AlertDialogBackdropProps = React.HTMLAttributes<HTMLDivElement>
+type AlertDialogBackdropProps = HTMLAttributes<HTMLDivElement>
 
-const AlertDialogBackdrop = React.forwardRef<HTMLDivElement, AlertDialogBackdropProps>(
+const AlertDialogBackdrop = forwardRef<HTMLDivElement, AlertDialogBackdropProps>(
   ({ className, ...props }, ref) => {
     return (
       <div
@@ -140,15 +153,15 @@ const AlertDialogBackdrop = React.forwardRef<HTMLDivElement, AlertDialogBackdrop
 AlertDialogBackdrop.displayName = "AlertDialogBackdrop"
 
 // Content component
-type AlertDialogContentProps = React.HTMLAttributes<HTMLDivElement>
+type AlertDialogContentProps = HTMLAttributes<HTMLDivElement>
 
-const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogContentProps>(
+const AlertDialogContent = forwardRef<HTMLDivElement, AlertDialogContentProps>(
   ({ className, children, ...props }, ref) => {
-    const { open, onOpenChange } = React.useContext(AlertDialogContext)
-    const contentRef = React.useRef<HTMLDivElement>(null)
+    const { open, onOpenChange } = useContext(AlertDialogContext)
+    const contentRef = useRef<HTMLDivElement>(null)
 
     // Focus the first focusable element when dialog opens
-    React.useEffect(() => {
+    useEffect(() => {
       if (open && contentRef.current) {
         const focusableElements = contentRef.current.querySelectorAll(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -161,7 +174,7 @@ const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogContentPr
     }, [open])
 
     // Close when backdrop is clicked (without attaching listener to backdrop)
-    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const handleBackdropClick = (e: MouseEvent<HTMLDivElement>) => {
       // If the click was directly on the parent element (backdrop), close the dialog
       if (e.target === e.currentTarget) {
         onOpenChange(false)
@@ -178,7 +191,7 @@ const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogContentPr
         >
           <AlertDialogBackdrop />
           <div
-            ref={React.useMemo(() => {
+            ref={useMemo(() => {
               // Merge the refs
               return (node: HTMLDivElement) => {
                 if (ref) {
@@ -211,9 +224,9 @@ const AlertDialogContent = React.forwardRef<HTMLDivElement, AlertDialogContentPr
 AlertDialogContent.displayName = "AlertDialogContent"
 
 // Header component
-type AlertDialogHeaderProps = React.HTMLAttributes<HTMLDivElement>
+type AlertDialogHeaderProps = HTMLAttributes<HTMLDivElement>
 
-const AlertDialogHeader = React.forwardRef<HTMLDivElement, AlertDialogHeaderProps>(
+const AlertDialogHeader = forwardRef<HTMLDivElement, AlertDialogHeaderProps>(
   ({ className, ...props }, ref) => {
     return (
       <div
@@ -228,9 +241,9 @@ const AlertDialogHeader = React.forwardRef<HTMLDivElement, AlertDialogHeaderProp
 AlertDialogHeader.displayName = "AlertDialogHeader"
 
 // Footer component
-type AlertDialogFooterProps = React.HTMLAttributes<HTMLDivElement>
+type AlertDialogFooterProps = HTMLAttributes<HTMLDivElement>
 
-const AlertDialogFooter = React.forwardRef<HTMLDivElement, AlertDialogFooterProps>(
+const AlertDialogFooter = forwardRef<HTMLDivElement, AlertDialogFooterProps>(
   ({ className, ...props }, ref) => {
     return (
       <div
@@ -248,9 +261,9 @@ const AlertDialogFooter = React.forwardRef<HTMLDivElement, AlertDialogFooterProp
 AlertDialogFooter.displayName = "AlertDialogFooter"
 
 // Title component
-type AlertDialogTitleProps = React.HTMLAttributes<HTMLHeadingElement>
+type AlertDialogTitleProps = HTMLAttributes<HTMLHeadingElement>
 
-const AlertDialogTitle = React.forwardRef<HTMLHeadingElement, AlertDialogTitleProps>(
+const AlertDialogTitle = forwardRef<HTMLHeadingElement, AlertDialogTitleProps>(
   ({ className, children, ...props }, ref) => {
     if (!children) {
       return null
@@ -272,9 +285,9 @@ const AlertDialogTitle = React.forwardRef<HTMLHeadingElement, AlertDialogTitlePr
 AlertDialogTitle.displayName = "AlertDialogTitle"
 
 // Description component
-type AlertDialogDescriptionProps = React.HTMLAttributes<HTMLParagraphElement>
+type AlertDialogDescriptionProps = HTMLAttributes<HTMLParagraphElement>
 
-const AlertDialogDescription = React.forwardRef<HTMLParagraphElement, AlertDialogDescriptionProps>(
+const AlertDialogDescription = forwardRef<HTMLParagraphElement, AlertDialogDescriptionProps>(
   ({ className, ...props }, ref) => {
     return (
       <p
@@ -290,13 +303,13 @@ const AlertDialogDescription = React.forwardRef<HTMLParagraphElement, AlertDialo
 AlertDialogDescription.displayName = "AlertDialogDescription"
 
 // Action button component
-type AlertDialogActionProps = React.ButtonHTMLAttributes<HTMLButtonElement>
+type AlertDialogActionProps = ButtonHTMLAttributes<HTMLButtonElement>
 
-const AlertDialogAction = React.forwardRef<HTMLButtonElement, AlertDialogActionProps>(
+const AlertDialogAction = forwardRef<HTMLButtonElement, AlertDialogActionProps>(
   ({ className, onClick, ...props }, ref) => {
-    const { onOpenChange } = React.useContext(AlertDialogContext)
+    const { onOpenChange } = useContext(AlertDialogContext)
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
       if (onClick) onClick(e)
       onOpenChange(false)
     }
@@ -315,13 +328,13 @@ const AlertDialogAction = React.forwardRef<HTMLButtonElement, AlertDialogActionP
 AlertDialogAction.displayName = "AlertDialogAction"
 
 // Cancel button component
-type AlertDialogCancelProps = React.ButtonHTMLAttributes<HTMLButtonElement>
+type AlertDialogCancelProps = ButtonHTMLAttributes<HTMLButtonElement>
 
-const AlertDialogCancel = React.forwardRef<HTMLButtonElement, AlertDialogCancelProps>(
+const AlertDialogCancel = forwardRef<HTMLButtonElement, AlertDialogCancelProps>(
   ({ className, onClick, ...props }, ref) => {
-    const { onOpenChange } = React.useContext(AlertDialogContext)
+    const { onOpenChange } = useContext(AlertDialogContext)
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
       if (onClick) onClick(e)
       onOpenChange(false)
     }
