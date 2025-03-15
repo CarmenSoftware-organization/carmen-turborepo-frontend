@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import * as TogglePrimitive from "@radix-ui/react-toggle"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
@@ -28,20 +27,51 @@ const toggleVariants = cva(
   }
 )
 
-function Toggle({
-  className,
-  variant,
-  size,
-  ...props
-}: React.ComponentProps<typeof TogglePrimitive.Root> &
-  VariantProps<typeof toggleVariants>) {
-  return (
-    <TogglePrimitive.Root
-      data-slot="toggle"
-      className={cn(toggleVariants({ variant, size, className }))}
-      {...props}
-    />
-  )
+interface ToggleProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange"> {
+  defaultPressed?: boolean
+  pressed?: boolean
+  onPressedChange?: (pressed: boolean) => void
+  variant?: VariantProps<typeof toggleVariants>["variant"]
+  size?: VariantProps<typeof toggleVariants>["size"]
 }
+
+const Toggle = React.forwardRef<HTMLButtonElement, ToggleProps>(
+  ({
+    className,
+    variant,
+    size,
+    defaultPressed = false,
+    pressed: controlledPressed,
+    onPressedChange,
+    ...props
+  }, ref) => {
+    // Handle uncontrolled/controlled state
+    const [uncontrolledPressed, setUncontrolledPressed] = React.useState(defaultPressed)
+    const isPressed = controlledPressed ?? uncontrolledPressed
+
+    const handleClick = React.useCallback(() => {
+      const newState = !isPressed
+      if (controlledPressed === undefined) {
+        setUncontrolledPressed(newState)
+      }
+      onPressedChange?.(newState)
+    }, [isPressed, controlledPressed, onPressedChange])
+
+    return (
+      <button
+        ref={ref}
+        type="button"
+        aria-pressed={isPressed}
+        data-state={isPressed ? "on" : "off"}
+        data-slot="toggle"
+        onClick={handleClick}
+        className={cn(toggleVariants({ variant, size }), className)}
+        {...props}
+      />
+    )
+  }
+)
+
+Toggle.displayName = "Toggle"
 
 export { Toggle, toggleVariants }
