@@ -20,3 +20,13 @@ export interface ReportTemplateDto {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface ClusterMemberDto {
+    id: string;
+    name: string;
+    email: string;
+    platform_role: string;
+    bu_role: string;
+    status: boolean;
+    last_active: string;
+}

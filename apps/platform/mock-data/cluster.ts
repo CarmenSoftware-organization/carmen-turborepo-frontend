@@ -1,4 +1,4 @@
-import { ClusterDto, ReportTemplateDto } from "@/dto/cluster.dto";
+import { ClusterDto, ClusterMemberDto, ReportTemplateDto } from "@/dto/cluster.dto";
 
 export const mockClusters: ClusterDto[] = [
     {
@@ -150,5 +150,98 @@ export const mockReportTemplates: ReportTemplateDto[] = [
         assigned_cluster: 10,
         createdAt: "2021-01-01",
         updatedAt: "2021-01-01"
+    }
+]
+
+export const mockClusterMembers: ClusterMemberDto[] = [
+    {
+        id: "mb-111",
+        name: "John Doe",
+        email: "john.doe@example.com",
+        platform_role: "Admin",
+        bu_role: "General Manager",
+        status: true,
+        last_active: "2023-05-15",
+    },
+    {
+        id: "mb-222",
+        name: "Emma Wilson",
+        email: "emma.wilson@example.com",
+        platform_role: "Manager",
+        bu_role: "Operations Director",
+        status: true,
+        last_active: "2023-05-18",
+    },
+    {
+        id: "mb-333",
+        name: "Michael Chen",
+        email: "michael.chen@example.com",
+        platform_role: "User",
+        bu_role: "Front Desk Manager",
+        status: true,
+        last_active: "2023-05-10",
+    },
+    {
+        id: "mb-444",
+        name: "Sophia Rodriguez",
+        email: "sophia.rodriguez@example.com",
+        platform_role: "Manager",
+        bu_role: "HR Director",
+        status: true,
+        last_active: "2023-05-17",
+    },
+    {
+        id: "mb-555",
+        name: "Alexander Kim",
+        email: "alexander.kim@example.com",
+        platform_role: "User",
+        bu_role: "Maintenance Supervisor",
+        status: false,
+        last_active: "2023-04-22",
+    },
+    {
+        id: "mb-666",
+        name: "Olivia Johnson",
+        email: "olivia.johnson@example.com",
+        platform_role: "Admin",
+        bu_role: "Regional Director",
+        status: true,
+        last_active: "2023-05-19",
+    },
+    {
+        id: "mb-777",
+        name: "William Smith",
+        email: "william.smith@example.com",
+        platform_role: "User",
+        bu_role: "Financial Analyst",
+        status: true,
+        last_active: "2023-05-12",
+    },
+    {
+        id: "mb-888",
+        name: "Ava Martinez",
+        email: "ava.martinez@example.com",
+        platform_role: "User",
+        bu_role: "Housekeeping Manager",
+        status: false,
+        last_active: "2023-03-30",
+    },
+    {
+        id: "mb-999",
+        name: "James Taylor",
+        email: "james.taylor@example.com",
+        platform_role: "Manager",
+        bu_role: "Food & Beverage Director",
+        status: true,
+        last_active: "2023-05-16",
+    },
+    {
+        id: "mb-000",
+        name: "Isabella Brown",
+        email: "isabella.brown@example.com",
+        platform_role: "User",
+        bu_role: "Sales Coordinator",
+        status: true,
+        last_active: "2023-05-14",
     }
 ]
