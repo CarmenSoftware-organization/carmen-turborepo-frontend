@@ -1,4 +1,4 @@
-import { SidebarItem } from "@/types/main";
+import { SidebarItem } from "@/dto/sidebar.dto"
 import {
     LayoutDashboard,
     FolderTree,
@@ -48,14 +48,14 @@ export const sidebarItems: SidebarItem[] = [
                 href: '/cluster',
             },
             {
-                title: 'Cluster Users',
-                href: '/cluster/users',
+                title: 'Template',
+                href: '/cluster/template',
                 icon: UserPlus,
             },
             {
-                title: 'Cluster Settings',
-                href: '/cluster/settings',
-                icon: Settings,
+                title: 'Members',
+                href: '/cluster/members',
+                icon: UserPlus,
             }
         ]
     },

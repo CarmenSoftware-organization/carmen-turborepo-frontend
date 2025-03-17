@@ -12,12 +12,12 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { usePathname } from 'next/navigation'
-import { SidebarItem } from '@/types/main'
 import { sidebarItems } from '@/constants/menu'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context';
+import { SidebarItem } from '@/dto/sidebar.dto';
 
 const SidebarComponent = () => {
     const pathname = usePathname()
@@ -40,7 +40,8 @@ const SidebarComponent = () => {
     }).map(item => {
         // กรองเมนูย่อยด้วยเช่นกัน
         if (item.children) {
-            const filteredChildren = item.children.filter(child => {
+            const children = item.children as SidebarItem['children'];
+            const filteredChildren = children?.filter(child => {
                 if (!child.allowedRoles || !user?.role_user) return true;
                 return child.allowedRoles.includes(user.role_user);
             });
