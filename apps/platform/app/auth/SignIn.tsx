@@ -1,22 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { startTransition, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Eye, EyeOff, Loader } from 'lucide-react';
-import { signIn } from './actions';
+import { useAuth } from '@/contexts/auth-context';
 
 // Form validation schema
 const loginSchema = z.object({
     email: z.string().email('Please enter a valid email address'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
-    rememberMe: z.boolean().optional(),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function SignIn() {
+    const { loginContext } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [authError, setAuthError] = useState<string | null>(null);
     const [isSubmittingForm, setIsSubmittingForm] = useState(false);
@@ -31,31 +31,28 @@ export default function SignIn() {
         defaultValues: {
             email: '',
             password: '',
-            rememberMe: false,
         },
     });
+
 
     const hasFormErrors = Object.keys(errors).length > 0;
     const emailError = errors.email?.message;
     const passwordError = errors.password?.message;
 
     const handleLogin = async (data: LoginFormValues) => {
-        try {
-            setIsSubmittingForm(true);
-            setAuthError(null);
+        setIsSubmittingForm(true);
+        setAuthError(null);
 
-            const result = await signIn(data);
-
-            if (!result.success) {
-                setAuthError(result.error ?? null);
+        startTransition(async () => {
+            try {
+                await loginContext({ ...data, rememberMe: false });
+            } catch (err) {
+                console.error('Login error:', err);
+                setAuthError(err instanceof Error ? err.message : 'Failed to login. Please try again.');
+            } finally {
+                setIsSubmittingForm(false);
             }
-            // Successful login is handled by the server action (redirects user)
-        } catch (error) {
-            setAuthError('An unexpected error occurred. Please try again.');
-            console.error('Login error:', error);
-        } finally {
-            setIsSubmittingForm(false);
-        }
+        });
     };
 
     return (

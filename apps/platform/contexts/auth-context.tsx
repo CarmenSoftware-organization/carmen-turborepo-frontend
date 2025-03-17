@@ -94,7 +94,6 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         defaultValues: {
             email: '',
             password: '',
-            rememberMe: false
         }
     });
 
@@ -126,6 +125,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     const loginContext = useCallback(async (data: LoginFormData) => {
         setLoading(true);
         setError(null);
+
+        console.log('data', data);
 
         try {
             const response = await fetch(`http://127.0.0.1:8080/api/login`, {
