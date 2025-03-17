@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { mockReportTemplates } from "@/mock-data/cluster";
 import ReportTemplateList from "./ReportTemplateList";
+import { Card } from "@/components/ui/card";
 
 export default function ReportTemplateComponent() {
     const reportTemplates = mockReportTemplates;
@@ -15,7 +16,16 @@ export default function ReportTemplateComponent() {
                 </div>
                 <Button>Add Report Template</Button >
             </div>
-            <ReportTemplateList reportTemplates={reportTemplates} />
+
+            <div className="flex justify-between gap-4">
+                <Card className="w-1/2 p-4">
+                    <p className="text-lg font-bold">Available Templates</p>
+                    <ReportTemplateList reportTemplates={reportTemplates} />
+                </Card>
+                <Card className="w-1/2 p-4">
+                    <p className="text-lg font-bold">Hotel Assignment</p>
+                </Card>
+            </div>
         </div>
     )
 }
