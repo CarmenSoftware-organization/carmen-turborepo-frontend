@@ -1,7 +1,5 @@
+import ReportTemplateComponent from "../components/ReportTemplateComponent";
+
 export default function ClusterTemplatePage() {
-    return (
-        <div>
-            Cluster Template
-        </div>
-    )
+    return <ReportTemplateComponent />
 }

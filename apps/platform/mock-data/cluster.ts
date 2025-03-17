@@ -1,4 +1,4 @@
-import { ClusterDto } from "@/dto/cluster.dto";
+import { ClusterDto, ReportTemplateDto } from "@/dto/cluster.dto";
 
 export const mockClusters: ClusterDto[] = [
     {
@@ -121,4 +121,34 @@ export const mockClusters: ClusterDto[] = [
         createdAt: "2021-12-17",
         updatedAt: "2022-10-08"
     }
-]   
+]
+
+export const mockReportTemplates: ReportTemplateDto[] = [
+    {
+        id: "oiaoidhj",
+        title: "Report Template 1",
+        department: "Sales",
+        description: "Report Template 1 Description",
+        assigned_cluster: 12,
+        createdAt: "2021-01-01",
+        updatedAt: "2021-01-01"
+    },
+    {
+        id: "ppasdas9",
+        title: "Report Template 1",
+        department: "Sales",
+        description: "Report Template 1 Description",
+        assigned_cluster: 1,
+        createdAt: "2021-01-01",
+        updatedAt: "2021-01-01"
+    },
+    {
+        id: "989asdk",
+        title: "Report Template 1",
+        department: "Sales",
+        description: "Report Template 1 Description",
+        assigned_cluster: 10,
+        createdAt: "2021-01-01",
+        updatedAt: "2021-01-01"
+    }
+]

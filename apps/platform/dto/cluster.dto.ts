@@ -10,3 +10,13 @@ export interface ClusterDto {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface ReportTemplateDto {
+    id: string;
+    title: string;
+    department: string;
+    description: string;
+    assigned_cluster: number;
+    createdAt: string;
+    updatedAt: string;
+}
