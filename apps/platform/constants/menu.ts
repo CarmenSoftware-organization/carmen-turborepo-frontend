@@ -5,7 +5,8 @@ import {
     Users,
     FileText,
     Settings,
-    UserPlus
+    UserPlus,
+    IdCardIcon
 } from "lucide-react"
 
 export const sidebarItems: SidebarItem[] = [
@@ -81,4 +82,26 @@ export const sidebarItems: SidebarItem[] = [
             }
         ]
     },
+    {
+        title: 'Reports',
+        href: '/reports',
+        icon: FileText,
+        allowedRoles: ['is_platform', 'is_cluster', 'is_business_unit'],
+    },
+    {
+        title: 'Subscriptions',
+        href: '/subscriptions',
+        icon: IdCardIcon,
+        allowedRoles: ['is_platform', 'is_cluster', 'is_business_unit'],
+        children: [
+            {
+                title: 'Subscriptions',
+                href: '/subscriptions',
+            },
+            {
+                title: 'Plan',
+                href: '/subscriptions/plan',
+            }
+        ]
+    }
 ]
