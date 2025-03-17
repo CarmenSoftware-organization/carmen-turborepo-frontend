@@ -1,3 +1,4 @@
+import AddBuComponent from "../components/AddBuComponent";
 export default function BusinessUnitAddPage() {
-    return <div>BusinessUnitAddPage</div>
+    return <AddBuComponent />
 }
