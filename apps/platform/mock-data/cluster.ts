@@ -1,6 +1,6 @@
 import { ClusterDto } from "@/dto/cluster.dto";
 
-export const clusters: ClusterDto[] = [
+export const mockClusters: ClusterDto[] = [
     {
         id: "oiaoidhj",
         name: "Cluster 1",
