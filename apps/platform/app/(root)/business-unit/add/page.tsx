@@ -1,4 +1,4 @@
-import AddBuComponent from "../components/AddBuComponent";
+import BuForm from "../components/BuForm";
 export default function BusinessUnitAddPage() {
-    return <AddBuComponent />
+    return <BuForm />
 }
