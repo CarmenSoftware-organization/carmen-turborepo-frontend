@@ -1,9 +1,5 @@
-import React from 'react'
+import DashboardComponent from "./components/DashboardComponent";
 
-const page = () => {
-    return (
-        <div>page</div>
-    )
+export default function DashboardPage() {
+    return <DashboardComponent />
 }
-
-export default page
