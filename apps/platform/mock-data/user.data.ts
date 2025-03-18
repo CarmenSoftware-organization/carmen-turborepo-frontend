@@ -1,4 +1,4 @@
-import { BusinessUnitUserDto, ClusterUserDto, PlatformUserDto, RoleDto } from "@/dto/user.dto";
+import { AccessModuleDto, BusinessUnitUserDto, ClusterUserDto, PlatformUserDto, RoleDto } from "@/dto/user.dto";
 
 export const platformUserMockData: PlatformUserDto[] = [
     {
@@ -407,6 +407,60 @@ export const mockRoleDepartment: RoleDto[] = [
         ],
         total_users: 7,
         last_active: "2025-03-13T15:20:00Z",
+    },
+];
+
+
+export const mockAccessModules: AccessModuleDto[] = [
+    {
+        id: "mod-001",
+        name: "Reservation System",
+        hotel_group: "Luxury Hotels Group",
+        users: 120,
+        status: "active",
+        limit: 150,
+        current_usage: 90,
+        last_active: "2025-03-17T12:30:00Z",
+    },
+    {
+        id: "mod-002",
+        name: "Housekeeping Management",
+        hotel_group: "Urban Stay Chain",
+        users: 80,
+        status: "active",
+        limit: 100,
+        current_usage: 75,
+        last_active: "2025-03-16T08:45:00Z",
+    },
+    {
+        id: "mod-003",
+        name: "Food & Beverage Ordering",
+        hotel_group: "Coastal Resorts",
+        users: 95,
+        status: "inactive",
+        limit: 120,
+        current_usage: 110,
+        last_active: "2025-03-14T15:20:00Z",
+    },
+    {
+        id: "mod-004",
+        name: "Spa & Wellness Booking",
+        hotel_group: "Wellness Retreats",
+        users: 60,
+        status: "active",
+        limit: 80,
+        current_usage: 50,
+        last_active: "2025-03-15T10:00:00Z",
+    },
+    {
+        id: "mod-005",
+        name: "Event & Conference Management",
+        hotel_group: "Business Hotels Alliance",
+        users: 45,
+        status: "pending",
+        limit: 60,
+        current_usage: 30,
+        last_active: "2025-03-18T09:10:00Z",
     },
 ];
 

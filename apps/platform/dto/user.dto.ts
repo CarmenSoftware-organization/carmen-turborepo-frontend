@@ -19,4 +19,13 @@ export interface RoleDto {
     last_active: string;
 }
 
-
+export interface AccessModuleDto {
+    id: string;
+    name: string;
+    hotel_group: string;
+    users: number;
+    status: string;
+    limit: number;
+    current_usage: number;
+    last_active: string;
+}
