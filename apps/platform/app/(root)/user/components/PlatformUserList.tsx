@@ -1,5 +1,5 @@
 import { PlatformUserDto } from "@/dto/user.dto"
-import { User, AtSign, Briefcase, Calendar, CheckCircle2, XCircle, Building2 } from "lucide-react"
+import { User, AtSign, Briefcase, CheckCircle2, XCircle, Building2 } from "lucide-react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -11,6 +11,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { format } from "date-fns"
 
 interface PlatformUserListProps {
     readonly users: PlatformUserDto[]
@@ -49,7 +50,11 @@ export default function PlatformUserList({ users }: PlatformUserListProps) {
                                     <TableCell>{user.role}</TableCell>
                                     <TableCell>{user.bu_name}</TableCell>
                                     <TableCell>
-                                        <Badge variant={user.status ? "outline" : "destructive"} className="flex items-center gap-1 w-fit">
+                                        <Badge
+                                            variant={user.status ? "outline" : "destructive"}
+                                            className="flex items-center gap-1 w-fit"
+                                            aria-label={user.status ? "Active" : "Inactive"}
+                                        >
                                             {user.status ? (
                                                 <>
                                                     <CheckCircle2 className="h-3 w-3" />
@@ -63,7 +68,7 @@ export default function PlatformUserList({ users }: PlatformUserListProps) {
                                             )}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{new Date(user.last_active).toLocaleDateString()}</TableCell>
+                                    <TableCell>{user?.last_active ? format(user.last_active, "dd MMM yyyy") : "-"}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -91,7 +96,11 @@ export default function PlatformUserList({ users }: PlatformUserListProps) {
                                                 </div>
                                             </div>
                                         </div>
-                                        <Badge variant={user.status ? "outline" : "destructive"} className="flex items-center gap-1">
+                                        <Badge
+                                            variant={user.status ? "outline" : "destructive"}
+                                            className="flex items-center gap-1"
+                                            aria-label={user.status ? "Active" : "Inactive"}
+                                        >
                                             {user.status ? (
                                                 <>
                                                     <CheckCircle2 className="h-3 w-3" />
@@ -120,16 +129,6 @@ export default function PlatformUserList({ users }: PlatformUserListProps) {
                                         <div>
                                             <span className="text-xs text-muted-foreground">Business Unit</span>
                                             <p className="text-foreground">{user.bu_name}</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center text-sm">
-                                        <Calendar className="h-4 w-4 text-muted-foreground mr-2" />
-                                        <div>
-                                            <span className="text-xs text-muted-foreground">Last Active</span>
-                                            <p className="text-foreground">
-                                                {new Date(user.last_active).toLocaleDateString()}
-                                            </p>
                                         </div>
                                     </div>
                                 </CardContent>

@@ -1,4 +1,4 @@
-import { PlatformUserDto } from "@/dto/user.dto";
+import { ClusterUserDto } from "@/dto/user.dto";
 import { useId } from "react";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,40 +29,46 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { platformUserSchema } from "@/constants/schema";
+import { clusterUserSchema } from "@/constants/schema";
+import { mockModules } from "@/constants/option";
 
-interface FormDialogPlatformProps {
+interface FormDialogClusterProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
-    readonly onAddUser: (user: PlatformUserDto) => void;
+    readonly onAddUser: (user: ClusterUserDto) => void;
 }
 
 
-export default function FormDialogPlatform({ open, onOpenChange, onAddUser }: FormDialogPlatformProps) {
+
+export default function FormDialogCluster({ open, onOpenChange, onAddUser }: FormDialogClusterProps) {
     const formId = useId();
 
-    const form = useForm<PlatformUserDto>({
-        resolver: zodResolver(platformUserSchema),
+    const form = useForm<ClusterUserDto>({
+        resolver: zodResolver(clusterUserSchema),
         defaultValues: {
             name: "",
             email: "",
+            hotel_group: "",
             role: "",
-            bu_name: "",
+            module: [],
             status: true,
+            last_active: "",
         },
     });
 
-    const handleSubmit = (values: PlatformUserDto) => {
-
-        const newUser: PlatformUserDto = {
-            id: `p${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`,
+    const onSubmit = (values: ClusterUserDto) => {
+        const newUser: ClusterUserDto = {
+            id: `c${Math.floor(Math.random() * 10000).toString().padStart(3, '0')}`,
             name: values.name,
             email: values.email,
+            hotel_group: values.hotel_group,
             role: values.role,
-            bu_name: values.bu_name,
+            module: values.module,
             status: values.status,
             last_active: new Date().toISOString()
         };
+
+        console.log(newUser);
 
         onAddUser(newUser);
         form.reset();
@@ -72,31 +78,31 @@ export default function FormDialogPlatform({ open, onOpenChange, onAddUser }: Fo
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogTrigger asChild>
-                <Button size="sm">
-                    <PlusIcon className="w-4 h-4 mr-2" />
+                <Button size="sm" >
+                    <PlusIcon className="w-4 h-4" />
                     Add User
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Add New Platform User</DialogTitle>
+                    <DialogTitle>Add New Cluster User</DialogTitle>
                     <DialogDescription>
-                        Create a new user with platform-level access. Fill out the details below.
+                        Create a new user with cluster-level access. Fill out the details below.
                     </DialogDescription>
                 </DialogHeader>
 
                 <Form {...form}>
-                    <form id={formId} onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
+                    <form id={formId} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                         <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-right">Name</FormLabel>
+                                    <FormLabel className="text-right text-foreground">Name</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="John Doe"
-                                            className="col-span-3"
+                                            className="col-span-3 bg-background text-foreground"
                                             {...field}
                                         />
                                     </FormControl>
@@ -110,12 +116,12 @@ export default function FormDialogPlatform({ open, onOpenChange, onAddUser }: Fo
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-right">Email</FormLabel>
+                                    <FormLabel className="text-right text-foreground">Email</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="email"
                                             placeholder="john.doe@example.com"
-                                            className="col-span-3"
+                                            className="col-span-3 bg-background text-foreground"
                                             {...field}
                                         />
                                     </FormControl>
@@ -126,26 +132,24 @@ export default function FormDialogPlatform({ open, onOpenChange, onAddUser }: Fo
 
                         <FormField
                             control={form.control}
-                            name="role"
+                            name="hotel_group"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-right">Role</FormLabel>
+                                    <FormLabel className="text-right text-foreground">Hotel Group</FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
                                         defaultValue={field.value}
                                         value={field.value}
                                     >
                                         <FormControl>
-                                            <SelectTrigger className="col-span-3">
-                                                <SelectValue placeholder="Select role" />
+                                            <SelectTrigger className="col-span-3 bg-background text-foreground">
+                                                <SelectValue placeholder="Select hotel group" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="Admin">Admin</SelectItem>
-                                            <SelectItem value="Finance Manager">Finance Manager</SelectItem>
-                                            <SelectItem value="IT Director">IT Director</SelectItem>
-                                            <SelectItem value="HR Director">HR Director</SelectItem>
-                                            <SelectItem value="Operations Manager">Operations Manager</SelectItem>
+                                        <SelectContent className="bg-background text-foreground">
+                                            <SelectItem value="Hotel Group 1">Hotel Group 1</SelectItem>
+                                            <SelectItem value="Hotel Group 2">Hotel Group 2</SelectItem>
+                                            <SelectItem value="Hotel Group 3">Hotel Group 3</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage className="col-start-2 col-span-3" />
@@ -155,26 +159,62 @@ export default function FormDialogPlatform({ open, onOpenChange, onAddUser }: Fo
 
                         <FormField
                             control={form.control}
-                            name="bu_name"
+                            name="module"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-right">Business Unit</FormLabel>
+                                    <FormLabel className="text-right text-foreground">Module</FormLabel>
+                                    <Select
+                                        onValueChange={(value) => {
+                                            const selectedModule = mockModules.find(m => m.value === value);
+                                            if (selectedModule) {
+                                                field.onChange([{
+                                                    id: selectedModule.value,
+                                                    name: selectedModule.label
+                                                }]);
+                                            }
+                                        }}
+                                        value={field.value && field.value.length > 0 ? field.value[0].id : ""}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger className="col-span-3 bg-background text-foreground">
+                                                <SelectValue
+                                                    placeholder="Select module"
+                                                />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent className="bg-background text-foreground">
+                                            {mockModules.map((module) => (
+                                                <SelectItem key={module.value} value={module.value}>
+                                                    {module.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage className="col-start-2 col-span-3" />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="role"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel className="text-right text-foreground">Role</FormLabel>
                                     <Select
                                         onValueChange={field.onChange}
                                         defaultValue={field.value}
                                         value={field.value}
                                     >
                                         <FormControl>
-                                            <SelectTrigger className="col-span-3">
-                                                <SelectValue placeholder="Select business unit" />
+                                            <SelectTrigger className="col-span-3 bg-background text-foreground">
+                                                <SelectValue placeholder="Select role" />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="Corporate Headquarters">Corporate Headquarters</SelectItem>
-                                            <SelectItem value="Finance Department">Finance Department</SelectItem>
-                                            <SelectItem value="IT Department">IT Department</SelectItem>
-                                            <SelectItem value="Human Resources">Human Resources</SelectItem>
-                                            <SelectItem value="Operations">Operations</SelectItem>
+                                        <SelectContent className="bg-background text-foreground">
+                                            <SelectItem value="Admin">Admin</SelectItem>
+                                            <SelectItem value="Manager">Manager</SelectItem>
+                                            <SelectItem value="User">User</SelectItem>
                                         </SelectContent>
                                     </Select>
                                     <FormMessage className="col-start-2 col-span-3" />
@@ -187,18 +227,18 @@ export default function FormDialogPlatform({ open, onOpenChange, onAddUser }: Fo
                             name="status"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-right">Status</FormLabel>
+                                    <FormLabel className="text-right text-foreground">Status</FormLabel>
                                     <Select
                                         onValueChange={(value) => field.onChange(value === "true")}
                                         defaultValue={field.value ? "true" : "false"}
                                         value={field.value ? "true" : "false"}
                                     >
                                         <FormControl>
-                                            <SelectTrigger className="col-span-3">
+                                            <SelectTrigger className="col-span-3 bg-background text-foreground">
                                                 <SelectValue />
                                             </SelectTrigger>
                                         </FormControl>
-                                        <SelectContent>
+                                        <SelectContent className="bg-background text-foreground">
                                             <SelectItem value="true">Active</SelectItem>
                                             <SelectItem value="false">Inactive</SelectItem>
                                         </SelectContent>
@@ -209,10 +249,20 @@ export default function FormDialogPlatform({ open, onOpenChange, onAddUser }: Fo
                         />
 
                         <DialogFooter>
-                            <Button variant="outline" type="button" onClick={() => onOpenChange(false)}>
+                            <Button
+                                variant="outline"
+                                type="button"
+                                onClick={() => onOpenChange(false)}
+                                className="bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+                            >
                                 Cancel
                             </Button>
-                            <Button type="submit">Add User</Button>
+                            <Button
+                                type="submit"
+                                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                            >
+                                Add User
+                            </Button>
                         </DialogFooter>
                     </form>
                 </Form>

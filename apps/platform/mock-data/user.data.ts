@@ -74,6 +74,10 @@ export const clusterUserMockData: ClusterUserDto[] = [
             {
                 id: "m003",
                 name: "Accounting"
+            },
+            {
+                id: "m004",
+                name: "Administration"
             }
         ],
         status: true,
@@ -88,7 +92,7 @@ export const clusterUserMockData: ClusterUserDto[] = [
         module: [
             {
                 id: "m005",
-                name: "Marketing Campaigns"
+                name: "Marketing"
             }
         ],
         status: true,
@@ -103,7 +107,7 @@ export const clusterUserMockData: ClusterUserDto[] = [
         module: [
             {
                 id: "m007",
-                name: "System Administration"
+                name: "Administration"
             }
         ],
         status: false,

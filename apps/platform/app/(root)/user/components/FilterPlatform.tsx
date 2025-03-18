@@ -5,7 +5,6 @@ export default function FilterPlatform() {
     return (
         <div className="flex items-center justify-between">
             <Input placeholder="Search" className="w-1/2" />
-
             <div className="flex gap-2 w-1/3">
                 <Select>
                     <SelectTrigger>

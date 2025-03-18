@@ -18,3 +18,10 @@ export const currencies = [
     { value: "GBP", label: "British Pound (£)" },
     { value: "JPY", label: "Japanese Yen (¥)" },
 ]
+
+export const mockModules = [
+    { value: "m001", label: "Reservations" },
+    { value: "m002", label: "Accounting" },
+    { value: "m003", label: "Marketing" },
+    { value: "m004", label: "Administration" },
+];
