@@ -103,5 +103,25 @@ export const sidebarItems: SidebarItem[] = [
                 href: '/subscriptions/plan',
             }
         ]
+    },
+    {
+        title: 'Settings',
+        href: '/settings',
+        icon: Settings,
+        allowedRoles: ['is_platform', 'is_cluster', 'is_business_unit'],
+        children: [
+            {
+                title: 'General ',
+                href: '/settings',
+            },
+            {
+                title: 'Profile',
+                href: '/settings/profile',
+            },
+            {
+                title: 'Security',
+                href: '/settings/security',
+            }
+        ]
     }
 ]
