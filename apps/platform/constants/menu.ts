@@ -7,7 +7,8 @@ import {
     Settings,
     UserPlus,
     IdCardIcon,
-    HelpCircle
+    HelpCircle,
+    User
 } from "lucide-react"
 
 export const sidebarItems: SidebarItem[] = [
@@ -16,28 +17,6 @@ export const sidebarItems: SidebarItem[] = [
         href: '/dashboard',
         icon: LayoutDashboard,
         allowedRoles: ['is_platform', 'is_cluster', 'is_business_unit'],
-    },
-    {
-        title: 'Platforms',
-        href: '/platform',
-        icon: FileText,
-        allowedRoles: ['is_platform'],
-        children: [
-            {
-                title: 'Overview',
-                href: '/platform',
-            },
-            {
-                title: 'Platform Users',
-                href: '/platform/users',
-                icon: UserPlus,
-            },
-            {
-                title: 'Platform Settings',
-                href: '/platform/settings',
-                icon: Settings,
-            }
-        ]
     },
     {
         title: 'Clusters',
@@ -80,6 +59,34 @@ export const sidebarItems: SidebarItem[] = [
                 title: 'Business Unit Settings',
                 href: '/business-unit/settings',
                 icon: Settings,
+            }
+        ]
+    },
+    {
+        title: 'Users',
+        href: '/user',
+        icon: User,
+        allowedRoles: ['is_platform', 'is_cluster', 'is_business_unit'],
+        children: [
+            {
+                title: 'Platform Users',
+                href: '/user/platform',
+            },
+            {
+                title: 'Cluster Users',
+                href: '/user/cluster',
+            },
+            {
+                title: 'Business Unit Users',
+                href: '/user/business-unit',
+            },
+            {
+                title: 'Role',
+                href: '/user/role',
+            },
+            {
+                title: 'Access Control',
+                href: '/user/access-control',
             }
         ]
     },
