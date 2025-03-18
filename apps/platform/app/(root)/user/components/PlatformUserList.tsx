@@ -26,7 +26,7 @@ export default function PlatformUserList({ users }: PlatformUserListProps) {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[250px]">User</TableHead>
+                                <TableHead>User</TableHead>
                                 <TableHead>Role</TableHead>
                                 <TableHead>Business Unit</TableHead>
                                 <TableHead>Status</TableHead>

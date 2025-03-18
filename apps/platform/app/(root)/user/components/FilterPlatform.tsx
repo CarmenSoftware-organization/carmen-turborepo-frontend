@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { mockRoles } from "@/constants/option";
 
 export default function FilterPlatform() {
     return (
@@ -11,8 +12,11 @@ export default function FilterPlatform() {
                         <SelectValue placeholder="Select Role" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="user">User</SelectItem>
+                        {mockRoles.map((role) => (
+                            <SelectItem key={role.value} value={role.value}>
+                                {role.label}
+                            </SelectItem>
+                        ))}
                     </SelectContent>
                 </Select>
                 <Select>

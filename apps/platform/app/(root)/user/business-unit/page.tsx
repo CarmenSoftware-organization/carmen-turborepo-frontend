@@ -1,7 +1,5 @@
+import UserBu from "../components/UserBu";
+
 export default function UserBusinessUnitPage() {
-    return (
-        <div>
-            <h1>User Business Unit</h1>
-        </div>
-    )
+    return <UserBu />
 }

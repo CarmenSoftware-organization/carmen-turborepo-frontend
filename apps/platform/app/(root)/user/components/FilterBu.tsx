@@ -1,13 +1,12 @@
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { mockHotelGroups, mockModules, mockRoles, mockStatus } from "@/constants/option";
+import { mockDepartments, mockHotelGroups, mockHotelNames, mockModules, mockRoles, mockStatus } from "@/constants/option";
 
-export default function FilterCluster() {
+export default function FilterBu() {
     return (
-        <div className="flex items-center justify-between gap-4">
-            <Input placeholder="Search" className="w-1/2" />
-
-            <div className="flex gap-2 w-1/2">
+        <div className="space-y-4">
+            <Input placeholder="Search" />
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-2">
                 <Select>
                     <SelectTrigger>
                         <SelectValue placeholder="Hotel Group" />
@@ -22,6 +21,31 @@ export default function FilterCluster() {
                 </Select>
                 <Select>
                     <SelectTrigger>
+                        <SelectValue placeholder="Hotel Name" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {mockHotelNames.map((hotelName) => (
+                            <SelectItem key={hotelName.value} value={hotelName.value}>
+                                {hotelName.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+                <Select>
+                    <SelectTrigger>
+                        <SelectValue placeholder="Department" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {mockDepartments.map((department) => (
+                            <SelectItem key={department.value} value={department.value}>
+                                {department.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
+                <Select>
+                    <SelectTrigger>
                         <SelectValue placeholder="Role" />
                     </SelectTrigger>
                     <SelectContent>
@@ -32,7 +56,6 @@ export default function FilterCluster() {
                         ))}
                     </SelectContent>
                 </Select>
-
                 <Select>
                     <SelectTrigger>
                         <SelectValue placeholder="Module" />
@@ -58,7 +81,6 @@ export default function FilterCluster() {
                     </SelectContent>
                 </Select>
             </div>
-
         </div>
     )
 }
