@@ -1,4 +1,6 @@
+import ModuleComponent from "./components/ModuleComponent";
+
 export default function ModulesPage() {
-    return <div>Modules</div>;
+    return <ModuleComponent />
 }
 
