@@ -1,4 +1,4 @@
-import { BusinessUnitUserDto, ClusterUserDto, PlatformUserDto } from "@/dto/user.dto";
+import { BusinessUnitUserDto, ClusterUserDto, PlatformUserDto, RoleDto } from "@/dto/user.dto";
 
 export const platformUserMockData: PlatformUserDto[] = [
     {
@@ -234,3 +234,182 @@ export const businessUnitUserMockData: BusinessUnitUserDto[] = [
         last_active: "2023-10-15T13:50:18Z"
     }
 ]
+
+export const mockRolePlatform: RoleDto[] = [
+    {
+        id: "plat-001",
+        name: "Platform Admin",
+        scope: "platform",
+        permissions: [
+            { id: "perm-001", name: "Manage Users" },
+            { id: "perm-002", name: "Manage System Settings" },
+            { id: "perm-003", name: "View Reports" },
+        ],
+        total_users: 5,
+        last_active: "2025-03-17T12:30:00Z",
+    },
+    {
+        id: "plat-002",
+        name: "Super Admin",
+        scope: "platform",
+        permissions: [
+            { id: "perm-004", name: "Full Access" },
+            { id: "perm-005", name: "Manage Integrations" },
+        ],
+        total_users: 2,
+        last_active: "2025-03-18T09:00:00Z",
+    },
+    {
+        id: "plat-003",
+        name: "Finance Controller",
+        scope: "platform",
+        permissions: [
+            { id: "perm-006", name: "Manage Financial Reports" },
+            { id: "perm-007", name: "Approve Budgets" },
+        ],
+        total_users: 3,
+        last_active: "2025-03-15T10:20:00Z",
+    },
+    {
+        id: "plat-004",
+        name: "IT Administrator",
+        scope: "platform",
+        permissions: [
+            { id: "perm-008", name: "Manage Servers" },
+            { id: "perm-009", name: "Handle Security Protocols" },
+        ],
+        total_users: 4,
+        last_active: "2025-03-14T14:45:00Z",
+    },
+    {
+        id: "plat-005",
+        name: "Support Manager",
+        scope: "platform",
+        permissions: [
+            { id: "perm-010", name: "Handle Customer Queries" },
+            { id: "perm-011", name: "Manage Support Tickets" },
+        ],
+        total_users: 6,
+        last_active: "2025-03-13T16:00:00Z",
+    },
+];
+
+export const mockRoleCluster: RoleDto[] = [
+    {
+        id: "clus-001",
+        name: "Cluster Manager",
+        scope: "cluster",
+        permissions: [
+            { id: "perm-012", name: "Manage Multiple Hotels" },
+            { id: "perm-013", name: "Monitor Hotel Performance" },
+        ],
+        total_users: 8,
+        last_active: "2025-03-16T15:45:00Z",
+    },
+    {
+        id: "clus-002",
+        name: "Operations Head",
+        scope: "cluster",
+        permissions: [
+            { id: "perm-014", name: "Oversee Daily Operations" },
+            { id: "perm-015", name: "Handle Crisis Management" },
+        ],
+        total_users: 5,
+        last_active: "2025-03-17T08:30:00Z",
+    },
+    {
+        id: "clus-003",
+        name: "Regional Sales Manager",
+        scope: "cluster",
+        permissions: [
+            { id: "perm-016", name: "Manage Sales Strategies" },
+            { id: "perm-017", name: "Track Revenue Growth" },
+        ],
+        total_users: 7,
+        last_active: "2025-03-15T12:10:00Z",
+    },
+    {
+        id: "clus-004",
+        name: "HR Coordinator",
+        scope: "cluster",
+        permissions: [
+            { id: "perm-018", name: "Handle Employee Relations" },
+            { id: "perm-019", name: "Recruitment & Training" },
+        ],
+        total_users: 6,
+        last_active: "2025-03-14T18:20:00Z",
+    },
+    {
+        id: "clus-005",
+        name: "Procurement Head",
+        scope: "cluster",
+        permissions: [
+            { id: "perm-020", name: "Manage Supplier Contracts" },
+            { id: "perm-021", name: "Monitor Inventory Levels" },
+        ],
+        total_users: 4,
+        last_active: "2025-03-12T09:50:00Z",
+    },
+];
+
+export const mockRoleDepartment: RoleDto[] = [
+    {
+        id: "dept-001",
+        name: "Front Desk Supervisor",
+        scope: "department",
+        permissions: [
+            { id: "perm-022", name: "Manage Check-ins/Check-outs" },
+            { id: "perm-023", name: "Handle Guest Complaints" },
+        ],
+        total_users: 10,
+        last_active: "2025-03-16T07:30:00Z",
+    },
+    {
+        id: "dept-002",
+        name: "Housekeeping Manager",
+        scope: "department",
+        permissions: [
+            { id: "perm-024", name: "Schedule Cleaning Services" },
+            { id: "perm-025", name: "Maintain Room Standards" },
+        ],
+        total_users: 12,
+        last_active: "2025-03-17T14:10:00Z",
+    },
+    {
+        id: "dept-003",
+        name: "Restaurant Supervisor",
+        scope: "department",
+        permissions: [
+            { id: "perm-026", name: "Oversee Food Service" },
+            { id: "perm-027", name: "Monitor Inventory & Orders" },
+        ],
+        total_users: 8,
+        last_active: "2025-03-15T13:00:00Z",
+    },
+    {
+        id: "dept-004",
+        name: "Spa & Wellness Coordinator",
+        scope: "department",
+        permissions: [
+            { id: "perm-028", name: "Manage Spa Bookings" },
+            { id: "perm-029", name: "Ensure Health & Safety Compliance" },
+        ],
+        total_users: 6,
+        last_active: "2025-03-14T10:40:00Z",
+    },
+    {
+        id: "dept-005",
+        name: "Maintenance Supervisor",
+        scope: "department",
+        permissions: [
+            { id: "perm-030", name: "Oversee Hotel Repairs" },
+            { id: "perm-031", name: "Manage Utility Systems" },
+        ],
+        total_users: 7,
+        last_active: "2025-03-13T15:20:00Z",
+    },
+];
+
+
+
+
