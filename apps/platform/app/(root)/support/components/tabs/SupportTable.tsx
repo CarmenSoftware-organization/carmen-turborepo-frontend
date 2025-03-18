@@ -1,13 +1,13 @@
 import { TicketType } from "@/dto/support.dto";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { format } from 'date-fns'
-import { Badge } from '@/components/ui/badge'
+import { format } from "date-fns";
+import { Badge } from "@/components/ui/badge";
 import { getPriorityVariant, getStatusVariant } from "@/้helpers/status.helper";
-interface TicketTabProps {
+
+interface Props {
     readonly tickets: TicketType[];
 }
-
-export default function TicketTab({ tickets }: TicketTabProps) {
+export default function SupportTable({ tickets }: Props) {
     return (
         <Table>
             <TableHeader>
