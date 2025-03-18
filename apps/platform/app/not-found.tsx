@@ -5,7 +5,6 @@ import { ArrowLeft } from "lucide-react";
 
 export default function notFound() {
     const router = useRouter();
-
     const handleBack = () => {
         router.back();
     };
