@@ -6,7 +6,8 @@ import {
     FileText,
     Settings,
     UserPlus,
-    IdCardIcon
+    IdCardIcon,
+    HelpCircle
 } from "lucide-react"
 
 export const sidebarItems: SidebarItem[] = [
@@ -103,6 +104,12 @@ export const sidebarItems: SidebarItem[] = [
                 href: '/subscriptions/plan',
             }
         ]
+    },
+    {
+        title: 'Support',
+        href: '/support',
+        icon: HelpCircle,
+        allowedRoles: ['is_platform', 'is_cluster', 'is_business_unit'],
     },
     {
         title: 'Settings',
