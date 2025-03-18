@@ -1,3 +1,6 @@
+import { platformUserSchema } from "@/constants/schema";
+import { z } from "zod";
+
 export interface PlatformUserDto {
     id: string;
     name: string;
@@ -8,6 +11,7 @@ export interface PlatformUserDto {
     last_active: string;
 }
 
+export type FormPlatformUserValues = z.infer<typeof platformUserSchema>;
 
 export interface ClusterUserDto {
     id: string;
