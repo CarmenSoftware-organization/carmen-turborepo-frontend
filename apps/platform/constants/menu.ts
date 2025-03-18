@@ -102,6 +102,23 @@ export const sidebarItems: SidebarItem[] = [
             {
                 title: 'Plan',
                 href: '/subscriptions/plan',
+            },
+            {
+                title: 'Module',
+                href: '/subscriptions/module',
+            },
+
+            {
+                title: 'Usage',
+                href: '/subscriptions/usage',
+            },
+            {
+                title: 'Report',
+                href: '/subscriptions/report',
+            },
+            {
+                title: 'Invoice',
+                href: '/subscriptions/invoice',
             }
         ]
     },
