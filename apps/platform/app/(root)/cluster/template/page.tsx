@@ -1,5 +1,10 @@
+import { Suspense } from "react";
 import ReportTemplateComponent from "../components/ReportTemplateComponent";
 
 export default function ClusterTemplatePage() {
-    return <ReportTemplateComponent />
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <ReportTemplateComponent />
+        </Suspense>
+    );
 }

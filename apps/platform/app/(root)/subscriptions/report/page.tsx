@@ -1,5 +1,11 @@
+import { Suspense } from "react";
+
 export default function ReportPage() {
-    return <div>Report</div>;
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <div>Report</div>
+        </Suspense>
+    );
 }
 
 

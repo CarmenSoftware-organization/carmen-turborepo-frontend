@@ -100,8 +100,8 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     // Check for existing auth on mount
     useEffect(() => {
         const initializeAuth = () => {
+            if (typeof window === 'undefined') return;
             try {
-                // Try to get auth data from sessionStorage first, then localStorage
                 const storedToken = sessionStorage.getItem('auth_token') ?? localStorage.getItem('auth_token');
                 const storedRefreshToken = sessionStorage.getItem('refresh_token') ?? localStorage.getItem('refresh_token');
                 const storedUser = sessionStorage.getItem('user') ?? localStorage.getItem('user');

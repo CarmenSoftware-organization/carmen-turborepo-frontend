@@ -1,5 +1,11 @@
+import { Suspense } from "react";
+
 export default function InvoicePage() {
-    return <div>Invoice</div>;
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <div>Invoice</div>
+        </Suspense>
+    )
 }
 
 
