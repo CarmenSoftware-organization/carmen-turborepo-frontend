@@ -1,19 +1,27 @@
+"use client";
+
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { mockReportTemplates } from "@/mock-data/reports";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ReportTemplateType } from "@/dto/report.dto";
+import FormTemplate from "./FormTemplate";
 
 export default function ReportTemplate() {
-    const templates = mockReportTemplates;
+    const [templates, setTemplates] = useState<ReportTemplateType[]>(mockReportTemplates);
+
+    const handleAddTemplate = (template: ReportTemplateType) => {
+        setTemplates(currentTemplates => [...currentTemplates, template]);
+    }
+
     return (
         <div className="space-y-4">
             <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-bold tracking-tight'>Report Templates</h2>
                 <div className='flex items-center gap-2'>
-                    <Input placeholder='Search' className='h-8 w-64' />
+                    <FormTemplate onAddTemplate={handleAddTemplate} />
                 </div>
             </div>
             <Card>

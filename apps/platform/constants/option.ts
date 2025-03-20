@@ -71,6 +71,31 @@ export const mockHotels = [
     { value: "h004", label: "City Center Hotel" },
 ];
 
+export const mockReportCategories = [
+    { value: "c001", label: "Sales" },
+    { value: "c002", label: "Marketing" },
+    { value: "c003", label: "Operations" },
+    { value: "c004", label: "Finance" },
+    { value: "c005", label: "HR" },
+    { value: "c006", label: "IT" },
+    { value: "c007", label: "Customer Service" },
+    { value: "c008", label: "Compliance" },
+    { value: "c009", label: "Inventory" },
+
+];
+
+export const mockUsersAssigned = [
+    { value: "u001", label: "John Doe" },
+    { value: "u002", label: "Jane Smith" },
+    { value: "u003", label: "Michael Brown" },
+    { value: "u004", label: "Emily Johnson" },
+    { value: "u005", label: "David Lee" },
+    { value: "u006", label: "Sarah White" },
+    { value: "u007", label: "Robert Green" },
+    { value: "u008", label: "Linda Adams" },
+    { value: "u009", label: "James Wilson" },
+    { value: "u010", label: "Patricia Moore" }
+]
 
 
 

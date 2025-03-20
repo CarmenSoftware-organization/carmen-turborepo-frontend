@@ -48,3 +48,21 @@ export const businessUnitUserSchema = z.object({
     status: z.boolean().default(true),
     last_active: z.string().optional(),
 });
+
+export const ReportSchedule = z.enum(
+    ["Daily", "Weekly", "Bi-Weekly", "Monthly", "Quarterly", "Annually", "Biannually"]
+)
+
+
+export const ReportTemplateSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    category: z.string(),
+    schedule: ReportSchedule,
+    data_points: z.number(),
+    assigned_to: z.array(z.object({ name: z.string() })),
+    status: z.enum(["active", "draft"]),
+    last_updated: z.string(),
+    created_at: z.string(),
+    updated_at: z.string(),
+});

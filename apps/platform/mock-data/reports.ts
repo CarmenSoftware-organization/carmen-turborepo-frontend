@@ -380,3 +380,55 @@ export const mockReportTemplates: ReportTemplateType[] = [
         updated_at: "2025-03-02T15:25:00Z",
     },
 ];
+
+export const mockNewAssignReports: ReportAssignmentType[] = [
+    {
+        id: "new-1",
+        category: "Report 1",
+        description: "Report 1 description",
+        location: "Department 1",
+        type: "standard",
+        status: "active",
+        frequency: {
+            type: "Daily",
+            nextReport: "2024-03-25"
+        }
+    },
+    {
+        id: "new-2",
+        category: "Report 2",
+        description: "Report 2 description",
+        location: "Department 2",
+        type: "standard",
+        status: "active",
+        frequency: {
+            type: "Weekly",
+            nextReport: "2024-03-25"
+        }
+    },
+    {
+        id: "new-3",
+        category: "Report 3",
+        description: "Report 3 description",
+        location: "Department 3",
+        type: "standard",
+        status: "active",
+        frequency: {
+            type: "Monthly",
+            nextReport: "2024-03-25"
+        }
+    },
+    {
+        id: "new-4",
+        category: "Report 4",
+        description: "Report 4 description",
+        location: "Department 4",
+        type: "standard",
+        status: "active",
+        frequency: {
+            type: "Quarterly",
+            nextReport: "2024-03-25"
+        }
+    },
+
+];

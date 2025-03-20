@@ -1,3 +1,6 @@
+import { ReportTemplateSchema } from "@/constants/schema";
+import { z } from "zod";
+
 export interface ReportAssignmentType {
     id: string;
     type: "standard" | "custom" | "premium" | "basic" | "detailed" | "summary";
@@ -32,15 +35,4 @@ export interface ReportClusterType {
     business_unit: ReportBusinessUnitType[];
 }
 
-export interface ReportTemplateType {
-    id: string;
-    name: string;
-    category: string;
-    schedule: string;
-    data_points: number;
-    assigned_to: { name: string }[];
-    status: "active" | "draft";
-    last_updated: string;
-    created_at: string;
-    updated_at: string;
-}
+export type ReportTemplateType = z.infer<typeof ReportTemplateSchema>;
