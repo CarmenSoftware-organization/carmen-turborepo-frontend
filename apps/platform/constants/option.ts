@@ -38,13 +38,6 @@ export const mockHotelGroups = [
 ];
 
 
-export const mockHotelNames = [
-    { value: "h001", label: "Hotel 1" },
-    { value: "h002", label: "Hotel 2" },
-    { value: "h003", label: "Hotel 3" },
-];
-
-
 export const mockDepartments = [
     { value: "d001", label: "Department 1" },
     { value: "d002", label: "Department 2" },
@@ -65,11 +58,18 @@ export const mockClusters = [
 ];
 
 export const mockHotels = [
-    { value: "h001", label: "Grand Hotel" },
-    { value: "h002", label: "Plaza Inn" },
-    { value: "h003", label: "Seaside Resort" },
-    { value: "h004", label: "City Center Hotel" },
+    { value: "jp_tokyo_ritz", label: "The Ritz-Carlton Tokyo (ザ・リッツ・カールトン東京)" },
+    { value: "th_bangkok_mandarin", label: "Mandarin Oriental Bangkok (แมนดาริน โอเรียนเต็ล กรุงเทพฯ)" },
+    { value: "fr_paris_crillon", label: "Hôtel de Crillon (Hôtel de Crillon, A Rosewood Hotel)" },
+    { value: "it_venice_danieli", label: "Hotel Danieli Venice (Hotel Danieli, Venezia)" },
+    { value: "us_nyc_plaza", label: "The Plaza Hotel New York" },
+    { value: "es_barcelona_w", label: "W Barcelona (Hotel W Barcelona)" },
+    { value: "ae_dubai_burj", label: "Burj Al Arab Jumeirah (برج العرب جميرا)" },
+    { value: "uk_london_savoy", label: "The Savoy London" },
+    { value: "de_berlin_adlon", label: "Hotel Adlon Kempinski Berlin" },
+    { value: "cn_shanghai_peninsula", label: "The Peninsula Shanghai (上海半岛酒店)" },
 ];
+
 
 export const mockReportCategories = [
     { value: "c001", label: "Sales" },
@@ -96,6 +96,16 @@ export const mockUsersAssigned = [
     { value: "u009", label: "James Wilson" },
     { value: "u010", label: "Patricia Moore" }
 ]
+
+export const mockInvoiceStatus = [
+    { value: "paid", label: "Paid" },
+    { value: "unpaid", label: "Unpaid" },
+    { value: "overdue", label: "Overdue" },
+    { value: "refunded", label: "Refunded" },
+    { value: "void", label: "Void" },
+]
+
+
 
 
 
