@@ -1,4 +1,4 @@
-import { ClusterDistributionData, InvoiceDto, LicenseUtilizationDataDto, ModuleUsageDataDto, RevenueDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
+import { ClusterDistributionData, InvoiceDto, LicenseUtilizationDataDto, ModuleUsageDataDto, PlanDto, RevenueDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -339,3 +339,54 @@ export const mockInvoices: InvoiceDto[] = [
     },
 ];
 
+
+export const mockPlans: PlanDto[] = [
+    {
+        id: "basic",
+        name: "Basic",
+        description: "For small hotel operations",
+        price: 199,
+        features: [
+            "1 Business Unit",
+            "Up to 30 BU Staff",
+            "Up to 20 Cluster Users",
+            "3 Modules included",
+            "30-day grace period",
+            "Standard support",
+        ],
+        modules: ["Accounting", "Inventory", "Sales", "Analytics", "PMS", "HR"],
+        maxModules: 3,
+    },
+    {
+        id: "professional",
+        name: "Professional",
+        description: "For medium-sized hotel chains",
+        price: 499,
+        features: [
+            "Up to 3 Business Units",
+            "Up to 150 BU Staff per business unit",
+            "Up to 100 Cluster Users",
+            "All modules included",
+            "30-day grace period",
+            "Priority support",
+        ],
+        modules: ["Accounting", "Inventory", "Sales", "Analytics", "PMS", "HR"],
+        maxModules: 6,
+    },
+    {
+        id: "enterprise",
+        name: "Enterprise",
+        description: "For large hotel groups",
+        price: 999,
+        features: [
+            "Unlimited Business Units",
+            "Up to 300 BU Staff per business unit",
+            "Up to 500 Cluster Users",
+            "All modules with premium features",
+            "Extended 60-day grace period",
+            "24/7 dedicated support",
+        ],
+        modules: ["Accounting", "Inventory", "Sales", "Analytics", "PMS", "HR"],
+        maxModules: 6,
+    },
+];

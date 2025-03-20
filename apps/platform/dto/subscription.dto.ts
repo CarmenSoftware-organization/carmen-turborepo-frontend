@@ -95,3 +95,13 @@ export interface InvoiceDto {
     amount: number;
     status: string;
 }
+
+export interface PlanDto {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    features: string[];
+    modules: string[];
+    maxModules: number;
+}
