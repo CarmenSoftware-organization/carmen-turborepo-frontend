@@ -1,11 +1,7 @@
-import { Suspense } from "react";
+import SubReportComponent from "./components/SubReportComponent";
 
 export default function ReportPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <div>Report</div>
-        </Suspense>
-    );
+    return <SubReportComponent />
 }
 
 

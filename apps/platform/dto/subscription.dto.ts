@@ -38,3 +38,14 @@ export interface UsageData {
     users: number
     storage: number
 }
+
+export interface SubscriptionReportDto {
+    subscription: number;
+    new_subscription: number;
+    revenue: number;
+    new_revenue: number;
+    bu: number;
+    new_bu: number;
+    cluster: number;
+    new_cluster: number;
+}
