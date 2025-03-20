@@ -1,5 +1,6 @@
 import CardReport from "./CardReport";
 import FilterSubReport from "./FilterSubReport";
+import SubscriptionInsight from "./SubscriptionInsight";
 import TabReport from "./TabReport";
 
 export default function SubReportComponent() {
@@ -18,6 +19,7 @@ export default function SubReportComponent() {
             </div>
             <CardReport />
             <TabReport />
+            <SubscriptionInsight />
         </div>
     )
 }
