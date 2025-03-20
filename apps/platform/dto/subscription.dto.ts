@@ -85,3 +85,13 @@ export interface RevenueDto {
     month: string;
     revenue: number;
 }
+
+
+export interface InvoiceDto {
+    id: string;
+    invoice_number: string;
+    date: string;
+    hotel_name: string;
+    amount: number;
+    status: string;
+}

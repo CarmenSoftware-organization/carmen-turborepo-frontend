@@ -1,4 +1,4 @@
-import { ClusterDistributionData, LicenseUtilizationDataDto, ModuleUsageDataDto, RevenueDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
+import { ClusterDistributionData, InvoiceDto, LicenseUtilizationDataDto, ModuleUsageDataDto, RevenueDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -254,4 +254,88 @@ export const mockRevenueData: RevenueDto[] = [
     { id: "rev_004", month: "Apr", revenue: 51000 },
     { id: "rev_005", month: "May", revenue: 54000 },
     { id: "rev_006", month: "Jun", revenue: 57000 },
-]
+];
+
+export const mockInvoices: InvoiceDto[] = [
+    {
+        id: "inv_001",
+        invoice_number: "INV-202401",
+        date: "2024-03-10",
+        hotel_name: "The Ritz-Carlton Tokyo (ザ・リッツ・カールトン東京)",
+        amount: 1200.5,
+        status: "Paid",
+    },
+    {
+        id: "inv_002",
+        invoice_number: "INV-202402",
+        date: "2024-03-15",
+        hotel_name: "Mandarin Oriental Bangkok (แมนดาริน โอเรียนเต็ล กรุงเทพฯ)",
+        amount: 950.75,
+        status: "Pending",
+    },
+    {
+        id: "inv_003",
+        invoice_number: "INV-202403",
+        date: "2024-03-20",
+        hotel_name: "Hôtel de Crillon (Hôtel de Crillon, A Rosewood Hotel)",
+        amount: 2100.25,
+        status: "Overdue",
+    },
+    {
+        id: "inv_004",
+        invoice_number: "INV-202404",
+        date: "2024-03-25",
+        hotel_name: "Hotel Danieli Venice (Hotel Danieli, Venezia)",
+        amount: 1800.0,
+        status: "Paid",
+    },
+    {
+        id: "inv_005",
+        invoice_number: "INV-202405",
+        date: "2024-03-30",
+        hotel_name: "The Plaza Hotel New York",
+        amount: 2500.75,
+        status: "Pending",
+    },
+    {
+        id: "inv_006",
+        invoice_number: "INV-202406",
+        date: "2024-04-05",
+        hotel_name: "W Barcelona (Hotel W Barcelona)",
+        amount: 1400.6,
+        status: "Paid",
+    },
+    {
+        id: "inv_007",
+        invoice_number: "INV-202407",
+        date: "2024-04-10",
+        hotel_name: "Burj Al Arab Jumeirah (برج العرب جميرا)",
+        amount: 3200.9,
+        status: "Overdue",
+    },
+    {
+        id: "inv_008",
+        invoice_number: "INV-202408",
+        date: "2024-04-15",
+        hotel_name: "The Savoy London",
+        amount: 2000.2,
+        status: "Paid",
+    },
+    {
+        id: "inv_009",
+        invoice_number: "INV-202409",
+        date: "2024-04-20",
+        hotel_name: "Hotel Adlon Kempinski Berlin",
+        amount: 1750.5,
+        status: "Pending",
+    },
+    {
+        id: "inv_010",
+        invoice_number: "INV-202410",
+        date: "2024-04-25",
+        hotel_name: "The Peninsula Shanghai (上海半岛酒店)",
+        amount: 1950.8,
+        status: "Paid",
+    },
+];
+
