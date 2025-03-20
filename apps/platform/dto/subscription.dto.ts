@@ -49,3 +49,15 @@ export interface SubscriptionReportDto {
     cluster: number;
     new_cluster: number;
 }
+
+export interface SubscriptionTrendData {
+    month: string;
+    active: number;
+    inactive: number;
+    total: number;
+}
+
+export interface ClusterDistributionData {
+    name: string;
+    value: number;
+}

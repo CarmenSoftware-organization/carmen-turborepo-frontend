@@ -1,4 +1,4 @@
-import { SubscriptionDto, SubscriptionReportDto, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
+import { ClusterDistributionData, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -172,3 +172,18 @@ export const mockSubscriptionReport: SubscriptionReportDto = {
     new_cluster: 5,
 }
 
+
+export const mockSubscriptionTrendData: SubscriptionTrendData[] = [
+    { month: "Jan", active: 42, inactive: 5, total: 47 },
+    { month: "Feb", active: 45, inactive: 4, total: 49 },
+    { month: "Mar", active: 48, inactive: 3, total: 51 },
+    { month: "Apr", active: 50, inactive: 3, total: 53 },
+    { month: "May", active: 53, inactive: 2, total: 55 },
+    { month: "Jun", active: 55, inactive: 2, total: 57 },
+]
+
+export const mockClusterDistributionData: ClusterDistributionData[] = [
+    { name: "European Hotels", value: 45 },
+    { name: "American Hotels", value: 30 },
+    { name: "Asian Hotels", value: 25 },
+]
