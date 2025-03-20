@@ -1,11 +1,7 @@
-import { Suspense } from "react";
+import InvoiceComponent from "./components/InvoiceComponent";
 
 export default function InvoicePage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <div>Invoice</div>
-        </Suspense>
-    )
+    return <InvoiceComponent />
 }
 
 
