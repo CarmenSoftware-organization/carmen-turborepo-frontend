@@ -79,3 +79,9 @@ export interface ModuleUsageDataDto {
     growthRate: number;
     businessUnits: number;
 }
+
+export interface RevenueDto {
+    id: string;
+    month: string;
+    revenue: number;
+}

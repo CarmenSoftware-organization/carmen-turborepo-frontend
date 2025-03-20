@@ -1,4 +1,4 @@
-import { ClusterDistributionData, LicenseUtilizationDataDto, ModuleUsageDataDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
+import { ClusterDistributionData, LicenseUtilizationDataDto, ModuleUsageDataDto, RevenueDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -245,4 +245,13 @@ export const mockModuleUsageData: ModuleUsageDataDto[] = [
         growthRate: 10,
         businessUnits: 13
     },
+];
+
+export const mockRevenueData: RevenueDto[] = [
+    { id: "rev_001", month: "Jan", revenue: 42000 },
+    { id: "rev_002", month: "Feb", revenue: 45000 },
+    { id: "rev_003", month: "Mar", revenue: 48000 },
+    { id: "rev_004", month: "Apr", revenue: 51000 },
+    { id: "rev_005", month: "May", revenue: 54000 },
+    { id: "rev_006", month: "Jun", revenue: 57000 },
 ]
