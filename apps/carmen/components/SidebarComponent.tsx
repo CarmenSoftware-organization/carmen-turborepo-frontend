@@ -104,9 +104,9 @@ export function SidebarComponent() {
     return (
         <Sidebar className="bg-[hsl(var(--sidebar-background))] border-r border-[hsl(var(--sidebar-border))]">
             <SidebarGroup>
-                <div className="flex h-12 items-center border-b border-[hsl(var(--sidebar-border))] px-4 mb-4">
+                <div className="flex h-12 items-center px-4 mb-4">
                     <SidebarGroupLabel className="text-xl font-semibold text-[hsl(var(--sidebar-primary))]">
-                        Carmen Platform
+                        Carmen
                     </SidebarGroupLabel>
                 </div>
             </SidebarGroup>
