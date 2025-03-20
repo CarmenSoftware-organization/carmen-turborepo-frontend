@@ -1,4 +1,4 @@
-import { SubscriptionDto } from "@/dto/subscription.dto";
+import { SubscriptionDto, SubscriptionUsageDto } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -107,3 +107,47 @@ export const mockSubscription: SubscriptionDto[] = [
         updated_at: "2023-11-02T10:15:00Z"
     }
 ]
+
+
+export const mockSubscriptionUsage: SubscriptionUsageDto[] = [
+    {
+        id: "1",
+        hotel_name: "Grand Palace Hotel",
+        user_license: 50,
+        used_user_license: 35,
+        module_license: 10,
+        used_module_license: 7,
+        storage_license: 500,
+        used_storage_license: 320,
+    },
+    {
+        id: "2",
+        hotel_name: "Ocean View Resort",
+        user_license: 30,
+        used_user_license: 22,
+        module_license: 8,
+        used_module_license: 6,
+        storage_license: 300,
+        used_storage_license: 180,
+    },
+    {
+        id: "3",
+        hotel_name: "Mountain Retreat Lodge",
+        user_license: 40,
+        used_user_license: 28,
+        module_license: 12,
+        used_module_license: 9,
+        storage_license: 400,
+        used_storage_license: 250,
+    },
+    {
+        id: "4",
+        hotel_name: "City Lights Hotel",
+        user_license: 60,
+        used_user_license: 45,
+        module_license: 15,
+        used_module_license: 10,
+        storage_license: 600,
+        used_storage_license: 420,
+    },
+];

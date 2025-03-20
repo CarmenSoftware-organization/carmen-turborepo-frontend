@@ -16,5 +16,9 @@ export enum REPORT_TAB {
     TEMPLATES = 'templates',
 }
 
+export enum SUBSCRIPTION_TAB {
+    USAGE = 'usage',
+    TRENDS = 'trends',
+}
 
 

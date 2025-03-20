@@ -1,11 +1,7 @@
-import { Suspense } from "react";
+import UsageComponent from "./components/UsageComponent";
 
 export default function UsagePage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <div>Usage</div>
-        </Suspense>
-    );
+    return <UsageComponent />
 }
 
 
