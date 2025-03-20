@@ -70,3 +70,12 @@ export interface LicenseUtilizationDataDto {
     clusterUsers: number;
     clusterUsersMax: number;
 }
+
+export interface ModuleUsageDataDto {
+    id: string;
+    name: string;
+    adoptionRate: number;
+    activeUsers: number;
+    growthRate: number;
+    businessUnits: number;
+}

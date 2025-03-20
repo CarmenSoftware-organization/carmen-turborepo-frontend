@@ -1,4 +1,4 @@
-import { ClusterDistributionData, LicenseUtilizationDataDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
+import { ClusterDistributionData, LicenseUtilizationDataDto, ModuleUsageDataDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -193,4 +193,56 @@ export const mockLicenseUtilizationData: LicenseUtilizationDataDto[] = [
     { id: "lc-2", name: "Luxury Resort Paris", buStaff: 98, buStaffMax: 150, clusterUsers: 67, clusterUsersMax: 100 },
     { id: "lc-3", name: "Seaside Hotel Barcelona", buStaff: 42, buStaffMax: 50, clusterUsers: 22, clusterUsersMax: 30 },
     { id: "lc-4", name: "City Center Hotel New York", buStaff: 187, buStaffMax: 200, clusterUsers: 92, clusterUsersMax: 100 },
+]
+
+
+export const mockModuleUsageData: ModuleUsageDataDto[] = [
+    {
+        id: "mod_001",
+        name: "Accounting",
+        adoptionRate: 85,
+        activeUsers: 320,
+        growthRate: 12,
+        businessUnits: 38
+    },
+    {
+        id: "mod_002",
+        name: "Inventory",
+        adoptionRate: 78,
+        activeUsers: 280,
+        growthRate: 8,
+        businessUnits: 35
+    },
+    {
+        id: "mod_003",
+        name: "Sales",
+        adoptionRate: 65,
+        activeUsers: 210,
+        growthRate: 15,
+        businessUnits: 29
+    },
+    {
+        id: "mod_004",
+        name: "Analytics",
+        adoptionRate: 60,
+        activeUsers: 180,
+        growthRate: 20,
+        businessUnits: 27
+    },
+    {
+        id: "mod_005",
+        name: "PMS",
+        adoptionRate: 45,
+        activeUsers: 150,
+        growthRate: 5,
+        businessUnits: 20
+    },
+    {
+        id: "mod_006",
+        name: "HR",
+        adoptionRate: 30,
+        activeUsers: 90,
+        growthRate: 10,
+        businessUnits: 13
+    },
 ]
