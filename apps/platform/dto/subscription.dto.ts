@@ -31,3 +31,10 @@ export interface SubscriptionUsageDto {
     storage_license: number;
     used_storage_license: number;
 }
+
+
+export interface UsageData {
+    month: string
+    users: number
+    storage: number
+}

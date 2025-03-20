@@ -1,4 +1,4 @@
-import { SubscriptionDto, SubscriptionUsageDto } from "@/dto/subscription.dto";
+import { SubscriptionDto, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -151,3 +151,12 @@ export const mockSubscriptionUsage: SubscriptionUsageDto[] = [
         used_storage_license: 420,
     },
 ];
+
+export const usageChartData: UsageData[] = [
+    { month: 'Jan', users: 520, storage: 150 },
+    { month: 'Feb', users: 580, storage: 165 },
+    { month: 'Mar', users: 620, storage: 180 },
+    { month: 'Apr', users: 650, storage: 195 },
+    { month: 'May', users: 675, storage: 210 },
+    { month: 'Jun', users: 675, storage: 220 }
+]

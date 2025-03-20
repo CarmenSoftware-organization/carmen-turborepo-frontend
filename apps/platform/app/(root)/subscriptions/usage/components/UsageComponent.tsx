@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SUBSCRIPTION_TAB } from "@/constants/enum";
 import { ChartLine, FileText } from "lucide-react";
 import UsageTab from "./UsageTab";
+import TrendsTab from "./TrendsTab";
 
 export default function UsageComponent() {
     return (
@@ -27,7 +28,7 @@ export default function UsageComponent() {
                     <UsageTab />
                 </TabsContent>
                 <TabsContent value={SUBSCRIPTION_TAB.TRENDS}>
-                    {/* <TrendsTab /> */}
+                    <TrendsTab />
                 </TabsContent>
             </Tabs>
         </div>
