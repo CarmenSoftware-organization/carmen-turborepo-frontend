@@ -1,7 +1,11 @@
+import ChartLicense from "./ChartLicense";
+import SubscriptionInsight from "./SubscriptionInsight";
+
 export default function TabLicense() {
     return (
-        <div>
-            <h1>Tab License</h1>
+        <div className="flex flex-col gap-2">
+            <ChartLicense />
+            <SubscriptionInsight />
         </div>
     )
 }

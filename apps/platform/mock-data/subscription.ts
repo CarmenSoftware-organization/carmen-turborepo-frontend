@@ -1,4 +1,4 @@
-import { ClusterDistributionData, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
+import { ClusterDistributionData, LicenseUtilizationDataDto, SubscriptionDto, SubscriptionReportDto, SubscriptionTrendData, SubscriptionUsageDto, UsageData } from "@/dto/subscription.dto";
 
 export const mockSubscription: SubscriptionDto[] = [
     {
@@ -186,4 +186,11 @@ export const mockClusterDistributionData: ClusterDistributionData[] = [
     { name: "European Hotels", value: 45 },
     { name: "American Hotels", value: 30 },
     { name: "Asian Hotels", value: 25 },
+]
+
+export const mockLicenseUtilizationData: LicenseUtilizationDataDto[] = [
+    { id: "lc-1", name: "Grand Hotel Berlin", buStaff: 22, buStaffMax: 30, clusterUsers: 15, clusterUsersMax: 20 },
+    { id: "lc-2", name: "Luxury Resort Paris", buStaff: 98, buStaffMax: 150, clusterUsers: 67, clusterUsersMax: 100 },
+    { id: "lc-3", name: "Seaside Hotel Barcelona", buStaff: 42, buStaffMax: 50, clusterUsers: 22, clusterUsersMax: 30 },
+    { id: "lc-4", name: "City Center Hotel New York", buStaff: 187, buStaffMax: 200, clusterUsers: 92, clusterUsersMax: 100 },
 ]

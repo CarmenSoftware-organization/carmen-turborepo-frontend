@@ -61,3 +61,12 @@ export interface ClusterDistributionData {
     name: string;
     value: number;
 }
+
+export interface LicenseUtilizationDataDto {
+    id: string;
+    name: string;
+    buStaff: number;
+    buStaffMax: number;
+    clusterUsers: number;
+    clusterUsersMax: number;
+}
