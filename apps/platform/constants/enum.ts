@@ -21,4 +21,9 @@ export enum SUBSCRIPTION_TAB {
     TRENDS = 'trends',
 }
 
-
+export enum SUBSCRIPTION_REPORT_TAB {
+    OVERVIEW = 'overview',
+    LICENSES = 'licenses',
+    MODULES = 'modules',
+    REVENUE = 'revenue',
+}

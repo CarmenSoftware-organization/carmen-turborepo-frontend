@@ -1,5 +1,6 @@
 import CardReport from "./CardReport";
 import FilterSubReport from "./FilterSubReport";
+import TabReport from "./TabReport";
 
 export default function SubReportComponent() {
     return (
@@ -16,6 +17,7 @@ export default function SubReportComponent() {
                 </div>
             </div>
             <CardReport />
+            <TabReport />
         </div>
     )
 }
