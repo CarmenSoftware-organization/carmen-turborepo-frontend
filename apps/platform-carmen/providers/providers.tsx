@@ -1,4 +1,4 @@
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/auth-context";
 import { Suspense } from "react";
 

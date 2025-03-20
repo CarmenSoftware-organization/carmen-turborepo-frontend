@@ -1,5 +1,4 @@
 import DashboardComponent from "./components/DashboardComponent";
-import PageWrapper from "@/app/components/PageWrapper";
 
 export async function generateMetadata() {
     return {
@@ -10,8 +9,6 @@ export async function generateMetadata() {
 
 export default function DashboardPage() {
     return (
-        <PageWrapper title="Dashboard" description="Dashboard page for Carmen Platform">
-            <DashboardComponent />
-        </PageWrapper>
+        <DashboardComponent />
     );
 }
