@@ -1,4 +1,6 @@
+import PlanComponent from "./components/PlanComponent";
+
 export default function PlanPage() {
-    return <div>Plan</div>;
+    return <PlanComponent />;
 }
 

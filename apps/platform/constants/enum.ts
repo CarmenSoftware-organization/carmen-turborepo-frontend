@@ -27,3 +27,9 @@ export enum SUBSCRIPTION_REPORT_TAB {
     MODULES = 'modules',
     REVENUE = 'revenue',
 }
+
+export enum SUBSCRIPTION_PLAN_TAB {
+    PLAN = 'Plan Tier',
+    CONFIGURATION = 'Configuration Details',
+    RULE = 'License Rule',
+}
