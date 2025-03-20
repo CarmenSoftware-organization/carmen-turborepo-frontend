@@ -1,9 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { REPORT_TAB } from '@/constants/enum';
 import { Building2, FileStack, FileText } from 'lucide-react'
-import Assignments from './tabs/Assignments';
 import BusinessReport from './tabs/BusinessReport';
 import ReportTemplate from './tabs/ReportTemplate';
+import AssignmentsTab from './tabs/AssignmentsTab';
 
 export default function ReportTabList() {
     return (
@@ -23,7 +23,7 @@ export default function ReportTabList() {
                 </TabsTrigger>
             </TabsList>
             <TabsContent value={REPORT_TAB.ASSIGNMENTS}>
-                <Assignments />
+                <AssignmentsTab />
             </TabsContent>
             <TabsContent value={REPORT_TAB.BU_REPORT}>
                 <BusinessReport />
