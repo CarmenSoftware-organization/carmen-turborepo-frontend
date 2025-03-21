@@ -1,66 +1,66 @@
 interface ModuleItem {
-    label: string;
+    labelKey: string;
     href: string;
     children?: ModuleItem[];
 }
 
 export const moduleItems: ModuleItem[] = [
     {
-        label: "Dashboard",
+        labelKey: "Modules.dashboard",
         href: "/dashboard",
     },
     {
-        label: "Procurement",
+        labelKey: "Modules.procurement",
         href: "/procurement",
         children: [
             {
-                label: "My Approval",
+                labelKey: "Modules.Procurement.myApproval",
                 href: "/procurement/my-approval",
             },
             {
-                label: "Purchase Order",
+                labelKey: "Modules.Procurement.purchaseOrder",
                 href: "/procurement/purchase-order",
             },
             {
-                label: "Purchase Request",
+                labelKey: "Modules.Procurement.purchaseRequest",
                 href: "/procurement/purchase-request",
             },
             {
-                label: "Goods Received Note",
+                labelKey: "Modules.Procurement.goodsReceivedNote",
                 href: "/procurement/goods-received-note",
             },
             {
-                label: "Purchase Request Approvals",
+                labelKey: "Modules.Procurement.purchaseRequestApprovals",
                 href: "/procurement/purchase-request-approvals",
             },
             {
-                label: "Credit Note",
+                labelKey: "Modules.Procurement.creditNote",
                 href: "/procurement/credit-note",
             },
             {
-                label: "Purchase Request Template",
+                labelKey: "Modules.Procurement.purchaseRequestTemplate",
                 href: "/procurement/purchase-request-template",
             },
         ],
     },
     {
-        label: "Configuration",
+        labelKey: "Modules.configuration",
         href: "/configuration",
         children: [
             {
-                label: "Currency",
+                labelKey: "Modules.Configuration.currency",
                 href: "/configuration/currency",
             },
             {
-                label: "Delivery Point",
+                labelKey: "Modules.Configuration.deliveryPoint",
                 href: "/configuration/delivery-point",
             },
             {
-                label: "Store Location",
+                labelKey: "Modules.Configuration.storeLocation",
                 href: "/configuration/store-location",
             },
             {
-                label: "Department",
+                labelKey: "Modules.Configuration.department",
                 href: "/configuration/department",
             },
         ],

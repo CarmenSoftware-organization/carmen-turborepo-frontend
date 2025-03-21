@@ -10,5 +10,25 @@
   "ProfilePage": {
     "profileTitle": "Profile Page",
     "profileWelcome": "Welcome to the profile page!"
+  },
+  "Modules": {
+    "dashboard": "Dashboard",
+    "procurement": "Procurement",
+    "configuration": "Configuration",
+    "Procurement": {
+      "myApproval": "My Approval",
+      "purchaseOrder": "Purchase Order",
+      "purchaseRequest": "Purchase Request",
+      "goodsReceivedNote": "Goods Received Note",
+      "purchaseRequestApprovals": "Purchase Request Approvals",
+      "creditNote": "Credit Note",
+      "purchaseRequestTemplate": "Purchase Request Template"
+    },
+    "Configuration": {
+      "currency": "Currency",
+      "deliveryPoint": "Delivery Point",
+      "storeLocation": "Store Location",
+      "department": "Department"
+    }
   }
 }

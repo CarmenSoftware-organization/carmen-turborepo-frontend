@@ -13,7 +13,7 @@ export default function Home() {
         <p className="text-lg">{t("welcome")}</p>
         <div className="flex flex-col gap-4 mt-4">
           <Link href="/dashboard" className="bg-blue-500 text-white p-2 rounded-md text-center">Dashboard</Link>
-          <button onClick={() => router.push("/profile")} className="bg-blue-500 text-white p-2 rounded-md">Profile</button>
+          <button onClick={() => router.push("/procurement")} className="bg-blue-500 text-white p-2 rounded-md">Procurement</button>
         </div>
       </div>
     </div>
