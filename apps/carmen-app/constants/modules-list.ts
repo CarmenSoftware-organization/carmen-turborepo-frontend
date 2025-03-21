@@ -1,17 +1,22 @@
 interface ModuleItem {
     labelKey: string;
     href: string;
+    icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
     children?: ModuleItem[];
 }
+
+import { LayoutDashboard, ShoppingCart, Settings } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
     {
         labelKey: "Modules.dashboard",
         href: "/dashboard",
+        icon: LayoutDashboard,
     },
     {
         labelKey: "Modules.procurement",
         href: "/procurement",
+        icon: ShoppingCart,
         children: [
             {
                 labelKey: "Modules.Procurement.myApproval",
@@ -46,6 +51,7 @@ export const moduleItems: ModuleItem[] = [
     {
         labelKey: "Modules.configuration",
         href: "/configuration",
+        icon: Settings,
         children: [
             {
                 labelKey: "Modules.Configuration.currency",

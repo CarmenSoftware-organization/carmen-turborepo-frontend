@@ -9,6 +9,7 @@ import {
 import { moduleItems } from "@/constants/modules-list"
 import { useTranslations } from "next-intl"
 import { useRouter, usePathname } from "next/navigation"
+import React from "react"
 
 export default function ModuleList() {
     const t = useTranslations('Modules');
@@ -31,12 +32,17 @@ export default function ModuleList() {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button variant="outline">{t('dashboard')}</Button>
+                <Button variant="outline">
+                    {activeModule?.icon &&
+                        React.createElement(activeModule.icon, { className: "h-4 w-4 mr-2" })}
+                    {activeModule ? t(activeModule.labelKey.split('.').pop() ?? '') : t('dashboard')}
+                </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[300px]">
                 {moduleItems.map((module) => {
                     // จัดการ key ที่มีรูปแบบ "Modules.key"
                     const key = module.labelKey.split('.').pop() ?? '';
+                    const Icon = module.icon;
 
                     // เช็คว่าเป็น active module หรือไม่
                     const isActive = activeModule?.labelKey === module.labelKey;
@@ -49,7 +55,8 @@ export default function ModuleList() {
                             onClick={() => handleModuleClick(module.href)}
                             aria-label={t(key)}
                         >
-                            <div className="px-3 py-1">
+                            <div className="px-3 py-1 flex items-center">
+                                {Icon && <Icon className="h-4 w-4 mr-2" />}
                                 {t(key)}
                             </div>
                         </button>

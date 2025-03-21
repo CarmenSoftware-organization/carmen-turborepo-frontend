@@ -24,11 +24,13 @@ export default function SidebarComponent() {
 
     // แยก key สำหรับการแปลภาษา
     const moduleKey = activeModuleData.labelKey.split('.').pop() ?? '';
+    const Icon = activeModuleData.icon;
 
     return (
         <div className="w-full">
             <nav className="p-2 space-y-1">
-                <div className="p-4 border-b">
+                <div className="p-4 border-b flex items-center gap-2">
+                    {Icon && <Icon className="h-5 w-5" />}
                     <h2 className="text-lg font-semibold">{t(moduleKey)}</h2>
                 </div>
 
