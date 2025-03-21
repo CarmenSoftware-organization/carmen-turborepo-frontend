@@ -1,12 +1,11 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { useRouter } from '@/lib/navigation';
+import { usePathname } from 'next/navigation';
 import { locales } from '@/i18n';
 
 export default function LanguageSwitcher() {
-    const router = useRouter();
-    const pathname = router.pathname; // pathname ที่ไม่รวม locale
+    const currentPathname = usePathname();
     const currentLocale = useLocale();
 
     // ฟังก์ชันสำหรับเปลี่ยนภาษาโดยใช้การ reload หน้า
@@ -14,16 +13,22 @@ export default function LanguageSwitcher() {
         if (currentLocale === newLocale) return;
 
         console.log('Changing locale from', currentLocale, 'to', newLocale);
-        console.log('Current pathname (without locale):', pathname);
+        console.log('Current full pathname:', currentPathname);
 
         // คำนวณ URL ใหม่อย่างระมัดระวัง
         const baseUrl = window.location.origin;
-        let newPath = `/${newLocale}`;
 
-        // ถ้า pathname ไม่ใช่หน้าหลัก (/) ให้เพิ่มเข้าไป
-        if (pathname !== '/') {
-            newPath += pathname;
+        // แยก pathname ออกจาก locale
+        let pathname = currentPathname;
+        const localePrefix = `/${currentLocale}`;
+
+        // ตัด locale ปัจจุบันออก
+        if (pathname.startsWith(localePrefix)) {
+            pathname = pathname.substring(localePrefix.length) || '/';
         }
+
+        // ถ้าเป็น root path ให้ใช้แค่ locale
+        const newPath = pathname === '/' ? `/${newLocale}` : `/${newLocale}${pathname}`;
 
         console.log('New URL will be:', baseUrl + newPath);
 
