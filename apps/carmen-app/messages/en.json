@@ -1,0 +1,14 @@
+{
+  "HomePage": {
+    "title": "Home Page",
+    "welcome": "Welcome to the home page!"
+  },
+  "DashboardPage": {
+    "dashboardTitle": "Dashboard Page",
+    "dashboardWelcome": "Welcome to the dashboard page!"
+  },
+  "ProfilePage": {
+    "profileTitle": "Profile Page",
+    "profileWelcome": "Welcome to the profile page!"
+  }
+}

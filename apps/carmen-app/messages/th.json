@@ -1,0 +1,14 @@
+{
+  "HomePage": {
+    "title": "หน้าหลัก",
+    "welcome": "ยินดีต้อนรับสู่หน้าหลัก!"
+  },
+  "DashboardPage": {
+    "dashboardTitle": "แดชบอร์ด",
+    "dashboardWelcome": "ยินดีต้อนรับสู่แดชบอร์ด!"
+  },
+  "ProfilePage": {
+    "profileTitle": "โปรไฟล์",
+    "profileWelcome": "ยินดีต้อนรับสู่โปรไฟล์!"
+  }
+}
