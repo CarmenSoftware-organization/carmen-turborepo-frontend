@@ -11,10 +11,13 @@ import { signInAction } from "../actions"
 import { SignInFormValues } from "@/dtos/sign-in.dto"
 import { signInSchema } from "@/constants/form.schema"
 import { useRouter } from "next/navigation"
+import { useAuth } from "@/context/AuthContext"
+import { PasswordInput } from "@/components/ui-custom/PasswordInput"
 
 export default function SignInComponent() {
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
+    const { setSession } = useAuth()
 
     const form = useForm<SignInFormValues>({
         resolver: zodResolver(signInSchema),
@@ -30,16 +33,10 @@ export default function SignInComponent() {
                 const result = await signInAction(values.email, values.password)
 
                 if (result.success) {
-                    // Store tokens in sessionStorage
-                    if (result.access_token) {
-                        sessionStorage.setItem('access_token', result.access_token);
+                    if (result.access_token && result.refresh_token) {
+                        setSession(result.access_token, result.refresh_token)
                     }
 
-                    if (result.refresh_token) {
-                        sessionStorage.setItem('refresh_token', result.refresh_token);
-                    }
-
-                    // เมื่อ login สำเร็จ ให้ redirect ไปยังหน้าหลัก
                     router.push('/')
                     form.reset()
                 } else {
@@ -94,7 +91,7 @@ export default function SignInComponent() {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input
+                                            <PasswordInput
                                                 placeholder="••••••••"
                                                 type="password"
                                                 autoComplete="current-password"

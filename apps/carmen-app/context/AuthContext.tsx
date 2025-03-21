@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
+    setSession: (accessToken: string, refreshToken: string) => void;
     logout: () => void;
 }
 
@@ -14,6 +15,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     isLoading: true,
+    setSession: () => { },
     logout: () => { },
 });
 
@@ -51,11 +53,17 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         checkAuth();
     }, [pathname]);
 
+    const setSession = useCallback((accessToken: string, refreshToken: string) => {
+        if (accessToken) {
+            sessionStorage.setItem('access_token', accessToken);
+        }
 
+        if (refreshToken) {
+            sessionStorage.setItem('refresh_token', refreshToken);
+        }
+    }, []);
 
-    // Logout function
     const logout = useCallback(() => {
-        // Get current locale
         const locale = pathname?.split('/')[1] || 'en';
 
         // Clear tokens
@@ -73,8 +81,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const value = useMemo(() => ({
         isAuthenticated: hasToken,
         isLoading,
+        setSession,
         logout
-    }), [hasToken, isLoading, logout]);
+    }), [hasToken, isLoading, setSession, logout]);
 
     return (
         <AuthContext.Provider value={value}>

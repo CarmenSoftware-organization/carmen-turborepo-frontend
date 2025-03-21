@@ -21,7 +21,6 @@ export async function signInAction(email: string, password: string) {
             throw new Error(data.message || "Authentication failed");
         }
 
-        // Return success with tokens to be stored in client-side sessionStorage
         return {
             success: true,
             access_token: data.access_token,
