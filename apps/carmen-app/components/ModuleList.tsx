@@ -15,6 +15,7 @@ export default function ModuleList() {
     const t = useTranslations('Modules');
     const router = useRouter();
     const pathname = usePathname();
+    const [open, setOpen] = React.useState(false);
 
     // ตัด locale ออกจาก pathname ถ้ามี
     const pathWithoutLocale = pathname.split('/').slice(2).join('/');
@@ -25,12 +26,14 @@ export default function ModuleList() {
     );
 
     const handleModuleClick = (href: string) => {
+        // ปิด popover
+        setOpen(false);
         // นำทางไปยังหน้านั้น
         router.push(href);
     };
 
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="outline">
                     {activeModule?.icon &&
@@ -38,30 +41,29 @@ export default function ModuleList() {
                     {activeModule ? t(activeModule.labelKey.split('.').pop() ?? '') : t('dashboard')}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px]">
-                {moduleItems.map((module) => {
-                    // จัดการ key ที่มีรูปแบบ "Modules.key"
-                    const key = module.labelKey.split('.').pop() ?? '';
-                    const Icon = module.icon;
+            <PopoverContent className="w-[500px]">
+                <div className="grid grid-cols-3 gap-2">
+                    {moduleItems.map((module) => {
+                        const key = module.labelKey.split('.').pop() ?? '';
+                        const Icon = module.icon;
+                        const isActive = activeModule?.labelKey === module.labelKey;
 
-                    // เช็คว่าเป็น active module หรือไม่
-                    const isActive = activeModule?.labelKey === module.labelKey;
-
-                    return (
-                        <button
-                            key={module.labelKey}
-                            className={`w-full text-left py-1 cursor-pointer rounded-md ${isActive ? 'bg-accent' : 'hover:bg-accent/50'
-                                }`}
-                            onClick={() => handleModuleClick(module.href)}
-                            aria-label={t(key)}
-                        >
-                            <div className="px-3 py-1 flex items-center">
-                                {Icon && <Icon className="h-4 w-4 mr-2" />}
-                                {t(key)}
-                            </div>
-                        </button>
-                    );
-                })}
+                        return (
+                            <button
+                                key={module.labelKey}
+                                className={`w-full text-left cursor-pointer rounded-md border p-3 ${isActive ? 'bg-accent border-primary' : 'hover:bg-accent/50 border-gray-200'
+                                    }`}
+                                onClick={() => handleModuleClick(module.href)}
+                                aria-label={t(key)}
+                            >
+                                <div className="flex flex-col items-center justify-center gap-2">
+                                    {Icon && <Icon className="h-8 w-8" />}
+                                    {t(key)}
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
             </PopoverContent>
         </Popover>
     );
