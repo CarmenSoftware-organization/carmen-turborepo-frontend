@@ -24,11 +24,91 @@
       "creditNote": "ใบลดหนี้",
       "purchaseRequestTemplate": "แม่แบบใบขอซื้อ"
     },
+    "productManagement": "การจัดการสินค้า",
+    "ProductManagement": {
+      "product": "สินค้า",
+      "category": "หมวดสินค้า",
+      "report": "รายงาน",
+      "unit": "หน่วยนับ"
+    },
+    "vendorManagement": "การจัดการผู้จัดจำหน่าย",
+    "VendorManagement": {
+      "manageVendors": "จัดการผู้จัดจำหน่าย",
+      "priceLists": "ราคาสินค้า",
+      "priceComparisons": "เปรียบเทียบราคา"
+    },
+    "storeOperations": "การดำเนินการร้านค้า",
+    "StoreOperations": {
+      "storeRequisitions": "ขอสินค้าจากร้าน",
+      "stockReplenishment": "ซื้อสินค้าเพิ่ม",
+      "wastageReporting": "รายงานสินค้าสูญหาย"
+    },
+    "inventoryManagement": "การจัดการสินค้า",
+    "InventoryManagement": {
+      "stockOverview": "ตรวจสอบสินค้า",
+      "inventoryAdjustments": "ปรับปรุงสินค้า",
+      "spotCheck": "ตรวจสอบสินค้า",
+      "physicalCountManagement": "ตรวจนับสินค้า",
+      "periodEnd": "สิ้นงวด"
+    },
+    "operationalPlanning": "การวางแผนการดำเนินงาน",
+    "OperationalPlanning": {
+      "recipesManagement": "การจัดการสูตรอาหาร",
+      "menuEngineering": "การวางแผนการดำเนินงาน",
+      "demandForecasting": "การพยากรณ์ความต้องการ",
+      "inventoryPlanning": "การวางแผนสินค้า",
+      "productionPlanning": "การวางแผนการผลิต",
+      "recipeManagement": "การจัดการสูตรอาหาร",
+      "recipeCuisineTypes": "ประเภทสูตรอาหาร"
+    },
+    "production": "การผลิต",
+    "Production": {
+      "recipeExecution": "การดำเนินการสูตรอาหาร",
+      "batchProduction": "การผลิตสินค้าแบตช์",
+      "wastageTracking": "การตรวจสอบสินค้าสูญหาย",
+      "qualityControl": "การควบคุมคุณภาพ"
+    },
+    "reportingAndAnalytics": "การรายงานและวิเคราะห์",
+    "ReportingAndAnalytics": {
+      "operationalReports": "รายงานการดำเนินงาน",
+      "financialReports": "รายงานการกิจการ",
+      "inventoryReports": "รายงานสินค้า",
+      "vendorPerformance": "การประเมินผู้จัดจำหน่าย",
+      "costAnalysis": "การวิเคราะห์ต้นทุน",
+      "salesAnalysis": "การวิเคราะห์การขาย"
+    },
+    "finance": "การกิจการ",
+    "Finance": {
+      "accountCodeMapping": "การจัดการรหัสบัญชี",
+      "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
+      "budgetPlanningAndControl": "การวางแผนงบประมาณและควบคุม"
+    },
     "Configuration": {
       "currency": "สกุลเงิน",
       "deliveryPoint": "จุดส่งของ",
       "storeLocation": "สถานที่เก็บสินค้า",
       "department": "แผนก"
+    },
+    "systemAdministration": "การจัดการระบบ",
+    "SystemAdministration": {
+      "userManagement": "การจัดการผู้ใช้งาน",
+      "config": "การตั้งค่า",
+      "locationManagement": "การจัดการสถานที่",
+      "workflowManagement": "การจัดการกระบวนการ",
+      "generalSettings": "การตั้งค่าทั่วไป",
+      "notificationPreferences": "การตั้งค่าการแจ้งเตือน",
+      "licenseManagement": "การจัดการสิทธิ์ใช้งาน",
+      "securitySettings": "การตั้งค่าความปลอดภัย",
+      "dataBackupAndRecovery": "การสำรองข้อมูลและการกู้คืน",
+      "systemIntegrations": "การรวมระบบ"
+    },
+    "helpAndSupport": "การสนับสนุน",
+    "HelpAndSupport": {
+      "userManuals": "คู่มือผู้ใช้งาน",
+      "videoTutorials": "วิดีโอการสอน",
+      "faqs": "คำถามที่พบบ่อย",
+      "supportTicketSystem": "ระบบการสนับสนุนการซื้อขาย",
+      "systemUpdatesAndReleaseNotes": "การอัพเดตและบันทึกการปรับปรุง"
     }
   }
 }

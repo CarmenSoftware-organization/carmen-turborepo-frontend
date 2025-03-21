@@ -24,11 +24,91 @@
       "creditNote": "Credit Note",
       "purchaseRequestTemplate": "Purchase Request Template"
     },
+    "productManagement": "Product Management",
+    "ProductManagement": {
+      "product": "Product",
+      "category": "Category",
+      "report": "Report",
+      "unit": "Unit"
+    },
+    "vendorManagement": "Vendor Management",
+    "VendorManagement": {
+      "manageVendors": "Manage Vendors",
+      "priceLists": "Price Lists",
+      "priceComparisons": "Price Comparisons"
+    },
+    "storeOperations": "Store Operations",
+    "StoreOperations": {
+      "storeRequisitions": "Store Requisitions",
+      "stockReplenishment": "Stock Replenishment",
+      "wastageReporting": "Wastage Reporting"
+    },
+    "inventoryManagement": "Inventory Management",
+    "InventoryManagement": {
+      "stockOverview": "Stock Overview",
+      "inventoryAdjustments": "Inventory Adjustments",
+      "spotCheck": "Spot Check",
+      "physicalCountManagement": "Physical Count Management",
+      "periodEnd": "Period End"
+    },
+    "operationalPlanning": "Operational Planning",
+    "OperationalPlanning": {
+      "recipesManagement": "Recipes Management",
+      "menuEngineering": "Menu Engineering",
+      "demandForecasting": "Demand Forecasting",
+      "inventoryPlanning": "Inventory Planning",
+      "productionPlanning": "Production Planning",
+      "recipeManagement": "Recipe Management",
+      "recipeCuisineTypes": "Recipe Cuisine Types"
+    },
+    "production": "Production",
+    "Production": {
+      "recipeExecution": "Recipe Execution",
+      "batchProduction": "Batch Production",
+      "wastageTracking": "Wastage Tracking",
+      "qualityControl": "Quality Control"
+    },
+    "reportingAndAnalytics": "Reporting and Analytics",
+    "ReportingAndAnalytics": {
+      "operationalReports": "Operational Reports",
+      "financialReports": "Financial Reports",
+      "inventoryReports": "Inventory Reports",
+      "vendorPerformance": "Vendor Performance",
+      "costAnalysis": "Cost Analysis",
+      "salesAnalysis": "Sales Analysis"
+    },
+    "finance": "Finance",
+    "Finance": {
+      "accountCodeMapping": "Account Code Mapping",
+      "exchangeRates": "Exchange Rates",
+      "budgetPlanningAndControl": "Budget Planning and Control"
+    },
     "Configuration": {
       "currency": "Currency",
       "deliveryPoint": "Delivery Point",
       "storeLocation": "Store Location",
       "department": "Department"
+    },
+    "systemAdministration": "System Administration",
+    "SystemAdministration": {
+      "userManagement": "User Management",
+      "config": "Config",
+      "locationManagement": "Location Management",
+      "workflowManagement": "Workflow Management",
+      "generalSettings": "General Settings",
+      "notificationPreferences": "Notification Preferences",
+      "licenseManagement": "License Management",
+      "securitySettings": "Security Settings",
+      "dataBackupAndRecovery": "Data Backup and Recovery",
+      "systemIntegrations": "System Integrations"
+    },
+    "helpAndSupport": "Help and Support",
+    "HelpAndSupport": {
+      "userManuals": "User Manuals",
+      "videoTutorials": "Video Tutorials",
+      "faqs": "FAQs",
+      "supportTicketSystem": "Support Ticket System",
+      "systemUpdatesAndReleaseNotes": "System Updates and Release Notes"
     }
   }
 }
