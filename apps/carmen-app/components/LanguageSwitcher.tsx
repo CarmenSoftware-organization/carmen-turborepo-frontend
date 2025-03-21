@@ -3,6 +3,19 @@
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { locales } from '@/i18n';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import Image from 'next/image';
+
+const localeFlags: Record<string, string> = {
+    en: '/images/flags/en.svg',
+    th: '/images/flags/th.svg',
+};
 
 export default function LanguageSwitcher() {
     const currentPathname = usePathname();
@@ -11,9 +24,6 @@ export default function LanguageSwitcher() {
     // ฟังก์ชันสำหรับเปลี่ยนภาษาโดยใช้การ reload หน้า
     const handleLocaleChange = (newLocale: string) => {
         if (currentLocale === newLocale) return;
-
-        console.log('Changing locale from', currentLocale, 'to', newLocale);
-        console.log('Current full pathname:', currentPathname);
 
         // คำนวณ URL ใหม่อย่างระมัดระวัง
         const baseUrl = window.location.origin;
@@ -30,27 +40,55 @@ export default function LanguageSwitcher() {
         // ถ้าเป็น root path ให้ใช้แค่ locale
         const newPath = pathname === '/' ? `/${newLocale}` : `/${newLocale}${pathname}`;
 
-        console.log('New URL will be:', baseUrl + newPath);
-
         // ใช้การ reload หน้าเพื่อให้แน่ใจว่าทุกอย่างถูกโหลดใหม่
         window.location.href = baseUrl + newPath;
     };
 
     return (
-        <div className="fixed top-4 right-4 flex gap-2">
-            {locales.map((locale) => (
-                <button
-                    key={locale}
-                    onClick={() => handleLocaleChange(locale)}
-                    className={`px-3 py-1 rounded ${currentLocale === locale
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 hover:bg-gray-300'
-                        }`}
-                    aria-label={`Switch to ${locale} language`}
-                >
-                    {locale.toUpperCase()}
-                </button>
-            ))}
-        </div>
+        <Select
+            value={currentLocale}
+            onValueChange={handleLocaleChange}
+        >
+            <SelectTrigger className="w-[80px] bg-background border-border focus:ring-ring">
+                <SelectValue>
+                    <div className="flex items-center gap-2">
+                        <span>{currentLocale.toUpperCase()}</span>
+                        {localeFlags[currentLocale] && (
+                            <div className="relative w-5 h-4">
+                                <Image
+                                    src={localeFlags[currentLocale]}
+                                    alt={`${currentLocale} flag`}
+                                    fill
+                                    className="object-cover rounded-sm"
+                                />
+                            </div>
+                        )}
+                    </div>
+                </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+                {locales.map((locale) => (
+                    <SelectItem
+                        key={locale}
+                        value={locale}
+                        className="cursor-pointer"
+                    >
+                        <div className="flex items-center">
+                            <span>{locale.toUpperCase()}</span>
+                            {localeFlags[locale] && (
+                                <div className="relative w-5 h-4 ml-2">
+                                    <Image
+                                        src={localeFlags[locale]}
+                                        alt={`${locale} flag`}
+                                        fill
+                                        className="object-cover rounded-sm"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
     );
 } 
