@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { signInAction } from "../actions"
-import { SignInFormValues, signInSchema } from "../schema"
+import { SignInFormValues } from "@/dtos/sign-in.dto"
+import { signInSchema } from "@/constants/form.schema"
 
 export default function SignInComponent() {
     const [isPending, startTransition] = useTransition()
@@ -21,7 +22,6 @@ export default function SignInComponent() {
         },
     })
 
-    // Handle form submission
     const handleSubmit = async (values: SignInFormValues) => {
         startTransition(async () => {
             try {
