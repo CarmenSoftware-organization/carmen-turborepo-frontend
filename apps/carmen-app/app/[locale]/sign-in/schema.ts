@@ -1,0 +1,15 @@
+import { z } from "zod"
+
+/**
+ * Sign-in form validation schema
+ */
+export const signInSchema = z.object({
+    email: z.string().email({
+        message: "Please enter a valid email address"
+    }),
+    password: z.string().min(6, {
+        message: "Password must be at least 6 characters"
+    }),
+})
+
+export type SignInFormValues = z.infer<typeof signInSchema> 
