@@ -1,7 +1,6 @@
 'use client';
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/lib/navigation";
-import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Home() {
   const t = useTranslations("HomePage");
@@ -9,8 +8,6 @@ export default function Home() {
 
   return (
     <div className="p-8">
-      <LanguageSwitcher />
-
       <div className="mt-16 max-w-md mx-auto">
         <h1 className="text-3xl font-bold mb-4">{t("title")}</h1>
         <p className="text-lg">{t("welcome")}</p>
