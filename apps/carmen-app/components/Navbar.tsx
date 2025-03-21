@@ -5,7 +5,7 @@ import UserAvatar from "./UserAvatar";
 
 export default function Navbar() {
     return (
-        <div className="flex justify-end items-center p-2 bg-background">
+        <div className="flex justify-end items-center p-2 bg-background border-b gap-2">
             <ModuleList />
             <SwitchTheme />
             <LanguageSwitcher />

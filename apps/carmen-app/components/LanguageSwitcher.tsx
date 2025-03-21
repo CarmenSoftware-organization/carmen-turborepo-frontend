@@ -49,7 +49,7 @@ export default function LanguageSwitcher() {
             value={currentLocale}
             onValueChange={handleLocaleChange}
         >
-            <SelectTrigger className="w-[80px] bg-background border-border focus:ring-ring">
+            <SelectTrigger className="w-[80px] bg-background border-none focus:ring-ring">
                 <SelectValue>
                     <div className="flex items-center gap-2">
                         <span>{currentLocale.toUpperCase()}</span>

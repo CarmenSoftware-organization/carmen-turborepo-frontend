@@ -27,10 +27,24 @@ export default function SidebarComponent() {
     const Icon = activeModuleData.icon;
 
     return (
-        <nav className="p-2 space-y-1">
-            <div className="p-4 border-b flex items-center gap-2">
+        <nav className="p-4 space-y-1 border-r h-screen w-[230px]">
+            <div>
+                <span
+                    className="text-2xl font-bold block tracking-wide"
+                    data-id="sidebar-logo-text"
+                >
+                    CARMEN
+                </span>
+                <span
+                    className="text-sm blocktracking-wide"
+                    data-id="sidebar-logo-text-sub"
+                >
+                    Hospitality Supply Chain
+                </span>
+            </div>
+            <div className="p-4 flex items-center gap-2 border-b">
                 {Icon && <Icon className="h-5 w-5" />}
-                <h2 className="text-lg font-semibold">{t(moduleKey)}</h2>
+                <h2 className="text-base font-semibold">{t(moduleKey)}</h2>
             </div>
 
             {/* แสดง submenu เฉพาะเมื่อมี children */}
@@ -50,12 +64,12 @@ export default function SidebarComponent() {
                         <Link
                             key={item.labelKey}
                             href={item.href}
-                            className={`flex items-center px-3 py-2 rounded-md text-sm transition-colors ${isActive
+                            className={`flex items-center p-2 rounded-md text-sm transition-colors ${isActive
                                 ? 'bg-primary text-primary-foreground'
                                 : 'hover:bg-accent hover:text-accent-foreground'
                                 }`}
                         >
-                            <span>{t(`${section}.${subItem}`)}</span>
+                            <span className="text-sm font-medium">{t(`${section}.${subItem}`)}</span>
                         </Link>
                     );
                 }

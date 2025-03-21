@@ -7,8 +7,9 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { moduleItems } from "@/constants/modules-list"
+import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl"
-import { useRouter, usePathname } from "next/navigation"
+import { usePathname } from "next/navigation"
 import React from "react"
 
 export default function ModuleList() {
@@ -35,14 +36,14 @@ export default function ModuleList() {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="outline">
+                <Button variant="ghost">
                     {activeModule?.icon &&
-                        React.createElement(activeModule.icon, { className: "h-4 w-4 mr-2" })}
+                        React.createElement(activeModule.icon, { className: "h-4 w-4" })}
                     {activeModule ? t(activeModule.labelKey.split('.').pop() ?? '') : t('dashboard')}
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[500px]">
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-4 gap-2">
                     {moduleItems.map((module) => {
                         const key = module.labelKey.split('.').pop() ?? '';
                         const Icon = module.icon;
@@ -51,14 +52,14 @@ export default function ModuleList() {
                         return (
                             <button
                                 key={module.labelKey}
-                                className={`w-full text-left cursor-pointer rounded-md border p-3 ${isActive ? 'bg-accent border-primary' : 'hover:bg-accent/50 border-gray-200'
+                                className={`w-full text-left cursor-pointer rounded-md p-3 ${isActive ? 'bg-accent border-primary' : 'hover:bg-accent/50 border-gray-200'
                                     }`}
                                 onClick={() => handleModuleClick(module.href)}
                                 aria-label={t(key)}
                             >
                                 <div className="flex flex-col items-center justify-center gap-2">
                                     {Icon && <Icon className="h-8 w-8" />}
-                                    {t(key)}
+                                    <span className="text-xs">{t(key)}</span>
                                 </div>
                             </button>
                         );
