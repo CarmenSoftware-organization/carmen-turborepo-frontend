@@ -1,15 +1,31 @@
 "use server"
+
+import { backendApi } from "@/lib/backend-api";
+
 export async function signInAction(email: string, password: string) {
-    // Simulate server processing time
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    const apiUrl = `${backendApi}/api/auth/login`
+
+    const options = {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+    }
 
     try {
-        console.log("email", email);
-        console.log("password", password);
+        const response = await fetch(apiUrl, options);
+        const data = await response.json();
 
+        if (!response.ok) {
+            throw new Error(data.message || "Authentication failed");
+        }
+
+        // Return success with tokens to be stored in client-side sessionStorage
         return {
             success: true,
-            message: "Authentication successful"
+            access_token: data.access_token,
+            refresh_token: data.refresh_token
         }
 
     } catch (error) {

@@ -1,18 +1,52 @@
-import createMiddleware from "next-intl/middleware";
-import { locales, defaultLocale } from "@/i18n";
+import { NextRequest, NextResponse } from 'next/server';
+import { match as matchLocale } from '@formatjs/intl-localematcher';
 
-export default createMiddleware({
-    // List of all locales that are supported
-    locales,
-    // Used when no locale matches
-    defaultLocale,
-    // This is the strategy to determine which locale to use
-    localePrefix: "always", // "always" | "as-needed" | "never" 
-    // This will enable automatic locale detection
-    localeDetection: true,
-});
+const locales = ['en', 'th'];
+const defaultLocale = 'en';
+
+function getLocale(request: NextRequest): string {
+    // Get Accept-Language header
+    const acceptLanguage = request.headers.get('Accept-Language') ?? '';
+    // Split languages by comma and trim whitespace
+    const languages = acceptLanguage
+        .split(',')
+        .map(lang => lang.split(';')[0].trim());
+
+    // Add default language if no Accept-Language header
+    if (languages.length === 0) {
+        languages.push(defaultLocale);
+    }
+
+    // Find best matching locale
+    const locale = matchLocale(languages, locales, defaultLocale);
+    return locale;
+}
+
+export function middleware(request: NextRequest) {
+    const pathname = request.nextUrl.pathname;
+
+    // Check if the request is for a locale route
+    const pathnameIsMissingLocale = locales.every(
+        locale => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
+    );
+
+    // Redirect if there is no locale
+    if (pathnameIsMissingLocale) {
+        const locale = getLocale(request);
+
+        return NextResponse.redirect(
+            new URL(`/${locale}${pathname.startsWith('/') ? '' : '/'}${pathname}`, request.url)
+        );
+    }
+
+    // Skip auth check in middleware since we can't access sessionStorage
+    // Auth will be handled by client-side components using AuthContext
+    return NextResponse.next();
+}
 
 export const config = {
-    // ตรวจสอบทุกเส้นทางยกเว้นไฟล์ static และ api
-    matcher: ["/((?!api|_next|.*\\..*).*)"]
+    matcher: [
+        // Skip all internal paths (_next)
+        '/((?!_next|api|.*\\..*).*)',
+    ],
 };

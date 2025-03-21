@@ -1,6 +1,7 @@
 import LanguageSwitcher from "./LanguageSwitcher";
 import ModuleList from "./ModuleList";
 import { SwitchTheme } from "./SwitchTheme";
+import UserAvatar from "./UserAvatar";
 
 export default function Navbar() {
     return (
@@ -8,6 +9,8 @@ export default function Navbar() {
             <ModuleList />
             <SwitchTheme />
             <LanguageSwitcher />
+            <UserAvatar />
         </div>
     );
 }
+

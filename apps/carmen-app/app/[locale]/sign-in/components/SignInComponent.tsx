@@ -10,9 +10,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { signInAction } from "../actions"
 import { SignInFormValues } from "@/dtos/sign-in.dto"
 import { signInSchema } from "@/constants/form.schema"
+import { useRouter } from "next/navigation"
 
 export default function SignInComponent() {
     const [isPending, startTransition] = useTransition()
+    const router = useRouter()
 
     const form = useForm<SignInFormValues>({
         resolver: zodResolver(signInSchema),
@@ -28,11 +30,21 @@ export default function SignInComponent() {
                 const result = await signInAction(values.email, values.password)
 
                 if (result.success) {
-                    alert("Sign in successful")
-                    form.reset();
+                    // Store tokens in sessionStorage
+                    if (result.access_token) {
+                        sessionStorage.setItem('access_token', result.access_token);
+                    }
+
+                    if (result.refresh_token) {
+                        sessionStorage.setItem('refresh_token', result.refresh_token);
+                    }
+
+                    // เมื่อ login สำเร็จ ให้ redirect ไปยังหน้าหลัก
+                    router.push('/')
+                    form.reset()
                 } else {
                     form.setError("root", {
-                        message: result.message || "Invalid email or password"
+                        message: result.message ?? "Invalid email or password"
                     })
                 }
             } catch (error) {
