@@ -110,5 +110,10 @@
       "supportTicketSystem": "ระบบการสนับสนุนการซื้อขาย",
       "systemUpdatesAndReleaseNotes": "การอัพเดตและบันทึกการปรับปรุง"
     }
+  },
+  "Error": {
+    "notFoundTitle": "ไม่พบหน้า",
+    "notFoundMessage": "ไม่พบหน้าที่คุณต้องการ",
+    "backToHome": "กลับไปหน้าหลัก"
   }
 }

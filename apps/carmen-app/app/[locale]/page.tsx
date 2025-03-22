@@ -1,19 +1,5 @@
-'use client';
-import { useTranslations } from "next-intl";
-import { Link } from "@/lib/navigation";
+import LandingPage from "@/components/LandingPage";
 
 export default function Home() {
-  const t = useTranslations("HomePage");
-
-  return (
-    <div className="p-8">
-      <div className="mt-16 max-w-md mx-auto">
-        <h1 className="text-3xl font-bold mb-4">{t("title")}</h1>
-        <p className="text-lg">{t("welcome")}</p>
-        <div className="flex flex-col gap-4 mt-4">
-          <Link href="/dashboard" className="bg-blue-500 text-white p-2 rounded-md text-center">Dashboard</Link>
-        </div>
-      </div>
-    </div>
-  );
+  return <LandingPage />
 }

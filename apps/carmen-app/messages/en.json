@@ -11,6 +11,11 @@
     "profileTitle": "Profile Page",
     "profileWelcome": "Welcome to the profile page!"
   },
+  "Error": {
+    "notFoundTitle": "Not Found",
+    "notFoundMessage": "Could not find the requested resource",
+    "backToHome": "Go to Home"
+  },
   "Modules": {
     "dashboard": "Dashboard",
     "procurement": "Procurement",
