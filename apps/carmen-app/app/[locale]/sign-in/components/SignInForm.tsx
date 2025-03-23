@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { PasswordInput } from "@/components/ui-custom/PasswordInput"
 import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 export default function SignInForm() {
     const [isPending, startTransition] = useTransition()
@@ -56,12 +57,19 @@ export default function SignInForm() {
         })
     }
     return (
-        <div className="flex justify-center items-center w-full min-h-screen">
-            <div className="bg-muted max-w-4xl w-full p-10 rounded-lg h-96">
+        <div className="flex justify-center items-center w-full min-h-screen bg-muted">
+            <div className="bg-background max-w-4xl w-full p-10 rounded-xl h-96">
 
                 <div className="flex">
                     <div className="w-1/2 space-y-4">
-                        <div className="w-20 h-20 bg-blue-600 rounded-full"></div>
+                        <Image
+                            src="/images/carmen_pic.jpg"
+                            alt="@shadcn"
+                            className="rounded-full"
+                            width={80}
+                            height={80}
+                            data-id="sidebar-logo-avatar-image"
+                        />
                         <p className="text-4xl font-semibold">
                             {tHome('CarmenSoftware')}
                         </p>

@@ -2,11 +2,30 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { backendApi } from '@/lib/backend-api';
 
+interface UserInfo {
+    firstname: string;
+    middlename?: string;
+    lastname: string;
+}
+
+interface BusinessUnit {
+    id: string;
+    name: string;
+}
+
+interface User {
+    id: string;
+    email: string;
+    user_info: UserInfo;
+    business_unit: BusinessUnit[];
+}
 
 interface AuthContextType {
     isAuthenticated: boolean;
     isLoading: boolean;
+    user: User | null;
     setSession: (accessToken: string, refreshToken: string) => void;
     logout: () => void;
 }
@@ -15,6 +34,7 @@ interface AuthContextType {
 export const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     isLoading: true,
+    user: null,
     setSession: () => { },
     logout: () => { },
 });
@@ -22,6 +42,7 @@ export const AuthContext = createContext<AuthContextType>({
 // Provider component
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState<User | null>(null);
     const router = useRouter();
     const pathname = usePathname();
 
@@ -38,9 +59,16 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
                 if (isSignInPage) {
                     sessionStorage.removeItem('access_token');
                     sessionStorage.removeItem('refresh_token');
-
+                    localStorage.removeItem('user');
+                    setUser(null);
                     setIsLoading(false);
                     return;
+                }
+
+                // Load user from localStorage if available
+                const storedUser = localStorage.getItem('user');
+                if (storedUser) {
+                    setUser(JSON.parse(storedUser));
                 }
 
             } catch (error) {
@@ -53,9 +81,23 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         checkAuth();
     }, [pathname]);
 
-    const setSession = useCallback((accessToken: string, refreshToken: string) => {
+    const setSession = useCallback(async (accessToken: string, refreshToken: string) => {
         if (accessToken) {
             sessionStorage.setItem('access_token', accessToken);
+
+            const url = `${backendApi}/api/auth/profile`
+            const options = {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            }
+            const response = await fetch(url, options);
+            const data = await response.json();
+
+            // Store user data in localStorage
+            localStorage.setItem('user', JSON.stringify(data));
+            setUser(data);
         }
 
         if (refreshToken) {
@@ -69,6 +111,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         // Clear tokens
         sessionStorage.removeItem('access_token');
         sessionStorage.removeItem('refresh_token');
+        // Also clear user data from localStorage
+        localStorage.removeItem('user');
+        setUser(null);
 
         // Redirect to sign-in with the current locale
         router.push(`/${locale}/sign-in`);
@@ -81,9 +126,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const value = useMemo(() => ({
         isAuthenticated: hasToken,
         isLoading,
+        user,
         setSession,
         logout
-    }), [hasToken, isLoading, setSession, logout]);
+    }), [hasToken, isLoading, user, setSession, logout]);
 
     return (
         <AuthContext.Provider value={value}>
