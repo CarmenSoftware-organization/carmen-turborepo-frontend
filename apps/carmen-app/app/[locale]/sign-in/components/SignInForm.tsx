@@ -1,236 +1,138 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+"use client";
+
+import { signInSchema } from "@/constants/form.schema";
+import { useAuth } from "@/context/AuthContext";
+import { SignInFormValues } from "@/dtos/sign-in.dto";
+import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
-import { Eye, EyeOff, Lock, Mail, Github, Facebook } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { z } from "zod";
-
-export const loginSchema = z.object({
-    email: z
-        .string()
-        .min(1, { message: "Email is required" })
-        .email({ message: "Invalid email address" }),
-    password: z
-        .string()
-        .min(1, { message: "Password is required" })
-        .min(8, { message: "Password must be at least 8 characters" }),
-    rememberMe: z.boolean().optional().default(false),
-});
-
-export type LoginFormValues = z.infer<typeof loginSchema>;
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { signInAction } from "../actions";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { PasswordInput } from "@/components/ui-custom/PasswordInput"
+import LanguageSwitch from "@/components/home-page/LanguageSwitch";
+import { useTranslations } from "next-intl";
 
 export default function SignInForm() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
+    const [isPending, startTransition] = useTransition()
+    const router = useRouter()
+    const { setSession } = useAuth()
+    const t = useTranslations('SignInPage');
+    const tHome = useTranslations('HomePage');
 
-    const form = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
+    const form = useForm<SignInFormValues>({
+        resolver: zodResolver(signInSchema),
         defaultValues: {
             email: "",
             password: "",
-            rememberMe: false,
         },
-    });
+    })
 
-    async function onSubmit(data: LoginFormValues) {
-        setIsLoading(true);
-        try {
-            // Simulate API call
-            console.log(data);
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+    const handleSubmit = (values: SignInFormValues) => {
+        startTransition(async () => {
+            try {
+                const result = await signInAction(values.email, values.password)
 
-            toast.success("Successfully logged in!");
-            form.reset();
-        } catch (error) {
-            toast.error("Something went wrong. Please try again.");
-            console.error(error);
-        } finally {
-            setIsLoading(false);
-        }
+                if (result.success) {
+                    if (result.access_token && result.refresh_token) {
+                        setSession(result.access_token, result.refresh_token)
+                    }
+
+                    router.push('/dashboard')
+                    form.reset()
+                } else {
+                    form.setError("root", {
+                        message: result.message ?? t('signInError')
+                    })
+                }
+            } catch (error) {
+                console.error("Sign in error:", error)
+                form.setError("root", {
+                    message: t('signInError')
+                })
+            }
+        })
     }
-
     return (
-        <div className="animate-fade-in">
-            <div className="space-y-2 text-center mb-8">
-                <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-                <p className="text-muted-foreground">
-                    Enter your credentials to sign in to your account
-                </p>
-            </div>
+        <div className="flex justify-center items-center w-full min-h-screen">
+            <div className="bg-muted max-w-4xl w-full p-10 rounded-lg h-96">
 
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-6 animate-slide-up"
-                style={{ animationDelay: "100ms" }}
-            >
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <div className="relative">
-                            <Label
-                                htmlFor="email"
-                                className="text-sm font-medium absolute -top-2 left-2 px-1 bg-background"
-                            >
-                                Email
-                            </Label>
-                            <div className="flex items-center">
-                                <Mail className="absolute left-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="name@example.com"
-                                    autoComplete="email"
-                                    autoCorrect="off"
-                                    disabled={isLoading}
-                                    className={cn(
-                                        "pl-10 h-12 transition-all duration-300 bg-background",
-                                        form.formState.errors.email && "ring-2 ring-destructive"
+                <div className="flex">
+                    <div className="w-1/2 space-y-4">
+                        <div className="w-20 h-20 bg-blue-600 rounded-full"></div>
+                        <p className="text-4xl font-semibold">
+                            {tHome('CarmenSoftware')}
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                            {tHome('HotelFinanceManagementSoftware')}
+                        </p>
+                    </div>
+
+                    <div className="w-1/2 pt-10">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>{t('email')}</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    placeholder="email@example.com"
+                                                    type="email"
+                                                    autoComplete="email"
+                                                    disabled={isPending}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
                                     )}
-                                    {...form.register("email")}
                                 />
-                            </div>
-                        </div>
-                        {form.formState.errors.email && (
-                            <p className="text-sm text-destructive px-1 animate-fade-in">
-                                {form.formState.errors.email.message}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="space-y-2">
-                        <div className="relative">
-                            <Label
-                                htmlFor="password"
-                                className="text-sm font-medium absolute -top-2 left-2 px-1 bg-background"
-                            >
-                                Password
-                            </Label>
-                            <div className="flex items-center">
-                                <Lock className="absolute left-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    id="password"
-                                    type={showPassword ? "text" : "password"}
-                                    autoComplete="current-password"
-                                    disabled={isLoading}
-                                    className={cn(
-                                        "pl-10 pr-10 h-12 transition-all duration-300 bg-background",
-                                        form.formState.errors.password && "ring-2 ring-destructive"
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>{t('password')}</FormLabel>
+                                            <FormControl>
+                                                <PasswordInput
+                                                    placeholder="••••••••"
+                                                    type="password"
+                                                    autoComplete="current-password"
+                                                    disabled={isPending}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
                                     )}
-                                    {...form.register("password")}
                                 />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-1 h-8 w-8 p-0"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    disabled={isLoading}
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                                    ) : (
-                                        <Eye className="h-4 w-4 text-muted-foreground" />
-                                    )}
-                                    <span className="sr-only">
-                                        {showPassword ? "Hide password" : "Show password"}
-                                    </span>
-                                </Button>
-                            </div>
-                        </div>
-                        {form.formState.errors.password && (
-                            <p className="text-sm text-destructive px-1 animate-fade-in">
-                                {form.formState.errors.password.message}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="remember-me"
-                                disabled={isLoading}
-                                {...form.register("rememberMe")}
-                            />
-                            <Label
-                                htmlFor="remember-me"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                                Remember me
-                            </Label>
-                        </div>
-                        <Button
-                            variant="link"
-                            size="sm"
-                            className="text-sm font-medium text-primary px-0"
-                            disabled={isLoading}
-                        >
-                            Forgot password?
-                        </Button>
+                                {form.formState.errors.root && (
+                                    <div className="text-sm font-medium text-destructive">
+                                        {form.formState.errors.root.message}
+                                    </div>
+                                )}
+                                <div className="flex justify-end">
+                                    <Button
+                                        type="submit"
+                                        className="w-40 h-10 bg-blue-700 hover:bg-blue-600 text-white rounded-full"
+                                        disabled={isPending}
+                                    >
+                                        {isPending ? t('signingIn') : t('signIn')}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
                     </div>
                 </div>
-
-                <Button
-                    type="submit"
-                    className="w-full h-12 transition-all duration-300 font-medium"
-                    disabled={isLoading}
-                >
-                    {isLoading ? (
-                        <div className="flex items-center justify-center">
-                            <div className="h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-                            Signing in...
-                        </div>
-                    ) : (
-                        "Sign in"
-                    )}
-                </Button>
-            </form>
-
-            <div className="mt-8 text-center animate-fade-in" style={{ animationDelay: "200ms" }}>
-                <p className="text-sm text-muted-foreground">
-                    Don&apos;t have an account?{" "}
-                    <Button variant="link" className="p-0 font-medium">
-                        Sign up
-                    </Button>
+                <p className="text-muted-foreground text-sm mt-10">
+                    <LanguageSwitch />
                 </p>
-            </div>
-
-            <div className="relative mt-8">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">
-                        Or continue with
-                    </span>
-                </div>
-            </div>
-
-            <div className="mt-6 grid grid-cols-2 gap-4">
-                <Button
-                    variant="outline"
-                    type="button"
-                    disabled={isLoading}
-                    className="animate-slide-up h-12"
-                    style={{ animationDelay: "300ms" }}
-                >
-                    <Github className="mr-2 h-4 w-4" />
-                    GitHub
-                </Button>
-                <Button
-                    variant="outline"
-                    type="button"
-                    disabled={isLoading}
-                    className="animate-slide-up h-12"
-                    style={{ animationDelay: "400ms" }}
-                >
-                    <Facebook className="mr-2 h-4 w-4" />
-                    Facebook
-                </Button>
             </div>
         </div>
-    );
+    )
 }

@@ -10,18 +10,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import Image from 'next/image';
 
-const localeFlags: Record<string, string> = {
-    en: '/images/flags/en.svg',
-    th: '/images/flags/th.svg',
-};
-
-interface Props {
-    readonly showFlag?: boolean;
-}
-
-export default function LanguageSwitcher({ showFlag = true }: Props) {
+export default function LanguageSwitch() {
     const currentPathname = usePathname();
     const currentLocale = useLocale();
 
@@ -53,20 +43,10 @@ export default function LanguageSwitcher({ showFlag = true }: Props) {
             value={currentLocale}
             onValueChange={handleLocaleChange}
         >
-            <SelectTrigger className="w-[80px] border-none focus:ring-ring">
+            <SelectTrigger className="w-[100px] border-none focus:ring-ring">
                 <SelectValue>
                     <div className="flex items-center gap-2">
-                        <span>{currentLocale.toUpperCase()}</span>
-                        {localeFlags[currentLocale] && (
-                            <div className="relative w-5 h-4">
-                                <Image
-                                    src={localeFlags[currentLocale]}
-                                    alt={`${currentLocale} flag`}
-                                    fill
-                                    className="object-cover rounded-sm"
-                                />
-                            </div>
-                        )}
+                        <span>{currentLocale === 'en' ? 'English' : 'Thai'}</span>
                     </div>
                 </SelectValue>
             </SelectTrigger>
@@ -78,17 +58,7 @@ export default function LanguageSwitcher({ showFlag = true }: Props) {
                         className="cursor-pointer"
                     >
                         <div className="flex items-center">
-                            <span>{locale.toUpperCase()}</span>
-                            {showFlag && localeFlags[locale] && (
-                                <div className="relative w-5 h-4 ml-2">
-                                    <Image
-                                        src={localeFlags[locale]}
-                                        alt={`${locale} flag`}
-                                        fill
-                                        className="object-cover rounded-sm"
-                                    />
-                                </div>
-                            )}
+                            <span>{locale === 'en' ? 'English' : 'Thai'}</span>
                         </div>
                     </SelectItem>
                 ))}

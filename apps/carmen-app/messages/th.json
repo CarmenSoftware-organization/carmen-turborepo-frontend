@@ -1,7 +1,18 @@
 {
   "HomePage": {
     "title": "หน้าหลัก",
-    "welcome": "ยินดีต้อนรับสู่หน้าหลัก!"
+    "welcome": "ยินดีต้อนรับสู่หน้าหลัก!",
+    "CarmenSoftware": "Carmen Software",
+    "HotelFinanceManagementSoftware": "ซอฟต์แวร์การบริหารการกิจการโรงแรม"
+  },
+  "SignInPage": {
+    "title": "เข้าสู่ระบบ",
+    "email": "อีเมล",
+    "password": "รหัสผ่าน",
+    "signIn": "เข้าสู่ระบบ",
+    "signingIn": "กำลังเข้าสู่ระบบ...",
+    "signInSuccess": "เข้าสู่ระบบสำเร็จ",
+    "signInError": "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
   },
   "DashboardPage": {
     "dashboardTitle": "แดชบอร์ด",

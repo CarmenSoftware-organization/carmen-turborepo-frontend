@@ -15,7 +15,8 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInput>(
     ({ className, error, icon, iconPosition = 'end', type = 'password', ...props }, ref) => {
         const [showPassword, setShowPassword] = useState(false);
 
-        const togglePasswordVisibility = () => {
+        const togglePasswordVisibility = (e: React.MouseEvent<HTMLButtonElement>) => {
+            e.stopPropagation();
             setShowPassword(prev => !prev);
         };
 
@@ -33,12 +34,14 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInput>(
                     {...props}
                 />
                 <button
+                    type="button"
                     className={cn(
                         "absolute top-1/2 transform -translate-y-1/2",
                         iconPosition === 'end' ? "right-3" : "left-3",
                         error ? "text-red-500" : "text-gray-500"
                     )}
                     onClick={togglePasswordVisibility}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                     {showPassword ? <EyeOff className="h-4 w-4 cursor-pointer" /> : <Eye className="h-4 w-4 cursor-pointer" />}
                 </button>

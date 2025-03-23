@@ -1,7 +1,18 @@
 {
   "HomePage": {
     "title": "Home Page",
-    "welcome": "Welcome to the home page!"
+    "welcome": "Welcome to the home page!",
+    "CarmenSoftware": "Carmen Software",
+    "HotelFinanceManagementSoftware": "Hotel finance management software"
+  },
+  "SignInPage": {
+    "title": "Sign In",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "signInSuccess": "Sign in successful",
+    "signInError": "Invalid email or password"
   },
   "DashboardPage": {
     "dashboardTitle": "Dashboard Page",
