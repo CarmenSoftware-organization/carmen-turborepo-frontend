@@ -39,7 +39,7 @@ export default function HomeFooter() {
 
 
     return (
-        <footer className="bg-muted text-foreground py-12 md:py-20">
+        <footer className="bg-muted text-foreground py-8">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                     <div className="lg:col-span-2">

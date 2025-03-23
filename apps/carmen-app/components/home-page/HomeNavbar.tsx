@@ -4,6 +4,8 @@ import { cn } from "@/lib/utils";
 import { Hotel, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import LanguageSwitcher from "../LanguageSwitcher";
+import { Button } from "../ui/button";
 
 export default function HomeNavbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -45,7 +47,6 @@ export default function HomeNavbar() {
         { name: 'Features', href: '#features' },
         { name: 'Testimonials', href: '#testimonials' },
         { name: 'Contact', href: '#contact' },
-        { name: 'Sign In', href: '/sign-in' },
     ];
 
     return (
@@ -66,7 +67,7 @@ export default function HomeNavbar() {
                 </Link>
 
                 {/* Desktop Navigation */}
-                <nav className="hidden md:flex items-center gap-8">
+                <nav className="hidden md:flex items-center gap-4">
                     {navItems.map((item) => (
                         <Link
                             key={item.name}
@@ -77,6 +78,11 @@ export default function HomeNavbar() {
                             {item.name}
                         </Link>
                     ))}
+                    <Button asChild>
+                        <Link href="/sign-in">
+                            Sign In
+                        </Link>
+                    </Button>
                     <Link
                         href="#demo"
                         className="bg-primary text-primary-foreground px-5 py-2 rounded-md hover:bg-primary/90 transition-all duration-300 text-sm font-medium"
@@ -84,6 +90,7 @@ export default function HomeNavbar() {
                     >
                         Get Demo
                     </Link>
+                    <LanguageSwitcher />
                 </nav>
 
                 {/* Mobile Menu Button */}

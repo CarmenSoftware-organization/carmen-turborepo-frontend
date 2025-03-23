@@ -37,7 +37,7 @@ export default function SignInComponent() {
                         setSession(result.access_token, result.refresh_token)
                     }
 
-                    router.push('/')
+                    router.push('/dashboard')
                     form.reset()
                 } else {
                     form.setError("root", {

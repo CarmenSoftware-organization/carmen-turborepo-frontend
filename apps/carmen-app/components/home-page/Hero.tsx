@@ -5,7 +5,7 @@ export default function Hero() {
     return (
         <section
             id="home"
-            className="min-h-screen pt-24 pb-16 md:pt-32 relative bg-hotel-pattern"
+            className="min-h-screen pt-24 md:pt-32 relative bg-hotel-pattern"
         >
             <div className="absolute top-0 left-0 right-0 bottom-0 bg-gradient-radial from-transparent to-background/80 z-0"></div>
 
