@@ -148,6 +148,9 @@
     "delete": "Delete",
     "cancel": "Cancel",
     "export": "Export",
-    "print": "Print"
+    "print": "Print",
+    "status": "Status",
+    "selectStatus": "Select Status",
+    "sort": "Sort"
   }
 }

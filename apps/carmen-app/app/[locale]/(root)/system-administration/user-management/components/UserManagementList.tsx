@@ -2,16 +2,34 @@
 
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
+import SortComponent from "@/components/ui-custom/SortComponent";
+import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+
+const statusOptions = [
+    { value: '', label: 'All' },
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' },
+];
+
+const sortFields = [
+    { key: 'name', label: 'Name' },
+    { key: 'email', label: 'Email' },
+    { key: 'role', label: 'Role' },
+];
 
 export default function UserManagementList() {
     const t = useTranslations('UserManagement');
     const tCommon = useTranslations('Common');
     const title = t('title');
     const [search, setSearch] = useURL('search');
+    const [status, setStatus] = useURL('status');
+    const [statusOpen, setStatusOpen] = useState(false);
+    const [sort, setSort] = useURL('sort');
 
     const actionButtons = (
         <div className="action-btn-container" data-id="user-management-list-action-buttons">
@@ -47,6 +65,22 @@ export default function UserManagementList() {
                 placeholder={tCommon('search')}
                 data-id="user-management-list-search-input"
             />
+            <div className="flex items-center">
+                <StatusSearchDropdown
+                    options={statusOptions}
+                    value={status}
+                    onChange={setStatus}
+                    open={statusOpen}
+                    onOpenChange={setStatusOpen}
+                    data-id="delivery-point-status-search-dropdown"
+                />
+                <SortComponent
+                    fieldConfigs={sortFields}
+                    sort={sort}
+                    setSort={setSort}
+                    data-id="delivery-point-sort-dropdown"
+                />
+            </div>
             <Button>
                 <Search />
                 {tCommon('search')}
@@ -66,6 +100,7 @@ export default function UserManagementList() {
             actionButtons={actionButtons}
             filters={filters}
             content={content}
+            data-id="user-management-list"
         />
     )
 }
