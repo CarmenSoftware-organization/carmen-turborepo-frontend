@@ -1,7 +1,7 @@
 "use client";
 
 import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
-import { Users, FileText, BarChart2 } from "lucide-react";
+import { Building2, CircleDollarSign, LineChart } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function VendorManagement() {
@@ -10,17 +10,17 @@ export default function VendorManagement() {
         {
             name: t('VendorManagement.manageVendors'),
             href: '/vendor-management/vendor',
-            icon: Users
+            icon: Building2
         },
         {
             name: t('VendorManagement.priceLists'),
             href: '/vendor-management/vendor-group',
-            icon: FileText
+            icon: CircleDollarSign
         },
         {
             name: t('VendorManagement.priceComparisons'),
             href: '/vendor-management/vendor-category',
-            icon: BarChart2
+            icon: LineChart
         }
     ]
     return (

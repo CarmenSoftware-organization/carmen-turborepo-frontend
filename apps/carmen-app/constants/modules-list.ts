@@ -92,20 +92,20 @@ export const moduleItems: ModuleItem[] = [
     },
     {
         labelKey: "Modules.storeOperations",
-        href: "/store-operations",
+        href: "/store-operation",
         icon: Store,
         children: [
             {
                 labelKey: "Modules.StoreOperations.storeRequisitions",
-                href: "/store-operations/store-requisitions",
+                href: "/store-operation/store-requisition",
             },
             {
                 labelKey: "Modules.StoreOperations.stockReplenishment",
-                href: "/store-operations/stock-replenishment",
+                href: "/store-operation/stock-replenishment",
             },
             {
                 labelKey: "Modules.StoreOperations.wastageReporting",
-                href: "/store-operations/wastage-reporting",
+                href: "/store-operation/wastage-reporting",
             },
         ],
     },
