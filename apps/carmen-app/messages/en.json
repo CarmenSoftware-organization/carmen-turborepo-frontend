@@ -22,6 +22,17 @@
     "profileTitle": "Profile Page",
     "profileWelcome": "Welcome to the profile page!"
   },
+  "TestSSGPage": {
+    "title": "Static Site Generation Example",
+    "description": "This page demonstrates Next.js Static Site Generation (SSG)",
+    "explanation": "This page demonstrates Next.js Static Site Generation (SSG). The data below was generated at build time and will remain static until the next build.",
+    "staticData": "Static Data",
+    "generatedAt": "Generated at",
+    "content": "Content",
+    "items": "Items",
+    "note": "Note",
+    "noteText": "In development, this page will regenerate on each request. In production, it will be generated at build time and served as static HTML."
+  },
   "Error": {
     "notFoundTitle": "Not Found",
     "notFoundMessage": "Could not find the requested resource",
