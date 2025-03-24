@@ -7,16 +7,25 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { moduleItems } from "@/constants/modules-list"
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 export default function ModuleList() {
     const t = useTranslations('Modules');
     const router = useRouter();
     const pathname = usePathname();
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
+
+    const isMobile = useIsMobile();
+
+    useEffect(() => {
+        if (isMobile) {
+            setOpen(false);
+        }
+    }, [isMobile]);
 
     // ตัด locale ออกจาก pathname ถ้ามี
     const pathWithoutLocale = pathname.split('/').slice(2).join('/');

@@ -10,7 +10,7 @@ import {
 export default function TenantList() {
     return (
         <Select defaultValue="tn-01">
-            <SelectTrigger className="w-40 bg-muted border-none focus:ring-ring">
+            <SelectTrigger className="w-40 bg-muted border-none focus:ring-ring text-xs h-8">
                 <SelectValue placeholder="Select a tenant" />
             </SelectTrigger>
             <SelectContent>

@@ -8,8 +8,12 @@ import UserAvatar from "./UserAvatar";
 export default function Navbar() {
     return (
         <div className="flex justify-end items-center p-2 bg-background border-b gap-2">
-            <ModuleList />
-            <ModuleMobile />
+            <div className="hidden md:block">
+                <ModuleList />
+            </div>
+            <div className="block md:hidden">
+                <ModuleMobile />
+            </div>
             <div className="hidden md:flex items-center">
                 <TenantList />
                 <SwitchTheme />

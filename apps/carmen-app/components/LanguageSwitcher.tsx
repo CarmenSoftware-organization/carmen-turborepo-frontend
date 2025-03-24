@@ -56,9 +56,9 @@ export default function LanguageSwitcher({ showFlag = true }: Props) {
             <SelectTrigger className="w-[80px] border-none focus:ring-ring">
                 <SelectValue>
                     <div className="flex items-center gap-2">
-                        <span>{currentLocale.toUpperCase()}</span>
+                        <span className='text-xs'>{currentLocale.toUpperCase()}</span>
                         {localeFlags[currentLocale] && (
-                            <div className="relative w-5 h-4">
+                            <div className="relative w-4 h-4">
                                 <Image
                                     src={localeFlags[currentLocale]}
                                     alt={`${currentLocale} flag`}
