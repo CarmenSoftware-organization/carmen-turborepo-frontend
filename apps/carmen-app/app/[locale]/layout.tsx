@@ -29,10 +29,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { locale: string };
 }>) {
-  console.log('RootLayout rendering with locale:', locale);
-
   const messages = await getMessages({ locale });
-
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>

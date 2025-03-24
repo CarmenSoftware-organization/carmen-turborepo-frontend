@@ -27,7 +27,7 @@ export default function SidebarComponent() {
     const Icon = activeModuleData.icon;
 
     return (
-        <nav className="p-4 space-y-1 border-r h-screen w-[230px]">
+        <nav className="p-4 space-y-1 border-r h-screen w-[230px] hidden md:block">
             <div>
                 <span
                     className="text-2xl font-bold block tracking-wide"

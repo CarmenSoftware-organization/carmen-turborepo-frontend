@@ -15,6 +15,7 @@ import { PasswordInput } from "@/components/ui-custom/PasswordInput"
 import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { toast } from "sonner";
 
 export default function SignInForm() {
     const [isPending, startTransition] = useTransition()
@@ -53,13 +54,13 @@ export default function SignInForm() {
                 form.setError("root", {
                     message: t('signInError')
                 })
+                toast.error(t('signInError'))
             }
         })
     }
     return (
         <div className="flex justify-center items-center w-full min-h-screen bg-muted">
-            <div className="bg-background max-w-4xl w-full p-10 rounded-xl h-96">
-
+            <div className="bg-background max-w-4xl w-full p-10 rounded-xl">
                 <div className="flex">
                     <div className="w-1/2 space-y-4">
                         <Image

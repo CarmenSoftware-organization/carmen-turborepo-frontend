@@ -59,7 +59,7 @@ export default function ModuleList() {
                             >
                                 <div className="flex flex-col items-center justify-center gap-2">
                                     {Icon && <Icon className="h-8 w-8" />}
-                                    <span className="text-xs">{t(key)}</span>
+                                    <span className="text-xs text-center">{t(key)}</span>
                                 </div>
                             </button>
                         );
