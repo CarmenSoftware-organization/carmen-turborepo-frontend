@@ -63,10 +63,6 @@ export default function ModuleMobile() {
                             const key = module.labelKey.split('.').pop() ?? '';
                             const Icon = module.icon;
                             const isActive = activeModule?.labelKey === module.labelKey;
-
-                            console.log('key', key);
-
-
                             return (
                                 <button
                                     key={module.labelKey}
