@@ -6,7 +6,7 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
 import { useURL } from "@/hooks/useURL";
-import { FileDown, Plus, Printer, Search } from "lucide-react";
+import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import UmList from "./UmList";
@@ -66,7 +66,7 @@ export default function UserManagementList() {
                 placeholder={tCommon('search')}
                 data-id="user-management-list-search-input"
             />
-            <div className="flex items-center">
+            <div className="flex items-center gap-2">
                 <StatusSearchDropdown
                     options={statusOptions}
                     value={status}
@@ -82,10 +82,6 @@ export default function UserManagementList() {
                     data-id="delivery-point-sort-dropdown"
                 />
             </div>
-            <Button>
-                <Search />
-                {tCommon('search')}
-            </Button>
         </div>
     )
 

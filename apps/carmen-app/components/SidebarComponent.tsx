@@ -27,7 +27,7 @@ export default function SidebarComponent() {
     const Icon = activeModuleData.icon;
 
     return (
-        <nav className="p-4 space-y-1 border-r h-screen w-[230px] hidden md:block">
+        <nav className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block">
             <div>
                 <span
                     className="text-2xl font-bold block tracking-wide"
@@ -44,7 +44,7 @@ export default function SidebarComponent() {
             </div>
             <div className="p-4 flex items-center gap-2 border-b">
                 {Icon && <Icon className="h-5 w-5" />}
-                <h2 className="text-base font-semibold">{t(moduleKey)}</h2>
+                <h2 className="text-sm font-semibold">{t(moduleKey)}</h2>
             </div>
 
             {/* แสดง submenu เฉพาะเมื่อมี children */}
@@ -69,7 +69,7 @@ export default function SidebarComponent() {
                                 : 'hover:bg-accent hover:text-accent-foreground'
                                 }`}
                         >
-                            <span className="text-sm font-medium">{t(`${section}.${subItem}`)}</span>
+                            <span className="text-xs font-medium">{t(`${section}.${subItem}`)}</span>
                         </Link>
                     );
                 }
