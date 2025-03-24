@@ -113,4 +113,10 @@
   pre {
     @apply p-2 bg-foreground text-background rounded-md;
   }
+  .action-btn-container {
+    @apply flex flex-col md:flex-row gap-2 md:items-start justify-between mb-4;
+  }
+  .filter-container {
+    @apply flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background;
+  }
 }

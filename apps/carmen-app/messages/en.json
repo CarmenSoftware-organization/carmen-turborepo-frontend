@@ -137,5 +137,17 @@
       "supportTicketSystem": "Support Ticket System",
       "systemUpdatesAndReleaseNotes": "System Updates and Release Notes"
     }
+  },
+  "UserManagement": {
+    "title": "User Management"
+  },
+  "Common": {
+    "search": "Search",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "export": "Export",
+    "print": "Print"
   }
 }

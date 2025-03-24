@@ -137,5 +137,17 @@
     "notFoundTitle": "ไม่พบหน้า",
     "notFoundMessage": "ไม่พบหน้าที่คุณต้องการ",
     "backToHome": "กลับไปหน้าหลัก"
+  },
+  "UserManagement": {
+    "title": "การจัดการผู้ใช้งาน"
+  },
+  "Common": {
+    "search": "ค้นหา",
+    "add": "เพิ่ม",
+    "edit": "แก้ไข",
+    "delete": "ลบ",
+    "cancel": "ยกเลิก",
+    "export": "ส่งออก",
+    "print": "พิมพ์"
   }
 }
