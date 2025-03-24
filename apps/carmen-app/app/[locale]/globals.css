@@ -114,10 +114,10 @@
     @apply p-2 bg-foreground text-background rounded-md;
   }
   .action-btn-container {
-    @apply flex flex-col md:flex-row gap-2 md:items-start justify-between mb-4;
+    @apply flex flex-col md:flex-row gap-2 md:items-start justify-between;
   }
   .filter-container {
-    @apply flex gap-4 mb-4 flex-col md:flex-row justify-between bg-background;
+    @apply flex gap-4 flex-col md:flex-row justify-between bg-background;
   }
   .btn-combobox {
     @apply w-full md:w-[140px] justify-between hover:bg-muted;

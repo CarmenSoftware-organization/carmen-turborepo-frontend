@@ -152,5 +152,14 @@
     "status": "Status",
     "selectStatus": "Select Status",
     "sort": "Sort"
+  },
+  "TableHeader": {
+    "name": "Name",
+    "email": "Email",
+    "businessUnit": "Business Unit",
+    "department": "Department",
+    "status": "Status",
+    "lastLogin": "Last Login",
+    "action": "Action"
   }
 }

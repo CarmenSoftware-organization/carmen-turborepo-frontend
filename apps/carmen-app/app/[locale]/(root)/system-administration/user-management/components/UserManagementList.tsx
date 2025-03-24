@@ -9,6 +9,7 @@ import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import UmList from "./UmList";
 
 const statusOptions = [
     { value: '', label: 'All' },
@@ -88,18 +89,12 @@ export default function UserManagementList() {
         </div>
     )
 
-    const content = (
-        <div>
-            <h1>User Management</h1>
-        </div>
-    )
-
     return (
         <DataDisplayTemplate
             title={title}
             actionButtons={actionButtons}
             filters={filters}
-            content={content}
+            content={<UmList />}
             data-id="user-management-list"
         />
     )

@@ -1,7 +1,7 @@
 import { LucideIcon } from "lucide-react";
-import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Link } from "@/lib/navigation";
 
 export interface MenuCardItem {
     name: string;

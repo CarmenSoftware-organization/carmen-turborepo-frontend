@@ -152,5 +152,14 @@
     "status": "สถานะ",
     "selectStatus": "เลือกสถานะ",
     "sort": "จัดเรียงลำดับ"
+  },
+  "TableHeader": {
+    "name": "ชื่อ",
+    "email": "อีเมล",
+    "businessUnit": "หน่วยงาน",
+    "department": "แผนก",
+    "status": "สถานะ",
+    "lastLogin": "ล่าสุด",
+    "action": "การดำเนินการ"
   }
 }
