@@ -197,32 +197,32 @@ export const moduleItems: ModuleItem[] = [
     },
     {
         labelKey: "Modules.reportingAndAnalytics",
-        href: "/reporting-analytics",
+        href: "/reporting-analytic",
         icon: BarChart2,
         children: [
             {
                 labelKey: "Modules.ReportingAndAnalytics.operationalReports",
-                href: "/reporting-analytics/operational-reports",
+                href: "/reporting-analytic/operational-reports",
             },
             {
                 labelKey: "Modules.ReportingAndAnalytics.financialReports",
-                href: "/reporting-analytics/financial-reports",
+                href: "/reporting-analytic/financial-reports",
             },
             {
                 labelKey: "Modules.ReportingAndAnalytics.inventoryReports",
-                href: "/reporting-analytics/inventory-reports",
+                href: "/reporting-analytic/inventory-reports",
             },
             {
                 labelKey: "Modules.ReportingAndAnalytics.vendorPerformance",
-                href: "/reporting-analytics/vendor-performance",
+                href: "/reporting-analytic/vendor-performance",
             },
             {
                 labelKey: "Modules.ReportingAndAnalytics.costAnalysis",
-                href: "/reporting-analytics/cost-analysis",
+                href: "/reporting-analytic/cost-analysis",
             },
             {
                 labelKey: "Modules.ReportingAndAnalytics.salesAnalysis",
-                href: "/reporting-analytics/sales-analysis",
+                href: "/reporting-analytic/sales-analysis",
             },
         ]
     },
