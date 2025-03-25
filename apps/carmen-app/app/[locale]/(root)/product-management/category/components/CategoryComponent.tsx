@@ -49,7 +49,7 @@ export default function CategoryComponent() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col space-y-4">
+        <div className="flex flex-col space-y-4">
             <div className="container flex items-center justify-end">
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={expandAll}>
@@ -63,21 +63,9 @@ export default function CategoryComponent() {
                     </Button>
                 </div>
             </div>
-            <main className="flex-1">
-                <div className="container">
-                    <div className="tree-view border rounded-md">
-                        <div className="tree-header flex items-center p-3 bg-muted/50 border-b">
-                            <div className="flex-1 font-semibold">Name</div>
-                            <div className="w-24 text-right font-semibold">Actions</div>
-                        </div>
-                        <div className="tree-body p-2">
-                            {mockCategoryData.map((node) => (
-                                <TreeNode key={node.id} node={node} expanded={expanded} toggleExpand={toggleExpand} />
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </main>
+            {mockCategoryData.map((node) => (
+                <TreeNode key={node.id} node={node} expanded={expanded} toggleExpand={toggleExpand} />
+            ))}
         </div>
     )
 }
