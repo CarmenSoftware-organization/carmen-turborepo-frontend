@@ -1,7 +1,7 @@
 import { formType } from "@/dtos/form.dto";
 import ProductForm from "../components/ProductForm";
-import { mockProducts } from "@/mock-data/product";
+import { mockProductDetails } from "@/mock-data/product";
 
 export default function ProductEdit() {
-    return <ProductForm mode={formType.EDIT} product={mockProducts[0]} />
+    return <ProductForm mode={formType.EDIT} product={mockProductDetails} />
 }

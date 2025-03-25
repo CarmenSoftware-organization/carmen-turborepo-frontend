@@ -163,7 +163,9 @@
     "action": "Action",
     "category": "Category",
     "sub_category": "Sub Category",
-    "item_group": "Item Group"
+    "item_group": "Item Group",
+    "code": "Code",
+    "description": "Description"
   },
   "Product": {
     "title": "Product"

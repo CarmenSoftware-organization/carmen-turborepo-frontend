@@ -1,4 +1,4 @@
-import { ProductDto } from "@/dtos/product.dto";
+import { ProductDetailDto, ProductDto } from "@/dtos/product.dto";
 
 export const mockProducts: ProductDto[] = [
     {
@@ -92,3 +92,38 @@ export const mockProducts: ProductDto[] = [
         status: true,
     },
 ];
+
+
+export const mockProductDetails: ProductDetailDto = {
+    id: "pdd-001",
+    code: "PRD001",
+    name: "Organic Green Tea",
+    status: true,
+    description: "Premium organic green tea with a rich aroma.",
+    local_description: "ชาเขียวออร์แกนิกคุณภาพสูง",
+    category: "Beverages",
+    sub_category: "Tea",
+    item_group: "Organic",
+    unit: "Box",
+    usage_ingredient: true,
+    attributes: [
+        { name: "Origin", value: "Japan" },
+        { name: "Type", value: "Loose Leaf" },
+    ],
+    price_info: [
+        { name: "Retail Price", value: "10.99" },
+        { name: "Wholesale Price", value: "8.99" },
+    ],
+    order_unit: [
+        { name: "Box", description: "A pack of 10 tea bags", conversion_factor: 10, default: true },
+        { name: "Carton", description: "A pack of 12 boxes", conversion_factor: 120, default: false },
+    ],
+    ingredients_unit: [
+        { unit: "Gram", description: "Measured in grams", conversion_factor: 1, default: true },
+    ],
+    stock_count: [
+        { unit: "Box", description: "Stock counted in boxes", conversion_factor: 10, default: true },
+        { unit: "Carton", description: "Stock counted in cartons", conversion_factor: 120, default: false },
+    ],
+};
+
