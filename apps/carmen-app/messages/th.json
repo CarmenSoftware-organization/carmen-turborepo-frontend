@@ -160,6 +160,12 @@
     "department": "แผนก",
     "status": "สถานะ",
     "lastLogin": "ล่าสุด",
-    "action": "การดำเนินการ"
+    "action": "การดำเนินการ",
+    "category": "หมวดสินค้า",
+    "sub_category": "หมวดสินค้าย่อย",
+    "item_group": "หมวดสินค้ากลุ่ม"
+  },
+  "Product": {
+    "title": "สินค้า"
   }
 }

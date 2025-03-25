@@ -55,7 +55,7 @@ export const moduleItems: ModuleItem[] = [
         children: [
             {
                 labelKey: "Modules.ProductManagement.product",
-                href: "/product-management",
+                href: "/product-management/product",
             },
             {
                 labelKey: "Modules.ProductManagement.category",

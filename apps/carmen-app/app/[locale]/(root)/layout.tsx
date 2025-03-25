@@ -12,7 +12,7 @@ export default function RootLayout({
         <ProtectedRoute>
             <div className="flex">
                 <SidebarComponent />
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1">
                     <Navbar />
                     <main className="p-4 space-y-4">
                         {children}

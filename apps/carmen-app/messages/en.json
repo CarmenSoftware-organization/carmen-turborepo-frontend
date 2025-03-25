@@ -160,6 +160,12 @@
     "department": "Department",
     "status": "Status",
     "lastLogin": "Last Login",
-    "action": "Action"
+    "action": "Action",
+    "category": "Category",
+    "sub_category": "Sub Category",
+    "item_group": "Item Group"
+  },
+  "Product": {
+    "title": "Product"
   }
 }

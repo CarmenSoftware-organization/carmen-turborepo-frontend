@@ -1,35 +1,38 @@
-'use client';
-
+"use client";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
+import { statusOptions } from "@/constants/options";
 import { useURL } from "@/hooks/useURL";
+import { mockProducts } from "@/mock-data/product";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import UmList from "./UmList";
-import { statusOptions } from "@/constants/options";
+import ProductList from "./ProductList";
 
 
-const sortFields = [
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'role', label: 'Role' },
-];
-
-export default function UserManagementList() {
-    const t = useTranslations('UserManagement');
+export function ProductComponent() {
     const tCommon = useTranslations('Common');
-    const title = t('title');
+    const tHeader = useTranslations('TableHeader');
+    const tProduct = useTranslations('Product');
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
 
+    const sortFields = [
+        { key: 'name', label: tHeader('name') },
+        { key: 'category', label: tHeader('category') },
+        { key: 'sub_category', label: tHeader('sub_category') },
+        { key: 'item_group', label: tHeader('item_group') },
+    ];
+
+    const title = tProduct('title');
+
     const actionButtons = (
-        <div className="action-btn-container" data-id="user-management-list-action-buttons">
+        <div className="action-btn-container" data-id="product-list-action-buttons">
             <Button size={'sm'}>
                 <Plus />
                 {tCommon('add')}
@@ -55,12 +58,12 @@ export default function UserManagementList() {
     );
 
     const filters = (
-        <div className="filter-container" data-id="user-management-list-filters">
+        <div className="filter-container" data-id="product-list-filters">
             <SearchInput
                 defaultValue={search}
                 onSearch={setSearch}
                 placeholder={tCommon('search')}
-                data-id="user-management-list-search-input"
+                data-id="product-list-search-input"
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
@@ -69,16 +72,20 @@ export default function UserManagementList() {
                     onChange={setStatus}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
-                    data-id="delivery-point-status-search-dropdown"
+                    data-id="product-list-status-search-dropdown"
                 />
                 <SortComponent
                     fieldConfigs={sortFields}
                     sort={sort}
                     setSort={setSort}
-                    data-id="delivery-point-sort-dropdown"
+                    data-id="product-list-sort-dropdown"
                 />
             </div>
         </div>
+    );
+
+    const content = (
+        <ProductList products={mockProducts} data-id="product-list-template" />
     )
 
     return (
@@ -86,8 +93,8 @@ export default function UserManagementList() {
             title={title}
             actionButtons={actionButtons}
             filters={filters}
-            content={<UmList />}
-            data-id="user-management-list"
+            content={content}
+            data-id="product-list-template"
         />
     )
 }

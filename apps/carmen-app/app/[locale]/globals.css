@@ -110,9 +110,6 @@
   h3 {
     @apply text-lg font-bold;
   }
-  pre {
-    @apply p-2 bg-foreground text-background rounded-md;
-  }
   .action-btn-container {
     @apply flex flex-col md:flex-row gap-2 md:items-start justify-between;
   }

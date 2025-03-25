@@ -3,7 +3,7 @@ import { CategoryNode } from "@/dtos/category";
 import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
 
 const getIconColor = (type: CategoryNode["type"]) => {
-    if (type === "category") return "text-primary";
+    if (type === "category") return "";
     if (type === "subcategory") return "text-blue-500";
     return "text-green-500";
 };
