@@ -14,11 +14,24 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
 interface UnitListProps {
     readonly units: UnitDto[];
+    readonly onEdit: (unit: UnitDto) => void;
+    readonly onDelete: (unit: UnitDto) => void;
 }
-export default function UnitList({ units }: UnitListProps) {
+
+export default function UnitList({ units, onEdit, onDelete }: UnitListProps) {
     const t = useTranslations('TableHeader');
+
+    const handleEdit = (unit: UnitDto) => {
+        onEdit(unit);
+    };
+
+    const handleDelete = (unit: UnitDto) => {
+        onDelete(unit);
+    };
+
     return (
         <div className="space-y-4">
             <div>
@@ -33,7 +46,7 @@ export default function UnitList({ units }: UnitListProps) {
                         </TableRow>
                     </TableHeader>
                 </Table>
-                <ScrollArea className="h-[600px]">
+                <ScrollArea className="h-[calc(100vh-300px)]">
                     <Table>
                         <TableBody>
                             {units.map((unit, index) => (
@@ -48,10 +61,19 @@ export default function UnitList({ units }: UnitListProps) {
                                     </TableCell>
                                     <TableCell className="flex justify-end">
                                         <div className="flex items-center gap-2">
-                                            <Button variant="ghost" size="icon">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => handleEdit(unit)}
+                                            >
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="icon" className="hover:text-destructive">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="hover:text-destructive"
+                                                onClick={() => handleDelete(unit)}
+                                            >
                                                 <Trash className="h-4 w-4" />
                                             </Button>
                                         </div>

@@ -11,13 +11,22 @@ import { statusOptions } from "@/constants/options";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { mockUnits } from "@/mock-data/unit";
 import UnitList from "./UnitList";
-
+import UnitDialog from "./UnitDialog";
+import DeleteConfirmDialog from "./DeleteConfirmDialog";
+import { UnitDto } from "@/dtos/unit.dto";
+import { generateNanoid } from "@/utils/nano-id";
+import { formType } from "@/dtos/form.dto";
 export default function UnitComponent() {
     const tCommon = useTranslations('Common');
-    const [search, setSearch] = useURL('search');
+    const tUnit = useTranslations('Unit');
+    const [search, setSearch] = useURL('se  arch');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>();
+    const [units, setUnits] = useState<UnitDto[]>(mockUnits);
 
     const sortFields = [
         { key: 'name', label: 'Name' },
@@ -25,11 +34,52 @@ export default function UnitComponent() {
         { key: 'status', label: 'Status' },
     ];
 
-    const title = "Unit";
+    const title = tUnit('title');
+
+    const handleAdd = () => {
+        setSelectedUnit(undefined);
+        setDialogOpen(true);
+    };
+
+    const handleEdit = (unit: UnitDto) => {
+        setSelectedUnit(unit);
+        setDialogOpen(true);
+    };
+
+    const handleDelete = (unit: UnitDto) => {
+        setSelectedUnit(unit);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleSubmit = (data: UnitDto) => {
+        if (selectedUnit) {
+            // Edit mode
+            setUnits(units.map(unit =>
+                unit.id === selectedUnit.id
+                    ? { ...data, id: unit.id }
+                    : unit
+            ));
+        } else {
+            // Add mode
+            const newUnit: UnitDto = {
+                ...data,
+                id: generateNanoid(),
+            };
+            setUnits([...units, newUnit]);
+        }
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedUnit) {
+            setUnits(units.filter(unit => unit.id !== selectedUnit.id));
+            setDeleteDialogOpen(false);
+            setSelectedUnit(undefined);
+        }
+    };
 
     const actionButtons = (
         <div className="action-btn-container" data-id="unit-list-action-buttons">
-            <Button size={'sm'}>
+            <Button size={'sm'} onClick={handleAdd}>
                 {tCommon('add')}
             </Button>
             <Button
@@ -79,14 +129,35 @@ export default function UnitComponent() {
         </div>
     );
 
-    const content = <UnitList units={mockUnits} data-id="unit-list-template" />
+    const content = (
+        <UnitList
+            units={units}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            data-id="unit-list-template"
+        />
+    );
 
     return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filters}
-            content={content}
-        />
+        <>
+            <DataDisplayTemplate
+                title={title}
+                actionButtons={actionButtons}
+                filters={filters}
+                content={content}
+            />
+            <UnitDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                mode={selectedUnit ? formType.EDIT : formType.ADD}
+                unit={selectedUnit}
+                onSubmit={handleSubmit}
+            />
+            <DeleteConfirmDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleConfirmDelete}
+            />
+        </>
     );
 }
