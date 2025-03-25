@@ -11,6 +11,7 @@ import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ProductList from "./ProductList";
+import { Link } from "@/lib/navigation";
 
 
 export function ProductComponent() {
@@ -33,9 +34,11 @@ export function ProductComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="product-list-action-buttons">
-            <Button size={'sm'}>
-                <Plus />
-                {tCommon('add')}
+            <Button size={'sm'} asChild>
+                <Link href="/product-management/product/new">
+                    <Plus />
+                    {tCommon('add')}
+                </Link>
             </Button>
             <Button
                 variant="outline"

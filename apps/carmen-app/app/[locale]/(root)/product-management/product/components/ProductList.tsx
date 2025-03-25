@@ -19,7 +19,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
+import { Link } from "@/lib/navigation";
 interface ProductListProps {
     readonly products: ProductDto[];
 }
@@ -65,13 +66,11 @@ export default function ProductList({ products }: ProductListProps) {
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center justify-end">
-                                        <Button variant="ghost" size={'sm'}>
-                                            <Eye />
+                                        <Button variant="ghost" size={'sm'} asChild>
+                                            <Link href={`/product-management/product/${product.id}`}>
+                                                <Eye />
+                                            </Link>
                                         </Button>
-                                        <Button variant="ghost" size={'sm'}>
-                                            <Pencil />
-                                        </Button>
-
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -107,11 +106,10 @@ export default function ProductList({ products }: ProductListProps) {
                                     <span className="text-sm font-medium">{product.item_group}</span>
                                 </div>
                                 <div className="flex items-center justify-end">
-                                    <Button variant="ghost" size={'sm'}>
-                                        <Eye />
-                                    </Button>
-                                    <Button variant="ghost" size={'sm'}>
-                                        <Pencil />
+                                    <Button variant="ghost" size={'sm'} asChild>
+                                        <Link href={`/product-management/product/${product.id}`}>
+                                            <Eye />
+                                        </Link>
                                     </Button>
                                 </div>
                             </div>
