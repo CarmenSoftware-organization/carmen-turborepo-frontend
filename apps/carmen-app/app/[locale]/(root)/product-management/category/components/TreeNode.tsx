@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
 import { CategoryNode } from "@/dtos/category";
+import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
 
 const getIconColor = (type: CategoryNode["type"]) => {
-    if (type === "itemGroup") return "text-green-500";
+    if (type === "category") return "text-primary";
     if (type === "subcategory") return "text-blue-500";
-    return "";
+    return "text-green-500";
 };
 
 interface TreeNodeProps {
@@ -13,9 +13,20 @@ interface TreeNodeProps {
     readonly level?: number;
     readonly expanded: Record<string, boolean>;
     readonly toggleExpand: (id: string) => void;
+    readonly onEdit: (node: CategoryNode) => void;
+    readonly onAdd: (parentNode: CategoryNode) => void;
+    readonly onDelete: (node: CategoryNode) => void;
 }
 
-export default function TreeNode({ node, level = 0, expanded, toggleExpand }: TreeNodeProps) {
+export default function TreeNode({
+    node,
+    level = 0,
+    expanded,
+    toggleExpand,
+    onEdit,
+    onAdd,
+    onDelete
+}: TreeNodeProps) {
     const isExpanded = expanded[node.id] ?? false;
     const hasChildren = node.children && node.children.length > 0;
 
@@ -23,6 +34,7 @@ export default function TreeNode({ node, level = 0, expanded, toggleExpand }: Tr
     let Icon = Layers
     if (node.type === "subcategory") Icon = FolderTree
     if (node.type === "itemGroup") Icon = Package
+
     return (
         <div className="tree-node">
             <div
@@ -31,7 +43,10 @@ export default function TreeNode({ node, level = 0, expanded, toggleExpand }: Tr
             >
                 {hasChildren ? (
                     <button onClick={() => toggleExpand(node.id)} className="mr-1 p-1 rounded-full hover:bg-muted">
-                        {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                        <ChevronRight
+                            className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-90" : ""
+                                }`}
+                        />
                     </button>
                 ) : (
                     <div className="w-6"></div>
@@ -48,14 +63,29 @@ export default function TreeNode({ node, level = 0, expanded, toggleExpand }: Tr
                 </div>
 
                 <div className="flex gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => onEdit(node)}
+                    >
                         <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 hover:text-destructive"
+                        onClick={() => onDelete(node)}
+                    >
                         <Trash2 className="h-4 w-4" />
                     </Button>
                     {node.type !== "itemGroup" && (
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => onAdd(node)}
+                        >
                             <Plus className="h-4 w-4" />
                         </Button>
                     )}
@@ -65,7 +95,16 @@ export default function TreeNode({ node, level = 0, expanded, toggleExpand }: Tr
             {hasChildren && isExpanded && (
                 <div className="children">
                     {node.children?.map((child) => (
-                        <TreeNode key={child.id} node={child} level={level + 1} expanded={expanded} toggleExpand={toggleExpand} />
+                        <TreeNode
+                            key={child.id}
+                            node={child}
+                            level={level + 1}
+                            expanded={expanded}
+                            toggleExpand={toggleExpand}
+                            onEdit={onEdit}
+                            onAdd={onAdd}
+                            onDelete={onDelete}
+                        />
                     ))}
                 </div>
             )}
