@@ -19,3 +19,13 @@ export const deliveryPointSchema = z.object({
 });
 
 export type DeliveryPointDto = z.infer<typeof deliveryPointSchema>;
+
+
+export const departmentSchema = z.object({
+    id: z.string().min(1).optional(),
+    name: z.string().min(1),
+    description: z.string().min(1),
+    is_active: z.boolean(),
+});
+
+export type DepartmentDto = z.infer<typeof departmentSchema>;
