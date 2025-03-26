@@ -1,7 +1,5 @@
+import DpComponent from "./components/DpComponent";
+
 export default function DeliveryPointPage() {
-    return (
-        <div>
-            <h1>Delivery Point</h1>
-        </div>
-    )
+    return <DpComponent />
 }

@@ -11,3 +11,11 @@ export const currencySchema = z.object({
 });
 
 export type CurrencyDto = z.infer<typeof currencySchema>;
+
+export const deliveryPointSchema = z.object({
+    id: z.string().min(1).optional(),
+    name: z.string().min(1),
+    is_active: z.boolean(),
+});
+
+export type DeliveryPointDto = z.infer<typeof deliveryPointSchema>;

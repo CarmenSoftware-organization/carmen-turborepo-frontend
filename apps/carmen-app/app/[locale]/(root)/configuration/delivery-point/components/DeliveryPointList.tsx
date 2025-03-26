@@ -1,6 +1,6 @@
 "use client";
 
-import { CurrencyDto } from "@/dtos/config.dto";
+import { DeliveryPointDto } from "@/dtos/config.dto";
 import {
     Table,
     TableBody,
@@ -15,23 +15,41 @@ import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { useState } from "react";
 
-interface CurrencyListProps {
+interface DeliveryPointListProps {
     readonly isLoading: boolean;
-    readonly currencies: CurrencyDto[];
-    readonly onEdit: (currency: CurrencyDto) => void;
-    readonly onDelete: (currency: CurrencyDto) => void;
+    readonly deliveryPoints: DeliveryPointDto[];
+    readonly onEdit: (deliveryPoint: DeliveryPointDto) => void;
+    readonly onDelete: (deliveryPoint: DeliveryPointDto) => void;
 }
 
-export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }: CurrencyListProps) {
+export default function DeliveryPointList({ isLoading, deliveryPoints, onEdit, onDelete }: DeliveryPointListProps) {
     const t = useTranslations('TableHeader');
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
 
-    const handleEdit = (currency: CurrencyDto) => {
-        onEdit(currency);
+    const handleEdit = (deliveryPoint: DeliveryPointDto) => {
+        onEdit(deliveryPoint);
     };
 
-    const handleDelete = (currency: CurrencyDto) => {
-        onDelete(currency);
+    const handleDelete = (deliveryPoint: DeliveryPointDto) => {
+        setSelectedDeliveryPoint(deliveryPoint);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (selectedDeliveryPoint) {
+            onDelete(selectedDeliveryPoint);
+            setDeleteDialogOpen(false);
+            setSelectedDeliveryPoint(undefined);
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteDialogOpen(false);
+        setSelectedDeliveryPoint(undefined);
     };
 
     return (
@@ -42,27 +60,21 @@ export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }
                         <TableRow>
                             <TableHead className="w-10 hidden md:table-cell">#</TableHead>
                             <TableHead className="w-10 md:w-24 hidden md:table-cell">{t('name')}</TableHead>
-                            <TableHead className="w-10 hidden md:table-cell">{t('code')}</TableHead>
-                            <TableHead className="w-10 md:w-24 md:text-center">{t('symbol')}</TableHead>
-                            <TableHead className="w-32 md:text-center">{t('exchangeRate')}</TableHead>
                             <TableHead className="w-10 md:w-24 md:text-center">{t('status')}</TableHead>
                             <TableHead className="text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     {isLoading ? (
-                        <TableBodySkeleton columns={7} />
+                        <TableBodySkeleton columns={4} />
                     ) : (
                         <TableBody>
-                            {currencies.map((currency: CurrencyDto, index: number) => (
-                                <TableRow key={currency.id}>
+                            {deliveryPoints.map((deliveryPoint: DeliveryPointDto, index: number) => (
+                                <TableRow key={deliveryPoint.id}>
                                     <TableCell className="w-10 hidden md:table-cell">{index + 1}</TableCell>
-                                    <TableCell className="w-10 md:w-24 hidden md:table-cell">{currency.name}</TableCell>
-                                    <TableCell className="w-10 hidden md:table-cell">{currency.code}</TableCell>
-                                    <TableCell className="w-10 md:w-24 md:text-center">{currency.symbol}</TableCell>
-                                    <TableCell className="w-32 md:text-center">{currency.exchange_rate}</TableCell>
+                                    <TableCell className="w-10 md:w-24 hidden md:table-cell">{deliveryPoint.name}</TableCell>
                                     <TableCell className="w-10 md:w-24 md:text-center">
-                                        <Badge variant={currency.is_active ? "default" : "destructive"}>
-                                            {currency.is_active ? 'Active' : 'Inactive'}
+                                        <Badge variant={deliveryPoint.is_active ? "default" : "destructive"}>
+                                            {deliveryPoint.is_active ? 'Active' : 'Inactive'}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right p-0 pr-2">
@@ -70,8 +82,8 @@ export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                onClick={() => handleEdit(currency)}
-                                                aria-label="Edit currency"
+                                                onClick={() => handleEdit(deliveryPoint)}
+                                                aria-label="Edit delivery point"
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
@@ -79,8 +91,8 @@ export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }
                                                 variant="ghost"
                                                 size="icon"
                                                 className="hover:text-destructive"
-                                                onClick={() => handleDelete(currency)}
-                                                aria-label="Delete currency"
+                                                onClick={() => handleDelete(deliveryPoint)}
+                                                aria-label="Delete delivery point"
                                             >
                                                 <Trash className="h-4 w-4" />
                                             </Button>
@@ -92,6 +104,11 @@ export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }
                     )}
                 </Table>
             </ScrollArea>
+            <DeleteConfirmDialog
+                open={deleteDialogOpen}
+                onOpenChange={handleCancelDelete}
+                onConfirm={handleConfirmDelete}
+            />
         </div>
     );
 }

@@ -1,8 +1,8 @@
-import { CurrencyDto } from "@/dtos/config.dto";
 import { backendApi } from "@/lib/backend-api";
+import { DeliveryPointDto } from "@/dtos/config.dto";
 
-export const getAllCurrencies = async (token: string) => {
-    const url = `${backendApi}/api/config/currencies`;
+export const getAllDeliveryPoints = async (token: string) => {
+    const url = `${backendApi}/api/config/delivery-point`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -13,37 +13,38 @@ export const getAllCurrencies = async (token: string) => {
     return data;
 }
 
-export const createCurrency = async (token: string, currency: CurrencyDto) => {
-    const url = `${backendApi}/api/config/currencies`;
+export const createDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointDto) => {
+    const url = `${backendApi}/api/config/delivery-point`;
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(currency),
+        body: JSON.stringify(deliveryPoint),
     });
     const data = await response.json();
     return data;
 }
 
-export const updateCurrency = async (token: string, currency: CurrencyDto) => {
-    const url = `${backendApi}/api/config/currencies/${currency.id}`;
+export const updateDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointDto) => {
+    const url = `${backendApi}/api/config/delivery-point/${deliveryPoint.id}`;
     const response = await fetch(url, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(currency),
+        body: JSON.stringify(deliveryPoint),
     });
     const data = await response.json();
+
+    console.log('data', data);
     return data;
 }
 
-
-export const deleteCurrency = async (token: string, currency: CurrencyDto) => {
-    const url = `${backendApi}/api/config/currencies/${currency.id}`;
+export const deleteDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointDto) => {
+    const url = `${backendApi}/api/config/delivery-point/${deliveryPoint.id}`;
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
@@ -52,6 +53,7 @@ export const deleteCurrency = async (token: string, currency: CurrencyDto) => {
         },
     });
     const data = await response.json();
+    console.log('data', data);
     return data;
 }
 

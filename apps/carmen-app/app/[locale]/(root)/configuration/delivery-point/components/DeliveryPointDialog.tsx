@@ -1,7 +1,7 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { CurrencyDto, currencySchema } from "@/dtos/config.dto";
+import { DeliveryPointDto, deliveryPointSchema } from "@/dtos/config.dto";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,53 +25,49 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-interface CurrencyDialogProps {
+interface DeliveryPointDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
     readonly mode: formType;
-    readonly currency?: CurrencyDto;
-    readonly onSubmit: (data: CurrencyDto) => void;
+    readonly deliveryPoint?: DeliveryPointDto;
+    readonly onSubmit: (data: DeliveryPointDto) => void;
     readonly isLoading?: boolean;
 }
 
-export default function CurrencyDialog({
+export default function DeliveryPointDialog({
     open,
     onOpenChange,
     mode,
-    currency,
+    deliveryPoint,
     onSubmit,
     isLoading = false
-}: CurrencyDialogProps) {
+}: DeliveryPointDialogProps) {
 
-    const defaultCurrencyValues = useMemo(() => ({
+    const defaultDeliveryPointValues = useMemo(() => ({
         name: '',
-        code: '',
-        symbol: '',
-        description: '',
-        exchange_rate: 0,
         is_active: true,
     }), []);
 
-    const form = useForm<CurrencyDto>({
-        resolver: zodResolver(currencySchema),
-        defaultValues: mode === formType.EDIT && currency
-            ? { ...currency }
-            : defaultCurrencyValues,
+    const form = useForm<DeliveryPointDto>({
+        resolver: zodResolver(deliveryPointSchema),
+        defaultValues: mode === formType.EDIT && deliveryPoint
+            ? { ...deliveryPoint }
+            : defaultDeliveryPointValues,
     });
 
     useEffect(() => {
-        if (mode === formType.EDIT && currency) {
-            form.reset({ ...currency });
+        if (mode === formType.EDIT && deliveryPoint) {
+            form.reset({ ...deliveryPoint });
         } else {
-            form.reset({ ...defaultCurrencyValues });
+            form.reset({ ...defaultDeliveryPointValues });
         }
-    }, [mode, currency, form, defaultCurrencyValues]);
+    }, [mode, deliveryPoint, form, defaultDeliveryPointValues]);
 
-    const handleSubmit = async (data: CurrencyDto) => {
+    const handleSubmit = async (data: DeliveryPointDto) => {
         try {
-            const validatedData = currencySchema.parse(data);
+            const validatedData = deliveryPointSchema.parse(data);
             onSubmit(validatedData)
-            form.reset(defaultCurrencyValues);
+            form.reset(defaultDeliveryPointValues);
             onOpenChange(false);
         } catch (error) {
             console.error('Validation Error:', error);
@@ -83,7 +79,7 @@ export default function CurrencyDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? "Add Currency" : "Edit Currency"}
+                        {mode === formType.ADD ? "Add Delivery Point" : "Edit Delivery Point"}
                     </DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
@@ -96,62 +92,6 @@ export default function CurrencyDialog({
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="code"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Code</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="symbol"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Symbol</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="exchange_rate"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Exchange Rate</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            {...field}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -193,5 +133,4 @@ export default function CurrencyDialog({
             </DialogContent>
         </Dialog>
     )
-}
-
+} 

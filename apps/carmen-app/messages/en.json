@@ -182,5 +182,10 @@
     "currency_symbol": "Symbol",
     "currency_status": "Status",
     "currency_exchange_rate": "Exchange Rate"
+  },
+  "DeliveryPoint": {
+    "title": "Delivery Point",
+    "delivery_point_name": "Delivery Point Name",
+    "delivery_point_status": "Status"
   }
 }

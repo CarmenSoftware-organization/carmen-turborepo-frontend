@@ -9,7 +9,7 @@ import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { CurrencyDto } from "@/dtos/currency.dto";
+import { CurrencyDto } from "@/dtos/config.dto";
 import { useAuth } from "@/context/AuthContext";
 import { createCurrency, getAllCurrencies, updateCurrency } from "@/services/currency.service";
 import CurrencyList from "./CurrencyList";
