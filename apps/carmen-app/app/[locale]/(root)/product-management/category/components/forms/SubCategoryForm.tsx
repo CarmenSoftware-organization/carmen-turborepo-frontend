@@ -29,6 +29,24 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
+                    name="category_id"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Category</FormLabel>
+                            <FormControl>
+                                <Input
+                                    value={parentNode?.name ?? ""}
+                                    disabled
+                                    className="bg-muted"
+                                />
+                            </FormControl>
+                            <input type="hidden" {...field} />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
@@ -53,24 +71,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="category_id"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Parent Category</FormLabel>
-                            <FormControl>
-                                <Input
-                                    value={parentNode?.name ?? ""}
-                                    disabled
-                                    className="bg-muted"
-                                />
-                            </FormControl>
-                            <input type="hidden" {...field} />
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
                 <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={onCancel}>
                         Cancel

@@ -1,24 +1,23 @@
-import React from 'react';
-import { TableBody } from '@/components/ui/table';
-import { TableRowSkeleton } from './TableRowSkeleton';
+import { Skeleton } from "../ui/skeleton";
+import { TableBody, TableCell, TableRow } from "../ui/table";
+
 interface TableBodySkeletonProps {
-    rows?: number;
     columns: number;
-    withAction?: boolean;
 }
 
-export const TableBodySkeleton: React.FC<TableBodySkeletonProps> = ({
-    rows = 10,
-    columns,
-    withAction
-}) => (
+export const TableBodySkeleton = ({ columns }: TableBodySkeletonProps) => (
     <TableBody>
-        {Array(rows).fill(0).map((_, index) => (
-            <TableRowSkeleton
-                key={index}
-                columns={columns}
-                withAction={withAction}
-            />
+        {Array(10).fill(0).map((_, index) => (
+            <TableRow key={index}>
+                {Array(columns).fill(0).map((_, index) => (
+                    <TableCell key={index}>
+                        <Skeleton className="w-full h-10" />
+                    </TableCell>
+                ))}
+            </TableRow>
         ))}
+        <TableCell className="text-right">
+            <Skeleton className="h-8 w-8 ml-auto" />
+        </TableCell>
     </TableBody>
 );

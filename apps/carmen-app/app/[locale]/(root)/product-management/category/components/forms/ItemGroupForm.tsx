@@ -29,6 +29,24 @@ export function ItemGroupForm({ mode, selectedNode, parentNode, onSubmit, onCanc
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
+                    name="sub_category_id"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Sub Category</FormLabel>
+                            <FormControl>
+                                <Input
+                                    value={parentNode?.name ?? ""}
+                                    disabled
+                                    className="bg-muted"
+                                />
+                            </FormControl>
+                            <input type="hidden" {...field} />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
                     name="name"
                     render={({ field }) => (
                         <FormItem>
@@ -53,24 +71,7 @@ export function ItemGroupForm({ mode, selectedNode, parentNode, onSubmit, onCanc
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="sub_category_id"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Parent Sub Category</FormLabel>
-                            <FormControl>
-                                <Input
-                                    value={parentNode?.name ?? ""}
-                                    disabled
-                                    className="bg-muted"
-                                />
-                            </FormControl>
-                            <input type="hidden" {...field} />
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+
                 <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={onCancel}>
                         Cancel

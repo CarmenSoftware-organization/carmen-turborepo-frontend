@@ -16,7 +16,7 @@ export const TableRowSkeleton: React.FC<TableRowSkeletonProps> = ({
             <Skeleton className="h-4 w-8" />
         </TableCell>
         {Array(columns).fill(0).map((_, index) => (
-            <TableCell key={index}>
+            <TableCell key={`skeleton-cell-${index}-${Math.random().toString(36).substr(2, 5)}`}>
                 <Skeleton className="h-4 w-full" />
             </TableCell>
         ))}

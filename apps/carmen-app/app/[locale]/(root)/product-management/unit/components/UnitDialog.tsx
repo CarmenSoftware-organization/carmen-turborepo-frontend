@@ -25,11 +25,11 @@ import { useEffect, useMemo } from "react";
 import { formType } from "@/dtos/form.dto";
 
 interface UnitDialogProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    mode: formType;
-    unit?: UnitDto;
-    onSubmit: (data: UnitDto) => void;
+    readonly open: boolean;
+    readonly onOpenChange: (open: boolean) => void;
+    readonly mode: formType;
+    readonly unit?: UnitDto;
+    readonly onSubmit: (data: UnitDto) => void;
 }
 
 export default function UnitDialog({

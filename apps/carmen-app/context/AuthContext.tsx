@@ -28,6 +28,8 @@ interface AuthContextType {
     user: User | null;
     setSession: (accessToken: string, refreshToken: string) => void;
     logout: () => void;
+    token: string;
+    getServerSideToken: () => string;
 }
 
 // Create context with a default value
@@ -37,7 +39,17 @@ export const AuthContext = createContext<AuthContextType>({
     user: null,
     setSession: () => { },
     logout: () => { },
+    token: '',
+    getServerSideToken: () => '',
 });
+
+// Helper function to get token on the client side
+export function getServerSideToken(): string {
+    if (typeof window !== 'undefined') {
+        return sessionStorage.getItem('access_token') ?? '';
+    }
+    return '';
+}
 
 // Provider component
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
@@ -57,18 +69,22 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
                 const isSignInPage = pathname === signInPage;
 
                 if (isSignInPage) {
-                    sessionStorage.removeItem('access_token');
-                    sessionStorage.removeItem('refresh_token');
-                    localStorage.removeItem('user');
+                    if (typeof window !== 'undefined') {
+                        sessionStorage.removeItem('access_token');
+                        sessionStorage.removeItem('refresh_token');
+                        localStorage.removeItem('user');
+                    }
                     setUser(null);
                     setIsLoading(false);
                     return;
                 }
 
                 // Load user from localStorage if available
-                const storedUser = localStorage.getItem('user');
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
+                if (typeof window !== 'undefined') {
+                    const storedUser = localStorage.getItem('user');
+                    if (storedUser) {
+                        setUser(JSON.parse(storedUser));
+                    }
                 }
 
             } catch (error) {
@@ -83,7 +99,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     const setSession = useCallback(async (accessToken: string, refreshToken: string) => {
         if (accessToken) {
-            sessionStorage.setItem('access_token', accessToken);
+            if (typeof window !== 'undefined') {
+                sessionStorage.setItem('access_token', accessToken);
+            }
 
             const url = `${backendApi}/api/auth/profile`
             const options = {
@@ -96,11 +114,13 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             const data = await response.json();
 
             // Store user data in localStorage
-            localStorage.setItem('user', JSON.stringify(data));
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('user', JSON.stringify(data));
+            }
             setUser(data);
         }
 
-        if (refreshToken) {
+        if (refreshToken && typeof window !== 'undefined') {
             sessionStorage.setItem('refresh_token', refreshToken);
         }
     }, []);
@@ -109,15 +129,24 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         const locale = pathname?.split('/')[1] || 'en';
 
         // Clear tokens
-        sessionStorage.removeItem('access_token');
-        sessionStorage.removeItem('refresh_token');
-        // Also clear user data from localStorage
-        localStorage.removeItem('user');
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('access_token');
+            sessionStorage.removeItem('refresh_token');
+            // Also clear user data from localStorage
+            localStorage.removeItem('user');
+        }
         setUser(null);
-
         // Redirect to sign-in with the current locale
         router.push(`/${locale}/sign-in`);
     }, [router, pathname]);
+
+    // Get token for server actions
+    const getServerSideToken = useCallback(() => {
+        if (typeof window !== 'undefined') {
+            return sessionStorage.getItem('access_token') ?? '';
+        }
+        return '';
+    }, []);
 
     // Check if user is authenticated by looking for tokens
     const hasToken = typeof window !== 'undefined' && !!sessionStorage.getItem('access_token');
@@ -128,8 +157,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         isLoading,
         user,
         setSession,
-        logout
-    }), [hasToken, isLoading, user, setSession, logout]);
+        logout,
+        token: typeof window !== 'undefined' ? (sessionStorage.getItem('access_token') ?? '') : '',
+        getServerSideToken,
+    }), [hasToken, isLoading, user, setSession, logout, getServerSideToken]);
 
     return (
         <AuthContext.Provider value={value}>

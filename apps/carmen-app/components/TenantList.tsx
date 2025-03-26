@@ -1,3 +1,4 @@
+'use client';
 import {
     Select,
     SelectContent,
@@ -6,18 +7,20 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useAuth } from "@/context/AuthContext";
 
 export default function TenantList() {
+    const { user } = useAuth();
     return (
-        <Select defaultValue="tn-01">
+        <Select defaultValue={user?.business_unit[0].id}>
             <SelectTrigger className="w-40 bg-muted border-none focus:ring-ring text-xs h-8">
                 <SelectValue placeholder="Select a tenant" />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    <SelectItem value="tn-01">Tenant 1</SelectItem>
-                    <SelectItem value="tn-02">Tenant 2</SelectItem>
-                    <SelectItem value="tn-03">Tenant 3</SelectItem>
+                    {user?.business_unit.map((bu) => (
+                        <SelectItem key={bu.id} value={bu.id} >{bu.name}</SelectItem>
+                    ))}
                 </SelectGroup>
             </SelectContent>
         </Select>

@@ -165,12 +165,22 @@
     "sub_category": "Sub Category",
     "item_group": "Item Group",
     "code": "Code",
-    "description": "Description"
+    "description": "Description",
+    "symbol": "Symbol",
+    "exchangeRate": "Rate"
   },
   "Product": {
     "title": "Product"
   },
   "Unit": {
     "title": "Unit"
+  },
+  "Currency": {
+    "title": "Currency",
+    "currency_code": "Code",
+    "currency_name": "Currency Name",
+    "currency_symbol": "Symbol",
+    "currency_status": "Status",
+    "currency_exchange_rate": "Exchange Rate"
   }
 }

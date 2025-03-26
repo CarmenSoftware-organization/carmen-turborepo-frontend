@@ -163,9 +163,24 @@
     "action": "การดำเนินการ",
     "category": "หมวดสินค้า",
     "sub_category": "หมวดสินค้าย่อย",
-    "item_group": "หมวดสินค้ากลุ่ม"
+    "item_group": "หมวดสินค้ากลุ่ม",
+    "code": "รหัส",
+    "description": "คำอธิบาย",
+    "symbol": "สัญลักษณ์",
+    "exchangeRate": "อัตราแลกเปลี่ยนเงิน"
   },
   "Product": {
     "title": "สินค้า"
+  },
+  "Unit": {
+    "title": "หน่วยนับ"
+  },
+  "Currency": {
+    "title": "สกุลเงิน",
+    "currency_code": "รหัสสกุลเงิน",
+    "currency_name": "ชื่อสกุลเงิน",
+    "currency_symbol": "สัญลักษณ์สกุลเงิน",
+    "currency_status": "สถานะสกุลเงิน",
+    "currency_exchange_rate": "อัตราแลกเปลี่ยนเงิน"
   }
 }
