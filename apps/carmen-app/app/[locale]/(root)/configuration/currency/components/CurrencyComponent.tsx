@@ -11,7 +11,7 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { CurrencyDto } from "@/dtos/currency.dto";
 import { useAuth } from "@/context/AuthContext";
-import { createCurrency, getAllCurrencies } from "@/services/currency.service";
+import { createCurrency, getAllCurrencies, updateCurrency } from "@/services/currency.service";
 import CurrencyList from "./CurrencyList";
 import { formType } from "@/dtos/form.dto";
 import CurrencyDialog from "./CurrencyDialog";
@@ -32,8 +32,6 @@ export default function CurrencyComponent() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
-
-    console.log('currencies', currencies);
 
     useEffect(() => {
         const fetchCurrencies = async () => {
@@ -82,15 +80,18 @@ export default function CurrencyComponent() {
             if (selectedCurrency) {
                 // Edit mode
                 const updatedCurrency = { ...data, id: selectedCurrency.id };
-                console.log('Updating currency:', updatedCurrency);
-
-                setCurrencies(prevCurrencies =>
-                    prevCurrencies.map(currency =>
-                        currency.id === selectedCurrency.id
-                            ? updatedCurrency
-                            : currency
-                    )
-                );
+                const result = await updateCurrency(token, updatedCurrency);
+                if (result) {
+                    setCurrencies(prevCurrencies =>
+                        prevCurrencies.map(currency =>
+                            currency.id === selectedCurrency.id
+                                ? updatedCurrency
+                                : currency
+                        )
+                    );
+                } else {
+                    console.error('Error updating currency:', result);
+                }
             } else {
                 // Add mode
                 const result = await createCurrency(token, data);

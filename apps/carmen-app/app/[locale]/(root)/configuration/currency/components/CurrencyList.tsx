@@ -38,8 +38,8 @@ export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }
         <div className="space-y-4">
             <ScrollArea className="h-[calc(100vh-300px)]">
                 <Table>
-                    <TableHeader className="bg-muted/50 sticky top-0">
-                        <TableRow className="hover:bg-muted/50">
+                    <TableHeader className="sticky top-0">
+                        <TableRow>
                             <TableHead className="w-10 hidden md:table-cell">#</TableHead>
                             <TableHead className="w-10 md:w-24 hidden md:table-cell">{t('name')}</TableHead>
                             <TableHead className="w-10 hidden md:table-cell">{t('code')}</TableHead>
@@ -54,7 +54,7 @@ export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }
                     ) : (
                         <TableBody>
                             {currencies.map((currency: CurrencyDto, index: number) => (
-                                <TableRow key={currency.id} className="hover:bg-muted/50 bg-card">
+                                <TableRow key={currency.id}>
                                     <TableCell className="w-10 hidden md:table-cell">{index + 1}</TableCell>
                                     <TableCell className="w-10 md:w-24 hidden md:table-cell">{currency.name}</TableCell>
                                     <TableCell className="w-10 hidden md:table-cell">{currency.code}</TableCell>
