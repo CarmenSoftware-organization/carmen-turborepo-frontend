@@ -14,14 +14,16 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 
 interface UnitListProps {
     readonly units: UnitDto[];
     readonly onEdit: (unit: UnitDto) => void;
     readonly onDelete: (unit: UnitDto) => void;
+    readonly isLoading: boolean;
 }
 
-export default function UnitList({ units, onEdit, onDelete }: UnitListProps) {
+export default function UnitList({ units, onEdit, onDelete, isLoading }: UnitListProps) {
     const t = useTranslations('TableHeader');
 
     const handleEdit = (unit: UnitDto) => {
@@ -34,34 +36,35 @@ export default function UnitList({ units, onEdit, onDelete }: UnitListProps) {
 
     return (
         <div className="space-y-4">
-            <div>
+            <ScrollArea className="h-[calc(100vh-300px)]">
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="sticky top-0">
                         <TableRow>
                             <TableHead className="w-10 hidden md:table-cell">#</TableHead>
                             <TableHead className="w-10 md:w-24">{t('name')}</TableHead>
-                            <TableHead className="w-10 md:w-24">{t('code')}</TableHead>
+                            <TableHead className="w-10 md:w-24">{t('description')}</TableHead>
                             <TableHead className="w-10 md:w-24">{t('status')}</TableHead>
                             <TableHead className="flex justify-end items-center">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
-                </Table>
-                <ScrollArea className="h-[calc(100vh-300px)]">
-                    <Table>
+                    {isLoading ? (
+                        <TableBodySkeleton columns={4} />
+                    ) : (
                         <TableBody>
                             {units.map((unit, index) => (
-                                <TableRow key={unit.id}>
-                                    <TableCell className="w-10 hidden md:table-cell">{index + 1}</TableCell>
-                                    <TableCell className="w-10 md:w-24">{unit.name}</TableCell>
-                                    <TableCell className="w-10 md:w-24">{unit.code}</TableCell>
-                                    <TableCell className="w-10 md:w-24">
-                                        <Badge variant={unit.status ? "default" : "destructive"}>
-                                            {unit.status ? 'Active' : 'Inactive'}
+                                <TableRow key={`unit-row-${unit.id}`}>
+                                    <TableCell key={`unit-index-${unit.id}`} className="w-10 hidden md:table-cell">{index + 1}</TableCell>
+                                    <TableCell key={`unit-name-${unit.id}`} className="w-10 md:w-24">{unit.name}</TableCell>
+                                    <TableCell key={`unit-description-${unit.id}`} className="w-10 md:w-24">{unit.description}</TableCell>
+                                    <TableCell key={`unit-status-${unit.id}`} className="w-10 md:w-24">
+                                        <Badge variant={unit.is_active ? "default" : "destructive"}>
+                                            {unit.is_active ? 'Active' : 'Inactive'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="flex justify-end">
+                                    <TableCell key={`unit-actions-${unit.id}`} className="flex justify-end">
                                         <div className="flex items-center gap-2">
                                             <Button
+                                                key={`unit-edit-${unit.id}`}
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => handleEdit(unit)}
@@ -69,6 +72,7 @@ export default function UnitList({ units, onEdit, onDelete }: UnitListProps) {
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
                                             <Button
+                                                key={`unit-delete-${unit.id}`}
                                                 variant="ghost"
                                                 size="icon"
                                                 className="hover:text-destructive"
@@ -81,9 +85,9 @@ export default function UnitList({ units, onEdit, onDelete }: UnitListProps) {
                                 </TableRow>
                             ))}
                         </TableBody>
-                    </Table>
-                </ScrollArea>
-            </div>
+                    )}
+                </Table>
+            </ScrollArea>
         </div>
     );
 }

@@ -1,6 +1,6 @@
 "use client";
 import { useURL } from "@/hooks/useURL";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileDown, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,14 +9,17 @@ import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { statusOptions } from "@/constants/options";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { mockUnits } from "@/mock-data/unit";
 import UnitList from "./UnitList";
 import UnitDialog from "./UnitDialog";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import { UnitDto } from "@/dtos/unit.dto";
-import { generateNanoid } from "@/utils/nano-id";
 import { formType } from "@/dtos/form.dto";
+import { createUnit, deleteUnit, getAllUnits, updateUnit } from "@/services/unit.service";
+import { useAuth } from "@/context/AuthContext";
+import { z } from "zod";
+
 export default function UnitComponent() {
+    const { token } = useAuth();
     const tCommon = useTranslations('Common');
     const tUnit = useTranslations('Unit');
     const [search, setSearch] = useURL('se  arch');
@@ -26,7 +29,28 @@ export default function UnitComponent() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>();
-    const [units, setUnits] = useState<UnitDto[]>(mockUnits);
+    const [units, setUnits] = useState<UnitDto[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    console.log('units', units);
+
+
+    useEffect(() => {
+        const fetchUnits = async () => {
+            if (!token) return;
+            try {
+                setIsLoading(true);
+                const data = await getAllUnits(token);
+                setUnits(data);
+            } catch (error) {
+                console.error('Error fetching units:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchUnits();
+    }, [token]);
+
 
     const sortFields = [
         { key: 'name', label: 'Name' },
@@ -51,30 +75,64 @@ export default function UnitComponent() {
         setDeleteDialogOpen(true);
     };
 
-    const handleSubmit = (data: UnitDto) => {
-        if (selectedUnit) {
-            // Edit mode
-            setUnits(units.map(unit =>
-                unit.id === selectedUnit.id
-                    ? { ...data, id: unit.id }
-                    : unit
-            ));
-        } else {
-            // Add mode
-            const newUnit: UnitDto = {
-                ...data,
-                id: generateNanoid(),
-            };
-            setUnits([...units, newUnit]);
+    const handleSubmit = async (data: UnitDto) => {
+        try {
+            if (selectedUnit) {
+                const updatedUnit = { ...data, id: selectedUnit.id };
+                const result = await updateUnit(token, updatedUnit);
+                if (result) {
+                    setUnits(units.map(unit =>
+                        unit.id === selectedUnit.id
+                            ? { ...data, id: unit.id }
+                            : unit
+                    ));
+                } else {
+                    console.error('Error updating unit:', result);
+                }
+            } else {
+                const result = await createUnit(token, data);
+                if (result) {
+                    const newUnit: UnitDto = {
+                        ...data,
+                        id: result.id,
+                    };
+                    setUnits([...units, newUnit]);
+                } else {
+                    console.error('Error creating unit: No ID returned');
+                }
+            }
+            setDialogOpen(false);
+            setSelectedUnit(undefined);
+        } catch (error) {
+            console.error('Error submitting unit:', error);
+            if (error instanceof z.ZodError) {
+                console.error('Zod Validation Errors:', error.errors);
+            }
         }
     };
 
-    const handleConfirmDelete = () => {
-        if (selectedUnit) {
-            setUnits(units.filter(unit => unit.id !== selectedUnit.id));
+    const handleConfirmDelete = async () => {
+        if (!selectedUnit) return;
+        try {
+            setIsLoading(true);
+            const result = await deleteUnit(token, selectedUnit);
+            if (result) {
+                setUnits(prevUnits => prevUnits.filter(unit => unit.id !== selectedUnit.id));
+            } else {
+                console.error('Error deleting unit:', result);
+            }
+        } catch (error) {
+            console.error('Error deleting unit:', error);
+        } finally {
+            setIsLoading(false);
             setDeleteDialogOpen(false);
             setSelectedUnit(undefined);
         }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteDialogOpen(false);
+        setSelectedUnit(undefined);
     };
 
     const actionButtons = (
@@ -134,6 +192,7 @@ export default function UnitComponent() {
             units={units}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            isLoading={isLoading}
             data-id="unit-list-template"
         />
     );
@@ -155,7 +214,7 @@ export default function UnitComponent() {
             />
             <DeleteConfirmDialog
                 open={deleteDialogOpen}
-                onOpenChange={setDeleteDialogOpen}
+                onOpenChange={handleCancelDelete}
                 onConfirm={handleConfirmDelete}
             />
         </>

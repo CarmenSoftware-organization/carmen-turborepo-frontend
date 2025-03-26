@@ -64,22 +64,9 @@ export default function DpComponent() {
         setDialogOpen(true);
     };
 
-    const handleDelete = async (deliveryPoint: DeliveryPointDto) => {
-        try {
-            setIsLoading(true);
-            const result = await deleteDeliveryPoint(token, deliveryPoint);
-            if (result) {
-                setDeliveryPoints(prevDeliveryPoints =>
-                    prevDeliveryPoints.filter(dp => dp.id !== deliveryPoint.id)
-                );
-            } else {
-                console.error('Error deleting delivery point:', result);
-            }
-        } catch (error) {
-            console.error('Error deleting delivery point:', error);
-        } finally {
-            setIsLoading(false);
-        }
+    const handleDelete = (deliveryPoint: DeliveryPointDto) => {
+        setSelectedDeliveryPoint(deliveryPoint);
+        setDeleteDialogOpen(true);
     };
 
     const handleSubmit = async (data: DeliveryPointDto) => {
@@ -119,6 +106,7 @@ export default function DpComponent() {
     const handleConfirmDelete = async () => {
         if (!selectedDeliveryPoint) return;
         try {
+            setIsLoading(true);
             const result = await deleteDeliveryPoint(token, selectedDeliveryPoint);
             if (result) {
                 setDeliveryPoints(prevDeliveryPoints =>
@@ -129,6 +117,10 @@ export default function DpComponent() {
             }
         } catch (error) {
             console.error('Error deleting delivery point:', error);
+        } finally {
+            setIsLoading(false);
+            setDeleteDialogOpen(false);
+            setSelectedDeliveryPoint(undefined);
         }
     };
 

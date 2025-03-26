@@ -9,6 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import {
     Form,
@@ -43,7 +44,10 @@ export default function UnitDialog({
         id: '',
         name: '',
         code: '',
-        status: true,
+        description: '',
+        is_active: true,
+        created_at: '',
+        updated_at: '',
     }), []);
 
     const form = useForm<UnitDto>({
@@ -57,7 +61,7 @@ export default function UnitDialog({
         if (mode === formType.EDIT && unit) {
             form.reset({ ...unit });
         } else {
-            form.reset({ ...defaultUnitValues });
+            form.reset(defaultUnitValues);
         }
     }, [mode, unit, form, defaultUnitValues]);
 
@@ -73,6 +77,12 @@ export default function UnitDialog({
                     <DialogTitle>
                         {mode === formType.ADD ? "Add Unit" : "Edit Unit"}
                     </DialogTitle>
+                    <DialogDescription>
+                        {mode === formType.ADD
+                            ? "Fill in the details to create a new unit."
+                            : "Update the unit information below."
+                        }
+                    </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -91,10 +101,10 @@ export default function UnitDialog({
                         />
                         <FormField
                             control={form.control}
-                            name="code"
+                            name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Code</FormLabel>
+                                    <FormLabel>Description</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -104,7 +114,7 @@ export default function UnitDialog({
                         />
                         <FormField
                             control={form.control}
-                            name="status"
+                            name="is_active"
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
