@@ -11,12 +11,15 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { CurrencyDto } from "@/dtos/currency.dto";
 import { useAuth } from "@/context/AuthContext";
-import { getAllCurrencies } from "@/services/currency.service";
+import { createCurrency, getAllCurrencies } from "@/services/currency.service";
 import CurrencyList from "./CurrencyList";
+import { formType } from "@/dtos/form.dto";
+import CurrencyDialog from "./CurrencyDialog";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { z } from "zod";
 
 export default function CurrencyComponent() {
     const { token } = useAuth();
-
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
@@ -25,6 +28,12 @@ export default function CurrencyComponent() {
     const [sort, setSort] = useURL('sort');
     const [currencies, setCurrencies] = useState<CurrencyDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
+
+    console.log('currencies', currencies);
 
     useEffect(() => {
         const fetchCurrencies = async () => {
@@ -51,16 +60,73 @@ export default function CurrencyComponent() {
     ];
 
     const handleAdd = () => {
-        // Implementation for adding a currency will be added later
-        alert('Add currency functionality will be implemented later');
+        setSelectedCurrency(undefined);
+        setDialogOpen(true);
     };
 
     const handleEdit = (currency: CurrencyDto) => {
-        console.log(currency);
+        setSelectedCurrency(currency);
+        setDialogOpen(true);
     };
 
     const handleDelete = (currency: CurrencyDto) => {
-        console.log(currency);
+        setSelectedCurrency(currency);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleSubmit = async (data: CurrencyDto) => {
+        try {
+            setIsSubmitting(true);
+            console.log('Submitting data:', data);
+
+            if (selectedCurrency) {
+                // Edit mode
+                const updatedCurrency = { ...data, id: selectedCurrency.id };
+                console.log('Updating currency:', updatedCurrency);
+
+                setCurrencies(prevCurrencies =>
+                    prevCurrencies.map(currency =>
+                        currency.id === selectedCurrency.id
+                            ? updatedCurrency
+                            : currency
+                    )
+                );
+            } else {
+                // Add mode
+                const result = await createCurrency(token, data);
+                const newCurrency: CurrencyDto = {
+                    ...data,
+                    id: result.id,
+                };
+                setCurrencies(prevCurrencies => [...prevCurrencies, newCurrency]);
+            }
+            setDialogOpen(false);
+            setSelectedCurrency(undefined);
+        } catch (error) {
+            console.error('Error handling currency submission:', error);
+            if (error instanceof z.ZodError) {
+                console.error('Zod Validation Errors:', error.errors);
+            }
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        if (selectedCurrency) {
+            try {
+                setIsSubmitting(true);
+                setCurrencies(prevCurrencies =>
+                    prevCurrencies.filter(currency => currency.id !== selectedCurrency.id)
+                );
+            } catch (error) {
+                console.error('Error deleting currency:', error);
+            } finally {
+                setIsSubmitting(false);
+                setDeleteDialogOpen(false);
+                setSelectedCurrency(undefined);
+            }
+        }
     };
 
     const title = tCurrency('title');
@@ -131,6 +197,19 @@ export default function CurrencyComponent() {
                 actionButtons={actionButtons}
                 filters={filters}
                 content={content}
+            />
+            <CurrencyDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+                mode={selectedCurrency ? formType.EDIT : formType.ADD}
+                currency={selectedCurrency}
+                onSubmit={handleSubmit}
+                isLoading={isSubmitting}
+            />
+            <DeleteConfirmDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleConfirmDelete}
             />
         </div>
     );

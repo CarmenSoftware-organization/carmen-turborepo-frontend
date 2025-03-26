@@ -16,8 +16,10 @@ export const TableBodySkeleton = ({ columns }: TableBodySkeletonProps) => (
                 ))}
             </TableRow>
         ))}
-        <TableCell className="text-right">
-            <Skeleton className="h-8 w-8 ml-auto" />
-        </TableCell>
+        <TableRow>
+            <TableCell className="text-right">
+                <Skeleton className="h-8 w-8 ml-auto" />
+            </TableCell>
+        </TableRow>
     </TableBody>
 );
