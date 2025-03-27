@@ -32,7 +32,7 @@ const PaginationComponent = ({
 
 	return (
 		<Pagination
-			className="flex justify-end mt-4 items-center"
+			className="flex justify-end items-center"
 			data-id="pagination-container"
 		>
 			<PaginationContent data-id="pagination-content">

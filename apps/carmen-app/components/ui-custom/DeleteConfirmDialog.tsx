@@ -15,12 +15,16 @@ interface DeleteConfirmDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
     readonly onConfirm: () => void;
+    readonly title?: string;
+    readonly description?: string;
 }
 
 export default function DeleteConfirmDialog({
     open,
     onOpenChange,
     onConfirm,
+    title = "Confirm Delete",
+    description = "Are you sure you want to delete this item?"
 }: DeleteConfirmDialogProps) {
 
     return (
@@ -28,10 +32,10 @@ export default function DeleteConfirmDialog({
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Confirm Delete
+                        {title}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to delete this item?
+                        {description}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

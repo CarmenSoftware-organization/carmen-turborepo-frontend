@@ -79,3 +79,22 @@ export const deleteCurrency = async (token: string, currency: CurrencyDto) => {
     return data;
 }
 
+export const toggleCurrencyStatus = async (token: string, tenantId: string, currencyId: string, isActive: boolean) => {
+    const url = `${backendApi}/api/config/currencies/${currencyId}`;
+    const response = await fetch(url, {
+        method: 'PATCH',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            is_active: !isActive,
+        }),
+    });
+    if (!response.ok) {
+        throw new Error('Failed to toggle currency status');
+    }
+    const data = await response.json();
+    return data;
+}

@@ -11,7 +11,7 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { CurrencyDto } from "@/dtos/config.dto";
 import { useAuth } from "@/context/AuthContext";
-import { createCurrency, getCurrenciesService, updateCurrency } from "@/services/currency.service";
+import { createCurrency, getCurrenciesService, updateCurrency, toggleCurrencyStatus } from "@/services/currency.service";
 import CurrencyList from "./CurrencyList";
 import { formType } from "@/dtos/form.dto";
 import CurrencyDialog from "./CurrencyDialog";
@@ -31,7 +31,7 @@ export default function CurrencyComponent() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -79,9 +79,52 @@ export default function CurrencyComponent() {
         setDialogOpen(true);
     };
 
-    const handleDelete = (currency: CurrencyDto) => {
-        setSelectedCurrency(currency);
-        setDeleteDialogOpen(true);
+    const handleToggleStatus = async (currency: CurrencyDto) => {
+        if (!currency.id) {
+            toastError({ message: 'Invalid currency ID' });
+            return;
+        }
+
+        if (currency.is_active) {
+            // If active, show confirmation dialog before deactivating
+            setSelectedCurrency(currency);
+            setConfirmDialogOpen(true);
+        } else {
+            // If inactive, directly activate
+            await performToggleStatus(currency);
+        }
+    };
+
+    const performToggleStatus = async (currency: CurrencyDto) => {
+        try {
+            setIsSubmitting(true);
+            const result = await toggleCurrencyStatus(token, tenantId, currency.id!, currency.is_active);
+            if (result) {
+                setCurrencies(prevCurrencies =>
+                    prevCurrencies.map(c =>
+                        c.id === currency.id
+                            ? { ...c, is_active: !c.is_active }
+                            : c
+                    )
+                );
+                toastSuccess({ message: `Currency ${!currency.is_active ? 'activated' : 'deactivated'} successfully` });
+            } else {
+                toastError({ message: 'Error toggling currency status' });
+            }
+        } catch (error) {
+            console.error('Error toggling currency status:', error);
+            toastError({ message: 'Error toggling currency status' });
+        } finally {
+            setIsSubmitting(false);
+            setConfirmDialogOpen(false);
+            setSelectedCurrency(undefined);
+        }
+    };
+
+    const handleConfirmToggle = async () => {
+        if (selectedCurrency) {
+            await performToggleStatus(selectedCurrency);
+        }
     };
 
     const handleSubmit = async (data: CurrencyDto) => {
@@ -124,25 +167,6 @@ export default function CurrencyComponent() {
             toastError({ message: 'Error handling currency submission' });
         } finally {
             setIsSubmitting(false);
-        }
-    };
-
-    const handleConfirmDelete = async () => {
-        if (selectedCurrency) {
-            try {
-                setIsSubmitting(true);
-                setCurrencies(prevCurrencies =>
-                    prevCurrencies.filter(currency => currency.id !== selectedCurrency.id)
-                );
-                toastSuccess({ message: 'Currency deleted successfully' });
-            } catch (error) {
-                console.error('Error deleting currency:', error);
-                toastError({ message: 'Error deleting currency' });
-            } finally {
-                setIsSubmitting(false);
-                setDeleteDialogOpen(false);
-                setSelectedCurrency(undefined);
-            }
         }
     };
 
@@ -209,7 +233,7 @@ export default function CurrencyComponent() {
         isLoading={isLoading}
         currencies={currencies}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
@@ -232,9 +256,11 @@ export default function CurrencyComponent() {
                 isLoading={isSubmitting}
             />
             <DeleteConfirmDialog
-                open={deleteDialogOpen}
-                onOpenChange={setDeleteDialogOpen}
-                onConfirm={handleConfirmDelete}
+                open={confirmDialogOpen}
+                onOpenChange={setConfirmDialogOpen}
+                onConfirm={handleConfirmToggle}
+                title="Deactivate Currency"
+                description="Are you sure you want to deactivate this currency? This action can be reversed later."
             />
         </div>
     );

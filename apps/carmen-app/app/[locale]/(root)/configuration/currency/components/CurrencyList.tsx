@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Power } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -21,7 +21,7 @@ interface CurrencyListProps {
     readonly isLoading: boolean;
     readonly currencies: CurrencyDto[];
     readonly onEdit: (currency: CurrencyDto) => void;
-    readonly onDelete: (currency: CurrencyDto) => void;
+    readonly onToggleStatus: (currency: CurrencyDto) => void;
     readonly currentPage: number;
     readonly totalPages: number;
     readonly onPageChange: (page: number) => void;
@@ -31,7 +31,7 @@ export default function CurrencyList({
     isLoading,
     currencies,
     onEdit,
-    onDelete,
+    onToggleStatus,
     currentPage,
     totalPages,
     onPageChange
@@ -42,8 +42,8 @@ export default function CurrencyList({
         onEdit(currency);
     };
 
-    const handleDelete = (currency: CurrencyDto) => {
-        onDelete(currency);
+    const handleToggleStatus = (currency: CurrencyDto) => {
+        onToggleStatus(currency);
     };
 
     return (
@@ -90,11 +90,11 @@ export default function CurrencyList({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="hover:text-destructive"
-                                                onClick={() => handleDelete(currency)}
-                                                aria-label="Delete currency"
+                                                className={currency.is_active ? "hover:text-destructive" : "hover:text-green-600"}
+                                                onClick={() => handleToggleStatus(currency)}
+                                                aria-label={currency.is_active ? "Deactivate currency" : "Activate currency"}
                                             >
-                                                <Trash className="h-4 w-4" />
+                                                <Power className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     </TableCell>
