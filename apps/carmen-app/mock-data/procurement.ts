@@ -1,4 +1,5 @@
-import { FlaggedDto, PendingApprovalDto } from "@/dtos/procurement.dto";
+import { NotificationDto } from "@/dtos/notification.dto";
+import { FlaggedDto, PendingApprovalDto, RecentApprovalDto } from "@/dtos/procurement.dto";
 
 export const mockPendingApprovals: PendingApprovalDto[] = [
     {
@@ -194,4 +195,73 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         status: "Pending",
         flagged_reason: "Needs space reallocation review",
     },
+];
+
+export const mockRecentApprovals: RecentApprovalDto[] = [
+    {
+        id: "rp-201",
+        title: "Graphic Design Software",
+        no_unit: 5,
+        price: 75000,
+        requestor: "Emily Carter",
+        department: "Marketing",
+        status: "Approved",
+        date_approved: "2025-03-25",
+    },
+    {
+        id: "rp-202",
+        title: "Wireless Headsets",
+        no_unit: 10,
+        price: 30000,
+        requestor: "James Anderson",
+        department: "Customer Support",
+        status: "Approved",
+        date_approved: "2025-03-26",
+    },
+    {
+        id: "rp-203",
+        title: "Cloud Storage Subscription",
+        no_unit: 1,
+        price: 50000,
+        requestor: "Sophia Bennett",
+        department: "IT",
+        status: "Approved",
+        date_approved: "2025-03-27",
+    },
+];
+
+
+export const mockNotiApproval: NotificationDto[] = [
+    {
+        id: "n-301",
+        title: "New Purchase Request",
+        message: "Your purchase request for office chairs has been submitted.",
+        user_posted: "Prayuth Chan-o-cha",
+        created_at: "2025-03-27T08:30:00Z",
+        read: false,
+    },
+    {
+        id: "n-302",
+        title: "Approval Granted",
+        message: "Your request for wireless headsets has been approved.",
+        user_posted: "Prawit Wongsuwon",
+        created_at: "2025-03-26T15:45:00Z",
+        read: true,
+    },
+    {
+        id: "n-303",
+        title: "New Comment on Request",
+        message: "The finance department has left a comment on your request.",
+        user_posted: "Anutin Charnvirakul",
+        created_at: "2025-03-26T10:15:00Z",
+        read: false,
+    },
+    {
+        id: "n-304",
+        title: "System Maintenance",
+        message: "Scheduled maintenance will occur on March 30, 2025.",
+        user_posted: "Taksin Shinawatra",
+        created_at: "2025-03-25T12:00:00Z",
+        read: true,
+    }
 ];

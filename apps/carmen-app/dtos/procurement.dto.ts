@@ -11,3 +11,9 @@ export interface PendingApprovalDto {
 export interface FlaggedDto extends PendingApprovalDto {
     flagged_reason: string;
 }
+
+export interface RecentApprovalDto extends PendingApprovalDto {
+    status: string;
+    date_approved: string;
+}
+

@@ -15,4 +15,4 @@ export default function MyApprovalComponent() {
             </div>
         </div>
     );
-}
+};
