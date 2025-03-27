@@ -40,14 +40,12 @@ export default function UnitDialog({
     unit,
     onSubmit,
 }: UnitDialogProps) {
+
     const defaultUnitValues = useMemo(() => ({
         id: '',
         name: '',
-        code: '',
         description: '',
         is_active: true,
-        created_at: '',
-        updated_at: '',
     }), []);
 
     const form = useForm<UnitDto>({
@@ -58,12 +56,14 @@ export default function UnitDialog({
     });
 
     useEffect(() => {
-        if (mode === formType.EDIT && unit) {
-            form.reset({ ...unit });
-        } else {
-            form.reset(defaultUnitValues);
+        if (open) {
+            if (mode === formType.EDIT && unit) {
+                form.reset({ ...unit });
+            } else {
+                form.reset(defaultUnitValues);
+            }
         }
-    }, [mode, unit, form, defaultUnitValues]);
+    }, [open, mode, unit, form, defaultUnitValues]);
 
     const handleSubmit = (data: UnitDto) => {
         onSubmit(data);

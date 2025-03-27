@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 
 interface UnitListProps {
@@ -36,58 +35,56 @@ export default function UnitList({ units, onEdit, onDelete, isLoading }: UnitLis
 
     return (
         <div className="space-y-4">
-            <ScrollArea className="h-[calc(100vh-300px)]">
-                <Table>
-                    <TableHeader className="sticky top-0">
-                        <TableRow>
-                            <TableHead className="w-10 hidden md:table-cell">#</TableHead>
-                            <TableHead className="w-10 md:w-24">{t('name')}</TableHead>
-                            <TableHead className="w-10 md:w-24">{t('description')}</TableHead>
-                            <TableHead className="w-10 md:w-24">{t('status')}</TableHead>
-                            <TableHead className="flex justify-end items-center">{t('action')}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    {isLoading ? (
-                        <TableBodySkeleton columns={4} />
-                    ) : (
-                        <TableBody>
-                            {units.map((unit, index) => (
-                                <TableRow key={`unit-row-${unit.id}`}>
-                                    <TableCell key={`unit-index-${unit.id}`} className="w-10 hidden md:table-cell">{index + 1}</TableCell>
-                                    <TableCell key={`unit-name-${unit.id}`} className="w-10 md:w-24">{unit.name}</TableCell>
-                                    <TableCell key={`unit-description-${unit.id}`} className="w-10 md:w-24">{unit.description}</TableCell>
-                                    <TableCell key={`unit-status-${unit.id}`} className="w-10 md:w-24">
-                                        <Badge variant={unit.is_active ? "default" : "destructive"}>
-                                            {unit.is_active ? 'Active' : 'Inactive'}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell key={`unit-actions-${unit.id}`} className="flex justify-end">
-                                        <div className="flex items-center gap-2">
-                                            <Button
-                                                key={`unit-edit-${unit.id}`}
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleEdit(unit)}
-                                            >
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                key={`unit-delete-${unit.id}`}
-                                                variant="ghost"
-                                                size="icon"
-                                                className="hover:text-destructive"
-                                                onClick={() => handleDelete(unit)}
-                                            >
-                                                <Trash className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    )}
-                </Table>
-            </ScrollArea>
+            <Table>
+                <TableHeader className="sticky top-0">
+                    <TableRow>
+                        <TableHead className="w-10 hidden md:table-cell">#</TableHead>
+                        <TableHead className="w-10 md:w-24">{t('name')}</TableHead>
+                        <TableHead className="w-10 md:w-24">{t('description')}</TableHead>
+                        <TableHead className="w-10 md:w-24">{t('status')}</TableHead>
+                        <TableHead className="flex justify-end items-center">{t('action')}</TableHead>
+                    </TableRow>
+                </TableHeader>
+                {isLoading ? (
+                    <TableBodySkeleton columns={4} />
+                ) : (
+                    <TableBody>
+                        {units.map((unit, index) => (
+                            <TableRow key={`unit-row-${unit.id}`}>
+                                <TableCell key={`unit-index-${unit.id}`} className="w-10 hidden md:table-cell">{index + 1}</TableCell>
+                                <TableCell key={`unit-name-${unit.id}`} className="w-10 md:w-24">{unit.name}</TableCell>
+                                <TableCell key={`unit-description-${unit.id}`} className="w-10 md:w-24">{unit.description}</TableCell>
+                                <TableCell key={`unit-status-${unit.id}`} className="w-10 md:w-24">
+                                    <Badge variant={unit.is_active ? "default" : "destructive"}>
+                                        {unit.is_active ? 'Active' : 'Inactive'}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell key={`unit-actions-${unit.id}`} className="flex justify-end">
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            key={`unit-edit-${unit.id}`}
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => handleEdit(unit)}
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            key={`unit-delete-${unit.id}`}
+                                            variant="ghost"
+                                            size="icon"
+                                            className="hover:text-destructive"
+                                            onClick={() => handleDelete(unit)}
+                                        >
+                                            <Trash className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                )}
+            </Table>
         </div>
     );
 }

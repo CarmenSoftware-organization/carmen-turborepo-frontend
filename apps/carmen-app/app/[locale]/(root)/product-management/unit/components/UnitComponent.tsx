@@ -2,7 +2,7 @@
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { FileDown, Printer } from "lucide-react";
+import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
@@ -145,6 +145,7 @@ export default function UnitComponent() {
     const actionButtons = (
         <div className="action-btn-container" data-id="unit-list-action-buttons">
             <Button size={'sm'} onClick={handleAdd}>
+                <Plus className="h-4 w-4" />
                 {tCommon('add')}
             </Button>
             <Button

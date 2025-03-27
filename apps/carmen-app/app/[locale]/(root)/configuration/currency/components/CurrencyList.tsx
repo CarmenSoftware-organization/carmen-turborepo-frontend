@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Pencil, Power } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 
@@ -48,62 +47,60 @@ export default function CurrencyList({
 
     return (
         <div className="space-y-4">
-            <ScrollArea className="h-[calc(100vh-300px)]">
-                <Table>
-                    <TableHeader className="sticky top-0">
-                        <TableRow>
-                            <TableHead className="w-10 hidden md:table-cell">#</TableHead>
-                            <TableHead className="w-10 md:w-24 hidden md:table-cell">{t('name')}</TableHead>
-                            <TableHead className="w-10 hidden md:table-cell">{t('code')}</TableHead>
-                            <TableHead className="w-10 md:w-24 md:text-center">{t('symbol')}</TableHead>
-                            <TableHead className="w-32 md:text-center">{t('exchangeRate')}</TableHead>
-                            <TableHead className="w-10 md:w-24 md:text-center">{t('status')}</TableHead>
-                            <TableHead className="text-right">{t('action')}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    {isLoading ? (
-                        <TableBodySkeleton columns={7} />
-                    ) : (
-                        <TableBody>
-                            {currencies.map((currency: CurrencyDto, index: number) => (
-                                <TableRow key={currency.id}>
-                                    <TableCell className="w-10 hidden md:table-cell">{index + 1}</TableCell>
-                                    <TableCell className="w-10 md:w-24 hidden md:table-cell">{currency.name}</TableCell>
-                                    <TableCell className="w-10 hidden md:table-cell">{currency.code}</TableCell>
-                                    <TableCell className="w-10 md:w-24 md:text-center">{currency.symbol}</TableCell>
-                                    <TableCell className="w-32 md:text-center">{currency.exchange_rate}</TableCell>
-                                    <TableCell className="w-10 md:w-24 md:text-center">
-                                        <Badge variant={currency.is_active ? "default" : "destructive"}>
-                                            {currency.is_active ? 'Active' : 'Inactive'}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-right p-0 pr-2">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleEdit(currency)}
-                                                aria-label="Edit currency"
-                                            >
-                                                <Pencil className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className={currency.is_active ? "hover:text-destructive" : "hover:text-green-600"}
-                                                onClick={() => handleToggleStatus(currency)}
-                                                aria-label={currency.is_active ? "Deactivate currency" : "Activate currency"}
-                                            >
-                                                <Power className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    )}
-                </Table>
-            </ScrollArea>
+            <Table>
+                <TableHeader className="sticky top-0">
+                    <TableRow>
+                        <TableHead className="w-10 hidden md:table-cell">#</TableHead>
+                        <TableHead className="w-10 md:w-24 md:table-cell">{t('name')}</TableHead>
+                        <TableHead className="w-10 hidden md:table-cell">{t('code')}</TableHead>
+                        <TableHead className="w-10 md:w-24 hidden md:table-cell">{t('symbol')}</TableHead>
+                        <TableHead className="w-32 md:text-center">{t('exchangeRate')}</TableHead>
+                        <TableHead className="w-10 md:w-24 md:text-center">{t('status')}</TableHead>
+                        <TableHead className="text-right">{t('action')}</TableHead>
+                    </TableRow>
+                </TableHeader>
+                {isLoading ? (
+                    <TableBodySkeleton columns={7} />
+                ) : (
+                    <TableBody>
+                        {currencies.map((currency: CurrencyDto, index: number) => (
+                            <TableRow key={currency.id}>
+                                <TableCell className="w-10 hidden md:table-cell">{index + 1}</TableCell>
+                                <TableCell className="w-10 md:w-24 md:table-cell">{currency.name}</TableCell>
+                                <TableCell className="w-10 hidden md:table-cell">{currency.code}</TableCell>
+                                <TableCell className="w-10 md:w-24 hidden md:table-cell">{currency.symbol}</TableCell>
+                                <TableCell className="w-32 md:text-center">{currency.exchange_rate}</TableCell>
+                                <TableCell className="w-10 md:w-24 md:text-center">
+                                    <Badge variant={currency.is_active ? "default" : "destructive"}>
+                                        {currency.is_active ? 'Active' : 'Inactive'}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <div className="flex items-center justify-end">
+                                        <Button
+                                            variant="ghost"
+                                            size={'sm'}
+                                            onClick={() => handleEdit(currency)}
+                                            aria-label="Edit currency"
+                                        >
+                                            <Pencil className="h-4 w-4" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size={'sm'}
+                                            className={currency.is_active ? "hover:text-destructive" : "hover:text-green-600"}
+                                            onClick={() => handleToggleStatus(currency)}
+                                            aria-label={currency.is_active ? "Deactivate currency" : "Activate currency"}
+                                        >
+                                            <Power className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                )}
+            </Table>
             <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}

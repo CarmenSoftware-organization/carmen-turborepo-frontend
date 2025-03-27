@@ -34,7 +34,7 @@ export default function DeliveryPointList({
                     <TableHeader className="sticky top-0 bg-background">
                         <TableRow>
                             <TableHead className="w-10">#</TableHead>
-                            <TableHead>{t('name')}</TableHead>
+                            <TableHead className="md:w-56">{t('name')}</TableHead>
                             <TableHead>{t('status')}</TableHead>
                             <TableHead className="w-20 text-right">{t('action')}</TableHead>
                         </TableRow>
@@ -46,13 +46,7 @@ export default function DeliveryPointList({
                             {deliveryPoints.map((deliveryPoint, index) => (
                                 <TableRow key={deliveryPoint.id}>
                                     <TableCell className="w-10">{index + 1}</TableCell>
-                                    <TableCell>
-                                        <div className="flex flex-col gap-1">
-                                            <span className="font-medium">
-                                                {deliveryPoint.name}
-                                            </span>
-                                        </div>
-                                    </TableCell>
+                                    <TableCell className="md:w-56">{deliveryPoint.name}</TableCell>
                                     <TableCell>
                                         <Badge variant={deliveryPoint.is_active ? "default" : "destructive"}>
                                             {deliveryPoint.is_active ? "Active" : "Inactive"}
