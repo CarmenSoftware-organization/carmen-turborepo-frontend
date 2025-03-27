@@ -15,15 +15,27 @@ import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface CurrencyListProps {
     readonly isLoading: boolean;
     readonly currencies: CurrencyDto[];
     readonly onEdit: (currency: CurrencyDto) => void;
     readonly onDelete: (currency: CurrencyDto) => void;
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly onPageChange: (page: number) => void;
 }
 
-export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }: CurrencyListProps) {
+export default function CurrencyList({
+    isLoading,
+    currencies,
+    onEdit,
+    onDelete,
+    currentPage,
+    totalPages,
+    onPageChange
+}: CurrencyListProps) {
     const t = useTranslations('TableHeader');
 
     const handleEdit = (currency: CurrencyDto) => {
@@ -92,6 +104,11 @@ export default function CurrencyList({ isLoading, currencies, onEdit, onDelete }
                     )}
                 </Table>
             </ScrollArea>
+            <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+            />
         </div>
     );
 }

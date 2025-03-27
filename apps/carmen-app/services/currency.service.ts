@@ -1,12 +1,36 @@
 import { CurrencyDto } from "@/dtos/config.dto";
 import { backendApi } from "@/lib/backend-api";
 
-export const getAllCurrencies = async (token: string) => {
-    const url = `${backendApi}/api/config/currencies`;
+export const getCurrenciesService = async (
+    token: string,
+    tenantId: string,
+    params: {
+        search?: string;
+        page?: string;
+        perPage?: string;
+    } = {}
+) => {
+
+    const query = new URLSearchParams();
+    if (params.search) {
+        query.append('search', params.search);
+    }
+
+    if (params.page) {
+        query.append('page', params.page);
+    }
+
+    if (params.perPage) {
+        query.append('perPage', params.perPage);
+    }
+
+    const url = `${backendApi}/api/config/currencies?${query}`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
+            'Content-Type': 'application/json',
         },
     });
     const data = await response.json();

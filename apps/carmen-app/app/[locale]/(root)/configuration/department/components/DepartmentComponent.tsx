@@ -65,7 +65,7 @@ export default function DepartmentComponent() {
         setDialogOpen(true);
     };
 
-    const handleDelete = async (department: DepartmentDto) => {
+    const handleToggleStatus = async (department: DepartmentDto) => {
         try {
             setIsLoading(true);
             const result = await deleteDepartment(token, department);
@@ -200,7 +200,7 @@ export default function DepartmentComponent() {
         isLoading={isLoading}
         departments={departments}
         onEdit={handleEdit}
-        onDelete={handleDelete}
+        onToggleStatus={handleToggleStatus}
     />
     return (
         <div>

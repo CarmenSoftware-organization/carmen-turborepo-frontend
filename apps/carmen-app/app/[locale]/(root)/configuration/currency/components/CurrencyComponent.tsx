@@ -11,7 +11,7 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { CurrencyDto } from "@/dtos/config.dto";
 import { useAuth } from "@/context/AuthContext";
-import { createCurrency, getAllCurrencies, updateCurrency } from "@/services/currency.service";
+import { createCurrency, getCurrenciesService, updateCurrency } from "@/services/currency.service";
 import CurrencyList from "./CurrencyList";
 import { formType } from "@/dtos/form.dto";
 import CurrencyDialog from "./CurrencyDialog";
@@ -33,14 +33,24 @@ export default function CurrencyComponent() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const tenantId = 'mock-tenant-id';
 
     useEffect(() => {
         const fetchCurrencies = async () => {
             if (!token) return;
             try {
                 setIsLoading(true);
-                const data = await getAllCurrencies(token);
-                setCurrencies(data);
+                const data = await getCurrenciesService(token, tenantId, {
+                    search,
+                    page: currentPage.toString(),
+                    perPage: '10',
+                });
+                setCurrencies(data.data);
+                setTotalPages(data.paginate.pages);
+                setCurrentPage(data.paginate.page);
             } catch (error) {
                 console.error('Error fetching currencies:', error);
                 toastError({ message: 'Error fetching currencies' });
@@ -49,7 +59,7 @@ export default function CurrencyComponent() {
             }
         };
         fetchCurrencies();
-    }, [token]);
+    }, [search, token, currentPage]);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -136,6 +146,10 @@ export default function CurrencyComponent() {
         }
     };
 
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
+    };
+
     const title = tCurrency('title');
 
     const actionButtons = (
@@ -196,6 +210,9 @@ export default function CurrencyComponent() {
         currencies={currencies}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
     />
 
     return (
