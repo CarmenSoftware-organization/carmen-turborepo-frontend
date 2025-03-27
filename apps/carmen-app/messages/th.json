@@ -167,7 +167,23 @@
     "code": "รหัส",
     "description": "คำอธิบาย",
     "symbol": "สัญลักษณ์",
-    "exchangeRate": "อัตราแลกเปลี่ยนเงิน"
+    "exchangeRate": "อัตราแลกเปลี่ยนเงิน",
+    "date": "วันที่",
+    "type": "ประเภท",
+    "amount": "จำนวนเงิน",
+    "requestor": "ผู้ขอซื้อ",
+    "workflow_status": "สถานะกระบวนการ",
+    "title_purchase_request": "ใบขอซื้อ",
+    "title_purchase_order": "ใบสั่งซื้อ",
+    "title_goods_received_note": "ใบรับสินค้า",
+    "title_purchase_request_approval": "การอนุมัติใบขอซื้อ",
+    "title_credit_note": "ใบลดหนี้",
+    "title_purchase_request_template": "แม่แบบใบขอซื้อ",
+    "delivery_date": "วันที่ส่งสินค้า",
+    "po_number": "เลขที่ใบสั่งซื้อ",
+    "currency": "สกุลเงิน",
+    "net_amount": "จำนวนเงินสุทธิ",
+    "tax_amount": "จำนวนเงินภาษี"
   },
   "Product": {
     "title": "สินค้า"

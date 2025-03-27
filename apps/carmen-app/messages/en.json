@@ -167,7 +167,24 @@
     "code": "Code",
     "description": "Description",
     "symbol": "Symbol",
-    "exchangeRate": "Rate"
+    "exchangeRate": "Rate",
+    "date": "Date",
+    "type": "Type",
+    "amount": "Amount",
+    "requestor": "Requestor",
+    "workflow_status": "Workflow Status",
+    "title_purchase_request": "Purchase Request",
+    "title_purchase_order": "Purchase Order",
+    "title_goods_received_note": "Goods Received Note",
+    "title_purchase_request_approval": "Purchase Request Approval",
+    "title_credit_note": "Credit Note",
+    "title_purchase_request_template": "Purchase Request Template",
+    "title_purchase_order_number": "Purchase Order Number",
+    "po_number": "Purchase Order Number",
+    "delivery_date": "Delivery Date",
+    "currency": "Currency",
+    "net_amount": "Net Amount",
+    "tax_amount": "Tax Amount"
   },
   "Product": {
     "title": "Product"

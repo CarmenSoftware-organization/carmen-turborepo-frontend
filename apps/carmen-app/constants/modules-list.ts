@@ -23,12 +23,12 @@ export const moduleItems: ModuleItem[] = [
                 href: "/procurement/my-approval",
             },
             {
-                labelKey: "Modules.Procurement.purchaseOrder",
-                href: "/procurement/purchase-order",
-            },
-            {
                 labelKey: "Modules.Procurement.purchaseRequest",
                 href: "/procurement/purchase-request",
+            },
+            {
+                labelKey: "Modules.Procurement.purchaseOrder",
+                href: "/procurement/purchase-order",
             },
             {
                 labelKey: "Modules.Procurement.goodsReceivedNote",

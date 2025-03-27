@@ -11,6 +11,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseOrderList from "./PurchaseOrderList";
+import { mockPurchaseOrders } from "@/mock-data/procurement";
 
 export default function PurchaseOrderComponent() {
     const tCommon = useTranslations('Common');
@@ -85,7 +86,7 @@ export default function PurchaseOrderComponent() {
         </div>
     );
 
-    const content = <PurchaseOrderList />
+    const content = <PurchaseOrderList purchaseOrders={mockPurchaseOrders} />
 
     return (
         <DataDisplayTemplate

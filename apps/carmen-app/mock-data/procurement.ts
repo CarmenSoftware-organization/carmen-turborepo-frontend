@@ -1,5 +1,5 @@
 import { NotificationDto } from "@/dtos/notification.dto";
-import { FlaggedDto, PendingApprovalDto, RecentApprovalDto } from "@/dtos/procurement.dto";
+import { FlaggedDto, PendingApprovalDto, PurchaseOrderlDto, PurchaseRequestDto, RecentApprovalDto } from "@/dtos/procurement.dto";
 
 export const mockPendingApprovals: PendingApprovalDto[] = [
     {
@@ -263,5 +263,132 @@ export const mockNotiApproval: NotificationDto[] = [
         user_posted: "Taksin Shinawatra",
         created_at: "2025-03-25T12:00:00Z",
         read: true,
+    }
+];
+
+export const mockPurchaseRequests: PurchaseRequestDto[] = [
+    {
+        id: "PR-001",
+        title: "Purchase of Office Chairs",
+        status: "Pending",
+        date_created: "2024-03-25",
+        type: "Office Supplies",
+        description: "Request to purchase 10 ergonomic office chairs for the HR department.",
+        requestor: "John Doe",
+        department: "Human Resources",
+        amount: 1500,
+        workflow_status: "Approval Pending",
+    },
+    {
+        id: "PR-002",
+        title: "Software License Renewal",
+        status: "Approved",
+        date_created: "2024-03-20",
+        type: "IT Equipment",
+        description: "Annual renewal of Adobe Creative Cloud licenses for the design team.",
+        requestor: "Jane Smith",
+        department: "IT",
+        amount: 2500,
+        workflow_status: "Completed",
+    },
+    {
+        id: "PR-003",
+        title: "New Laptops for Development Team",
+        status: "Rejected",
+        date_created: "2024-03-18",
+        type: "Hardware",
+        description: "Request to purchase 5 new MacBook Pro laptops for the development team.",
+        requestor: "Michael Johnson",
+        department: "Engineering",
+        amount: 12000,
+        workflow_status: "Rejected",
+    },
+    {
+        id: "PR-004",
+        title: "Marketing Campaign Budget",
+        status: "Pending",
+        date_created: "2024-03-27",
+        type: "Marketing",
+        description: "Request for budget allocation for Q2 social media ads campaign.",
+        requestor: "Emily Davis",
+        department: "Marketing",
+        amount: 5000,
+        workflow_status: "Under Review",
+    },
+    {
+        id: "PR-005",
+        title: "Office Stationery Refill",
+        status: "Approved",
+        date_created: "2024-03-22",
+        type: "Office Supplies",
+        description: "Restocking essential office stationery such as pens, papers, and binders.",
+        requestor: "Robert Wilson",
+        department: "Administration",
+        amount: 700,
+        workflow_status: "Completed",
+    }
+];
+
+
+export const mockPurchaseOrders: PurchaseOrderlDto[] = [
+    {
+        id: "PO-001",
+        department: "Human Resources",
+        status: "Pending",
+        date_created: "2024-03-25",
+        delivery_date: "2024-04-01",
+        po_number: "HR-20240325-001",
+        currency: "USD",
+        net_amount: 1500,
+        tax_amount: 75,
+        amount: 1575,
+    },
+    {
+        id: "PO-002",
+        department: "IT",
+        status: "Approved",
+        date_created: "2024-03-20",
+        delivery_date: "2024-03-30",
+        po_number: "IT-20240320-002",
+        currency: "USD",
+        net_amount: 2500,
+        tax_amount: 125,
+        amount: 2625,
+    },
+    {
+        id: "PO-003",
+        department: "Engineering",
+        status: "Rejected",
+        date_created: "2024-03-18",
+        delivery_date: "2024-03-28",
+        po_number: "ENG-20240318-003",
+        currency: "EUR",
+        net_amount: 12000,
+        tax_amount: 600,
+        amount: 12600,
+    },
+    {
+        id: "PO-004",
+        department: "Marketing",
+        status: "Pending",
+        date_created: "2024-03-27",
+        delivery_date: "2024-04-05",
+        po_number: "MKT-20240327-004",
+        currency: "USD",
+        net_amount: 5000,
+        tax_amount: 250,
+        amount: 5250,
+    },
+    {
+        id: "PO-005",
+        department: "Administration",
+        status: "Approved",
+        date_created: "2024-03-22",
+        delivery_date: "2024-03-29",
+        po_number: "ADM-20240322-005",
+        currency: "USD",
+        net_amount: 700,
+        tax_amount: 35,
+        amount: 735,
     }
 ];

@@ -17,3 +17,30 @@ export interface RecentApprovalDto extends PendingApprovalDto {
     date_approved: string;
 }
 
+export interface PurchaseRequestDto {
+    id: string;
+    title: string;
+    status: string;
+    date_created: string;
+    type: string;
+    description: string;
+    requestor: string;
+    department: string;
+    amount: number;
+    workflow_status: string;
+}
+
+
+export interface PurchaseOrderlDto {
+    id: string;
+    department: string;
+    status: string;
+    date_created: string;
+    delivery_date: string;
+    po_number: string;
+    currency: string;
+    net_amount: number;
+    tax_amount: number;
+    amount: number;
+}
+
