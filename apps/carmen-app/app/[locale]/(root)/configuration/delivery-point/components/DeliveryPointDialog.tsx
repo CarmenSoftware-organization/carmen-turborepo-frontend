@@ -11,6 +11,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import {
     Form,
@@ -81,6 +82,11 @@ export default function DeliveryPointDialog({
                     <DialogTitle>
                         {mode === formType.ADD ? "Add Delivery Point" : "Edit Delivery Point"}
                     </DialogTitle>
+                    <DialogDescription>
+                        {mode === formType.ADD
+                            ? "Add a new delivery point with name and status"
+                            : "Edit existing delivery point details including name and status"}
+                    </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">

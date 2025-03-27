@@ -30,6 +30,7 @@ interface AuthContextType {
     logout: () => void;
     token: string;
     getServerSideToken: () => string;
+    tenantId: string;
 }
 
 // Create context with a default value
@@ -41,6 +42,7 @@ export const AuthContext = createContext<AuthContextType>({
     logout: () => { },
     token: '',
     getServerSideToken: () => '',
+    tenantId: '',
 });
 
 // Helper function to get token on the client side
@@ -151,6 +153,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     // Check if user is authenticated by looking for tokens
     const hasToken = typeof window !== 'undefined' && !!sessionStorage.getItem('access_token');
 
+    const tenantId = user?.business_unit[0].id ?? '';
     // Context value
     const value = useMemo(() => ({
         isAuthenticated: hasToken,
@@ -160,7 +163,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         logout,
         token: typeof window !== 'undefined' ? (sessionStorage.getItem('access_token') ?? '') : '',
         getServerSideToken,
-    }), [hasToken, isLoading, user, setSession, logout, getServerSideToken]);
+        tenantId,
+    }), [hasToken, isLoading, user, setSession, logout, getServerSideToken, tenantId]);
 
     return (
         <AuthContext.Provider value={value}>

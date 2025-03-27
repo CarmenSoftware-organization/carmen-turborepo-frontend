@@ -231,7 +231,7 @@ const WorkflowList = () => {
 					</TableRow>
 				</TableHeader>
 				{isLoading ? (
-					<TableBodySkeleton columns={fields.length} withAction />
+					<TableBodySkeleton columns={fields.length} />
 				) : (
 					<TableBody>
 						{workflows &&

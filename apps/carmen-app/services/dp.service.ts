@@ -43,14 +43,15 @@ export const updateDeliveryPoint = async (token: string, deliveryPoint: Delivery
     return data;
 }
 
-export const deleteDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointDto) => {
+export const inactiveDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointDto) => {
     const url = `${backendApi}/api/config/delivery-point/${deliveryPoint.id}`;
     const response = await fetch(url, {
-        method: 'DELETE',
+        method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ ...deliveryPoint, is_active: !deliveryPoint.is_active }),
     });
     const data = await response.json();
     console.log('data', data);

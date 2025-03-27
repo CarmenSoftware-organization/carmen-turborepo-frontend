@@ -1,5 +1,5 @@
-import DpComponent from "./components/DpComponent";
+import { DeliveryPointComponent } from "./components/DeliveryPointComponent";
 
 export default function DeliveryPointPage() {
-    return <DpComponent />
+    return <DeliveryPointComponent />
 }

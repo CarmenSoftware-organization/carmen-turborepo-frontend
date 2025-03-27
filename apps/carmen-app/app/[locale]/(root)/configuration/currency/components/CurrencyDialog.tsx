@@ -11,6 +11,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import {
     Form,
@@ -85,6 +86,11 @@ export default function CurrencyDialog({
                     <DialogTitle>
                         {mode === formType.ADD ? "Add Currency" : "Edit Currency"}
                     </DialogTitle>
+                    <DialogDescription>
+                        {mode === formType.ADD
+                            ? "Add a new currency with name, code, symbol, exchange rate, and status"
+                            : "Edit existing currency details including name, code, symbol, exchange rate, and status"}
+                    </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
