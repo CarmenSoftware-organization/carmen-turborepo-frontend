@@ -78,15 +78,15 @@ export const moduleItems: ModuleItem[] = [
         children: [
             {
                 labelKey: "Modules.VendorManagement.manageVendors",
-                href: "/vendor-management/vendors",
+                href: "/vendor-management/vendor",
             },
             {
                 labelKey: "Modules.VendorManagement.priceLists",
-                href: "/vendor-management/price-lists",
+                href: "/vendor-management/price-list",
             },
             {
                 labelKey: "Modules.VendorManagement.priceComparisons",
-                href: "/vendor-management/price-comparisons",
+                href: "/vendor-management/price-comparison",
             },
         ],
     },
