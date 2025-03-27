@@ -187,5 +187,15 @@
     "title": "Delivery Point",
     "delivery_point_name": "Delivery Point Name",
     "delivery_point_status": "Status"
+  },
+  "Department": {
+    "title": "Department",
+    "department_name": "Department Name",
+    "department_status": "Status"
+  },
+  "StoreLocation": {
+    "title": "Store Location",
+    "store_location_name": "Store Location Name",
+    "store_location_status": "Status"
   }
 }

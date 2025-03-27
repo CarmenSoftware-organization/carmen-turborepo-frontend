@@ -3,7 +3,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Printer } from "lucide-react";
+import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
@@ -17,6 +17,7 @@ import { formType } from "@/dtos/form.dto";
 import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { z } from "zod";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 export default function CurrencyComponent() {
     const { token } = useAuth();
@@ -42,6 +43,7 @@ export default function CurrencyComponent() {
                 setCurrencies(data);
             } catch (error) {
                 console.error('Error fetching currencies:', error);
+                toastError({ message: 'Error fetching currencies' });
             } finally {
                 setIsLoading(false);
             }
@@ -75,8 +77,6 @@ export default function CurrencyComponent() {
     const handleSubmit = async (data: CurrencyDto) => {
         try {
             setIsSubmitting(true);
-            console.log('Submitting data:', data);
-
             if (selectedCurrency) {
                 // Edit mode
                 const updatedCurrency = { ...data, id: selectedCurrency.id };
@@ -89,8 +89,10 @@ export default function CurrencyComponent() {
                                 : currency
                         )
                     );
+                    toastSuccess({ message: 'Currency updated successfully' });
                 } else {
                     console.error('Error updating currency:', result);
+                    toastError({ message: 'Error updating currency' });
                 }
             } else {
                 // Add mode
@@ -100,6 +102,7 @@ export default function CurrencyComponent() {
                     id: result.id,
                 };
                 setCurrencies(prevCurrencies => [...prevCurrencies, newCurrency]);
+                toastSuccess({ message: 'Currency created successfully' });
             }
             setDialogOpen(false);
             setSelectedCurrency(undefined);
@@ -108,6 +111,7 @@ export default function CurrencyComponent() {
             if (error instanceof z.ZodError) {
                 console.error('Zod Validation Errors:', error.errors);
             }
+            toastError({ message: 'Error handling currency submission' });
         } finally {
             setIsSubmitting(false);
         }
@@ -120,8 +124,10 @@ export default function CurrencyComponent() {
                 setCurrencies(prevCurrencies =>
                     prevCurrencies.filter(currency => currency.id !== selectedCurrency.id)
                 );
+                toastSuccess({ message: 'Currency deleted successfully' });
             } catch (error) {
                 console.error('Error deleting currency:', error);
+                toastError({ message: 'Error deleting currency' });
             } finally {
                 setIsSubmitting(false);
                 setDeleteDialogOpen(false);
@@ -135,6 +141,7 @@ export default function CurrencyComponent() {
     const actionButtons = (
         <div className="action-btn-container" data-id="currency-list-action-buttons">
             <Button size={'sm'} onClick={handleAdd}>
+                <Plus className="h-4 w-4" />
                 {tCommon('add')}
             </Button>
             <Button

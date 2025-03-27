@@ -182,5 +182,20 @@
     "currency_symbol": "สัญลักษณ์สกุลเงิน",
     "currency_status": "สถานะสกุลเงิน",
     "currency_exchange_rate": "อัตราแลกเปลี่ยนเงิน"
+  },
+  "DeliveryPoint": {
+    "title": "จุดส่งของ",
+    "delivery_point_name": "ชื่อจุดส่งของ",
+    "delivery_point_status": "สถานะจุดส่งของ"
+  },
+  "Department": {
+    "title": "แผนก",
+    "department_name": "ชื่อแผนก",
+    "department_status": "สถานะแผนก"
+  },
+  "StoreLocation": {
+    "title": "สถานที่เก็บสินค้า",
+    "store_location_name": "ชื่อสถานที่เก็บสินค้า",
+    "store_location_status": "สถานะสถานที่เก็บสินค้า"
   }
 }

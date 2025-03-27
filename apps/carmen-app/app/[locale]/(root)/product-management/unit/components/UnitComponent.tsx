@@ -17,6 +17,7 @@ import { formType } from "@/dtos/form.dto";
 import { createUnit, deleteUnit, getAllUnits, updateUnit } from "@/services/unit.service";
 import { useAuth } from "@/context/AuthContext";
 import { z } from "zod";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 export default function UnitComponent() {
     const { token } = useAuth();
@@ -32,9 +33,6 @@ export default function UnitComponent() {
     const [units, setUnits] = useState<UnitDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    console.log('units', units);
-
-
     useEffect(() => {
         const fetchUnits = async () => {
             if (!token) return;
@@ -44,6 +42,7 @@ export default function UnitComponent() {
                 setUnits(data);
             } catch (error) {
                 console.error('Error fetching units:', error);
+                toastError({ message: 'Error fetching units' });
             } finally {
                 setIsLoading(false);
             }
@@ -86,8 +85,10 @@ export default function UnitComponent() {
                             ? { ...data, id: unit.id }
                             : unit
                     ));
+                    toastSuccess({ message: 'Unit updated successfully' });
                 } else {
                     console.error('Error updating unit:', result);
+                    toastError({ message: 'Error updating unit' });
                 }
             } else {
                 const result = await createUnit(token, data);
@@ -97,14 +98,17 @@ export default function UnitComponent() {
                         id: result.id,
                     };
                     setUnits([...units, newUnit]);
+                    toastSuccess({ message: 'Unit created successfully' });
                 } else {
                     console.error('Error creating unit: No ID returned');
+                    toastError({ message: 'Error creating unit' });
                 }
             }
             setDialogOpen(false);
             setSelectedUnit(undefined);
         } catch (error) {
             console.error('Error submitting unit:', error);
+            toastError({ message: 'Error submitting unit' });
             if (error instanceof z.ZodError) {
                 console.error('Zod Validation Errors:', error.errors);
             }
@@ -118,11 +122,14 @@ export default function UnitComponent() {
             const result = await deleteUnit(token, selectedUnit);
             if (result) {
                 setUnits(prevUnits => prevUnits.filter(unit => unit.id !== selectedUnit.id));
+                toastSuccess({ message: 'Unit deleted successfully' });
             } else {
                 console.error('Error deleting unit:', result);
+                toastError({ message: 'Error deleting unit' });
             }
         } catch (error) {
             console.error('Error deleting unit:', error);
+            toastError({ message: 'Error deleting unit' });
         } finally {
             setIsLoading(false);
             setDeleteDialogOpen(false);

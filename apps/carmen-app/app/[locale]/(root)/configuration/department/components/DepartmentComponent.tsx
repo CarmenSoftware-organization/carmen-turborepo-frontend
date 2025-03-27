@@ -3,7 +3,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Printer } from "lucide-react";
+import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
@@ -17,6 +17,7 @@ import { formType } from "@/dtos/form.dto";
 import DepartmentList from "./DepartmentList";
 import DepartmentDialog from "./DepartmentDialog";
 import { createDepartment, deleteDepartment, getAllDepartments, updateDepartment } from "@/services/department.service";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 export default function DepartmentComponent() {
     const { token } = useAuth();
@@ -33,7 +34,6 @@ export default function DepartmentComponent() {
     const [selectedDepartment, setSelectedDepartment] = useState<DepartmentDto | undefined>();
 
     useEffect(() => {
-
         const fetchDepartments = async () => {
             if (!token) return;
             try {
@@ -42,6 +42,7 @@ export default function DepartmentComponent() {
                 setDepartments(data);
             } catch (error) {
                 console.error('Error fetching departments:', error);
+                toastError({ message: 'Error fetching departments' });
             } finally {
                 setIsLoading(false);
             }
@@ -72,8 +73,10 @@ export default function DepartmentComponent() {
                 setDepartments(prevDepartments =>
                     prevDepartments.filter(dp => dp.id !== department.id)
                 );
+                toastSuccess({ message: 'Department deleted successfully' });
             } else {
                 console.error('Error deleting department:', result);
+                toastError({ message: 'Error deleting department' });
             }
         } catch (error) {
             console.error('Error deleting department:', error);
@@ -94,9 +97,11 @@ export default function DepartmentComponent() {
                                 ? updatedDepartment
                                 : dp
                         )
-                    );
+                    )
+                    toastSuccess({ message: 'Department updated successfully' });
                 } else {
                     console.error('Error updating department:', result);
+                    toastError({ message: 'Error updating department' });
                 }
             } else {
                 const result = await createDepartment(token, data);
@@ -105,11 +110,13 @@ export default function DepartmentComponent() {
                     id: result.id,
                 };
                 setDepartments(prevDepartments => [...prevDepartments, newDepartment]);
+                toastSuccess({ message: 'Department created successfully' });
             }
             setDialogOpen(false);
             setSelectedDepartment(undefined);
         } catch (error) {
             console.error('Error handling department submission:', error);
+            toastError({ message: 'Error handling department submission' });
             if (error instanceof z.ZodError) {
                 console.error('Zod Validation Errors:', error.errors);
             }
@@ -124,11 +131,14 @@ export default function DepartmentComponent() {
                 setDepartments(prevDepartments =>
                     prevDepartments.filter(dp => dp.id !== selectedDepartment.id)
                 );
+                toastSuccess({ message: 'Department deleted successfully' });
             } else {
                 console.error('Error deleting department:', result);
+                toastError({ message: 'Error deleting department' });
             }
         } catch (error) {
             console.error('Error deleting department:', error);
+            toastError({ message: 'Error deleting department' });
         }
     };
 
@@ -137,6 +147,7 @@ export default function DepartmentComponent() {
     const actionButtons = (
         <div className="action-btn-container" data-id="department-list-action-buttons">
             <Button size={'sm'} onClick={handleAdd}>
+                <Plus className="h-4 w-4" />
                 {tCommon('add')}
             </Button>
             <Button

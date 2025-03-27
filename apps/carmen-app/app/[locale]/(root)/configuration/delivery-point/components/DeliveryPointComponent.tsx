@@ -16,6 +16,7 @@ import { DeliveryPointDto } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { createDeliveryPoint, getAllDeliveryPoints, updateDeliveryPoint } from "@/services/dp.service";
 import { useAuth } from "@/context/AuthContext";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
@@ -39,6 +40,7 @@ export function DeliveryPointComponent() {
                 setDeliveryPoints(data);
             } catch (error) {
                 console.error('Error fetching delivery points:', error);
+                toastError({ message: 'Error fetching delivery points' });
             } finally {
                 setIsLoading(false);
             }
@@ -134,8 +136,10 @@ export function DeliveryPointComponent() {
                     dp.id === deliveryPoint.id ? updatedDeliveryPoint : dp
                 )
             );
+            toastSuccess({ message: 'Delivery point status updated successfully' });
         } catch (error) {
             console.error('Error toggling delivery point status:', error);
+            toastError({ message: 'Error toggling delivery point status' });
         } finally {
             setIsLoading(false);
         }
@@ -151,6 +155,7 @@ export function DeliveryPointComponent() {
                     id: result.id,
                 };
                 setDeliveryPoints(prev => [...prev, newDeliveryPoint]);
+                toastSuccess({ message: 'Delivery point created successfully' });
             } else {
                 const updatedDeliveryPoint = {
                     ...data,
@@ -162,10 +167,12 @@ export function DeliveryPointComponent() {
                         dp.id === data.id ? data : dp
                     )
                 );
+                toastSuccess({ message: 'Delivery point updated successfully' });
             }
             setDialogOpen(false);
         } catch (error) {
             console.error('Error submitting delivery point:', error);
+            toastError({ message: 'Error submitting delivery point' });
         } finally {
             setIsLoading(false);
         }

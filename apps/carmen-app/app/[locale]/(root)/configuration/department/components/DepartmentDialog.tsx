@@ -11,6 +11,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogFooter,
+    DialogDescription,
 } from "@/components/ui/dialog";
 import {
     Form,
@@ -82,6 +83,11 @@ export default function DepartmentDialog({
                     <DialogTitle>
                         {mode === formType.ADD ? "Add Department" : "Edit Department"}
                     </DialogTitle>
+                    <DialogDescription>
+                        {mode === formType.ADD
+                            ? "Add a new department with name and status"
+                            : "Edit existing department details including name and status"}
+                    </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
