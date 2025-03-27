@@ -36,7 +36,7 @@ export const moduleItems: ModuleItem[] = [
             },
             {
                 labelKey: "Modules.Procurement.purchaseRequestApprovals",
-                href: "/procurement/purchase-request-approvals",
+                href: "/procurement/purchase-request-approval",
             },
             {
                 labelKey: "Modules.Procurement.creditNote",
