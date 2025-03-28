@@ -117,10 +117,32 @@ export const moduleItems: ModuleItem[] = [
             {
                 labelKey: "Modules.InventoryManagement.stockOverview",
                 href: "/inventory-management/stock-overview",
+                children: [
+                    {
+                        labelKey: "Modules.InventoryManagement.stockOverview",
+                        href: "/inventory-management/stock-overview/overview",
+                    },
+                    {
+                        labelKey: "Modules.InventoryManagement.StockOverview.inventoryBalance",
+                        href: "/inventory-management/stock-overview/inventory-balance",
+                    },
+                    {
+                        labelKey: "Modules.InventoryManagement.StockOverview.inventoryAging",
+                        href: "/inventory-management/stock-overview/inventory-aging",
+                    },
+                    {
+                        labelKey: "Modules.InventoryManagement.StockOverview.stockCard",
+                        href: "/inventory-management/stock-overview/stock-card",
+                    },
+                    {
+                        labelKey: "Modules.InventoryManagement.StockOverview.slowMoving",
+                        href: "/inventory-management/stock-overview/slow-moving",
+                    }
+                ]
             },
             {
                 labelKey: "Modules.InventoryManagement.inventoryAdjustments",
-                href: "/inventory-management/inventory-adjustments",
+                href: "/inventory-management/inventory-adjustment",
             },
             {
                 labelKey: "Modules.InventoryManagement.spotCheck",

@@ -73,6 +73,12 @@
     "inventoryManagement": "Inventory Management",
     "InventoryManagement": {
       "stockOverview": "Stock Overview",
+      "StockOverview": {
+        "inventoryBalance": "Inventory Balance",
+        "inventoryAging": "Inventory Aging",
+        "stockCard": "Stock Card",
+        "slowMoving": "Slow Moving"
+      },
       "inventoryAdjustments": "Inventory Adjustments",
       "spotCheck": "Spot Check",
       "physicalCountManagement": "Physical Count Management",
@@ -216,5 +222,13 @@
     "title": "Store Location",
     "store_location_name": "Store Location Name",
     "store_location_status": "Status"
+  },
+  "InventoryManagement": {
+    "StockOverview": {
+      "title": "Stock Overview"
+    },
+    "InventoryAdjustment": {
+      "title": "Inventory Adjustment"
+    }
   }
 }

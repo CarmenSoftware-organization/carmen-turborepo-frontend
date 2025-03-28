@@ -68,6 +68,12 @@
     "inventoryManagement": "การจัดการสินค้า",
     "InventoryManagement": {
       "stockOverview": "ตรวจสอบสินค้า",
+      "StockOverview": {
+        "inventoryBalance": "ยอดคงเหลือสินค้า",
+        "inventoryAging": "อายุสินค้า",
+        "stockCard": "บัญชีสินค้า",
+        "slowMoving": "สินค้าชำรุด"
+      },
       "inventoryAdjustments": "ปรับปรุงสินค้า",
       "spotCheck": "ตรวจสอบสินค้า",
       "physicalCountManagement": "ตรวจนับสินค้า",
@@ -215,5 +221,13 @@
     "title": "สถานที่เก็บสินค้า",
     "store_location_name": "ชื่อสถานที่เก็บสินค้า",
     "store_location_status": "สถานะสถานที่เก็บสินค้า"
+  },
+  "InventoryManagement": {
+    "StockOverview": {
+      "title": "ตรวจสอบสินค้า"
+    },
+    "InventoryAdjustment": {
+      "title": "ปรับปรุงสินค้า"
+    }
   }
 }
