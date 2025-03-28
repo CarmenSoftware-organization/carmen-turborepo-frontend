@@ -11,6 +11,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import StoreRequisitionList from "./StoreRequisitionList";
+import { mockStoreRequisitions } from "@/mock-data/store-operation";
 
 export default function StoreRequisitionComponent() {
 
@@ -83,7 +84,7 @@ export default function StoreRequisitionComponent() {
         </div>
     );
 
-    const content = <StoreRequisitionList />
+    const content = <StoreRequisitionList storeRequisitions={mockStoreRequisitions} />
 
     return (
         <DataDisplayTemplate
