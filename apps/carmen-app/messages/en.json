@@ -238,7 +238,8 @@
       "title": "Physical Count Management"
     },
     "SpotCheck": {
-      "title": "Spot Check"
+      "title": "Spot Check",
+      "description": "Random inventory spot checks for accuracy verification"
     }
   }
 }

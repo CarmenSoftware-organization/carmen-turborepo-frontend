@@ -21,3 +21,13 @@ export interface PeriodEndDto {
     completed_at: string;
     note: string;
 }
+
+export interface SpotCheckDto {
+    id: string;
+    department: string;
+    status: string;
+    requested_by: string;
+    date: string;
+    checked_items: number;
+    count_items: number;
+}

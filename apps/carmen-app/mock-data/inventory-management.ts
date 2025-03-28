@@ -1,4 +1,4 @@
-import { InventoryAdjustmentDTO, PeriodEndDto } from "@/dtos/inventory-management.dto";
+import { InventoryAdjustmentDTO, PeriodEndDto, SpotCheckDto } from "@/dtos/inventory-management.dto";
 
 export const mockInventoryAdjustments: InventoryAdjustmentDTO[] = [
     {
@@ -223,5 +223,116 @@ export const mockPeriodEndData: PeriodEndDto[] = [
         created_by: "admin",
         completed_at: "2023-11-01 09:30:00",
         note: "Final review completed",
+    },
+];
+
+
+export const mockDepartments = [
+    { id: '1', name: 'F&B' },
+    { id: '2', name: 'Housekeeping' },
+    { id: '3', name: 'Maintenance' },
+    { id: '4', name: 'Front Office' },
+    { id: '5', name: 'Security' },
+];
+
+export const mockStoreLocations = [
+    { id: '1', name: 'Main Kitchen Store' },
+    { id: '2', name: 'Dry Store' },
+    { id: '3', name: 'Cold Room' },
+    { id: '4', name: 'Linen Room' },
+    { id: '5', name: 'Equipment Store' },
+];
+
+
+export const mockSpotCheckData: SpotCheckDto[] = [
+    {
+        id: "SC-001",
+        department: "Finance",
+        status: "Completed",
+        requested_by: "John Doe",
+        date: "2024-07-01",
+        checked_items: 48,
+        count_items: 50,
+    },
+    {
+        id: "SC-002",
+        department: "Warehouse",
+        status: "Pending",
+        requested_by: "Jane Smith",
+        date: "2024-07-05",
+        checked_items: 0,
+        count_items: 30,
+    },
+    {
+        id: "SC-003",
+        department: "IT",
+        status: "In Progress",
+        requested_by: "Alice Brown",
+        date: "2024-07-10",
+        checked_items: 12,
+        count_items: 20,
+    },
+    {
+        id: "SC-004",
+        department: "Logistics",
+        status: "Completed",
+        requested_by: "Bob Johnson",
+        date: "2024-07-12",
+        checked_items: 60,
+        count_items: 60,
+    },
+    {
+        id: "SC-005",
+        department: "Procurement",
+        status: "Rejected",
+        requested_by: "Charlie Wilson",
+        date: "2024-07-15",
+        checked_items: 25,
+        count_items: 40,
+    },
+    {
+        id: "SC-006",
+        department: "HR",
+        status: "Pending",
+        requested_by: "Daniel Lee",
+        date: "2024-07-18",
+        checked_items: 0,
+        count_items: 10,
+    },
+    {
+        id: "SC-007",
+        department: "Marketing",
+        status: "Completed",
+        requested_by: "Emma White",
+        date: "2024-07-20",
+        checked_items: 30,
+        count_items: 30,
+    },
+    {
+        id: "SC-008",
+        department: "Production",
+        status: "In Progress",
+        requested_by: "George Harris",
+        date: "2024-07-22",
+        checked_items: 15,
+        count_items: 25,
+    },
+    {
+        id: "SC-009",
+        department: "Quality Control",
+        status: "Completed",
+        requested_by: "Hannah Clark",
+        date: "2024-07-25",
+        checked_items: 50,
+        count_items: 50,
+    },
+    {
+        id: "SC-010",
+        department: "Maintenance",
+        status: "Rejected",
+        requested_by: "Ian Miller",
+        date: "2024-07-28",
+        checked_items: 22,
+        count_items: 30,
     },
 ];
