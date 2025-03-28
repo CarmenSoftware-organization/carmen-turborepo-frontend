@@ -10,11 +10,10 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import PurchaseRequestTemplateList from "./PurchaseRequestTemplateList";
-
-// mock
-import { mockPurchaseRequestTemplates } from "@/mock-data/procurement";
-export default function PurchaseRequestTemplateComponent() {
+import InventoryAdjustmentList from "./InventoryAdjustmentList";
+import { mockInventoryAdjustments } from "@/mock-data/inventory-management";
+export default function InventoryAdjustmentComponent() {
+    const t = useTranslations("InventoryManagement");
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
@@ -23,16 +22,13 @@ export default function PurchaseRequestTemplateComponent() {
 
     const sortFields = [
         { key: 'code', label: 'Code' },
-        { key: 'name', label: 'Name' },
-        { key: 'symbol', label: 'Symbol' },
-        { key: 'is_active', label: 'Status' },
-        { key: 'exchange_rate', label: 'Exchange Rate' },
+        { key: 'name', label: 'Name' }
     ];
 
-    const title = "Purchase Request Template"
+    const title = t("InventoryAdjustment.title");
 
     const actionButtons = (
-        <div className="action-btn-container" data-id="pr-template-action-buttons">
+        <div className="action-btn-container" data-id="inventory-ad-action-buttons">
             <Button size={'sm'}>
                 <Plus className="h-4 w-4" />
                 {tCommon('add')}
@@ -41,7 +37,7 @@ export default function PurchaseRequestTemplateComponent() {
                 variant="outline"
                 className="group"
                 size={'sm'}
-                data-id="pr-template-list-export-button"
+                data-id="inventory-ad-list-export-button"
             >
                 <FileDown className="h-4 w-4" />
                 {tCommon('export')}
@@ -49,7 +45,7 @@ export default function PurchaseRequestTemplateComponent() {
             <Button
                 variant="outline"
                 size={'sm'}
-                data-id="pr-template-list-print-button"
+                data-id="inventory-ad-list-print-button"
             >
                 <Printer className="h-4 w-4" />
                 {tCommon('print')}
@@ -58,12 +54,12 @@ export default function PurchaseRequestTemplateComponent() {
     );
 
     const filters = (
-        <div className="filter-container" data-id="pr-template-list-filters">
+        <div className="filter-container" data-id="inventory-ad-list-filters">
             <SearchInput
                 defaultValue={search}
                 onSearch={setSearch}
                 placeholder={tCommon('search')}
-                data-id="pr-template-list-search-input"
+                data-id="inventory-ad-list-search-input"
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
@@ -72,13 +68,13 @@ export default function PurchaseRequestTemplateComponent() {
                     onChange={setStatus}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
-                    data-id="pr-template-list-status-search-dropdown"
+                    data-id="inventory-ad-list-status-search-dropdown"
                 />
                 <SortComponent
                     fieldConfigs={sortFields}
                     sort={sort}
                     setSort={setSort}
-                    data-id="pr-template-list-sort-dropdown"
+                    data-id="inventory-ad-list-sort-dropdown"
                 />
                 <Button size={'sm'}>
                     Add Filter
@@ -87,7 +83,7 @@ export default function PurchaseRequestTemplateComponent() {
         </div>
     );
 
-    const content = <PurchaseRequestTemplateList purchaseRequestTemplates={mockPurchaseRequestTemplates} />
+    const content = <InventoryAdjustmentList inventoryAdjustments={mockInventoryAdjustments} />
 
     return (
         <DataDisplayTemplate
@@ -97,4 +93,4 @@ export default function PurchaseRequestTemplateComponent() {
             content={content}
         />
     )
-} 
+}
