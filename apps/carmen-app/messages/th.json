@@ -228,6 +228,16 @@
     },
     "InventoryAdjustment": {
       "title": "ปรับปรุงสินค้า"
+    },
+    "PeriodEnd": {
+      "title": "สิ้นงวด",
+      "description": "จัดการสิ้นงวดสินค้า"
+    },
+    "PhysicalCountManagement": {
+      "title": "ตรวจนับสินค้า"
+    },
+    "SpotCheck": {
+      "title": "ตรวจสอบสินค้า"
     }
   }
 }

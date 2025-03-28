@@ -9,3 +9,15 @@ export interface InventoryAdjustmentDTO {
     status: string;
     total_value: number;
 }
+
+export interface PeriodEndDto {
+    id: string;
+    pe_no: string;
+    pe_date: string;
+    start_date: string;
+    end_date: string;
+    status: string;
+    created_by: string;
+    completed_at: string;
+    note: string;
+}

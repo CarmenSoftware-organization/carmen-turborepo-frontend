@@ -229,6 +229,16 @@
     },
     "InventoryAdjustment": {
       "title": "Inventory Adjustment"
+    },
+    "PeriodEnd": {
+      "title": "Period End",
+      "description": "Manage your inventory period end closings"
+    },
+    "PhysicalCountManagement": {
+      "title": "Physical Count Management"
+    },
+    "SpotCheck": {
+      "title": "Spot Check"
     }
   }
 }
