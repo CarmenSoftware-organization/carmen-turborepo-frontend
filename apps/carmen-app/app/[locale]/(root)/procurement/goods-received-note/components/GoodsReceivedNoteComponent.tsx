@@ -11,7 +11,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
-
+import { mockGoodsReceivedNotes } from "@/mock-data/procurement";
 export default function GoodsReceivedNoteComponent() {
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
@@ -85,7 +85,7 @@ export default function GoodsReceivedNoteComponent() {
         </div>
     );
 
-    const content = <GoodsReceivedNoteList />
+    const content = <GoodsReceivedNoteList goodsReceivedNotes={mockGoodsReceivedNotes} />
 
     return (
         <DataDisplayTemplate

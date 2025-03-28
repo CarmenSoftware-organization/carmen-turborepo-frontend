@@ -11,7 +11,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import CreditNoteList from "./CreditNoteList";
-
+import { mockCreditNotes } from "@/mock-data/procurement";
 export default function CreditNoteComponent() {
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
@@ -85,7 +85,7 @@ export default function CreditNoteComponent() {
         </div>
     );
 
-    const content = <CreditNoteList />
+    const content = <CreditNoteList creditNotes={mockCreditNotes} />
 
     return (
         <DataDisplayTemplate

@@ -184,7 +184,9 @@
     "delivery_date": "Delivery Date",
     "currency": "Currency",
     "net_amount": "Net Amount",
-    "tax_amount": "Tax Amount"
+    "tax_amount": "Tax Amount",
+    "invoice_date": "Invoice Date",
+    "grn_number": "GRN Number"
   },
   "Product": {
     "title": "Product"
