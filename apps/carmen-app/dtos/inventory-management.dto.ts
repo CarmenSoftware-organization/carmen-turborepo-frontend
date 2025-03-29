@@ -36,3 +36,16 @@ export const SpotCheckSchema = z.object({
 })
 
 export type SpotCheckDto = z.infer<typeof SpotCheckSchema>;
+
+export const PhysicalCountSchema = z.object({
+    id: z.string().optional(),
+    department: z.string(),
+    location: z.string(),
+    status: z.string(),
+    requested_by: z.string(),
+    date: z.string(),
+    checked_items: z.number(),
+    count_items: z.number(),
+})
+
+export type PhysicalCountDto = z.infer<typeof PhysicalCountSchema>;

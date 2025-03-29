@@ -1,4 +1,4 @@
-import { SpotCheckDto } from "@/dtos/inventory-management.dto";
+import { PhysicalCountDto } from "@/dtos/inventory-management.dto";
 import {
     Table,
     TableBody,
@@ -13,11 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import { ProgressCustom } from "@/components/ui-custom/progress-custom";
 import { Link } from "@/lib/navigation";
 import { calculateProgress } from "@/utils/calculate";
-interface SpotCheckListProps {
-    readonly spotCheckData: SpotCheckDto[];
+interface PcmListProps {
+    readonly physicalCountData: PhysicalCountDto[];
 }
 
-export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
+export default function PcmList({ physicalCountData }: PcmListProps) {
     return (
         <div className="space-y-4">
             <Table>
@@ -34,15 +34,15 @@ export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {spotCheckData.map((spotCheck, index) => {
-                        const progress = calculateProgress(spotCheck.checked_items, spotCheck.count_items)
+                    {physicalCountData.map((pcm, index) => {
+                        const progress = calculateProgress(pcm.checked_items, pcm.count_items)
                         return (
-                            <TableRow key={spotCheck.id}>
+                            <TableRow key={pcm.id}>
                                 <TableCell>{index + 1}</TableCell>
-                                <TableCell>{spotCheck.department}</TableCell>
-                                <TableCell>{spotCheck.location}</TableCell>
-                                <TableCell>{spotCheck.requested_by}</TableCell>
-                                <TableCell>{spotCheck.date}</TableCell>
+                                <TableCell>{pcm.department}</TableCell>
+                                <TableCell>{pcm.location}</TableCell>
+                                <TableCell>{pcm.requested_by}</TableCell>
+                                <TableCell>{pcm.date}</TableCell>
                                 <TableCell>
                                     <div className="flex flex-col gap-1">
                                         <ProgressCustom
@@ -51,19 +51,19 @@ export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
                                         <div className="text-xs">
                                             <strong>Progress {progress}%</strong>
                                             <span className="ml-2">
-                                                {spotCheck.checked_items} of {spotCheck.count_items} items checked
+                                                {pcm.checked_items} of {pcm.count_items} items checked
                                             </span>
                                         </div>
                                     </div>
                                 </TableCell>
                                 <TableCell>
                                     <Badge>
-                                        {spotCheck.status}
+                                        {pcm.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button variant="ghost" size={'sm'} asChild>
-                                        <Link href={`/inventory-management/spot-check/${spotCheck.id}`}>
+                                        <Link href={`/inventory-management/physical-count-management/${pcm.id}`}>
                                             <Eye className="h-4 w-4" />
                                         </Link>
                                     </Button>
@@ -79,3 +79,4 @@ export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
         </div>
     )
 }
+

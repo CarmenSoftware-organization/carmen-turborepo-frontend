@@ -1,7 +1,5 @@
+import PhysicalCountManagementComponent from "./components/PhysicalCountManagementComponent";
+
 export default function PhysicalCountManagementPage() {
-    return (
-        <div>
-            <h1>Physical Count Management</h1>
-        </div>
-    )
+    return <PhysicalCountManagementComponent />
 }

@@ -235,7 +235,8 @@
       "description": "Manage your inventory period end closings"
     },
     "PhysicalCountManagement": {
-      "title": "Physical Count Management"
+      "title": "Physical Count Management",
+      "description": "Manage your physical count process"
     },
     "SpotCheck": {
       "title": "Spot Check",

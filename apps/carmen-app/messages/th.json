@@ -234,7 +234,8 @@
       "description": "จัดการสิ้นงวดสินค้า"
     },
     "PhysicalCountManagement": {
-      "title": "ตรวจนับสินค้า"
+      "title": "ตรวจนับสินค้า",
+      "description": "จัดการกระบวนการตรวจนับสินค้า"
     },
     "SpotCheck": {
       "title": "ตรวจสอบสินค้า",
