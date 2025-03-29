@@ -8,16 +8,17 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ProgressCustom } from "@/components/ui-custom/progress-custom";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Link } from "@/lib/navigation";
 
-interface SportCheckGridProps {
+interface SpotCheckGridProps {
     readonly spotCheckData: SpotCheckDto[];
 }
 
-export default function SportCheckGrid({ spotCheckData }: SportCheckGridProps) {
+export default function SpotCheckGrid({ spotCheckData }: SpotCheckGridProps) {
     const calculateProgress = (checked: number, total: number) => {
         return total > 0 ? Math.round((checked / total) * 100) : 0;
     };
@@ -40,9 +41,12 @@ export default function SportCheckGrid({ spotCheckData }: SportCheckGridProps) {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex-grow">
-                                <div className="space-y-2">
+                                <div className="space-y-4">
                                     <div className="text-sm text-muted-foreground">
                                         Date: {spotCheck.date}
+                                    </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        Location: {spotCheck.location}
                                     </div>
                                     <div className="space-y-1">
                                         <ProgressCustom value={progress} />
@@ -56,13 +60,12 @@ export default function SportCheckGrid({ spotCheckData }: SportCheckGridProps) {
                                 </div>
                             </CardContent>
                             <CardFooter className="flex justify-end gap-2">
-                                <Button variant="ghost" size="icon">
-                                    <Eye className="h-4 w-4" />
+                                <Button variant="ghost" size={'sm'} asChild>
+                                    <Link href={`/inventory-management/spot-check/${spotCheck.id}`}>
+                                        <Eye className="h-4 w-4" />
+                                    </Link>
                                 </Button>
-                                <Button variant="ghost" size="icon">
-                                    <Pencil className="h-4 w-4" />
-                                </Button>
-                                <Button variant="ghost" size="icon">
+                                <Button variant="ghost" size={'sm'}>
                                     <Trash className="h-4 w-4" />
                                 </Button>
                             </CardFooter>

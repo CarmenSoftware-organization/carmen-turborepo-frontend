@@ -11,7 +11,8 @@ import { statusSpotCheckOptions } from "@/constants/options";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { mockDepartments, mockSpotCheckData } from "@/mock-data/inventory-management";
 import SpotCheckList from "./SpotCheckList";
-import SportCheckGrid from "./SportCheckGrid";
+import { Link } from "@/lib/navigation";
+import SpotCheckGrid from "./SpotCheckGrid";
 
 enum VIEW {
     List = 'list',
@@ -30,12 +31,15 @@ export default function SpotCheckComponent() {
     const actionButtons = (
         <div className="action-btn-container" data-id="spot-check-list-action-buttons">
             <Button
-                variant="outline"
+                variant={'default'}
                 size={'sm'}
                 data-id="spot-check-list-print-button"
+                asChild
             >
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
+                <Link href={'/inventory-management/spot-check/new'}>
+                    <Plus className="h-4 w-4" />
+                    New Spot Check
+                </Link>
             </Button>
         </div>
     );
@@ -97,7 +101,7 @@ export default function SpotCheckComponent() {
     const content = (
         <div>
             {view === VIEW.List && <SpotCheckList spotCheckData={mockSpotCheckData} />}
-            {view === VIEW.Grid && <SportCheckGrid spotCheckData={mockSpotCheckData} />}
+            {view === VIEW.Grid && <SpotCheckGrid spotCheckData={mockSpotCheckData} />}
         </div>
     )
 

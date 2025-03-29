@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface InventoryAdjustmentDTO {
     id: string;
     adj_no: string;
@@ -22,12 +24,15 @@ export interface PeriodEndDto {
     note: string;
 }
 
-export interface SpotCheckDto {
-    id: string;
-    department: string;
-    status: string;
-    requested_by: string;
-    date: string;
-    checked_items: number;
-    count_items: number;
-}
+export const SpotCheckSchema = z.object({
+    id: z.string().optional(),
+    department: z.string(),
+    location: z.string(),
+    status: z.string(),
+    requested_by: z.string(),
+    date: z.string(),
+    checked_items: z.number(),
+    count_items: z.number(),
+})
+
+export type SpotCheckDto = z.infer<typeof SpotCheckSchema>;

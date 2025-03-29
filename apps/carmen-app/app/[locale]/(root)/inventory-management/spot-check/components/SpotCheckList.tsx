@@ -8,9 +8,10 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ProgressCustom } from "@/components/ui-custom/progress-custom";
+import { Link } from "@/lib/navigation";
 interface SpotCheckListProps {
     readonly spotCheckData: SpotCheckDto[];
 }
@@ -25,6 +26,8 @@ export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead></TableHead>
+                        <TableHead>Department</TableHead>
                         <TableHead>Store Name</TableHead>
                         <TableHead>Requested By</TableHead>
                         <TableHead>Date</TableHead>
@@ -34,11 +37,13 @@ export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {spotCheckData.map((spotCheck) => {
+                    {spotCheckData.map((spotCheck, index) => {
                         const progress = calculateProgress(spotCheck.checked_items, spotCheck.count_items)
                         return (
                             <TableRow key={spotCheck.id}>
+                                <TableCell>{index + 1}</TableCell>
                                 <TableCell>{spotCheck.department}</TableCell>
+                                <TableCell>{spotCheck.location}</TableCell>
                                 <TableCell>{spotCheck.requested_by}</TableCell>
                                 <TableCell>{spotCheck.date}</TableCell>
                                 <TableCell>
@@ -60,13 +65,12 @@ export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
                                     </Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="ghost" size="icon">
-                                        <Eye className="h-4 w-4" />
+                                    <Button variant="ghost" size={'sm'} asChild>
+                                        <Link href={`/inventory-management/spot-check/${spotCheck.id}`}>
+                                            <Eye className="h-4 w-4" />
+                                        </Link>
                                     </Button>
-                                    <Button variant="ghost" size="icon">
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon">
+                                    <Button variant="ghost" size={'sm'}>
                                         <Trash className="h-4 w-4" />
                                     </Button>
                                 </TableCell>
