@@ -1,7 +1,4 @@
+import StockCardComponent from "./components/StockCardComponent";
 export default function StockCardPage() {
-    return (
-        <div>
-            <h1>Stock Card</h1>
-        </div>
-    )
+    return <StockCardComponent />
 }

@@ -49,3 +49,19 @@ export const PhysicalCountSchema = z.object({
 })
 
 export type PhysicalCountDto = z.infer<typeof PhysicalCountSchema>;
+
+
+export const StockCardSchema = z.object({
+    id: z.string().optional(),
+    code: z.string(),
+    name: z.string(),
+    category: z.string(),
+    status: z.boolean(),
+    count: z.number(),
+    unit: z.string(),
+    stock_level: z.string(),
+    value: z.number(),
+});
+
+export type StockCardDto = z.infer<typeof StockCardSchema>;
+

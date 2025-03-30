@@ -10,11 +10,10 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import PeriodEndList from "./PeriodEndList";
-import { mockPeriodEndData } from "@/mock-data/inventory-management";
+import { mockStockCardData } from "@/mock-data/inventory-management";
+import StockCardList from "./StockCardList";
 
-
-export default function PeriodEndComponent() {
+export default function StockCardComponent() {
     const t = useTranslations("InventoryManagement");
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
@@ -27,10 +26,10 @@ export default function PeriodEndComponent() {
         { key: 'name', label: 'Name' }
     ];
 
-    const title = t("PeriodEnd.title");
+    const title = t("StockCard.title");
 
     const actionButtons = (
-        <div className="action-btn-container" data-id="period-end-action-buttons">
+        <div className="action-btn-container" data-id="stock-card-action-buttons">
             <Button size={'sm'}>
                 <Plus className="h-4 w-4" />
                 {tCommon('add')}
@@ -39,7 +38,7 @@ export default function PeriodEndComponent() {
                 variant="outline"
                 className="group"
                 size={'sm'}
-                data-id="period-end-list-export-button"
+                data-id="stock-card-list-export-button"
             >
                 <FileDown className="h-4 w-4" />
                 {tCommon('export')}
@@ -47,7 +46,7 @@ export default function PeriodEndComponent() {
             <Button
                 variant="outline"
                 size={'sm'}
-                data-id="period-end-list-print-button"
+                data-id="stock-card-list-print-button"
             >
                 <Printer className="h-4 w-4" />
                 {tCommon('print')}
@@ -56,12 +55,12 @@ export default function PeriodEndComponent() {
     );
 
     const filters = (
-        <div className="filter-container" data-id="period-end-list-filters">
+        <div className="filter-container" data-id="stock-card-list-filters">
             <SearchInput
                 defaultValue={search}
                 onSearch={setSearch}
                 placeholder={tCommon('search')}
-                data-id="period-end-list-search-input"
+                data-id="stock-card-list-search-input"
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
@@ -70,13 +69,13 @@ export default function PeriodEndComponent() {
                     onChange={setStatus}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
-                    data-id="period-end-list-status-search-dropdown"
+                    data-id="stock-card-list-status-search-dropdown"
                 />
                 <SortComponent
                     fieldConfigs={sortFields}
                     sort={sort}
                     setSort={setSort}
-                    data-id="period-end-list-sort-dropdown"
+                    data-id="stock-card-list-sort-dropdown"
                 />
                 <Button size={'sm'}>
                     Add Filter
@@ -85,7 +84,7 @@ export default function PeriodEndComponent() {
         </div>
     );
 
-    const content = <PeriodEndList periodEnds={mockPeriodEndData} />
+    const content = <StockCardList stockCardData={mockStockCardData} />
 
     return (
         <DataDisplayTemplate

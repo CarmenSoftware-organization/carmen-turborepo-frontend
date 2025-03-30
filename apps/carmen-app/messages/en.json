@@ -241,6 +241,10 @@
     "SpotCheck": {
       "title": "Spot Check",
       "description": "Random inventory spot checks for accuracy verification"
+    },
+    "StockCard": {
+      "title": "Stock Card",
+      "description": "View and manage your stock card"
     }
   }
 }
