@@ -1,14 +1,14 @@
 "use client";
 import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
-import { Utensils, LayoutGrid, TrendingUp, Boxes, Factory, BookOpen, Tags } from "lucide-react";
+import { Utensils, LayoutGrid, TrendingUp, Boxes } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function OperationalPlanningPage() {
     const t = useTranslations('Modules');
     const subMenu: MenuCardItem[] = [
         {
-            name: t('OperationalPlanning.recipesManagement'),
-            href: '/operational-planning/recipes-management',
+            name: t('OperationalPlanning.RecipesManagement.title'),
+            href: '/operational-planning/recipe-management',
             icon: Utensils
         },
         {
@@ -25,21 +25,6 @@ export default function OperationalPlanningPage() {
             name: t('OperationalPlanning.inventoryPlanning'),
             href: '/operational-planning/inventory-planning',
             icon: Boxes
-        },
-        {
-            name: t('OperationalPlanning.productionPlanning'),
-            href: '/operational-planning/production-planning',
-            icon: Factory
-        },
-        {
-            name: t('OperationalPlanning.recipeManagement'),
-            href: '/operational-planning/recipe-management',
-            icon: BookOpen
-        },
-        {
-            name: t('OperationalPlanning.recipeCuisineTypes'),
-            href: '/operational-planning/recipe-management/cuisine-types',
-            icon: Tags
         }
     ]
     return (

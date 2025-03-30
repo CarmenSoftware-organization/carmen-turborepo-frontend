@@ -86,7 +86,12 @@
     },
     "operationalPlanning": "Operational Planning",
     "OperationalPlanning": {
-      "recipesManagement": "Recipes Management",
+      "RecipesManagement": {
+        "title": "Recipes Management",
+        "recipe": "Recipe",
+        "category": "Category",
+        "cuisineType": "Cuisine Type"
+      },
       "menuEngineering": "Menu Engineering",
       "demandForecasting": "Demand Forecasting",
       "inventoryPlanning": "Inventory Planning",

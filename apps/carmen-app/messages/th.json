@@ -81,7 +81,12 @@
     },
     "operationalPlanning": "การวางแผนการดำเนินงาน",
     "OperationalPlanning": {
-      "recipesManagement": "การจัดการสูตรอาหาร",
+      "RecipesManagement": {
+        "title": "การจัดการสูตรอาหาร",
+        "recipe": "สูตรอาหาร",
+        "category": "หมวดสูตรอาหาร",
+        "cuisineType": "ประเภทสูตรอาหาร"
+      },
       "menuEngineering": "การวางแผนการดำเนินงาน",
       "demandForecasting": "การพยากรณ์ความต้องการ",
       "inventoryPlanning": "การวางแผนสินค้า",

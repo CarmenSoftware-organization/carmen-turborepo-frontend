@@ -164,8 +164,23 @@ export const moduleItems: ModuleItem[] = [
         icon: CalendarClock,
         children: [
             {
-                labelKey: "Modules.OperationalPlanning.recipesManagement",
-                href: "/operational-planning/recipes-management",
+                labelKey: "Modules.OperationalPlanning.RecipesManagement.title",
+                href: "/operational-planning/recipe-management",
+                children: [
+                    {
+                        labelKey: "Modules.OperationalPlanning.RecipesManagement.recipe",
+                        href: "/operational-planning/recipe-management/recipe",
+                    },
+                    {
+                        labelKey: "Modules.OperationalPlanning.RecipesManagement.category",
+                        href: "/operational-planning/recipe-management/category",
+                    },
+                    {
+                        labelKey: "Modules.OperationalPlanning.RecipesManagement.cuisineType",
+                        href: "/operational-planning/recipe-management/cuisine-type",
+                    },
+
+                ]
             },
             {
                 labelKey: "Modules.OperationalPlanning.menuEngineering",
@@ -178,20 +193,7 @@ export const moduleItems: ModuleItem[] = [
             {
                 labelKey: "Modules.OperationalPlanning.inventoryPlanning",
                 href: "/operational-planning/inventory-planning",
-            },
-            {
-                labelKey: "Modules.OperationalPlanning.productionPlanning",
-                href: "/operational-planning/production-planning",
-            },
-            {
-                labelKey: "Modules.OperationalPlanning.recipeManagement",
-                href: "/operational-planning/recipe-management",
-            },
-            {
-                labelKey: "Modules.OperationalPlanning.recipeCuisineTypes",
-                href: "/operational-planning/recipe-management/cuisine-types",
-            },
-
+            }
         ]
     },
     {
