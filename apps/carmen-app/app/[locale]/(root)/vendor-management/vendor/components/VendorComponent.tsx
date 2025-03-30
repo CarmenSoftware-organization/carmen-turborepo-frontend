@@ -11,6 +11,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
+import { mockVendorData } from "@/mock-data/vendor-management";
 
 export default function VendorComponent() {
     const tCommon = useTranslations('Common');
@@ -85,7 +86,7 @@ export default function VendorComponent() {
         </div>
     );
 
-    const content = <VendorList />
+    const content = <VendorList vendors={mockVendorData} />
 
     return (
         <DataDisplayTemplate

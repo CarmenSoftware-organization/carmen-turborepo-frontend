@@ -11,6 +11,7 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PriceListList from "./PriceListList";
+import { mockPriceListData } from "@/mock-data/vendor-management";
 
 export default function PriceListComponent() {
     const tCommon = useTranslations('Common');
@@ -85,7 +86,7 @@ export default function PriceListComponent() {
         </div>
     );
 
-    const content = <PriceListList />
+    const content = <PriceListList priceLists={mockPriceListData} />
 
     return (
         <DataDisplayTemplate
