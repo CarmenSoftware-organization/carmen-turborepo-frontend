@@ -162,7 +162,8 @@
     "print": "Print",
     "status": "Status",
     "selectStatus": "Select Status",
-    "sort": "Sort"
+    "sort": "Sort",
+    "import": "Import"
   },
   "TableHeader": {
     "name": "Name",
@@ -250,6 +251,12 @@
     "StockCard": {
       "title": "Stock Card",
       "description": "View and manage your stock card"
+    }
+  },
+  "OperationalPlanning": {
+    "CuisineType": {
+      "title": "Cuisine Type",
+      "description": "Manage your cuisine type"
     }
   }
 }

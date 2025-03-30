@@ -1,4 +1,6 @@
+import CuisineComponent from "./components/CuisineComponent";
+
 export default function CuisineTypePage() {
-    return <div>Cuisine Type</div>
+    return <CuisineComponent />
 }
 
