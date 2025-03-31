@@ -7,6 +7,7 @@ export const getAllDepartments = async (token: string) => {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
         },
     });
     const data = await response.json();

@@ -18,6 +18,7 @@ import DepartmentList from "./DepartmentList";
 import DepartmentDialog from "./DepartmentDialog";
 import { createDepartment, deleteDepartment, getAllDepartments, updateDepartment } from "@/services/department.service";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import SignInDialog from "@/components/SignInDialog";
 
 export default function DepartmentComponent() {
     const { token } = useAuth();
@@ -31,6 +32,7 @@ export default function DepartmentComponent() {
     const [isLoading, setIsLoading] = useState(true);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState<DepartmentDto | undefined>();
 
     useEffect(() => {
@@ -39,6 +41,11 @@ export default function DepartmentComponent() {
             try {
                 setIsLoading(true);
                 const data = await getAllDepartments(token);
+                console.log('data component', data);
+                if (data.statusCode === 401) {
+                    setLoginDialogOpen(true);
+                    return;
+                }
                 setDepartments(data);
             } catch (error) {
                 console.error('Error fetching departments:', error);
@@ -221,6 +228,10 @@ export default function DepartmentComponent() {
                 open={deleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleConfirmDelete}
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
             />
         </div>
     )
