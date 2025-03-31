@@ -257,7 +257,7 @@ const renderItemContent = (item: CategoryItem) => {
 
 export default function SystemCategory() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {systemCategories.map((category) => {
                 const Icon = category.icon;
                 return (
