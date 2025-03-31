@@ -1,7 +1,5 @@
+import PosComponent from "./components/PosComponent";
+
 export default function POSPage() {
-    return (
-        <div>
-            <h1>POS</h1>
-        </div>
-    );
+    return <PosComponent />
 }
