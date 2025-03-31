@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PurchaseRequestDto } from "@/dtos/procurement.dto";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -12,6 +12,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 
 interface PurchaseRequestListProps {
     readonly purchaseRequests: PurchaseRequestDto[];
@@ -62,11 +63,10 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center justify-end gap-1">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                            <Eye className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                            <Pencil className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent" asChild>
+                                            <Link href={`/procurement/purchase-request/${pr.id}`}>
+                                                <Eye className="h-4 w-4" />
+                                            </Link>
                                         </Button>
                                         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
                                             <Trash className="h-4 w-4" />
@@ -92,11 +92,10 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                     <CardTitle className="text-base">{pr.title}</CardTitle>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                        <Eye className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                        <Pencil className="h-4 w-4" />
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent" asChild>
+                                        <Link href={`/procurement/purchase-request/${pr.id}`}>
+                                            <Eye className="h-4 w-4" />
+                                        </Link>
                                     </Button>
                                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
                                         <Trash className="h-4 w-4" />

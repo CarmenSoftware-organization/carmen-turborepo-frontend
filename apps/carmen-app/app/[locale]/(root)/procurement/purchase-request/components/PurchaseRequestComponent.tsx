@@ -12,6 +12,7 @@ import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseRequestList from "./PurchaseRequestList";
 import { mockPurchaseRequests } from "@/mock-data/procurement";
+import { Link } from "@/lib/navigation";
 
 export default function PurchaseRequestComponent() {
     const tCommon = useTranslations('Common');
@@ -33,10 +34,6 @@ export default function PurchaseRequestComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="purchase-request-action-buttons">
-            <Button size={'sm'}>
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
-            </Button>
             <Button
                 variant="outline"
                 className="group"
@@ -53,6 +50,12 @@ export default function PurchaseRequestComponent() {
             >
                 <Printer className="h-4 w-4" />
                 {tCommon('print')}
+            </Button>
+            <Button size={'sm'} asChild>
+                <Link href="/procurement/purchase-request/new">
+                    <Plus className="h-4 w-4" />
+                    {tCommon('add')}
+                </Link>
             </Button>
         </div>
     );

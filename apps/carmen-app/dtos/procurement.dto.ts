@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export interface PendingApprovalDto {
     id: string;
     title: string;
@@ -17,19 +19,20 @@ export interface RecentApprovalDto extends PendingApprovalDto {
     date_approved: string;
 }
 
-export interface PurchaseRequestDto {
-    id: string;
-    title: string;
-    status: string;
-    date_created: string;
-    type: string;
-    description: string;
-    requestor: string;
-    department: string;
-    amount: number;
-    workflow_status: string;
-}
+export const prFormSchema = z.object({
+    id: z.string().optional(),
+    title: z.string().min(1, "Title is required"),
+    status: z.string().optional(),
+    date_created: z.string().optional(),
+    type: z.string().min(1, "Type is required"),
+    description: z.string().min(1, "Description is required"),
+    requestor: z.string().min(1, "Requestor is required"),
+    department: z.string().min(1, "Department is required"),
+    amount: z.number().min(0, "Amount must be greater than 0"),
+    workflow_status: z.string().optional(),
+});
 
+export type PurchaseRequestDto = z.infer<typeof prFormSchema>;
 
 export interface PurchaseOrderlDto {
     id: string;
