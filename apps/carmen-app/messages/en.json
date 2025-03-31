@@ -163,7 +163,8 @@
     "status": "Status",
     "selectStatus": "Select Status",
     "sort": "Sort",
-    "import": "Import"
+    "import": "Import",
+    "scan": "Scan"
   },
   "TableHeader": {
     "name": "Name",
