@@ -8,11 +8,13 @@ import { ItemDetailPrDto } from "@/dtos/procurement.dto";
 export default function ItemPr() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [items, setItems] = useState<ItemDetailPrDto[]>(mockItemDetailPrData);
 
     const handleSubmit = async (data: ItemDetailPrDto) => {
         try {
             setIsLoading(true);
             console.log('Form submitted:', data);
+            setItems(prevItems => [...prevItems, { ...data, id: Date.now().toString() }]);
             setIsDialogOpen(false);
         } catch (error) {
             console.error('Error submitting form:', error);
@@ -45,7 +47,7 @@ export default function ItemPr() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {mockItemDetailPrData.map((item) => (
+                    {items.map((item) => (
                         <TableRow key={item.id}>
                             <TableCell>{item.location}</TableCell>
                             <TableCell>{item.product_name}</TableCell>
