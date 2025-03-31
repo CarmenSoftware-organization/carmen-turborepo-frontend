@@ -25,5 +25,9 @@
   "workspaces": [
     "apps/*",
     "packages/*"
+  ],
+  "trustedDependencies": [
+    "carmen-inventory",
+    "snappy"
   ]
 }
