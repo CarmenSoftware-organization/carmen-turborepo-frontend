@@ -1,4 +1,6 @@
+import CategoryRecipeComponent from "./components/CategoryRecipeComponent";
+
 export default function RecipeCategoryPage() {
-    return <div>Recipe Category</div>
+    return <CategoryRecipeComponent />
 }
 
