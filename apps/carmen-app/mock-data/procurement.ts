@@ -1,5 +1,5 @@
 import { NotificationDto } from "@/dtos/notification.dto";
-import { CreditNoteDto, FlaggedDto, GoodsReceivedNoteDto, ItemDetailPrDto, PendingApprovalDto, PurchaseOrderlDto, PurchaseRequestDto, PurchaseRequestTemplateDto, RecentApprovalDto } from "@/dtos/procurement.dto";
+import { ActivityPrDto, AttachmentPrDto, BudgetPrDto, CreditNoteDto, FlaggedDto, GoodsReceivedNoteDto, ItemDetailPrDto, PendingApprovalDto, PurchaseOrderlDto, PurchaseRequestDto, PurchaseRequestTemplateDto, RecentApprovalDto, WorkflowPrDto } from "@/dtos/procurement.dto";
 
 export const mockPendingApprovals: PendingApprovalDto[] = [
     {
@@ -854,3 +854,189 @@ export const mockItemDetailPrData: ItemDetailPrDto[] = [
         status: "Approved",
     }
 ];
+
+export const mockBudgetPrData: BudgetPrDto[] = [
+    {
+        id: "BUD-001",
+        location: "New York Office",
+        category: "IT Equipment",
+        total_budget: 50000,
+        dept_head_approval: 45000,
+        po_approval: 42000,
+        actual_gl: 40000,
+        available_budget: 10000,
+        current_budget: 5000,
+    },
+    {
+        id: "BUD-002",
+        location: "Los Angeles Warehouse",
+        category: "Office Supplies",
+        total_budget: 20000,
+        dept_head_approval: 18000,
+        po_approval: 16000,
+        actual_gl: 15000,
+        available_budget: 5000,
+        current_budget: 3000,
+    },
+    {
+        id: "BUD-003",
+        location: "Chicago HQ",
+        category: "Marketing",
+        total_budget: 75000,
+        dept_head_approval: 70000,
+        po_approval: 65000,
+        actual_gl: 60000,
+        available_budget: 15000,
+        current_budget: 7000,
+    },
+    {
+        id: "BUD-004",
+        location: "Houston Branch",
+        category: "R&D",
+        total_budget: 90000,
+        dept_head_approval: 85000,
+        po_approval: 82000,
+        actual_gl: 80000,
+        available_budget: 10000,
+        current_budget: 4000,
+    },
+    {
+        id: "BUD-005",
+        location: "San Francisco Office",
+        category: "Operations",
+        total_budget: 60000,
+        dept_head_approval: 55000,
+        po_approval: 50000,
+        actual_gl: 48000,
+        available_budget: 12000,
+        current_budget: 6000,
+    },
+];
+
+export const mockWorkflowPrData: WorkflowPrDto[] = [
+    {
+        id: "WF-001",
+        stage: "Initial Review",
+        approver: "John Doe",
+        status: "Approved",
+        date_approved: "2024-03-10",
+        comments: "Reviewed and approved without any issues.",
+    },
+    {
+        id: "WF-002",
+        stage: "Department Head Approval",
+        approver: "Jane Smith",
+        status: "Pending",
+        date_approved: "",
+        comments: "Waiting for department head approval.",
+    },
+    {
+        id: "WF-003",
+        stage: "Finance Review",
+        approver: "Michael Johnson",
+        status: "Rejected",
+        date_approved: "2024-03-12",
+        comments: "Budget exceeded the allocated amount.",
+    },
+    {
+        id: "WF-004",
+        stage: "Final Approval",
+        approver: "Emily Davis",
+        status: "Approved",
+        date_approved: "2024-03-15",
+        comments: "All conditions met, final approval granted.",
+    },
+    {
+        id: "WF-005",
+        stage: "Initial Review",
+        approver: "William Brown",
+        status: "Approved",
+        date_approved: "2024-03-05",
+        comments: "Checked all documents, everything is fine.",
+    }
+];
+
+
+export const mockAttachments: AttachmentPrDto[] = [
+    {
+        id: "1",
+        name: "Purchase_Request_Form.pdf",
+        type: "PDF",
+        size: "2.5 MB",
+        uploadedBy: "John Doe",
+        uploadedAt: "2024-03-20 14:30",
+    },
+    {
+        id: "2",
+        name: "Budget_Details.csv",
+        type: "CSV",
+        size: "1.2 MB",
+        uploadedBy: "Jane Smith",
+        uploadedAt: "2024-03-20 15:45",
+    },
+    {
+        id: "3",
+        name: "Quotation_Comparison.xlsx",
+        type: "Excel",
+        size: "3.8 MB",
+        uploadedBy: "Mike Johnson",
+        uploadedAt: "2024-03-20 16:15",
+    },
+];
+
+
+
+export const mockActivities: ActivityPrDto[] = [
+    {
+        id: "1",
+        timestamp: "2024-03-20 14:30",
+        action: {
+            label: "Created",
+            variant: "default"
+        },
+        user: "John Doe",
+        details: "Purchase request created"
+    },
+    {
+        id: "2",
+        timestamp: "2024-03-20 15:45",
+        action: {
+            label: "Submitted",
+            variant: "success"
+        },
+        user: "John Doe",
+        details: "Purchase request submitted for approval"
+    },
+    {
+        id: "3",
+        timestamp: "2024-03-20 16:15",
+        action: {
+            label: "Approved",
+            variant: "success"
+        },
+        user: "Jane Smith",
+        details: "Purchase request approved by Purchasing Department"
+    },
+    {
+        id: "4",
+        timestamp: "2024-03-20 17:30",
+        action: {
+            label: "Rejected",
+            variant: "destructive"
+        },
+        user: "Mike Johnson",
+        details: "Purchase request rejected by Finance Department - Budget exceeded"
+    },
+    {
+        id: "5",
+        timestamp: "2024-03-20 18:00",
+        action: {
+            label: "Modified",
+            variant: "warning"
+        },
+        user: "John Doe",
+        details: "Purchase request modified based on feedback"
+    }
+];
+
+

@@ -51,6 +51,26 @@ export interface ItemDetailPrDto {
     status: string;
 };
 
+export interface BudgetPrDto {
+    id: string;
+    location: string;
+    category: string;
+    total_budget: number;
+    dept_head_approval: number;
+    po_approval: number;
+    actual_gl: number;
+    available_budget: number;
+    current_budget: number;
+}
+export interface WorkflowPrDto {
+    id: string;
+    stage: string;
+    approver: string;
+    status: string;
+    date_approved: string;
+    comments: string;
+}
+
 export interface PurchaseOrderlDto {
     id: string;
     department: string;
@@ -62,7 +82,29 @@ export interface PurchaseOrderlDto {
     net_amount: number;
     tax_amount: number;
     amount: number;
+};
+
+
+export interface AttachmentPrDto {
+    id: string;
+    name: string;
+    type: string;
+    size: string;
+    uploadedBy: string;
+    uploadedAt: string;
+};
+
+export interface ActivityPrDto {
+    id: string;
+    timestamp: string;
+    action: {
+        label: string;
+        variant: "default" | "success" | "warning" | "destructive";
+    };
+    user: string;
+    details: string;
 }
+
 
 export interface GoodsReceivedNoteDto {
     id: string;

@@ -106,28 +106,28 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                         <CardContent className="p-4 pt-0">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">{t('date')}</p>
-                                    <p className="text-sm font-medium">{pr.date_created}</p>
+                                    <p className="text-xs text-muted-foreground">{t('date')}</p>
+                                    <p className="text-xs font-medium">{pr.date_created}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">{t('type')}</p>
-                                    <p className="text-sm font-medium">{pr.type}</p>
+                                    <p className="text-xs text-muted-foreground">{t('type')}</p>
+                                    <p className="text-xs font-medium">{pr.type}</p>
                                 </div>
                                 <div className="space-y-1 col-span-2">
-                                    <p className="text-sm text-muted-foreground">{t('description')}</p>
-                                    <p className="text-sm font-medium line-clamp-2">{pr.description}</p>
+                                    <p className="text-xs text-muted-foreground">{t('description')}</p>
+                                    <p className="text-xs font-medium line-clamp-2">{pr.description}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">{t('department')}</p>
-                                    <p className="text-sm font-medium">{pr.department}</p>
+                                    <p className="text-xs text-muted-foreground">{t('department')}</p>
+                                    <p className="text-xs font-medium">{pr.department}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">{t('requestor')}</p>
-                                    <p className="text-sm font-medium">{pr.requestor}</p>
+                                    <p className="text-xs text-muted-foreground">{t('requestor')}</p>
+                                    <p className="text-xs font-medium">{pr.requestor}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">{t('amount')}</p>
-                                    <p className="text-sm font-medium">{pr.amount}</p>
+                                    <p className="text-xs text-muted-foreground">{t('amount')}</p>
+                                    <p className="text-xs font-medium">{pr.amount}</p>
                                 </div>
                             </div>
                         </CardContent>

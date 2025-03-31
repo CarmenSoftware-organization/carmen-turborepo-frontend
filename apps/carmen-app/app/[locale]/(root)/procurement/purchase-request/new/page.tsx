@@ -1,3 +1,4 @@
+"use client";
 import PrForm from "../components/PrForm";
 import { formType } from "@/dtos/form.dto";
 
