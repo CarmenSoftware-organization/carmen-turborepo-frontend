@@ -30,3 +30,30 @@ export const CategoryRecipeSchema = z.object({
 
 export type CategoryRecipeDto = z.infer<typeof CategoryRecipeSchema>;
 
+export const RecipeSchema = z.object({
+    id: z.number().optional(),
+    name: z.string(),
+    ingredients: z.array(z.string()),
+    instructions: z.array(z.string()),
+    prepTimeMinutes: z.number(),
+    cookTimeMinutes: z.number(),
+    serving: z.number(),
+    difficulty: z.string(),
+    cuisine: z.string(),
+    caloriesPerServing: z.number(),
+    tags: z.array(z.string()),
+    userId: z.number(),
+    image: z.string(),
+    rating: z.number(),
+    reviewCount: z.number(),
+    mealType: z.array(z.string()),
+});
+
+export type RecipeDto = z.infer<typeof RecipeSchema>;
+
+export interface RecipeResponse {
+    recipes: RecipeDto[];
+    total: number;
+    skip: number;
+    limit: number;
+}

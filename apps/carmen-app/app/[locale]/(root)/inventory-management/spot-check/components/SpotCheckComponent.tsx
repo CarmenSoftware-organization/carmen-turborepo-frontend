@@ -13,19 +13,14 @@ import { mockDepartments, mockSpotCheckData } from "@/mock-data/inventory-manage
 import SpotCheckList from "./SpotCheckList";
 import { Link } from "@/lib/navigation";
 import SpotCheckGrid from "./SpotCheckGrid";
-
-enum VIEW {
-    List = 'list',
-    Grid = 'grid',
-}
-
+import { VIEW } from "@/constants/enum";
 export default function SpotCheckComponent() {
     const t = useTranslations("InventoryManagement");
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
-    const [view, setView] = useState<VIEW>(VIEW.List);
+    const [view, setView] = useState<VIEW>(VIEW.LIST);
     const title = t("SpotCheck.title");
 
     const actionButtons = (
@@ -80,16 +75,16 @@ export default function SpotCheckComponent() {
                     <Building className="h-4 w-4" />
                 </Button>
                 <Button
-                    variant={view === VIEW.List ? 'default' : 'outline'}
+                    variant={view === VIEW.LIST ? 'default' : 'outline'}
                     size={'sm'}
-                    onClick={() => setView(VIEW.List)}
+                    onClick={() => setView(VIEW.LIST)}
                 >
                     <List className="h-4 w-4" />
                 </Button>
                 <Button
-                    variant={view === VIEW.Grid ? 'default' : 'outline'}
+                    variant={view === VIEW.GRID ? 'default' : 'outline'}
                     size={'sm'}
-                    onClick={() => setView(VIEW.Grid)}
+                    onClick={() => setView(VIEW.GRID)}
                 >
                     <Grid className="h-4 w-4" />
                 </Button>
@@ -100,8 +95,8 @@ export default function SpotCheckComponent() {
 
     const content = (
         <div>
-            {view === VIEW.List && <SpotCheckList spotCheckData={mockSpotCheckData} />}
-            {view === VIEW.Grid && <SpotCheckGrid spotCheckData={mockSpotCheckData} />}
+            {view === VIEW.LIST && <SpotCheckList spotCheckData={mockSpotCheckData} />}
+            {view === VIEW.GRID && <SpotCheckGrid spotCheckData={mockSpotCheckData} />}
         </div>
     )
 
