@@ -35,8 +35,8 @@ export default function RecipeList({ data, isLoading }: RecipeListProps) {
     }
 
     return (
-        <ScrollArea className="h-[calc(100vh-200px)]">
-            <div className="rounded-md border">
+        <ScrollArea className="h-[calc(100vh-230px)]">
+            <div>
                 <Table>
                     <TableHeader>
                         <TableRow>

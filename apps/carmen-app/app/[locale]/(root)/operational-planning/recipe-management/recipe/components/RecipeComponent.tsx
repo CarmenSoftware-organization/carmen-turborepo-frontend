@@ -131,17 +131,14 @@ export default function RecipeComponent() {
     );
 
     const content = (
-        <div className="space-y-4">
+        <div className="space-y-2">
             {view === VIEW.LIST && <RecipeList data={recipe} isLoading={isLoading} />}
             {view === VIEW.GRID && <RecipeGrid data={recipe} isLoading={isLoading} />}
-
-            <div className="flex items-center justify-center mt-4">
-                <PaginationComponent
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handleSkip}
-                />
-            </div>
+            <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handleSkip}
+            />
         </div>
     )
 

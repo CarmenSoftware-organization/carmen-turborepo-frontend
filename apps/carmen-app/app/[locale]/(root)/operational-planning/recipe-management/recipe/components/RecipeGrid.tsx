@@ -33,8 +33,8 @@ export default function RecipeGrid({ data, isLoading }: Props) {
     }
 
     return (
-        <ScrollArea className="h-[calc(100vh-200px)]">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-2">
+        <ScrollArea className="h-[calc(100vh-230px)]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-1">
                 {data.map((recipe) => (
                     <Card
                         key={recipe.id}
