@@ -25,7 +25,7 @@ const fields = [
 
 export default function TransactionSummary() {
     return (
-        <Table>
+        <Table className="mt-4">
             <TableHeader>
                 <TableRow>
                     {fields.map((field) => (

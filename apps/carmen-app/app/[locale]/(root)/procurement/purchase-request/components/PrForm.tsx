@@ -23,7 +23,7 @@ import WorkflowPr from "./WorkflowPr";
 import AttachmentPr from "./AttachmentPr";
 import ActivityPr from "./ActivityPr";
 import TransactionSummary from "./TransactionSummary";
-
+import { ScrollArea } from "@/components/ui/scroll-area";
 interface PrFormProps {
     readonly mode: formType;
     readonly initValues?: PurchaseRequestDto;
@@ -50,144 +50,146 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
 
     return (
         <Card className="w-full p-4 space-y-4">
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <h1 className="text-2xl font-bold">
-                            {mode === formType.ADD ? "Create Purchase Request" : "Edit Purchase Request"}
-                        </h1>
-                        <div className="flex justify-end gap-2">
-                            <Button variant="outline" type="button" onClick={() => router.back()}>
-                                Cancel
-                            </Button>
-                            <Button type="submit">
-                                {mode === formType.ADD ? "Create" : "Update"}
-                            </Button>
+            <ScrollArea className="h-[calc(110vh-200px)]">
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                        <div className="flex justify-between items-center">
+                            <h1 className="text-2xl font-bold">
+                                {mode === formType.ADD ? "Create Purchase Request" : "Edit Purchase Request"}
+                            </h1>
+                            <div className="flex justify-end gap-2">
+                                <Button variant="outline" type="button" onClick={() => router.back()}>
+                                    Cancel
+                                </Button>
+                                <Button type="submit">
+                                    {mode === formType.ADD ? "Create" : "Update"}
+                                </Button>
+                            </div>
                         </div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-2">
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Title</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter title" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="type"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Type</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter type" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-2">
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Title</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter title" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="type"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Type</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter type" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="requestor"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Requestor</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter requestor" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="department"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Department</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter department" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="amount"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Amount</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="number"
+                                                placeholder="Enter amount"
+                                                {...field}
+                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
 
                         <FormField
                             control={form.control}
-                            name="requestor"
+                            name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Requestor</FormLabel>
+                                    <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="Enter requestor" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="department"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Department</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter department" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="amount"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Amount</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="number"
-                                            placeholder="Enter amount"
+                                        <Textarea
+                                            placeholder="Enter description"
+                                            className="resize-none min-h-[100px]"
                                             {...field}
-                                            onChange={(e) => field.onChange(Number(e.target.value))}
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                    </div>
-
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Description</FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                        placeholder="Enter description"
-                                        className="resize-none min-h-[100px]"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
 
 
-                </form>
-            </Form>
+                    </form>
+                </Form>
 
-            <Tabs defaultValue={TAB_PR.ITEM}>
-                <TabsList className="w-full">
-                    <TabsTrigger value={TAB_PR.ITEM} className="w-full">Items</TabsTrigger>
-                    <TabsTrigger value={TAB_PR.BUDGET} className="w-full">Budget</TabsTrigger>
-                    <TabsTrigger value={TAB_PR.WORKFLOW} className="w-full">Workflow</TabsTrigger>
-                    <TabsTrigger value={TAB_PR.ATTACHMENT} className="w-full">Attachments</TabsTrigger>
-                    <TabsTrigger value={TAB_PR.ACTIVITY} className="w-full">Activity</TabsTrigger>
-                </TabsList>
-                <TabsContent value={TAB_PR.ITEM}>
-                    <ItemPr />
-                </TabsContent>
-                <TabsContent value={TAB_PR.BUDGET}>
-                    <BudgetPr />
-                </TabsContent>
-                <TabsContent value={TAB_PR.WORKFLOW}>
-                    <WorkflowPr />
-                </TabsContent>
-                <TabsContent value={TAB_PR.ATTACHMENT}>
-                    <AttachmentPr />
-                </TabsContent>
-                <TabsContent value={TAB_PR.ACTIVITY}>
-                    <ActivityPr />
-                </TabsContent>
-            </Tabs>
-            <TransactionSummary />
+                <Tabs defaultValue={TAB_PR.ITEM}>
+                    <TabsList className="w-full mt-4">
+                        <TabsTrigger value={TAB_PR.ITEM} className="w-full">Items</TabsTrigger>
+                        <TabsTrigger value={TAB_PR.BUDGET} className="w-full">Budget</TabsTrigger>
+                        <TabsTrigger value={TAB_PR.WORKFLOW} className="w-full">Workflow</TabsTrigger>
+                        <TabsTrigger value={TAB_PR.ATTACHMENT} className="w-full">Attachments</TabsTrigger>
+                        <TabsTrigger value={TAB_PR.ACTIVITY} className="w-full">Activity</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value={TAB_PR.ITEM}>
+                        <ItemPr />
+                    </TabsContent>
+                    <TabsContent value={TAB_PR.BUDGET}>
+                        <BudgetPr />
+                    </TabsContent>
+                    <TabsContent value={TAB_PR.WORKFLOW}>
+                        <WorkflowPr />
+                    </TabsContent>
+                    <TabsContent value={TAB_PR.ATTACHMENT}>
+                        <AttachmentPr />
+                    </TabsContent>
+                    <TabsContent value={TAB_PR.ACTIVITY}>
+                        <ActivityPr />
+                    </TabsContent>
+                </Tabs>
+                <TransactionSummary />
+            </ScrollArea>
         </Card>
     );
 }

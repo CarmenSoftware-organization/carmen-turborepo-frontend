@@ -34,6 +34,23 @@ export const prFormSchema = z.object({
 
 export type PurchaseRequestDto = z.infer<typeof prFormSchema>;
 
+export interface ItemDetailPrDto {
+    id: string;
+    location: string;
+    product_name: string;
+    description: string;
+    order_unit: string;
+    inv_unit: string;
+    request_qty: number;
+    on_order_qty: number;
+    approved_qty: number;
+    on_hand_qty: number;
+    base_currency: string;
+    price: number;
+    total_price: number;
+    status: string;
+};
+
 export interface PurchaseOrderlDto {
     id: string;
     department: string;
