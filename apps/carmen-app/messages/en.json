@@ -138,7 +138,10 @@
       "licenseManagement": "License Management",
       "securitySettings": "Security Settings",
       "dataBackupAndRecovery": "Data Backup and Recovery",
-      "systemIntegrations": "System Integrations"
+      "SystemIntegrations": {
+        "title": "System Integrations",
+        "pos": "POS"
+      }
     },
     "helpAndSupport": "Help and Support",
     "HelpAndSupport": {

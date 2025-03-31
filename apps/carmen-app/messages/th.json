@@ -133,7 +133,10 @@
       "licenseManagement": "การจัดการสิทธิ์ใช้งาน",
       "securitySettings": "การตั้งค่าความปลอดภัย",
       "dataBackupAndRecovery": "การสำรองข้อมูลและการกู้คืน",
-      "systemIntegrations": "การรวมระบบ"
+      "SystemIntegrations": {
+        "title": "การรวมระบบ",
+        "pos": "ระบบสะสมคะแนน"
+      }
     },
     "helpAndSupport": "การสนับสนุน",
     "HelpAndSupport": {

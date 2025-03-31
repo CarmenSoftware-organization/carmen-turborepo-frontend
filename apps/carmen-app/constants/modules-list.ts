@@ -315,7 +315,7 @@ export const moduleItems: ModuleItem[] = [
             },
             {
                 labelKey: "Modules.SystemAdministration.generalSettings",
-                href: "/system-administration/general-settings",
+                href: "/system-administration/general-setting",
             },
             {
                 labelKey: "Modules.SystemAdministration.notificationPreferences",
@@ -327,15 +327,21 @@ export const moduleItems: ModuleItem[] = [
             },
             {
                 labelKey: "Modules.SystemAdministration.securitySettings",
-                href: "/system-administration/security-settings",
+                href: "/system-administration/security-setting",
             },
             {
                 labelKey: "Modules.SystemAdministration.dataBackupAndRecovery",
                 href: "/system-administration/data-backup-and-recovery",
             },
             {
-                labelKey: "Modules.SystemAdministration.systemIntegrations",
-                href: "/system-administration/system-integrations",
+                labelKey: "Modules.SystemAdministration.SystemIntegrations.title",
+                href: "/system-administration/system-integration",
+                children: [
+                    {
+                        labelKey: "Modules.SystemAdministration.SystemIntegrations.pos",
+                        href: "/system-administration/system-integration/pos",
+                    },
+                ]
             },
         ]
     },
