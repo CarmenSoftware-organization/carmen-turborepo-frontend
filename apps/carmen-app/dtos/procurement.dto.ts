@@ -34,22 +34,24 @@ export const prFormSchema = z.object({
 
 export type PurchaseRequestDto = z.infer<typeof prFormSchema>;
 
-export interface ItemDetailPrDto {
-    id: string;
-    location: string;
-    product_name: string;
-    description: string;
-    order_unit: string;
-    inv_unit: string;
-    request_qty: number;
-    on_order_qty: number;
-    approved_qty: number;
-    on_hand_qty: number;
-    base_currency: string;
-    price: number;
-    total_price: number;
-    status: string;
-};
+export const ItemPrSchema = z.object({
+    id: z.string().optional(),
+    location: z.string().min(1, "Location is required"),
+    product_name: z.string().min(1, "Product name is required"),
+    description: z.string().min(1, "Description is required"),
+    order_unit: z.string().min(1, "Order unit is required"),
+    inv_unit: z.string().min(1, "Inventory unit is required"),
+    request_qty: z.number().min(1, "Request quantity must be greater than 0"),
+    on_order_qty: z.number().min(0, "On order quantity must be 0 or greater"),
+    approved_qty: z.number().min(0, "Approved quantity must be 0 or greater"),
+    on_hand_qty: z.number().min(0, "On hand quantity must be 0 or greater"),
+    base_currency: z.string().min(1, "Base currency is required"),
+    price: z.number().min(0, "Price must be 0 or greater"),
+    total_price: z.number().min(0, "Total price must be 0 or greater"),
+    status: z.string().optional(),
+});
+
+export type ItemDetailPrDto = z.infer<typeof ItemPrSchema>;
 
 export interface BudgetPrDto {
     id: string;
