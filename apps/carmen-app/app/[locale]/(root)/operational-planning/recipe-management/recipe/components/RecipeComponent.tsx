@@ -11,11 +11,11 @@ import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { VIEW } from "@/constants/enum";
-import RecipeList from "./RecipeList";
-import RecipeGrid from "./RecipeGrid";
 import { fetchRecipe } from "@/services/operational-planning.service";
 import { RecipeDto } from "@/dtos/operational-planning.dto";
 import PaginationComponent from "@/components/PaginationComponent";
+import RecipeList from "./RecipeList";
+import RecipeGrid from "./RecipeGrid";
 
 export default function RecipeComponent() {
     const tCommon = useTranslations('Common');

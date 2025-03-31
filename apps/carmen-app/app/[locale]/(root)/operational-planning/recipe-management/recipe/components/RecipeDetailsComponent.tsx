@@ -5,6 +5,7 @@ import { Clock, Users, Utensils, ChefHat, Flame, Star, ArrowLeft, BookOpen } fro
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 
 interface Props {
     readonly recipe: RecipeDto;
@@ -23,7 +24,7 @@ export default function RecipeDetailsComponent({ recipe }: Props) {
             <ScrollArea className="h-[calc(100vh-10rem)]">
                 <div className="flex flex-col md:flex-row gap-4 mb-4">
                     <div className="md:w-1/3">
-                        <img
+                        <Image
                             src={recipe.image}
                             alt={recipe.name}
                             className="w-full h-[250px] object-cover rounded-lg shadow-lg"

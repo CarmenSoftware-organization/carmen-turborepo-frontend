@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 
 interface Props {
     readonly data: RecipeDto[];
@@ -41,7 +42,7 @@ export default function RecipeGrid({ data, isLoading }: Props) {
                         className="w-full cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1 p-3"
                         onClick={() => router.push(`/operational-planning/recipe-management/recipe/${recipe.id}`)}
                     >
-                        <img
+                        <Image
                             src={recipe.image}
                             alt={recipe.name}
                             className="w-full h-24 object-cover rounded-md mb-4"

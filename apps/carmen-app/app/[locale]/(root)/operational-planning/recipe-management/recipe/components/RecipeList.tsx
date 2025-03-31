@@ -13,6 +13,7 @@ import { EyeIcon } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 
 interface RecipeListProps {
     readonly data: RecipeDto[];
@@ -54,7 +55,7 @@ export default function RecipeList({ data, isLoading }: RecipeListProps) {
                         {data.map((recipe) => (
                             <TableRow key={recipe.id}>
                                 <TableCell>
-                                    <img
+                                    <Image
                                         src={recipe.image}
                                         alt={recipe.name}
                                         className="w-16 h-16 object-cover rounded-md"
