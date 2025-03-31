@@ -14,12 +14,12 @@ export default function VendorManagement() {
         },
         {
             name: t('VendorManagement.priceLists'),
-            href: '/vendor-management/vendor-group',
+            href: '/vendor-management/price-list',
             icon: CircleDollarSign
         },
         {
             name: t('VendorManagement.priceComparisons'),
-            href: '/vendor-management/vendor-category',
+            href: '/vendor-management/price-comparison',
             icon: LineChart
         }
     ]
