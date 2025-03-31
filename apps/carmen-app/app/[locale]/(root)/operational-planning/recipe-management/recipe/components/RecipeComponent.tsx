@@ -15,6 +15,7 @@ import RecipeList from "./RecipeList";
 import RecipeGrid from "./RecipeGrid";
 import { fetchRecipe } from "@/services/operational-planning.service";
 import { RecipeDto } from "@/dtos/operational-planning.dto";
+import PaginationComponent from "@/components/PaginationComponent";
 
 export default function RecipeComponent() {
     const tCommon = useTranslations('Common');
@@ -131,39 +132,15 @@ export default function RecipeComponent() {
 
     const content = (
         <div className="space-y-4">
-            {view === VIEW.LIST && <RecipeList data={recipe} isLoading={isLoading} currentPage={currentPage} totalPages={totalPages} handleSkip={handleSkip} />}
-            {view === VIEW.GRID && <RecipeGrid data={recipe} isLoading={isLoading} currentPage={currentPage} totalPages={totalPages} handleSkip={handleSkip} />}
+            {view === VIEW.LIST && <RecipeList data={recipe} isLoading={isLoading} />}
+            {view === VIEW.GRID && <RecipeGrid data={recipe} isLoading={isLoading} />}
 
-            {/* Pagination Controls */}
-            <div className="flex items-center justify-center gap-2 mt-4">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSkip(currentPage - 1)}
-                    disabled={currentPage === 1}
-                >
-                    Previous
-                </Button>
-                <div className="flex items-center gap-1">
-                    {[...Array(totalPages)].map((_, index) => (
-                        <Button
-                            key={index + 1}
-                            variant={currentPage === index + 1 ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleSkip(index + 1)}
-                        >
-                            {index + 1}
-                        </Button>
-                    ))}
-                </div>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSkip(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                >
-                    Next
-                </Button>
+            <div className="flex items-center justify-center mt-4">
+                <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handleSkip}
+                />
             </div>
         </div>
     )
