@@ -235,15 +235,17 @@ export default function CurrencyComponent() {
         </div>
     );
 
-    const content = <CurrencyList
-        isLoading={isLoading}
-        currencies={currencies}
-        onEdit={handleEdit}
-        onToggleStatus={handleToggleStatus}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-    />
+    const content = (
+        <CurrencyList
+            isLoading={isLoading}
+            currencies={currencies}
+            onEdit={handleEdit}
+            onToggleStatus={handleToggleStatus}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+        />
+    );
 
     return (
         <div>

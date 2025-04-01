@@ -18,6 +18,8 @@ import { createDeliveryPoint, getAllDeliveryPoints, updateDeliveryPoint } from "
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
+import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
+
 
 export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
@@ -34,14 +36,17 @@ export function DeliveryPointComponent() {
     const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [isUnauthorized, setIsUnauthorized] = useState(false);
 
     const fetchDeliveryPoints = useCallback(() => {
         if (!token) return;
 
         const fetchData = async () => {
             try {
+                setIsUnauthorized(false);
                 const data = await getAllDeliveryPoints(token);
                 if (data.statusCode === 401) {
+                    setIsUnauthorized(true);
                     setLoginDialogOpen(true);
                     return;
                 }
@@ -103,6 +108,10 @@ export function DeliveryPointComponent() {
 
         startTransition(updateStatus);
     }, [token, deliveryPoints]);
+
+    const handleOpenLoginDialog = useCallback(() => {
+        setLoginDialogOpen(true);
+    }, []);
 
     const handleSubmit = useCallback((data: DeliveryPointDto) => {
         if (!token) return;
@@ -218,7 +227,13 @@ export function DeliveryPointComponent() {
                     <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
                 </div>
             )}
-            {!isPending && (
+            {!isPending && isUnauthorized && (
+                <UnauthorizedMessage
+                    onRetry={fetchDeliveryPoints}
+                    onLogin={handleOpenLoginDialog}
+                />
+            )}
+            {!isPending && !isUnauthorized && (
                 <DeliveryPointList
                     deliveryPoints={deliveryPoints}
                     onEdit={handleEdit}
@@ -226,7 +241,7 @@ export function DeliveryPointComponent() {
                 />
             )}
         </>
-    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending]);
+    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, handleOpenLoginDialog]);
 
     return (
         <>
