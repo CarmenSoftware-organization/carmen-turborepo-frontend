@@ -9,7 +9,7 @@ import { statusOptions } from "@/constants/options";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition, useCallback, useMemo } from "react";
 import DeliveryPointList from "./DeliveryPointList";
 import DeliveryPointDialog from "./DeliveryPointDialog";
 import { DeliveryPointDto } from "@/dtos/config.dto";
@@ -29,17 +29,18 @@ export function DeliveryPointComponent() {
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointDto[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchDeliveryPoints = async () => {
+    const fetchDeliveryPoints = useCallback(() => {
+        if (!token) return;
+
+        const fetchData = async () => {
             try {
-                setIsLoading(true);
-                const data = await getAllDeliveryPoints(token || '');
+                const data = await getAllDeliveryPoints(token);
                 if (data.statusCode === 401) {
                     setLoginDialogOpen(true);
                     return;
@@ -48,39 +49,125 @@ export function DeliveryPointComponent() {
             } catch (error) {
                 console.error('Error fetching delivery points:', error);
                 toastError({ message: 'Error fetching delivery points' });
-            } finally {
-                setIsLoading(false);
             }
         };
 
-        if (token) {
-            fetchDeliveryPoints();
-        }
+        startTransition(fetchData);
     }, [token]);
 
-    const sortFields = [
+    useEffect(() => {
+        fetchDeliveryPoints();
+    }, [fetchDeliveryPoints]);
+
+    const sortFields = useMemo(() => [
         { key: 'name', label: tHeader('name') },
-    ];
+    ], [tHeader]);
 
-    const title = tDeliveryPoint('title');
+    const title = useMemo(() => tDeliveryPoint('title'), [tDeliveryPoint]);
 
-    const actionButtons = (
+    const handleOpenAddDialog = useCallback(() => {
+        setDialogMode(formType.ADD);
+        setSelectedDeliveryPoint(undefined);
+        setDialogOpen(true);
+    }, []);
+
+    const handleEdit = useCallback((deliveryPoint: DeliveryPointDto) => {
+        setDialogMode(formType.EDIT);
+        setSelectedDeliveryPoint(deliveryPoint);
+        setDialogOpen(true);
+    }, []);
+
+    const handleToggleStatus = useCallback((deliveryPoint: DeliveryPointDto) => {
+        if (!token) return;
+
+        const updateStatus = async () => {
+            try {
+                const updatedDeliveryPoint = {
+                    ...deliveryPoint,
+                    is_active: !deliveryPoint.is_active
+                };
+                await updateDeliveryPoint(token, updatedDeliveryPoint);
+
+                const id = deliveryPoint.id;
+                const updatedPoints = deliveryPoints.map(dp =>
+                    dp.id === id ? updatedDeliveryPoint : dp
+                );
+
+                setDeliveryPoints(updatedPoints);
+                toastSuccess({ message: 'Delivery point status updated successfully' });
+            } catch (error) {
+                console.error('Error toggling delivery point status:', error);
+                toastError({ message: 'Error toggling delivery point status' });
+            }
+        };
+
+        startTransition(updateStatus);
+    }, [token, deliveryPoints]);
+
+    const handleSubmit = useCallback((data: DeliveryPointDto) => {
+        if (!token) return;
+
+        const submitAdd = async () => {
+            try {
+                const result = await createDeliveryPoint(token, data);
+                const newDeliveryPoint: DeliveryPointDto = {
+                    ...data,
+                    id: result.id,
+                };
+
+                const updatedPoints = [...deliveryPoints, newDeliveryPoint];
+                setDeliveryPoints(updatedPoints);
+
+                toastSuccess({ message: 'Delivery point created successfully' });
+                setDialogOpen(false);
+            } catch (error) {
+                console.error('Error creating delivery point:', error);
+                toastError({ message: 'Error creating delivery point' });
+            }
+        };
+
+        const submitEdit = async () => {
+            try {
+                const updatedDeliveryPoint: DeliveryPointDto = {
+                    ...data,
+                    id: selectedDeliveryPoint?.id
+                };
+                await updateDeliveryPoint(token, updatedDeliveryPoint);
+
+                const id = updatedDeliveryPoint.id;
+                const updatedPoints = deliveryPoints.map(dp =>
+                    dp.id === id ? updatedDeliveryPoint : dp
+                );
+
+                setDeliveryPoints(updatedPoints);
+                toastSuccess({ message: 'Delivery point updated successfully' });
+                setDialogOpen(false);
+            } catch (error) {
+                console.error('Error updating delivery point:', error);
+                toastError({ message: 'Error updating delivery point' });
+            }
+        };
+
+        if (dialogMode === formType.ADD) {
+            startTransition(submitAdd);
+        } else {
+            startTransition(submitEdit);
+        }
+    }, [token, dialogMode, selectedDeliveryPoint, deliveryPoints]);
+
+    const actionButtons = useMemo(() => (
         <div className="action-btn-container" data-id="delivery-point-list-action-buttons">
             <Button
-                size={'sm'}
-                onClick={() => {
-                    setDialogMode(formType.ADD);
-                    setSelectedDeliveryPoint(undefined);
-                    setDialogOpen(true);
-                }}
+                size="sm"
+                onClick={handleOpenAddDialog}
             >
-                <Plus />
+                <Plus className="h-4 w-4" />
                 {tCommon('add')}
             </Button>
             <Button
                 variant="outline"
                 className="group"
-                size={'sm'}
+                size="sm"
                 data-id="delivery-point-export-button"
             >
                 <FileDown className="h-4 w-4" />
@@ -88,16 +175,16 @@ export function DeliveryPointComponent() {
             </Button>
             <Button
                 variant="outline"
-                size={'sm'}
+                size="sm"
                 data-id="delivery-point-print-button"
             >
                 <Printer className="h-4 w-4" />
                 {tCommon('print')}
             </Button>
         </div>
-    );
+    ), [tCommon, handleOpenAddDialog]);
 
-    const filters = (
+    const filters = useMemo(() => (
         <div className="filter-container" data-id="delivery-point-list-filters">
             <SearchInput
                 defaultValue={search}
@@ -122,76 +209,24 @@ export function DeliveryPointComponent() {
                 />
             </div>
         </div>
-    );
+    ), [search, setSearch, tCommon, status, setStatus, statusOpen, setStatusOpen, sortFields, sort, setSort]);
 
-    const handleEdit = (deliveryPoint: DeliveryPointDto) => {
-        setDialogMode(formType.EDIT);
-        setSelectedDeliveryPoint(deliveryPoint);
-        setDialogOpen(true);
-    };
-
-    const handleToggleStatus = async (deliveryPoint: DeliveryPointDto) => {
-        try {
-            setIsLoading(true);
-            const updatedDeliveryPoint = {
-                ...deliveryPoint,
-                is_active: !deliveryPoint.is_active
-            };
-            await updateDeliveryPoint(token || '', updatedDeliveryPoint);
-            setDeliveryPoints(prev =>
-                prev.map(dp =>
-                    dp.id === deliveryPoint.id ? updatedDeliveryPoint : dp
-                )
-            );
-            toastSuccess({ message: 'Delivery point status updated successfully' });
-        } catch (error) {
-            console.error('Error toggling delivery point status:', error);
-            toastError({ message: 'Error toggling delivery point status' });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleSubmit = async (data: DeliveryPointDto) => {
-        try {
-            setIsLoading(true);
-            if (dialogMode === formType.ADD) {
-                const result = await createDeliveryPoint(token, data);
-                const newDeliveryPoint: DeliveryPointDto = {
-                    ...data,
-                    id: result.id,
-                };
-                setDeliveryPoints(prev => [...prev, newDeliveryPoint]);
-                toastSuccess({ message: 'Delivery point created successfully' });
-            } else {
-                const updatedDeliveryPoint = {
-                    ...data,
-                    id: selectedDeliveryPoint?.id
-                };
-                await updateDeliveryPoint(token, updatedDeliveryPoint);
-                setDeliveryPoints(prev =>
-                    prev.map(dp =>
-                        dp.id === data.id ? data : dp
-                    )
-                );
-                toastSuccess({ message: 'Delivery point updated successfully' });
-            }
-            setDialogOpen(false);
-        } catch (error) {
-            console.error('Error submitting delivery point:', error);
-            toastError({ message: 'Error submitting delivery point' });
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const content = (
-        <DeliveryPointList
-            deliveryPoints={deliveryPoints}
-            onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
-        />
-    );
+    const content = useMemo(() => (
+        <>
+            {isPending && (
+                <div className="flex justify-center items-center min-h-[200px]">
+                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                </div>
+            )}
+            {!isPending && (
+                <DeliveryPointList
+                    deliveryPoints={deliveryPoints}
+                    onEdit={handleEdit}
+                    onToggleStatus={handleToggleStatus}
+                />
+            )}
+        </>
+    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending]);
 
     return (
         <>
@@ -208,7 +243,7 @@ export function DeliveryPointComponent() {
                 mode={dialogMode}
                 deliveryPoint={selectedDeliveryPoint}
                 onSubmit={handleSubmit}
-                isLoading={isLoading}
+                isLoading={isPending}
             />
             <SignInDialog
                 open={loginDialogOpen}

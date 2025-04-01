@@ -24,10 +24,10 @@ import { signInSchema } from "@/constants/form.schema";
 import { SignInFormValues } from "@/dtos/sign-in.dto";
 import { signInAction } from "@/app/[locale]/sign-in/actions";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useTransition, useEffect, useState } from "react";
 import { PasswordInput } from "./ui-custom/PasswordInput";
 
 
@@ -42,8 +42,21 @@ export default function SignInDialog({
 }: Props) {
     const { setSession } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const [currentPath, setCurrentPath] = useState<string>('');
     const t = useTranslations('SignInPage');
     const [isPending, startTransition] = useTransition();
+
+    // เก็บ path ปัจจุบันเมื่อ dialog เปิด
+    useEffect(() => {
+        if (open) {
+            const params = new URLSearchParams(searchParams);
+            const queryString = params.toString();
+            const fullPath = queryString ? `${pathname}?${queryString}` : pathname;
+            setCurrentPath(fullPath);
+        }
+    }, [open, pathname, searchParams]);
 
     const form = useForm<SignInFormValues>({
         resolver: zodResolver(signInSchema),
@@ -63,8 +76,10 @@ export default function SignInDialog({
                         setSession(result.access_token, result.refresh_token)
                     }
 
-                    router.push('/dashboard')
+                    // กลับไปที่ path เดิมแทนที่จะไป dashboard
+                    router.push(currentPath || '/dashboard')
                     form.reset()
+                    onOpenChange(false)
                 } else {
                     form.setError("root", {
                         message: result.message ?? t('signInError')
