@@ -17,6 +17,8 @@ import { formType } from "@/dtos/form.dto";
 import { createDeliveryPoint, getAllDeliveryPoints, updateDeliveryPoint } from "@/services/dp.service";
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import SignInDialog from "@/components/SignInDialog";
+
 export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
@@ -31,12 +33,17 @@ export function DeliveryPointComponent() {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchDeliveryPoints = async () => {
             try {
                 setIsLoading(true);
                 const data = await getAllDeliveryPoints(token || '');
+                if (data.statusCode === 401) {
+                    setLoginDialogOpen(true);
+                    return;
+                }
                 setDeliveryPoints(data);
             } catch (error) {
                 console.error('Error fetching delivery points:', error);
@@ -202,6 +209,10 @@ export function DeliveryPointComponent() {
                 deliveryPoint={selectedDeliveryPoint}
                 onSubmit={handleSubmit}
                 isLoading={isLoading}
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
             />
         </>
     );
