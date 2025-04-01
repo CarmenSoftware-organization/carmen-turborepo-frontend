@@ -32,21 +32,29 @@ export default function DepartmentList({
     const t = useTranslations('TableHeader');
     return (
         <div className="relative">
-            <Table>
-                <TableHeader className="sticky top-0">
-                    <TableRow>
-                        <TableHead className="w-10">#</TableHead>
-                        <TableHead className="w-20">{t('name')}</TableHead>
-                        <TableHead className="w-20">{t('status')}</TableHead>
-                        <TableHead className="w-20 text-right">{t('action')}</TableHead>
-                    </TableRow>
-                </TableHeader>
-            </Table>
             {isLoading ? (
-                <TableBodySkeleton columns={3} />
+                <Table>
+                    <TableHeader className="sticky top-0">
+                        <TableRow>
+                            <TableHead className="w-10">#</TableHead>
+                            <TableHead className="w-20">{t('name')}</TableHead>
+                            <TableHead className="w-20">{t('status')}</TableHead>
+                            <TableHead className="w-20 text-right">{t('action')}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBodySkeleton columns={3} />
+                </Table>
             ) : (
-                <ScrollArea className="h-[calc(102vh-300px)] w-full">
+                <ScrollArea className="h-[calc(102vh-250px)] w-full">
                     <Table>
+                        <TableHeader className="sticky top-0">
+                            <TableRow>
+                                <TableHead className="w-10">#</TableHead>
+                                <TableHead className="w-20">{t('name')}</TableHead>
+                                <TableHead className="w-20">{t('status')}</TableHead>
+                                <TableHead className="w-20 text-right">{t('action')}</TableHead>
+                            </TableRow>
+                        </TableHeader>
                         <TableBody>
                             {departments.map((department, index) => (
                                 <TableRow key={department.id}>
