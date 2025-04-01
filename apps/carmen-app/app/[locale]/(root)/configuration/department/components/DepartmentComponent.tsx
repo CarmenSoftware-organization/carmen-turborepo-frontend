@@ -41,7 +41,6 @@ export default function DepartmentComponent() {
             try {
                 setIsLoading(true);
                 const data = await getAllDepartments(token);
-                console.log('data component', data);
                 if (data.statusCode === 401) {
                     setLoginDialogOpen(true);
                     return;
@@ -203,12 +202,14 @@ export default function DepartmentComponent() {
         </div>
     )
 
-    const content = <DepartmentList
-        isLoading={isLoading}
-        departments={departments}
-        onEdit={handleEdit}
-        onToggleStatus={handleToggleStatus}
-    />
+    const content = (
+        <DepartmentList
+            isLoading={isLoading}
+            departments={departments}
+            onEdit={handleEdit}
+            onToggleStatus={handleToggleStatus}
+        />
+    )
     return (
         <div>
             <DataDisplayTemplate

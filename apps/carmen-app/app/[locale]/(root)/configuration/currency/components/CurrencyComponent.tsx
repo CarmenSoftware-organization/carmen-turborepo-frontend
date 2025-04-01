@@ -18,6 +18,7 @@ import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { z } from "zod";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import SignInDialog from "@/components/SignInDialog";
 
 export default function CurrencyComponent() {
     const { token } = useAuth();
@@ -35,6 +36,7 @@ export default function CurrencyComponent() {
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
     const tenantId = 'mock-tenant-id';
 
@@ -48,6 +50,10 @@ export default function CurrencyComponent() {
                     page: currentPage.toString(),
                     perPage: '10',
                 });
+                if (data.statusCode === 401) {
+                    setLoginDialogOpen(true);
+                    return;
+                }
                 setCurrencies(data.data);
                 setTotalPages(data.paginate.pages);
                 setCurrentPage(data.paginate.page);
@@ -261,6 +267,10 @@ export default function CurrencyComponent() {
                 onConfirm={handleConfirmToggle}
                 title="Deactivate Currency"
                 description="Are you sure you want to deactivate this currency? This action can be reversed later."
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
             />
         </div>
     );
