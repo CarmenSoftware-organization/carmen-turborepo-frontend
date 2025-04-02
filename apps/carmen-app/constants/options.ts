@@ -1,3 +1,5 @@
+import { INVENTORY_TYPE } from "./enum";
+
 export const statusOptions = [
     { label: 'All', value: '' },
     { label: 'Active', value: 'active' },
@@ -12,3 +14,9 @@ export const statusSpotCheckOptions = [
     { label: 'In Progress', value: 'in-progress' },
 ];
 
+
+export const inventoryTypeOptions = [
+    { label: 'Inventory', value: INVENTORY_TYPE.INVENTORY },
+    { label: 'Direct', value: INVENTORY_TYPE.DIRECT },
+    { label: 'Consignment', value: INVENTORY_TYPE.CONSIGNMENT },
+];

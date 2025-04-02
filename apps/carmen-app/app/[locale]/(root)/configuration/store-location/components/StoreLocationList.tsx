@@ -1,0 +1,92 @@
+import { StoreLocationDto } from "@/dtos/config.dto";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
+import { Pencil, Trash2 } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface StoreLocationListProps {
+    readonly storeLocations: StoreLocationDto[];
+    readonly onEdit: (storeLocation: StoreLocationDto) => void;
+    readonly onDelete: (storeLocation: StoreLocationDto) => void;
+}
+
+export default function StoreLocationList({
+    storeLocations,
+    onEdit,
+    onDelete
+}: StoreLocationListProps) {
+    const t = useTranslations('TableHeader');
+
+    return (
+        <div className="space-y-4">
+            <div className="relative">
+                <Table>
+                    <TableHeader className="sticky top-0 bg-background">
+                        <TableRow>
+                            <TableHead className="w-10">#</TableHead>
+                            <TableHead className="md:w-56">{t('name')}</TableHead>
+                            <TableHead className="hidden md:table-cell">{t('type')}</TableHead>
+                            <TableHead className="hidden md:table-cell">{t('description')}</TableHead>
+                            <TableHead className="text-center">Floor</TableHead>
+                            <TableHead className="text-center">Building</TableHead>
+                            <TableHead>{t('status')}</TableHead>
+                            <TableHead className="w-20 text-right">{t('action')}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                </Table>
+                <ScrollArea className="h-[calc(100vh-300px)]">
+                    <Table>
+                        <TableBody>
+                            {storeLocations.map((storeLocation, index) => (
+                                <TableRow key={storeLocation.id}>
+                                    <TableCell className="w-10">{index + 1}</TableCell>
+                                    <TableCell className="md:w-56">{storeLocation.name}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{storeLocation.location_type}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{storeLocation.description}</TableCell>
+                                    <TableCell className="text-center">{storeLocation.info.floor}</TableCell>
+                                    <TableCell className="text-center">{storeLocation.info.building}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={storeLocation.is_active ? "default" : "destructive"}>
+                                            {storeLocation.is_active ? "Active" : "Inactive"}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => onEdit(storeLocation)}
+                                                aria-label="Edit store location"
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => onDelete(storeLocation)}
+                                                className="hover:text-destructive"
+                                                aria-label="Delete store location"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </ScrollArea>
+            </div>
+        </div>
+    );
+}
+

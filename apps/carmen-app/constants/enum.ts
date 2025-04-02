@@ -3,3 +3,10 @@ export enum VIEW {
     GRID = 'grid',
 }
 
+
+export enum INVENTORY_TYPE {
+    INVENTORY = 'inventory',
+    DIRECT = 'direct',
+    CONSIGNMENT = 'consignment',
+}
+
