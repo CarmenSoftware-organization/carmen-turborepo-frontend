@@ -9,60 +9,36 @@ import { statusOptions } from "@/constants/options";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState, useEffect, useTransition, useCallback, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import DeliveryPointList from "./DeliveryPointList";
 import DeliveryPointDialog from "./DeliveryPointDialog";
 import { DeliveryPointDto } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
-import { createDeliveryPoint, getAllDeliveryPoints, updateDeliveryPoint } from "@/services/dp.service";
-import { useAuth } from "@/context/AuthContext";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
-
+import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
 
 export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
     const tDeliveryPoint = useTranslations('DeliveryPoint');
-    const { token, tenantId } = useAuth();
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
-    const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointDto[]>([]);
-    const [isPending, startTransition] = useTransition();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-    const [isUnauthorized, setIsUnauthorized] = useState(false);
 
-    const fetchDeliveryPoints = useCallback(() => {
-        if (!token) return;
-
-        const fetchData = async () => {
-            try {
-                setIsUnauthorized(false);
-                const data = await getAllDeliveryPoints(token, tenantId);
-                if (data.statusCode === 401) {
-                    setIsUnauthorized(true);
-                    setLoginDialogOpen(true);
-                    return;
-                }
-                setDeliveryPoints(data);
-            } catch (error) {
-                console.error('Error fetching delivery points:', error);
-                toastError({ message: 'Error fetching delivery points' });
-            }
-        };
-
-        startTransition(fetchData);
-    }, [tenantId, token]);
-
-    useEffect(() => {
-        fetchDeliveryPoints();
-    }, [fetchDeliveryPoints]);
+    const {
+        deliveryPoints,
+        isPending,
+        isUnauthorized,
+        fetchDeliveryPoints,
+        handleToggleStatus,
+        handleSubmit
+    } = useDeliveryPoint();
 
     const sortFields = useMemo(() => [
         { key: 'name', label: tHeader('name') },
@@ -82,87 +58,14 @@ export function DeliveryPointComponent() {
         setDialogOpen(true);
     }, []);
 
-    const handleToggleStatus = useCallback((deliveryPoint: DeliveryPointDto) => {
-        if (!token) return;
-
-        const updateStatus = async () => {
-            try {
-                const updatedDeliveryPoint = {
-                    ...deliveryPoint,
-                    is_active: !deliveryPoint.is_active
-                };
-                await updateDeliveryPoint(token, tenantId, updatedDeliveryPoint);
-
-                const id = deliveryPoint.id;
-                const updatedPoints = deliveryPoints.map(dp =>
-                    dp.id === id ? updatedDeliveryPoint : dp
-                );
-
-                setDeliveryPoints(updatedPoints);
-                toastSuccess({ message: 'Delivery point status updated successfully' });
-            } catch (error) {
-                console.error('Error toggling delivery point status:', error);
-                toastError({ message: 'Error toggling delivery point status' });
-            }
-        };
-
-        startTransition(updateStatus);
-    }, [token, tenantId, deliveryPoints]);
-
     const handleOpenLoginDialog = useCallback(() => {
         setLoginDialogOpen(true);
     }, []);
 
-    const handleSubmit = useCallback((data: DeliveryPointDto) => {
-        if (!token) return;
-
-        const submitAdd = async () => {
-            try {
-                const result = await createDeliveryPoint(token, tenantId, data);
-                const newDeliveryPoint: DeliveryPointDto = {
-                    ...data,
-                    id: result.id,
-                };
-
-                const updatedPoints = [...deliveryPoints, newDeliveryPoint];
-                setDeliveryPoints(updatedPoints);
-
-                toastSuccess({ message: 'Delivery point created successfully' });
-                setDialogOpen(false);
-            } catch (error) {
-                console.error('Error creating delivery point:', error);
-                toastError({ message: 'Error creating delivery point' });
-            }
-        };
-
-        const submitEdit = async () => {
-            try {
-                const updatedDeliveryPoint: DeliveryPointDto = {
-                    ...data,
-                    id: selectedDeliveryPoint?.id
-                };
-                await updateDeliveryPoint(token, tenantId, updatedDeliveryPoint);
-
-                const id = updatedDeliveryPoint.id;
-                const updatedPoints = deliveryPoints.map(dp =>
-                    dp.id === id ? updatedDeliveryPoint : dp
-                );
-
-                setDeliveryPoints(updatedPoints);
-                toastSuccess({ message: 'Delivery point updated successfully' });
-                setDialogOpen(false);
-            } catch (error) {
-                console.error('Error updating delivery point:', error);
-                toastError({ message: 'Error updating delivery point' });
-            }
-        };
-
-        if (dialogMode === formType.ADD) {
-            startTransition(submitAdd);
-        } else {
-            startTransition(submitEdit);
-        }
-    }, [token, tenantId, dialogMode, selectedDeliveryPoint, deliveryPoints]);
+    const handleDialogSubmit = useCallback((data: DeliveryPointDto) => {
+        handleSubmit(data, dialogMode, selectedDeliveryPoint);
+        setDialogOpen(false);
+    }, [handleSubmit, dialogMode, selectedDeliveryPoint]);
 
     const actionButtons = useMemo(() => (
         <div className="action-btn-container" data-id="delivery-point-list-action-buttons">
@@ -250,15 +153,13 @@ export function DeliveryPointComponent() {
                 actionButtons={actionButtons}
                 filters={filters}
                 content={content}
-                data-id="delivery-point-list-template"
             />
             <DeliveryPointDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
                 mode={dialogMode}
                 deliveryPoint={selectedDeliveryPoint}
-                onSubmit={handleSubmit}
-                isLoading={isPending}
+                onSubmit={handleDialogSubmit}
             />
             <SignInDialog
                 open={loginDialogOpen}

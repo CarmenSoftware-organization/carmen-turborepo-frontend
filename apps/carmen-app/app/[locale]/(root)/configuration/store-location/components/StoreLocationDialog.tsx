@@ -1,4 +1,4 @@
-import { CreateStoreLocationDto, createStoreLocationSchema, StoreLocationDto } from "@/dtos/config.dto";
+import { CreateStoreLocationDto, createStoreLocationSchema, DeliveryPointDto, StoreLocationDto } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo } from "react";
@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { INVENTORY_TYPE } from "@/constants/enum";
+import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
 
 interface Props {
     readonly open: boolean;
@@ -36,6 +37,9 @@ interface Props {
 }
 
 export default function StoreLocationDialog({ open, onOpenChange, mode, storeLocation, onSubmit, isLoading = false }: Props) {
+
+    const { deliveryPoints } = useDeliveryPoint();
+
     const defaultStoreLocationValues = useMemo(() => ({
         name: '',
         location_type: INVENTORY_TYPE.INVENTORY,
@@ -226,9 +230,13 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                                                     <SelectValue placeholder="Select a delivery point" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="c32dbbe4-d453-4f02-9268-8014deffa299">Delivery Point 1</SelectItem>
-                                                    <SelectItem value="2">Delivery Point 2</SelectItem>
-                                                    <SelectItem value="3">Delivery Point 3</SelectItem>
+                                                    {deliveryPoints
+                                                        .filter((dp): dp is DeliveryPointDto & { id: string } => !!dp.id)
+                                                        .map((deliveryPoint) => (
+                                                            <SelectItem key={deliveryPoint.id} value={deliveryPoint.id}>
+                                                                {deliveryPoint.name}
+                                                            </SelectItem>
+                                                        ))}
                                                 </SelectContent>
                                             </Select>
                                         </FormControl>
