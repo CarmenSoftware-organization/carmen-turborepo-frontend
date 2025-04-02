@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CategoryNode, SubCategoryFormSchema, type SubCategoryFormData } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 interface SubCategoryFormProps {
     readonly mode: formType;
@@ -18,9 +20,11 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
     const form = useForm<SubCategoryFormData>({
         resolver: zodResolver(SubCategoryFormSchema),
         defaultValues: {
+            code: selectedNode?.code ?? "",
             name: selectedNode?.name ?? "",
             description: selectedNode?.description ?? "",
-            category_id: parentNode?.id ?? ""
+            product_category_id: parentNode?.id ?? "",
+            is_active: selectedNode?.is_active ?? true
         }
     });
 
@@ -29,7 +33,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                     control={form.control}
-                    name="category_id"
+                    name="product_category_id"
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Category</FormLabel>
@@ -40,7 +44,24 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                                     className="bg-muted"
                                 />
                             </FormControl>
-                            <input type="hidden" {...field} />
+                            <input
+                                type="hidden"
+                                {...field}
+                                value={parentNode?.id ?? field.value}
+                            />
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Code</FormLabel>
+                            <FormControl>
+                                <Input {...field} />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
@@ -65,7 +86,23 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Textarea {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="is_active"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Status</FormLabel>
+                            <FormControl>
+                                <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

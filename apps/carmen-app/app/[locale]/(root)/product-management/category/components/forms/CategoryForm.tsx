@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CategoryDto, CategoryNode, CategorySchema } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 interface CategoryFormProps {
     readonly mode: formType;
@@ -62,7 +63,7 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                         <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Textarea {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

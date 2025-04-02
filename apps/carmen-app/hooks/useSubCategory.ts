@@ -40,7 +40,7 @@ export const useSubCategory = () => {
 
     const handleSubmit = useCallback((data: SubCategoryDto, mode: formType, selectedSubCategory?: SubCategoryDto) => {
         if (!token) return;
-
+        console.log('handle submit 222', data);
         const submitAdd = async () => {
             try {
                 const result = await createSubCategoryService(token, tenantId, data);

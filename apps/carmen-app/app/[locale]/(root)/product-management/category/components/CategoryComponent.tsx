@@ -11,7 +11,9 @@ import {
     CategoryNode,
     ItemGroupFormData,
     SubCategoryFormData,
-    CategoryDto
+    CategoryDto,
+    SubCategoryDto,
+    ItemGroupDto
 } from "@/dtos/category.dto";
 import { generateNanoid } from "@/utils/nano-id";
 import {
@@ -46,8 +48,8 @@ function hasProductCategoryId(obj: unknown): obj is ExtendedSubCategory {
 
 export default function CategoryComponent() {
     const { categories, isPending: isCategoriesPending, handleSubmit: submitCategory, isUnauthorized } = useCategory();
-    const { subCategories, isPending: isSubCategoriesPending, fetchSubCategories } = useSubCategory();
-    const { itemGroups, isPending: isItemGroupsPending, fetchItemGroups } = useItemGroup();
+    const { subCategories, isPending: isSubCategoriesPending, handleSubmit: submitSubCategory } = useSubCategory();
+    const { itemGroups, isPending: isItemGroupsPending, handleSubmit: submitItemGroup } = useItemGroup();
 
     const isLoading = isCategoriesPending || isSubCategoriesPending || isItemGroupsPending;
 
@@ -204,11 +206,6 @@ export default function CategoryComponent() {
     };
 
     const handleFormSubmit = (data: CategoryFormData | SubCategoryFormData | ItemGroupFormData) => {
-        console.log('handle form submit', data);
-        console.log('dialog mode', dialogMode);
-        console.log('selected node', selectedNode);
-        console.log('parent node', parentNode);
-
         const getNodeType = () => {
             if (dialogMode === formType.EDIT && selectedNode) {
                 return selectedNode.type;
@@ -277,17 +274,23 @@ export default function CategoryComponent() {
             } else if (nodeType === 'subcategory') {
                 // For subcategory, just refresh the data after a delay
                 // This is a temporary solution until we add proper API integration
-                setTimeout(() => {
-                    fetchSubCategories();
-                    toastSuccess({ message: 'Subcategory saved successfully' });
-                }, 500);
-            } else {
-                // For item group, just refresh the data after a delay
-                // This is a temporary solution until we add proper API integration
-                setTimeout(() => {
-                    fetchItemGroups();
-                    toastSuccess({ message: 'Item group saved successfully' });
-                }, 500);
+                if (dialogMode === formType.EDIT && selectedNode) {
+                    submitSubCategory(formData as SubCategoryDto, dialogMode, {
+                        ...formData,
+                        id: selectedNode.id
+                    } as SubCategoryDto);
+                } else {
+                    submitSubCategory(formData as SubCategoryDto, dialogMode);
+                }
+            } else if (nodeType === 'itemGroup') {
+                if (dialogMode === formType.EDIT && selectedNode) {
+                    submitItemGroup(formData as ItemGroupDto, dialogMode, {
+                        ...formData,
+                        id: selectedNode.id
+                    } as ItemGroupDto);
+                } else {
+                    submitItemGroup(formData as ItemGroupDto, dialogMode);
+                }
             }
         } catch (error) {
             console.error('Error submitting form:', error);

@@ -16,6 +16,7 @@ export const SubCategorySchema = z.object({
     code: z.string(),
     name: z.string(),
     description: z.string().optional(),
+    is_active: z.boolean(),
     product_category_id: z.string(),
 });
 
@@ -24,6 +25,7 @@ export const ItemGroupSchema = z.object({
     code: z.string(),
     name: z.string(),
     description: z.string().optional(),
+    is_active: z.boolean(),
     product_subcategory_id: z.string(),
 });
 
@@ -50,4 +52,7 @@ export type CategoryNode = {
     type: "category" | "subcategory" | "itemGroup";
     children?: CategoryNode[];
     itemCount?: number;
+    is_active?: boolean;
+    product_category_id?: string;
+    product_subcategory_id?: string;
 }; 

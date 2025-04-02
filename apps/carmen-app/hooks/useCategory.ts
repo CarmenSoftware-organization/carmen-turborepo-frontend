@@ -40,8 +40,6 @@ export const useCategory = () => {
 
     const handleSubmit = useCallback((data: CategoryDto, mode: formType, selectedCategory?: CategoryDto) => {
         if (!token) return;
-        console.log('handle submit', data);
-        console.log('mode', mode);
 
         const submitAdd = async () => {
             try {

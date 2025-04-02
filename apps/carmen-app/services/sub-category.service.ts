@@ -15,6 +15,7 @@ export const getSubCategoryService = async (token: string, tenantId: string) => 
 }
 
 export const createSubCategoryService = async (token: string, tenantId: string, data: SubCategoryDto) => {
+    console.log('service create sub category', data);
     const response = await fetch(`${backendApi}/api/config/product-sub-category`, {
         method: 'POST',
         headers: {
