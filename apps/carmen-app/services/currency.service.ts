@@ -37,12 +37,13 @@ export const getCurrenciesService = async (
     return data;
 }
 
-export const createCurrency = async (token: string, currency: CurrencyDto) => {
+export const createCurrency = async (token: string, tenantId: string, currency: CurrencyDto) => {
     const url = `${backendApi}/api/config/currencies`;
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(currency),
@@ -51,12 +52,13 @@ export const createCurrency = async (token: string, currency: CurrencyDto) => {
     return data;
 }
 
-export const updateCurrency = async (token: string, currency: CurrencyDto) => {
+export const updateCurrency = async (token: string, tenantId: string, currency: CurrencyDto) => {
     const url = `${backendApi}/api/config/currencies/${currency.id}`;
     const response = await fetch(url, {
         method: 'PATCH',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(currency),
@@ -66,12 +68,13 @@ export const updateCurrency = async (token: string, currency: CurrencyDto) => {
 }
 
 
-export const deleteCurrency = async (token: string, currency: CurrencyDto) => {
+export const deleteCurrency = async (token: string, tenantId: string, currency: CurrencyDto) => {
     const url = `${backendApi}/api/config/currencies/${currency.id}`;
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
     });

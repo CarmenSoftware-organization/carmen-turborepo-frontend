@@ -21,7 +21,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
 
 export default function DepartmentComponent() {
-    const { token } = useAuth();
+    const { token, tenantId } = useAuth();
     const tDepartment = useTranslations('Department');
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
@@ -40,7 +40,7 @@ export default function DepartmentComponent() {
             if (!token) return;
             try {
                 setIsLoading(true);
-                const data = await getAllDepartments(token);
+                const data = await getAllDepartments(token, tenantId);
                 if (data.statusCode === 401) {
                     setLoginDialogOpen(true);
                     return;
@@ -54,7 +54,7 @@ export default function DepartmentComponent() {
             }
         };
         fetchDepartments();
-    }, [token]);
+    }, [tenantId, token]);
 
     const sortFields = [
         { key: 'name', label: tDepartment('department_name') },
@@ -74,7 +74,7 @@ export default function DepartmentComponent() {
     const handleToggleStatus = async (department: DepartmentDto) => {
         try {
             setIsLoading(true);
-            const result = await deleteDepartment(token, department);
+            const result = await deleteDepartment(token, tenantId, department);
             if (result) {
                 setDepartments(prevDepartments =>
                     prevDepartments.filter(dp => dp.id !== department.id)
@@ -95,7 +95,7 @@ export default function DepartmentComponent() {
         try {
             if (selectedDepartment) {
                 const updatedDepartment = { ...data, id: selectedDepartment.id };
-                const result = await updateDepartment(token, updatedDepartment);
+                const result = await updateDepartment(token, tenantId, updatedDepartment);
                 if (result) {
                     setDepartments(prevDepartments =>
                         prevDepartments.map(dp =>
@@ -110,7 +110,7 @@ export default function DepartmentComponent() {
                     toastError({ message: 'Error updating department' });
                 }
             } else {
-                const result = await createDepartment(token, data);
+                const result = await createDepartment(token, tenantId, data);
                 const newDepartment: DepartmentDto = {
                     ...data,
                     id: result.id,
@@ -132,7 +132,7 @@ export default function DepartmentComponent() {
     const handleConfirmDelete = async () => {
         if (!selectedDepartment) return;
         try {
-            const result = await deleteDepartment(token, selectedDepartment);
+            const result = await deleteDepartment(token, tenantId, selectedDepartment);
             if (result) {
                 setDepartments(prevDepartments =>
                     prevDepartments.filter(dp => dp.id !== selectedDepartment.id)

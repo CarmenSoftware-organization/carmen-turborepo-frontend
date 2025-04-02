@@ -25,7 +25,7 @@ export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
     const tDeliveryPoint = useTranslations('DeliveryPoint');
-    const { token } = useAuth();
+    const { token, tenantId } = useAuth();
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
@@ -44,7 +44,7 @@ export function DeliveryPointComponent() {
         const fetchData = async () => {
             try {
                 setIsUnauthorized(false);
-                const data = await getAllDeliveryPoints(token);
+                const data = await getAllDeliveryPoints(token, tenantId);
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     setLoginDialogOpen(true);
@@ -58,7 +58,7 @@ export function DeliveryPointComponent() {
         };
 
         startTransition(fetchData);
-    }, [token]);
+    }, [tenantId, token]);
 
     useEffect(() => {
         fetchDeliveryPoints();
@@ -91,7 +91,7 @@ export function DeliveryPointComponent() {
                     ...deliveryPoint,
                     is_active: !deliveryPoint.is_active
                 };
-                await updateDeliveryPoint(token, updatedDeliveryPoint);
+                await updateDeliveryPoint(token, tenantId, updatedDeliveryPoint);
 
                 const id = deliveryPoint.id;
                 const updatedPoints = deliveryPoints.map(dp =>
@@ -107,7 +107,7 @@ export function DeliveryPointComponent() {
         };
 
         startTransition(updateStatus);
-    }, [token, deliveryPoints]);
+    }, [token, tenantId, deliveryPoints]);
 
     const handleOpenLoginDialog = useCallback(() => {
         setLoginDialogOpen(true);
@@ -118,7 +118,7 @@ export function DeliveryPointComponent() {
 
         const submitAdd = async () => {
             try {
-                const result = await createDeliveryPoint(token, data);
+                const result = await createDeliveryPoint(token, tenantId, data);
                 const newDeliveryPoint: DeliveryPointDto = {
                     ...data,
                     id: result.id,
@@ -141,7 +141,7 @@ export function DeliveryPointComponent() {
                     ...data,
                     id: selectedDeliveryPoint?.id
                 };
-                await updateDeliveryPoint(token, updatedDeliveryPoint);
+                await updateDeliveryPoint(token, tenantId, updatedDeliveryPoint);
 
                 const id = updatedDeliveryPoint.id;
                 const updatedPoints = deliveryPoints.map(dp =>
@@ -162,7 +162,7 @@ export function DeliveryPointComponent() {
         } else {
             startTransition(submitEdit);
         }
-    }, [token, dialogMode, selectedDeliveryPoint, deliveryPoints]);
+    }, [token, tenantId, dialogMode, selectedDeliveryPoint, deliveryPoints]);
 
     const actionButtons = useMemo(() => (
         <div className="action-btn-container" data-id="delivery-point-list-action-buttons">

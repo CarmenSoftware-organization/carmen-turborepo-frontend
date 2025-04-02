@@ -1,12 +1,13 @@
 import { UnitDto } from "@/dtos/unit.dto";
 import { backendApi } from "@/lib/backend-api";
 
-export const getAllUnits = async (token: string) => {
+export const getAllUnits = async (token: string, tenantId: string) => {
     const url = `${backendApi}/api/config/units`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
     });
@@ -18,12 +19,13 @@ export const getAllUnits = async (token: string) => {
 };
 
 
-export const createUnit = async (token: string, unit: UnitDto) => {
+export const createUnit = async (token: string, tenantId: string, unit: UnitDto) => {
     const url = `${backendApi}/api/config/units`;
     const response = await fetch(url, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(unit),
@@ -36,12 +38,13 @@ export const createUnit = async (token: string, unit: UnitDto) => {
     return data;
 };
 
-export const updateUnit = async (token: string, unit: UnitDto) => {
+export const updateUnit = async (token: string, tenantId: string, unit: UnitDto) => {
     const url = `${backendApi}/api/config/units/${unit.id}`;
     const response = await fetch(url, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(unit),
@@ -53,12 +56,13 @@ export const updateUnit = async (token: string, unit: UnitDto) => {
     return data;
 };
 
-export const deleteUnit = async (token: string, unit: UnitDto) => {
+export const deleteUnit = async (token: string, tenantId: string, unit: UnitDto) => {
     const url = `${backendApi}/api/config/units/${unit.id}`;
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
     });

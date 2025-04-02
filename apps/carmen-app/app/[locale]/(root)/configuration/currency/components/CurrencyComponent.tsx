@@ -21,7 +21,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
 
 export default function CurrencyComponent() {
-    const { token } = useAuth();
+    const { token, tenantId } = useAuth();
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
@@ -37,8 +37,6 @@ export default function CurrencyComponent() {
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-
-    const tenantId = 'mock-tenant-id';
 
     useEffect(() => {
         const fetchCurrencies = async () => {
@@ -65,7 +63,7 @@ export default function CurrencyComponent() {
             }
         };
         fetchCurrencies();
-    }, [search, token, currentPage]);
+    }, [search, token, currentPage, tenantId]);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -139,7 +137,7 @@ export default function CurrencyComponent() {
             if (selectedCurrency) {
                 // Edit mode
                 const updatedCurrency = { ...data, id: selectedCurrency.id };
-                const result = await updateCurrency(token, updatedCurrency);
+                const result = await updateCurrency(token, tenantId, updatedCurrency);
                 if (result) {
                     setCurrencies(prevCurrencies =>
                         prevCurrencies.map(currency =>
@@ -155,7 +153,7 @@ export default function CurrencyComponent() {
                 }
             } else {
                 // Add mode
-                const result = await createCurrency(token, data);
+                const result = await createCurrency(token, tenantId, data);
                 const newCurrency: CurrencyDto = {
                     ...data,
                     id: result.id,
