@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CategoryNode } from "@/dtos/category";
+import { CategoryNode } from "@/dtos/category.dto";
 import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
 
 const getIconColor = (type: CategoryNode["type"]) => {

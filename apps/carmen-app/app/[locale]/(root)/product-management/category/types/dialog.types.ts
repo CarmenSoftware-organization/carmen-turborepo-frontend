@@ -1,5 +1,5 @@
 import { formType } from "@/dtos/form.dto";
-import { CategoryFormData, SubCategoryFormData, ItemGroupFormData, CategoryNode } from "@/dtos/category";
+import { CategoryFormData, SubCategoryFormData, ItemGroupFormData, CategoryNode } from "@/dtos/category.dto";
 
 export interface CategoryDialogProps {
     readonly open: boolean;

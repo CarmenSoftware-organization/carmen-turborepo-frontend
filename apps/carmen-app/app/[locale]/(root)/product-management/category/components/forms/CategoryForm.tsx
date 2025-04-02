@@ -3,28 +3,45 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CategoryFormSchema, CategoryNode, type CategoryFormData } from "@/dtos/category";
+import { CategoryDto, CategoryNode, CategorySchema } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
+import { Switch } from "@/components/ui/switch";
 
 interface CategoryFormProps {
     readonly mode: formType;
     readonly selectedNode?: CategoryNode;
-    readonly onSubmit: (data: CategoryFormData) => void;
+    readonly onSubmit: (data: CategoryDto) => void;
     readonly onCancel: () => void;
 }
 
 export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: CategoryFormProps) {
-    const form = useForm<CategoryFormData>({
-        resolver: zodResolver(CategoryFormSchema),
+    const form = useForm<CategoryDto>({
+        resolver: zodResolver(CategorySchema),
         defaultValues: {
+            id: selectedNode?.id ?? "",
             name: selectedNode?.name ?? "",
-            description: selectedNode?.description ?? ""
+            code: selectedNode?.code ?? "",
+            description: selectedNode?.description ?? "",
+            is_active: true
         }
     });
 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="code"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Code</FormLabel>
+                            <FormControl>
+                                <Input {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
                 <FormField
                     control={form.control}
                     name="name"
@@ -51,6 +68,23 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                         </FormItem>
                     )}
                 />
+                <FormField
+                    control={form.control}
+                    name="is_active"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">Active</FormLabel>
+                            </div>
+                            <FormControl>
+                                <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
                 <div className="flex justify-end gap-2">
                     <Button variant="outline" onClick={onCancel}>
                         Cancel
@@ -58,7 +92,6 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                     <Button type="submit">
                         {mode === formType.EDIT ? "Save changes" : "Create"}
                     </Button>
-
                 </div>
             </form>
         </Form>

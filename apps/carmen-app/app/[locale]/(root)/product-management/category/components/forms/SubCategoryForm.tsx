@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CategoryNode, SubCategoryFormSchema, type SubCategoryFormData } from "@/dtos/category";
+import { CategoryNode, SubCategoryFormSchema, type SubCategoryFormData } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 
 interface SubCategoryFormProps {

@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CategoryNode, ItemGroupFormSchema, type ItemGroupFormData } from "@/dtos/category";
+import { CategoryNode, ItemGroupFormSchema, type ItemGroupFormData } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 
 interface ItemGroupFormProps {

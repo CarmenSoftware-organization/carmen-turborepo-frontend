@@ -5,12 +5,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { CategoryNode } from "@/dtos/category";
+import { CategoryNode } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { CategoryForm } from "./forms/CategoryForm";
 import { SubCategoryForm } from "./forms/SubCategoryForm";
 import { ItemGroupForm } from "./forms/ItemGroupForm";
-import type { CategoryFormData, SubCategoryFormData, ItemGroupFormData } from "@/dtos/category";
+import type { CategoryFormData, SubCategoryFormData, ItemGroupFormData } from "@/dtos/category.dto";
 
 interface CategoryDialogProps {
     readonly open: boolean;
