@@ -38,6 +38,7 @@
     "procurement": "การจัดซื้อ",
     "configuration": "การตั้งค่า",
     "Procurement": {
+      "dashboard": "แดชบอร์ด",
       "myApproval": "การอนุมัติของฉัน",
       "purchaseOrder": "ใบสั่งซื้อ",
       "purchaseRequest": "ใบขอซื้อ",

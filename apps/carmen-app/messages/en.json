@@ -43,6 +43,7 @@
     "procurement": "Procurement",
     "configuration": "Configuration",
     "Procurement": {
+      "dashboard": "Dashboard",
       "myApproval": "My Approval",
       "purchaseOrder": "Purchase Order",
       "purchaseRequest": "Purchase Request",

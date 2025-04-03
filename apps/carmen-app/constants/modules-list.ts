@@ -5,19 +5,18 @@ interface ModuleItem {
     children?: ModuleItem[];
 }
 
-import { LayoutDashboard, ShoppingCart, Settings, Package, Users, Store, CalendarClock, Factory, BarChart2, DollarSign, HelpCircle } from "lucide-react";
+import { ShoppingCart, Settings, Package, Users, Store, CalendarClock, Factory, BarChart2, DollarSign, HelpCircle } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
-    {
-        labelKey: "Modules.dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-    },
     {
         labelKey: "Modules.procurement",
         href: "/procurement",
         icon: ShoppingCart,
         children: [
+            {
+                labelKey: "Modules.Procurement.dashboard",
+                href: "/procurement/dashboard",
+            },
             {
                 labelKey: "Modules.Procurement.myApproval",
                 href: "/procurement/my-approval",

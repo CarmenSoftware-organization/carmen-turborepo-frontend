@@ -42,7 +42,7 @@ export default function SignInForm() {
                         setSession(result.access_token, result.refresh_token)
                     }
 
-                    router.push('/dashboard')
+                    router.push('/procurement/my-approval')
                     form.reset()
                 } else {
                     form.setError("root", {
