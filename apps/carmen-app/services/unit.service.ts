@@ -11,9 +11,6 @@ export const getAllUnits = async (token: string, tenantId: string) => {
             'Content-Type': 'application/json',
         },
     });
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
     const data = await response.json();
     return data;
 };
@@ -30,10 +27,6 @@ export const createUnit = async (token: string, tenantId: string, unit: UnitDto)
         },
         body: JSON.stringify(unit),
     });
-    console.log('response', response);
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
     const data = await response.json();
     return data;
 };
@@ -49,9 +42,6 @@ export const updateUnit = async (token: string, tenantId: string, unit: UnitDto)
         },
         body: JSON.stringify(unit),
     });
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
     const data = await response.json();
     return data;
 };
@@ -66,9 +56,7 @@ export const deleteUnit = async (token: string, tenantId: string, unit: UnitDto)
             'Content-Type': 'application/json',
         },
     });
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return true;
+    const data = await response.json();
+    return data;
 };
 

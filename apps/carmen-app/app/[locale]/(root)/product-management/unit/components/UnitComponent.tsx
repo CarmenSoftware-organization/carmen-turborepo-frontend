@@ -1,6 +1,4 @@
 "use client";
-import { useURL } from "@/hooks/useURL";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -12,44 +10,39 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import UnitList from "./UnitList";
 import UnitDialog from "./UnitDialog";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
-import { UnitDto } from "@/dtos/unit.dto";
 import { formType } from "@/dtos/form.dto";
-import { createUnit, deleteUnit, getAllUnits, updateUnit } from "@/services/unit.service";
-import { useAuth } from "@/context/AuthContext";
-import { z } from "zod";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useUnitData, useUnitForm, useUnitDelete, useUnitFilters } from "@/hooks/ีuseUnit";
+import SignInDialog from "@/components/SignInDialog";
+import { useEffect, useState } from "react";
 
 export default function UnitComponent() {
-    const { token } = useAuth();
     const tCommon = useTranslations('Common');
     const tUnit = useTranslations('Unit');
-    const [search, setSearch] = useURL('se  arch');
-    const [status, setStatus] = useURL('status');
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [sort, setSort] = useURL('sort');
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>();
-    const [units, setUnits] = useState<UnitDto[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [signInOpen, setSignInOpen] = useState(false);
+    const { units, setUnits, isLoading, setIsLoading, isUnauthorized } = useUnitData();
+    const { search, setSearch, status, setStatus, statusOpen, setStatusOpen, sort, setSort } = useUnitFilters();
+
+    const {
+        dialogOpen,
+        setDialogOpen,
+        selectedUnit: formSelectedUnit,
+        handleAdd,
+        handleEdit,
+        handleSubmit
+    } = useUnitForm(units, setUnits);
+
+    const {
+        deleteDialogOpen,
+        handleDelete,
+        handleConfirmDelete,
+        handleCancelDelete
+    } = useUnitDelete(units, setUnits, setIsLoading);
 
     useEffect(() => {
-        const fetchUnits = async () => {
-            if (!token) return;
-            try {
-                setIsLoading(true);
-                const data = await getAllUnits(token);
-                setUnits(data);
-            } catch (error) {
-                console.error('Error fetching units:', error);
-                toastError({ message: 'Error fetching units' });
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchUnits();
-    }, [token]);
-
+        if (isUnauthorized) {
+            setSignInOpen(true);
+        }
+    }, [isUnauthorized]);
 
     const sortFields = [
         { key: 'name', label: 'Name' },
@@ -58,89 +51,6 @@ export default function UnitComponent() {
     ];
 
     const title = tUnit('title');
-
-    const handleAdd = () => {
-        setSelectedUnit(undefined);
-        setDialogOpen(true);
-    };
-
-    const handleEdit = (unit: UnitDto) => {
-        setSelectedUnit(unit);
-        setDialogOpen(true);
-    };
-
-    const handleDelete = (unit: UnitDto) => {
-        setSelectedUnit(unit);
-        setDeleteDialogOpen(true);
-    };
-
-    const handleSubmit = async (data: UnitDto) => {
-        try {
-            if (selectedUnit) {
-                const updatedUnit = { ...data, id: selectedUnit.id };
-                const result = await updateUnit(token, updatedUnit);
-                if (result) {
-                    setUnits(units.map(unit =>
-                        unit.id === selectedUnit.id
-                            ? { ...data, id: unit.id }
-                            : unit
-                    ));
-                    toastSuccess({ message: 'Unit updated successfully' });
-                } else {
-                    console.error('Error updating unit:', result);
-                    toastError({ message: 'Error updating unit' });
-                }
-            } else {
-                const result = await createUnit(token, data);
-                if (result) {
-                    const newUnit: UnitDto = {
-                        ...data,
-                        id: result.id,
-                    };
-                    setUnits([...units, newUnit]);
-                    toastSuccess({ message: 'Unit created successfully' });
-                } else {
-                    console.error('Error creating unit: No ID returned');
-                    toastError({ message: 'Error creating unit' });
-                }
-            }
-            setDialogOpen(false);
-            setSelectedUnit(undefined);
-        } catch (error) {
-            console.error('Error submitting unit:', error);
-            toastError({ message: 'Error submitting unit' });
-            if (error instanceof z.ZodError) {
-                console.error('Zod Validation Errors:', error.errors);
-            }
-        }
-    };
-
-    const handleConfirmDelete = async () => {
-        if (!selectedUnit) return;
-        try {
-            setIsLoading(true);
-            const result = await deleteUnit(token, selectedUnit);
-            if (result) {
-                setUnits(prevUnits => prevUnits.filter(unit => unit.id !== selectedUnit.id));
-                toastSuccess({ message: 'Unit deleted successfully' });
-            } else {
-                console.error('Error deleting unit:', result);
-                toastError({ message: 'Error deleting unit' });
-            }
-        } catch (error) {
-            console.error('Error deleting unit:', error);
-            toastError({ message: 'Error deleting unit' });
-        } finally {
-            setIsLoading(false);
-            setDeleteDialogOpen(false);
-            setSelectedUnit(undefined);
-        }
-    };
-
-    const handleCancelDelete = () => {
-        setDeleteDialogOpen(false);
-        setSelectedUnit(undefined);
-    };
 
     const actionButtons = (
         <div className="action-btn-container" data-id="unit-list-action-buttons">
@@ -216,8 +126,8 @@ export default function UnitComponent() {
             <UnitDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                mode={selectedUnit ? formType.EDIT : formType.ADD}
-                unit={selectedUnit}
+                mode={formSelectedUnit ? formType.EDIT : formType.ADD}
+                unit={formSelectedUnit}
                 onSubmit={handleSubmit}
             />
             <DeleteConfirmDialog
@@ -225,6 +135,7 @@ export default function UnitComponent() {
                 onOpenChange={handleCancelDelete}
                 onConfirm={handleConfirmDelete}
             />
+            {isUnauthorized && <SignInDialog open={signInOpen} onOpenChange={setSignInOpen} />}
         </>
     );
 }
