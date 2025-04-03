@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { ItemGroupDto } from "@/dtos/category.dto";
 import { useAuth } from "@/context/AuthContext";
 import { createItemGroupService, deleteItemGroupService, getItemGroupService, updateItemGroupService } from "@/services/item-group.service";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { toastError } from "@/components/ui-custom/Toast";
 import { formType } from "@/dtos/form.dto";
 
 export const useItemGroup = () => {
@@ -38,9 +38,7 @@ export const useItemGroup = () => {
     }, [fetchItemGroups]);
 
     const handleSubmit = useCallback((data: ItemGroupDto, mode: formType, selectedItemGroup?: ItemGroupDto) => {
-        if (!token) return;
-        console.log('handle submit', data);
-        console.log('mode', mode);
+        if (!token) return Promise.reject(new Error('No token available'));
 
         const submitAdd = async () => {
             try {
@@ -50,10 +48,10 @@ export const useItemGroup = () => {
                     id: result.id,
                 };
                 setItemGroups([...itemGroups, newItemGroup]);
-                toastSuccess({ message: 'Item group created successfully' });
+                return result;
             } catch (error) {
                 console.error('Error creating item group:', error);
-                toastError({ message: 'Error creating item group' });
+                throw error;
             }
         };
 
@@ -63,40 +61,42 @@ export const useItemGroup = () => {
                     ...data,
                     id: selectedItemGroup!.id,
                 };
-                await updateItemGroupService(token, tenantId, updatedItemGroup);
+                const result = await updateItemGroupService(token, tenantId, updatedItemGroup);
                 const id = updatedItemGroup.id;
                 const updatedItemGroups = itemGroups.map(c =>
                     c.id === id ? updatedItemGroup : c
                 );
                 setItemGroups(updatedItemGroups);
-                toastSuccess({ message: 'Item group updated successfully' });
+                return result;
             } catch (error) {
                 console.error('Error updating item group:', error);
-                toastError({ message: 'Error updating item group' });
+                throw error;
             }
         };
 
         if (mode === formType.ADD) {
-            startTransition(submitAdd);
+            return submitAdd();
         } else {
-            startTransition(submitEdit);
+            return submitEdit();
         }
     }, [token, tenantId, itemGroups]);
 
     const handleDelete = useCallback((itemGroup: ItemGroupDto) => {
-        if (!token) return;
+        if (!token) return Promise.reject(new Error('No token available'));
+
         const submitDelete = async () => {
             try {
-                await deleteItemGroupService(token, tenantId, itemGroup.id ?? '');
+                const result = await deleteItemGroupService(token, tenantId, itemGroup.id ?? '');
                 const updatedItemGroups = itemGroups.filter(c => c.id !== itemGroup.id);
                 setItemGroups(updatedItemGroups);
-                toastSuccess({ message: 'Item group deleted successfully' });
+                return result;
             } catch (error) {
                 console.error('Error deleting item group:', error);
-                toastError({ message: 'Error deleting item group' });
+                throw error;
             }
         };
-        startTransition(submitDelete);
+
+        return submitDelete();
     }, [token, tenantId, itemGroups]);
 
 

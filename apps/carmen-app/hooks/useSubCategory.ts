@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { SubCategoryDto } from "@/dtos/category.dto";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { toastError } from "@/components/ui-custom/Toast";
 import { createSubCategoryService, deleteSubCategoryService, getSubCategoryService, updateSubCategoryService } from "@/services/sub-category.service";
 import { formType } from "@/dtos/form.dto";
 
@@ -39,8 +39,8 @@ export const useSubCategory = () => {
     }, [fetchSubCategories]);
 
     const handleSubmit = useCallback((data: SubCategoryDto, mode: formType, selectedSubCategory?: SubCategoryDto) => {
-        if (!token) return;
-        console.log('handle submit 222', data);
+        if (!token) return Promise.reject(new Error('No token available'));
+
         const submitAdd = async () => {
             try {
                 const result = await createSubCategoryService(token, tenantId, data);
@@ -49,10 +49,10 @@ export const useSubCategory = () => {
                     id: result.id,
                 };
                 setSubCategories([...subCategories, newSubCategory]);
-                toastSuccess({ message: 'Sub category created successfully' });
+                return result;
             } catch (error) {
                 console.error('Error creating sub category:', error);
-                toastError({ message: 'Error creating sub category' });
+                throw error;
             }
         };
 
@@ -62,42 +62,43 @@ export const useSubCategory = () => {
                     ...data,
                     id: selectedSubCategory!.id,
                 };
-                await updateSubCategoryService(token, tenantId, updatedSubCategory);
+                const result = await updateSubCategoryService(token, tenantId, updatedSubCategory);
                 const id = updatedSubCategory.id;
                 const updatedSubCategories = subCategories.map(c =>
                     c.id === id ? updatedSubCategory : c
                 );
                 setSubCategories(updatedSubCategories);
-                toastSuccess({ message: 'Sub category updated successfully' });
+                return result;
             } catch (error) {
                 console.error('Error updating sub category:', error);
-                toastError({ message: 'Error updating sub category' });
+                throw error;
             }
         };
 
         if (mode === formType.ADD) {
-            startTransition(submitAdd);
+            return submitAdd();
         } else {
-            startTransition(submitEdit);
+            return submitEdit();
         }
     }, [token, tenantId, subCategories]);
 
 
     const handleDelete = useCallback((subCategory: SubCategoryDto) => {
-        if (!token) return;
+        if (!token) return Promise.reject(new Error('No token available'));
+
         const submitDelete = async () => {
             try {
-                await deleteSubCategoryService(token, tenantId, subCategory.id ?? '');
+                const result = await deleteSubCategoryService(token, tenantId, subCategory.id ?? '');
                 const updatedSubCategories = subCategories.filter(c => c.id !== subCategory.id);
                 setSubCategories(updatedSubCategories);
-                toastSuccess({ message: 'Sub category deleted successfully' });
+                return result;
             } catch (error) {
                 console.error('Error deleting sub category:', error);
-                toastError({ message: 'Error deleting sub category' });
+                throw error;
             }
         };
 
-        startTransition(submitDelete);
+        return submitDelete();
     }, [token, tenantId, subCategories]);
 
     return {

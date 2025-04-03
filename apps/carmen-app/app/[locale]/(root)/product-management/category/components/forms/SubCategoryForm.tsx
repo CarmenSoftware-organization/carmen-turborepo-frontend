@@ -7,6 +7,7 @@ import { CategoryNode, SubCategoryFormSchema, type SubCategoryFormData } from "@
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from "react";
 
 interface SubCategoryFormProps {
     readonly mode: formType;
@@ -17,16 +18,43 @@ interface SubCategoryFormProps {
 }
 
 export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCancel }: SubCategoryFormProps) {
+    const [parentName, setParentName] = useState("");
+    const [parentId, setParentId] = useState("");
+
+    // Set parent information when editing or creating
+    useEffect(() => {
+        if (mode === formType.EDIT && selectedNode) {
+            // When editing, get the parent ID from the selected node
+            setParentId(selectedNode.product_category_id || "");
+
+            // For edit mode, we need to find the parent name from the parent_category_id
+            if (parentNode && selectedNode.product_category_id === parentNode.id) {
+                setParentName(parentNode.name);
+            }
+        } else if (parentNode) {
+            // When creating, use the parent node provided
+            setParentId(parentNode.id);
+            setParentName(parentNode.name);
+        }
+    }, [mode, selectedNode, parentNode]);
+
     const form = useForm<SubCategoryFormData>({
         resolver: zodResolver(SubCategoryFormSchema),
         defaultValues: {
             code: selectedNode?.code ?? "",
             name: selectedNode?.name ?? "",
             description: selectedNode?.description ?? "",
-            product_category_id: parentNode?.id ?? "",
+            product_category_id: selectedNode?.product_category_id || parentNode?.id || "",
             is_active: selectedNode?.is_active ?? true
         }
     });
+
+    // Update form values when parent information changes
+    useEffect(() => {
+        if (parentId) {
+            form.setValue('product_category_id', parentId);
+        }
+    }, [parentId, form]);
 
     return (
         <Form {...form}>
@@ -39,7 +67,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                             <FormLabel>Category</FormLabel>
                             <FormControl>
                                 <Input
-                                    value={parentNode?.name ?? ""}
+                                    value={parentName}
                                     disabled
                                     className="bg-muted"
                                 />
@@ -47,7 +75,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                             <input
                                 type="hidden"
                                 {...field}
-                                value={parentNode?.id ?? field.value}
+                                value={parentId || field.value}
                             />
                             <FormMessage />
                         </FormItem>

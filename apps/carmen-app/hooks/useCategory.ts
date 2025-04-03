@@ -4,7 +4,7 @@ import { createCategoryService, deleteCategoryService, getCategoryService, updat
 import { useAuth } from "@/context/AuthContext";
 import { CategoryDto } from "@/dtos/category.dto";
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { toastError } from "@/components/ui-custom/Toast";
 import { formType } from "@/dtos/form.dto";
 
 export const useCategory = () => {
@@ -39,26 +39,22 @@ export const useCategory = () => {
     }, [fetchCategories]);
 
     const handleSubmit = useCallback((data: CategoryDto, mode: formType, selectedCategory?: CategoryDto) => {
-        if (!token) return;
+        if (!token) return Promise.reject(new Error('No token available'));
 
         const submitAdd = async () => {
             try {
                 const result = await createCategoryService(token, tenantId, data);
-                console.log('result', result);
 
                 const newCategory: CategoryDto = {
                     ...data,
                     id: result.id,
                 };
 
-                console.log('new category', newCategory);
-
-
                 setCategories([...categories, newCategory]);
-                toastSuccess({ message: 'Category created successfully' });
+                return result;
             } catch (error) {
                 console.error('Error creating category:', error);
-                toastError({ message: 'Error creating category' });
+                throw error;
             }
         };
 
@@ -69,7 +65,7 @@ export const useCategory = () => {
                     id: selectedCategory!.id,
                 };
 
-                await updateCategoryService(token, tenantId, updatedCategory);
+                const result = await updateCategoryService(token, tenantId, updatedCategory);
 
                 const id = updatedCategory.id;
                 const updatedCategories = categories.map(c =>
@@ -77,35 +73,35 @@ export const useCategory = () => {
                 );
 
                 setCategories(updatedCategories);
-                toastSuccess({ message: 'Category updated successfully' });
+                return result;
             } catch (error) {
                 console.error('Error updating category:', error);
-                toastError({ message: 'Error updating category' });
+                throw error;
             }
         };
 
         if (mode === formType.ADD) {
-            startTransition(submitAdd);
+            return submitAdd();
         } else {
-            startTransition(submitEdit);
+            return submitEdit();
         }
     }, [token, tenantId, categories]);
 
     const handleDelete = useCallback((category: CategoryDto) => {
-        if (!token) return;
+        if (!token) return Promise.reject(new Error('No token available'));
         const submitDelete = async () => {
             try {
-                await deleteCategoryService(token, tenantId, category.id ?? '');
+                const result = await deleteCategoryService(token, tenantId, category.id ?? '');
                 const updatedCategories = categories.filter(c => c.id !== category.id);
                 setCategories(updatedCategories);
-                toastSuccess({ message: 'Category deleted successfully' });
+                return result;
             } catch (error) {
                 console.error('Error deleting category:', error);
-                toastError({ message: 'Error deleting category' });
+                throw error;
             }
         };
 
-        startTransition(submitDelete);
+        return submitDelete();
     }, [token, tenantId, categories]);
 
     return {

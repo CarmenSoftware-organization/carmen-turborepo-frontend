@@ -1,21 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button"
-import { useState, useEffect, useCallback } from "react"
 import { Plus } from "lucide-react"
 import TreeNode from "./TreeNode"
 import { CategoryDialog } from "./CategoryDialog"
-import { formType } from "@/dtos/form.dto"
-import {
-    CategoryFormData,
-    CategoryNode,
-    ItemGroupFormData,
-    SubCategoryFormData,
-    CategoryDto,
-    SubCategoryDto,
-    ItemGroupDto
-} from "@/dtos/category.dto";
-import { generateNanoid } from "@/utils/nano-id";
+import { useCategory } from "@/hooks/useCategory";
+import { useSubCategory } from "@/hooks/useSubCategory";
+import { useItemGroup } from "@/hooks/useItemGroup";
+import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import SignInDialog from "@/components/SignInDialog";
+import { formType } from "@/dtos/form.dto";
+import { CategoryDto, SubCategoryDto, ItemGroupDto, CategoryNode } from "@/dtos/category.dto";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -26,416 +21,296 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useCategory } from "@/hooks/useCategory";
-import { useSubCategory } from "@/hooks/useSubCategory";
-import { useItemGroup } from "@/hooks/useItemGroup";
-import { toastSuccess } from "@/components/ui-custom/Toast";
-import SignInDialog from "@/components/SignInDialog";
-
-// Define the extended SubCategory type with product_category_id
-interface ExtendedSubCategory {
-    id: string;
-    code: string;
-    name: string;
-    description?: string;
-    product_category_id: string;
-}
-
-// Type guard function
-function hasProductCategoryId(obj: unknown): obj is ExtendedSubCategory {
-    return obj !== null && typeof obj === 'object' && 'product_category_id' in obj;
-}
+import { useState } from "react";
+import { useCategoryTree } from "@/hooks/useCategoryTree";
+import { useCategoryDialog } from "@/hooks/useCategoryDialog";
+import { useCategoryDelete } from "@/hooks/useCategoryDelete";
 
 export default function CategoryComponent() {
-    const { categories, isPending: isCategoriesPending, handleSubmit: submitCategory, isUnauthorized } = useCategory();
+    const [signInOpen, setSignInOpen] = useState(false);
+    const {
+        categories,
+        isPending: isCategoriesPending,
+        handleSubmit: submitCategory,
+        handleDelete: deleteCategory,
+        isUnauthorized
+    } = useCategory();
     const { subCategories, isPending: isSubCategoriesPending, handleSubmit: submitSubCategory } = useSubCategory();
     const { itemGroups, isPending: isItemGroupsPending, handleSubmit: submitItemGroup } = useItemGroup();
 
     const isLoading = isCategoriesPending || isSubCategoriesPending || isItemGroupsPending;
 
-    const [categoryData, setCategoryData] = useState<CategoryNode[]>([]);
-    const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+    const {
+        categoryData,
+        expanded,
+        expandAll,
+        collapseAll,
+        toggleExpand
+    } = useCategoryTree({
+        categories,
+        subCategories,
+        itemGroups,
+        isLoading
+    });
 
-    // Build tree data from API data
-    const buildCategoryTree = useCallback(() => {
-        if (!categories || !subCategories || !itemGroups) return [];
+    const {
+        dialogOpen,
+        dialogMode,
+        selectedNode,
+        parentNode,
+        handleDialogChange,
+        handleEdit: dialogHandleEdit,
+        handleAdd: dialogHandleAdd,
+        handleFormSubmit
+    } = useCategoryDialog({
+        categoryData,
+        onFormSubmit: async (data) => {
+            try {
+                let success = false;
+                let result;
 
-        // Map ItemGroup to CategoryNode
-        const mapItemGroups = (subcategoryId: string): CategoryNode[] => {
-            return itemGroups
-                .filter(item => item.product_subcategory_id === subcategoryId)
-                .map(item => ({
-                    id: item.id || generateNanoid(),
-                    name: item.name,
-                    code: item.code,
-                    description: item.description,
-                    type: "itemGroup" as const,
-                    children: []
-                }));
-        };
+                if (dialogMode === formType.EDIT && selectedNode) {
+                    // Edit mode
+                    if (selectedNode.type === "category") {
+                        const categoryDto: CategoryDto = {
+                            id: selectedNode.id,
+                            code: data.code,
+                            name: data.name,
+                            description: data.description,
+                            is_active: true
+                        };
+                        result = await submitCategory(categoryDto, dialogMode, categoryDto);
+                        success = !!result;
+                    } else if (selectedNode.type === "subcategory") {
+                        const subCategoryDto: SubCategoryDto = {
+                            id: selectedNode.id,
+                            code: data.code,
+                            name: data.name,
+                            description: data.description,
+                            is_active: true,
+                            product_category_id: parentNode?.id || selectedNode.product_category_id || ""
+                        };
+                        result = await submitSubCategory(subCategoryDto, dialogMode, subCategoryDto);
+                        success = !!result;
+                    } else {
+                        const itemGroupDto: ItemGroupDto = {
+                            id: selectedNode.id,
+                            code: data.code,
+                            name: data.name,
+                            description: data.description,
+                            is_active: true,
+                            product_subcategory_id: parentNode?.id || selectedNode.product_subcategory_id || ""
+                        };
+                        result = await submitItemGroup(itemGroupDto, dialogMode, itemGroupDto);
+                        success = !!result;
+                    }
+                } else {
+                    // Add mode
+                    const isCategory = !parentNode;
+                    const isSubCategory = parentNode?.type === "category";
 
-        // Map SubCategory to CategoryNode
-        const mapSubCategories = (categoryId: string): CategoryNode[] => {
-            return (subCategories as unknown[])
-                .filter(sub => hasProductCategoryId(sub) && sub.product_category_id === categoryId)
-                .map(sub => ({
-                    id: (sub as ExtendedSubCategory).id || generateNanoid(),
-                    name: (sub as ExtendedSubCategory).name,
-                    code: (sub as ExtendedSubCategory).code,
-                    description: (sub as ExtendedSubCategory).description,
-                    type: "subcategory" as const,
-                    children: mapItemGroups((sub as ExtendedSubCategory).id || '')
-                }));
-        };
+                    if (isCategory) {
+                        const categoryDto: CategoryDto = {
+                            id: "", // Will be set by the backend
+                            code: data.code,
+                            name: data.name,
+                            description: data.description,
+                            is_active: true
+                        };
+                        result = await submitCategory(categoryDto, dialogMode);
+                        success = !!result;
+                    } else if (isSubCategory) {
+                        const subCategoryDto: SubCategoryDto = {
+                            id: "", // Will be set by the backend
+                            code: data.code,
+                            name: data.name,
+                            description: data.description,
+                            is_active: true,
+                            product_category_id: parentNode!.id
+                        };
+                        result = await submitSubCategory(subCategoryDto, dialogMode);
+                        success = !!result;
+                    } else {
+                        const itemGroupDto: ItemGroupDto = {
+                            id: "", // Will be set by the backend
+                            code: data.code,
+                            name: data.name,
+                            description: data.description,
+                            is_active: true,
+                            product_subcategory_id: parentNode!.id
+                        };
+                        result = await submitItemGroup(itemGroupDto, dialogMode);
+                        success = !!result;
+                    }
+                }
 
-        // Map Category to CategoryNode
-        return categories.map(cat => ({
-            id: cat.id || generateNanoid(),
-            name: cat.name,
-            code: cat.code,
-            description: cat.description,
-            type: "category" as const,
-            children: mapSubCategories(cat.id || '')
-        }));
-    }, [categories, subCategories, itemGroups]);
-
-    // Initialize or update tree when API data changes
-    useEffect(() => {
-        if (!isLoading) {
-            const tree = buildCategoryTree();
-            setCategoryData(tree);
-
-            // Initialize expanded state
-            const initialExpanded: Record<string, boolean> = {};
-            tree.forEach(category => {
-                initialExpanded[category.id] = true;
-            });
-            setExpanded(initialExpanded);
+                if (success) {
+                    toastSuccess({ message: "Operation completed successfully" });
+                    handleDialogChange(false); // Close dialog only on success
+                } else {
+                    toastError({ message: "Operation failed. Please try again." });
+                }
+            } catch (error) {
+                console.error("Error submitting form:", error);
+                toastError({ message: "Operation failed. Please try again." });
+                // Don't close dialog on error
+            }
         }
-    }, [isLoading, buildCategoryTree]);
+    });
 
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
-    const [selectedNode, setSelectedNode] = useState<CategoryNode | undefined>();
-    const [parentNode, setParentNode] = useState<CategoryNode | undefined>();
+    const {
+        deleteDialogOpen,
+        nodeToDelete,
+        handleDeleteDialogChange,
+        handleConfirmDelete,
+        handleDelete: deleteHandleDelete,
+        getDeleteMessage
+    } = useCategoryDelete({
+        onDelete: async (node) => {
+            try {
+                let success = false;
+                const nodeType = node.type;
+                let result;
 
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [nodeToDelete, setNodeToDelete] = useState<CategoryNode | undefined>();
+                if (nodeType === "category") {
+                    // Use direct deleteCategory service instead of setting is_active flag
+                    const categoryDto: CategoryDto = {
+                        id: node.id,
+                        code: node.code,
+                        name: node.name,
+                        description: node.description,
+                        is_active: true
+                    };
+                    result = await deleteCategory(categoryDto);
+                    success = !!result;
+                } else if (nodeType === "subcategory") {
+                    const subCategoryDto: SubCategoryDto = {
+                        id: node.id,
+                        code: node.code,
+                        name: node.name,
+                        description: node.description,
+                        is_active: false,
+                        product_category_id: node.product_category_id || ""
+                    };
+                    result = await submitSubCategory(subCategoryDto, formType.EDIT, subCategoryDto);
+                    success = !!result;
+                } else {
+                    // Must be itemGroup
+                    const itemGroupDto: ItemGroupDto = {
+                        id: node.id,
+                        code: node.code,
+                        name: node.name,
+                        description: node.description,
+                        is_active: false,
+                        product_subcategory_id: node.product_subcategory_id || ""
+                    };
+                    result = await submitItemGroup(itemGroupDto, formType.EDIT, itemGroupDto);
+                    success = !!result;
+                }
 
+                if (success) {
+                    toastSuccess({ message: "Item deleted successfully" });
+                    handleDeleteDialogChange(false); // Close dialog only on success
+                } else {
+                    toastError({ message: "Delete operation failed. Please try again." });
+                }
+            } catch (error) {
+                console.error("Error deleting item:", error);
+                toastError({ message: "Delete operation failed. Please try again." });
+                // Don't close dialog on error
+            }
+        }
+    });
+
+    // Connect tree events to dialog actions
     const handleEdit = (node: CategoryNode) => {
-        console.log('handleEdit called with node:', node);
-        setDialogMode(formType.EDIT);
-        setSelectedNode(node);
-        setDialogOpen(true);
+        dialogHandleEdit(node);
     };
 
     const handleAdd = (parent?: CategoryNode) => {
-        console.log('handleAdd called with parent:', parent);
-        setDialogMode(formType.ADD);
-        setParentNode(parent);
-        setSelectedNode(undefined);
-        setDialogOpen(true);
-    };
-
-    const expandAll = () => {
-        const allExpanded: Record<string, boolean> = {};
-
-        const addAllNodes = (nodes: CategoryNode[]) => {
-            nodes.forEach((node) => {
-                allExpanded[node.id] = true;
-                if (node.children && node.children.length > 0) {
-                    addAllNodes(node.children);
-                }
-            });
-        };
-
-        addAllNodes(categoryData);
-        setExpanded(allExpanded);
-    };
-
-    const collapseAll = () => {
-        const topLevelOnly: Record<string, boolean> = {};
-        categoryData.forEach((category) => {
-            topLevelOnly[category.id] = false;
-        });
-        setExpanded(topLevelOnly);
-    };
-
-    const toggleExpand = (id: string) => {
-        setExpanded((prev) => ({
-            ...prev,
-            [id]: !prev[id],
-        }));
-    };
-
-    const updateNodeInTree = (nodes: CategoryNode[], updatedNode: CategoryNode): CategoryNode[] => {
-        return nodes.map(node => {
-            if (node.id === updatedNode.id) {
-                return { ...node, ...updatedNode };
-            }
-            if (node.children && node.children.length > 0) {
-                return {
-                    ...node,
-                    children: updateNodeInTree(node.children, updatedNode)
-                };
-            }
-            return node;
-        });
-    };
-
-    const addNodeToTree = (nodes: CategoryNode[], newNode: CategoryNode, parentId?: string): CategoryNode[] => {
-        if (!parentId) {
-            return [...nodes, newNode];
-        }
-
-        return nodes.map(node => {
-            if (node.id === parentId) {
-                return {
-                    ...node,
-                    children: [...(node.children || []), newNode]
-                };
-            }
-            if (node.children && node.children.length > 0) {
-                return {
-                    ...node,
-                    children: addNodeToTree(node.children, newNode, parentId)
-                };
-            }
-            return node;
-        });
-    };
-
-    const handleFormSubmit = (data: CategoryFormData | SubCategoryFormData | ItemGroupFormData) => {
-        const getNodeType = () => {
-            if (dialogMode === formType.EDIT && selectedNode) {
-                return selectedNode.type;
-            }
-            // For new nodes, determine type based on parent
-            if (!parentNode) return "category";
-            if (parentNode.type === "category") return "subcategory";
-            return "itemGroup";
-        };
-
-        // Generate a new ID for new nodes
-        const id = dialogMode === formType.EDIT && selectedNode
-            ? (selectedNode.id || generateNanoid())
-            : generateNanoid();
-
-        // Get node type
-        const nodeType = getNodeType();
-
-        // Create the node with all required properties
-        const newNode: CategoryNode = {
-            id,
-            name: data.name,
-            code: data.code,
-            description: data.description,
-            type: nodeType,
-            children: dialogMode === formType.EDIT && selectedNode
-                ? selectedNode.children || []
-                : []
-        };
-
-        // Update UI immediately
-        if (dialogMode === formType.EDIT) {
-            setCategoryData(prev => updateNodeInTree(prev, newNode));
-        } else {
-            setCategoryData(prev => addNodeToTree(prev, newNode, parentNode?.id));
-            if (parentNode?.id) {
-                setExpanded(prev => ({
-                    ...prev,
-                    [parentNode.id]: true
-                }));
-            }
-        }
-
-        // Submit to API based on node type
-        try {
-            const formData = {
-                ...data,
-                id: newNode.id,
-                is_active: true // Add is_active for CategoryDto
-            };
-
-            if (nodeType === 'category') {
-                // For category, use the submitCategory function without selectedNode
-                // when in ADD mode or if selectedNode is undefined
-                if (dialogMode === formType.EDIT && selectedNode) {
-                    // When editing, we need the existing category ID
-                    submitCategory(formData as CategoryDto, dialogMode, {
-                        ...formData,
-                        id: selectedNode.id
-                    } as CategoryDto);
-                } else {
-                    // When creating new, we don't need selectedNode
-                    submitCategory(formData as CategoryDto, dialogMode);
-                }
-                toastSuccess({ message: 'Category saved successfully' });
-            } else if (nodeType === 'subcategory') {
-                // For subcategory, just refresh the data after a delay
-                // This is a temporary solution until we add proper API integration
-                if (dialogMode === formType.EDIT && selectedNode) {
-                    submitSubCategory(formData as SubCategoryDto, dialogMode, {
-                        ...formData,
-                        id: selectedNode.id
-                    } as SubCategoryDto);
-                } else {
-                    submitSubCategory(formData as SubCategoryDto, dialogMode);
-                }
-            } else if (nodeType === 'itemGroup') {
-                if (dialogMode === formType.EDIT && selectedNode) {
-                    submitItemGroup(formData as ItemGroupDto, dialogMode, {
-                        ...formData,
-                        id: selectedNode.id
-                    } as ItemGroupDto);
-                } else {
-                    submitItemGroup(formData as ItemGroupDto, dialogMode);
-                }
-            }
-        } catch (error) {
-            console.error('Error submitting form:', error);
-        }
-
-        handleDialogChange(false);
-    };
-
-    const handleDialogChange = (open: boolean) => {
-        setDialogOpen(open);
-        if (!open) {
-            setSelectedNode(undefined);
-            setParentNode(undefined);
-            setDialogMode(formType.ADD);
-        }
+        dialogHandleAdd(parent);
     };
 
     const handleDelete = (node: CategoryNode) => {
-        setNodeToDelete(node);
-        setDeleteDialogOpen(true);
+        deleteHandleDelete(node);
     };
 
-    const getDeleteMessage = (node: CategoryNode) => {
-        switch (node.type) {
-            case "category":
-                return `This will permanently delete category "${node.name}" and all its sub-categories and item groups.`;
-            case "subcategory":
-                return `This will permanently delete sub-category "${node.name}" and all its item groups.`;
-            default:
-                return `This will permanently delete item group "${node.name}".`;
-        }
-    };
-
-    const deleteNodeFromTree = (nodes: CategoryNode[], nodeId: string): CategoryNode[] => {
-        return nodes.map(node => {
-            // If this is the node to delete, filter it out
-            if (node.id === nodeId) {
-                return null;
-            }
-
-            // If node has children, process them
-            if (node.children && node.children.length > 0) {
-                const filteredChildren = deleteNodeFromTree(node.children, nodeId);
-                return {
-                    ...node,
-                    children: filteredChildren.filter(Boolean)
-                };
-            }
-
-            return node;
-        }).filter(Boolean) as CategoryNode[];
-    };
-
-    const handleConfirmDelete = () => {
-        if (nodeToDelete) {
-            setCategoryData(prev => deleteNodeFromTree(prev, nodeToDelete.id));
-            setDeleteDialogOpen(false);
-            setNodeToDelete(undefined);
-        }
-    };
-
-    // Get node type label for display
     const getNodeTypeLabel = (type?: string) => {
         switch (type) {
-            case "subcategory": return "Sub Category";
-            case "itemGroup": return "Item Group";
-            default: return "Category";
+            case "category":
+                return "Category";
+            case "subcategory":
+                return "Subcategory";
+            case "itemGroup":
+                return "Item Group";
+            default:
+                return "Item";
         }
     };
 
-    // Render content based on loading state
     const renderContent = () => {
+        if (isLoading) {
+            return <div>Loading...</div>;
+        }
+
         if (isUnauthorized) {
-            return (
-                <SignInDialog
-                    open={true}
-                    onOpenChange={() => !isUnauthorized}
-                />
-            );
+            return <SignInDialog open={signInOpen} onOpenChange={setSignInOpen} />;
         }
 
-        if (isCategoriesPending) {
-            return (
-                <div className="flex justify-center items-center h-32">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        // Default return when not loading and authorized
+        return (
+            <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                    <div className="space-x-2">
+                        <Button onClick={expandAll}>Expand All</Button>
+                        <Button onClick={collapseAll}>Collapse All</Button>
+                    </div>
+                    <Button onClick={() => handleAdd()}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        Add Category
+                    </Button>
                 </div>
-            );
-        }
 
-        return categoryData.map((node) => (
-            <TreeNode
-                key={node.id}
-                node={node}
-                expanded={expanded}
-                toggleExpand={toggleExpand}
-                onEdit={handleEdit}
-                onAdd={handleAdd}
-                onDelete={handleDelete}
-            />
-        ));
+                <div className="border rounded-lg p-4">
+                    {categoryData.map((category: CategoryNode) => (
+                        <TreeNode
+                            key={category.id}
+                            node={category}
+                            expanded={expanded}
+                            toggleExpand={toggleExpand}
+                            onEdit={handleEdit}
+                            onAdd={handleAdd}
+                            onDelete={handleDelete}
+                        />
+                    ))}
+                </div>
+
+                <CategoryDialog
+                    open={dialogOpen}
+                    onOpenChange={handleDialogChange}
+                    mode={dialogMode}
+                    selectedNode={selectedNode}
+                    parentNode={parentNode}
+                    onSubmit={handleFormSubmit}
+                />
+
+                <AlertDialog open={deleteDialogOpen} onOpenChange={handleDeleteDialogChange}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Delete {getNodeTypeLabel(nodeToDelete?.type)}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {nodeToDelete && getDeleteMessage(nodeToDelete)}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            </div>
+        );
     };
 
-    return (
-        <div className="flex flex-col space-y-4">
-            <div className="container flex items-center justify-end">
-                <div className="flex gap-2">
-                    <Button variant="outline" onClick={expandAll}>
-                        Expand All
-                    </Button>
-                    <Button variant="outline" onClick={collapseAll}>
-                        Collapse All
-                    </Button>
-                    <Button onClick={() => handleAdd()}>
-                        <Plus className="h-4 w-4" /> Add Category
-                    </Button>
-                </div>
-            </div>
-            {isLoading ? (
-                <div className="flex justify-center items-center h-32">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                </div>
-            ) : renderContent()}
-            <CategoryDialog
-                open={dialogOpen}
-                onOpenChange={handleDialogChange}
-                mode={dialogMode}
-                selectedNode={selectedNode}
-                parentNode={parentNode}
-                parentType={(parentNode?.type === "itemGroup" ? "subcategory" : parentNode?.type) ?? "root"}
-                onSubmit={handleFormSubmit}
-            />
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Delete {getNodeTypeLabel(nodeToDelete?.type)}</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {nodeToDelete && getDeleteMessage(nodeToDelete)}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setNodeToDelete(undefined)}>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive hover:bg-destructive/90">Delete</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </div>
-    );
+    return renderContent();
 }
