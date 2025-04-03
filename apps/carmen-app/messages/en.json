@@ -159,6 +159,10 @@
       "faqs": "FAQs",
       "supportTicketSystem": "Support Ticket System",
       "systemUpdatesAndReleaseNotes": "System Updates and Release Notes"
+    },
+    "systemIntegration": "System Integration",
+    "SystemIntegration": {
+      "pos": "POS Integrations"
     }
   },
   "UserManagement": {

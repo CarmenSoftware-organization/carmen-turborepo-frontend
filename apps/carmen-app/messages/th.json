@@ -153,6 +153,10 @@
       "faqs": "คำถามที่พบบ่อย",
       "supportTicketSystem": "ระบบการสนับสนุนการซื้อขาย",
       "systemUpdatesAndReleaseNotes": "การอัพเดตและบันทึกการปรับปรุง"
+    },
+    "systemIntegration": "การรวมระบบ",
+    "SystemIntegration": {
+      "pos": "ระบบสะสมคะแนน"
     }
   },
   "Error": {

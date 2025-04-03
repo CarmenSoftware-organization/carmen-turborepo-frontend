@@ -120,6 +120,22 @@ export const moduleItems: ModuleItem[] = [
                 ]
             },
             {
+                labelKey: "Modules.InventoryManagement.inventoryAdjustments",
+                href: "/inventory-management/inventory-adjustment",
+            },
+            {
+                labelKey: "Modules.InventoryManagement.spotCheck",
+                href: "/inventory-management/spot-check",
+            },
+            {
+                labelKey: "Modules.InventoryManagement.physicalCountManagement",
+                href: "/inventory-management/physical-count-management",
+            },
+            {
+                labelKey: "Modules.InventoryManagement.periodEnd",
+                href: "/inventory-management/period-end",
+            },
+            {
                 labelKey: "Modules.InventoryManagement.stockOverview",
                 href: "/inventory-management/stock-overview",
                 children: [
@@ -146,23 +162,6 @@ export const moduleItems: ModuleItem[] = [
 
                 ]
             },
-            {
-                labelKey: "Modules.InventoryManagement.inventoryAdjustments",
-                href: "/inventory-management/inventory-adjustment",
-            },
-            {
-                labelKey: "Modules.InventoryManagement.spotCheck",
-                href: "/inventory-management/spot-check",
-            },
-            {
-                labelKey: "Modules.InventoryManagement.physicalCountManagement",
-                href: "/inventory-management/physical-count-management",
-            },
-            {
-                labelKey: "Modules.InventoryManagement.periodEnd",
-                href: "/inventory-management/period-end",
-            },
-
         ]
     },
     {
@@ -340,16 +339,6 @@ export const moduleItems: ModuleItem[] = [
                 labelKey: "Modules.SystemAdministration.dataBackupAndRecovery",
                 href: "/system-administration/data-backup-and-recovery",
             },
-            {
-                labelKey: "Modules.SystemAdministration.SystemIntegrations.title",
-                href: "/system-administration/system-integration",
-                children: [
-                    {
-                        labelKey: "Modules.SystemAdministration.SystemIntegrations.pos",
-                        href: "/system-administration/system-integration/pos",
-                    },
-                ]
-            },
         ]
     },
     {
@@ -376,6 +365,17 @@ export const moduleItems: ModuleItem[] = [
             {
                 labelKey: "Modules.HelpAndSupport.systemUpdatesAndReleaseNotes",
                 href: "/help-support/system-updates-and-release-notes",
+            },
+        ]
+    },
+    {
+        labelKey: "Modules.systemIntegration",
+        href: "/system-integration",
+        icon: Package,
+        children: [
+            {
+                labelKey: "Modules.SystemIntegration.pos",
+                href: "/system-integration/pos",
             },
         ]
     }

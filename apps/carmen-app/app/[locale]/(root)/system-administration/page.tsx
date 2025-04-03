@@ -12,7 +12,6 @@ import {
     Key,
     Shield,
     Database,
-    Link
 } from "lucide-react";
 
 export default function SystemAdministrationPage() {
@@ -62,11 +61,6 @@ export default function SystemAdministrationPage() {
             name: t('SystemAdministration.dataBackupAndRecovery'),
             href: '/system-administration/data-backup-and-recovery',
             icon: Database
-        },
-        {
-            name: t('SystemAdministration.systemIntegrations'),
-            href: '/system-administration/system-integrations',
-            icon: Link
         }
     ]
     return (
