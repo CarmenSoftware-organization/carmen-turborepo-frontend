@@ -18,12 +18,12 @@ export default function StockTable() {
             <CardHeader>
                 <div className="flex flex-col gap-4">
                     {/* First Row - Title and Create Button */}
-                    <div className="flex-between space-y-2">
+                    <div className="flex justify-between items-center">
                         <CardTitle>Inventory Status</CardTitle>
-                        <Button>Create Requisition</Button>
+                        <Button size="sm">Create PR Requisition</Button>
                     </div>
                     {/* Second Row - Search and Filters with justify-between */}
-                    <div className="flex-between space-y-2">
+                    <div className="flex justify-between items-center">
                         <div className="relative w-1/2">
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                             <Input className="pl-8 w-full" placeholder="Search items..." />

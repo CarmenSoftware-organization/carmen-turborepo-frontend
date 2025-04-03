@@ -74,16 +74,24 @@
     "inventoryManagement": "Inventory Management",
     "InventoryManagement": {
       "stockOverview": "Stock Overview",
+      "storeOperation": {
+        "title": "Store Operation",
+        "storeRequisition": "Store Requisitions",
+        "stockReplenishment": "Stock Replenishment"
+      },
+
+      "inventoryAdjustments": "Inventory Adjustments",
+      "spotCheck": "Spot Check",
+      "physicalCountManagement": "Physical Count Management",
+      "periodEnd": "Period End",
+      "storeRequisition": "Store Requisitions",
+      "stockReplenishment": "Stock Replenishment",
       "StockOverview": {
         "inventoryBalance": "Inventory Balance",
         "inventoryAging": "Inventory Aging",
         "stockCard": "Stock Card",
         "slowMoving": "Slow Moving"
-      },
-      "inventoryAdjustments": "Inventory Adjustments",
-      "spotCheck": "Spot Check",
-      "physicalCountManagement": "Physical Count Management",
-      "periodEnd": "Period End"
+      }
     },
     "operationalPlanning": "Operational Planning",
     "OperationalPlanning": {

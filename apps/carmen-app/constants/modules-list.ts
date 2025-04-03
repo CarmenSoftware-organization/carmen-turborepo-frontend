@@ -95,14 +95,6 @@ export const moduleItems: ModuleItem[] = [
         icon: Store,
         children: [
             {
-                labelKey: "Modules.StoreOperations.storeRequisitions",
-                href: "/store-operation/store-requisition",
-            },
-            {
-                labelKey: "Modules.StoreOperations.stockReplenishment",
-                href: "/store-operation/stock-replenishment",
-            },
-            {
                 labelKey: "Modules.StoreOperations.wastageReporting",
                 href: "/store-operation/wastage-reporting",
             },
@@ -113,6 +105,20 @@ export const moduleItems: ModuleItem[] = [
         href: "/inventory-management",
         icon: Package,
         children: [
+            {
+                labelKey: "Modules.InventoryManagement.storeOperation.title",
+                href: "/inventory-management/store-operation",
+                children: [
+                    {
+                        labelKey: "Modules.InventoryManagement.storeOperation.storeRequisition",
+                        href: "/inventory-management/store-operation/store-requisition",
+                    },
+                    {
+                        labelKey: "Modules.InventoryManagement.storeOperation.stockReplenishment",
+                        href: "/inventory-management/store-operation/stock-replenishment",
+                    },
+                ]
+            },
             {
                 labelKey: "Modules.InventoryManagement.stockOverview",
                 href: "/inventory-management/stock-overview",
@@ -136,7 +142,8 @@ export const moduleItems: ModuleItem[] = [
                     {
                         labelKey: "Modules.InventoryManagement.StockOverview.slowMoving",
                         href: "/inventory-management/stock-overview/slow-moving",
-                    }
+                    },
+
                 ]
             },
             {
@@ -155,6 +162,7 @@ export const moduleItems: ModuleItem[] = [
                 labelKey: "Modules.InventoryManagement.periodEnd",
                 href: "/inventory-management/period-end",
             },
+
         ]
     },
     {

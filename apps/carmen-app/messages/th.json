@@ -68,6 +68,11 @@
     },
     "inventoryManagement": "การจัดการสินค้า",
     "InventoryManagement": {
+      "storeOperation": {
+        "title": "การดำเนินการร้านค้า",
+        "storeRequisition": "ขอสินค้าจากร้าน",
+        "stockReplenishment": "ซื้อสินค้าเพิ่ม"
+      },
       "stockOverview": "ตรวจสอบสินค้า",
       "StockOverview": {
         "inventoryBalance": "ยอดคงเหลือสินค้า",
@@ -78,7 +83,9 @@
       "inventoryAdjustments": "ปรับปรุงสินค้า",
       "spotCheck": "ตรวจสอบสินค้า",
       "physicalCountManagement": "ตรวจนับสินค้า",
-      "periodEnd": "สิ้นงวด"
+      "periodEnd": "สิ้นงวด",
+      "storeRequisition": "ขอสินค้าจากร้าน",
+      "stockReplenishment": "ซื้อสินค้าเพิ่ม"
     },
     "operationalPlanning": "การวางแผนการดำเนินงาน",
     "OperationalPlanning": {
