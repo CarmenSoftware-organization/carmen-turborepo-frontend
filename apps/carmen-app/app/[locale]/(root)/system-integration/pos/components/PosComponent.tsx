@@ -22,12 +22,12 @@ export default function PosComponent() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
-                        <Link href="/system-administration/system-integration/pos/settings/config">
+                        <Link href="/system-integration/pos/settings/config">
                             POS Configuration
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                        <Link href="/system-administration/system-integration/pos/settings/system">
+                        <Link href="/system-integration/pos/settings/system">
                             System Settings
                         </Link>
                     </DropdownMenuItem>

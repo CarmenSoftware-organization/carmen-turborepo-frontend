@@ -99,13 +99,13 @@ const systemCategories: SystemCategory[] = [
             {
                 title: "POS Configuration",
                 description: "API settings and connection details",
-                link: "/system-administration/system-integrations/pos/settings/config",
+                link: "/system-integrations/pos/settings/config",
                 buttonText: "Configure"
             },
             {
                 title: "System Settings",
                 description: "Workflow and notification preferences",
-                link: "/system-administration/system-integrations/pos/settings/system",
+                link: "/system-integrations/pos/settings/system",
                 buttonText: "Settings"
             },
             {
@@ -118,7 +118,7 @@ const systemCategories: SystemCategory[] = [
                 }
             }
         ],
-        footerLink: "/system-administration/system-integrations/pos/settings/config",
+        footerLink: "/system-integrations/pos/settings/config",
         footerText: "Go to Setup"
     },
     {
@@ -130,24 +130,24 @@ const systemCategories: SystemCategory[] = [
             {
                 title: "Recipe Mapping",
                 description: getRecipeMappingDescription(systemStatus.unmappedItems),
-                link: "/system-administration/system-integrations/pos/mapping/recipes",
+                link: "/system-integrations/pos/mapping/recipes",
                 buttonText: "Map Recipes",
                 highlight: systemStatus.unmappedItems > 0
             },
             {
                 title: "Unit Mapping",
                 description: "Configure unit conversions",
-                link: "/system-administration/system-integrations/pos/mapping/units",
+                link: "/system-integrations/pos/mapping/units",
                 buttonText: "Map Units"
             },
             {
                 title: "Location Mapping",
                 description: "Map POS locations to system locations",
-                link: "/system-administration/system-integrations/pos/mapping/locations",
+                link: "/system-integrations/pos/mapping/locations",
                 buttonText: "Map Locations"
             }
         ],
-        footerLink: "/system-administration/system-integrations/pos/mapping/recipes",
+        footerLink: "/system-integrations/pos/mapping/recipes",
         footerText: "Go to Mapping"
     },
     {
@@ -159,13 +159,13 @@ const systemCategories: SystemCategory[] = [
             {
                 title: "View Transactions",
                 description: "Browse and filter transaction history",
-                link: "/system-administration/system-integrations/pos/transactions",
+                link: "/system-integrations/pos/transactions",
                 buttonText: "View All"
             },
             {
                 title: "Failed Transactions",
                 description: getFailedTransactionsDescription(systemStatus.failedTransactions),
-                link: "/system-administration/system-integrations/pos/transactions?filter=failed",
+                link: "/system-integrations/pos/transactions?filter=failed",
                 buttonText: "Review",
                 disabled: systemStatus.failedTransactions === 0,
                 highlight: systemStatus.failedTransactions > 0
@@ -173,13 +173,13 @@ const systemCategories: SystemCategory[] = [
             {
                 title: "Stock-out Review",
                 description: getPendingApprovalsDescription(systemStatus.pendingApprovals),
-                link: "/system-administration/system-integrations/pos/transactions/stock-out-review",
+                link: "/system-integrations/pos/transactions/stock-out-review",
                 buttonText: "Approve",
                 disabled: systemStatus.pendingApprovals === 0,
                 highlight: systemStatus.pendingApprovals > 0
             }
         ],
-        footerLink: "/system-administration/system-integrations/pos/transactions",
+        footerLink: "/system-integrations/pos/transactions",
         footerText: "Go to Operations"
     },
     {
@@ -191,13 +191,13 @@ const systemCategories: SystemCategory[] = [
             {
                 title: "Gross Profit Analysis",
                 description: "Sales vs. Cost analysis by category",
-                link: "/system-administration/system-integrations/pos/reports/gross-profit",
+                link: "/system-integrations/pos/reports/gross-profit",
                 buttonText: "View Report"
             },
             {
                 title: "Consumption Report",
                 description: "Actual vs. Theoretical usage analysis",
-                link: "/system-administration/system-integrations/pos/reports/consumption",
+                link: "/system-integrations/pos/reports/consumption",
                 buttonText: "View Report"
             },
             {
@@ -211,7 +211,7 @@ const systemCategories: SystemCategory[] = [
                 }
             }
         ],
-        footerLink: "/system-administration/system-integrations/pos/reports",
+        footerLink: "/system-integrations/pos/reports",
         footerText: "Go to Reports"
     }
 ];
