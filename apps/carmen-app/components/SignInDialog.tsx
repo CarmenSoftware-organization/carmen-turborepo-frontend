@@ -22,13 +22,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signInSchema } from "@/constants/form.schema";
 import { SignInFormValues } from "@/dtos/sign-in.dto";
-import { signInAction } from "@/app/[locale]/sign-in/actions";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { useTransition, useEffect, useState } from "react";
 import { PasswordInput } from "./ui-custom/PasswordInput";
+import { signInService } from "@/services/auth.service";
 
 
 interface Props {
@@ -69,7 +69,7 @@ export default function SignInDialog({
     const handleSubmit = (values: SignInFormValues) => {
         startTransition(async () => {
             try {
-                const result = await signInAction(values.email, values.password)
+                const result = await signInService(values.email, values.password)
 
                 if (result.success) {
                     if (result.access_token && result.refresh_token) {

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { backendApi } from '@/lib/backend-api';
+import { getUserProfileService } from '@/services/auth.service';
 
 interface UserInfo {
     firstname: string;
@@ -105,15 +105,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
                 sessionStorage.setItem('access_token', accessToken);
             }
 
-            const url = `${backendApi}/api/auth/profile`
-            const options = {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                }
-            }
-            const response = await fetch(url, options);
-            const data = await response.json();
+            const data = await getUserProfileService(accessToken);
 
             // Store user data in localStorage
             if (typeof window !== 'undefined') {

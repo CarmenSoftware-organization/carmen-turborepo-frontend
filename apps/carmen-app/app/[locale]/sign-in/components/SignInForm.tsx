@@ -7,7 +7,6 @@ import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { signInAction } from "../actions";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -16,6 +15,7 @@ import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { toast } from "sonner";
+import { signInService } from "@/services/auth.service";
 
 export default function SignInForm() {
     const [isPending, startTransition] = useTransition()
@@ -35,9 +35,8 @@ export default function SignInForm() {
     const handleSubmit = (values: SignInFormValues) => {
         startTransition(async () => {
             try {
-                const result = await signInAction(values.email, values.password)
-
-                if (result.success) {
+                const result = await signInService(values.email, values.password)
+                if (result) {
                     if (result.access_token && result.refresh_token) {
                         setSession(result.access_token, result.refresh_token)
                     }
