@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductDto } from "@/dtos/product.dto";
+import { ProductGetDto } from "@/dtos/product.dto";
 import {
     Table,
     TableBody,
@@ -21,11 +21,13 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Eye } from "lucide-react";
 import { Link } from "@/lib/navigation";
-interface ProductListProps {
-    readonly products: ProductDto[];
+interface Props {
+    readonly products: ProductGetDto[];
 }
 
-export default function ProductList({ products }: ProductListProps) {
+export default function ProductList({ products }: Props) {
+    console.log('products', products);
+
     const t = useTranslations('TableHeader');
     return (
         <div className="space-y-4">
@@ -35,9 +37,9 @@ export default function ProductList({ products }: ProductListProps) {
                         <TableRow>
                             <TableHead className="w-10">#</TableHead>
                             <TableHead>{t('name')}</TableHead>
-                            <TableHead>{t('category')}</TableHead>
+                            {/* <TableHead>{t('category')}</TableHead>
                             <TableHead>{t('sub_category')}</TableHead>
-                            <TableHead>{t('item_group')}</TableHead>
+                            <TableHead>{t('item_group')}</TableHead> */}
                             <TableHead>{t('status')}</TableHead>
                             <TableHead className="w-20 text-right">{t('action')}</TableHead>
                         </TableRow>
@@ -56,12 +58,12 @@ export default function ProductList({ products }: ProductListProps) {
                                         </span>
                                     </div>
                                 </TableCell>
-                                <TableCell>{product.category}</TableCell>
+                                {/* <TableCell>{product.category}</TableCell>
                                 <TableCell>{product.sub_category}</TableCell>
-                                <TableCell>{product.item_group}</TableCell>
+                                <TableCell>{product.item_group}</TableCell> */}
                                 <TableCell>
-                                    <Badge variant={product.status ? "default" : "destructive"}>
-                                        {product.status ? "Active" : "Inactive"}
+                                    <Badge variant={product.product_status_type ? "default" : "destructive"}>
+                                        {product.product_status_type ? "Active" : "Inactive"}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
@@ -85,15 +87,15 @@ export default function ProductList({ products }: ProductListProps) {
                         <CardHeader>
                             <CardTitle className="flex items-center justify-between">
                                 <span>{product.name}</span>
-                                <Badge variant={product.status ? "default" : "destructive"}>
-                                    {product.status ? "Active" : "Inactive"}
+                                <Badge variant={product.product_status_type ? "default" : "destructive"}>
+                                    {product.product_status_type ? "Active" : "Inactive"}
                                 </Badge>
                             </CardTitle>
                             <CardDescription>{product.description}</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between">
+                                {/* <div className="flex items-center justify-between">
                                     <span className="text-sm text-muted-foreground">Category</span>
                                     <span className="text-sm font-medium">{product.category}</span>
                                 </div>
@@ -104,7 +106,7 @@ export default function ProductList({ products }: ProductListProps) {
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm text-muted-foreground">Item Group</span>
                                     <span className="text-sm font-medium">{product.item_group}</span>
-                                </div>
+                                </div> */}
                                 <div className="flex items-center justify-end">
                                     <Button variant="ghost" size={'sm'} asChild>
                                         <Link href={`/product-management/product/${product.id}`}>

@@ -1,52 +1,55 @@
 import { z } from "zod";
 
-export const ProductSchema = z.object({
-    id: z.string(),
+const BaseProductSchema = z.object({
     name: z.string(),
+    code: z.string(),
+    local_name: z.string(),
     description: z.string(),
-    category: z.string(),
-    sub_category: z.string(),
-    item_group: z.string(),
-    status: z.boolean(),
+    inventory_unit_id: z.string().uuid(),
+    inventory_unit_name: z.string(),
+    product_status_type: z.literal("active"),
 });
 
-export type ProductDto = z.infer<typeof ProductSchema>;
-export interface ProductDetailDto {
-    id: string;
-    code: string;
-    name: string;
-    status: boolean;
-    description: string;
-    local_description: string;
-    category: string;
-    sub_category: string;
-    item_group: string;
-    unit: string;
-    usage_ingredient: boolean;
-    attributes: {
-        name: string;
-        value: string;
-    }[];
-    price_info: {
-        name: string;
-        value: string;
-    }[];
-    order_unit: {
-        name: string;
-        description: string;
-        conversion_factor: number;
-        default: boolean;
-    }[];
-    ingredients_unit: {
-        unit: string;
-        description: string;
-        conversion_factor: number;
-        default: boolean;
-    }[];
-    stock_count: {
-        unit: string;
-        description: string;
-        conversion_factor: number;
-        default: boolean;
-    }[];
-}
+export const ProductFormSchema = BaseProductSchema.extend({
+    product_info: z.object({
+        product_item_group_id: z.string().uuid(),
+        is_ingredients: z.boolean(),
+        price: z.number().min(0),
+        tax_type: z.enum(["none", "included", "excluded"]).default("none"),
+        tax_rate: z.number().min(0),
+        price_deviation_limit: z.number().min(0),
+        info: z.object({
+            label: z.string(),
+            value: z.string(),
+        }),
+    }),
+    locations: z.object({
+        add: z.array(
+            z.object({
+                location_id: z.string().uuid(),
+            })
+        ),
+    }),
+});
+
+export type ProductFormDto = z.infer<typeof ProductFormSchema>;
+
+export const ProductSchema = BaseProductSchema.extend({
+    id: z.string().uuid(),
+    tb_product_info: z.object({
+        id: z.string().uuid(),
+        product_id: z.string().uuid(),
+        product_item_group_id: z.string().uuid(),
+        is_ingredients: z.boolean(),
+        price: z.string(),
+        tax_type: z.enum(["none", "included", "excluded"]).default("none"),
+        tax_rate: z.string(),
+        price_deviation_limit: z.string(),
+        info: z.object({
+            label: z.string(),
+            value: z.string(),
+        }),
+    }),
+});
+
+export type ProductGetDto = z.infer<typeof ProductSchema>;

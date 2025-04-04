@@ -6,15 +6,19 @@ import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
 import { statusOptions } from "@/constants/options";
 import { useURL } from "@/hooks/useURL";
-import { mockProducts } from "@/mock-data/product";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductList from "./ProductList";
 import { Link } from "@/lib/navigation";
+import { ProductGetDto } from "@/dtos/product.dto";
+import { getProductService } from "@/services/product.service";
+import { useAuth } from "@/context/AuthContext";
+import SignInDialog from "@/components/SignInDialog";
 
 
 export function ProductComponent() {
+    const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
     const tProduct = useTranslations('Product');
@@ -22,6 +26,23 @@ export function ProductComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [products, setProducts] = useState<ProductGetDto[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setIsLoading(true);
+            const data = await getProductService(token, tenantId);
+            if (data.statusCode === 401) {
+                setLoginDialogOpen(true);
+                return;
+            }
+            setProducts(data);
+            setIsLoading(false);
+        }
+        fetchProducts();
+    }, [token, tenantId]);
 
     const sortFields = [
         { key: 'name', label: tHeader('name') },
@@ -87,17 +108,25 @@ export function ProductComponent() {
         </div>
     );
 
-    const content = (
-        <ProductList products={mockProducts} data-id="product-list-template" />
-    )
+    const content = isLoading ? <div>Loading...</div> : <ProductList products={products} data-id="product-list-template" />
+
+
+    // const content = (
+    //     <ProductList products={mockProducts} data-id="product-list-template" />
+    // )
 
     return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filters}
-            content={content}
-            data-id="product-list-template"
-        />
+        <div>
+            <DataDisplayTemplate
+                title={title}
+                actionButtons={actionButtons}
+                filters={filters}
+                content={content}
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+            />
+        </div>
     )
 }

@@ -71,7 +71,7 @@ export default function SignInDialog({
             try {
                 const result = await signInService(values.email, values.password)
 
-                if (result.success) {
+                if (result) {
                     if (result.access_token && result.refresh_token) {
                         setSession(result.access_token, result.refresh_token)
                     }
