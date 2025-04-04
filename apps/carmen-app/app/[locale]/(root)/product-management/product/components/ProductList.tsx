@@ -62,8 +62,8 @@ export default function ProductList({ products }: Props) {
                                 <TableCell>{product.sub_category}</TableCell>
                                 <TableCell>{product.item_group}</TableCell> */}
                                 <TableCell>
-                                    <Badge variant={product.product_status_type ? "default" : "destructive"}>
-                                        {product.product_status_type ? "Active" : "Inactive"}
+                                    <Badge variant={product.product_status_type === "active" ? "default" : "destructive"}>
+                                        {product.product_status_type === "active" ? "Active" : "Inactive"}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
@@ -87,8 +87,8 @@ export default function ProductList({ products }: Props) {
                         <CardHeader>
                             <CardTitle className="flex items-center justify-between">
                                 <span>{product.name}</span>
-                                <Badge variant={product.product_status_type ? "default" : "destructive"}>
-                                    {product.product_status_type ? "Active" : "Inactive"}
+                                <Badge variant={product.product_status_type === "active" ? "default" : "destructive"}>
+                                    {product.product_status_type === "active" ? "Active" : "Inactive"}
                                 </Badge>
                             </CardTitle>
                             <CardDescription>{product.description}</CardDescription>
@@ -120,5 +120,5 @@ export default function ProductList({ products }: Props) {
                 ))}
             </div>
         </div>
-    )
+    );
 }
