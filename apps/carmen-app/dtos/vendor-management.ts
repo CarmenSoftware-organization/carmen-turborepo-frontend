@@ -1,18 +1,21 @@
 import { z } from "zod";
 
+
 export const VendorSchema = z.object({
-    id: z.string().optional(),
+    id: z.string(),
     name: z.string(),
-    bu_type: z.string(),
-    address: z.string(),
-    contact_person: z.object({
-        name: z.string(),
-        phone: z.string(),
-        email: z.string(),
-    }),
+    description: z.string(),
+    info: z.any().optional(),
+    is_active: z.boolean(),
 });
 
+// DTO สำหรับส่งข้อมูลทั่วไป
 export type VendorDto = z.infer<typeof VendorSchema>;
+
+// DTO สำหรับฟอร์ม (ไม่มี id)
+export const VendorFormSchema = VendorSchema.omit({ id: true });
+export type VendorFormDto = z.infer<typeof VendorFormSchema>;
+
 
 export const PriceListSchema = z.object({
     id: z.string().optional(),

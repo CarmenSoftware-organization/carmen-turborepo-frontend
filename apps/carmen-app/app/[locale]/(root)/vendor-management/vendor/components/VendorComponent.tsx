@@ -8,31 +8,102 @@ import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
-import { mockVendorData } from "@/mock-data/vendor-management";
+import VendorFormDialog from "./VendorFormDialog";
+import { VendorDto } from "@/dtos/vendor-management";
+import { getAllVendorService, deleteVendorService } from "@/services/vendor.service";
+import { useAuth } from "@/context/AuthContext";
+import SignInDialog from "@/components/SignInDialog";
+import { formType } from "@/dtos/form.dto";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+
 
 export default function VendorComponent() {
+    const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [vendors, setVendors] = useState<VendorDto[]>([]);
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [selectedVendor, setSelectedVendor] = useState<VendorDto | undefined>(undefined);
+    const [currentMode, setCurrentMode] = useState<formType>(formType.ADD);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [vendorToDelete, setVendorToDelete] = useState<VendorDto | undefined>(undefined);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const fetchVendors = useCallback(async () => {
+        const data = await getAllVendorService(token, tenantId);
+        if (data.statusCode === 401) {
+            setLoginDialogOpen(true);
+            return;
+        }
+        setVendors(data);
+    }, [token, tenantId, setLoginDialogOpen]);
+
+    useEffect(() => {
+        fetchVendors();
+    }, [fetchVendors]);
+
 
     const sortFields = [
         { key: 'code', label: 'Code' },
         { key: 'name', label: 'Name' },
-        { key: 'symbol', label: 'Symbol' },
         { key: 'is_active', label: 'Status' },
-        { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
     const title = "Vendor"
 
+    const handleAddClick = () => {
+        setCurrentMode(formType.ADD);
+        setSelectedVendor(undefined);
+        setOpenAddDialog(true);
+    };
+
+    const handleEditClick = (vendor: VendorDto) => {
+        setCurrentMode(formType.EDIT);
+        setSelectedVendor(vendor);
+        setOpenAddDialog(true);
+    };
+
+    const handleDeleteClick = (vendor: VendorDto) => {
+        setVendorToDelete(vendor);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!vendorToDelete) return;
+
+        try {
+            setIsDeleting(true);
+            const response = await deleteVendorService(token, tenantId, vendorToDelete);
+            if (response) {
+                alert("Vendor deleted successfully");
+                fetchVendors();
+            } else {
+                alert("Failed to delete vendor");
+            }
+        } catch (error) {
+            console.error("Error deleting vendor:", error);
+            alert(`Failed to delete vendor: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsDeleting(false);
+            setDeleteDialogOpen(false);
+            setVendorToDelete(undefined);
+        }
+    };
+
+    const handleFormSuccess = () => {
+        fetchVendors();
+    };
+
     const actionButtons = (
         <div className="action-btn-container" data-id="vendor-action-buttons">
-            <Button size={'sm'}>
+            <Button size={'sm'} onClick={handleAddClick}>
                 <Plus className="h-4 w-4" />
                 {tCommon('add')}
             </Button>
@@ -86,14 +157,40 @@ export default function VendorComponent() {
         </div>
     );
 
-    const content = <VendorList vendors={mockVendorData} />
+    const content = <VendorList
+        vendors={vendors}
+        onEditClick={handleEditClick}
+        onDeleteClick={handleDeleteClick}
+    />;
 
     return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filters}
-            content={content}
-        />
+        <>
+            <DataDisplayTemplate
+                title={title}
+                actionButtons={actionButtons}
+                filters={filters}
+                content={content}
+            />
+
+            <VendorFormDialog
+                open={openAddDialog}
+                onOpenChange={setOpenAddDialog}
+                onSuccess={handleFormSuccess}
+                mode={currentMode}
+                initialData={selectedVendor}
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+            />
+            <DeleteConfirmDialog
+                open={deleteDialogOpen}
+                onOpenChange={setDeleteDialogOpen}
+                onConfirm={handleConfirmDelete}
+                title="Delete Vendor"
+                description={`Are you sure you want to delete vendor ${vendorToDelete?.name}?`}
+                isLoading={isDeleting}
+            />
+        </>
     )
 } 

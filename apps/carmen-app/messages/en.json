@@ -184,7 +184,8 @@
     "unauthorized": "Unauthorized",
     "unauthorizedMessage": "You are not authorized to access this resource. Please sign in with the appropriate credentials.",
     "retry": "Try Again",
-    "signIn": "Sign In"
+    "signIn": "Sign In",
+    "save": "Save"
   },
   "TableHeader": {
     "name": "Name",
