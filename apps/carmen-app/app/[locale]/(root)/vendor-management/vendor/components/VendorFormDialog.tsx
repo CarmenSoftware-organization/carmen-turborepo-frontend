@@ -31,6 +31,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface VendorFormDialogProps {
     readonly open: boolean;
@@ -103,7 +104,7 @@ export default function VendorFormDialog({
             }
 
             if (response.statusCode === 401) {
-                alert("Authentication failed. Please login again.");
+                toastError({ message: "Authentication failed. Please login again." });
                 return;
             }
 
@@ -115,7 +116,7 @@ export default function VendorFormDialog({
                 ? "Vendor updated successfully"
                 : "Vendor created successfully";
 
-            alert(successMessage);
+            toastSuccess({ message: successMessage });
             form.reset();
             onOpenChange(false);
             if (onSuccess) {
@@ -123,7 +124,7 @@ export default function VendorFormDialog({
             }
         } catch (error) {
             console.error(`Error ${mode === formType.EDIT ? 'updating' : 'creating'} vendor:`, error);
-            alert(`Failed to ${mode === formType.EDIT ? 'update' : 'create'} vendor: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            toastError({ message: `Failed to ${mode === formType.EDIT ? 'update' : 'create'} vendor: ${error instanceof Error ? error.message : 'Unknown error'}` });
         } finally {
             setLoading(false);
         }

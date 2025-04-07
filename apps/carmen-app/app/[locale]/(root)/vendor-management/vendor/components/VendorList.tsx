@@ -16,9 +16,10 @@ interface VendorListProps {
     readonly vendors: VendorDto[];
     readonly onEditClick?: (vendor: VendorDto) => void;
     readonly onDeleteClick?: (vendor: VendorDto) => void;
+    readonly isLoading?: boolean;
 }
 
-export default function VendorList({ vendors, onEditClick, onDeleteClick }: VendorListProps) {
+export default function VendorList({ vendors, onEditClick, onDeleteClick, isLoading }: VendorListProps) {
     const handleEditClick = (vendor: VendorDto) => {
         if (onEditClick) {
             onEditClick(vendor);
@@ -46,6 +47,16 @@ export default function VendorList({ vendors, onEditClick, onDeleteClick }: Vend
                         </TableRow>
                     </TableHeader>
                     <TableBody>
+                        {isLoading && (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center">Loading...</TableCell>
+                            </TableRow>
+                        )}
+                        {vendors.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={6} className="text-center">No vendors found</TableCell>
+                            </TableRow>
+                        )}
                         {vendors.map((vendor, index) => (
                             <TableRow key={vendor.id}>
                                 <TableCell className="text-center w-10">{index + 1}</TableCell>
@@ -84,6 +95,12 @@ export default function VendorList({ vendors, onEditClick, onDeleteClick }: Vend
             </div>
 
             <div className="grid gap-4 md:hidden">
+                {isLoading && (
+                    <div className="text-center">Loading...</div>
+                )}
+                {vendors.length === 0 && (
+                    <div className="text-center">No vendors found</div>
+                )}
                 {vendors.map((vendor) => (
                     <Card key={vendor.id}>
                         <CardHeader>

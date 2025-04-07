@@ -18,6 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import SignInDialog from "@/components/SignInDialog";
 import { formType } from "@/dtos/form.dto";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 
 export default function VendorComponent() {
@@ -35,14 +36,23 @@ export default function VendorComponent() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [vendorToDelete, setVendorToDelete] = useState<VendorDto | undefined>(undefined);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchVendors = useCallback(async () => {
-        const data = await getAllVendorService(token, tenantId);
-        if (data.statusCode === 401) {
-            setLoginDialogOpen(true);
-            return;
+        setIsLoading(true);
+        try {
+            const data = await getAllVendorService(token, tenantId);
+            if (data.statusCode === 401) {
+                setLoginDialogOpen(true);
+                return;
+            }
+            setVendors(data);
+        } catch (error) {
+            console.error("Error fetching vendors:", error);
+            toastError({ message: "Failed to fetch vendors" });
+        } finally {
+            setIsLoading(false);
         }
-        setVendors(data);
     }, [token, tenantId, setLoginDialogOpen]);
 
     useEffect(() => {
@@ -82,14 +92,14 @@ export default function VendorComponent() {
             setIsDeleting(true);
             const response = await deleteVendorService(token, tenantId, vendorToDelete);
             if (response) {
-                alert("Vendor deleted successfully");
+                toastSuccess({ message: "Vendor deleted successfully" });
                 fetchVendors();
             } else {
-                alert("Failed to delete vendor");
+                toastError({ message: "Failed to delete vendor" });
             }
         } catch (error) {
             console.error("Error deleting vendor:", error);
-            alert(`Failed to delete vendor: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            toastError({ message: `Failed to delete vendor: ${error instanceof Error ? error.message : 'Unknown error'}` });
         } finally {
             setIsDeleting(false);
             setDeleteDialogOpen(false);
@@ -161,6 +171,7 @@ export default function VendorComponent() {
         vendors={vendors}
         onEditClick={handleEditClick}
         onDeleteClick={handleDeleteClick}
+        isLoading={isLoading}
     />;
 
     return (
