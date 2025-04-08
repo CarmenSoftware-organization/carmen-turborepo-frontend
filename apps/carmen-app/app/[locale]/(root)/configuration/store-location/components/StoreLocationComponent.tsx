@@ -12,14 +12,14 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { statusOptions } from "@/constants/options";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { CreateStoreLocationDto, StoreLocationDto } from "@/dtos/config.dto";
-import { deleteStoreLocation, getAllStoreLocations, createStoreLocation, updateStoreLocation } from "@/services/store-location.service";
+import { getAllStoreLocations, createStoreLocation, updateStoreLocation } from "@/services/store-location.service";
 import SignInDialog from "@/components/SignInDialog";
 import StoreLocationList from "./StoreLocationList";
-import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import StoreLocationDialog from "./StoreLocationDialog";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import StoreLocationDialog from "./StoreLocationDialog";
 
 const handleAddStoreLocation = async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
     const result = await createStoreLocation(token, tenantId, data);
@@ -50,8 +50,8 @@ const handleUpdateStoreLocation = async (token: string, tenantId: string, data: 
     };
 
     const result = await updateStoreLocation(token, tenantId, updateData);
-    if (!result?.delivery_point) {
-        throw new Error('Invalid response: missing delivery point data');
+    if (!result) {
+        throw new Error('Failed to update store location');
     }
 
     const updatedStoreLocation: StoreLocationDto = {
@@ -63,11 +63,35 @@ const handleUpdateStoreLocation = async (token: string, tenantId: string, data: 
         info: data.info,
         delivery_point: {
             id: data.delivery_point_id,
-            name: result.delivery_point.name || '',
-            is_active: result.delivery_point.is_active ?? true
+            name: result?.delivery_point?.name ?? '',
+            is_active: result?.delivery_point?.is_active ?? true
         }
     };
     return updatedStoreLocation;
+};
+
+const handleUpdateStoreLocationStatus = async (token: string, tenantId: string, storeLocation: StoreLocationDto) => {
+    if (!storeLocation.id) return;
+
+    const updateData = {
+        name: storeLocation.name,
+        location_type: storeLocation.location_type,
+        description: storeLocation.description,
+        is_active: !storeLocation.is_active,
+        info: storeLocation.info,
+        delivery_point_id: storeLocation.delivery_point?.id || '',
+        id: storeLocation.id
+    };
+
+    const result = await updateStoreLocation(token, tenantId, updateData);
+    if (!result) {
+        throw new Error('Failed to update store location status');
+    }
+
+    return {
+        ...storeLocation,
+        is_active: !storeLocation.is_active
+    };
 };
 
 export default function StoreLocationComponent() {
@@ -85,7 +109,7 @@ export default function StoreLocationComponent() {
     const [selectedStoreLocation, setSelectedStoreLocation] = useState<StoreLocationDto>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [statusDialogOpen, setStatusDialogOpen] = useState(false);
     const [isUnauthorized, setIsUnauthorized] = useState(false);
 
     const handleSubmitAdd = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
@@ -96,6 +120,7 @@ export default function StoreLocationComponent() {
     }, []);
 
     const handleSubmitEdit = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto, selectedId: string) => {
+        console.log('handleSubmitEdit data', data);
         const newStoreLocation = await handleUpdateStoreLocation(token, tenantId, data, selectedId);
         setStoreLocations(prev => prev.map(loc =>
             loc.id === newStoreLocation.id ? newStoreLocation : loc
@@ -114,9 +139,11 @@ export default function StoreLocationComponent() {
                 } else if (selectedStoreLocation?.id) {
                     await handleSubmitEdit(token, tenantId, data, selectedStoreLocation.id);
                 }
-            } catch (error) {
+            } catch (error: Error | unknown) {
                 console.error('Error saving store location:', error);
-                toastError({ message: 'Error saving store location' });
+                const errorMessage = error instanceof Error ? error.message : 'Error saving store location';
+                toastError({ message: errorMessage });
+                return;
             }
         };
 
@@ -166,22 +193,27 @@ export default function StoreLocationComponent() {
         setDialogOpen(true);
     }, []);
 
-    const handleDelete = useCallback((storeLocation: StoreLocationDto) => {
+    const handleStatusChange = useCallback((storeLocation: StoreLocationDto) => {
         setSelectedStoreLocation(storeLocation);
-        setConfirmDialogOpen(true);
+        setStatusDialogOpen(true);
     }, []);
 
-    const handleConfirmDelete = useCallback(async () => {
+    const handleConfirmStatusChange = useCallback(async () => {
         if (!selectedStoreLocation?.id || !token || !tenantId) return;
 
         try {
-            await deleteStoreLocation(token, tenantId, selectedStoreLocation.id);
-            setStoreLocations(prev => prev.filter(loc => loc.id !== selectedStoreLocation.id));
-            toastSuccess({ message: 'Store location deleted successfully' });
-            setConfirmDialogOpen(false);
-        } catch (error) {
-            console.error('Error deleting store location:', error);
-            toastError({ message: 'Error deleting store location' });
+            const updatedStoreLocation = await handleUpdateStoreLocationStatus(token, tenantId, selectedStoreLocation);
+            if (!updatedStoreLocation) return;
+
+            setStoreLocations(prev => prev.map(loc =>
+                loc.id === selectedStoreLocation.id ? updatedStoreLocation : loc
+            ));
+            toastSuccess({ message: `Store location ${updatedStoreLocation.is_active ? 'activated' : 'deactivated'} successfully` });
+            setStatusDialogOpen(false);
+        } catch (error: Error | unknown) {
+            console.error('Error updating store location status:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Error updating store location status';
+            toastError({ message: errorMessage });
         }
     }, [selectedStoreLocation, token, tenantId]);
 
@@ -255,7 +287,7 @@ export default function StoreLocationComponent() {
                 <StoreLocationList
                     storeLocations={storeLocations}
                     onEdit={handleEdit}
-                    onDelete={handleDelete}
+                    onStatusChange={handleStatusChange}
                 />
             )}
         </>
@@ -282,13 +314,24 @@ export default function StoreLocationComponent() {
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}
             />
-            <DeleteConfirmDialog
-                open={confirmDialogOpen}
-                onOpenChange={setConfirmDialogOpen}
-                onConfirm={handleConfirmDelete}
-                title="Delete Store Location"
-                description="Are you sure you want to delete this store location?"
-            />
+            <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{selectedStoreLocation?.is_active ? 'Deactivate' : 'Activate'} Store Location</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to {selectedStoreLocation?.is_active ? 'deactivate' : 'activate'} this store location?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setStatusDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleConfirmStatusChange}>
+                            Confirm
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

@@ -57,7 +57,10 @@ export default function DepartmentList({
                         </TableHeader>
                         <TableBody>
                             {departments.map((department, index) => (
-                                <TableRow key={department.id}>
+                                <TableRow
+                                    key={department.id}
+                                    className={!department.is_active ? "line-through opacity-70" : ""}
+                                >
                                     <TableCell className="w-10">{index + 1}</TableCell>
                                     <TableCell className="w-20">
                                         {department.name}
@@ -73,6 +76,8 @@ export default function DepartmentList({
                                                 variant="ghost"
                                                 size={'sm'}
                                                 onClick={() => onEdit(department)}
+                                                disabled={!department.is_active}
+                                                aria-label="Edit department"
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
@@ -80,7 +85,8 @@ export default function DepartmentList({
                                                 variant="ghost"
                                                 size={'sm'}
                                                 onClick={() => onToggleStatus(department)}
-                                                className={department.is_active ? "hover:text-red-500" : "hover:text-green-500"}
+                                                className={department.is_active ? "hover:text-destructive" : "hover:text-primary"}
+                                                aria-label={`${department.is_active ? 'Deactivate' : 'Activate'} department`}
                                             >
                                                 <Power className="h-4 w-4" />
                                             </Button>

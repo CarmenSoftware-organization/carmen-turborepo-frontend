@@ -684,11 +684,21 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
     // Render product tabs in view mode
     const renderProductTabs = () => (
         <Tabs defaultValue="order-units">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
+                <TabsTrigger value="inventory-info">Inventory Info</TabsTrigger>
                 <TabsTrigger value="order-units">Order Units</TabsTrigger>
                 <TabsTrigger value="ingredient-units">Ingredient Units</TabsTrigger>
-                <TabsTrigger value="stock-units">Stock Units</TabsTrigger>
+                <TabsTrigger value="locations">Locations</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="basic-info">
+                <div>Baisic</div>
+            </TabsContent>
+
+            <TabsContent value="inventory-info">
+                <div>Inventory</div>
+            </TabsContent>
 
             <TabsContent value="order-units">
                 <Card>
@@ -746,12 +756,18 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
                 </Card>
             </TabsContent>
 
-            <TabsContent value="stock-units">
+            {/* basic info
+            inventory Info
+            order unit
+            ingredient unit
+            locations */}
+
+            <TabsContent value="locations">
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Package className="h-5 w-5" />
-                            Stock Count Units
+                            Locations
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

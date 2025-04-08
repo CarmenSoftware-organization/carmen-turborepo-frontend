@@ -56,7 +56,9 @@ export const deleteStoreLocation = async (token: string, tenantId: string, id: s
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
-    return data;
+    if (response.ok) {
+        return true;
+    }
+    return false;
 };
 

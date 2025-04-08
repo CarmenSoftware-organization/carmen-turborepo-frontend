@@ -44,9 +44,7 @@ export default function CurrencyComponent() {
             try {
                 setIsLoading(true);
                 const data = await getCurrenciesService(token, tenantId, {
-                    search,
-                    page: currentPage.toString(),
-                    perPage: '10',
+                    search
                 });
                 if (data.statusCode === 401) {
                     setLoginDialogOpen(true);

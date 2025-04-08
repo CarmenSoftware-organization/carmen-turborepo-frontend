@@ -12,13 +12,13 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { DepartmentDto } from "@/dtos/config.dto";
 import { useAuth } from "@/context/AuthContext";
 import { z } from "zod";
-import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { formType } from "@/dtos/form.dto";
 import DepartmentList from "./DepartmentList";
 import DepartmentDialog from "./DepartmentDialog";
-import { createDepartment, deleteDepartment, getAllDepartments, updateDepartment } from "@/services/department.service";
+import { createDepartment, getAllDepartments, updateDepartment } from "@/services/department.service";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function DepartmentComponent() {
     const { token, tenantId } = useAuth();
@@ -31,7 +31,7 @@ export default function DepartmentComponent() {
     const [departments, setDepartments] = useState<DepartmentDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [statusDialogOpen, setStatusDialogOpen] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState<DepartmentDto | undefined>();
 
@@ -71,23 +71,34 @@ export default function DepartmentComponent() {
         setDialogOpen(true);
     };
 
-    const handleToggleStatus = async (department: DepartmentDto) => {
+    const handleStatusChange = (department: DepartmentDto) => {
+        setSelectedDepartment(department);
+        setStatusDialogOpen(true);
+    };
+
+    const handleConfirmStatusChange = async () => {
+        if (!selectedDepartment?.id || !token || !tenantId) return;
+
         try {
-            setIsLoading(true);
-            const result = await deleteDepartment(token, tenantId, department);
+            const updatedDepartment = {
+                ...selectedDepartment,
+                is_active: !selectedDepartment.is_active
+            };
+            const result = await updateDepartment(token, tenantId, updatedDepartment);
             if (result) {
                 setDepartments(prevDepartments =>
-                    prevDepartments.filter(dp => dp.id !== department.id)
+                    prevDepartments.map(dp =>
+                        dp.id === selectedDepartment.id
+                            ? { ...dp, is_active: !dp.is_active }
+                            : dp
+                    )
                 );
-                toastSuccess({ message: 'Department deleted successfully' });
-            } else {
-                console.error('Error deleting department:', result);
-                toastError({ message: 'Error deleting department' });
+                toastSuccess({ message: `Department ${!selectedDepartment.is_active ? 'activated' : 'deactivated'} successfully` });
+                setStatusDialogOpen(false);
             }
         } catch (error) {
-            console.error('Error deleting department:', error);
-        } finally {
-            setIsLoading(false);
+            console.error('Error updating department status:', error);
+            toastError({ message: 'Error updating department status' });
         }
     };
 
@@ -105,9 +116,6 @@ export default function DepartmentComponent() {
                         )
                     )
                     toastSuccess({ message: 'Department updated successfully' });
-                } else {
-                    console.error('Error updating department:', result);
-                    toastError({ message: 'Error updating department' });
                 }
             } else {
                 const result = await createDepartment(token, tenantId, data);
@@ -126,25 +134,6 @@ export default function DepartmentComponent() {
             if (error instanceof z.ZodError) {
                 console.error('Zod Validation Errors:', error.errors);
             }
-        }
-    };
-
-    const handleConfirmDelete = async () => {
-        if (!selectedDepartment) return;
-        try {
-            const result = await deleteDepartment(token, tenantId, selectedDepartment);
-            if (result) {
-                setDepartments(prevDepartments =>
-                    prevDepartments.filter(dp => dp.id !== selectedDepartment.id)
-                );
-                toastSuccess({ message: 'Department deleted successfully' });
-            } else {
-                console.error('Error deleting department:', result);
-                toastError({ message: 'Error deleting department' });
-            }
-        } catch (error) {
-            console.error('Error deleting department:', error);
-            toastError({ message: 'Error deleting department' });
         }
     };
 
@@ -207,9 +196,10 @@ export default function DepartmentComponent() {
             isLoading={isLoading}
             departments={departments}
             onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
+            onToggleStatus={handleStatusChange}
         />
     )
+
     return (
         <div>
             <DataDisplayTemplate
@@ -225,11 +215,24 @@ export default function DepartmentComponent() {
                 department={selectedDepartment}
                 onSubmit={handleSubmit}
             />
-            <DeleteConfirmDialog
-                open={deleteDialogOpen}
-                onOpenChange={setDeleteDialogOpen}
-                onConfirm={handleConfirmDelete}
-            />
+            <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{selectedDepartment?.is_active ? 'Deactivate' : 'Activate'} Department</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to {selectedDepartment?.is_active ? 'deactivate' : 'activate'} this department?
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setStatusDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleConfirmStatusChange}>
+                            Confirm
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
             <SignInDialog
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}
