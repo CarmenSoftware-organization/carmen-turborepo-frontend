@@ -30,8 +30,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { Switch } from "@/components/ui/switch";
 
 interface VendorFormDialogProps {
     readonly open: boolean;
@@ -182,16 +182,19 @@ export default function VendorFormDialog({
                             control={form.control}
                             name="is_active"
                             render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                    <div className="space-y-0.5">
+                                        <FormLabel className="text-base">
+                                            Status
+                                        </FormLabel>
+                                    </div>
                                     <FormControl>
-                                        <Checkbox
+                                        <Switch
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
+                                            className="data-[state=checked]:bg-blue-600"
                                         />
                                     </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                        <FormLabel>Active</FormLabel>
-                                    </div>
                                 </FormItem>
                             )}
                         />

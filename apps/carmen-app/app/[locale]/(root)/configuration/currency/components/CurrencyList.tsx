@@ -64,7 +64,10 @@ export default function CurrencyList({
                 ) : (
                     <TableBody>
                         {currencies.map((currency: CurrencyDto, index: number) => (
-                            <TableRow key={currency.id}>
+                            <TableRow
+                                key={currency.id}
+                                className={!currency.is_active ? "line-through opacity-70" : ""}
+                            >
                                 <TableCell className="w-10 hidden md:table-cell">{index + 1}</TableCell>
                                 <TableCell className="w-10 md:w-24 md:table-cell">{currency.name}</TableCell>
                                 <TableCell className="w-10 hidden md:table-cell">{currency.code}</TableCell>
@@ -82,6 +85,7 @@ export default function CurrencyList({
                                             size={'sm'}
                                             onClick={() => handleEdit(currency)}
                                             aria-label="Edit currency"
+                                            disabled={!currency.is_active}
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </Button>
@@ -91,6 +95,7 @@ export default function CurrencyList({
                                             className={currency.is_active ? "hover:text-destructive" : "hover:text-green-600"}
                                             onClick={() => handleToggleStatus(currency)}
                                             aria-label={currency.is_active ? "Deactivate currency" : "Activate currency"}
+                                            disabled={!currency.is_active}
                                         >
                                             <Power className="h-4 w-4" />
                                         </Button>
