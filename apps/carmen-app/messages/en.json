@@ -137,7 +137,7 @@
       "department": "Department"
     },
     "SystemAdministration": {
-      "title": "System Administration",
+      "systemAdministration": "System Administration",
       "userManagement": "User Management",
       "workflowManagement": "Workflow Management",
       "generalSettings": "General Settings",

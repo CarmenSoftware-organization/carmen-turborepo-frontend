@@ -112,43 +112,6 @@ export default function StoreLocationComponent() {
     const [statusDialogOpen, setStatusDialogOpen] = useState(false);
     const [isUnauthorized, setIsUnauthorized] = useState(false);
 
-    const handleSubmitAdd = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
-        const newStoreLocation = await handleAddStoreLocation(token, tenantId, data);
-        setStoreLocations(prev => [...prev, newStoreLocation]);
-        toastSuccess({ message: 'Store location created successfully' });
-        setDialogOpen(false);
-    }, []);
-
-    const handleSubmitEdit = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto, selectedId: string) => {
-        console.log('handleSubmitEdit data', data);
-        const newStoreLocation = await handleUpdateStoreLocation(token, tenantId, data, selectedId);
-        setStoreLocations(prev => prev.map(loc =>
-            loc.id === newStoreLocation.id ? newStoreLocation : loc
-        ));
-        toastSuccess({ message: 'Store location updated successfully' });
-        setDialogOpen(false);
-    }, []);
-
-    const handleSubmit = useCallback((data: CreateStoreLocationDto) => {
-        if (!token || !tenantId) return;
-
-        const submitData = async () => {
-            try {
-                if (dialogMode === formType.ADD) {
-                    await handleSubmitAdd(token, tenantId, data);
-                } else if (selectedStoreLocation?.id) {
-                    await handleSubmitEdit(token, tenantId, data, selectedStoreLocation.id);
-                }
-            } catch (error) {
-                console.error('Error saving store location:', error);
-                toastError({ message: error instanceof Error ? error.message : 'Error saving store location' });
-                return;
-            }
-        };
-
-        startTransition(submitData);
-    }, [token, tenantId, dialogMode, selectedStoreLocation, handleSubmitAdd, handleSubmitEdit]);
-
     const fetchStoreLocations = useCallback(() => {
         if (!token || !tenantId) return;
 
@@ -170,6 +133,43 @@ export default function StoreLocationComponent() {
 
         startTransition(fetchData);
     }, [token, tenantId]);
+
+    const handleSubmitAdd = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
+        const newStoreLocation = await handleAddStoreLocation(token, tenantId, data);
+        setStoreLocations(prev => [...prev, newStoreLocation]);
+        toastSuccess({ message: 'Store location created successfully' });
+        setDialogOpen(false);
+    }, []);
+
+    const handleSubmitEdit = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto, selectedId: string) => {
+        const newStoreLocation = await handleUpdateStoreLocation(token, tenantId, data, selectedId);
+        setStoreLocations(prev => prev.map(loc =>
+            loc.id === newStoreLocation.id ? newStoreLocation : loc
+        ));
+        toastSuccess({ message: 'Store location updated successfully' });
+        fetchStoreLocations();
+        setDialogOpen(false);
+    }, [fetchStoreLocations]);
+
+    const handleSubmit = useCallback((data: CreateStoreLocationDto) => {
+        if (!token || !tenantId) return;
+
+        const submitData = async () => {
+            try {
+                if (dialogMode === formType.ADD) {
+                    await handleSubmitAdd(token, tenantId, data);
+                } else if (selectedStoreLocation?.id) {
+                    await handleSubmitEdit(token, tenantId, data, selectedStoreLocation.id);
+                }
+            } catch (error) {
+                console.error('Error saving store location:', error);
+                toastError({ message: error instanceof Error ? error.message : 'Error saving store location' });
+                return;
+            }
+        };
+
+        startTransition(submitData);
+    }, [token, tenantId, dialogMode, selectedStoreLocation, handleSubmitAdd, handleSubmitEdit]);
 
     useEffect(() => {
         fetchStoreLocations();

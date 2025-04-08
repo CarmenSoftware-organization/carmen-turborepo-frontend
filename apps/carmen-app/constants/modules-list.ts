@@ -303,7 +303,7 @@ export const moduleItems: ModuleItem[] = [
         ],
     },
     {
-        labelKey: "Modules.systemAdministration",
+        labelKey: "Modules.SystemAdministration.systemAdministration",
         href: "/system-administration",
         icon: Settings,
         children: [

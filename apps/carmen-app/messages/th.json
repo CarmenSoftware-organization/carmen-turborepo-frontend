@@ -131,7 +131,7 @@
       "department": "แผนก"
     },
     "SystemAdministration": {
-      "title": "การจัดการระบบ",
+      "systemAdministration": "การจัดการระบบ",
       "userManagement": "การจัดการผู้ใช้งาน",
       "workflowManagement": "การจัดการกระบวนการ",
       "generalSettings": "การตั้งค่าทั่วไป",
