@@ -42,6 +42,7 @@ export const updateDeliveryPoint = async (token: string, tenantId: string, deliv
         body: JSON.stringify(deliveryPoint),
     });
     const data = await response.json();
+    console.log('data', data);
     return data;
 }
 

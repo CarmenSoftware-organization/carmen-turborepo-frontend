@@ -2,7 +2,7 @@
 
 import { formType } from "@/dtos/form.dto";
 import { DeliveryPointDto, deliveryPointSchema } from "@/dtos/config.dto";
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface DeliveryPointDialogProps {
     readonly open: boolean;
@@ -43,7 +44,7 @@ export default function DeliveryPointDialog({
     onSubmit,
     isLoading = false
 }: DeliveryPointDialogProps) {
-
+    const tCommon = useTranslations('Common');
     const defaultDeliveryPointValues = useMemo(() => ({
         name: '',
         is_active: true,
@@ -75,8 +76,16 @@ export default function DeliveryPointDialog({
         }
     };
 
+    const handleCancel = useCallback(() => {
+        form.reset(mode === formType.EDIT && deliveryPoint
+            ? { ...deliveryPoint }
+            : defaultDeliveryPointValues
+        );
+        onOpenChange(false);
+    }, [form, mode, deliveryPoint, defaultDeliveryPointValues, onOpenChange]);
+
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={open} onOpenChange={handleCancel}>
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
@@ -125,10 +134,17 @@ export default function DeliveryPointDialog({
                         />
                         <DialogFooter>
                             <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleCancel}
+                            >
+                                {tCommon('cancel')}
+                            </Button>
+                            <Button
                                 type="submit"
                                 disabled={isLoading || form.formState.isSubmitting}
                             >
-                                {mode === formType.ADD ? "Add" : "Edit"}
+                                {mode === formType.ADD ? tCommon('save') : tCommon('edit')}
                                 {(isLoading || form.formState.isSubmitting) && (
                                     <Loader2 className="w-4 h-4 ml-2 animate-spin" />
                                 )}

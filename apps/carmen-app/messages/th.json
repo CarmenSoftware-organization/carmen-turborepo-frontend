@@ -180,11 +180,13 @@
     "sort": "เรียงลำดับ",
     "import": "นำเข้า",
     "scan": "สแกน",
-    "unauthorized": "ไม่ได้รับอนุญาต",
-    "unauthorizedMessage": "คุณไม่ได้รับอนุญาตให้เข้าถึงทรัพยากรนี้ โปรดลงชื่อเข้าใช้ด้วยข้อมูลประจำตัวที่เหมาะสม",
+    "unauthorized": "ไม่มีสิทธิ์",
+    "unauthorizedMessage": "คุณไม่มีสิทธิ์เข้าถึงทรัพยากรนี้ กรุณาเข้าสู่ระบบด้วยข้อมูลที่เหมาะสม",
     "retry": "ลองอีกครั้ง",
     "signIn": "เข้าสู่ระบบ",
-    "save": "บันทึก"
+    "save": "บันทึก",
+    "confirm": "ยืนยัน",
+    "confirmAction": "ยืนยันการดำเนินการ"
   },
   "TableHeader": {
     "name": "ชื่อ",
@@ -235,9 +237,11 @@
     "currency_exchange_rate": "อัตราแลกเปลี่ยนเงิน"
   },
   "DeliveryPoint": {
-    "title": "จุดส่งของ",
-    "delivery_point_name": "ชื่อจุดส่งของ",
-    "delivery_point_status": "สถานะจุดส่งของ"
+    "title": "จุดส่งสินค้า",
+    "delivery_point_name": "ชื่อจุดส่งสินค้า",
+    "delivery_point_status": "สถานะ",
+    "confirmDeactivate": "คุณแน่ใจหรือไม่ที่จะปิดการใช้งานจุดส่งสินค้านี้?",
+    "confirmActivate": "คุณแน่ใจหรือไม่ที่จะเปิดการใช้งานจุดส่งสินค้านี้?"
   },
   "Department": {
     "title": "แผนก",

@@ -185,7 +185,9 @@
     "unauthorizedMessage": "You are not authorized to access this resource. Please sign in with the appropriate credentials.",
     "retry": "Try Again",
     "signIn": "Sign In",
-    "save": "Save"
+    "save": "Save",
+    "confirm": "Confirm",
+    "confirmAction": "Confirm Action"
   },
   "TableHeader": {
     "name": "Name",
@@ -239,7 +241,9 @@
   "DeliveryPoint": {
     "title": "Delivery Point",
     "delivery_point_name": "Delivery Point Name",
-    "delivery_point_status": "Status"
+    "delivery_point_status": "Status",
+    "confirmDeactivate": "Are you sure you want to deactivate this delivery point?",
+    "confirmActivate": "Are you sure you want to activate this delivery point?"
   },
   "Department": {
     "title": "Department",

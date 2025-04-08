@@ -17,6 +17,16 @@ import { formType } from "@/dtos/form.dto";
 import SignInDialog from "@/components/SignInDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
@@ -30,6 +40,8 @@ export function DeliveryPointComponent() {
     const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [deliveryPointToToggle, setDeliveryPointToToggle] = useState<DeliveryPointDto | undefined>();
 
     const {
         deliveryPoints,
@@ -66,6 +78,24 @@ export function DeliveryPointComponent() {
         handleSubmit(data, dialogMode, selectedDeliveryPoint);
         setDialogOpen(false);
     }, [handleSubmit, dialogMode, selectedDeliveryPoint]);
+
+    const handleConfirmToggleStatus = useCallback((deliveryPoint: DeliveryPointDto) => {
+        setDeliveryPointToToggle(deliveryPoint);
+        setConfirmDialogOpen(true);
+    }, []);
+
+    const handleCancelDialog = useCallback(() => {
+        setConfirmDialogOpen(false);
+        setDeliveryPointToToggle(undefined);
+    }, []);
+
+    const handleConfirmedToggle = useCallback(() => {
+        if (deliveryPointToToggle) {
+            handleToggleStatus(deliveryPointToToggle);
+            setDeliveryPointToToggle(undefined);
+            setConfirmDialogOpen(false);
+        }
+    }, [deliveryPointToToggle, handleToggleStatus]);
 
     const actionButtons = useMemo(() => (
         <div className="action-btn-container" data-id="delivery-point-list-action-buttons">
@@ -140,11 +170,11 @@ export function DeliveryPointComponent() {
                 <DeliveryPointList
                     deliveryPoints={deliveryPoints}
                     onEdit={handleEdit}
-                    onToggleStatus={handleToggleStatus}
+                    onToggleStatus={handleConfirmToggleStatus}
                 />
             )}
         </>
-    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, handleOpenLoginDialog]);
+    ), [deliveryPoints, handleEdit, handleConfirmToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, handleOpenLoginDialog]);
 
     return (
         <>
@@ -165,6 +195,26 @@ export function DeliveryPointComponent() {
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}
             />
+            <AlertDialog open={confirmDialogOpen} onOpenChange={handleCancelDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            {tCommon('confirmAction')}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {deliveryPointToToggle?.is_active
+                                ? tDeliveryPoint('confirmDeactivate')
+                                : tDeliveryPoint('confirmActivate')}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={handleCancelDialog}>{tCommon('cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmedToggle}>
+                            {tCommon('confirm')}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 } 
