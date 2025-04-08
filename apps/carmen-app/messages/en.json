@@ -220,7 +220,8 @@
     "net_amount": "Net Amount",
     "tax_amount": "Tax Amount",
     "invoice_date": "Invoice Date",
-    "grn_number": "GRN Number"
+    "grn_number": "GRN Number",
+    "delivery_point": "Delivery Point"
   },
   "Product": {
     "title": "Product"

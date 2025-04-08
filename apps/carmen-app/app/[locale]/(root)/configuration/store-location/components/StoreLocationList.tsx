@@ -40,7 +40,7 @@ export default function StoreLocationList({
                             <TableHead className="md:w-56">{t('name')}</TableHead>
                             <TableHead className="hidden md:table-cell">{t('type')}</TableHead>
                             <TableHead className="hidden md:table-cell">{t('description')}</TableHead>
-                            <TableHead className="">Delivery Point</TableHead>
+                            <TableHead className="hidden md:table-cell">{t('delivery_point')}</TableHead>
                             <TableHead>{t('status')}</TableHead>
                             <TableHead className="text-right">{t('action')}</TableHead>
                         </TableRow>
