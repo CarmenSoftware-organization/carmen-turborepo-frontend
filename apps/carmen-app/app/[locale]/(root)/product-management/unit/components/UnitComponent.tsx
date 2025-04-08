@@ -14,6 +14,7 @@ import { formType } from "@/dtos/form.dto";
 import { useUnitData, useUnitForm, useUnitDelete, useUnitFilters } from "@/hooks/ีuseUnit";
 import SignInDialog from "@/components/SignInDialog";
 import { useEffect, useState } from "react";
+import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 
 export default function UnitComponent() {
     const tCommon = useTranslations('Common');
@@ -106,13 +107,22 @@ export default function UnitComponent() {
     );
 
     const content = (
-        <UnitList
-            units={units}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            isLoading={isLoading}
-            data-id="unit-list-template"
-        />
+        <>
+            {isUnauthorized ? (
+                <UnauthorizedMessage
+                    onRetry={() => setIsLoading(false)}
+                    onLogin={() => setSignInOpen(true)}
+                />
+            ) : (
+                <UnitList
+                    units={units}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    isLoading={isLoading}
+                    data-id="unit-list-template"
+                />
+            )}
+        </>
     );
 
     return (

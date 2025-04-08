@@ -19,6 +19,7 @@ import SignInDialog from "@/components/SignInDialog";
 import { formType } from "@/dtos/form.dto";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 
 
 export default function VendorComponent() {
@@ -37,6 +38,7 @@ export default function VendorComponent() {
     const [vendorToDelete, setVendorToDelete] = useState<VendorDto | undefined>(undefined);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isUnauthorized, setIsUnauthorized] = useState(false);
 
     const fetchVendors = useCallback(async () => {
         setIsLoading(true);
@@ -44,6 +46,7 @@ export default function VendorComponent() {
             const data = await getAllVendorService(token, tenantId);
             if (data.statusCode === 401) {
                 setLoginDialogOpen(true);
+                setIsUnauthorized(true);
                 return;
             }
             setVendors(data);
@@ -167,12 +170,23 @@ export default function VendorComponent() {
         </div>
     );
 
-    const content = <VendorList
-        vendors={vendors}
-        onEditClick={handleEditClick}
-        onDeleteClick={handleDeleteClick}
-        isLoading={isLoading}
-    />;
+    const content = (
+        <>
+            {isUnauthorized ? (
+                <UnauthorizedMessage
+                    onRetry={fetchVendors}
+                    onLogin={() => setLoginDialogOpen(true)}
+                />
+            ) : (
+                <VendorList
+                    vendors={vendors}
+                    onEditClick={handleEditClick}
+                    onDeleteClick={handleDeleteClick}
+                    isLoading={isLoading}
+                />
+            )}
+        </>
+    );
 
     return (
         <>

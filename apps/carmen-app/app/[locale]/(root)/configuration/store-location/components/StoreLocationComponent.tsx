@@ -272,22 +272,17 @@ export default function StoreLocationComponent() {
 
     const content = (
         <>
-            {isPending && (
-                <div className="flex justify-center items-center min-h-[200px]">
-                    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                </div>
-            )}
-            {!isPending && isUnauthorized && (
+            {isUnauthorized ? (
                 <UnauthorizedMessage
                     onRetry={fetchStoreLocations}
                     onLogin={() => setLoginDialogOpen(true)}
                 />
-            )}
-            {!isPending && !isUnauthorized && (
+            ) : (
                 <StoreLocationList
                     storeLocations={storeLocations}
                     onEdit={handleEdit}
                     onStatusChange={handleStatusChange}
+                    isLoading={isPending}
                 />
             )}
         </>
