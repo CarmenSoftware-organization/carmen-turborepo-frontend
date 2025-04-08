@@ -79,7 +79,7 @@ const handleUpdateStoreLocationStatus = async (token: string, tenantId: string, 
         description: storeLocation.description,
         is_active: !storeLocation.is_active,
         info: storeLocation.info,
-        delivery_point_id: storeLocation.delivery_point?.id || '',
+        delivery_point_id: storeLocation.delivery_point?.id ?? '',
         id: storeLocation.id
     };
 
@@ -139,10 +139,9 @@ export default function StoreLocationComponent() {
                 } else if (selectedStoreLocation?.id) {
                     await handleSubmitEdit(token, tenantId, data, selectedStoreLocation.id);
                 }
-            } catch (error: Error | unknown) {
+            } catch (error) {
                 console.error('Error saving store location:', error);
-                const errorMessage = error instanceof Error ? error.message : 'Error saving store location';
-                toastError({ message: errorMessage });
+                toastError({ message: error instanceof Error ? error.message : 'Error saving store location' });
                 return;
             }
         };
@@ -210,10 +209,9 @@ export default function StoreLocationComponent() {
             ));
             toastSuccess({ message: `Store location ${updatedStoreLocation.is_active ? 'activated' : 'deactivated'} successfully` });
             setStatusDialogOpen(false);
-        } catch (error: Error | unknown) {
+        } catch (error) {
             console.error('Error updating store location status:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Error updating store location status';
-            toastError({ message: errorMessage });
+            toastError({ message: error instanceof Error ? error.message : 'Error updating store location status' });
         }
     }, [selectedStoreLocation, token, tenantId]);
 

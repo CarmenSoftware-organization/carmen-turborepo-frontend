@@ -12,9 +12,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Power } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 
 interface DeliveryPointListProps {
@@ -53,9 +52,6 @@ export default function DeliveryPointList({
                                 {deliveryPoints.map((deliveryPoint, index) => (
                                     <TableRow
                                         key={deliveryPoint.id}
-                                        className={cn(
-                                            !deliveryPoint.is_active && "line-through opacity-70"
-                                        )}
                                     >
                                         <TableCell className="w-10">{index + 1}</TableCell>
                                         <TableCell className="md:w-56">{deliveryPoint.name}</TableCell>
@@ -65,12 +61,12 @@ export default function DeliveryPointList({
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="w-20">
-                                            <div className="flex items-center justify-end gap-2">
+                                            <div className="flex items-center justify-end">
                                                 <Button
                                                     variant="ghost"
                                                     size={'sm'}
                                                     onClick={() => onEdit(deliveryPoint)}
-                                                    disabled={!deliveryPoint.is_active}
+                                                    aria-label="Edit delivery point"
                                                 >
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
@@ -78,10 +74,9 @@ export default function DeliveryPointList({
                                                     variant="ghost"
                                                     size={'sm'}
                                                     onClick={() => onToggleStatus(deliveryPoint)}
-                                                    className={deliveryPoint.is_active ? "hover:text-red-500" : "hover:text-green-500"}
                                                     disabled={!deliveryPoint.is_active}
                                                 >
-                                                    <Power className="h-4 w-4" />
+                                                    <Trash className="h-4 w-4 text-destructive" />
                                                 </Button>
                                             </div>
                                         </TableCell>

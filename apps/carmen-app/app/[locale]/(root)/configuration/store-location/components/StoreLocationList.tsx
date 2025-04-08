@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Power } from "lucide-react";
+import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 
@@ -28,6 +28,7 @@ export default function StoreLocationList({
     onStatusChange
 }: StoreLocationListProps) {
     const t = useTranslations('TableHeader');
+    console.log('storeLocations', storeLocations);
 
     return (
         <div className="space-y-4">
@@ -39,10 +40,9 @@ export default function StoreLocationList({
                             <TableHead className="md:w-56">{t('name')}</TableHead>
                             <TableHead className="hidden md:table-cell">{t('type')}</TableHead>
                             <TableHead className="hidden md:table-cell">{t('description')}</TableHead>
-                            <TableHead className="text-center">Floor</TableHead>
-                            <TableHead className="text-center">Building</TableHead>
+                            <TableHead className="">Delivery Point</TableHead>
                             <TableHead>{t('status')}</TableHead>
-                            <TableHead className="w-20 text-right">{t('action')}</TableHead>
+                            <TableHead className="text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
                     {isLoading ? (
@@ -52,27 +52,24 @@ export default function StoreLocationList({
                             {storeLocations.map((storeLocation, index) => (
                                 <TableRow
                                     key={storeLocation.id}
-                                    className={!storeLocation.is_active ? "line-through opacity-70" : ""}
                                 >
                                     <TableCell className="w-10">{index + 1}</TableCell>
                                     <TableCell className="md:w-56">{storeLocation.name}</TableCell>
                                     <TableCell className="hidden md:table-cell">{storeLocation.location_type}</TableCell>
                                     <TableCell className="hidden md:table-cell">{storeLocation.description}</TableCell>
-                                    <TableCell className="text-center">{storeLocation.info.floor}</TableCell>
-                                    <TableCell className="text-center">{storeLocation.info.building}</TableCell>
+                                    <TableCell>{storeLocation.delivery_point.name}</TableCell>
                                     <TableCell>
                                         <Badge variant={storeLocation.is_active ? "default" : "destructive"}>
                                             {storeLocation.is_active ? "Active" : "Inactive"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center justify-end gap-2">
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end">
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => onEdit(storeLocation)}
                                                 aria-label="Edit store location"
-                                                disabled={!storeLocation.is_active}
                                             >
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
@@ -84,7 +81,7 @@ export default function StoreLocationList({
                                                 aria-label={`${storeLocation.is_active ? 'Deactivate' : 'Activate'} store location`}
                                                 disabled={!storeLocation.is_active}
                                             >
-                                                <Power className="h-4 w-4" />
+                                                <Trash className="h-4 w-4 text-destructive" />
                                             </Button>
                                         </div>
                                     </TableCell>
