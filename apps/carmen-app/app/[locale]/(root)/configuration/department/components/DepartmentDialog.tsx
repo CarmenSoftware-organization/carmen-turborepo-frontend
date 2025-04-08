@@ -139,6 +139,13 @@ export default function DepartmentDialog({
                         />
                         <DialogFooter>
                             <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => onOpenChange(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
                                 type="submit"
                                 disabled={isLoading || form.formState.isSubmitting}
                             >

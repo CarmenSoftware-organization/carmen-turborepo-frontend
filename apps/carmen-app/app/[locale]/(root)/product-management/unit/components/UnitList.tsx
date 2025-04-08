@@ -71,7 +71,7 @@ export default function UnitList({ units, onEdit, onDelete, isLoading = false }:
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <div className="flex items-center justify-end gap-2">
+                                            <div className="flex items-center justify-end">
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
@@ -87,7 +87,7 @@ export default function UnitList({ units, onEdit, onDelete, isLoading = false }:
                                                     onClick={() => handleDelete(unit)}
                                                     disabled={!unit.is_active}
                                                 >
-                                                    <Trash className="h-4 w-4" />
+                                                    <Trash className="h-4 w-4 text-destructive" />
                                                 </Button>
                                             </div>
                                         </TableCell>

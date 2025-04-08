@@ -86,9 +86,8 @@ export default function VendorList({ vendors, onEditClick, onDeleteClick, isLoad
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => handleDeleteClick(vendor)}
-                                                    className="hover:bg-destructive/10 hover:text-destructive"
                                                 >
-                                                    <Trash className="h-4 w-4" />
+                                                    <Trash className="h-4 w-4 text-destructive" />
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
