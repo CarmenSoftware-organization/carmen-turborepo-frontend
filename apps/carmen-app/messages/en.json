@@ -127,20 +127,18 @@
     "finance": "Finance",
     "Finance": {
       "accountCodeMapping": "Account Code Mapping",
-      "exchangeRates": "Exchange Rates",
       "budgetPlanningAndControl": "Budget Planning and Control"
     },
     "Configuration": {
       "currency": "Currency",
+      "exchangeRates": "Exchange Rates",
       "deliveryPoint": "Delivery Point",
       "storeLocation": "Store Location",
       "department": "Department"
     },
-    "systemAdministration": "System Administration",
     "SystemAdministration": {
+      "title": "System Administration",
       "userManagement": "User Management",
-      "config": "Config",
-      "locationManagement": "Location Management",
       "workflowManagement": "Workflow Management",
       "generalSettings": "General Settings",
       "notificationPreferences": "Notification Preferences",

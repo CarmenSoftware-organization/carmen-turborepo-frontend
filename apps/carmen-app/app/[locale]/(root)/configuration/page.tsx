@@ -13,6 +13,11 @@ export default function Configuration() {
             icon: CreditCard
         },
         {
+            name: t('Configuration.exchangeRates'),
+            href: '/configuration/exchange-rate',
+            icon: CreditCard
+        },
+        {
             name: t('Configuration.deliveryPoint'),
             href: '/configuration/delivery-point',
             icon: MapPin

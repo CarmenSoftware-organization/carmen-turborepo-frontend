@@ -121,20 +121,18 @@
     "finance": "การกิจการ",
     "Finance": {
       "accountCodeMapping": "การจัดการรหัสบัญชี",
-      "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
       "budgetPlanningAndControl": "การวางแผนงบประมาณและควบคุม"
     },
     "Configuration": {
       "currency": "สกุลเงิน",
+      "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
       "deliveryPoint": "จุดส่งของ",
       "storeLocation": "สถานที่เก็บสินค้า",
       "department": "แผนก"
     },
-    "systemAdministration": "การจัดการระบบ",
     "SystemAdministration": {
+      "title": "การจัดการระบบ",
       "userManagement": "การจัดการผู้ใช้งาน",
-      "config": "การตั้งค่า",
-      "locationManagement": "การจัดการสถานที่",
       "workflowManagement": "การจัดการกระบวนการ",
       "generalSettings": "การตั้งค่าทั่วไป",
       "notificationPreferences": "การตั้งค่าการแจ้งเตือน",

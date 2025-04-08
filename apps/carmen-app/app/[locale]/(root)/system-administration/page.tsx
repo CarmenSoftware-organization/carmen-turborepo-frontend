@@ -4,8 +4,6 @@ import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
 import { useTranslations } from "next-intl";
 import {
     Users,
-    Settings,
-    MapPin,
     GitBranch,
     Sliders,
     Bell,
@@ -21,16 +19,6 @@ export default function SystemAdministrationPage() {
             name: t('SystemAdministration.userManagement'),
             href: '/system-administration/user-management',
             icon: Users
-        },
-        {
-            name: t('SystemAdministration.config'),
-            href: '/system-administration/config',
-            icon: Settings
-        },
-        {
-            name: t('SystemAdministration.locationManagement'),
-            href: '/system-administration/location-management',
-            icon: MapPin
         },
         {
             name: t('SystemAdministration.workflowManagement'),

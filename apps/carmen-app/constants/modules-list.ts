@@ -285,6 +285,10 @@ export const moduleItems: ModuleItem[] = [
                 href: "/configuration/currency",
             },
             {
+                labelKey: "Modules.Configuration.exchangeRates",
+                href: "/configuration/exchange-rates",
+            },
+            {
                 labelKey: "Modules.Configuration.deliveryPoint",
                 href: "/configuration/delivery-point",
             },
@@ -306,14 +310,6 @@ export const moduleItems: ModuleItem[] = [
             {
                 labelKey: "Modules.SystemAdministration.userManagement",
                 href: "/system-administration/user-management",
-            },
-            {
-                labelKey: "Modules.SystemAdministration.config",
-                href: "/system-administration/config",
-            },
-            {
-                labelKey: "Modules.SystemAdministration.locationManagement",
-                href: "/system-administration/location-management",
             },
             {
                 labelKey: "Modules.SystemAdministration.workflowManagement",
