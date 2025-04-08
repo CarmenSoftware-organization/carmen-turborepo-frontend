@@ -55,7 +55,11 @@ export default function StoreLocationList({
                                 >
                                     <TableCell className="w-10">{index + 1}</TableCell>
                                     <TableCell className="md:w-56">{storeLocation.name}</TableCell>
-                                    <TableCell className="hidden md:table-cell">{storeLocation.location_type}</TableCell>
+                                    <TableCell className="hidden md:table-cell">
+                                        <Badge>
+                                            {storeLocation.location_type.toUpperCase()}
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell className="hidden md:table-cell">{storeLocation.description}</TableCell>
                                     <TableCell>{storeLocation.delivery_point.name}</TableCell>
                                     <TableCell>
