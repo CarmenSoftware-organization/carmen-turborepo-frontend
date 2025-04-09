@@ -1,7 +1,16 @@
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import { mockVendorComparisonData } from "@/mock-data/procurement";
+import VendorComparisonList from "./VendorComparisonList";
+
 export default function VendorComparisonComponent() {
+    const title = "Vendor Comparison"
+
+    const content = <VendorComparisonList vendorComparisons={mockVendorComparisonData} />
+
     return (
-        <div>
-            <h1>Vendor Comparison Component</h1>
-        </div>
+        <DataDisplayTemplate
+            title={title}
+            content={content}
+        />
     );
 }

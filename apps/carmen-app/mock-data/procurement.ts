@@ -1,5 +1,5 @@
 import { NotificationDto } from "@/dtos/notification.dto";
-import { ActivityPrDto, AttachmentPrDto, BudgetPrDto, CreditNoteDto, FlaggedDto, GoodsReceivedNoteDto, ItemDetailPrDto, PendingApprovalDto, PurchaseOrderlDto, PurchaseRequestDto, PurchaseRequestTemplateDto, RecentApprovalDto, WorkflowPrDto } from "@/dtos/procurement.dto";
+import { ActivityPrDto, AttachmentPrDto, BudgetPrDto, CreditNoteDto, FlaggedDto, GoodsReceivedNoteDto, ItemDetailPrDto, PendingApprovalDto, PurchaseOrderlDto, PurchaseRequestDto, PurchaseRequestTemplateDto, RecentApprovalDto, VendorComparisonDto, WorkflowPrDto } from "@/dtos/procurement.dto";
 
 export const mockPendingApprovals: PendingApprovalDto[] = [
     {
@@ -1067,4 +1067,95 @@ export const mockActivities: ActivityPrDto[] = [
     }
 ];
 
-
+export const mockVendorComparisonData: VendorComparisonDto[] = [
+    {
+        id: 'vc-001',
+        vendor_name: 'SCG Chemical',
+        status: true,
+        rating: 4.5,
+        score: 87,
+        res_time: 84,
+        delivery_time: 10,
+    },
+    {
+        id: 'vc-002',
+        vendor_name: 'PTT Lubricants',
+        status: false,
+        rating: 3.8,
+        score: 75,
+        res_time: 150,
+        delivery_time: 2,
+    },
+    {
+        id: 'vc-003',
+        vendor_name: 'HMC Polymer',
+        status: true,
+        rating: 4.9,
+        score: 92,
+        res_time: 100,
+        delivery_time: 5,
+    },
+    {
+        id: 'vc-004',
+        vendor_name: 'Dow Chemical',
+        status: true,
+        rating: 4.5,
+        score: 60,
+        res_time: 100,
+        delivery_time: 3,
+    },
+    {
+        id: 'vc-005',
+        vendor_name: 'PPG Industries',
+        status: false,
+        rating: 4.5,
+        score: 87,
+        res_time: 120,
+        delivery_time: 2,
+    },
+    {
+        id: 'vc-006',
+        vendor_name: 'BASF',
+        status: true,
+        rating: 3.5,
+        score: 99,
+        res_time: 300,
+        delivery_time: 9,
+    },
+    {
+        id: 'vc-007',
+        vendor_name: 'BSAA',
+        status: true,
+        rating: 2.5,
+        score: 87,
+        res_time: 64,
+        delivery_time: 1,
+    },
+    {
+        id: 'vc-008',
+        vendor_name: 'SRF Industries',
+        status: false,
+        rating: 4.8,
+        score: 95,
+        res_time: 80,
+        delivery_time: 7,
+    },
+    {
+        id: 'vc-009',
+        vendor_name: 'Huaweii',
+        status: true,
+        rating: 4.5,
+        score: 33,
+        res_time: 62,
+        delivery_time: 6,
+    },
+    {
+        id: 'vc-010',
+        vendor_name: 'Samsung',
+        status: true,
+        rating: 4.5,
+        score: 78,
+        res_time: 77,
+        delivery_time: 9,
+    }
+];

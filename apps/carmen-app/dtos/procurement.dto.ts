@@ -147,3 +147,13 @@ export interface PurchaseRequestTemplateDto {
     amount: number;
     workflow_status: string;
 }
+
+export interface VendorComparisonDto {
+    id: string;
+    vendor_name: string;
+    status: boolean;
+    rating: number;
+    score: number;
+    res_time: number;
+    delivery_time: number;
+}
