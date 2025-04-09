@@ -102,7 +102,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 75000,
         requestor: "Alice Green",
         department: "IT",
-        status: "Pending",
+        status: "Low",
         flagged_reason: "Exceeds budget limit",
     },
     {
@@ -112,7 +112,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 45000,
         requestor: "Robert White",
         department: "HR",
-        status: "Rejected",
+        status: "Medium",
         flagged_reason: "Unnecessary purchase",
     },
     {
@@ -122,7 +122,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 90000,
         requestor: "Lucas Brown",
         department: "Development",
-        status: "Pending",
+        status: "High",
         flagged_reason: "Requires additional approval",
     },
     {
@@ -132,7 +132,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 50000,
         requestor: "Sophia Wilson",
         department: "Facilities",
-        status: "Approved",
+        status: "Medium",
         flagged_reason: "Requires IT security review",
     },
     {
@@ -142,7 +142,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 200000,
         requestor: "Ethan Martinez",
         department: "Management",
-        status: "Pending",
+        status: "Medium",
         flagged_reason: "Exceeds company policy limit",
     },
     {
@@ -152,7 +152,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 60000,
         requestor: "Charlotte Johnson",
         department: "IT",
-        status: "Pending",
+        status: "Medium",
         flagged_reason: "Needs vendor evaluation",
     },
     {
@@ -162,7 +162,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 25000,
         requestor: "Mason Taylor",
         department: "HR",
-        status: "Rejected",
+        status: "Medium",
         flagged_reason: "Not essential for operations",
     },
     {
@@ -172,7 +172,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 120000,
         requestor: "Amelia Thomas",
         department: "Operations",
-        status: "Pending",
+        status: "Medium",
         flagged_reason: "Requires CFO approval",
     },
     {
@@ -182,7 +182,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 15000,
         requestor: "Liam Walker",
         department: "Development",
-        status: "Approved",
+        status: "Medium",
         flagged_reason: "High return rate on previous orders",
     },
     {
@@ -192,7 +192,7 @@ export const mockFlaggedApprovals: FlaggedDto[] = [
         price: 90000,
         requestor: "Emma Harris",
         department: "Admin",
-        status: "Pending",
+        status: "High",
         flagged_reason: "Needs space reallocation review",
     },
 ];
@@ -225,8 +225,18 @@ export const mockRecentApprovals: RecentApprovalDto[] = [
         price: 50000,
         requestor: "Sophia Bennett",
         department: "IT",
-        status: "Approved",
+        status: "Pending",
         date_approved: "2025-03-27",
+    },
+    {
+        id: "rp-204",
+        title: "Office Chairs",
+        no_unit: 10,
+        price: 15000,
+        requestor: "John Doe",
+        department: "HR",
+        status: "Rejected",
+        date_approved: "2025-03-28",
     },
 ];
 
@@ -236,7 +246,7 @@ export const mockNotiApproval: NotificationDto[] = [
         id: "n-301",
         title: "New Purchase Request",
         message: "Your purchase request for office chairs has been submitted.",
-        user_posted: "Prayuth Chan-o-cha",
+        user_posted: "Thitiphong Srisavat",
         created_at: "2025-03-27T08:30:00Z",
         read: false,
     },
@@ -244,7 +254,7 @@ export const mockNotiApproval: NotificationDto[] = [
         id: "n-302",
         title: "Approval Granted",
         message: "Your request for wireless headsets has been approved.",
-        user_posted: "Prawit Wongsuwon",
+        user_posted: "Chaiwat Chaiyakul",
         created_at: "2025-03-26T15:45:00Z",
         read: true,
     },
@@ -252,7 +262,7 @@ export const mockNotiApproval: NotificationDto[] = [
         id: "n-303",
         title: "New Comment on Request",
         message: "The finance department has left a comment on your request.",
-        user_posted: "Anutin Charnvirakul",
+        user_posted: "Narongdech Ngamkham",
         created_at: "2025-03-26T10:15:00Z",
         read: false,
     },
@@ -260,7 +270,7 @@ export const mockNotiApproval: NotificationDto[] = [
         id: "n-304",
         title: "System Maintenance",
         message: "Scheduled maintenance will occur on March 30, 2025.",
-        user_posted: "Taksin Shinawatra",
+        user_posted: "Oralik Musikkawong",
         created_at: "2025-03-25T12:00:00Z",
         read: true,
     }

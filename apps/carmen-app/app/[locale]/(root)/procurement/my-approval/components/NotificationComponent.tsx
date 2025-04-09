@@ -4,13 +4,16 @@ import { NotificationDto } from "@/dtos/notification.dto";
 import { mockNotiApproval } from "@/mock-data/procurement";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
-import { Clock, UserRound } from "lucide-react";
+import { Bell, Clock, UserRound } from "lucide-react";
 export default function NotificationComponent() {
     return (
         <Card>
-            <CardHeader>
-                <CardTitle>Notifications</CardTitle>
-                <CardDescription>
+            <CardHeader className="border-b">
+                <CardTitle className="flex items-center gap-2">
+                    <Bell className="w-4 h-4" />
+                    Notifications
+                </CardTitle>
+                <CardDescription className="text-xs">
                     Recent updates and alerts
                 </CardDescription>
             </CardHeader>
@@ -18,7 +21,7 @@ export default function NotificationComponent() {
                 {mockNotiApproval.map((notification: NotificationDto) => (
                     <div key={notification.id} className="p-4 space-y-2 border-b">
                         <div className="flex items-center justify-between gap-2">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                                 <UserRound className="w-3 h-3" />
                                 <p className="text-xs text-muted-foreground">{notification.user_posted}</p>
                             </div>
