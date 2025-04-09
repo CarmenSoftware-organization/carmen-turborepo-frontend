@@ -16,7 +16,7 @@ export default function ActivityPr() {
                 <TableBody>
                     {mockActivities.map((activity) => (
                         <TableRow key={activity.id}>
-                            <TableCell className="text-sm text-muted-foreground">
+                            <TableCell className="text-xs text-muted-foreground">
                                 {activity.timestamp}
                             </TableCell>
                             <TableCell>

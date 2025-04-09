@@ -36,7 +36,7 @@ export default function TransactionSummary() {
             <TableBody>
                 <TableRow>
                     {fields.map((field) => (
-                        <TableCell key={field.label}>{field.amount}</TableCell>
+                        <TableCell key={field.label}>{field.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                     ))}
                 </TableRow>
             </TableBody>

@@ -24,6 +24,8 @@ import AttachmentPr from "./AttachmentPr";
 import ActivityPr from "./ActivityPr";
 import TransactionSummary from "./TransactionSummary";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ArrowLeftRightIcon, BookmarkIcon, CheckCircleIcon, FileDown, Printer, ShareIcon, XCircleIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 interface PrFormProps {
     readonly mode: formType;
     readonly initValues?: PurchaseRequestDto;
@@ -58,6 +60,22 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                                 {mode === formType.ADD ? "Create Purchase Request" : "Edit Purchase Request"}
                             </h1>
                             <div className="flex justify-end gap-2">
+                                <Button variant={'outline'} size={'sm'}>
+                                    <Printer className="w-4 h-4" />
+                                    Print
+                                </Button>
+                                <Button variant={'outline'} size={'sm'}>
+                                    <FileDown className="h-4 w-4" />
+                                    Export
+                                </Button>
+                                <Button variant={'outline'} size={'sm'}>
+                                    <ShareIcon className="w-4 h-4" />
+                                    Share
+                                </Button>
+                                <Button variant={'outline'} size={'sm'}>
+                                    <BookmarkIcon className="w-4 h-4" />
+                                    Save as Template
+                                </Button>
                                 <Button variant="outline" type="button" onClick={() => router.back()}>
                                     Cancel
                                 </Button>
@@ -142,25 +160,50 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                             />
                         </div>
 
-                        <FormField
-                            control={form.control}
-                            name="description"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Description</FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            placeholder="Enter description"
-                                            className="resize-none min-h-[100px]"
-                                            {...field}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="flex flex-col md:flex-row gap-2">
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem className="w-1/2">
+                                        <FormLabel>Description</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="Enter description"
+                                                className="resize-none min-h-[100px]"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
+                            <div className="w-1/2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-muted p-2 rounded-md">
+                                <div className="flex flex-col items-center justify-center space-y-2">
+                                    <p className="text-sm font-medium">Current Workflow Stage</p>
+                                    <Badge className="bg-green-100 text-green-800">
+                                        <CheckCircleIcon className="w-4 h-4" />
+                                        Requestor
+                                    </Badge>
 
+                                </div>
+                                <div className="flex flex-col items-center justify-center space-y-2">
+                                    <p className="text-sm font-medium">Workflow Status</p>
+                                    <Badge className="bg-yellow-100 text-yellow-800">
+                                        <CheckCircleIcon className="w-4 h-4" />
+                                        Pending
+                                    </Badge>
+                                </div>
+                                <div className="flex flex-col items-center justify-center space-y-2">
+                                    <p className="text-sm font-medium">Status</p>
+                                    <Badge className="bg-blue-100 text-blue-800">
+                                        <CheckCircleIcon className="w-4 h-4" />
+                                        Approved
+                                    </Badge>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 </Form>
 
@@ -189,6 +232,22 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                     </TabsContent>
                 </Tabs>
                 <TransactionSummary />
+                {mode === formType.ADD && (
+                    <div className="flex justify-end gap-2 mt-2">
+                        <Button size={'sm'}>
+                            <CheckCircleIcon className="w-4 h-4" />
+                            Approve
+                        </Button>
+                        <Button variant={'outline'} size={'sm'}>
+                            <XCircleIcon className="w-4 h-4" />
+                            Reject
+                        </Button>
+                        <Button variant={'outline'} size={'sm'}>
+                            <ArrowLeftRightIcon className="w-4 h-4" />
+                            Send Back
+                        </Button>
+                    </div>
+                )}
             </ScrollArea>
         </Card>
     );
