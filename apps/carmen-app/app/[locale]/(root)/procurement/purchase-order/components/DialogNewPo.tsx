@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog";
+import { useRouter } from "@/lib/navigation";
 import { Building2, FileText } from "lucide-react";
 
 interface DialogNewPoProps {
@@ -9,6 +10,8 @@ interface DialogNewPoProps {
 }
 
 export default function DialogNewPo({ open, onOpenChange }: DialogNewPoProps) {
+    const router = useRouter();
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[525px]">
@@ -21,7 +24,10 @@ export default function DialogNewPo({ open, onOpenChange }: DialogNewPoProps) {
                     </p>
                 </DialogHeader>
                 <div className="grid grid-cols-2 gap-4 py-4">
-                    <Card className="cursor-pointer hover:bg-accent/50 transition-all duration-300 ease-in-out">
+                    <Card
+                        className="cursor-pointer hover:bg-accent/50 transition-all duration-300 ease-in-out"
+                        onClick={() => router.push('/procurement/purchase-order/new?type=blank')}
+                    >
                         <CardHeader>
                             <CardTitle>
                                 <div className="flex items-center gap-2">
@@ -37,7 +43,10 @@ export default function DialogNewPo({ open, onOpenChange }: DialogNewPoProps) {
                         </CardContent>
                     </Card>
 
-                    <Card className="cursor-pointer hover:bg-accent/50 transition-all duration-300 ease-in-out">
+                    <Card
+                        className="cursor-pointer hover:bg-accent/50 transition-all duration-300 ease-in-out"
+                        onClick={() => router.push('/procurement/purchase-order/new?type=pr')}
+                    >
                         <CardHeader>
                             <CardTitle>
                                 <div className="flex items-center gap-2">

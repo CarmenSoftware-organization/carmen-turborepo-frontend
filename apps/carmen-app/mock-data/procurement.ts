@@ -289,6 +289,7 @@ export const mockPurchaseRequests: PurchaseRequestDto[] = [
         department: "Human Resources",
         amount: 1500.00,
         workflow_status: "Approval Pending",
+        delivery_date: "2024-04-01",
     },
     {
         id: "PR-002",
@@ -302,6 +303,7 @@ export const mockPurchaseRequests: PurchaseRequestDto[] = [
         department: "IT",
         amount: 2500.00,
         workflow_status: "Completed",
+        delivery_date: "2024-05-01",
     },
     {
         id: "PR-003",
@@ -315,6 +317,7 @@ export const mockPurchaseRequests: PurchaseRequestDto[] = [
         department: "Engineering",
         amount: 12000.00,
         workflow_status: "Rejected",
+        delivery_date: "2024-08-01",
     },
     {
         id: "PR-004",
@@ -328,6 +331,7 @@ export const mockPurchaseRequests: PurchaseRequestDto[] = [
         department: "Marketing",
         amount: 5000.00,
         workflow_status: "Under Review",
+        delivery_date: "2024-09-01",
     },
     {
         id: "PR-005",
@@ -341,6 +345,7 @@ export const mockPurchaseRequests: PurchaseRequestDto[] = [
         department: "Administration",
         amount: 700.00,
         workflow_status: "Completed",
+        delivery_date: "2024-09-08",
     },
     {
         id: "PR-006",
@@ -354,6 +359,7 @@ export const mockPurchaseRequests: PurchaseRequestDto[] = [
         department: "Human Resources",
         amount: 1500.00,
         workflow_status: "Approval Pending",
+        delivery_date: "2024-09-08",
     }
 ];
 

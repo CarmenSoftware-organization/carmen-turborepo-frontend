@@ -30,6 +30,7 @@ export const prFormSchema = z.object({
     requestor: z.string().min(1, "Requestor is required"),
     department: z.string().min(1, "Department is required"),
     amount: z.number().min(0, "Amount must be greater than 0"),
+    delivery_date: z.string().optional(),
     workflow_status: z.string().optional(),
 });
 
@@ -73,6 +74,20 @@ export interface WorkflowPrDto {
     date_approved: string;
     comments: string;
 }
+
+export const poFormSchema = z.object({
+    vendor: z.string().min(1, "Vendor is required"),
+    status: z.string(),
+    date_created: z.string(),
+    delivery_date: z.string(),
+    po_number: z.string(),
+    currency: z.string(),
+    net_amount: z.number(),
+    tax_amount: z.number(),
+    amount: z.number(),
+});
+
+export type PoFormDto = z.infer<typeof poFormSchema>;
 
 export interface PurchaseOrderlDto {
     id: string;
