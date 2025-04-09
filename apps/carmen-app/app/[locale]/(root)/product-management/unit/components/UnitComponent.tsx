@@ -11,7 +11,7 @@ import UnitList from "./UnitList";
 import UnitDialog from "./UnitDialog";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import { formType } from "@/dtos/form.dto";
-import { useUnitData, useUnitForm, useUnitDelete, useUnitFilters } from "@/hooks/ีuseUnit";
+import { useUnit, useUnitForm, useUnitDelete, useUnitFilters } from "@/hooks/useUnit";
 import SignInDialog from "@/components/SignInDialog";
 import { useEffect, useState } from "react";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
@@ -20,7 +20,7 @@ export default function UnitComponent() {
     const tCommon = useTranslations('Common');
     const tUnit = useTranslations('Unit');
     const [signInOpen, setSignInOpen] = useState(false);
-    const { units, setUnits, isLoading, setIsLoading, isUnauthorized } = useUnitData();
+    const { units, setUnits, isLoading, setIsLoading, isUnauthorized } = useUnit();
     const { search, setSearch, status, setStatus, statusOpen, setStatusOpen, sort, setSort } = useUnitFilters();
 
     const {

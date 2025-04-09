@@ -30,6 +30,32 @@ export const ProductFormSchema = BaseProductSchema.extend({
             })
         ),
     }),
+    order_units: z.object({
+        add: z.array(
+            z.object({
+                from_unit_id: z.string().uuid(),
+                from_unit_qty: z.number().min(0),
+                to_unit_id: z.string().uuid(),
+                to_unit_qty: z.number().min(0),
+                description: z.string(),
+                is_active: z.boolean(),
+                is_default: z.boolean(),
+            })
+        ),
+    }),
+    ingredient_units: z.object({
+        add: z.array(
+            z.object({
+                from_unit_id: z.string().uuid(),
+                from_unit_qty: z.number().min(0),
+                to_unit_id: z.string().uuid(),
+                to_unit_qty: z.number().min(0),
+                description: z.string(),
+                is_active: z.boolean(),
+                is_default: z.boolean(),
+            })
+        ),
+    }),
 });
 
 export type ProductFormDto = z.infer<typeof ProductFormSchema>;
@@ -41,15 +67,42 @@ export const ProductSchema = BaseProductSchema.extend({
         product_id: z.string().uuid(),
         product_item_group_id: z.string().uuid(),
         is_ingredients: z.boolean(),
-        price: z.string(),
+        price: z.number(),
         tax_type: z.enum(["none", "included", "excluded"]).default("none"),
-        tax_rate: z.string(),
-        price_deviation_limit: z.string(),
+        tax_rate: z.number(),
+        price_deviation_limit: z.number(),
         info: z.object({
             label: z.string(),
             value: z.string(),
         }),
     }),
+    locations: z.array(
+        z.object({
+            id: z.string().uuid(),
+        })
+    ).optional(),
+    order_units: z.array(
+        z.object({
+            from_unit_id: z.string().uuid(),
+            from_unit_qty: z.string(),
+            to_unit_id: z.string().uuid(),
+            to_unit_qty: z.string(),
+            description: z.string(),
+            is_active: z.boolean(),
+            is_default: z.boolean(),
+        })
+    ).optional(),
+    ingredient_units: z.array(
+        z.object({
+            from_unit_id: z.string().uuid(),
+            from_unit_qty: z.string(),
+            to_unit_id: z.string().uuid(),
+            to_unit_qty: z.string(),
+            description: z.string(),
+            is_active: z.boolean(),
+            is_default: z.boolean(),
+        })
+    ).optional(),
 });
 
 export type ProductGetDto = z.infer<typeof ProductSchema>;

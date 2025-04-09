@@ -1,12 +1,12 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import ProductForm from "../components/ProductForm";
 import { getProductIdService } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { ProductGetDto } from "@/dtos/product.dto";
+import ProductDetail from "../components/ProductDetail";
 
 export default function ProductEdit() {
     const { token, tenantId } = useAuth();
@@ -34,5 +34,5 @@ export default function ProductEdit() {
         return <div>Loading product information...</div>;
     }
 
-    return <ProductForm mode={formType.EDIT} product={product} />;
+    return <ProductDetail mode={formType.EDIT} initValues={product} />;
 }
