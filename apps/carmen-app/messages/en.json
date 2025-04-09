@@ -129,6 +129,7 @@
       "accountCodeMapping": "Account Code Mapping",
       "budgetPlanningAndControl": "Budget Planning and Control"
     },
+    "systemAdministration": "System Administration",
     "Configuration": {
       "currency": "Currency",
       "exchangeRates": "Exchange Rates",

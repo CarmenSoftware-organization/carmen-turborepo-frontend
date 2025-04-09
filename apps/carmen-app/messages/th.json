@@ -123,6 +123,7 @@
       "accountCodeMapping": "การจัดการรหัสบัญชี",
       "budgetPlanningAndControl": "การวางแผนงบประมาณและควบคุม"
     },
+    "systemAdministration": "การจัดการระบบ",
     "Configuration": {
       "currency": "สกุลเงิน",
       "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
