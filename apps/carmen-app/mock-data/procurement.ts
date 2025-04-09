@@ -360,8 +360,8 @@ export const mockPurchaseRequests: PurchaseRequestDto[] = [
 export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-001",
-        department: "Human Resources",
-        status: "Pending",
+        vendor: "Apple",
+        status: "Sent",
         date_created: "2024-03-25",
         delivery_date: "2024-04-01",
         po_number: "HR-20240325-001",
@@ -372,7 +372,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     },
     {
         id: "PO-002",
-        department: "IT",
+        vendor: "Samsung",
         status: "Approved",
         date_created: "2024-03-20",
         delivery_date: "2024-03-30",
@@ -384,7 +384,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     },
     {
         id: "PO-003",
-        department: "Engineering",
+        vendor: "LG",
         status: "Rejected",
         date_created: "2024-03-18",
         delivery_date: "2024-03-28",
@@ -396,7 +396,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     },
     {
         id: "PO-004",
-        department: "Marketing",
+        vendor: "Sony",
         status: "Pending",
         date_created: "2024-03-27",
         delivery_date: "2024-04-05",
@@ -408,7 +408,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     },
     {
         id: "PO-005",
-        department: "Administration",
+        vendor: "Dell",
         status: "Approved",
         date_created: "2024-03-22",
         delivery_date: "2024-03-29",

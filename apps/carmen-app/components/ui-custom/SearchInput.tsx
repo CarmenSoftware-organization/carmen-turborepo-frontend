@@ -55,7 +55,7 @@ export default function SearchInput({
                     value={inputValue}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
-                    className='h-9 pr-10 text-xs'
+                    className='h-8 pr-10 text-xs'
                 />
                 <Button
                     type="button"

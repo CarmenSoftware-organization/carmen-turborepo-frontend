@@ -2,16 +2,16 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
-import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseOrderList from "./PurchaseOrderList";
 import { mockPurchaseOrders } from "@/mock-data/procurement";
+import PoStatusCard from "./PoStatusCard";
 
 export default function PurchaseOrderComponent() {
     const tCommon = useTranslations('Common');
@@ -28,72 +28,74 @@ export default function PurchaseOrderComponent() {
         { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
-    const title = "Purchase Order"
+    return (
+        <div className="space-y-4 flex w-full flex-col justify-center transition-all duration-300 ease-in-out">
+            <div className="md:flex justify-between items-start">
+                <h1 className="text-2xl font-semibold">Purchase Order</h1>
+                <div className="action-btn-container" data-id="purchase-order-action-buttons">
+                    <Button size={'sm'}>
+                        <Plus className="h-4 w-4" />
+                        New Purchase Order
+                    </Button>
+                    <Button
+                        variant="outline"
+                        className="group"
+                        size={'sm'}
+                        data-id="po-list-export-button"
+                    >
+                        <FileDown className="h-4 w-4" />
+                        {tCommon('export')}
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size={'sm'}
+                        data-id="po-list-print-button"
+                    >
+                        <Printer className="h-4 w-4" />
+                        {tCommon('print')}
+                    </Button>
+                </div>
+            </div>
+            <div className="p-4 border rounded-md space-y-1">
+                <h2 className="text-sm font-semibold text-gray-900">About Purchase Orders</h2>
+                <p className="text-xs text-gray-500">
+                    Manage your purchase orders to vendors. Track order status, delivery dates, and payment terms for all your procurement activities.
+                </p>
 
-    const actionButtons = (
-        <div className="action-btn-container" data-id="purchase-order-action-buttons">
-            <Button size={'sm'}>
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
-            </Button>
-            <Button
-                variant="outline"
-                className="group"
-                size={'sm'}
-                data-id="po-list-export-button"
-            >
-                <FileDown className="h-4 w-4" />
-                {tCommon('export')}
-            </Button>
-            <Button
-                variant="outline"
-                size={'sm'}
-                data-id="po-list-print-button"
-            >
-                <Printer className="h-4 w-4" />
-                {tCommon('print')}
-            </Button>
-        </div>
-    );
+            </div>
+            <PoStatusCard />
+            <div className="filter-container" data-id="po-list-filters">
+                <SearchInput
+                    defaultValue={search}
+                    onSearch={setSearch}
+                    placeholder={tCommon('search')}
+                    data-id="po-list-search-input"
+                />
+                <div className="flex items-center gap-2">
+                    <StatusSearchDropdown
+                        options={statusOptions}
+                        value={status}
+                        onChange={setStatus}
+                        open={statusOpen}
+                        onOpenChange={setStatusOpen}
+                        data-id="po-list-status-search-dropdown"
+                    />
+                    <SortComponent
+                        fieldConfigs={sortFields}
+                        sort={sort}
+                        setSort={setSort}
+                        data-id="po-list-sort-dropdown"
+                    />
+                    <Button size={'sm'}>
+                        <Filter className="h-4 w-4" />
+                        Add Filter
+                    </Button>
+                </div>
+            </div>
 
-    const filters = (
-        <div className="filter-container" data-id="po-list-filters">
-            <SearchInput
-                defaultValue={search}
-                onSearch={setSearch}
-                placeholder={tCommon('search')}
-                data-id="po-list-search-input"
-            />
-            <div className="flex items-center gap-2">
-                <StatusSearchDropdown
-                    options={statusOptions}
-                    value={status}
-                    onChange={setStatus}
-                    open={statusOpen}
-                    onOpenChange={setStatusOpen}
-                    data-id="po-list-status-search-dropdown"
-                />
-                <SortComponent
-                    fieldConfigs={sortFields}
-                    sort={sort}
-                    setSort={setSort}
-                    data-id="po-list-sort-dropdown"
-                />
-                <Button size={'sm'}>
-                    Add Filter
-                </Button>
+            <div className="flex-1 overflow-y-auto bg-background rounded-lg">
+                <PurchaseOrderList purchaseOrders={mockPurchaseOrders} />
             </div>
         </div>
-    );
-
-    const content = <PurchaseOrderList purchaseOrders={mockPurchaseOrders} />
-
-    return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filters}
-            content={content}
-        />
     )
 }

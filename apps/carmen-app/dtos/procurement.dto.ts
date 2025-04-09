@@ -76,7 +76,7 @@ export interface WorkflowPrDto {
 
 export interface PurchaseOrderlDto {
     id: string;
-    department: string;
+    vendor: string;
     status: string;
     date_created: string;
     delivery_date: string;
