@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
@@ -34,7 +34,7 @@ export default function CreditNoteComponent() {
         <div className="action-btn-container" data-id="credit-note-action-buttons">
             <Button size={'sm'}>
                 <Plus className="h-4 w-4" />
-                {tCommon('add')}
+                New Credit Note
             </Button>
             <Button
                 variant="outline"
@@ -80,6 +80,7 @@ export default function CreditNoteComponent() {
                     data-id="credit-note-list-sort-dropdown"
                 />
                 <Button size={'sm'}>
+                    <Filter className="h-4 w-4" />
                     Add Filter
                 </Button>
             </div>

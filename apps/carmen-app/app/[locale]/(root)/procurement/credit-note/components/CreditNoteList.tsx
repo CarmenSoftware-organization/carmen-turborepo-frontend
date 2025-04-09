@@ -11,12 +11,49 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil, Trash } from "lucide-react";
+import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const creditNoteStatusColor = (status: string) => {
+    if (status === 'Pending') {
+        return 'bg-yellow-100 text-yellow-800';
+    } else if (status === 'Draft') {
+        return 'bg-blue-100 text-blue-800';
+    } else if (status === 'Rejected') {
+        return 'bg-red-100 text-red-800';
+    } else if (status === 'Approved') {
+        return 'bg-green-100 text-green-800';
+    }
+}
 
 interface CreditNoteListProps {
     readonly creditNotes: CreditNoteDto[];
 }
 
 export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
+
+    const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+    const handleSelectItem = (id: string) => {
+        setSelectedItems(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedItems.length === creditNotes.length) {
+            // If all items are selected, unselect all
+            setSelectedItems([]);
+        } else {
+            // Otherwise, select all items
+            const allIds = creditNotes.map(cn => cn.id ?? '').filter(Boolean);
+            setSelectedItems(allIds);
+        }
+    };
+
+    const isAllSelected = creditNotes.length > 0 && selectedItems.length === creditNotes.length;
     return (
         <div className="space-y-4">
             {/* Desktop Table View */}
@@ -24,7 +61,14 @@ export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead className="w-10 text-center">#</TableHead>
+                            <TableHead className="w-10 text-center">
+                                <Checkbox
+                                    id="select-all"
+                                    checked={isAllSelected}
+                                    onCheckedChange={handleSelectAll}
+                                    aria-label="Select all purchase requests"
+                                />
+                            </TableHead>
                             <TableHead>Credit Note No.</TableHead>
                             <TableHead>Title</TableHead>
                             <TableHead>Date Created</TableHead>
@@ -35,37 +79,44 @@ export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
                             <TableHead>Tax Amount</TableHead>
                             <TableHead>Amount</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead className="w-[100px] text-right">Action</TableHead>
+                            <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {creditNotes.map((cn, index) => (
+                        {creditNotes.map((cn) => (
                             <TableRow key={cn.id}>
-                                <TableCell className="text-center w-10">{index + 1}</TableCell>
+                                <TableCell className="text-center w-10">
+                                    <Checkbox
+                                        id={`checkbox-${cn.id}`}
+                                        checked={selectedItems.includes(cn.id ?? '')}
+                                        onCheckedChange={() => handleSelectItem(cn.id ?? '')}
+                                        aria-label={`Select ${cn.cdn_number}`}
+                                    />
+                                </TableCell>
                                 <TableCell className="font-medium">{cn.cdn_number}</TableCell>
                                 <TableCell>{cn.title}</TableCell>
                                 <TableCell>{cn.date_created}</TableCell>
                                 <TableCell>{cn.vendor}</TableCell>
                                 <TableCell>{cn.doc_no}</TableCell>
                                 <TableCell>{cn.doc_date}</TableCell>
-                                <TableCell>{cn.net_amount}</TableCell>
-                                <TableCell>{cn.tax_amount}</TableCell>
-                                <TableCell>{cn.amount}</TableCell>
+                                <TableCell>{cn.net_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                                <TableCell>{cn.tax_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                                <TableCell>{cn.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                                 <TableCell>
-                                    <Badge variant="outline" className="bg-secondary text-secondary-foreground">
+                                    <Badge variant="outline" className={`${creditNoteStatusColor(cn.status)} rounded-full`}>
                                         {cn.status}
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex items-center justify-end gap-1">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+                                    <div className="flex items-center justify-end">
+                                        <Button variant="ghost" size={'sm'}>
                                             <Eye className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+                                        <Button variant="ghost" size={'sm'}>
                                             <Pencil className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                                            <Trash className="h-4 w-4" />
+                                        <Button variant="ghost" size={'sm'}>
+                                            <Trash className="h-4 w-4 text-destructive" />
                                         </Button>
                                     </div>
                                 </TableCell>
@@ -77,25 +128,47 @@ export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
 
             {/* Mobile Card View */}
             <div className="grid gap-4 md:hidden">
+                <div className="flex items-center justify-between">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSelectAll}
+                    >
+                        {isAllSelected ? 'Unselect All' : 'Select All'}
+                    </Button>
+                    {selectedItems.length > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                            {selectedItems.length} Items Selected
+                        </span>
+                    )}
+                </div>
                 {creditNotes.map((cn) => (
                     <Card key={cn.id} className="transition-all duration-200 hover:shadow-lg hover:border-primary/50">
                         <CardHeader className="p-4">
                             <div className="flex justify-between items-start">
-                                <div className="space-y-1">
-                                    <Badge variant="outline" className="bg-secondary text-secondary-foreground">
+
+                                <div className="flex items-center gap-2">
+                                    <Checkbox
+                                        id={`mobile-checkbox-${cn.id}`}
+                                        checked={selectedItems.includes(cn.id ?? '')}
+                                        onCheckedChange={() => handleSelectItem(cn.id ?? '')}
+                                        aria-label={`Select ${cn.cdn_number}`}
+                                        className="mt-1"
+                                    />
+                                    <CardTitle className="text-base">{cn.cdn_number}</CardTitle>
+                                    <Badge variant="outline" className={`${creditNoteStatusColor(cn.status)} rounded-full`}>
                                         {cn.status}
                                     </Badge>
-                                    <CardTitle className="text-base">{cn.cdn_number}</CardTitle>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+                                <div className="flex items-center">
+                                    <Button variant="ghost" size={'sm'}>
                                         <Eye className="h-4 w-4" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+                                    <Button variant="ghost" size={'sm'}>
                                         <Pencil className="h-4 w-4" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                                        <Trash className="h-4 w-4" />
+                                    <Button variant="ghost" size={'sm'}>
+                                        <Trash className="h-4 w-4 text-destructive" />
                                     </Button>
                                 </div>
                             </div>
@@ -124,15 +197,15 @@ export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Net Amount</p>
-                                    <p className="text-sm font-medium">{cn.net_amount}</p>
+                                    <p className="text-sm font-medium">{cn.net_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Tax Amount</p>
-                                    <p className="text-sm font-medium">{cn.tax_amount}</p>
+                                    <p className="text-sm font-medium">{cn.tax_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-sm text-muted-foreground">Amount</p>
-                                    <p className="text-sm font-medium">{cn.amount}</p>
+                                    <p className="text-sm font-medium">{cn.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
                                 </div>
                             </div>
                         </CardContent>

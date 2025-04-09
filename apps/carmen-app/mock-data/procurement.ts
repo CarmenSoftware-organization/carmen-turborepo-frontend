@@ -555,7 +555,7 @@ export const mockCreditNotes: CreditNoteDto[] = [
         net_amount: 1200,
         tax_amount: 60,
         amount: 1260,
-        status: "Pending",
+        status: "Approved",
     },
     {
         id: "CDN-002",
@@ -633,7 +633,7 @@ export const mockCreditNotes: CreditNoteDto[] = [
         net_amount: 1100,
         tax_amount: 55,
         amount: 1155,
-        status: "Pending",
+        status: "Approved",
     },
     {
         id: "CDN-008",
