@@ -1,7 +1,9 @@
+"use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FlaggedDto, PendingApprovalDto } from "@/dtos/procurement.dto";
+import { Link } from "@/lib/navigation";
 import { Eye, ThumbsUp, User } from "lucide-react";
 
 interface ApprovalCardProps {
@@ -52,9 +54,13 @@ export default function ApprovalCard({ approval, type = 'pending', onApprove }: 
                     <Button
                         size="sm"
                         variant="outline"
+                        // onClick={() => router.push(`/procurement/purchase-order/${approval.id}`)}
+                        asChild
                     >
-                        <Eye className="w-4 h-4" />
-                        Detail
+                        <Link href={`/procurement/purchase-request/${approval.id}`}>
+                            <Eye className="w-4 h-4" />
+                            Detail
+                        </Link>
                     </Button>
                     <Button
                         size="sm"
