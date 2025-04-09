@@ -220,7 +220,8 @@
     "tax_amount": "จำนวนเงินภาษี",
     "invoice_date": "วันที่อนุญาติบัญชี",
     "grn_number": "เลขที่ใบรับสินค้า",
-    "delivery_point": "จุดส่งสินค้า"
+    "delivery_point": "จุดส่งสินค้า",
+    "pr_no": "เลขที่ใบขอซื้อ"
   },
   "Product": {
     "title": "สินค้า"

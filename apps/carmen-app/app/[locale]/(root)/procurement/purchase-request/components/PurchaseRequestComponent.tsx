@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
@@ -34,6 +34,12 @@ export default function PurchaseRequestComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="purchase-request-action-buttons">
+            <Button size={'sm'} asChild>
+                <Link href="/procurement/purchase-request/new">
+                    <Plus className="h-4 w-4" />
+                    {tCommon('add')} Purchase Request
+                </Link>
+            </Button>
             <Button
                 variant="outline"
                 className="group"
@@ -50,12 +56,6 @@ export default function PurchaseRequestComponent() {
             >
                 <Printer className="h-4 w-4" />
                 {tCommon('print')}
-            </Button>
-            <Button size={'sm'} asChild>
-                <Link href="/procurement/purchase-request/new">
-                    <Plus className="h-4 w-4" />
-                    {tCommon('add')}
-                </Link>
             </Button>
         </div>
     );
@@ -84,7 +84,8 @@ export default function PurchaseRequestComponent() {
                     data-id="pr-list-sort-dropdown"
                 />
                 <Button size={'sm'}>
-                    Add Filter
+                    <Filter className="h-4 w-4" />
+                    Filter
                 </Button>
             </div>
 

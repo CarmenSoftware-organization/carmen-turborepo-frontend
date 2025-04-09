@@ -21,6 +21,7 @@ export interface RecentApprovalDto extends PendingApprovalDto {
 
 export const prFormSchema = z.object({
     id: z.string().optional(),
+    pr_no: z.string(),
     title: z.string().min(1, "Title is required"),
     status: z.string().optional(),
     date_created: z.string().optional(),
