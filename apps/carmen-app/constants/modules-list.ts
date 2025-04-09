@@ -34,13 +34,18 @@ export const moduleItems: ModuleItem[] = [
                 href: "/procurement/goods-received-note",
             },
             {
-                labelKey: "Modules.Procurement.purchaseRequestApprovals",
-                href: "/procurement/purchase-request-approval",
-            },
-            {
                 labelKey: "Modules.Procurement.creditNote",
                 href: "/procurement/credit-note",
             },
+            {
+                labelKey: "Modules.Procurement.vendorComparison",
+                href: "/procurement/vendor-comparison",
+            },
+            {
+                labelKey: "Modules.Procurement.purchaseRequestApprovals",
+                href: "/procurement/purchase-request-approval",
+            },
+
             {
                 labelKey: "Modules.Procurement.purchaseRequestTemplate",
                 href: "/procurement/purchase-request-template",

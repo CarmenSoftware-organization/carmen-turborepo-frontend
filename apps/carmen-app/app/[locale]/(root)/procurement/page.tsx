@@ -1,7 +1,7 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import { MenuCardGrid, MenuCardItem } from '@/components/ui/menu-card';
-import { ClipboardCheck, ShoppingCart, FileText, Package, UserCheck, Receipt, FileCode } from 'lucide-react';
+import { ClipboardCheck, ShoppingCart, FileText, Package, UserCheck, Receipt, FileCode, Building } from 'lucide-react';
 
 export default function ProcurementPage() {
     const t = useTranslations('Modules');
@@ -28,15 +28,21 @@ export default function ProcurementPage() {
             icon: Package
         },
         {
-            name: t('Procurement.purchaseRequestApprovals'),
-            href: '/procurement/purchase-request-approvals',
-            icon: UserCheck
-        },
-        {
             name: t('Procurement.creditNote'),
             href: '/procurement/credit-note',
             icon: Receipt
         },
+        {
+            name: t('Procurement.vendorComparison'),
+            href: '/procurement/vendor-comparison',
+            icon: Building
+        },
+        {
+            name: t('Procurement.purchaseRequestApprovals'),
+            href: '/procurement/purchase-request-approvals',
+            icon: UserCheck
+        },
+
         {
             name: t('Procurement.purchaseRequestTemplate'),
             href: '/procurement/purchase-request-template',

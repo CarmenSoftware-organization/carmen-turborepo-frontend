@@ -45,7 +45,8 @@
       "goodsReceivedNote": "ใบรับสินค้า",
       "purchaseRequestApprovals": "การอนุมัติใบขอซื้อ",
       "creditNote": "ใบลดหนี้",
-      "purchaseRequestTemplate": "แม่แบบใบขอซื้อ"
+      "purchaseRequestTemplate": "แม่แบบใบขอซื้อ",
+      "vendorComparison": "เปรียบเทียบผู้จัดจำหน่าย"
     },
     "productManagement": "การจัดการสินค้า",
     "ProductManagement": {

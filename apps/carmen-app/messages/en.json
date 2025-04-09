@@ -50,7 +50,8 @@
       "goodsReceivedNote": "Goods Received Note",
       "purchaseRequestApprovals": "Purchase Request Approvals",
       "creditNote": "Credit Note",
-      "purchaseRequestTemplate": "Purchase Request Template"
+      "purchaseRequestTemplate": "Purchase Request Template",
+      "vendorComparison": "Vendor Comparison"
     },
     "productManagement": "Product Management",
     "ProductManagement": {
