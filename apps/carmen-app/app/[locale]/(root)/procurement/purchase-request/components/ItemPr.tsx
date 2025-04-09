@@ -4,7 +4,18 @@ import { mockItemDetailPrData } from "@/mock-data/procurement";
 import { useState } from "react";
 import ItemPrDialog from "./ItemPrDialog";
 import { ItemDetailPrDto } from "@/dtos/procurement.dto";
+import { Plus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
+const prStatusColor = (status: string) => {
+    if (status === 'Approved') {
+        return 'bg-green-100 text-green-800'
+    } else if (status === 'Pending') {
+        return 'bg-yellow-100 text-yellow-800'
+    } else if (status === 'Rejected') {
+        return 'bg-red-100 text-red-800'
+    }
+}
 export default function ItemPr() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +37,10 @@ export default function ItemPr() {
     return (
         <div className="space-y-4">
             <div className="flex justify-end">
-                <Button size={'sm'} onClick={() => setIsDialogOpen(true)}>Add Item</Button>
+                <Button size={'sm'} onClick={() => setIsDialogOpen(true)}>
+                    <Plus className="h-4 w-4" />
+                    Add Item
+                </Button>
             </div>
             <Table>
                 <TableHeader>
@@ -61,7 +75,11 @@ export default function ItemPr() {
                             <TableCell>{item.base_currency}</TableCell>
                             <TableCell>{item.price}</TableCell>
                             <TableCell>{item.total_price}</TableCell>
-                            <TableCell>{item.status}</TableCell>
+                            <TableCell>
+                                <Badge variant="outline" className={`rounded-full ${prStatusColor(item.status ?? '')}`}>
+                                    {item.status}
+                                </Badge>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

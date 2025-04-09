@@ -69,15 +69,15 @@ export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
                                     aria-label="Select all purchase requests"
                                 />
                             </TableHead>
-                            <TableHead>Credit Note No.</TableHead>
-                            <TableHead>Title</TableHead>
-                            <TableHead>Date Created</TableHead>
+                            <TableHead>Reference #</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Date</TableHead>
                             <TableHead>Vendor</TableHead>
-                            <TableHead>Document No.</TableHead>
-                            <TableHead>Document Date</TableHead>
+                            <TableHead>Doc #</TableHead>
+                            <TableHead>Doc Date</TableHead>
                             <TableHead>Net Amount</TableHead>
                             <TableHead>Tax Amount</TableHead>
-                            <TableHead>Amount</TableHead>
+                            <TableHead>Total Amount</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>
