@@ -424,7 +424,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-001",
         department: "Human Resources",
-        status: "Received",
+        status: "Approved",
         date_created: "2024-03-10",
         invoice_date: "2024-03-12",
         grn_number: "HR-20240310-001",
@@ -448,7 +448,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-003",
         department: "Engineering",
-        status: "Received",
+        status: "Approved",
         date_created: "2024-03-08",
         invoice_date: "2024-03-10",
         grn_number: "ENG-20240308-003",
@@ -460,7 +460,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-004",
         department: "Marketing",
-        status: "Processing",
+        status: "Pending",
         date_created: "2024-03-20",
         invoice_date: "2024-03-22",
         grn_number: "MKT-20240320-004",
@@ -472,7 +472,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-005",
         department: "Administration",
-        status: "Received",
+        status: "Rejected",
         date_created: "2024-03-05",
         invoice_date: "2024-03-07",
         grn_number: "ADM-20240305-005",
@@ -496,7 +496,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-007",
         department: "Logistics",
-        status: "Received",
+        status: "Rejected",
         date_created: "2024-03-12",
         invoice_date: "2024-03-14",
         grn_number: "LOG-20240312-007",
@@ -508,7 +508,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-008",
         department: "Procurement",
-        status: "Processing",
+        status: "Pending",
         date_created: "2024-03-14",
         invoice_date: "2024-03-16",
         grn_number: "PRC-20240314-008",
@@ -520,7 +520,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-009",
         department: "Customer Service",
-        status: "Received",
+        status: "Approved",
         date_created: "2024-03-09",
         invoice_date: "2024-03-11",
         grn_number: "CS-20240309-009",
@@ -532,7 +532,7 @@ export const mockGoodsReceivedNotes: GoodsReceivedNoteDto[] = [
     {
         id: "GRN-010",
         department: "Sales",
-        status: "Pending",
+        status: "Rejected",
         date_created: "2024-03-22",
         invoice_date: "2024-03-24",
         grn_number: "SLS-20240322-010",

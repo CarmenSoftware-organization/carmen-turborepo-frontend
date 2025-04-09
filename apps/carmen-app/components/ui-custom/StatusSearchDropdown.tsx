@@ -53,7 +53,7 @@ export default function StatusSearchDropdown({
 					<ChevronDown className="h-4 w-4" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent>
+			<PopoverContent className="p-1">
 				<Command>
 					<CommandInput
 						placeholder={`${t('search')} ${t('status')}`}

@@ -2,16 +2,23 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
 import { mockGoodsReceivedNotes } from "@/mock-data/procurement";
+
+const grnStatusOptions = [
+    { label: 'Pending', value: 'pending' },
+    { label: 'Received', value: 'received' },
+    { label: 'Partial', value: 'partial' },
+    { label: 'Voided', value: 'voided' },
+    { label: 'Cancelled', value: 'cancelled' },
+]
 export default function GoodsReceivedNoteComponent() {
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
@@ -33,7 +40,7 @@ export default function GoodsReceivedNoteComponent() {
         <div className="action-btn-container" data-id="grn-action-buttons">
             <Button size={'sm'}>
                 <Plus className="h-4 w-4" />
-                {tCommon('add')}
+                New Goods Received Note
             </Button>
             <Button
                 variant="outline"
@@ -65,7 +72,7 @@ export default function GoodsReceivedNoteComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
+                    options={grnStatusOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}
@@ -79,6 +86,7 @@ export default function GoodsReceivedNoteComponent() {
                     data-id="grn-list-sort-dropdown"
                 />
                 <Button size={'sm'}>
+                    <Filter className="h-4 w-4" />
                     Add Filter
                 </Button>
             </div>
