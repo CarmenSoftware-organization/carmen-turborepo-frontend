@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import { ProductGetDto } from "@/dtos/product.dto";
 import ProductDetail from "../components/ProductDetail";
+import SignInDialog from "@/components/SignInDialog";
 
 export default function ProductEdit() {
     const { token, tenantId } = useAuth();
@@ -14,11 +15,16 @@ export default function ProductEdit() {
     const id = typeof params.id === 'string' ? params.id : params.id[0];
     const [product, setProduct] = useState<ProductGetDto | undefined>(undefined);
     const [loading, setLoading] = useState(true);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchProduct = async () => {
             try {
                 const data = await getProductIdService(token, tenantId, id);
+                if (data.statusCode === 401) {
+                    setLoginDialogOpen(true);
+                    return;
+                }
                 setProduct(data);
             } catch (error) {
                 console.error("Error fetching product:", error);
@@ -34,5 +40,14 @@ export default function ProductEdit() {
         return <div>Loading product information...</div>;
     }
 
-    return <ProductDetail mode={formType.EDIT} initValues={product} />;
+
+    return (
+        <>
+            <ProductDetail mode={formType.VIEW} initValues={product} />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+            />
+        </>
+    )
 }

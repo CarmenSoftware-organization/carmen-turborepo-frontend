@@ -11,7 +11,6 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import PurchaseOrderList from "./PurchaseOrderList";
 import { mockPurchaseOrders } from "@/mock-data/procurement";
-import PoStatusCard from "./PoStatusCard";
 import DialogNewPo from "./DialogNewPo";
 
 export default function PurchaseOrderComponent() {
@@ -62,14 +61,6 @@ export default function PurchaseOrderComponent() {
                     </Button>
                 </div>
             </div>
-            <div className="p-4 border rounded-md space-y-1">
-                <h2 className="text-sm font-semibold text-gray-900">About Purchase Orders</h2>
-                <p className="text-xs text-gray-500">
-                    Manage your purchase orders to vendors. Track order status, delivery dates, and payment terms for all your procurement activities.
-                </p>
-
-            </div>
-            <PoStatusCard />
             <div className="filter-container" data-id="po-list-filters">
                 <SearchInput
                     defaultValue={search}
