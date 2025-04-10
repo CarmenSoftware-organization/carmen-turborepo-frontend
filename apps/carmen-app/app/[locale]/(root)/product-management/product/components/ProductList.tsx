@@ -42,7 +42,6 @@ export default function ProductList({
     onPageChange
 }: ProductListProps) {
     const t = useTranslations('TableHeader');
-    console.log('products', products);
 
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
