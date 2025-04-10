@@ -144,8 +144,8 @@ export default function ProductList({
             <div className="grid gap-4 md:hidden">
                 {isLoading ? (
                     <div className="space-y-4">
-                        {[...Array(3)].map((_, index) => (
-                            <Card key={index} className="animate-pulse">
+                        {['skeleton-1', 'skeleton-2', 'skeleton-3'].map((id) => (
+                            <Card key={id} className="animate-pulse">
                                 <CardHeader className="h-16 bg-muted" />
                                 <CardContent className="space-y-4">
                                     <div className="h-4 bg-muted rounded w-3/4" />
