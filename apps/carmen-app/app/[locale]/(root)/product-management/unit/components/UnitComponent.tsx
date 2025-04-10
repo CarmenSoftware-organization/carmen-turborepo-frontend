@@ -11,7 +11,7 @@ import UnitList from "./UnitList";
 import UnitDialog from "./UnitDialog";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import { formType } from "@/dtos/form.dto";
-import { useUnit, useUnitForm, useUnitDelete, useUnitFilters } from "@/hooks/useUnit";
+import { useUnit } from "@/hooks/useUnit";
 import SignInDialog from "@/components/SignInDialog";
 import { useEffect, useState } from "react";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
@@ -20,24 +20,35 @@ export default function UnitComponent() {
     const tCommon = useTranslations('Common');
     const tUnit = useTranslations('Unit');
     const [signInOpen, setSignInOpen] = useState(false);
-    const { units, setUnits, isLoading, setIsLoading, isUnauthorized } = useUnit();
-    const { search, setSearch, status, setStatus, statusOpen, setStatusOpen, sort, setSort } = useUnitFilters();
-
     const {
+        // Data
+        units,
+        isLoading,
+        isUnauthorized,
+        totalPages,
+        page,
+        setPage,
+        search,
+        setSearch,
+        status,
+        setStatus,
+        statusOpen,
+        setStatusOpen,
+        sort,
+        setSort,
+        // Form
         dialogOpen,
         setDialogOpen,
-        selectedUnit: formSelectedUnit,
+        selectedUnit,
         handleAdd,
         handleEdit,
-        handleSubmit
-    } = useUnitForm(units, setUnits);
-
-    const {
+        handleSubmit,
+        // Delete
         deleteDialogOpen,
         handleDelete,
         handleConfirmDelete,
         handleCancelDelete
-    } = useUnitDelete(units, setUnits, setIsLoading);
+    } = useUnit();
 
     useEffect(() => {
         if (isUnauthorized) {
@@ -110,7 +121,7 @@ export default function UnitComponent() {
         <>
             {isUnauthorized ? (
                 <UnauthorizedMessage
-                    onRetry={() => setIsLoading(false)}
+                    onRetry={() => window.location.reload()}
                     onLogin={() => setSignInOpen(true)}
                 />
             ) : (
@@ -119,6 +130,9 @@ export default function UnitComponent() {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     isLoading={isLoading}
+                    currentPage={parseInt(page || '1')}
+                    totalPages={totalPages}
+                    onPageChange={(newPage) => setPage(newPage.toString())}
                     data-id="unit-list-template"
                 />
             )}
@@ -136,8 +150,8 @@ export default function UnitComponent() {
             <UnitDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                mode={formSelectedUnit ? formType.EDIT : formType.ADD}
-                unit={formSelectedUnit}
+                mode={selectedUnit ? formType.EDIT : formType.ADD}
+                unit={selectedUnit}
                 onSubmit={handleSubmit}
             />
             <DeleteConfirmDialog

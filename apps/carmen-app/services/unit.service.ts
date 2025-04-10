@@ -1,8 +1,33 @@
 import { UnitDto } from "@/dtos/unit.dto";
 import { backendApi } from "@/lib/backend-api";
 
-export const getAllUnits = async (token: string, tenantId: string) => {
-    const url = `${backendApi}/api/config/units`;
+export const getAllUnits = async (token: string, tenantId: string,
+    params: {
+        search?: string;
+        page?: string;
+        perPage?: string;
+        sort?: string;
+    } = {}
+) => {
+    const query = new URLSearchParams();
+
+    if (params.search) {
+        query.append('search', params.search);
+    }
+
+    if (params.page) {
+        query.append('page', params.page);
+    }
+
+    if (params.perPage) {
+        query.append('perPage', params.perPage);
+    }
+
+    if (params.sort) {
+        query.append('sort', params.sort);
+    }
+
+    const url = `${backendApi}/api/config/units?${query}`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -56,7 +81,9 @@ export const deleteUnit = async (token: string, tenantId: string, unit: UnitDto)
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
-    return data;
+    if (response.ok) {
+        return true;
+    }
+    return false;
 };
 

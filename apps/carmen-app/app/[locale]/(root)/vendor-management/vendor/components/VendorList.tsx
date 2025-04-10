@@ -13,15 +13,27 @@ import { Button } from "@/components/ui/button";
 import { Eye, Pencil, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface VendorListProps {
     readonly vendors: VendorDto[];
     readonly onEditClick?: (vendor: VendorDto) => void;
     readonly onDeleteClick?: (vendor: VendorDto) => void;
     readonly isLoading?: boolean;
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly onPageChange: (page: number) => void;
 }
 
-export default function VendorList({ vendors, onEditClick, onDeleteClick, isLoading = false }: VendorListProps) {
+export default function VendorList({
+    vendors,
+    onEditClick,
+    onDeleteClick,
+    isLoading = false,
+    currentPage,
+    totalPages,
+    onPageChange
+}: VendorListProps) {
     const handleEditClick = (vendor: VendorDto) => {
         if (onEditClick) {
             onEditClick(vendor);
@@ -166,6 +178,14 @@ export default function VendorList({ vendors, onEditClick, onDeleteClick, isLoad
                     ))
                 )}
             </div>
+
+            {totalPages > 1 && (
+                <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                />
+            )}
         </div>
     )
 } 

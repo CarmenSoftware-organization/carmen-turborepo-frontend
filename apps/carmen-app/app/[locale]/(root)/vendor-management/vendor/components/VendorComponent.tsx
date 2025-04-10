@@ -29,6 +29,7 @@ export default function VendorComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [page, setPage] = useURL('page');
     const [vendors, setVendors] = useState<VendorDto[]>([]);
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -39,29 +40,44 @@ export default function VendorComponent() {
     const [isDeleting, setIsDeleting] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isUnauthorized, setIsUnauthorized] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
 
     const fetchVendors = useCallback(async () => {
         setIsLoading(true);
         try {
-            const data = await getAllVendorService(token, tenantId);
+            const data = await getAllVendorService(token, tenantId, {
+                search,
+                sort,
+                page: search ? undefined : page
+            });
             if (data.statusCode === 401) {
                 setLoginDialogOpen(true);
                 setIsUnauthorized(true);
                 return;
             }
-            setVendors(data);
+            setVendors(data.data);
+            setTotalPages(data.paginate.pages);
         } catch (error) {
             console.error("Error fetching vendors:", error);
             toastError({ message: "Failed to fetch vendors" });
         } finally {
             setIsLoading(false);
         }
-    }, [token, tenantId, setLoginDialogOpen]);
+    }, [token, tenantId, search, sort, page]);
 
     useEffect(() => {
         fetchVendors();
     }, [fetchVendors]);
 
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage.toString());
+    }, [setPage]);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -183,6 +199,9 @@ export default function VendorComponent() {
                     onEditClick={handleEditClick}
                     onDeleteClick={handleDeleteClick}
                     isLoading={isLoading}
+                    currentPage={parseInt(page || '1')}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                 />
             )}
         </>

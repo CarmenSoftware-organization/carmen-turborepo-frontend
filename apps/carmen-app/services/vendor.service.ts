@@ -2,8 +2,33 @@ import { VendorDto, VendorFormDto } from "@/dtos/vendor-management";
 import { backendApi } from "@/lib/backend-api";
 
 
-export const getAllVendorService = async (token: string, tenantId: string) => {
-    const url = `${backendApi}/api/config/vendors`;
+export const getAllVendorService = async (token: string, tenantId: string,
+    params: {
+        search?: string;
+        page?: string;
+        perPage?: string;
+        sort?: string;
+    } = {}
+) => {
+    const query = new URLSearchParams();
+
+    if (params.search) {
+        query.append('search', params.search);
+    }
+
+    if (params.page) {
+        query.append('page', params.page);
+    }
+
+    if (params.perPage) {
+        query.append('perPage', params.perPage);
+    }
+
+    if (params.sort) {
+        query.append('sort', params.sort);
+    }
+
+    const url = `${backendApi}/api/config/vendors?${query}`;
     const options = {
         method: 'GET',
         headers: {

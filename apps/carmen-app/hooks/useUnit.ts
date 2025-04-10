@@ -11,18 +11,38 @@ export const useUnit = () => {
     const [units, setUnits] = useState<UnitDto[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isUnauthorized, setIsUnauthorized] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+    const [page, setPage] = useURL('page');
+    const [search, setSearch] = useURL('search');
+    const [status, setStatus] = useURL('status');
+    const [statusOpen, setStatusOpen] = useState(false);
+    const [sort, setSort] = useURL('sort');
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>();
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
 
     useEffect(() => {
         const fetchUnits = async () => {
             if (!token) return;
             try {
                 setIsLoading(true);
-                const data = await getAllUnits(token, tenantId);
+                const data = await getAllUnits(token, tenantId, {
+                    search,
+                    page,
+                    sort
+                });
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     return;
                 }
-                setUnits(data);
+                setUnits(data.data);
+                setTotalPages(data.paginate.pages);
             } catch (error) {
                 console.error('Error fetching units:', error);
                 toastError({ message: 'Error fetching units' });
@@ -32,15 +52,7 @@ export const useUnit = () => {
         };
 
         fetchUnits();
-    }, [token, tenantId]);
-
-    return { units, setUnits, isLoading, setIsLoading, isUnauthorized };
-};
-
-export const useUnitForm = (units: UnitDto[], setUnits: React.Dispatch<React.SetStateAction<UnitDto[]>>) => {
-    const { token, tenantId } = useAuth();
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>();
+    }, [token, tenantId, page, search, sort]);
 
     const handleAdd = () => {
         setSelectedUnit(undefined);
@@ -93,21 +105,6 @@ export const useUnitForm = (units: UnitDto[], setUnits: React.Dispatch<React.Set
         }
     };
 
-    return {
-        dialogOpen,
-        setDialogOpen,
-        selectedUnit,
-        handleAdd,
-        handleEdit,
-        handleSubmit
-    };
-};
-
-export const useUnitDelete = (units: UnitDto[], setUnits: React.Dispatch<React.SetStateAction<UnitDto[]>>, setIsLoading: React.Dispatch<React.SetStateAction<boolean>>) => {
-    const { token, tenantId } = useAuth();
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>();
-
     const handleDelete = (unit: UnitDto) => {
         setSelectedUnit(unit);
         setDeleteDialogOpen(true);
@@ -141,20 +138,15 @@ export const useUnitDelete = (units: UnitDto[], setUnits: React.Dispatch<React.S
     };
 
     return {
-        deleteDialogOpen,
-        handleDelete,
-        handleConfirmDelete,
-        handleCancelDelete
-    };
-};
-
-export const useUnitFilters = () => {
-    const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [sort, setSort] = useURL('sort');
-
-    return {
+        // Data
+        units,
+        setUnits,
+        isLoading,
+        setIsLoading,
+        isUnauthorized,
+        totalPages,
+        page,
+        setPage,
         search,
         setSearch,
         status,
@@ -162,6 +154,18 @@ export const useUnitFilters = () => {
         statusOpen,
         setStatusOpen,
         sort,
-        setSort
+        setSort,
+        // Form
+        dialogOpen,
+        setDialogOpen,
+        selectedUnit,
+        handleAdd,
+        handleEdit,
+        handleSubmit,
+        // Delete
+        deleteDialogOpen,
+        handleDelete,
+        handleConfirmDelete,
+        handleCancelDelete
     };
 };

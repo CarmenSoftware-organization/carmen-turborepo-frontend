@@ -16,15 +16,27 @@ import { Pencil, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface UnitListProps {
     readonly units: UnitDto[];
     readonly onEdit: (unit: UnitDto) => void;
     readonly onDelete: (unit: UnitDto) => void;
     readonly isLoading: boolean;
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly onPageChange: (page: number) => void;
 }
 
-export default function UnitList({ units, onEdit, onDelete, isLoading = false }: UnitListProps) {
+export default function UnitList({
+    units,
+    onEdit,
+    onDelete,
+    isLoading = false,
+    currentPage,
+    totalPages,
+    onPageChange
+}: UnitListProps) {
     const t = useTranslations('TableHeader');
 
     const handleEdit = (unit: UnitDto) => {
@@ -98,6 +110,14 @@ export default function UnitList({ units, onEdit, onDelete, isLoading = false }:
                     </Table>
                 </ScrollArea>
             </div>
+
+            {totalPages > 1 && (
+                <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                />
+            )}
         </div>
     );
 }
