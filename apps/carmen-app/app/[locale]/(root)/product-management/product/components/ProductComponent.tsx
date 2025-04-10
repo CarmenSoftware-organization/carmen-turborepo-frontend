@@ -16,7 +16,6 @@ import { getProductService } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
 import SignInDialog from "@/components/SignInDialog";
 
-
 export function ProductComponent() {
     const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
@@ -26,23 +25,40 @@ export function ProductComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [page, setPage] = useURL('page');
     const [products, setProducts] = useState<ProductGetDto[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
 
     useEffect(() => {
         const fetchProducts = async () => {
             setIsLoading(true);
-            const data = await getProductService(token, tenantId);
+            const data = await getProductService(token, tenantId, {
+                search,
+                sort,
+                page: search ? undefined : page
+            });
             if (data.statusCode === 401) {
                 setLoginDialogOpen(true);
                 return;
             }
-            setProducts(data);
+            setProducts(data.data);
+            setTotalPages(data.paginate.pages);
             setIsLoading(false);
         }
         fetchProducts();
-    }, [token, tenantId]);
+    }, [token, tenantId, search, sort, page]);
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage.toString());
+    };
 
     const sortFields = [
         { key: 'name', label: tHeader('name') },
@@ -108,12 +124,16 @@ export function ProductComponent() {
         </div>
     );
 
-    const content = isLoading ? <div>Loading...</div> : <ProductList products={products} data-id="product-list-template" />
-
-
-    // const content = (
-    //     <ProductList products={mockProducts} data-id="product-list-template" />
-    // )
+    const content = (
+        <ProductList
+            products={products}
+            isLoading={isLoading}
+            currentPage={parseInt(page || '1')}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            data-id="product-list-template"
+        />
+    );
 
     return (
         <div>
