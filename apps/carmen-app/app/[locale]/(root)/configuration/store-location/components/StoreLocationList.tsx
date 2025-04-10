@@ -13,22 +13,28 @@ import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface StoreLocationListProps {
-    readonly isLoading?: boolean;
+    readonly isLoading: boolean;
     readonly storeLocations: StoreLocationDto[];
     readonly onEdit: (storeLocation: StoreLocationDto) => void;
     readonly onStatusChange: (storeLocation: StoreLocationDto) => void;
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly onPageChange: (page: number) => void;
 }
 
 export default function StoreLocationList({
-    isLoading = false,
+    isLoading,
     storeLocations,
     onEdit,
-    onStatusChange
+    onStatusChange,
+    currentPage,
+    totalPages,
+    onPageChange
 }: StoreLocationListProps) {
     const t = useTranslations('TableHeader');
-    console.log('storeLocations', storeLocations);
 
     return (
         <div className="space-y-4">
@@ -95,6 +101,11 @@ export default function StoreLocationList({
                     )}
                 </Table>
             </ScrollArea>
+            <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+            />
         </div>
     );
 }

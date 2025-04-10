@@ -12,6 +12,9 @@ export const getCurrenciesService = async (
 ) => {
 
     const query = new URLSearchParams();
+
+    console.log('params', params);
+
     if (params.search) {
         query.append('search', params.search);
     }

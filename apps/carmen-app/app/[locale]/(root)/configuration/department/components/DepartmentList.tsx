@@ -15,24 +15,31 @@ import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface DepartmentListProps {
     readonly departments: DepartmentDto[];
     readonly onEdit: (department: DepartmentDto) => void;
     readonly onToggleStatus: (department: DepartmentDto) => void;
     readonly isLoading: boolean;
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly onPageChange: (page: number) => void;
 }
 
 export default function DepartmentList({
     departments,
     onEdit,
     onToggleStatus,
-    isLoading
+    isLoading,
+    currentPage,
+    totalPages,
+    onPageChange
 }: DepartmentListProps) {
     const t = useTranslations('TableHeader');
     return (
-        <div className="relative">
-            {isLoading ? (
+        <div className="space-y-4">
+            <ScrollArea className="h-[calc(102vh-250px)] w-full">
                 <Table>
                     <TableHeader className="sticky top-0">
                         <TableRow>
@@ -42,19 +49,9 @@ export default function DepartmentList({
                             <TableHead className="w-20 text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBodySkeleton columns={3} />
-                </Table>
-            ) : (
-                <ScrollArea className="h-[calc(102vh-250px)] w-full">
-                    <Table>
-                        <TableHeader className="sticky top-0">
-                            <TableRow>
-                                <TableHead>#</TableHead>
-                                <TableHead>{t('name')}</TableHead>
-                                <TableHead>{t('status')}</TableHead>
-                                <TableHead className="w-20 text-right">{t('action')}</TableHead>
-                            </TableRow>
-                        </TableHeader>
+                    {isLoading ? (
+                        <TableBodySkeleton columns={4} />
+                    ) : (
                         <TableBody>
                             {departments.map((department, index) => (
                                 <TableRow
@@ -64,7 +61,7 @@ export default function DepartmentList({
                                     <TableCell>
                                         {department.name}
                                     </TableCell>
-                                    <TableCell >
+                                    <TableCell>
                                         <Badge variant={department.is_active ? "default" : "destructive"}>
                                             {department.is_active ? "Active" : "Inactive"}
                                         </Badge>
@@ -93,9 +90,14 @@ export default function DepartmentList({
                                 </TableRow>
                             ))}
                         </TableBody>
-                    </Table>
-                </ScrollArea>
-            )}
+                    )}
+                </Table>
+            </ScrollArea>
+            <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+            />
         </div>
-    )
+    );
 } 

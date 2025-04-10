@@ -35,8 +35,8 @@ export default function CurrencyComponent() {
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
     const [totalPages, setTotalPages] = useState(1);
-    const [currentPage, setCurrentPage] = useState(1);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [page, setPage] = useURL("page");
 
     useEffect(() => {
         const fetchCurrencies = async () => {
@@ -44,15 +44,16 @@ export default function CurrencyComponent() {
             try {
                 setIsLoading(true);
                 const data = await getCurrenciesService(token, tenantId, {
-                    search
+                    search,
+                    page
                 });
+                console.log('cm data', data);
                 if (data.statusCode === 401) {
                     setLoginDialogOpen(true);
                     return;
                 }
                 setCurrencies(data.data);
                 setTotalPages(data.paginate.pages);
-                setCurrentPage(data.paginate.page);
             } catch (error) {
                 console.error('Error fetching currencies:', error);
                 toastError({ message: 'Error fetching currencies' });
@@ -61,7 +62,13 @@ export default function CurrencyComponent() {
             }
         };
         fetchCurrencies();
-    }, [search, token, currentPage, tenantId]);
+    }, [search, token, page, tenantId]);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -173,7 +180,7 @@ export default function CurrencyComponent() {
     };
 
     const handlePageChange = (newPage: number) => {
-        setCurrentPage(newPage);
+        setPage(newPage.toString());
     };
 
     const title = tCurrency('title');
@@ -237,7 +244,7 @@ export default function CurrencyComponent() {
             currencies={currencies}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
-            currentPage={currentPage}
+            currentPage={parseInt(page || '1')}
             totalPages={totalPages}
             onPageChange={handlePageChange}
         />

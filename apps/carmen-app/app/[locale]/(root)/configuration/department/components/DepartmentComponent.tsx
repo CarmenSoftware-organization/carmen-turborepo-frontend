@@ -1,6 +1,6 @@
 "use client";
 import { useURL } from "@/hooks/useURL";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
@@ -34,18 +34,31 @@ export default function DepartmentComponent() {
     const [statusDialogOpen, setStatusDialogOpen] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState<DepartmentDto | undefined>();
+    const [page, setPage] = useURL('page');
+    const [totalPages, setTotalPages] = useState(1);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
 
     useEffect(() => {
         const fetchDepartments = async () => {
             if (!token) return;
             try {
                 setIsLoading(true);
-                const data = await getAllDepartments(token, tenantId);
+                const data = await getAllDepartments(token, tenantId, {
+                    search,
+                    sort,
+                    page
+                });
                 if (data.statusCode === 401) {
                     setLoginDialogOpen(true);
                     return;
                 }
-                setDepartments(data);
+                setDepartments(data.data);
+                setTotalPages(data.paginate.pages);
             } catch (error) {
                 console.error('Error fetching departments:', error);
                 toastError({ message: 'Error fetching departments' });
@@ -54,7 +67,11 @@ export default function DepartmentComponent() {
             }
         };
         fetchDepartments();
-    }, [tenantId, token]);
+    }, [search, sort, tenantId, token, page]);
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage.toString());
+    }, [setPage]);
 
     const sortFields = [
         { key: 'name', label: tDepartment('department_name') },
@@ -197,6 +214,9 @@ export default function DepartmentComponent() {
             departments={departments}
             onEdit={handleEdit}
             onToggleStatus={handleStatusChange}
+            currentPage={parseInt(page || '1')}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
         />
     )
 

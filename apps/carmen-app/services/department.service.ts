@@ -1,8 +1,33 @@
 import { backendApi } from "@/lib/backend-api";
 import { DepartmentDto } from "@/dtos/config.dto";
 
-export const getAllDepartments = async (token: string, tenantId: string) => {
-    const url = `${backendApi}/api/config/departments`;
+export const getAllDepartments = async (token: string, tenantId: string,
+    params: {
+        search?: string;
+        page?: string;
+        perPage?: string;
+        sort?: string;
+    } = {}
+) => {
+    const query = new URLSearchParams();
+
+    if (params.search) {
+        query.append('search', params.search);
+    }
+
+    if (params.page) {
+        query.append('page', params.page);
+    }
+
+    if (params.perPage) {
+        query.append('perPage', params.perPage);
+    }
+
+    if (params.sort) {
+        query.append('sort', params.sort);
+    }
+
+    const url = `${backendApi}/api/config/departments?${query}`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {

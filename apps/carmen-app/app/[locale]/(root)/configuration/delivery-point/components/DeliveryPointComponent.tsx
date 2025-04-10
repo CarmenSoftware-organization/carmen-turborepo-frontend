@@ -32,28 +32,35 @@ export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
     const tDeliveryPoint = useTranslations('DeliveryPoint');
-    const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
-    const [sort, setSort] = useURL('sort');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [deliveryPointToToggle, setDeliveryPointToToggle] = useState<DeliveryPointDto | undefined>();
+    const [status, setStatus] = useURL('status');
 
     const {
         deliveryPoints,
         isPending,
         isUnauthorized,
+        totalPages,
+        currentPage,
+        search,
+        setSearch,
+        sort,
+        setSort,
         fetchDeliveryPoints,
         handleToggleStatus,
-        handleSubmit
+        handleSubmit,
+        handlePageChange
     } = useDeliveryPoint();
 
     const sortFields = useMemo(() => [
         { key: 'name', label: tHeader('name') },
+        { key: 'code', label: tHeader('code') },
+        { key: 'is_active', label: tHeader('status') }
     ], [tHeader]);
 
     const title = useMemo(() => tDeliveryPoint('title'), [tDeliveryPoint]);
@@ -166,10 +173,13 @@ export function DeliveryPointComponent() {
                     onEdit={handleEdit}
                     onToggleStatus={handleConfirmToggleStatus}
                     isLoading={isPending}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                 />
             )}
         </>
-    ), [deliveryPoints, handleEdit, handleConfirmToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, handleOpenLoginDialog]);
+    ), [deliveryPoints, handleEdit, handleConfirmToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, handleOpenLoginDialog, currentPage, totalPages, handlePageChange]);
 
     return (
         <>

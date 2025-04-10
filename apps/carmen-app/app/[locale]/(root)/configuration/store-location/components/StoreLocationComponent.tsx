@@ -103,6 +103,7 @@ export default function StoreLocationComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [page, setPage] = useURL('page');
     const [storeLocations, setStoreLocations] = useState<StoreLocationDto[]>([]);
     const [isPending, startTransition] = useTransition();
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -111,6 +112,7 @@ export default function StoreLocationComponent() {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [statusDialogOpen, setStatusDialogOpen] = useState(false);
     const [isUnauthorized, setIsUnauthorized] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
 
     const fetchStoreLocations = useCallback(() => {
         if (!token || !tenantId) return;
@@ -118,13 +120,18 @@ export default function StoreLocationComponent() {
         const fetchData = async () => {
             try {
                 setIsUnauthorized(false);
-                const data = await getAllStoreLocations(token, tenantId);
+                const data = await getAllStoreLocations(token, tenantId, {
+                    search,
+                    sort,
+                    page
+                });
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     setLoginDialogOpen(true);
                     return;
                 }
-                setStoreLocations(data);
+                setStoreLocations(data.data);
+                setTotalPages(data.paginate.pages);
             } catch (error) {
                 console.error('Error fetching store locations:', error);
                 toastError({ message: 'Error fetching store locations' });
@@ -132,7 +139,13 @@ export default function StoreLocationComponent() {
         };
 
         startTransition(fetchData);
-    }, [token, tenantId]);
+    }, [token, tenantId, search, sort, page]);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
 
     const handleSubmitAdd = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
         const newStoreLocation = await handleAddStoreLocation(token, tenantId, data);
@@ -174,6 +187,10 @@ export default function StoreLocationComponent() {
     useEffect(() => {
         fetchStoreLocations();
     }, [fetchStoreLocations]);
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage.toString());
+    }, [setPage]);
 
     const sortFields = [
         { key: 'name', label: tHeader('name') },
@@ -281,6 +298,9 @@ export default function StoreLocationComponent() {
                     onEdit={handleEdit}
                     onStatusChange={handleStatusChange}
                     isLoading={isPending}
+                    currentPage={parseInt(page || '1')}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
                 />
             )}
         </>

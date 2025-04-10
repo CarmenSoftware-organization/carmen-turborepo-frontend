@@ -6,14 +6,22 @@ import { formType } from "@/dtos/form.dto";
 import { createDeliveryPoint, getAllDeliveryPoints, updateDeliveryPoint } from "@/services/dp.service";
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useURL } from "./useURL";
 
 interface UseDeliveryPointReturn {
     deliveryPoints: DeliveryPointDto[];
     isPending: boolean;
     isUnauthorized: boolean;
+    totalPages: number;
+    currentPage: number;
+    search: string;
+    setSearch: (value: string) => void;
+    sort: string;
+    setSort: (value: string) => void;
     fetchDeliveryPoints: () => void;
     handleToggleStatus: (deliveryPoint: DeliveryPointDto) => void;
     handleSubmit: (data: DeliveryPointDto, mode: formType, selectedDeliveryPoint?: DeliveryPointDto) => void;
+    handlePageChange: (page: number) => void;
 }
 
 export const useDeliveryPoint = (): UseDeliveryPointReturn => {
@@ -21,6 +29,10 @@ export const useDeliveryPoint = (): UseDeliveryPointReturn => {
     const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPointDto[]>([]);
     const [isPending, startTransition] = useTransition();
     const [isUnauthorized, setIsUnauthorized] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+    const [search, setSearch] = useURL('search');
+    const [sort, setSort] = useURL('sort');
+    const [page, setPage] = useURL('page');
 
     const fetchDeliveryPoints = useCallback(() => {
         if (!token) return;
@@ -28,12 +40,16 @@ export const useDeliveryPoint = (): UseDeliveryPointReturn => {
         const fetchData = async () => {
             try {
                 setIsUnauthorized(false);
-                const data = await getAllDeliveryPoints(token, tenantId);
+                const data = await getAllDeliveryPoints(token, tenantId, {
+                    search,
+                    page,
+                });
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     return;
                 }
-                setDeliveryPoints(data);
+                setDeliveryPoints(data.data);
+                setTotalPages(data.paginate.pages);
             } catch (error) {
                 console.error('Error fetching delivery points:', error);
                 toastError({ message: 'Error fetching delivery points' });
@@ -41,7 +57,13 @@ export const useDeliveryPoint = (): UseDeliveryPointReturn => {
         };
 
         startTransition(fetchData);
-    }, [tenantId, token]);
+    }, [tenantId, token, search, page]);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
 
     useEffect(() => {
         fetchDeliveryPoints();
@@ -124,12 +146,23 @@ export const useDeliveryPoint = (): UseDeliveryPointReturn => {
         }
     }, [token, tenantId, deliveryPoints]);
 
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage.toString());
+    }, [setPage]);
+
     return {
         deliveryPoints,
         isPending,
         isUnauthorized,
+        totalPages,
+        currentPage: parseInt(page || '1'),
+        search,
+        setSearch,
+        sort,
+        setSort,
         fetchDeliveryPoints,
         handleToggleStatus,
-        handleSubmit
+        handleSubmit,
+        handlePageChange
     };
 }; 

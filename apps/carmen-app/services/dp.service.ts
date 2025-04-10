@@ -1,8 +1,25 @@
 import { backendApi } from "@/lib/backend-api";
 import { DeliveryPointDto } from "@/dtos/config.dto";
 
-export const getAllDeliveryPoints = async (token: string, tenantId: string) => {
-    const url = `${backendApi}/api/config/delivery-point`;
+export const getAllDeliveryPoints = async (token: string, tenantId: string, params: {
+    search?: string;
+    page?: string;
+    perPage?: string;
+} = {}) => {
+    const query = new URLSearchParams();
+
+    if (params.search) {
+        query.append('search', params.search);
+    }
+
+    if (params.page) {
+        query.append('page', params.page);
+    }
+
+    if (params.perPage) {
+        query.append('perPage', params.perPage);
+    }
+    const url = `${backendApi}/api/config/delivery-point?${query}`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {

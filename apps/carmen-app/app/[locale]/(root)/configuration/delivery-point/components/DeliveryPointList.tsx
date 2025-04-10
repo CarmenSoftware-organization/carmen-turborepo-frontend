@@ -15,19 +15,26 @@ import { useTranslations } from "next-intl";
 import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface DeliveryPointListProps {
-    readonly isLoading?: boolean;
     readonly deliveryPoints: DeliveryPointDto[];
     readonly onEdit: (deliveryPoint: DeliveryPointDto) => void;
     readonly onToggleStatus: (deliveryPoint: DeliveryPointDto) => void;
+    readonly isLoading: boolean;
+    readonly currentPage: number;
+    readonly totalPages: number;
+    readonly onPageChange: (page: number) => void;
 }
 
 export default function DeliveryPointList({
-    isLoading,
     deliveryPoints,
     onEdit,
-    onToggleStatus
+    onToggleStatus,
+    isLoading,
+    currentPage,
+    totalPages,
+    onPageChange
 }: DeliveryPointListProps) {
     const t = useTranslations('TableHeader');
     return (
@@ -87,6 +94,11 @@ export default function DeliveryPointList({
                     </Table>
                 </ScrollArea>
             </div>
+            <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={onPageChange}
+            />
         </div>
     )
 }
