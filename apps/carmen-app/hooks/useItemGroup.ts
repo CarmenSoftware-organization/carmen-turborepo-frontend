@@ -23,7 +23,7 @@ export const useItemGroup = () => {
                     setIsUnauthorized(true);
                     return;
                 }
-                setItemGroups(data);
+                setItemGroups(data.data);
             } catch (error) {
                 console.error('Error fetching item groups:', error);
                 toastError({ message: 'Error fetching item groups' });

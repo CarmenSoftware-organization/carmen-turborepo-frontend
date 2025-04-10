@@ -24,7 +24,7 @@ export const useCategory = () => {
                     setIsUnauthorized(true);
                     return;
                 }
-                setCategories(data);
+                setCategories(data.data);
             } catch (error) {
                 console.error('Error fetching categories:', error);
                 toastError({ message: 'Error fetching categories' });
@@ -33,6 +33,7 @@ export const useCategory = () => {
 
         startTransition(fetchData);
     }, [token, tenantId]);
+
 
     useEffect(() => {
         fetchCategories();

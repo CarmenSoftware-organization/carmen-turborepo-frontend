@@ -24,7 +24,7 @@ export const useSubCategory = () => {
                     setIsUnauthorized(true);
                     return;
                 }
-                setSubCategories(data);
+                setSubCategories(data.data);
             } catch (error) {
                 console.error('Error fetching sub categories:', error);
                 toastError({ message: 'Error fetching sub categories' });

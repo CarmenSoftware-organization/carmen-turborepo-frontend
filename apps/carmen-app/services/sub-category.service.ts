@@ -2,7 +2,7 @@ import { SubCategoryDto } from "@/dtos/category.dto";
 import { backendApi } from "@/lib/backend-api";
 
 export const getSubCategoryService = async (token: string, tenantId: string) => {
-    const response = await fetch(`${backendApi}/api/config/product-sub-category`, {
+    const response = await fetch(`${backendApi}/api/config/product/sub-category`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -16,7 +16,7 @@ export const getSubCategoryService = async (token: string, tenantId: string) => 
 
 export const createSubCategoryService = async (token: string, tenantId: string, data: SubCategoryDto) => {
     console.log('service create sub category', data);
-    const response = await fetch(`${backendApi}/api/config/product-sub-category`, {
+    const response = await fetch(`${backendApi}/api/config/product/sub-category`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -30,7 +30,7 @@ export const createSubCategoryService = async (token: string, tenantId: string, 
 }
 
 export const updateSubCategoryService = async (token: string, tenantId: string, data: SubCategoryDto) => {
-    const response = await fetch(`${backendApi}/api/config/product-sub-category/${data.id}`, {
+    const response = await fetch(`${backendApi}/api/config/product/sub-category/${data.id}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -44,7 +44,7 @@ export const updateSubCategoryService = async (token: string, tenantId: string, 
 }
 
 export const deleteSubCategoryService = async (token: string, tenantId: string, id: string) => {
-    const response = await fetch(`${backendApi}/api/config/product-sub-category/${id}`, {
+    const response = await fetch(`${backendApi}/api/config/product/sub-category/${id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
