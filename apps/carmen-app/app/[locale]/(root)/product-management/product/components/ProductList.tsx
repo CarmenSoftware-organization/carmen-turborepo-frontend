@@ -83,6 +83,9 @@ export default function ProductList({
                             </TableHead>
                             <TableHead>{t('code')}</TableHead>
                             <TableHead>{t('name')}</TableHead>
+                            <TableHead>Category</TableHead>
+                            <TableHead>Sub Category</TableHead>
+                            <TableHead>Item Group</TableHead>
                             <TableHead>{t('status')}</TableHead>
                             <TableHead className="w-20 text-right">{t('action')}</TableHead>
                         </TableRow>
@@ -112,6 +115,9 @@ export default function ProductList({
                                             </span>
                                         </div>
                                     </TableCell>
+                                    <TableCell>{pd.product_category.name}</TableCell>
+                                    <TableCell>{pd.product_sub_category.name}</TableCell>
+                                    <TableCell>{pd.product_item_group.name}</TableCell>
                                     <TableCell>
                                         <Badge variant={pd.product_status_type === "active" ? "default" : "destructive"}>
                                             {pd.product_status_type === "active" ? "Active" : "Inactive"}

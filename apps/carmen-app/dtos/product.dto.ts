@@ -103,6 +103,20 @@ export const ProductSchema = BaseProductSchema.extend({
             is_default: z.boolean(),
         })
     ).optional(),
+    product_category: z.object({
+        id: z.string().uuid(),
+        name: z.string(),
+    }),
+    product_sub_category: z.object({
+        id: z.string().uuid(),
+        name: z.string(),
+        product_category_id: z.string().uuid(),
+    }),
+    product_item_group: z.object({
+        id: z.string().uuid(),
+        name: z.string(),
+        product_sub_category_id: z.string().uuid(),
+    }),
 });
 
 export type ProductGetDto = z.infer<typeof ProductSchema>;
