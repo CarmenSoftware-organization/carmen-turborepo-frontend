@@ -16,7 +16,7 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --primary: 225 92% 39%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -54,7 +54,7 @@
     --popover: 240 5% 12%; /* Slightly Lighter than Background */
     --popover-foreground: 0 0% 95%;
 
-    --primary: 220 10% 15%; /* Modern Dark Blue-Gray */
+    --primary: 225 92% 39%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 240 3% 16%; /* Gunmetal Dark Gray */
