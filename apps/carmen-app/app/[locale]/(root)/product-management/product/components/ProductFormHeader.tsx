@@ -1,4 +1,4 @@
-import { Control } from "react-hook-form";
+import { Control, useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { formType } from "@/dtos/form.dto";
@@ -6,24 +6,32 @@ import { ProductFormValues } from "./ProductDetail";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useItemGroup } from "@/hooks/useItemGroup";
 import { Textarea } from "@/components/ui/textarea";
+import { useUnit } from "@/hooks/useUnit";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ProductFormFieldsProps {
     control: Control<ProductFormValues>;
     currentMode: formType;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    initValues?: any;
 }
 
-export const ProductFormHeader = ({ control, currentMode }: ProductFormFieldsProps) => {
+export const ProductFormHeader = ({ control, currentMode, initValues }: ProductFormFieldsProps) => {
     const { itemGroups } = useItemGroup();
+    const { units } = useUnit();
+    const form = useFormContext();
+
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <FormField
                 control={control}
                 name="name"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>ชื่อผลิตภัณฑ์</FormLabel>
+                        <FormLabel>Product Name</FormLabel>
                         <FormControl>
-                            <Input placeholder="ระบุชื่อผลิตภัณฑ์" {...field} disabled={currentMode === formType.VIEW} />
+                            <Input placeholder="Enter Product Name" {...field} disabled={currentMode === formType.VIEW} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -35,9 +43,9 @@ export const ProductFormHeader = ({ control, currentMode }: ProductFormFieldsPro
                 name="local_name"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>ชื่อภาษาไทย</FormLabel>
+                        <FormLabel>Local Name</FormLabel>
                         <FormControl>
-                            <Input placeholder="ระบุชื่อภาษาไทย" {...field} disabled={currentMode === formType.VIEW} />
+                            <Input placeholder="Enter Local Name" {...field} disabled={currentMode === formType.VIEW} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -46,73 +54,42 @@ export const ProductFormHeader = ({ control, currentMode }: ProductFormFieldsPro
 
             <FormField
                 control={control}
-                name="product_category"
+                name="code"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>หมวดผลิตภัณฑ์</FormLabel>
+                        <FormLabel>Product Code</FormLabel>
                         <FormControl>
-                            <Select
-                                disabled
-                                value={field.value?.id || "1"}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="เลือกหมวดผลิตภัณฑ์">
-                                            {field.value?.name || "หมวด 1"}
-                                        </SelectValue>
-                                    </SelectTrigger>
-                                </FormControl>
-                            </Select>
+                            <Input placeholder="Enter Product Code" {...field} disabled={currentMode === formType.VIEW} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
                 )}
             />
 
-            <FormField
-                control={control}
-                name="product_sub_category"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>หมวดย่อยผลิตภัณฑ์</FormLabel>
-                        <FormControl>
-                            <Select
-                                disabled
-                                value={field.value?.id || "1"}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="เลือกหมวดย่อยผลิตภัณฑ์">
-                                            {field.value?.name || "หมวดย่อย 1"}
-                                        </SelectValue>
-                                    </SelectTrigger>
-                                </FormControl>
-                            </Select>
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            />
+            <div className="space-y-2">
+                <Label>Category</Label>
+                <Input placeholder="Select Category" defaultValue={initValues?.product_category?.name ?? ''} disabled />
+            </div>
+
+            <div className="space-y-2">
+                <Label>Sub Category</Label>
+                <Input placeholder="Select Sub Category" defaultValue={initValues?.product_sub_category?.name ?? ''} disabled />
+            </div>
 
             <FormField
                 control={control}
-                name="product_item_group"
+                name="product_info.product_item_group_id"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>กลุ่มผลิตภัณฑ์</FormLabel>
+                        <FormLabel>Item Group</FormLabel>
                         <Select
-                            onValueChange={(value) => {
-                                const selectedOption = itemGroups.find(itemGroup => itemGroup.id === value);
-                                field.onChange(selectedOption);
-                            }}
-                            value={field.value?.id || itemGroups[0]?.id}
+                            onValueChange={field.onChange}
+                            value={field.value}
                             disabled={currentMode === formType.VIEW}
                         >
                             <FormControl>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="เลือกกลุ่มผลิตภัณฑ์">
-                                        {field.value?.name}
-                                    </SelectValue>
+                                    <SelectValue placeholder="Select Product Item Group" />
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
@@ -130,24 +107,54 @@ export const ProductFormHeader = ({ control, currentMode }: ProductFormFieldsPro
 
             <FormField
                 control={control}
-                name="inventory_unit"
+                name="inventory_unit_id"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>หน่วยนับสินค้า</FormLabel>
+                        <FormLabel>Unit</FormLabel>
                         <FormControl>
                             <Select
-                                value={field.value?.id || "1"}
+                                onValueChange={(value) => {
+                                    const selectedUnit = units.find(unit => unit.id === value);
+                                    field.onChange(value);
+                                    form.setValue('inventory_unit_name', selectedUnit?.name ?? '');
+                                }}
+                                value={field.value}
                                 disabled={currentMode === formType.VIEW}
                             >
                                 <FormControl>
                                     <SelectTrigger>
-                                        <SelectValue placeholder="เลือกหน่วยนับสินค้า">
-                                            {field.value?.name}
-                                        </SelectValue>
+                                        <SelectValue placeholder="Select Inventory Unit" />
                                     </SelectTrigger>
                                 </FormControl>
+                                <SelectContent>
+                                    {units.map((unit) => (
+                                        <SelectItem key={unit.id ?? ''} value={unit.id ?? ''}>
+                                            {unit.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
                             </Select>
                         </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={control}
+                name="product_info.is_ingredients"
+                render={({ field }) => (
+                    <FormItem>
+                        <div className="flex items-center gap-2">
+                            <FormLabel>Use for Ingredients</FormLabel>
+                            <FormControl>
+                                <Checkbox
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    disabled={currentMode === formType.VIEW}
+                                />
+                            </FormControl>
+                        </div>
                         <FormMessage />
                     </FormItem>
                 )}
@@ -158,11 +165,11 @@ export const ProductFormHeader = ({ control, currentMode }: ProductFormFieldsPro
                 name="description"
                 render={({ field }) => (
                     <FormItem className="col-span-full">
-                        <FormLabel>คำอธิบาย</FormLabel>
+                        <FormLabel>Description</FormLabel>
                         <FormControl>
                             <Textarea
                                 className="w-full min-h-[100px] p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="ระบุคำอธิบายผลิตภัณฑ์"
+                                placeholder="Enter Description"
                                 {...field}
                                 disabled={currentMode === formType.VIEW}
                             />
@@ -171,6 +178,8 @@ export const ProductFormHeader = ({ control, currentMode }: ProductFormFieldsPro
                     </FormItem>
                 )}
             />
+
+
         </div>
     );
 }; 
