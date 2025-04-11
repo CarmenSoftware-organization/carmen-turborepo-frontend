@@ -255,8 +255,8 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={'default'}>
-                                                {locationData?.location_type ?? '-'}
+                                            <Badge className={STORE_LOCATION_TYPE_COLOR(locationData?.location_type ?? INVENTORY_TYPE.INVENTORY)}>
+                                                {locationData?.location_type.toUpperCase() ?? '-'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
