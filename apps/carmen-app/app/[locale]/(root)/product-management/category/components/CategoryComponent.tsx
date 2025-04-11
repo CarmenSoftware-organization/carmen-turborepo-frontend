@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { ChevronUp, ChevronDown, Plus } from "lucide-react"
 import TreeNode from "./TreeNode"
 import { CategoryDialog } from "./CategoryDialog"
 import { useCategory } from "@/hooks/useCategory";
@@ -25,6 +25,7 @@ import { useState } from "react";
 import { useCategoryTree } from "@/hooks/useCategoryTree";
 import { useCategoryDialog } from "@/hooks/useCategoryDialog";
 import { useCategoryDelete } from "@/hooks/useCategoryDelete";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function CategoryComponent() {
     const [signInOpen, setSignInOpen] = useState(false);
@@ -261,17 +262,23 @@ export default function CategoryComponent() {
         return (
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                    <div className="space-x-2">
-                        <Button onClick={expandAll}>Expand All</Button>
-                        <Button onClick={collapseAll}>Collapse All</Button>
+                    <div className="flex items-center gap-2">
+                        <Button onClick={expandAll} size={'sm'}>
+                            <ChevronDown className="h-4 w-4" />
+                            Expand All
+                        </Button>
+                        <Button onClick={collapseAll} size={'sm'}>
+                            <ChevronUp className="h-4 w-4" />
+                            Collapse All
+                        </Button>
                     </div>
-                    <Button onClick={() => handleAdd()}>
-                        <Plus className="mr-2 h-4 w-4" />
+                    <Button onClick={() => handleAdd()} size={'sm'}>
+                        <Plus className="h-4 w-4" />
                         Add Category
                     </Button>
                 </div>
 
-                <div className="border rounded-lg p-4">
+                <ScrollArea className="h-[calc(98vh-120px)] border rounded-lg">
                     {categoryData.map((category: CategoryNode) => (
                         <TreeNode
                             key={category.id}
@@ -283,7 +290,7 @@ export default function CategoryComponent() {
                             onDelete={handleDelete}
                         />
                     ))}
-                </div>
+                </ScrollArea>
 
                 <CategoryDialog
                     open={dialogOpen}

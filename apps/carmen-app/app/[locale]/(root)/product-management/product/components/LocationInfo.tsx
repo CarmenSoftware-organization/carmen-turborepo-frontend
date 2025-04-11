@@ -182,13 +182,15 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
                                             {getLocationName(location)}
                                         </TableCell>
                                         <TableCell>
-                                            {locationData?.location_type ?? '-'}
+                                            <Badge variant={'default'}>
+                                                {locationData?.location_type.toUpperCase() ?? '-'}
+                                            </Badge>
                                         </TableCell>
                                         <TableCell>
                                             {locationData?.delivery_point?.name ?? '-'}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={locationData?.is_active ? "default" : "secondary"}>
+                                            <Badge variant={locationData?.is_active ? "default" : "destructive"}>
                                                 {locationData?.is_active ? 'Active' : 'Inactive'}
                                             </Badge>
                                         </TableCell>
@@ -251,7 +253,9 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            {locationData?.location_type ?? '-'}
+                                            <Badge variant={'default'}>
+                                                {locationData?.location_type ?? '-'}
+                                            </Badge>
                                         </TableCell>
                                         <TableCell>
                                             {locationData?.delivery_point?.name ?? '-'}

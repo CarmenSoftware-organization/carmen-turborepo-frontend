@@ -90,7 +90,7 @@ export default function ProductList({
                         </TableRow>
                     </TableHeader>
                     {isLoading ? (
-                        <TableBodySkeleton columns={4} />
+                        <TableBodySkeleton columns={7} />
                     ) : (
                         <TableBody>
                             {products.map((pd) => (

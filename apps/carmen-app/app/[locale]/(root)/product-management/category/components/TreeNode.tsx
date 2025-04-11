@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CategoryNode } from "@/dtos/category.dto";
-import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
+import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash, Trash2 } from "lucide-react";
 
 const getIconColor = (type: CategoryNode["type"]) => {
     if (type === "category") return "";
@@ -53,37 +53,35 @@ export default function TreeNode({
                 )}
 
                 <Icon
-                    className={`h-5 w-5 mr-2 ${getIconColor(node.type)}`}
+                    className={`h-4 w-4 mr-2 ${getIconColor(node.type)}`}
                 />
 
                 <div className="flex-1">
                     <div className="font-medium">{node.name}</div>
                     <div className="text-xs text-muted-foreground">{node.description}</div>
-                    {node.type === "itemGroup" && <div className="text-xs text-muted-foreground">{node.itemCount} items</div>}
+                    {node.type === "itemGroup" && <div className="text-xs text-muted-foreground">{node.itemCount}</div>}
                 </div>
 
-                <div className="flex gap-1">
+                <div className="flex items-center">
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
+                        size={'sm'}
                         onClick={() => onEdit(node)}
                     >
                         <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 hover:text-destructive"
+                        size={'sm'}
                         onClick={() => onDelete(node)}
+                        className="text-destructive hover:text-destructive/80"
                     >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash className="h-4 w-4" />
                     </Button>
                     {node.type !== "itemGroup" && (
                         <Button
                             variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
+                            size={'sm'}
                             onClick={() => onAdd(node)}
                         >
                             <Plus className="h-4 w-4" />
