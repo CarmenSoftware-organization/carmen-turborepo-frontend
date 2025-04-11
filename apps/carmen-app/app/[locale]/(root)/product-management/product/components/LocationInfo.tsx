@@ -18,6 +18,8 @@ import { useState } from "react";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { StoreLocationDto } from "@/dtos/config.dto";
 import { Badge } from "@/components/ui/badge";
+import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
+import { INVENTORY_TYPE } from "@/constants/enum";
 
 interface Location {
     id: string;
@@ -41,7 +43,7 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
         name: "locations.remove",
     });
 
-    const { fields: addFields, append, remove } = useFieldArray({
+    const { fields: addFields, append, remove, update } = useFieldArray({
         control,
         name: "locations.add",
     });
@@ -101,13 +103,13 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
         const location = storeLocations?.find(loc => loc.id === value);
         if (location) {
             // Update the form state with the selected location's details
-            control._formValues.locations.add[index] = {
+            update(index, {
                 location_id: value,
                 location_name: location.name,
                 location_type: location.location_type,
                 delivery_point: location.delivery_point,
                 is_active: location.is_active
-            };
+            });
         }
     };
 
@@ -182,7 +184,7 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
                                             {getLocationName(location)}
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={'default'}>
+                                            <Badge className={STORE_LOCATION_TYPE_COLOR(locationData?.location_type ?? INVENTORY_TYPE.INVENTORY)}>
                                                 {locationData?.location_type.toUpperCase() ?? '-'}
                                             </Badge>
                                         </TableCell>
@@ -293,3 +295,4 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
         </Card>
     );
 };
+

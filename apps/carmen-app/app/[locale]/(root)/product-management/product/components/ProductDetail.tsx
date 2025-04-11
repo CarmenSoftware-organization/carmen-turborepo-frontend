@@ -52,6 +52,10 @@ const productFormSchema = z.object({
         add: z.array(
             z.object({
                 location_id: z.string().uuid(),
+                location_name: z.string().optional(),
+                location_type: z.string().optional(),
+                delivery_point: z.any().optional(),
+                is_active: z.boolean().optional(),
             })
         ),
         remove: z.array(

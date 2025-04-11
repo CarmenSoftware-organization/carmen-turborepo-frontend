@@ -14,6 +14,7 @@ import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
+import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
 
 interface StoreLocationListProps {
     readonly isLoading: boolean;
@@ -24,6 +25,8 @@ interface StoreLocationListProps {
     readonly totalPages: number;
     readonly onPageChange: (page: number) => void;
 }
+
+
 
 export default function StoreLocationList({
     isLoading,
@@ -62,7 +65,7 @@ export default function StoreLocationList({
                                     <TableCell className="w-10">{index + 1}</TableCell>
                                     <TableCell className="md:w-56">{storeLocation.name}</TableCell>
                                     <TableCell className="hidden md:table-cell">
-                                        <Badge>
+                                        <Badge className={STORE_LOCATION_TYPE_COLOR(storeLocation.location_type)}>
                                             {storeLocation.location_type.toUpperCase()}
                                         </Badge>
                                     </TableCell>
