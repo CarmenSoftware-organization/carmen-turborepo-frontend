@@ -1,6 +1,4 @@
 "use client";
-import { useURL } from "@/hooks/useURL";
-import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
@@ -9,179 +7,49 @@ import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { CurrencyDto } from "@/dtos/config.dto";
-import { useAuth } from "@/context/AuthContext";
-import { createCurrency, getCurrenciesService, updateCurrency, toggleCurrencyStatus } from "@/services/currency.service";
-import CurrencyList from "./CurrencyList";
 import { formType } from "@/dtos/form.dto";
+import CurrencyList from "./CurrencyList";
 import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { z } from "zod";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export default function CurrencyComponent() {
-    const { token, tenantId } = useAuth();
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
-    const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [sort, setSort] = useURL('sort');
-    const [currencies, setCurrencies] = useState<CurrencyDto[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-    const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
-    const [totalPages, setTotalPages] = useState(1);
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-    const [page, setPage] = useURL("page");
 
-    useEffect(() => {
-        const fetchCurrencies = async () => {
-            if (!token) return;
-            try {
-                setIsLoading(true);
-                const data = await getCurrenciesService(token, tenantId, {
-                    search,
-                    page
-                });
-                console.log('cm data', data);
-                if (data.statusCode === 401) {
-                    setLoginDialogOpen(true);
-                    return;
-                }
-                setCurrencies(data.data);
-                setTotalPages(data.paginate.pages);
-            } catch (error) {
-                console.error('Error fetching currencies:', error);
-                toastError({ message: 'Error fetching currencies' });
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchCurrencies();
-    }, [search, token, page, tenantId]);
+    const {
+        // State
+        search,
+        setSearch,
+        status,
+        setStatus,
+        statusOpen,
+        setStatusOpen,
+        sort,
+        setSort,
+        currencies,
+        isLoading,
+        isSubmitting,
+        dialogOpen,
+        setDialogOpen,
+        confirmDialogOpen,
+        setConfirmDialogOpen,
+        selectedCurrency,
+        totalPages,
+        loginDialogOpen,
+        setLoginDialogOpen,
+        page,
 
-    useEffect(() => {
-        if (search) {
-            setPage('');
-        }
-    }, [search, setPage]);
-
-    const sortFields = [
-        { key: 'code', label: 'Code' },
-        { key: 'name', label: 'Name' },
-        { key: 'symbol', label: 'Symbol' },
-        { key: 'is_active', label: 'Status' },
-        { key: 'exchange_rate', label: 'Exchange Rate' },
-    ];
-
-    const handleAdd = () => {
-        setSelectedCurrency(undefined);
-        setDialogOpen(true);
-    };
-
-    const handleEdit = (currency: CurrencyDto) => {
-        setSelectedCurrency(currency);
-        setDialogOpen(true);
-    };
-
-    const handleToggleStatus = async (currency: CurrencyDto) => {
-        if (!currency.id) {
-            toastError({ message: 'Invalid currency ID' });
-            return;
-        }
-
-        if (currency.is_active) {
-            // If active, show confirmation dialog before deactivating
-            setSelectedCurrency(currency);
-            setConfirmDialogOpen(true);
-        } else {
-            // If inactive, directly activate
-            await performToggleStatus(currency);
-        }
-    };
-
-    const performToggleStatus = async (currency: CurrencyDto) => {
-        try {
-            setIsSubmitting(true);
-            const result = await toggleCurrencyStatus(token, tenantId, currency.id!, currency.is_active);
-            if (result) {
-                setCurrencies(prevCurrencies =>
-                    prevCurrencies.map(c =>
-                        c.id === currency.id
-                            ? { ...c, is_active: !c.is_active }
-                            : c
-                    )
-                );
-                toastSuccess({ message: `Currency ${!currency.is_active ? 'activated' : 'deactivated'} successfully` });
-            } else {
-                toastError({ message: 'Error toggling currency status' });
-            }
-        } catch (error) {
-            console.error('Error toggling currency status:', error);
-            toastError({ message: 'Error toggling currency status' });
-        } finally {
-            setIsSubmitting(false);
-            setConfirmDialogOpen(false);
-            setSelectedCurrency(undefined);
-        }
-    };
-
-    const handleConfirmToggle = async () => {
-        if (selectedCurrency) {
-            await performToggleStatus(selectedCurrency);
-        }
-    };
-
-    const handleSubmit = async (data: CurrencyDto) => {
-        try {
-            setIsSubmitting(true);
-            if (selectedCurrency) {
-                // Edit mode
-                const updatedCurrency = { ...data, id: selectedCurrency.id };
-                const result = await updateCurrency(token, tenantId, updatedCurrency);
-                if (result) {
-                    setCurrencies(prevCurrencies =>
-                        prevCurrencies.map(currency =>
-                            currency.id === selectedCurrency.id
-                                ? updatedCurrency
-                                : currency
-                        )
-                    );
-                    toastSuccess({ message: 'Currency updated successfully' });
-                } else {
-                    console.error('Error updating currency:', result);
-                    toastError({ message: 'Error updating currency' });
-                }
-            } else {
-                // Add mode
-                const result = await createCurrency(token, tenantId, data);
-                const newCurrency: CurrencyDto = {
-                    ...data,
-                    id: result.id,
-                };
-                setCurrencies(prevCurrencies => [...prevCurrencies, newCurrency]);
-                toastSuccess({ message: 'Currency created successfully' });
-            }
-            setDialogOpen(false);
-            setSelectedCurrency(undefined);
-        } catch (error) {
-            console.error('Error handling currency submission:', error);
-            if (error instanceof z.ZodError) {
-                console.error('Zod Validation Errors:', error.errors);
-            }
-            toastError({ message: 'Error handling currency submission' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage.toString());
-    };
+        // Functions
+        handlePageChange,
+        sortFields,
+        handleAdd,
+        handleEdit,
+        handleToggleStatus,
+        handleConfirmToggle,
+        handleSubmit
+    } = useCurrency();
 
     const title = tCurrency('title');
 
