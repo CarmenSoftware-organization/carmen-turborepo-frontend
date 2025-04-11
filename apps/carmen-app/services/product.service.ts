@@ -53,7 +53,7 @@ export const getProductIdService = async (accessToken: string, tenantId: string,
     return data;
 }
 
-export const createProductService = async (accessToken: string, tenantId: string, product: ProductFormDto) => {
+export const createProductService = async (accessToken: string, tenantId: string, product: any) => {
     const url = `${backendApi}/api/config/products`;
     const options = {
         method: "POST",
@@ -66,6 +66,23 @@ export const createProductService = async (accessToken: string, tenantId: string
     };
     const response = await fetch(url, options);
     const data = await response.json();
+    return data;
+}
+
+export const updateProductService = async (accessToken: string, tenantId: string, id: string, product: any) => {
+    const url = `${backendApi}/api/config/products/${id}`;
+    const options = {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`,
+            "x-tenant-id": tenantId
+        },
+        body: JSON.stringify(product)
+    };
+    const response = await fetch(url, options);
+    const data = await response.json();
+    console.log("update response data", data);
     return data;
 }
 

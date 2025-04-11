@@ -113,9 +113,15 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
                                     <FormControl>
                                         <Input
                                             type="number"
+                                            step="0.01"
+                                            min="0"
                                             placeholder="Enter Price"
-                                            {...field}
                                             disabled={currentMode === formType.VIEW}
+                                            {...field}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                field.onChange(value === "" ? "" : Number(value));
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -132,9 +138,15 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
                                     <FormControl>
                                         <Input
                                             type="number"
+                                            step="0.01"
+                                            min="0"
                                             placeholder="Enter Price Deviation Limit"
                                             {...field}
                                             disabled={currentMode === formType.VIEW}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                field.onChange(value === "" ? "" : Number(value));
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -154,6 +166,10 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
                                             placeholder="Enter Tax Rate"
                                             {...field}
                                             disabled={currentMode === formType.VIEW}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                field.onChange(value === "" ? "" : Number(value));
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />
