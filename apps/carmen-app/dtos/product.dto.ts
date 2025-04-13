@@ -122,3 +122,32 @@ export const ProductSchema = BaseProductSchema.extend({
 });
 
 export type ProductGetDto = z.infer<typeof ProductSchema>;
+
+export interface StockLocationDto {
+    code: string;
+    name: string;
+    type: string;
+    onHand: number;
+    onOrder: number;
+    minimum: number;
+    maximum: number;
+    reorderPoint: number;
+    parLevel: number;
+}
+
+type AggregateSettingsDto = {
+    minimum: number;
+    maximum: number;
+    reorderPoint: number;
+    parLevel: number;
+};
+
+export type InventoryDataDto = {
+    totalStock: {
+        onHand: number;
+        onOrder: number;
+    };
+    locations: StockLocationDto[];
+    aggregateSettings: AggregateSettingsDto;
+};
+

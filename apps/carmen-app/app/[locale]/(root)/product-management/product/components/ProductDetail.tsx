@@ -25,6 +25,8 @@ import { useUnit } from "@/hooks/useUnit";
 import IngredientUnitInfo from "./IngredientUnitInfo";
 import { createProductService, updateProductService } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
+import InventoryInfo from "./InventoryInfo";
+import { mockStockInventoryData } from "@/mock-data/stock-invent";
 // สร้าง schema validation ด้วย Zod
 const productFormSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -319,6 +321,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 if (initValues?.locations) {
                     const removedLocationIds = data.locations.remove.map(loc => loc.location_id);
                     updatedLocations = initValues.locations
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .filter((loc: any) => !removedLocationIds.includes(loc.location_id));
                 }
 
@@ -336,10 +339,12 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 if (initValues?.order_units) {
                     const removedOrderUnitIds = data.order_units?.remove?.map(unit => unit.product_order_unit_id) || [];
                     updatedOrderUnits = initValues.order_units
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .filter((unit: any) => !removedOrderUnitIds.includes(unit.id));
 
                     // Update existing order units
                     if (data.order_units?.update && data.order_units.update.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         updatedOrderUnits = updatedOrderUnits.map((unit: any) => {
                             const updatedUnit = data.order_units?.update.find(u => u.product_order_unit_id === unit.id);
                             if (updatedUnit) {
@@ -382,10 +387,12 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 if (initValues?.ingredient_units) {
                     const removedIngredientUnitIds = data.ingredient_units?.remove?.map(unit => unit.product_order_unit_id) || [];
                     updatedIngredientUnits = initValues.ingredient_units
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .filter((unit: any) => !removedIngredientUnitIds.includes(unit.id));
 
                     // Update existing ingredient units
                     if (data.ingredient_units?.update && data.ingredient_units.update.length > 0) {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         updatedIngredientUnits = updatedIngredientUnits.map((unit: any) => {
                             const updatedUnit = data.ingredient_units?.update.find(u => u.product_order_unit_id === unit.id);
                             if (updatedUnit) {
@@ -426,12 +433,6 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 }
             }
 
-            console.log('Prepared data for API call:', {
-                locations: updatedLocations,
-                order_units: updatedOrderUnits,
-                ingredient_units: updatedIngredientUnits
-            });
-
             // Make API call first
             let response;
             if (currentMode === formType.ADD) {
@@ -447,8 +448,6 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                     throw new Error('Failed to update product');
                 }
             }
-
-            console.log('API response:', response);
 
             // Only update UI state after successful API call
             setUpdatedInitValues({
@@ -571,11 +570,10 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                                 />
                             </TabsContent>
                             <TabsContent value="inventory">
-                                Inventory
+                                <InventoryInfo inventoryData={mockStockInventoryData} />
                             </TabsContent>
                         </Tabs>
                     </ScrollArea>
-
                 </form>
             </Form>
         </div>
