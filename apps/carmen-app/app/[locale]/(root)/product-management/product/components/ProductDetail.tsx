@@ -419,13 +419,13 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                     const newIngredientUnits = data.ingredient_units.add.map(unit => ({
                         id: unit.from_unit_id + '-' + unit.to_unit_id, // Temporary ID for display
                         from_unit_id: unit.from_unit_id,
-                        from_unit_name: units.find(u => u.id === unit.from_unit_id)?.name || "",
+                        from_unit_name: units.find(u => u.id === unit.from_unit_id)?.name ?? '',
                         from_unit_qty: unit.from_unit_qty,
                         to_unit_id: unit.to_unit_id,
-                        to_unit_name: units.find(u => u.id === unit.to_unit_id)?.name || "",
+                        to_unit_name: units.find(u => u.id === unit.to_unit_id)?.name ?? '',
                         to_unit_qty: unit.to_unit_qty,
                         unit_type: "ingredient_unit",
-                        description: unit.description || "",
+                        description: unit.description ?? '',
                         is_active: unit.is_active,
                         is_default: unit.is_default
                     }));
