@@ -10,7 +10,7 @@ import MovementHistory from "./MovementHistory";
 export default function InventoryBalanceTabs() {
     return (
         <Tabs defaultValue="balance_report">
-            <TabsList>
+            <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="balance_report">Balance Report</TabsTrigger>
                 <TabsTrigger value="movement_history">Movement History</TabsTrigger>
             </TabsList>

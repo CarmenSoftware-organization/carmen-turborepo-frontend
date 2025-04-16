@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { mockBalanceReport } from '@/mock-data/inventory-balance';
@@ -12,7 +10,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 
-export default function BalanceReport() {
+export default function MovementHistoryList() {
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
     const [expandedSubSections, setExpandedSubSections] = useState<Record<string, boolean>>({});
 

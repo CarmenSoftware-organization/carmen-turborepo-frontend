@@ -237,3 +237,322 @@ export const mockSummaryMovementHistory = {
     transaction_count: 60,
 
 }
+
+export type InventoryBalanceTypeDto = 'IN' | 'OUT' | 'ADJUSTMENT';
+
+export interface InventoryBalanceItemDto {
+    id: string;
+    date: string; // format: 'YYYY-MM-DD'
+    time: string; // format: 'HH:mm'
+    ref: {
+        code: string;
+        no: string;
+    };
+    product: {
+        name: string;
+        code: string;
+    };
+    location: string;
+    type: InventoryBalanceTypeDto;
+    reason: string;
+    quantity: {
+        old: number;
+        new: number;
+        diff: number;
+    };
+    value: {
+        old: number;
+        new: number;
+        diff: number;
+    };
+};
+
+
+export const mockMovementHistoryList: InventoryBalanceItemDto[] = [
+    {
+        id: 'ib-1',
+        date: '2024-01-01',
+        time: '10:00',
+        ref: {
+            code: 'TRF',
+            no: '39823'
+        },
+        product: {
+            name: 'Apple',
+            code: 'P-1001',
+        },
+        location: 'Warehouse',
+        type: 'IN',
+        reason: 'Purchase Order',
+        quantity: {
+            old: 100,
+            new: 150,
+            diff: 50,
+        },
+        value: {
+            old: 1000,
+            new: 1500,
+            diff: 500,
+        }
+    },
+    {
+        id: 'ib-2',
+        date: '2024-01-03',
+        time: '14:45',
+        ref: {
+            code: 'SAL',
+            no: '39824'
+        },
+        product: {
+            name: 'Banana',
+            code: 'P-1002',
+        },
+        location: 'Kitchen',
+        type: 'OUT',
+        reason: 'Customer Sale',
+        quantity: {
+            old: 150,
+            new: 130,
+            diff: -20,
+        },
+        value: {
+            old: 1200,
+            new: 1040,
+            diff: -160,
+        }
+    },
+    {
+        id: 'ib-3',
+        date: '2024-01-05',
+        time: '09:30',
+        ref: {
+            code: 'ADJ',
+            no: '39825'
+        },
+        product: {
+            name: 'Carrot',
+            code: 'P-1003',
+        },
+        location: 'Cold Storage',
+        type: 'ADJUSTMENT',
+        reason: 'Inventory Count',
+        quantity: {
+            old: 80,
+            new: 78,
+            diff: -2,
+        },
+        value: {
+            old: 640,
+            new: 624,
+            diff: -16,
+        }
+    },
+    {
+        id: 'ib-4',
+        date: '2024-01-06',
+        time: '16:10',
+        ref: {
+            code: 'PO',
+            no: '39826'
+        },
+        product: {
+            name: 'Milk',
+            code: 'D-2001',
+        },
+        location: 'Dairy Section',
+        type: 'IN',
+        reason: 'Supplier Delivery',
+        quantity: {
+            old: 60,
+            new: 110,
+            diff: 50,
+        },
+        value: {
+            old: 660,
+            new: 1210,
+            diff: 550,
+        }
+    },
+    {
+        id: 'ib-5',
+        date: '2024-01-07',
+        time: '11:05',
+        ref: {
+            code: 'RTN',
+            no: '39827'
+        },
+        product: {
+            name: 'Cheese',
+            code: 'D-2002',
+        },
+        location: 'Dairy Section',
+        type: 'OUT',
+        reason: 'Product Return',
+        quantity: {
+            old: 30,
+            new: 20,
+            diff: -10,
+        },
+        value: {
+            old: 450,
+            new: 300,
+            diff: -150,
+        }
+    },
+    {
+        id: 'ib-6',
+        date: '2024-01-08',
+        time: '08:50',
+        ref: {
+            code: 'ADJ',
+            no: '39828'
+        },
+        product: {
+            name: 'Orange Juice',
+            code: 'JU-6101',
+        },
+        location: 'Beverage Section',
+        type: 'ADJUSTMENT',
+        reason: 'Spillage',
+        quantity: {
+            old: 90,
+            new: 88,
+            diff: -2,
+        },
+        value: {
+            old: 180,
+            new: 176,
+            diff: -4,
+        }
+    },
+    {
+        id: 'ib-7',
+        date: '2024-01-10',
+        time: '13:20',
+        ref: {
+            code: 'TRF',
+            no: '39829'
+        },
+        product: {
+            name: 'Bread',
+            code: 'BK-4001',
+        },
+        location: 'Bakery',
+        type: 'IN',
+        reason: 'Internal Transfer',
+        quantity: {
+            old: 200,
+            new: 230,
+            diff: 30,
+        },
+        value: {
+            old: 600,
+            new: 690,
+            diff: 90,
+        }
+    },
+    {
+        id: 'ib-8',
+        date: '2024-01-12',
+        time: '15:10',
+        ref: {
+            code: 'SAL',
+            no: '39830'
+        },
+        product: {
+            name: 'Coke',
+            code: 'SD-6001',
+        },
+        location: 'Beverage Section',
+        type: 'OUT',
+        reason: 'Promotion Giveaway',
+        quantity: {
+            old: 300,
+            new: 280,
+            diff: -20,
+        },
+        value: {
+            old: 300,
+            new: 280,
+            diff: -20,
+        }
+    },
+    {
+        id: 'ib-9',
+        date: '2024-01-13',
+        time: '17:40',
+        ref: {
+            code: 'ADJ',
+            no: '39831'
+        },
+        product: {
+            name: 'Pen',
+            code: 'ST-9002',
+        },
+        location: 'Office Supplies',
+        type: 'ADJUSTMENT',
+        reason: 'Damaged Item',
+        quantity: {
+            old: 50,
+            new: 47,
+            diff: -3,
+        },
+        value: {
+            old: 125,
+            new: 117.5,
+            diff: -7.5,
+        }
+    },
+    {
+        id: 'ib-10',
+        date: '2024-01-15',
+        time: '10:20',
+        ref: {
+            code: 'TRF',
+            no: '39832'
+        },
+        product: {
+            name: 'Potato Chips',
+            code: 'CH-7001',
+        },
+        location: 'Snack Area',
+        type: 'IN',
+        reason: 'Restocking',
+        quantity: {
+            old: 40,
+            new: 100,
+            diff: 60,
+        },
+        value: {
+            old: 60,
+            new: 150,
+            diff: 90,
+        }
+    },
+    {
+        id: 'ib-11',
+        date: '2024-01-16',
+        time: '12:00',
+        ref: {
+            code: 'SAL',
+            no: '39833'
+        },
+        product: {
+            name: 'Chocolate Chip Cookies',
+            code: 'CO-7101',
+        },
+        location: 'Snack Area',
+        type: 'OUT',
+        reason: 'Staff Use',
+        quantity: {
+            old: 75,
+            new: 70,
+            diff: -5,
+        },
+        value: {
+            old: 150,
+            new: 140,
+            diff: -10,
+        }
+    }
+];
