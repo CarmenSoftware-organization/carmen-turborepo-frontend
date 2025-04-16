@@ -1,7 +1,5 @@
+import InventoryBalanceComponent from "./components/InventoryBalanceComponent";
+
 export default function InventoryBalancePage() {
-    return (
-        <div>
-            <h1>Inventory Balance</h1>
-        </div>
-    )
+    return <InventoryBalanceComponent />
 }
