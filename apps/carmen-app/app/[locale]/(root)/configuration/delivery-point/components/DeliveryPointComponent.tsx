@@ -15,6 +15,7 @@ import { formType } from "@/dtos/form.dto";
 import SignInDialog from "@/components/SignInDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
+import { SortConfig, SortDirection } from "@/utils/table-sort";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -63,7 +64,8 @@ export function DeliveryPointComponent() {
     } = useDeliveryPoint();
 
     const sortFields = useMemo(() => [
-        { key: 'name', label: tHeader('name') }
+        { key: 'name', label: tHeader('name') },
+        { key: 'is_active', label: tHeader('status') }
     ], [tHeader]);
 
     const title = useMemo(() => tDeliveryPoint('title'), [tDeliveryPoint]);
@@ -124,6 +126,19 @@ export function DeliveryPointComponent() {
         </div>
     ), [search, setSearch, tCommon, filter, setFilter, statusOpen, setStatusOpen, sortFields, sort, setSort]);
 
+    // Parse the sort string into field and direction
+    const parsedSort = useMemo((): SortConfig | undefined => {
+        if (!sort) return undefined;
+
+        const parts = sort.split(':');
+        if (parts.length !== 2) return undefined;
+
+        return {
+            field: parts[0],
+            direction: parts[1] as SortDirection
+        };
+    }, [sort]);
+
     const content = useMemo(() => (
         <>
             {isUnauthorized ? (
@@ -140,10 +155,15 @@ export function DeliveryPointComponent() {
                     currentPage={currentPage}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
+                    sort={parsedSort}
+                    onSort={(field) => {
+                        const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
+                        setSort(`${field}:${direction}`);
+                    }}
                 />
             )}
         </>
-    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, setLoginDialogOpen, currentPage, totalPages, handlePageChange]);
+    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, setLoginDialogOpen, currentPage, totalPages, handlePageChange, parsedSort, setSort]);
 
     const handleDialogSubmit = (data: DeliveryPointDto) => {
         handleSubmit(data, selectedDeliveryPoint ? formType.EDIT : formType.ADD, selectedDeliveryPoint);

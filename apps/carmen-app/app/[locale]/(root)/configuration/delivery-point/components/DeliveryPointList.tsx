@@ -16,6 +16,7 @@ import { Pencil, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
+import { SortConfig, getSortableColumnProps, renderSortIcon } from "@/utils/table-sort";
 
 interface DeliveryPointListProps {
     readonly deliveryPoints: DeliveryPointDto[];
@@ -25,6 +26,8 @@ interface DeliveryPointListProps {
     readonly currentPage: number;
     readonly totalPages: number;
     readonly onPageChange: (page: number) => void;
+    readonly sort?: SortConfig;
+    readonly onSort?: (field: string) => void;
 }
 
 export default function DeliveryPointList({
@@ -34,9 +37,12 @@ export default function DeliveryPointList({
     isLoading,
     currentPage,
     totalPages,
-    onPageChange
+    onPageChange,
+    sort,
+    onSort
 }: DeliveryPointListProps) {
     const t = useTranslations('TableHeader');
+
     return (
         <div className="space-y-4">
             <div className="relative">
@@ -44,8 +50,22 @@ export default function DeliveryPointList({
                     <TableHeader className="sticky top-0 bg-background">
                         <TableRow>
                             <TableHead className="w-10">#</TableHead>
-                            <TableHead className="md:w-56">{t('name')}</TableHead>
-                            <TableHead>{t('status')}</TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('name', sort, onSort, 'md:w-56')}
+                            >
+                                <div className="flex items-center">
+                                    {t('name')}
+                                    {renderSortIcon('name', sort)}
+                                </div>
+                            </TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('is_active', sort, onSort)}
+                            >
+                                <div className="flex items-center">
+                                    {t('status')}
+                                    {renderSortIcon('is_active', sort)}
+                                </div>
+                            </TableHead>
                             <TableHead className="w-20 text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -82,6 +102,7 @@ export default function DeliveryPointList({
                                                     size={'sm'}
                                                     onClick={() => onToggleStatus(deliveryPoint)}
                                                     disabled={!deliveryPoint.is_active}
+                                                    aria-label={deliveryPoint.is_active ? "Deactivate delivery point" : "Activate delivery point"}
                                                 >
                                                     <Trash className="h-4 w-4 text-destructive" />
                                                 </Button>
