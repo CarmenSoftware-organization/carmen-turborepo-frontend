@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import { statusOptions } from "@/constants/options";
+import { boolFilterOptions } from "@/constants/options";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SignInDialog from "@/components/SignInDialog";
 import StoreLocationList from "./StoreLocationList";
@@ -23,15 +23,16 @@ export default function StoreLocationComponent() {
         // State
         search,
         setSearch,
-        status,
-        setStatus,
+        filter,
+        setFilter,
         statusOpen,
         setStatusOpen,
         sort,
         setSort,
         page,
         storeLocations,
-        isPending,
+        isLoading,
+        isSubmitting,
         dialogOpen,
         setDialogOpen,
         selectedStoreLocation,
@@ -90,9 +91,9 @@ export default function StoreLocationComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
-                    value={status}
-                    onChange={setStatus}
+                    options={boolFilterOptions}
+                    value={filter}
+                    onChange={setFilter}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
                     data-id="store-location-list-status-search-dropdown"
@@ -119,7 +120,7 @@ export default function StoreLocationComponent() {
                     storeLocations={storeLocations}
                     onEdit={handleEdit}
                     onStatusChange={handleStatusChange}
-                    isLoading={isPending}
+                    isLoading={isLoading}
                     currentPage={parseInt(page || '1')}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
@@ -143,7 +144,7 @@ export default function StoreLocationComponent() {
                 mode={dialogMode}
                 storeLocation={selectedStoreLocation}
                 onSubmit={handleSubmit}
-                isLoading={isPending}
+                isLoading={isSubmitting}
             />
             <SignInDialog
                 open={loginDialogOpen}
@@ -161,7 +162,7 @@ export default function StoreLocationComponent() {
                         <Button variant="outline" onClick={() => setStatusDialogOpen(false)}>
                             Cancel
                         </Button>
-                        <Button onClick={handleConfirmStatusChange}>
+                        <Button onClick={handleConfirmStatusChange} disabled={isSubmitting}>
                             Confirm
                         </Button>
                     </div>

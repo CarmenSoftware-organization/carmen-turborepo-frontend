@@ -1,25 +1,31 @@
 import { backendApi } from "@/lib/backend-api";
 import { DeliveryPointDto } from "@/dtos/config.dto";
 
-export const getAllDeliveryPoints = async (token: string, tenantId: string, params: {
-    search?: string;
-    page?: string;
-    perPage?: string;
-} = {}) => {
+export const getAllDeliveryPoints = async (
+    token: string,
+    tenantId: string,
+    params: {
+        search?: string;
+        page?: string;
+        perPage?: string;
+        sort?: string;
+        filter?: string;
+    } = {}
+) => {
     const query = new URLSearchParams();
 
-    if (params.search) {
-        query.append('search', params.search);
-    }
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+            query.append(key, String(value));
+        }
+    });
 
-    if (params.page) {
-        query.append('page', params.page);
-    }
+    const queryString = query.toString();
 
-    if (params.perPage) {
-        query.append('perPage', params.perPage);
-    }
-    const url = `${backendApi}/api/config/delivery-point?${query}`;
+    const url = queryString
+        ? `${backendApi}/api/config/delivery-point?${queryString}`
+        : `${backendApi}/api/config/delivery-point`;
+
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -28,6 +34,9 @@ export const getAllDeliveryPoints = async (token: string, tenantId: string, para
             'Content-Type': 'application/json',
         },
     });
+    if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+    }
     const data = await response.json();
     return data;
 }

@@ -56,12 +56,6 @@ export const useCurrency = () => {
         fetchCurrencies();
     }, [fetchCurrencies]);
 
-    const statusOptions = [
-        { value: '', label: 'All' },
-        { value: 'true', label: 'Active' },
-        { value: 'false', label: 'Inactive' }
-    ];
-
     const handleSetFilter = useCallback((filterValue: string) => {
         setFilter(filterValue);
         setPage('');
@@ -201,7 +195,6 @@ export const useCurrency = () => {
         page,
 
         // Status helper
-        statusOptions,
         handleSetFilter,
 
         // Sort helper

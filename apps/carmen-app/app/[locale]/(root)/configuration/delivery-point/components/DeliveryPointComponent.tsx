@@ -5,11 +5,9 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { statusOptions } from "@/constants/options";
-import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState, useMemo, useCallback } from "react";
+import { useMemo } from "react";
 import DeliveryPointList from "./DeliveryPointList";
 import DeliveryPointDialog from "./DeliveryPointDialog";
 import { DeliveryPointDto } from "@/dtos/config.dto";
@@ -27,88 +25,54 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { boolFilterOptions } from "@/constants/options";
 
 export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
     const tDeliveryPoint = useTranslations('DeliveryPoint');
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
-    const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-    const [deliveryPointToToggle, setDeliveryPointToToggle] = useState<DeliveryPointDto | undefined>();
-    const [status, setStatus] = useURL('status');
 
     const {
         deliveryPoints,
         isPending,
         isUnauthorized,
+        dialogOpen,
+        setDialogOpen,
+        confirmDialogOpen,
+        setConfirmDialogOpen,
+        selectedDeliveryPoint,
+        statusOpen,
+        setStatusOpen,
+        loginDialogOpen,
+        setLoginDialogOpen,
         totalPages,
         currentPage,
         search,
         setSearch,
         sort,
         setSort,
+        filter,
+        setFilter,
         fetchDeliveryPoints,
         handleToggleStatus,
+        handleConfirmToggle,
         handleSubmit,
-        handlePageChange
+        handlePageChange,
+        handleAdd,
+        handleEdit
     } = useDeliveryPoint();
 
     const sortFields = useMemo(() => [
-        { key: 'name', label: tHeader('name') },
-        { key: 'code', label: tHeader('code') },
-        { key: 'is_active', label: tHeader('status') }
+        { key: 'name', label: tHeader('name') }
     ], [tHeader]);
 
     const title = useMemo(() => tDeliveryPoint('title'), [tDeliveryPoint]);
-
-    const handleOpenAddDialog = useCallback(() => {
-        setDialogMode(formType.ADD);
-        setSelectedDeliveryPoint(undefined);
-        setDialogOpen(true);
-    }, []);
-
-    const handleEdit = useCallback((deliveryPoint: DeliveryPointDto) => {
-        setDialogMode(formType.EDIT);
-        setSelectedDeliveryPoint(deliveryPoint);
-        setDialogOpen(true);
-    }, []);
-
-    const handleOpenLoginDialog = useCallback(() => {
-        setLoginDialogOpen(true);
-    }, []);
-
-    const handleDialogSubmit = useCallback((data: DeliveryPointDto) => {
-        handleSubmit(data, dialogMode, selectedDeliveryPoint);
-        setDialogOpen(false);
-    }, [handleSubmit, dialogMode, selectedDeliveryPoint]);
-
-    const handleConfirmToggleStatus = useCallback((deliveryPoint: DeliveryPointDto) => {
-        setDeliveryPointToToggle(deliveryPoint);
-        setConfirmDialogOpen(true);
-    }, []);
-
-    const handleCancelDialog = useCallback(() => {
-        setConfirmDialogOpen(false);
-        setDeliveryPointToToggle(undefined);
-    }, []);
-
-    const handleConfirmedToggle = useCallback(() => {
-        if (deliveryPointToToggle) {
-            handleToggleStatus(deliveryPointToToggle);
-            setDeliveryPointToToggle(undefined);
-            setConfirmDialogOpen(false);
-        }
-    }, [deliveryPointToToggle, handleToggleStatus]);
 
     const actionButtons = useMemo(() => (
         <div className="action-btn-container" data-id="delivery-point-list-action-buttons">
             <Button
                 size="sm"
-                onClick={handleOpenAddDialog}
+                onClick={handleAdd}
             >
                 <Plus className="h-4 w-4" />
                 {tCommon('add')}
@@ -131,7 +95,7 @@ export function DeliveryPointComponent() {
                 {tCommon('print')}
             </Button>
         </div>
-    ), [tCommon, handleOpenAddDialog]);
+    ), [tCommon, handleAdd]);
 
     const filters = useMemo(() => (
         <div className="filter-container" data-id="delivery-point-list-filters">
@@ -143,9 +107,9 @@ export function DeliveryPointComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
-                    value={status}
-                    onChange={setStatus}
+                    options={boolFilterOptions}
+                    value={filter}
+                    onChange={setFilter}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
                     data-id="delivery-point-status-search-dropdown"
@@ -158,20 +122,20 @@ export function DeliveryPointComponent() {
                 />
             </div>
         </div>
-    ), [search, setSearch, tCommon, status, setStatus, statusOpen, setStatusOpen, sortFields, sort, setSort]);
+    ), [search, setSearch, tCommon, filter, setFilter, statusOpen, setStatusOpen, sortFields, sort, setSort]);
 
     const content = useMemo(() => (
         <>
             {isUnauthorized ? (
                 <UnauthorizedMessage
                     onRetry={fetchDeliveryPoints}
-                    onLogin={handleOpenLoginDialog}
+                    onLogin={() => setLoginDialogOpen(true)}
                 />
             ) : (
                 <DeliveryPointList
                     deliveryPoints={deliveryPoints}
                     onEdit={handleEdit}
-                    onToggleStatus={handleConfirmToggleStatus}
+                    onToggleStatus={handleToggleStatus}
                     isLoading={isPending}
                     currentPage={currentPage}
                     totalPages={totalPages}
@@ -179,7 +143,11 @@ export function DeliveryPointComponent() {
                 />
             )}
         </>
-    ), [deliveryPoints, handleEdit, handleConfirmToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, handleOpenLoginDialog, currentPage, totalPages, handlePageChange]);
+    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, setLoginDialogOpen, currentPage, totalPages, handlePageChange]);
+
+    const handleDialogSubmit = (data: DeliveryPointDto) => {
+        handleSubmit(data, selectedDeliveryPoint ? formType.EDIT : formType.ADD, selectedDeliveryPoint);
+    };
 
     return (
         <>
@@ -192,7 +160,7 @@ export function DeliveryPointComponent() {
             <DeliveryPointDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
-                mode={dialogMode}
+                mode={selectedDeliveryPoint ? formType.EDIT : formType.ADD}
                 deliveryPoint={selectedDeliveryPoint}
                 onSubmit={handleDialogSubmit}
             />
@@ -200,21 +168,21 @@ export function DeliveryPointComponent() {
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}
             />
-            <AlertDialog open={confirmDialogOpen} onOpenChange={handleCancelDialog}>
+            <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
                             {tCommon('confirmAction')}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            {deliveryPointToToggle?.is_active
+                            {selectedDeliveryPoint?.is_active
                                 ? tDeliveryPoint('confirmDeactivate')
                                 : tDeliveryPoint('confirmActivate')}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={handleCancelDialog}>{tCommon('cancel')}</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirmedToggle}>
+                        <AlertDialogCancel onClick={() => setConfirmDialogOpen(false)}>{tCommon('cancel')}</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmToggle}>
                             {tCommon('confirm')}
                         </AlertDialogAction>
                     </AlertDialogFooter>

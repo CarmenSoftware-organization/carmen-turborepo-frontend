@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CreateStoreLocationDto, StoreLocationDto } from "@/dtos/config.dto";
 import { getAllStoreLocations, createStoreLocation, updateStoreLocation } from "@/services/store-location.service";
 import { formType } from "@/dtos/form.dto";
@@ -84,12 +84,13 @@ export const useStoreLocation = () => {
     const { token, tenantId } = useAuth();
     const tHeader = useTranslations('TableHeader');
     const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
+    const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [page, setPage] = useURL('page');
     const [storeLocations, setStoreLocations] = useState<StoreLocationDto[]>([]);
-    const [isPending, startTransition] = useTransition();
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedStoreLocation, setSelectedStoreLocation] = useState<StoreLocationDto>();
     const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
@@ -98,32 +99,32 @@ export const useStoreLocation = () => {
     const [isUnauthorized, setIsUnauthorized] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
 
-    const fetchStoreLocations = useCallback(() => {
+    const fetchStoreLocations = useCallback(async () => {
         if (!token || !tenantId) return;
 
-        const fetchData = async () => {
-            try {
-                setIsUnauthorized(false);
-                const data = await getAllStoreLocations(token, tenantId, {
-                    search,
-                    sort,
-                    page
-                });
-                if (data.statusCode === 401) {
-                    setIsUnauthorized(true);
-                    setLoginDialogOpen(true);
-                    return;
-                }
-                setStoreLocations(data.data);
-                setTotalPages(data.paginate.pages);
-            } catch (error) {
-                console.error('Error fetching store locations:', error);
-                toastError({ message: 'Error fetching store locations' });
+        try {
+            setIsLoading(true);
+            setIsUnauthorized(false);
+            const data = await getAllStoreLocations(token, tenantId, {
+                search,
+                sort,
+                page,
+                filter
+            });
+            if (data.statusCode === 401) {
+                setIsUnauthorized(true);
+                setLoginDialogOpen(true);
+                return;
             }
-        };
-
-        startTransition(fetchData);
-    }, [token, tenantId, search, sort, page]);
+            setStoreLocations(data.data);
+            setTotalPages(data.paginate.pages);
+        } catch (error) {
+            console.error('Error fetching store locations:', error);
+            toastError({ message: 'Error fetching store locations' });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [token, tenantId, search, sort, page, filter]);
 
     useEffect(() => {
         if (search) {
@@ -148,24 +149,22 @@ export const useStoreLocation = () => {
         setDialogOpen(false);
     }, [fetchStoreLocations]);
 
-    const handleSubmit = useCallback((data: CreateStoreLocationDto) => {
+    const handleSubmit = useCallback(async (data: CreateStoreLocationDto) => {
         if (!token || !tenantId) return;
 
-        const submitData = async () => {
-            try {
-                if (dialogMode === formType.ADD) {
-                    await handleSubmitAdd(token, tenantId, data);
-                } else if (selectedStoreLocation?.id) {
-                    await handleSubmitEdit(token, tenantId, data, selectedStoreLocation.id);
-                }
-            } catch (error) {
-                console.error('Error saving store location:', error);
-                toastError({ message: error instanceof Error ? error.message : 'Error saving store location' });
-                return;
+        try {
+            setIsSubmitting(true);
+            if (dialogMode === formType.ADD) {
+                await handleSubmitAdd(token, tenantId, data);
+            } else if (selectedStoreLocation?.id) {
+                await handleSubmitEdit(token, tenantId, data, selectedStoreLocation.id);
             }
-        };
-
-        startTransition(submitData);
+        } catch (error) {
+            console.error('Error saving store location:', error);
+            toastError({ message: error instanceof Error ? error.message : 'Error saving store location' });
+        } finally {
+            setIsSubmitting(false);
+        }
     }, [token, tenantId, dialogMode, selectedStoreLocation, handleSubmitAdd, handleSubmitEdit]);
 
     useEffect(() => {
@@ -178,7 +177,6 @@ export const useStoreLocation = () => {
 
     const sortFields = [
         { key: 'name', label: tHeader('name') },
-        { key: 'status', label: tHeader('status') },
     ];
 
     const handleOpenAddDialog = useCallback(() => {
@@ -202,6 +200,7 @@ export const useStoreLocation = () => {
         if (!selectedStoreLocation?.id || !token || !tenantId) return;
 
         try {
+            setIsSubmitting(true);
             const updatedStoreLocation = await handleUpdateStoreLocationStatus(token, tenantId, selectedStoreLocation);
             if (!updatedStoreLocation) return;
 
@@ -209,10 +208,12 @@ export const useStoreLocation = () => {
                 loc.id === selectedStoreLocation.id ? updatedStoreLocation : loc
             ));
             toastSuccess({ message: `Store location ${updatedStoreLocation.is_active ? 'activated' : 'deactivated'} successfully` });
-            setStatusDialogOpen(false);
         } catch (error) {
             console.error('Error updating store location status:', error);
             toastError({ message: error instanceof Error ? error.message : 'Error updating store location status' });
+        } finally {
+            setIsSubmitting(false);
+            setStatusDialogOpen(false);
         }
     }, [selectedStoreLocation, token, tenantId]);
 
@@ -220,8 +221,8 @@ export const useStoreLocation = () => {
         // State
         search,
         setSearch,
-        status,
-        setStatus,
+        filter,
+        setFilter,
         statusOpen,
         setStatusOpen,
         sort,
@@ -229,7 +230,8 @@ export const useStoreLocation = () => {
         page,
         setPage,
         storeLocations,
-        isPending,
+        isLoading,
+        isSubmitting,
         dialogOpen,
         setDialogOpen,
         selectedStoreLocation,
