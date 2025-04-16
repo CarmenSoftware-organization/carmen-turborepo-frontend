@@ -14,7 +14,7 @@ export const useUnit = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [page, setPage] = useURL('page');
     const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
+    const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -24,8 +24,10 @@ export const useUnit = () => {
     useEffect(() => {
         if (search) {
             setPage('');
+            setSort('');
+
         }
-    }, [search, setPage]);
+    }, [search, setPage, setSort]);
 
     useEffect(() => {
         const fetchUnits = async () => {
@@ -35,7 +37,8 @@ export const useUnit = () => {
                 const data = await getAllUnits(token, tenantId, {
                     search,
                     page,
-                    sort
+                    sort,
+                    filter
                 });
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
@@ -52,7 +55,7 @@ export const useUnit = () => {
         };
 
         fetchUnits();
-    }, [token, tenantId, page, search, sort]);
+    }, [token, tenantId, page, search, sort, filter]);
 
     const handleAdd = () => {
         setSelectedUnit(undefined);
@@ -149,8 +152,8 @@ export const useUnit = () => {
         setPage,
         search,
         setSearch,
-        status,
-        setStatus,
+        filter,
+        setFilter,
         statusOpen,
         setStatusOpen,
         sort,

@@ -7,39 +7,41 @@ export const getAllUnits = async (token: string, tenantId: string,
         page?: string;
         perPage?: string;
         sort?: string;
+        filter?: string;
     } = {}
 ) => {
     const query = new URLSearchParams();
 
-    if (params.search) {
-        query.append('search', params.search);
-    }
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+            query.append(key, String(value));
+        }
+    });
 
-    if (params.page) {
-        query.append('page', params.page);
-    }
+    const queryString = query.toString();
 
-    if (params.perPage) {
-        query.append('perPage', params.perPage);
-    }
+    const url = queryString
+        ? `${backendApi}/api/config/units?${queryString}`
+        : `${backendApi}/api/config/units`;
 
-    if (params.sort) {
-        query.append('sort', params.sort);
-    }
-
-    const url = `${backendApi}/api/config/units?${query}`;
-    const response = await fetch(url, {
+    const options = {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
             'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
-    });
+    };
+
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+    }
+
     const data = await response.json();
     return data;
 };
-
 
 export const createUnit = async (token: string, tenantId: string, unit: UnitDto) => {
     const url = `${backendApi}/api/config/units`;

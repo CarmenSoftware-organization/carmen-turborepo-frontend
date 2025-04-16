@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import { statusOptions } from "@/constants/options";
+import { boolFilterOptions } from "@/constants/options";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import UnitList from "./UnitList";
 import UnitDialog from "./UnitDialog";
@@ -30,8 +30,8 @@ export default function UnitComponent() {
         setPage,
         search,
         setSearch,
-        status,
-        setStatus,
+        filter,
+        setFilter,
         statusOpen,
         setStatusOpen,
         sort,
@@ -58,7 +58,6 @@ export default function UnitComponent() {
 
     const sortFields = [
         { key: 'name', label: 'Name' },
-        { key: 'code', label: 'Code' },
         { key: 'status', label: 'Status' },
     ];
 
@@ -100,9 +99,9 @@ export default function UnitComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
-                    value={status}
-                    onChange={setStatus}
+                    options={boolFilterOptions}
+                    value={filter}
+                    onChange={setFilter}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
                     data-id="product-list-status-search-dropdown"
