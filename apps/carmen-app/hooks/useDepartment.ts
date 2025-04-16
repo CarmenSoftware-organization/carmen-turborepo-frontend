@@ -10,7 +10,7 @@ export const useDepartment = () => {
     const { token, tenantId } = useAuth();
     const tDepartment = useTranslations('Department');
     const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
+    const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [departments, setDepartments] = useState<DepartmentDto[]>([]);
@@ -35,7 +35,8 @@ export const useDepartment = () => {
             const data = await getAllDepartments(token, tenantId, {
                 search,
                 sort,
-                page
+                page,
+                filter
             });
             if (data.statusCode === 401) {
                 setLoginDialogOpen(true);
@@ -49,7 +50,7 @@ export const useDepartment = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [token, tenantId, search, sort, page]);
+    }, [token, tenantId, search, sort, page, filter]);
 
     useEffect(() => {
         fetchDepartments();
@@ -141,8 +142,8 @@ export const useDepartment = () => {
         // State
         search,
         setSearch,
-        status,
-        setStatus,
+        filter,
+        setFilter,
         statusOpen,
         setStatusOpen,
         sort,

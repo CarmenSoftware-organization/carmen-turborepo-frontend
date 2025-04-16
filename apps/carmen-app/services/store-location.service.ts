@@ -18,7 +18,12 @@ export const getAllStoreLocations = async (token: string, tenantId: string,
         }
     });
 
-    const url = `${backendApi}/api/config/locations?${query.toString()}`;
+    const queryString = query.toString();
+
+    const url = queryString
+        ? `${backendApi}/api/config/locations?${queryString}`
+        : `${backendApi}/api/config/locations`;
+
     const response = await fetch(url, {
         method: 'GET',
         headers: {

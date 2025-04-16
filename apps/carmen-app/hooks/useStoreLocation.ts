@@ -129,8 +129,9 @@ export const useStoreLocation = () => {
     useEffect(() => {
         if (search) {
             setPage('');
+            setFilter('');
         }
-    }, [search, setPage]);
+    }, [search, setPage, setFilter]);
 
     const handleSubmitAdd = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
         const newStoreLocation = await handleAddStoreLocation(token, tenantId, data);

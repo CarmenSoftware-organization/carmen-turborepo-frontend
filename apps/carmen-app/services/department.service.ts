@@ -7,27 +7,23 @@ export const getAllDepartments = async (token: string, tenantId: string,
         page?: string;
         perPage?: string;
         sort?: string;
+        filter?: string;
     } = {}
 ) => {
     const query = new URLSearchParams();
 
-    if (params.search) {
-        query.append('search', params.search);
-    }
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+            query.append(key, String(value));
+        }
+    });
 
-    if (params.page) {
-        query.append('page', params.page);
-    }
+    const queryString = query.toString();
 
-    if (params.perPage) {
-        query.append('perPage', params.perPage);
-    }
+    const url = queryString
+        ? `${backendApi}/api/config/departments?${queryString}`
+        : `${backendApi}/api/config/departments`;
 
-    if (params.sort) {
-        query.append('sort', params.sort);
-    }
-
-    const url = `${backendApi}/api/config/departments?${query}`;
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -36,6 +32,11 @@ export const getAllDepartments = async (token: string, tenantId: string,
             'Content-Type': 'application/json',
         },
     });
+
+    if (!response.ok) {
+        throw new Error(`API responded with status: ${response.status}`);
+    }
+
     const data = await response.json();
     return data;
 };
