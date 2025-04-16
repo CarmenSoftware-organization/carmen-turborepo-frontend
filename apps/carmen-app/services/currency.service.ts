@@ -8,37 +8,44 @@ export const getCurrenciesService = async (
         search?: string;
         page?: string;
         perPage?: string;
+        sort?: string;
+        filter?: string;
     } = {}
 ) => {
+    try {
 
-    const query = new URLSearchParams();
+        const query = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== '') {
+                query.append(key, String(value));
+            }
+        });
 
-    console.log('params', params);
+        const queryString = query.toString();
 
-    if (params.search) {
-        query.append('search', params.search);
+        const url = queryString
+            ? `${backendApi}/api/config/currencies?${queryString}`
+            : `${backendApi}/api/config/currencies`;
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`API responded with status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch currencies:', error);
+        throw error;
     }
-
-    if (params.page) {
-        query.append('page', params.page);
-    }
-
-    if (params.perPage) {
-        query.append('perPage', params.perPage);
-    }
-
-    const url = `${backendApi}/api/config/currencies?${query}`;
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    });
-    const data = await response.json();
-    return data;
-}
+};
 
 export const createCurrency = async (token: string, tenantId: string, currency: CurrencyDto) => {
     const url = `${backendApi}/api/config/currencies`;

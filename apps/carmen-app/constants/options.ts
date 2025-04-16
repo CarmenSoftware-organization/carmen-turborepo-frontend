@@ -6,6 +6,12 @@ export const statusOptions = [
     { label: 'Inactive', value: 'inactive' },
 ];
 
+export const boolFilterOptions = [
+    { label: 'All', value: '' },
+    { label: 'Active', value: 'is_active|bool:true' },
+    { label: 'Inactive', value: 'is_active|bool:false' },
+];
+
 
 export const statusSpotCheckOptions = [
     { label: 'All', value: '' },

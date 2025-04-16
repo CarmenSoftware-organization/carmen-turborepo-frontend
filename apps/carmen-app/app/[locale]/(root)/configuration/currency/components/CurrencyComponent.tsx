@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
+import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { formType } from "@/dtos/form.dto";
@@ -22,8 +22,8 @@ export default function CurrencyComponent() {
         // State
         search,
         setSearch,
-        status,
-        setStatus,
+        filter,
+        setFilter,
         statusOpen,
         setStatusOpen,
         sort,
@@ -89,9 +89,9 @@ export default function CurrencyComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
-                    value={status}
-                    onChange={setStatus}
+                    options={boolFilterOptions}
+                    value={filter}
+                    onChange={setFilter}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
                     data-id="product-list-status-search-dropdown"

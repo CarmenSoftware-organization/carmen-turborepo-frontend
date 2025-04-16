@@ -8,7 +8,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 export const useCurrency = () => {
     const { token, tenantId } = useAuth();
     const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
+    const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [currencies, setCurrencies] = useState<CurrencyDto[]>([]);
@@ -24,8 +24,9 @@ export const useCurrency = () => {
     useEffect(() => {
         if (search) {
             setPage('');
+            setSort('');
         }
-    }, [search, setPage]);
+    }, [search, setPage, setSort]);
 
     const fetchCurrencies = useCallback(async () => {
         if (!token) return;
@@ -33,7 +34,9 @@ export const useCurrency = () => {
             setIsLoading(true);
             const data = await getCurrenciesService(token, tenantId, {
                 search,
-                page
+                page,
+                sort,
+                filter
             });
             if (data.statusCode === 401) {
                 setLoginDialogOpen(true);
@@ -47,19 +50,34 @@ export const useCurrency = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [token, tenantId, search, page]);
+    }, [token, tenantId, search, page, sort, filter]);
 
     useEffect(() => {
         fetchCurrencies();
     }, [fetchCurrencies]);
 
+    const statusOptions = [
+        { value: '', label: 'All' },
+        { value: 'true', label: 'Active' },
+        { value: 'false', label: 'Inactive' }
+    ];
+
+    const handleSetFilter = useCallback((filterValue: string) => {
+        setFilter(filterValue);
+        setPage('');
+    }, [setFilter, setPage]);
+
     const sortFields = [
         { key: 'code', label: 'Code' },
         { key: 'name', label: 'Name' },
         { key: 'symbol', label: 'Symbol' },
-        { key: 'is_active', label: 'Status' },
         { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
+
+    // Just set the sort string directly without parsing
+    const handleSetSort = useCallback((sortValue: string) => {
+        setSort(sortValue);
+    }, [setSort]);
 
     const handleAdd = useCallback(() => {
         setSelectedCurrency(undefined);
@@ -69,20 +87,6 @@ export const useCurrency = () => {
     const handleEdit = useCallback((currency: CurrencyDto) => {
         setSelectedCurrency(currency);
         setDialogOpen(true);
-    }, []);
-
-    const handleToggleStatus = useCallback(async (currency: CurrencyDto) => {
-        if (!currency.id) {
-            toastError({ message: 'Invalid currency ID' });
-            return;
-        }
-
-        if (currency.is_active) {
-            setSelectedCurrency(currency);
-            setConfirmDialogOpen(true);
-        } else {
-            await performToggleStatus(currency);
-        }
     }, []);
 
     const performToggleStatus = useCallback(async (currency: CurrencyDto) => {
@@ -110,6 +114,20 @@ export const useCurrency = () => {
             setSelectedCurrency(undefined);
         }
     }, [token, tenantId]);
+
+    const handleToggleStatus = useCallback(async (currency: CurrencyDto) => {
+        if (!currency.id) {
+            toastError({ message: 'Invalid currency ID' });
+            return;
+        }
+
+        if (currency.is_active) {
+            setSelectedCurrency(currency);
+            setConfirmDialogOpen(true);
+        } else {
+            await performToggleStatus(currency);
+        }
+    }, [performToggleStatus]);
 
     const handleConfirmToggle = useCallback(async () => {
         if (selectedCurrency) {
@@ -163,8 +181,8 @@ export const useCurrency = () => {
         // State
         search,
         setSearch,
-        status,
-        setStatus,
+        filter,
+        setFilter,
         statusOpen,
         setStatusOpen,
         sort,
@@ -181,6 +199,13 @@ export const useCurrency = () => {
         loginDialogOpen,
         setLoginDialogOpen,
         page,
+
+        // Status helper
+        statusOptions,
+        handleSetFilter,
+
+        // Sort helper
+        handleSetSort,
 
         // Functions
         handlePageChange,
