@@ -46,6 +46,8 @@ export default function VendorList({
         }
     };
 
+    console.log('vendor', vendors);
+
     return (
         <div className="space-y-4">
             <div className="hidden md:block relative">
@@ -53,10 +55,10 @@ export default function VendorList({
                     <TableHeader className="sticky top-0 bg-background">
                         <TableRow>
                             <TableHead className="w-10 text-center">#</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead>Info</TableHead>
-                            <TableHead>Status</TableHead>
+                            <TableHead className="w-60 text-left">Name</TableHead>
+                            <TableHead className="w-60 text-left">Description</TableHead>
+                            <TableHead className="w-60 text-left">Info</TableHead>
+                            <TableHead className="w-60 text-left">Status</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -75,9 +77,9 @@ export default function VendorList({
                                     vendors.map((vendor, index) => (
                                         <TableRow key={vendor.id}>
                                             <TableCell className="text-center w-10">{index + 1}</TableCell>
-                                            <TableCell className="font-medium">{vendor.name}</TableCell>
-                                            <TableCell>{vendor.description}</TableCell>
-                                            <TableCell>{vendor.info ? JSON.stringify(vendor.info) : 'N/A'}</TableCell>
+                                            <TableCell className="font-medium w-60">{vendor.name}</TableCell>
+                                            <TableCell className="text-left w-60">{vendor.description}</TableCell>
+                                            <TableCell className="text-left w-60">{vendor.info ? JSON.stringify(vendor.info) : 'N/A'}</TableCell>
                                             <TableCell>
                                                 <Badge variant={vendor.is_active ? "default" : "secondary"}>
                                                     {vendor.is_active ? "Active" : "Inactive"}

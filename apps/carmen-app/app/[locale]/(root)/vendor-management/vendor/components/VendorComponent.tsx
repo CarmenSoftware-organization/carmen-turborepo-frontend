@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
+import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState, useCallback } from "react";
@@ -26,7 +26,7 @@ export default function VendorComponent() {
     const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
     const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
+    const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [page, setPage] = useURL('page');
@@ -45,8 +45,9 @@ export default function VendorComponent() {
     useEffect(() => {
         if (search) {
             setPage('');
+            setFilter('');
         }
-    }, [search, setPage]);
+    }, [search, setPage, setFilter]);
 
     const fetchVendors = useCallback(async () => {
         setIsLoading(true);
@@ -54,7 +55,8 @@ export default function VendorComponent() {
             const data = await getAllVendorService(token, tenantId, {
                 search,
                 sort,
-                page: search ? undefined : page
+                page,
+                filter
             });
             if (data.statusCode === 401) {
                 setLoginDialogOpen(true);
@@ -69,7 +71,7 @@ export default function VendorComponent() {
         } finally {
             setIsLoading(false);
         }
-    }, [token, tenantId, search, sort, page]);
+    }, [token, tenantId, search, sort, page, filter]);
 
     useEffect(() => {
         fetchVendors();
@@ -166,9 +168,9 @@ export default function VendorComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
-                    value={status}
-                    onChange={setStatus}
+                    options={boolFilterOptions}
+                    value={filter}
+                    onChange={setFilter}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
                     data-id="vendor-list-status-search-dropdown"
