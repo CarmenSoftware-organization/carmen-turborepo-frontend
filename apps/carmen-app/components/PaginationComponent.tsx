@@ -17,6 +17,7 @@ interface PaginationProps {
 	onPageChange: (page: number) => void;
 	limit?: string;
 	onLimitChange?: (newLimit: string) => void;
+	position?: 'left' | 'right' | 'center';
 }
 
 const PaginationComponent = ({
@@ -25,6 +26,7 @@ const PaginationComponent = ({
 	onPageChange,
 	limit,
 	onLimitChange,
+	position = 'right',
 }: PaginationProps) => {
 
 	const handlePageChange = (newPage: number) => {
@@ -35,9 +37,15 @@ const PaginationComponent = ({
 
 	if (totalPages <= 1) return null;
 
+	const justifyPositions = {
+		left: 'justify-start',
+		center: 'justify-center',
+		right: 'justify-end'
+	};
+
 	return (
 		<Pagination
-			className="flex justify-between items-center"
+			className={`flex ${justifyPositions[position]} items-center`}
 			data-id="pagination-container"
 		>
 			{limit && onLimitChange && (

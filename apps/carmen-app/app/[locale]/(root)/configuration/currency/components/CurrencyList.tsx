@@ -103,10 +103,12 @@ export default function CurrencyList({
                     </TableBody>
                 )}
             </Table>
+
             <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={onPageChange}
+                position="right"
             />
         </div>
     );
