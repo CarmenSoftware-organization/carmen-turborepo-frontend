@@ -9,6 +9,7 @@ import {
 import { moduleItems } from "@/constants/modules-list"
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "@/lib/navigation";
+import { Grip } from "lucide-react";
 import { useTranslations } from "next-intl"
 import { usePathname } from "next/navigation"
 import React, { useEffect, useState } from "react"
@@ -46,10 +47,9 @@ export default function ModuleList() {
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button variant="ghost">
-                    {activeModule?.icon &&
-                        React.createElement(activeModule.icon, { className: "h-4 w-4" })}
-                    {activeModule ? t(activeModule.labelKey.split('.').pop() ?? '') : t('dashboard')}
+                    <Grip className="h-4 w-4" />
                 </Button>
+
             </PopoverTrigger>
             <PopoverContent className="w-[500px]">
                 <div className="grid grid-cols-4 gap-2">

@@ -13,6 +13,7 @@ interface UserInfo {
 interface BusinessUnit {
     id: string;
     name: string;
+    is_default?: boolean;
 }
 
 interface User {
@@ -31,6 +32,7 @@ interface AuthContextType {
     token: string;
     getServerSideToken: () => string;
     tenantId: string;
+    handleChangeTenant: (tenantId: string) => void;
 }
 
 // Create context with a default value
@@ -43,6 +45,7 @@ export const AuthContext = createContext<AuthContextType>({
     token: '',
     getServerSideToken: () => '',
     tenantId: '',
+    handleChangeTenant: () => { },
 });
 
 // Helper function to get token on the client side
@@ -57,6 +60,7 @@ export function getServerSideToken(): string {
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
+    const [selectedTenantId, setSelectedTenantId] = useState<string>('');
     const router = useRouter();
     const pathname = usePathname();
 
@@ -145,7 +149,25 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     // Check if user is authenticated by looking for tokens
     const hasToken = typeof window !== 'undefined' && !!sessionStorage.getItem('access_token');
 
-    const tenantId = user?.business_unit[0].id ?? '';
+    // Function to handle tenant change
+    const handleChangeTenant = useCallback((tenantId: string) => {
+        setSelectedTenantId(tenantId);
+    }, []);
+
+    // Get tenant ID - using selectedTenantId if set, otherwise default to first business unit or one marked as default
+    const tenantId = useMemo(() => {
+        if (selectedTenantId) return selectedTenantId;
+
+        if (!user?.business_unit?.length) return '';
+
+        // Try to find the default business unit first
+        const defaultBU = user.business_unit.find(bu => bu.is_default === true);
+        if (defaultBU) return defaultBU.id;
+
+        // Otherwise use the first one
+        return user.business_unit[0].id;
+    }, [user, selectedTenantId]);
+
     // Context value
     const value = useMemo(() => ({
         isAuthenticated: hasToken,
@@ -156,7 +178,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         token: typeof window !== 'undefined' ? (sessionStorage.getItem('access_token') ?? '') : '',
         getServerSideToken,
         tenantId,
-    }), [hasToken, isLoading, user, setSession, logout, getServerSideToken, tenantId]);
+        handleChangeTenant,
+    }), [hasToken, isLoading, user, setSession, logout, getServerSideToken, tenantId, handleChangeTenant]);
 
     return (
         <AuthContext.Provider value={value}>

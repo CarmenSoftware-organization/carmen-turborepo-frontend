@@ -10,9 +10,20 @@ import {
 import { useAuth } from "@/context/AuthContext";
 
 export default function TenantList() {
-    const { user } = useAuth();
+    const { user, tenantId, handleChangeTenant } = useAuth();
+
+    const handleValueChange = (value: string) => {
+        if (value !== tenantId) {
+            handleChangeTenant(value);
+            window.location.reload();
+        }
+    };
+
     return (
-        <Select defaultValue={user?.business_unit[0].id}>
+        <Select
+            defaultValue={tenantId}
+            onValueChange={handleValueChange}
+        >
             <SelectTrigger className="w-40 bg-muted border-none focus:ring-ring text-xs h-8">
                 <SelectValue placeholder="Select a tenant" />
             </SelectTrigger>
