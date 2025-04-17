@@ -21,11 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { UnitDto } from "@/dtos/unit.dto";
 
-interface Unit {
-    id: string;
-    name: string;
-}
-
 interface OrderUnit {
     id: string;
     from_unit_id: string;
@@ -395,8 +390,7 @@ export default function OrderUnitInfo({ control, currentMode, initValues, units 
 
                             {/* แสดงข้อมูลที่กำลังเพิ่มใหม่เฉพาะในโหมด EDIT หรือ ADD */}
                             {(currentMode === formType.EDIT || currentMode === formType.ADD) && addFields.map((field, index) => {
-                                const fromUnit = getUnitById(field.from_unit_id);
-                                const toUnit = getUnitById(field.to_unit_id);
+
                                 return (
                                     <TableRow key={field.id || `add-${index}`}>
                                         <TableCell>

@@ -416,8 +416,7 @@ export default function IngredientUnitInfo({ control, currentMode, initValues, u
 
                             {/* แสดงข้อมูลที่กำลังเพิ่มใหม่เฉพาะในโหมด EDIT หรือ ADD */}
                             {(currentMode === formType.EDIT || currentMode === formType.ADD) && addFields.map((field, index) => {
-                                const fromUnit = getUnitById(field.from_unit_id);
-                                const toUnit = getUnitById(field.to_unit_id);
+
                                 return (
                                     <TableRow key={field.id || `add-${index}`}>
                                         <TableCell>

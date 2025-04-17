@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Image, Upload } from "lucide-react";
+import { Image as ImageIcon, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
-
+import Image from "next/image";
 interface ImageUploadProps {
     value?: string;
     onChange?: (value: string) => void;
@@ -41,14 +41,16 @@ export const ImageUpload = ({
             <div className="flex items-center gap-4">
                 <div className="relative w-24 h-24">
                     {value ? (
-                        <img
+                        <Image
                             src={value}
                             alt="Uploaded"
                             className="w-full h-full object-cover rounded-lg"
+                            width={1920}
+                            height={1080}
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center bg-muted rounded-lg">
-                            <Image className="h-8 w-8 text-muted-foreground" />
+                            <ImageIcon className="h-8 w-8 text-muted-foreground" />
                         </div>
                     )}
                 </div>

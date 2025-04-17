@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Upload, X, Info } from 'lucide-react';
+import Image from 'next/image';
 
 interface UploadResponse {
     id: string;
@@ -224,10 +225,12 @@ export default function TestUploadPage() {
                                 }}
                                 className="border rounded-lg overflow-hidden"
                             >
-                                <img
+                                <Image
                                     src={file.url}
                                     alt={`Uploaded image ${index + 1}`}
                                     className="w-full h-48 object-cover"
+                                    width={1920}
+                                    height={1080}
                                 />
                                 <div className="p-3">
                                     <p className="text-sm text-muted-foreground truncate">

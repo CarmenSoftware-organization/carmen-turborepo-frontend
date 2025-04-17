@@ -1,6 +1,6 @@
 import { formType } from "@/dtos/form.dto";
 import { ProductFormValues } from "./ProductDetail";
-import { Control, useFieldArray, useWatch } from "react-hook-form";
+import { Control, useFieldArray } from "react-hook-form";
 import { Card } from "@/components/ui/card";
 import {
     Table,
@@ -44,12 +44,6 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
     });
 
     const { fields: addFields, append, remove, update } = useFieldArray({
-        control,
-        name: "locations.add",
-    });
-
-    // Watch for changes in the add locations array
-    const addLocations = useWatch({
         control,
         name: "locations.add",
     });
@@ -127,6 +121,7 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
     const locationsToDisplay = calculateLocationsToDisplay();
 
     // Function to get location name for display
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const getLocationName = (location: any) => {
         // First check if location has its own location_name
         if (location.location_name) {

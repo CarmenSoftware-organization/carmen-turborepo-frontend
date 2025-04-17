@@ -9,17 +9,22 @@ import {
 	// PaginationPrevious,
 } from "@/components/ui-custom/pagination";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PaginationProps {
 	currentPage: number;
 	totalPages: number;
 	onPageChange: (page: number) => void;
+	limit?: string;
+	onLimitChange?: (newLimit: string) => void;
 }
 
 const PaginationComponent = ({
 	currentPage,
 	totalPages,
 	onPageChange,
+	limit,
+	onLimitChange,
 }: PaginationProps) => {
 
 	const handlePageChange = (newPage: number) => {
@@ -32,9 +37,25 @@ const PaginationComponent = ({
 
 	return (
 		<Pagination
-			className="flex justify-end items-center"
+			className="flex justify-between items-center"
 			data-id="pagination-container"
 		>
+			{limit && onLimitChange && (
+				<div className="flex items-center gap-2">
+					<span className="text-sm">Items per page:</span>
+					<Select value={limit} onValueChange={onLimitChange}>
+						<SelectTrigger className="w-16 h-8">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="10">10</SelectItem>
+							<SelectItem value="25">25</SelectItem>
+							<SelectItem value="50">50</SelectItem>
+							<SelectItem value="100">100</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
+			)}
 			<PaginationContent data-id="pagination-content">
 				<PaginationItem data-id="pagination-item">
 					<ChevronLeft

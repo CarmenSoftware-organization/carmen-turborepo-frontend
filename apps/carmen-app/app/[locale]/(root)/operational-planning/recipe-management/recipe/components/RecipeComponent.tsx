@@ -26,7 +26,7 @@ export default function RecipeComponent() {
     const [view, setView] = useState<VIEW>(VIEW.GRID);
     const [recipe, setRecipe] = useState<RecipeDto[]>([]);
     const [limit, setLimit] = useURL('limit', { defaultValue: '10' });
-    const [skip, setSkip] = useURL('skip', { defaultValue: '10' });
+    const [skip, setSkip] = useURL('skip', { defaultValue: '0' });
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
@@ -36,11 +36,17 @@ export default function RecipeComponent() {
         setCurrentPage(page);
     };
 
+    const handleLimitChange = (newLimit: string) => {
+        setLimit(newLimit);
+        setSkip('0');
+        setCurrentPage(1);
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const response = await fetchRecipe(`limit=${limit || '10'}&skip=${skip || '10'}`);
+                const response = await fetchRecipe(`limit=${limit || '10'}&skip=${skip || '0'}`);
                 setRecipe(response.recipes);
                 setTotalPages(Math.ceil(response.total / Number(limit)));
             } catch (error) {
@@ -138,6 +144,8 @@ export default function RecipeComponent() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={handleSkip}
+                limit={limit}
+                onLimitChange={handleLimitChange}
             />
         </div>
     )
