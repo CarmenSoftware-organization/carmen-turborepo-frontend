@@ -27,10 +27,6 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
         append({ label: "", value: "" });
     };
 
-    const handleImageChange = (value: string) => {
-        setPreviewImage(value);
-    };
-
     return (
         <div className="flex gap-4">
             <div className="w-1/2 flex flex-col gap-4">
@@ -210,10 +206,24 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
             <Card className="p-4 w-1/2">
                 <div className="flex flex-col items-center gap-4">
                     <p className="text-lg font-bold">Product Image</p>
-                    <ImageUpload
-                        value={previewImage}
-                        onChange={handleImageChange}
-                        disabled={currentMode === formType.VIEW}
+                    <FormField
+                        control={control}
+                        name="image"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <ImageUpload
+                                        value={field.value || previewImage}
+                                        onChange={(value) => {
+                                            setPreviewImage(value);
+                                            field.onChange(value);
+                                        }}
+                                        disabled={currentMode === formType.VIEW}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
                     />
                 </div>
             </Card>

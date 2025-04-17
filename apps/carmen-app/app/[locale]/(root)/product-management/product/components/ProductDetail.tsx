@@ -34,7 +34,6 @@ const productFormSchema = z.object({
     local_name: z.string().optional(),
     description: z.string().optional(),
     inventory_unit_id: z.string().uuid(),
-    inventory_unit_name: z.string().min(1, "Inventory unit name is required"),
     product_status_type: z.literal("active"),
     product_info: z.object({
         product_item_group_id: z.string().uuid(),
@@ -108,7 +107,7 @@ const productFormSchema = z.object({
         ),
         update: z.array(
             z.object({
-                product_order_unit_id: z.string().uuid(),
+                product_ingredient_unit_id: z.string().uuid(),
                 from_unit_id: z.string().uuid(),
                 from_unit_qty: z.number().min(0),
                 to_unit_id: z.string().uuid(),
@@ -120,7 +119,7 @@ const productFormSchema = z.object({
         ),
         remove: z.array(
             z.object({
-                product_order_unit_id: z.string().uuid(),
+                product_ingredient_unit_id: z.string().uuid(),
             })
         ),
     }).optional(),
@@ -158,7 +157,6 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
             description: initValues?.description ?? "",
             local_name: initValues?.local_name ?? "",
             inventory_unit_id: initValues?.inventory_unit?.id ?? "",
-            inventory_unit_name: initValues?.inventory_unit?.name ?? "",
             product_status_type: "active",
             product_info: {
                 product_item_group_id: initValues?.product_item_group?.id ?? "",
@@ -189,12 +187,22 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 remove: [],
             },
             ingredient_units: {
-                add: initValues?.ingredient_units?.add ?? [],
+                add: [],
                 update: mode === formType.EDIT && initValues?.ingredient_units ?
-                    (initValues.ingredient_units.map((loc: { from_unit_id: string; id?: string }) => ({ from_unit_id: loc.from_unit_id })) ?? [])
+                    (initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_active: boolean; is_default: boolean; }) => ({
+                        product_ingredient_unit_id: unit.id,
+                        from_unit_id: unit.from_unit_id,
+                        from_unit_qty: unit.from_unit_qty,
+                        to_unit_id: unit.to_unit_id,
+                        to_unit_qty: unit.to_unit_qty,
+                        description: unit.description || '',
+                        is_active: unit.is_active,
+                        is_default: unit.is_default
+                    })) ?? [])
                     : [],
                 remove: [],
             },
+            image: initValues?.image ?? "",
         },
         mode: "onChange",
         reValidateMode: "onChange",
@@ -229,13 +237,14 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
             }
             if (initValues.ingredient_units && initValues.ingredient_units.length > 0) {
                 form.setValue('ingredient_units.update',
-                    initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_default: boolean; }) => ({
-                        product_order_unit_id: unit.id,
+                    initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_active: boolean; is_default: boolean; }) => ({
+                        product_ingredient_unit_id: unit.id,
                         from_unit_id: unit.from_unit_id,
                         from_unit_qty: unit.from_unit_qty,
                         to_unit_id: unit.to_unit_id,
                         to_unit_qty: unit.to_unit_qty,
                         description: unit.description || '',
+                        is_active: unit.is_active,
                         is_default: unit.is_default
                     }))
                 );
@@ -385,7 +394,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
 
                 // Process existing ingredient units and removals
                 if (initValues?.ingredient_units) {
-                    const removedIngredientUnitIds = data.ingredient_units?.remove?.map(unit => unit.product_order_unit_id) || [];
+                    const removedIngredientUnitIds = data.ingredient_units?.remove?.map(unit => unit.product_ingredient_unit_id) || [];
                     updatedIngredientUnits = initValues.ingredient_units
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .filter((unit: any) => !removedIngredientUnitIds.includes(unit.id));
@@ -394,7 +403,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                     if (data.ingredient_units?.update && data.ingredient_units.update.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         updatedIngredientUnits = updatedIngredientUnits.map((unit: any) => {
-                            const updatedUnit = data.ingredient_units?.update.find(u => u.product_order_unit_id === unit.id);
+                            const updatedUnit = data.ingredient_units?.update.find(u => u.product_ingredient_unit_id === unit.id);
                             if (updatedUnit) {
                                 return {
                                     ...unit,

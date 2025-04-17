@@ -1,4 +1,4 @@
-import { Control, useFormContext } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { formType } from "@/dtos/form.dto";
@@ -21,7 +21,6 @@ interface ProductFormFieldsProps {
 export const ProductFormHeader = ({ control, currentMode, initValues }: ProductFormFieldsProps) => {
     const { itemGroups } = useItemGroup();
     const { units } = useUnit();
-    const form = useFormContext();
 
     return (
         <Card className="p-4">
@@ -115,13 +114,11 @@ export const ProductFormHeader = ({ control, currentMode, initValues }: ProductF
                             <FormLabel>Unit</FormLabel>
                             <FormControl>
                                 <Select
-                                    onValueChange={(value) => {
-                                        const selectedUnit = units.find(unit => unit.id === value);
-                                        field.onChange(value);
-                                        form.setValue('inventory_unit_name', selectedUnit?.name ?? '');
-                                    }}
                                     value={field.value}
                                     disabled={currentMode === formType.VIEW}
+                                    onValueChange={(value) => {
+                                        field.onChange(value);
+                                    }}
                                 >
                                     <FormControl>
                                         <SelectTrigger>
@@ -180,8 +177,6 @@ export const ProductFormHeader = ({ control, currentMode, initValues }: ProductF
                         </FormItem>
                     )}
                 />
-
-
             </div>
         </Card>
     );

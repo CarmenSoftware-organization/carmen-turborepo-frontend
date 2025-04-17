@@ -82,7 +82,7 @@ export default function IngredientUnitInfo({ control, currentMode, initValues, u
         if (currentMode === formType.EDIT && initValues && initValues.length > 0) {
             // Only set update fields if we're in EDIT mode and there are existing ingredient units
             replaceEdit(initValues.map(unit => ({
-                product_order_unit_id: unit.id,
+                product_ingredient_unit_id: unit.id,
                 from_unit_id: unit.from_unit_id,
                 from_unit_qty: unit.from_unit_qty,
                 to_unit_id: unit.to_unit_id,
@@ -130,9 +130,9 @@ export default function IngredientUnitInfo({ control, currentMode, initValues, u
         if (isEdit) {
             const ingredientUnitToRemove = editFields[index];
             // Add to remove array
-            const currentRemove = removeFields.map(field => field.product_order_unit_id);
-            if (!currentRemove.includes(ingredientUnitToRemove.product_order_unit_id)) {
-                replaceRemove([...removeFields, { product_order_unit_id: ingredientUnitToRemove.product_order_unit_id }]);
+            const currentRemove = removeFields.map(field => field.product_ingredient_unit_id);
+            if (!currentRemove.includes(ingredientUnitToRemove.product_ingredient_unit_id)) {
+                replaceRemove([...removeFields, { product_ingredient_unit_id: ingredientUnitToRemove.product_ingredient_unit_id }]);
             }
             // Remove from edit array
             const newEditFields = editFields.filter((_, i) => i !== index);

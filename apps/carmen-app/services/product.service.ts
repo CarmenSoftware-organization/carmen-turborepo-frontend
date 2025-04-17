@@ -1,4 +1,3 @@
-import { ProductFormDto } from "@/dtos/product.dto";
 import { backendApi } from "@/lib/backend-api";
 export const getProductService = async (accessToken: string, tenantId: string, params: {
     search?: string;
@@ -53,6 +52,7 @@ export const getProductIdService = async (accessToken: string, tenantId: string,
     return data;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const createProductService = async (accessToken: string, tenantId: string, product: any) => {
     const url = `${backendApi}/api/config/products`;
     const options = {
@@ -69,6 +69,7 @@ export const createProductService = async (accessToken: string, tenantId: string
     return data;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const updateProductService = async (accessToken: string, tenantId: string, id: string, product: any) => {
     const url = `${backendApi}/api/config/products/${id}`;
     const options = {
