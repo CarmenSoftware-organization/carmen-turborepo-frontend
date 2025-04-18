@@ -26,6 +26,7 @@ import TransactionSummary from "./TransactionSummary";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeftRightIcon, BookmarkIcon, CheckCircleIcon, FileDown, Printer, SaveIcon, ShareIcon, XCircleIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+
 interface PrFormProps {
     readonly mode: formType;
     readonly initValues?: PurchaseRequestDto;
@@ -90,125 +91,126 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                                 </Button>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-2">
-                            <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Title</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Enter title" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="type"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Type</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Enter type" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="requestor"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Requestor</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Enter requestor" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="department"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Department</FormLabel>
-                                        <FormControl>
-                                            <Input placeholder="Enter department" {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            <FormField
-                                control={form.control}
-                                name="amount"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Amount</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="Enter amount"
-                                                {...field}
-                                                onChange={(e) => field.onChange(Number(e.target.value))}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
 
                         <div className="flex flex-col md:flex-row gap-2">
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem className="w-1/2">
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Enter description"
-                                                className="resize-none min-h-[100px]"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className="w-2/3 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                                <FormField
+                                    control={form.control}
+                                    name="title"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Title</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter title" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="type"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Type</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter type" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                            <div className="w-1/2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 bg-muted p-2 rounded-md">
-                                <div className="flex flex-col items-center justify-center space-y-2">
-                                    <p className="text-sm font-medium">Current Workflow Stage</p>
-                                    <Badge className="bg-green-100 text-green-800">
-                                        <CheckCircleIcon className="w-4 h-4" />
-                                        Requestor
-                                    </Badge>
+                                <FormField
+                                    control={form.control}
+                                    name="requestor"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Requestor</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter requestor" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                                </div>
-                                <div className="flex flex-col items-center justify-center space-y-2">
-                                    <p className="text-sm font-medium">Workflow Status</p>
-                                    <Badge className="bg-yellow-100 text-yellow-800">
-                                        <CheckCircleIcon className="w-4 h-4" />
-                                        Pending
-                                    </Badge>
-                                </div>
-                                <div className="flex flex-col items-center justify-center space-y-2">
-                                    <p className="text-sm font-medium">Status</p>
-                                    <Badge className="bg-blue-100 text-blue-800">
-                                        <CheckCircleIcon className="w-4 h-4" />
-                                        Approved
-                                    </Badge>
-                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="department"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Department</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Enter department" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="amount"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Amount</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    placeholder="Enter amount"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="description"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Description</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Enter description"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                             </div>
+
+                            <Card className="w-1/3 p-4 space-y-2">
+                                <p className="text-sm font-bold">Status Information</p>
+                                <div className="border-b pb-4 space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-xs text-muted-foreground">Current Stage:</p>
+                                        <Badge variant={'default'}>Requestor</Badge>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-xs text-muted-foreground">Workflow Status:</p>
+                                        <Badge variant={'outline'}>Pending</Badge>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-xs text-muted-foreground">Document Status:</p>
+                                        <Badge variant={'outline'}>Draft</Badge>
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className="text-xs text-muted-foreground">Created:</p>
+                                    <p className="text-xs">01 Jan 2023</p>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className="text-xs text-muted-foreground">Estimated Cost:</p>
+                                    <p className="text-xs">$1,500.00</p>
+                                </div>
+
+                            </Card>
                         </div>
                     </form>
                 </Form>

@@ -7,6 +7,8 @@ import { Plus, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { SelectContent, SelectItem, SelectTrigger, SelectValue, Select } from "@/components/ui/select";
+import { useUnit } from "@/hooks/useUnit";
 
 const prStatusColor = (status: string) => {
     if (status === 'Approved') {
@@ -39,9 +41,7 @@ export default function ItemPr() {
     const [items, setItems] = useState<ItemDetailPrDto[]>(mockItemDetailPrData);
     const [newItem, setNewItem] = useState<Partial<ItemDetailPrDto>>(defaultNewItem);
     const { storeLocations } = useStoreLocation();
-
-    console.log('storeLocations', storeLocations);
-
+    const { units } = useUnit();
 
     const handleInputChange = (field: keyof ItemDetailPrDto, value: string | number) => {
         setNewItem(prev => ({
@@ -101,11 +101,11 @@ export default function ItemPr() {
                 <TableBody>
                     {items.map((item) => (
                         <TableRow key={item.id}>
-                            <TableCell>{item.location}</TableCell>
+                            <TableCell>{storeLocations.find(loc => loc.id === item.location)?.name ?? item.location}</TableCell>
                             <TableCell>{item.product_name}</TableCell>
                             <TableCell>{item.description}</TableCell>
-                            <TableCell>{item.order_unit}</TableCell>
-                            <TableCell>{item.inv_unit}</TableCell>
+                            <TableCell>{units.find(unit => unit.id === item.order_unit)?.name ?? item.order_unit}</TableCell>
+                            <TableCell>{units.find(unit => unit.id === item.inv_unit)?.name ?? item.inv_unit}</TableCell>
                             <TableCell>{item.request_qty}</TableCell>
                             <TableCell>{item.on_order_qty}</TableCell>
                             <TableCell>{item.approved_qty}</TableCell>
@@ -124,11 +124,23 @@ export default function ItemPr() {
                     {isEditing && (
                         <TableRow>
                             <TableCell>
-                                <Input
+                                <Select
                                     value={newItem.location}
-                                    onChange={(e) => handleInputChange('location', e.target.value)}
-                                    className="w-full"
-                                />
+                                    onValueChange={(value) => handleInputChange('location', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select location">
+                                            {storeLocations.find(loc => loc.id === newItem.location)?.name ?? "Select location"}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {storeLocations.map((location) => (
+                                            <SelectItem key={location.id} value={location.id ?? ''}>
+                                                {location.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </TableCell>
                             <TableCell>
                                 <Input
@@ -145,18 +157,42 @@ export default function ItemPr() {
                                 />
                             </TableCell>
                             <TableCell>
-                                <Input
+                                <Select
                                     value={newItem.order_unit}
-                                    onChange={(e) => handleInputChange('order_unit', e.target.value)}
-                                    className="w-full"
-                                />
+                                    onValueChange={(value) => handleInputChange('order_unit', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select unit">
+                                            {units.find(unit => unit.id === newItem.order_unit)?.name ?? "Select unit"}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {units.map((unit) => (
+                                            <SelectItem key={unit.id} value={unit.id ?? ''}>
+                                                {unit.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </TableCell>
                             <TableCell>
-                                <Input
+                                <Select
                                     value={newItem.inv_unit}
-                                    onChange={(e) => handleInputChange('inv_unit', e.target.value)}
-                                    className="w-full"
-                                />
+                                    onValueChange={(value) => handleInputChange('inv_unit', value)}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select unit">
+                                            {units.find(unit => unit.id === newItem.inv_unit)?.name ?? "Select unit"}
+                                        </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {units.map((unit) => (
+                                            <SelectItem key={unit.id} value={unit.id ?? ''}>
+                                                {unit.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </TableCell>
                             <TableCell>
                                 <Input

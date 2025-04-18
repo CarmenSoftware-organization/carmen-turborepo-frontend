@@ -21,6 +21,9 @@ export const useUnit = () => {
     const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+    console.log('x-tenantId', tenantId);
+
+
     useEffect(() => {
         if (search) {
             setPage('');
