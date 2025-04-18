@@ -34,9 +34,6 @@ export const getAllDeliveryPoints = async (
             'Content-Type': 'application/json',
         },
     });
-    if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-    }
     const data = await response.json();
     return data;
 }
@@ -68,7 +65,6 @@ export const updateDeliveryPoint = async (token: string, tenantId: string, deliv
         body: JSON.stringify(deliveryPoint),
     });
     const data = await response.json();
-    console.log('data', data);
     return data;
 }
 
@@ -84,7 +80,6 @@ export const inactiveDeliveryPoint = async (token: string, tenantId: string, del
         body: JSON.stringify({ ...deliveryPoint, is_active: !deliveryPoint.is_active }),
     });
     const data = await response.json();
-    console.log('data', data);
     return data;
 }
 

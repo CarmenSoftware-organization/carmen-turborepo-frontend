@@ -34,11 +34,6 @@ export const getAllUnits = async (token: string, tenantId: string,
     };
 
     const response = await fetch(url, options);
-
-    if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-    }
-
     const data = await response.json();
     return data;
 };

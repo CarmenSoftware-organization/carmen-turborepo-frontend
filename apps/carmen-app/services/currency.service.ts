@@ -35,10 +35,6 @@ export const getCurrenciesService = async (
                 'Content-Type': 'application/json',
             },
         });
-
-        if (!response.ok) {
-            throw new Error(`API responded with status: ${response.status}`);
-        }
         const data = await response.json();
         return data;
     } catch (error) {

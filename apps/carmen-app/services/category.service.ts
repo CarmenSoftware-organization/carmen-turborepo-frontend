@@ -10,7 +10,6 @@ export const getCategoryService = async (token: string, tenantId: string) => {
         },
     });
     const data = await response.json();
-    console.log('data service', data);
     return data;
 }
 
@@ -25,7 +24,6 @@ export const createCategoryService = async (token: string, tenantId: string, cat
         body: JSON.stringify(category),
     });
     const data = await response.json();
-    console.log('service create category', data);
     return data;
 }
 

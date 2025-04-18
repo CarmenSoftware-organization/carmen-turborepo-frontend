@@ -32,11 +32,6 @@ export const getAllDepartments = async (token: string, tenantId: string,
             'Content-Type': 'application/json',
         },
     });
-
-    if (!response.ok) {
-        throw new Error(`API responded with status: ${response.status}`);
-    }
-
     const data = await response.json();
     return data;
 };

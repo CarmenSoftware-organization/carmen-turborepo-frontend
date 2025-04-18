@@ -71,6 +71,8 @@ export const useDeliveryPoint = (): UseDeliveryPointReturn => {
                     sort,
                     filter
                 });
+                console.log('data >><<><<', data);
+
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     setLoginDialogOpen(true);

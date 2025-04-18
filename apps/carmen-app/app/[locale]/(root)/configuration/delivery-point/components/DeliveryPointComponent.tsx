@@ -63,6 +63,9 @@ export function DeliveryPointComponent() {
         handleEdit
     } = useDeliveryPoint();
 
+    console.log('isUnauthorized', isUnauthorized);
+
+
     const sortFields = useMemo(() => [
         { key: 'name', label: tHeader('name') },
         { key: 'is_active', label: tHeader('status') }
