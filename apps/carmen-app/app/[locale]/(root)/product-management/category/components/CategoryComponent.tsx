@@ -279,17 +279,23 @@ export default function CategoryComponent() {
                 </div>
 
                 <ScrollArea className="h-[calc(98vh-120px)] border rounded-lg">
-                    {categoryData.map((category: CategoryNode) => (
-                        <TreeNode
-                            key={category.id}
-                            node={category}
-                            expanded={expanded}
-                            toggleExpand={toggleExpand}
-                            onEdit={handleEdit}
-                            onAdd={handleAdd}
-                            onDelete={handleDelete}
-                        />
-                    ))}
+                    {categoryData.length > 0 ? (
+                        categoryData.map((category: CategoryNode) => (
+                            <TreeNode
+                                key={category.id}
+                                node={category}
+                                expanded={expanded}
+                                toggleExpand={toggleExpand}
+                                onEdit={handleEdit}
+                                onAdd={handleAdd}
+                                onDelete={handleDelete}
+                            />
+                        ))
+                    ) : (
+                        <div className="flex justify-center items-center h-full">
+                            <p className="text-muted-foreground">No categories found</p>
+                        </div>
+                    )}
                 </ScrollArea>
 
                 <CategoryDialog

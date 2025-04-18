@@ -47,6 +47,67 @@ export default function UnitList({
         onDelete(unit);
     };
 
+    const renderTableContent = () => {
+        if (isLoading) return <TableBodySkeleton columns={5} />;
+
+        if (units.length === 0) {
+            return (
+                <TableBody>
+                    <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                                <p className="text-sm text-muted-foreground">No units found</p>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            );
+        }
+
+        return (
+            <TableBody>
+                {units.map((unit, index) => (
+                    <TableRow
+                        key={`unit-row-${unit.id}`}
+                        className={cn(
+                            !unit.is_active && "line-through opacity-70"
+                        )}
+                    >
+                        <TableCell className="w-10">{index + 1}</TableCell>
+                        <TableCell className="md:w-56">{unit.name}</TableCell>
+                        <TableCell>{unit.description}</TableCell>
+                        <TableCell>
+                            <Badge variant={unit.is_active ? "default" : "destructive"}>
+                                {unit.is_active ? 'Active' : 'Inactive'}
+                            </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                            <div className="flex items-center justify-end">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleEdit(unit)}
+                                    disabled={!unit.is_active}
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="hover:text-destructive"
+                                    onClick={() => handleDelete(unit)}
+                                    disabled={!unit.is_active}
+                                >
+                                    <Trash className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        );
+    };
+
     return (
         <div className="space-y-4">
             <div className="relative">
@@ -63,50 +124,7 @@ export default function UnitList({
                 </Table>
                 <ScrollArea className="h-[calc(102vh-300px)] w-full">
                     <Table>
-                        {isLoading ? (
-                            <TableBodySkeleton columns={5} />
-                        ) : (
-                            <TableBody>
-                                {units.map((unit, index) => (
-                                    <TableRow
-                                        key={`unit-row-${unit.id}`}
-                                        className={cn(
-                                            !unit.is_active && "line-through opacity-70"
-                                        )}
-                                    >
-                                        <TableCell className="w-10">{index + 1}</TableCell>
-                                        <TableCell className="md:w-56">{unit.name}</TableCell>
-                                        <TableCell>{unit.description}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={unit.is_active ? "default" : "destructive"}>
-                                                {unit.is_active ? 'Active' : 'Inactive'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex items-center justify-end">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleEdit(unit)}
-                                                    disabled={!unit.is_active}
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="hover:text-destructive"
-                                                    onClick={() => handleDelete(unit)}
-                                                    disabled={!unit.is_active}
-                                                >
-                                                    <Trash className="h-4 w-4 text-destructive" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        )}
+                        {renderTableContent()}
                     </Table>
                 </ScrollArea>
             </div>

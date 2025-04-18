@@ -43,6 +43,63 @@ export default function DeliveryPointList({
 }: DeliveryPointListProps) {
     const t = useTranslations('TableHeader');
 
+    const renderTableContent = () => {
+        if (isLoading) return <TableBodySkeleton columns={4} />;
+
+        if (deliveryPoints.length === 0) {
+            return (
+                <TableBody>
+                    <TableRow>
+                        <TableCell colSpan={4} className="h-24 text-center">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                                <p className="text-sm text-muted-foreground">No delivery points found</p>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            );
+        }
+
+        return (
+            <TableBody>
+                {deliveryPoints.map((deliveryPoint, index) => (
+                    <TableRow
+                        key={deliveryPoint.id}
+                    >
+                        <TableCell className="w-10">{index + 1}</TableCell>
+                        <TableCell className="md:w-56">{deliveryPoint.name}</TableCell>
+                        <TableCell>
+                            <Badge variant={deliveryPoint.is_active ? "default" : "destructive"}>
+                                {deliveryPoint.is_active ? "Active" : "Inactive"}
+                            </Badge>
+                        </TableCell>
+                        <TableCell className="w-20">
+                            <div className="flex items-center justify-end">
+                                <Button
+                                    variant="ghost"
+                                    size={'sm'}
+                                    onClick={() => onEdit(deliveryPoint)}
+                                    aria-label="Edit delivery point"
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size={'sm'}
+                                    onClick={() => onToggleStatus(deliveryPoint)}
+                                    disabled={!deliveryPoint.is_active}
+                                    aria-label={deliveryPoint.is_active ? "Deactivate delivery point" : "Activate delivery point"}
+                                >
+                                    <Trash className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        );
+    };
+
     return (
         <div className="space-y-4">
             <div className="relative">
@@ -72,46 +129,7 @@ export default function DeliveryPointList({
                 </Table>
                 <ScrollArea className="h-[calc(102vh-300px)] w-full">
                     <Table>
-                        {isLoading ? (
-                            <TableBodySkeleton columns={4} />
-                        ) : (
-                            <TableBody>
-                                {deliveryPoints.map((deliveryPoint, index) => (
-                                    <TableRow
-                                        key={deliveryPoint.id}
-                                    >
-                                        <TableCell className="w-10">{index + 1}</TableCell>
-                                        <TableCell className="md:w-56">{deliveryPoint.name}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={deliveryPoint.is_active ? "default" : "destructive"}>
-                                                {deliveryPoint.is_active ? "Active" : "Inactive"}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="w-20">
-                                            <div className="flex items-center justify-end">
-                                                <Button
-                                                    variant="ghost"
-                                                    size={'sm'}
-                                                    onClick={() => onEdit(deliveryPoint)}
-                                                    aria-label="Edit delivery point"
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size={'sm'}
-                                                    onClick={() => onToggleStatus(deliveryPoint)}
-                                                    disabled={!deliveryPoint.is_active}
-                                                    aria-label={deliveryPoint.is_active ? "Deactivate delivery point" : "Activate delivery point"}
-                                                >
-                                                    <Trash className="h-4 w-4 text-destructive" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        )}
+                        {renderTableContent()}
                     </Table>
                 </ScrollArea>
             </div>
