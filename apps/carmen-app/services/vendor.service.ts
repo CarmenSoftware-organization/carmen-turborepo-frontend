@@ -40,6 +40,7 @@ export const getAllVendorService = async (token: string, tenantId: string,
         throw new Error(`API responded with status: ${response.status}`);
     }
     const data = await response.json();
+    console.log('data', data);
     return data;
 }
 

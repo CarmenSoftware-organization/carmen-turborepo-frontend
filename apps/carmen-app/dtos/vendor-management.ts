@@ -1,12 +1,10 @@
 import { z } from "zod";
 
-
 export const VendorSchema = z.object({
     id: z.string(),
     name: z.string(),
     description: z.string(),
-    info: z.any().optional(),
-    is_active: z.boolean(),
+    vendor_type: z.enum(["contact_address", "mailing_address", "register_address"]),
 });
 
 // DTO สำหรับส่งข้อมูลทั่วไป

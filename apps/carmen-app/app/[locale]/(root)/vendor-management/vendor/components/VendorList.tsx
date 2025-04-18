@@ -8,7 +8,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
@@ -57,8 +56,7 @@ export default function VendorList({
                             <TableHead className="w-10 text-center">#</TableHead>
                             <TableHead className="w-60 text-left">Name</TableHead>
                             <TableHead className="w-60 text-left">Description</TableHead>
-                            <TableHead className="w-60 text-left">Info</TableHead>
-                            <TableHead className="w-60 text-left">Status</TableHead>
+                            <TableHead className="w-60 text-left">Vendor Type</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -79,12 +77,7 @@ export default function VendorList({
                                             <TableCell className="text-center w-10">{index + 1}</TableCell>
                                             <TableCell className="font-medium w-60">{vendor.name}</TableCell>
                                             <TableCell className="text-left w-60">{vendor.description}</TableCell>
-                                            <TableCell className="text-left w-60">{vendor.info ? JSON.stringify(vendor.info) : 'N/A'}</TableCell>
-                                            <TableCell>
-                                                <Badge variant={vendor.is_active ? "default" : "secondary"}>
-                                                    {vendor.is_active ? "Active" : "Inactive"}
-                                                </Badge>
-                                            </TableCell>
+                                            <TableCell className="text-left w-60">{vendor.vendor_type}</TableCell>
                                             <TableCell className="text-right">
                                                 <Button variant="ghost" size="icon">
                                                     <Eye className="h-4 w-4" />
@@ -135,9 +128,6 @@ export default function VendorList({
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium">{vendor.name}</p>
-                                        <Badge>
-                                            {vendor.is_active ? "Active" : "Inactive"}
-                                        </Badge>
                                     </div>
                                     <div className="flex items-center gap-1">
                                         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
@@ -169,9 +159,9 @@ export default function VendorList({
                                         <p className="text-sm font-medium">{vendor.description}</p>
                                     </div>
                                     <div className="space-y-1">
-                                        <p className="text-sm text-muted-foreground">Info</p>
+                                        <p className="text-sm text-muted-foreground">Vendor Type</p>
                                         <p className="text-sm font-medium">
-                                            {vendor.info ? JSON.stringify(vendor.info) : 'N/A'}
+                                            {vendor.vendor_type}
                                         </p>
                                     </div>
                                 </div>

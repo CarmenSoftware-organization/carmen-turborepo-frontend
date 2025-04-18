@@ -31,7 +31,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { SelectTrigger } from "@/components/ui/select";
 
 interface VendorFormDialogProps {
     readonly open: boolean;
@@ -57,8 +58,7 @@ export default function VendorFormDialog({
         defaultValues: {
             name: "",
             description: "",
-            is_active: true,
-            info: null
+            vendor_type: "contact_address"
         }
     });
 
@@ -70,22 +70,27 @@ export default function VendorFormDialog({
                 form.reset({
                     name: initialData.name,
                     description: initialData.description,
-                    is_active: initialData.is_active,
-                    info: initialData.info
+                    vendor_type: initialData.vendor_type
                 });
             } else {
                 // When adding, reset to defaults
                 form.reset({
                     name: "",
                     description: "",
-                    is_active: true,
-                    info: null
+                    vendor_type: "contact_address"
                 });
             }
         }
     }, [open, mode, initialData, form]);
 
     const handleSubmit = async (data: VendorFormDto) => {
+
+        console.log('data', data);
+        console.log('mode', mode);
+        console.log('initialData', initialData);
+        console.log('token', token);
+        console.log('tenantId', tenantId);
+
         try {
             setLoading(true);
 
@@ -180,21 +185,26 @@ export default function VendorFormDialog({
 
                         <FormField
                             control={form.control}
-                            name="is_active"
+                            name="vendor_type"
                             render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <FormLabel className="text-base">
-                                            Status
-                                        </FormLabel>
-                                    </div>
+                                <FormItem>
+                                    <FormLabel>Vendor Type</FormLabel>
                                     <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            className="data-[state=checked]:bg-blue-600"
-                                        />
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select vendor type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="contact_address">Contact Address</SelectItem>
+                                                <SelectItem value="mailing_address">Mailing Address</SelectItem>
+                                                <SelectItem value="register_address">Register Address</SelectItem>
+                                            </SelectContent>
+                                        </Select>
                                     </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
