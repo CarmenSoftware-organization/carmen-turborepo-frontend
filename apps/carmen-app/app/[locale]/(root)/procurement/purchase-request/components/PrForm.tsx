@@ -24,7 +24,7 @@ import AttachmentPr from "./AttachmentPr";
 import ActivityPr from "./ActivityPr";
 import TransactionSummary from "./TransactionSummary";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowLeftRightIcon, BookmarkIcon, CheckCircleIcon, FileDown, Printer, ShareIcon, XCircleIcon } from "lucide-react";
+import { ArrowLeftRightIcon, BookmarkIcon, CheckCircleIcon, FileDown, Printer, SaveIcon, ShareIcon, XCircleIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 interface PrFormProps {
     readonly mode: formType;
@@ -76,11 +76,17 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                                     <BookmarkIcon className="w-4 h-4" />
                                     Save as Template
                                 </Button>
-                                <Button variant="outline" type="button" onClick={() => router.back()}>
+                                <Button
+                                    size={'sm'}
+                                    variant="outline"
+                                    type="button"
+                                    onClick={() => router.back()}
+                                >
                                     Cancel
                                 </Button>
-                                <Button type="submit">
-                                    {mode === formType.ADD ? "Create" : "Update"}
+                                <Button type="submit" size={'sm'}>
+                                    <SaveIcon className="w-4 h-4" />
+                                    {mode === formType.ADD ? "Save" : "Update"}
                                 </Button>
                             </div>
                         </div>
@@ -232,22 +238,28 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                     </TabsContent>
                 </Tabs>
                 <TransactionSummary />
-                {mode === formType.ADD && (
-                    <div className="flex justify-end gap-2 mt-2">
-                        <Button size={'sm'}>
-                            <CheckCircleIcon className="w-4 h-4" />
-                            Approve
-                        </Button>
-                        <Button variant={'outline'} size={'sm'}>
-                            <XCircleIcon className="w-4 h-4" />
-                            Reject
-                        </Button>
-                        <Button variant={'outline'} size={'sm'}>
-                            <ArrowLeftRightIcon className="w-4 h-4" />
-                            Send Back
-                        </Button>
-                    </div>
-                )}
+                <div className="fixed bottom-6 right-6 flex gap-2 z-50">
+                    <Button
+                        size={'sm'}
+                    >
+                        <CheckCircleIcon className="w-5 h-5" />
+                        Approve
+                    </Button>
+                    <Button
+                        variant={'destructive'}
+                        size={'sm'}
+                    >
+                        <XCircleIcon className="w-5 h-5" />
+                        Reject
+                    </Button>
+                    <Button
+                        variant={'outline'}
+                        size={'sm'}
+                    >
+                        <ArrowLeftRightIcon className="w-5 h-5" />
+                        Send Back
+                    </Button>
+                </div>
             </ScrollArea>
         </Card>
     );

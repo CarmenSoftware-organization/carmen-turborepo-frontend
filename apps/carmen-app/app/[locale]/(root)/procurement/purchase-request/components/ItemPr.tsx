@@ -2,10 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Table, TableCell, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { mockItemDetailPrData } from "@/mock-data/procurement";
 import { useState } from "react";
-import ItemPrDialog from "./ItemPrDialog";
 import { ItemDetailPrDto } from "@/dtos/procurement.dto";
-import { Plus } from "lucide-react";
+import { Plus, Check, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useStoreLocation } from "@/hooks/useStoreLocation";
 
 const prStatusColor = (status: string) => {
     if (status === 'Approved') {
@@ -16,28 +17,64 @@ const prStatusColor = (status: string) => {
         return 'bg-red-100 text-red-800'
     }
 }
-export default function ItemPr() {
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [items, setItems] = useState<ItemDetailPrDto[]>(mockItemDetailPrData);
 
-    const handleSubmit = async (data: ItemDetailPrDto) => {
-        try {
-            setIsLoading(true);
-            console.log('Form submitted:', data);
-            setItems(prevItems => [...prevItems, { ...data, id: Date.now().toString() }]);
-            setIsDialogOpen(false);
-        } catch (error) {
-            console.error('Error submitting form:', error);
-        } finally {
-            setIsLoading(false);
-        }
+const defaultNewItem: Partial<ItemDetailPrDto> = {
+    location: '',
+    product_name: '',
+    description: '',
+    order_unit: '',
+    inv_unit: '',
+    request_qty: 0,
+    on_order_qty: 0,
+    approved_qty: 0,
+    on_hand_qty: 0,
+    base_currency: '',
+    price: 0,
+    total_price: 0,
+    status: 'Pending'
+};
+
+export default function ItemPr() {
+    const [isEditing, setIsEditing] = useState(false);
+    const [items, setItems] = useState<ItemDetailPrDto[]>(mockItemDetailPrData);
+    const [newItem, setNewItem] = useState<Partial<ItemDetailPrDto>>(defaultNewItem);
+    const { storeLocations } = useStoreLocation();
+
+    console.log('storeLocations', storeLocations);
+
+
+    const handleInputChange = (field: keyof ItemDetailPrDto, value: string | number) => {
+        setNewItem(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handleSave = () => {
+        const itemToAdd = {
+            ...newItem,
+            id: Date.now().toString(),
+            total_price: Number(newItem.price) * Number(newItem.request_qty)
+        } as ItemDetailPrDto;
+
+        setItems(prev => [...prev, itemToAdd]);
+        setIsEditing(false);
+        setNewItem(defaultNewItem);
+    };
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        setNewItem(defaultNewItem);
     };
 
     return (
         <div className="space-y-4">
             <div className="flex justify-end">
-                <Button size={'sm'} onClick={() => setIsDialogOpen(true)}>
+                <Button
+                    size={'sm'}
+                    onClick={() => setIsEditing(true)}
+                    disabled={isEditing}
+                >
                     <Plus className="h-4 w-4" />
                     Add Item
                 </Button>
@@ -58,6 +95,7 @@ export default function ItemPr() {
                         <TableHead>Price</TableHead>
                         <TableHead>Total Price</TableHead>
                         <TableHead>Status</TableHead>
+                        {isEditing && <TableHead>Actions</TableHead>}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -80,16 +118,125 @@ export default function ItemPr() {
                                     {item.status}
                                 </Badge>
                             </TableCell>
+                            {isEditing && <TableCell />}
                         </TableRow>
                     ))}
+                    {isEditing && (
+                        <TableRow>
+                            <TableCell>
+                                <Input
+                                    value={newItem.location}
+                                    onChange={(e) => handleInputChange('location', e.target.value)}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    value={newItem.product_name}
+                                    onChange={(e) => handleInputChange('product_name', e.target.value)}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    value={newItem.description}
+                                    onChange={(e) => handleInputChange('description', e.target.value)}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    value={newItem.order_unit}
+                                    onChange={(e) => handleInputChange('order_unit', e.target.value)}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    value={newItem.inv_unit}
+                                    onChange={(e) => handleInputChange('inv_unit', e.target.value)}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    type="number"
+                                    value={newItem.request_qty}
+                                    onChange={(e) => handleInputChange('request_qty', Number(e.target.value))}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    type="number"
+                                    value={newItem.on_order_qty}
+                                    onChange={(e) => handleInputChange('on_order_qty', Number(e.target.value))}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    type="number"
+                                    value={newItem.approved_qty}
+                                    onChange={(e) => handleInputChange('approved_qty', Number(e.target.value))}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    type="number"
+                                    value={newItem.on_hand_qty}
+                                    onChange={(e) => handleInputChange('on_hand_qty', Number(e.target.value))}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    value={newItem.base_currency}
+                                    onChange={(e) => handleInputChange('base_currency', e.target.value)}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Input
+                                    type="number"
+                                    value={newItem.price}
+                                    onChange={(e) => handleInputChange('price', Number(e.target.value))}
+                                    className="w-full"
+                                />
+                            </TableCell>
+                            <TableCell>
+                                {Number(newItem.price) * Number(newItem.request_qty)}
+                            </TableCell>
+                            <TableCell>
+                                <Badge variant="outline" className={`rounded-full ${prStatusColor('Pending')}`}>
+                                    Pending
+                                </Badge>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex gap-2">
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        onClick={handleSave}
+                                        className="h-8 w-8"
+                                    >
+                                        <Check className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        onClick={handleCancel}
+                                        className="h-8 w-8"
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
-            <ItemPrDialog
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen}
-                onSubmit={handleSubmit}
-                isLoading={isLoading}
-            />
         </div>
     )
 }

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PurchaseRequestDto } from "@/dtos/procurement.dto";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, Mail, MoreVertical, Pencil, Trash } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -15,6 +15,7 @@ import {
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { useState } from "react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface PurchaseRequestListProps {
     readonly purchaseRequests: PurchaseRequestDto[];
@@ -123,6 +124,46 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                         <Button variant="ghost" size={'sm'} className="text-destructive">
                                             <Trash className="h-3 w-3" />
                                         </Button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 rounded-full"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <span className="sr-only">More options</span>
+                                                    <MoreVertical className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log("Approve", pr.id);
+                                                    }}
+                                                >
+                                                    Approve
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log("Reject", pr.id);
+                                                    }}
+                                                >
+                                                    Reject
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log("Send Email", pr.id);
+                                                    }}
+                                                >
+                                                    <Mail className="h-4 w-4" />
+                                                    Send Email
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -149,7 +190,7 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                 </div>
                 {purchaseRequests.map((pr) => (
                     <Card key={pr.id} className="transition-all duration-200 hover:shadow-lg hover:border-primary/50">
-                        <CardHeader className="p-4">
+                        <CardHeader className="p-4 border-b bg-muted">
                             <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-2">
                                     <Checkbox
@@ -159,13 +200,21 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                         aria-label={`Select ${pr.title}`}
                                         className="mt-1"
                                     />
-                                    <div className="flex items-center gap-2">
-                                        <div className="mt-1">
-                                            {prStatusColor(pr.status ?? '')}
-                                        </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-primary">{pr.pr_no}</p>
+                                        <p className="text-xs text-muted-foreground">{pr.date_created}</p>
+                                    </div>
+
+
+
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="mt-1">
+                                        {prStatusColor(pr.status ?? '')}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-1">
+
+                                {/* <div className="flex items-center gap-1">
                                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent" asChild>
                                         <Link href={`/procurement/purchase-request/${pr.id}`}>
                                             <Eye className="h-4 w-4" />
@@ -174,27 +223,20 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
                                         <Trash className="h-4 w-4" />
                                     </Button>
-                                </div>
+                                </div> */}
                             </div>
                         </CardHeader>
-                        <CardContent className="p-4 pt-0">
+                        <CardContent className="p-4 pt-2">
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('pr_no')}</p>
-                                    <p className="text-xs font-medium">{pr.pr_no}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('date')}</p>
-                                    <p className="text-xs font-medium">{pr.date_created}</p>
+                                <div className="space-y-1 col-span-2">
+                                    <p className="text-xs text-muted-foreground">{t('description')}</p>
+                                    <p className="text-xs font-medium line-clamp-2">{pr.description}</p>
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">{t('type')}</p>
                                     <p className="text-xs font-medium">{pr.type}</p>
                                 </div>
-                                <div className="space-y-1 col-span-2">
-                                    <p className="text-xs text-muted-foreground">{t('description')}</p>
-                                    <p className="text-xs font-medium line-clamp-2">{pr.description}</p>
-                                </div>
+
                                 <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">{t('requestor')}</p>
                                     <p className="text-xs font-medium">{pr.requestor}</p>
@@ -203,7 +245,7 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                     <p className="text-xs text-muted-foreground">{t('department')}</p>
                                     <p className="text-xs font-medium">{pr.department}</p>
                                 </div>
-                                <div className="space-y-1 col-span-2">
+                                <div className="space-y-1">
                                     <p className="text-xs text-muted-foreground">{t('amount')}</p>
                                     <p className="text-xs font-medium">{pr.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</p>
                                 </div>
