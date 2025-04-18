@@ -63,8 +63,6 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
 
     return (
         <div className="space-y-4">
-
-            {/* <pre>{JSON.stringify(selectedItems, null, 2)}</pre> */}
             <div className="hidden md:block">
                 <Table>
                     <TableHeader>
@@ -204,26 +202,12 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                         <p className="text-sm font-semibold text-primary">{pr.pr_no}</p>
                                         <p className="text-xs text-muted-foreground">{pr.date_created}</p>
                                     </div>
-
-
-
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="mt-1">
                                         {prStatusColor(pr.status ?? '')}
                                     </div>
                                 </div>
-
-                                {/* <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent" asChild>
-                                        <Link href={`/procurement/purchase-request/${pr.id}`}>
-                                            <Eye className="h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                                        <Trash className="h-4 w-4" />
-                                    </Button>
-                                </div> */}
                             </div>
                         </CardHeader>
                         <CardContent className="p-4 pt-2">

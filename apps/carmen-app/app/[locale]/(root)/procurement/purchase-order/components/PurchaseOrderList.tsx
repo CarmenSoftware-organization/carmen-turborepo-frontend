@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PurchaseOrderlDto } from "@/dtos/procurement.dto";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, MoreVertical, Pencil, Trash } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -14,6 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface PurchaseOrderListProps {
     readonly purchaseOrders: PurchaseOrderlDto[];
@@ -118,9 +119,46 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
                                         <Button variant="ghost" size={'sm'}>
                                             <Pencil className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size={'sm'}>
-                                            <Trash className="h-4 w-4 text-destructive" />
-                                        </Button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="h-8 w-8 rounded-full"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <span className="sr-only">More options</span>
+                                                    <MoreVertical className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log("Approve", po.id);
+                                                    }}
+                                                >
+                                                    Print
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log("Reject", po.id);
+                                                    }}
+                                                >
+                                                    Download
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        console.log("Send Email", po.id);
+                                                    }}
+                                                    className="text-destructive"
+                                                >
+                                                    Delete
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
                                 </TableCell>
                             </TableRow>

@@ -12,7 +12,7 @@ import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseRequestList from "./PurchaseRequestList";
 import { mockPurchaseRequests } from "@/mock-data/procurement";
-import { Link } from "@/lib/navigation";
+import DialogNewPr from "./DialogNewPr";
 
 export default function PurchaseRequestComponent() {
     const tCommon = useTranslations('Common');
@@ -20,7 +20,7 @@ export default function PurchaseRequestComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
-
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -30,15 +30,17 @@ export default function PurchaseRequestComponent() {
         { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
-    const title = "Purchase Request"
+    const title = "Purchase Request";
+
+    const handleOpenDialog = () => {
+        setDialogOpen(true);
+    };
 
     const actionButtons = (
         <div className="action-btn-container" data-id="purchase-request-action-buttons">
-            <Button size={'sm'} asChild>
-                <Link href="/procurement/purchase-request/new">
-                    <Plus className="h-4 w-4" />
-                    {tCommon('add')} Purchase Request
-                </Link>
+            <Button size={'sm'} onClick={handleOpenDialog}>
+                <Plus className="h-4 w-4" />
+                {tCommon('add')} Purchase Request
             </Button>
             <Button
                 variant="outline"
@@ -95,11 +97,14 @@ export default function PurchaseRequestComponent() {
     const content = <PurchaseRequestList purchaseRequests={mockPurchaseRequests} />
 
     return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filters}
-            content={content}
-        />
+        <>
+            <DataDisplayTemplate
+                title={title}
+                actionButtons={actionButtons}
+                filters={filters}
+                content={content}
+            />
+            <DialogNewPr open={dialogOpen} onOpenChange={setDialogOpen} />
+        </>
     )
 }
