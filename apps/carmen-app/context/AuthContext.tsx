@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { getUserProfileService } from '@/services/auth.service';
+import { getUserProfileService, updateUserBusinessUnitService } from '@/services/auth.service';
 
 interface UserInfo {
     firstname: string;
@@ -60,9 +60,21 @@ export function getServerSideToken(): string {
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
-    const [selectedTenantId, setSelectedTenantId] = useState<string>('');
+    const [tenantId, setTenantId] = useState<string>('');
     const router = useRouter();
     const pathname = usePathname();
+    const token = typeof window !== 'undefined' ? (sessionStorage.getItem('access_token') ?? '') : '';
+
+    // Initialize tenantId when user changes
+    useEffect(() => {
+        if (user?.business_unit?.length) {
+            const defaultBu = user.business_unit.find(bu => bu.is_default === true);
+            const firstBu = user.business_unit[0];
+            setTenantId(defaultBu?.id ?? firstBu?.id ?? '');
+        } else {
+            setTenantId('');
+        }
+    }, [user]);
 
     // Check for existing user data on load
     useEffect(() => {
@@ -89,7 +101,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
                 if (typeof window !== 'undefined') {
                     const storedUser = localStorage.getItem('user');
                     if (storedUser) {
-                        setUser(JSON.parse(storedUser));
+                        const parsedUser = JSON.parse(storedUser);
+                        setUser(parsedUser);
                     }
                 }
 
@@ -150,23 +163,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const hasToken = typeof window !== 'undefined' && !!sessionStorage.getItem('access_token');
 
     // Function to handle tenant change
-    const handleChangeTenant = useCallback((tenantId: string) => {
-        setSelectedTenantId(tenantId);
-    }, []);
-
-    // Get tenant ID - using selectedTenantId if set, otherwise default to first business unit or one marked as default
-    const tenantId = useMemo(() => {
-        if (selectedTenantId) return selectedTenantId;
-
-        if (!user?.business_unit?.length) return '';
-
-        // Try to find the default business unit first
-        const defaultBU = user.business_unit.find(bu => bu.is_default === true);
-        if (defaultBU) return defaultBU.id;
-
-        // Otherwise use the first one
-        return user.business_unit[0].id;
-    }, [user, selectedTenantId]);
+    const handleChangeTenant = useCallback(async (id: string) => {
+        if (!id) return;
+        console.log('tenantId >>>', id);
+        const data = await updateUserBusinessUnitService(token, id);
+        if (data) {
+            setTenantId(id);
+        }
+    }, [token]);
 
     // Context value
     const value = useMemo(() => ({
@@ -175,11 +179,11 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         user,
         setSession,
         logout,
-        token: typeof window !== 'undefined' ? (sessionStorage.getItem('access_token') ?? '') : '',
+        token,
         getServerSideToken,
         tenantId,
         handleChangeTenant,
-    }), [hasToken, isLoading, user, setSession, logout, getServerSideToken, tenantId, handleChangeTenant]);
+    }), [hasToken, isLoading, user, setSession, logout, token, getServerSideToken, tenantId, handleChangeTenant]);
 
     return (
         <AuthContext.Provider value={value}>

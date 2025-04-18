@@ -42,12 +42,13 @@ const productFormSchema = z.object({
         tax_type: z.enum(["none", "included", "excluded"]),
         tax_rate: z.number().min(0, "Tax rate must be 0 or higher"),
         price_deviation_limit: z.number().min(0, "Price deviation limit must be 0 or higher"),
-        info: z.array(
-            z.object({
+        qtn_deviation: z.number().min(0, "Quantity deviation must be 0 or higher"),
+        info: z.array(z.object({
+            attributes: z.array(z.object({
                 label: z.string().optional(),
                 value: z.string().optional(),
-            })
-        ),
+            }))
+        })).optional(),
     }),
     locations: z.object({
         add: z.array(
@@ -165,6 +166,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 tax_type: initValues?.product_info?.tax_type ?? "none",
                 tax_rate: initValues?.product_info?.tax_rate ?? 0,
                 price_deviation_limit: initValues?.product_info?.price_deviation_limit ?? 0,
+                qtn_deviation: initValues?.product_info?.qtn_deviation ?? 0,
                 info: initValues?.product_info?.info ?? [],
             },
             locations: {
@@ -174,7 +176,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
             order_units: {
                 add: [],
                 update: mode === formType.EDIT && initValues?.order_units ?
-                    (initValues.order_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_default: boolean; }) => ({
+                    initValues.order_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_default: boolean; }) => ({
                         product_order_unit_id: unit.id,
                         from_unit_id: unit.from_unit_id,
                         from_unit_qty: unit.from_unit_qty,
@@ -182,14 +184,13 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                         to_unit_qty: unit.to_unit_qty,
                         description: unit.description || '',
                         is_default: unit.is_default
-                    })) ?? [])
-                    : [],
+                    })) : [],
                 remove: [],
             },
             ingredient_units: {
                 add: [],
                 update: mode === formType.EDIT && initValues?.ingredient_units ?
-                    (initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_active: boolean; is_default: boolean; }) => ({
+                    initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_active: boolean; is_default: boolean; }) => ({
                         product_ingredient_unit_id: unit.id,
                         from_unit_id: unit.from_unit_id,
                         from_unit_qty: unit.from_unit_qty,
@@ -198,8 +199,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                         description: unit.description || '',
                         is_active: unit.is_active,
                         is_default: unit.is_default
-                    })) ?? [])
-                    : [],
+                    })) : [],
                 remove: [],
             },
             image: initValues?.image ?? "",

@@ -28,3 +28,24 @@ export const getUserProfileService = async (accessToken: string) => {
     const data = await response.json();
     return data;
 }
+
+export const updateUserBusinessUnitService = async (accessToken: string, buId: string) => {
+
+    console.log('accessToken >>>', accessToken);
+    console.log('buId >>>', buId);
+
+    const url = `${backendApi}/api/business-unit/default`
+    const options = {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+            'x-tenant-id': buId
+        },
+    }
+    const response = await fetch(url, options);
+    const data = await response.json();
+    console.log('data response >>>', data);
+
+    return data;
+}

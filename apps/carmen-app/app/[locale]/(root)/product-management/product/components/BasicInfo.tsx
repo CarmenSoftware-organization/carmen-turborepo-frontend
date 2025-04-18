@@ -18,13 +18,13 @@ interface BasicInfoProps {
 export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
     const { fields, append, remove } = useFieldArray({
         control,
-        name: "product_info.info"
+        name: "product_info.info",
     });
 
     const [previewImage, setPreviewImage] = useState<string | undefined>(undefined);
 
     const handleAddInfo = () => {
-        append({ label: "", value: "" });
+        append({ attributes: [{ label: "", value: "" }] });
     };
 
     return (
@@ -51,13 +51,13 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
                             <div key={field.id} className="flex gap-4 items-end">
                                 <FormField
                                     control={control}
-                                    name={`product_info.info.${index}.value`}
+                                    name={`product_info.info.${index}.attributes.0.value`}
                                     render={({ field: valueField }) => (
                                         <FormItem className="flex-1">
                                             <FormLabel>
                                                 <FormField
                                                     control={control}
-                                                    name={`product_info.info.${index}.label`}
+                                                    name={`product_info.info.${index}.attributes.0.label`}
                                                     render={({ field: labelField }) => (
                                                         currentMode === formType.VIEW ? (
                                                             <p>{labelField.value}</p>

@@ -82,6 +82,9 @@ export const updateProductService = async (accessToken: string, tenantId: string
         body: JSON.stringify(product)
     };
     const response = await fetch(url, options);
+
+    console.log('>>> update response', response);
+
     const data = await response.json();
     console.log("update response data", data);
     return data;
