@@ -54,6 +54,8 @@ export default function StoreLocationList({
             );
         }
 
+        console.log('storeLocations', storeLocations);
+
         return (
             <TableBody>
                 {storeLocations.map((storeLocation, index) => (

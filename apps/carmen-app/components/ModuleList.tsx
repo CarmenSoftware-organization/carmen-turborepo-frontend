@@ -46,10 +46,9 @@ export default function ModuleList() {
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="ghost">
-                    <Grip className="h-4 w-4" />
+                <Button variant="ghost" className="rounded-full w-10 h-10">
+                    <Grip className="h-5 w-5" />
                 </Button>
-
             </PopoverTrigger>
             <PopoverContent className="w-[500px]">
                 <div className="grid grid-cols-4 gap-2">

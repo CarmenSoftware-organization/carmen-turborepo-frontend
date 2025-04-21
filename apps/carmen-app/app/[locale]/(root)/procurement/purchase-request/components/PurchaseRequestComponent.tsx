@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
@@ -13,6 +13,16 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseRequestList from "./PurchaseRequestList";
 import { mockPurchaseRequests } from "@/mock-data/procurement";
 import DialogNewPr from "./DialogNewPr";
+import { VIEW } from "@/constants/enum";
+import PurchaseRequestGrid from "./PurchaseRequestGrid";
+
+const sortFields = [
+    { key: 'code', label: 'Code' },
+    { key: 'name', label: 'Name' },
+    { key: 'symbol', label: 'Symbol' },
+    { key: 'is_active', label: 'Status' },
+    { key: 'exchange_rate', label: 'Exchange Rate' },
+];
 
 export default function PurchaseRequestComponent() {
     const tCommon = useTranslations('Common');
@@ -21,14 +31,7 @@ export default function PurchaseRequestComponent() {
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [dialogOpen, setDialogOpen] = useState(false);
-
-    const sortFields = [
-        { key: 'code', label: 'Code' },
-        { key: 'name', label: 'Name' },
-        { key: 'symbol', label: 'Symbol' },
-        { key: 'is_active', label: 'Status' },
-        { key: 'exchange_rate', label: 'Exchange Rate' },
-    ];
+    const [view, setView] = useState<VIEW>(VIEW.LIST);
 
     const title = "Purchase Request";
 
@@ -62,6 +65,27 @@ export default function PurchaseRequestComponent() {
         </div>
     );
 
+    const ViewToggleButtons = () => (
+        <div className="flex items-center gap-2">
+            <Button
+                variant={view === VIEW.LIST ? 'default' : 'outline'}
+                size={'sm'}
+                onClick={() => setView(VIEW.LIST)}
+                aria-label="List view"
+            >
+                <List className="h-4 w-4" />
+            </Button>
+            <Button
+                variant={view === VIEW.GRID ? 'default' : 'outline'}
+                size={'sm'}
+                onClick={() => setView(VIEW.GRID)}
+                aria-label="Grid view"
+            >
+                <Grid className="h-4 w-4" />
+            </Button>
+        </div>
+    );
+
     const filters = (
         <div className="filter-container" data-id="pr-list-filters">
             <SearchInput
@@ -89,12 +113,16 @@ export default function PurchaseRequestComponent() {
                     <Filter className="h-4 w-4" />
                     Filter
                 </Button>
+                <ViewToggleButtons />
             </div>
-
         </div>
     );
 
-    const content = <PurchaseRequestList purchaseRequests={mockPurchaseRequests} />
+    const ViewComponent = view === VIEW.LIST ? PurchaseRequestList : PurchaseRequestGrid;
+
+    const content = (
+        <ViewComponent purchaseRequests={mockPurchaseRequests} />
+    );
 
     return (
         <>
@@ -106,5 +134,5 @@ export default function PurchaseRequestComponent() {
             />
             <DialogNewPr open={dialogOpen} onOpenChange={setDialogOpen} />
         </>
-    )
+    );
 }
