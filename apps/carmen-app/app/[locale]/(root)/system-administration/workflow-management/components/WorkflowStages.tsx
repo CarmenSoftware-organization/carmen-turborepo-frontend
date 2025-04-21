@@ -50,7 +50,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
 
 	const selectedStage = form
 		.getValues()
-		.data?.stages.find((stage) => stage.name === selectedStageName);
+		.data?.stages?.find((stage) => stage.name === selectedStageName);
 
 	const handleStageSelect = (stageName: string) => {
 		setSelectedStageName(stageName);
@@ -59,7 +59,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
 	const handleDeleteStage = (stageName: string) => {
 		const index = form
 			.getValues()
-			.data?.stages.findIndex((stage) => stage.name === stageName);
+			.data?.stages?.findIndex((stage) => stage.name === stageName);
 		remove(index);
 		//onSave(updatedStages);
 	};
