@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Eye, Mail, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 
 export interface SelectionProps {
     selectedItems: string[];
@@ -39,34 +40,53 @@ export const formatCurrency = (amount: number) => {
 
 export const ActionButtons = ({ prId }: { prId: string }) => {
     return (
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex items-center justify-end">
             <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 className="h-8 w-8"
                 aria-label="View purchase request"
                 data-id={`view-pr-${prId}`}
             >
-                <Eye className="h-4 w-4" />
+                <Eye />
             </Button>
             <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 className="h-8 w-8"
                 aria-label="Edit purchase request"
                 data-id={`edit-pr-${prId}`}
             >
-                <Pencil className="h-4 w-4" />
+                <Pencil />
             </Button>
             <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 className="h-8 w-8 text-destructive"
                 aria-label="Delete purchase request"
                 data-id={`delete-pr-${prId}`}
             >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 />
             </Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem>
+                        Approve
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        Reject
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <Mail />
+                        Send Email
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         </div>
     );
 }; 
