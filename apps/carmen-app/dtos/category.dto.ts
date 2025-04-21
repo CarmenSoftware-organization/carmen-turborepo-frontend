@@ -5,6 +5,8 @@ export const CategorySchema = z.object({
     id: z.string(),
     code: z.string(),
     name: z.string(),
+    price_deviation_limit: z.number(),
+    qty_deviation_limit: z.number(),
     description: z.string().optional(),
     is_active: z.boolean(),
 });
@@ -15,6 +17,8 @@ export const SubCategorySchema = z.object({
     id: z.string(),
     code: z.string(),
     name: z.string(),
+    price_deviation_limit: z.number(),
+    qty_deviation_limit: z.number(),
     description: z.string().optional(),
     is_active: z.boolean(),
     product_category_id: z.string(),
@@ -24,6 +28,8 @@ export const ItemGroupSchema = z.object({
     id: z.string(),
     code: z.string(),
     name: z.string(),
+    price_deviation_limit: z.number(),
+    qty_deviation_limit: z.number(),
     description: z.string().optional(),
     is_active: z.boolean(),
     product_subcategory_id: z.string(),
@@ -55,4 +61,6 @@ export type CategoryNode = {
     is_active?: boolean;
     product_category_id?: string;
     product_subcategory_id?: string;
+    price_deviation_limit?: number;
+    qty_deviation_limit?: number;
 }; 

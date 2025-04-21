@@ -45,7 +45,9 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
             name: selectedNode?.name ?? "",
             description: selectedNode?.description ?? "",
             product_category_id: selectedNode?.product_category_id || parentNode?.id || "",
-            is_active: selectedNode?.is_active ?? true
+            is_active: selectedNode?.is_active ?? true,
+            price_deviation_limit: selectedNode?.price_deviation_limit ?? 0,
+            qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0
         }
     });
 
@@ -107,6 +109,56 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         </FormItem>
                     )}
                 />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <FormField
+                        control={form.control}
+                        name="price_deviation_limit"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Price Deviation Limit</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        placeholder="Enter Price Deviation Limit"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            field.onChange(value === "" ? "" : Number(value));
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="qty_deviation_limit"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantity Deviation Limit</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        step="1"
+                                        min="0"
+                                        placeholder="Enter Quantity Deviation Limit"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            field.onChange(value === "" ? "" : Number(value));
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
                 <FormField
                     control={form.control}
                     name="description"
@@ -124,15 +176,16 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                     control={form.control}
                     name="is_active"
                     render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Status</FormLabel>
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <div className="space-y-0.5">
+                                <FormLabel className="text-base">Active</FormLabel>
+                            </div>
                             <FormControl>
                                 <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
                                 />
                             </FormControl>
-                            <FormMessage />
                         </FormItem>
                     )}
                 />

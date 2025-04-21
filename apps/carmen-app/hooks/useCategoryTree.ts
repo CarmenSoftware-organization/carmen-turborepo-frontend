@@ -49,7 +49,9 @@ export const useCategoryTree = ({
                     type: "itemGroup" as const,
                     children: [],
                     product_subcategory_id: item.product_subcategory_id,
-                    is_active: item.is_active
+                    is_active: item.is_active,
+                    price_deviation_limit: item.price_deviation_limit,
+                    qty_deviation_limit: item.qty_deviation_limit
                 }));
         };
 
@@ -65,7 +67,9 @@ export const useCategoryTree = ({
                     type: "subcategory" as const,
                     children: mapItemGroups(sub.id || ''),
                     product_category_id: sub.product_category_id,
-                    is_active: sub.is_active
+                    is_active: sub.is_active,
+                    price_deviation_limit: sub.price_deviation_limit,
+                    qty_deviation_limit: sub.qty_deviation_limit
                 }));
         };
 
@@ -77,7 +81,9 @@ export const useCategoryTree = ({
             description: cat.description,
             type: "category" as const,
             children: mapSubCategories(cat.id || ''),
-            is_active: cat.is_active
+            is_active: cat.is_active,
+            price_deviation_limit: cat.price_deviation_limit,
+            qty_deviation_limit: cat.qty_deviation_limit
         }));
     }, [categories, subCategories, itemGroups]);
 

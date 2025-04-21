@@ -23,9 +23,14 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
             name: selectedNode?.name ?? "",
             code: selectedNode?.code ?? "",
             description: selectedNode?.description ?? "",
-            is_active: true
+            is_active: true,
+            price_deviation_limit: selectedNode?.price_deviation_limit ?? 0,
+            qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0
         }
     });
+
+    console.log('selectedNode', selectedNode);
+
 
     return (
         <Form {...form}>
@@ -56,6 +61,56 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                         </FormItem>
                     )}
                 />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <FormField
+                        control={form.control}
+                        name="price_deviation_limit"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Price Deviation Limit</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        step="0.01"
+                                        min="0"
+                                        placeholder="Enter Price Deviation Limit"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            field.onChange(value === "" ? "" : Number(value));
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="qty_deviation_limit"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantity Deviation Limit</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        step="1"
+                                        min="0"
+                                        placeholder="Enter Quantity Deviation Limit"
+                                        {...field}
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            field.onChange(value === "" ? "" : Number(value));
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
                 <FormField
                     control={form.control}
                     name="description"

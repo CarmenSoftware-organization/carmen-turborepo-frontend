@@ -11,9 +11,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const grnColor = (status: string) => {
     if (status === 'Pending') {
@@ -108,14 +109,32 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                 <TableCell>
                                     <div className="flex items-center justify-end">
                                         <Button variant="ghost" size={'sm'}>
-                                            <Eye className="h-4 w-4" />
+                                            <Eye />
                                         </Button>
                                         <Button variant="ghost" size={'sm'}>
-                                            <Pencil className="h-4 w-4" />
+                                            <Pencil />
                                         </Button>
                                         <Button variant="ghost" size={'sm'}>
-                                            <Trash className="h-4 w-4 text-destructive" />
+                                            <Trash className="text-destructive" />
                                         </Button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuItem>
+                                                    Print GRN
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    Download PDF
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem>
+                                                    Copy Reference
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
                                 </TableCell>
                             </TableRow>
