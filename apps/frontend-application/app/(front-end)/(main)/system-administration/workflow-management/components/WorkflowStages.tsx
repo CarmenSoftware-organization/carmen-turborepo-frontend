@@ -91,10 +91,10 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 		const updatedStages = stages.map((stage) => {
 			if (stage.id === selectedStage.id) {
-				const updatedActions = stage.availableActions.includes(action)
-					? stage.availableActions.filter((a) => a !== action)
-					: [...stage.availableActions, action];
-				return { ...stage, availableActions: updatedActions };
+				const updatedActions = stage.available_actions.includes(action)
+					? stage.available_actions.filter((a) => a !== action)
+					: [...stage.available_actions, action];
+				return { ...stage, available_actions: updatedActions };
 			}
 			return stage;
 		});
@@ -111,29 +111,29 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 		const updatedStages = stages.map((stage) => {
 			if (stage.id === selectedStage.id) {
-				const isUserAssigned = stage.assignedUsers.some(
+				const isUserAssigned = stage.assigned_users.some(
 					(u) => u.id === user.id
 				);
 				const updatedUsers = isUserAssigned
-					? stage.assignedUsers.filter((u) => u.id !== user.id)
-					: [...stage.assignedUsers, user];
-				return { ...stage, assignedUsers: updatedUsers };
+					? stage.assigned_users.filter((u) => u.id !== user.id)
+					: [...stage.assigned_users, user];
+				return { ...stage, assigned_users: updatedUsers };
 			}
 			return stage;
 		});
 		setStages(updatedStages);
 	};
 
-	const handleHideFieldToggle = (field: 'pricePerUnit' | 'totalPrice') => {
+	const handleHideFieldToggle = (field: 'price_per_unit' | 'total_price') => {
 		if (!selectedStage) return;
 
 		const updatedStages = stages.map((stage) => {
 			if (stage.id === selectedStage.id) {
 				return {
 					...stage,
-					hideFields: {
-						...stage.hideFields,
-						[field]: !stage.hideFields[field],
+					hide_fields: {
+						...stage.hide_fields,
+						[field]: !stage.hide_fields[field],
 					},
 				};
 			}
@@ -148,13 +148,13 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 			name: `Stage ${stages.length + 1}`,
 			description: '',
 			sla: '24',
-			slaUnit: 'hours',
-			availableActions: ['Submit'],
-			hideFields: {
-				pricePerUnit: false,
-				totalPrice: false,
+			sla_unit: 'hours',
+			available_actions: ['Submit'],
+			hide_fields: {
+				price_per_unit: false,
+				total_price: false,
 			},
-			assignedUsers: [],
+			assigned_users: [],
 		};
 		setStages([...stages, newStage]);
 		setSelectedStageId(newStage.id);
@@ -173,7 +173,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 	const filteredUsers = users.filter((user) => {
 		const isAssigned =
-			selectedStage?.assignedUsers.some((u) => u.id === user.id) ?? false;
+			selectedStage?.assigned_users.some((u) => u.id === user.id) ?? false;
 		switch (userFilter) {
 			case 'assigned':
 				return isAssigned;
@@ -304,11 +304,11 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												/>
 											</div>
 											<div>
-												<Label htmlFor="slaUnit">SLA Unit</Label>
+												<Label htmlFor="sla_unit">SLA Unit</Label>
 												<Select
-													value={selectedStage.slaUnit}
+													value={selectedStage.sla_unit}
 													onValueChange={(value) =>
-														handleSelectChange('slaUnit', value)
+														handleSelectChange('sla_unit', value)
 													}
 													disabled={!isStageEditing}
 												>
@@ -332,7 +332,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 														<Button
 															key={action}
 															variant={
-																selectedStage.availableActions.includes(action)
+																selectedStage.available_actions.includes(action)
 																	? 'default'
 																	: 'outline'
 															}
@@ -359,9 +359,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 													</Label>
 													<Switch
 														id="hide-price-per-unit"
-														checked={selectedStage.hideFields.pricePerUnit}
+														checked={selectedStage.hide_fields.price_per_unit}
 														onCheckedChange={() =>
-															handleHideFieldToggle('pricePerUnit')
+															handleHideFieldToggle('price_per_unit')
 														}
 														disabled={!isStageEditing}
 													/>
@@ -375,9 +375,9 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 													</Label>
 													<Switch
 														id="hide-total-price"
-														checked={selectedStage.hideFields.totalPrice}
+														checked={selectedStage.hide_fields.total_price}
 														onCheckedChange={() =>
-															handleHideFieldToggle('totalPrice')
+															handleHideFieldToggle('total_price')
 														}
 														disabled={!isStageEditing}
 													/>
@@ -390,7 +390,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 								<TabsContent value="notifications">
 									<div className="space-y-6">
 										<div className="grid gap-6">
-											{selectedStage.availableActions.includes('Submit') && (
+											{selectedStage.available_actions.includes('Submit') && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Submit Notification</CardTitle>
@@ -411,7 +411,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 																		Requestor
 																	</Label>
 																</div>
-																{selectedStage.availableActions.includes(
+																{selectedStage.available_actions.includes(
 																	'Approve'
 																) && (
 																	<div className="flex items-center space-x-2">
@@ -446,7 +446,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes('Approve') && (
+											{selectedStage.available_actions.includes('Approve') && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Approve Notification</CardTitle>
@@ -479,7 +479,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 																		Current Approver
 																	</Label>
 																</div>
-																{selectedStage.availableActions.includes(
+																{selectedStage.available_actions.includes(
 																	'Approve'
 																) && (
 																	<div className="flex items-center space-x-2">
@@ -514,7 +514,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes('Reject') && (
+											{selectedStage.available_actions.includes('Reject') && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Reject Notification</CardTitle>
@@ -566,7 +566,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 												</Card>
 											)}
 
-											{selectedStage.availableActions.includes('Send Back') && (
+											{selectedStage.available_actions.includes('Send Back') && (
 												<Card>
 													<CardHeader>
 														<CardTitle>Send Back Notification</CardTitle>
@@ -711,7 +711,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 											<CardContent className="p-6">
 												<div className="flex justify-between items-center mb-4">
 													<span className="font-semibold">
-														Total Users: {selectedStage.assignedUsers.length} /{' '}
+														Total Users: {selectedStage.assigned_users.length} /{' '}
 														{users.length}
 													</span>
 													<Button variant="outline" size="sm">
@@ -721,7 +721,7 @@ const WorkflowStages: React.FC<WorkflowStagesProps> = ({
 
 												<div className="space-y-4">
 													{filteredUsers.map((user) => {
-														const isAssigned = selectedStage.assignedUsers.some(
+														const isAssigned = selectedStage.assigned_users.some(
 															(u) => u.id === user.id
 														);
 														return (

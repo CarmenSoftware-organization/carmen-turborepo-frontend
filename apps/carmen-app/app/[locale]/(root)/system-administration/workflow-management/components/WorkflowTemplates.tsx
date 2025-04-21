@@ -91,7 +91,7 @@ export function WorkflowTemplates() {
 		if (!activeElement) return;
 
 		const field =
-			activeElement.id === 'subjectLine' ? 'subjectLine' : 'content';
+			activeElement.id === 'subject_line' ? 'subject_line' : 'content';
 		const updatedTemplates = templates.map((template) => {
 			if (template.id === selectedTemplate.id) {
 				const currentValue = template[field] || '';
@@ -128,9 +128,9 @@ export function WorkflowTemplates() {
 		const newTemplate: Template = {
 			id: Math.max(0, ...templates.map((n) => n.id)) + 1,
 			name: '',
-			eventTrigger: 'onSubmit',
+			event_trigger: 'onSubmit',
 			description: '',
-			subjectLine: '',
+			subject_line: '',
 			content: '',
 		};
 		const updatedTemplates = [...templates, newTemplate];
@@ -234,10 +234,10 @@ export function WorkflowTemplates() {
 								<Label>Template Content</Label>
 								<div className="space-y-4 mt-2">
 									<div>
-										<Label htmlFor="subjectLine">Subject Line</Label>
+										<Label htmlFor="subject_line">Subject Line</Label>
 										<Input
-											id="subjectLine"
-											value={selectedTemplate.subjectLine}
+											id="subject_line"
+											value={selectedTemplate.subject_line}
 											onChange={handleInputChange}
 											placeholder="Enter subject line"
 											disabled={!isTemplateEditing}

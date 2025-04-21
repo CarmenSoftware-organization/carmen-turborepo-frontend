@@ -155,7 +155,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
 				const updatedUsers = isUserAssigned
 					? stage.assigned_users.filter((u) => u.id !== user.id)
 					: [...stage.assigned_users, user];
-				return { ...stage, assignedUsers: updatedUsers };
+				return { ...stage, assigned_users: updatedUsers };
 			}
 			return stage;
 		});

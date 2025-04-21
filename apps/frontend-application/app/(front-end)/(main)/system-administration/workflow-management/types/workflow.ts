@@ -22,13 +22,13 @@ export interface Stage {
 	name: string;
 	description: string;
 	sla: string;
-	slaUnit: string;
-	availableActions: string[];
-	hideFields: {
-		pricePerUnit: boolean;
-		totalPrice: boolean;
+	sla_unit: string;
+	available_actions: string[];
+	hide_fields: {
+		price_per_unit: boolean;
+		total_price: boolean;
 	};
-	assignedUsers: {
+	assigned_users: {
 		id: number;
 		name: string;
 		department: string;
@@ -53,7 +53,7 @@ export interface RoutingRule {
 	id: number;
 	name: string;
 	description: string;
-	triggerStage: string;
+	trigger_stage: string;
 	condition: RoutingCondition;
 	action: RoutingAction;
 }
@@ -61,7 +61,7 @@ export interface RoutingRule {
 export interface WorkflowNotification {
 	id: number;
 	event?: string;
-	eventTrigger?: NotificationEventTrigger;
+	event_trigger?: NotificationEventTrigger;
 	description?: string;
 	recipients?: string[];
 	channels?: NotificationChannel[];
@@ -70,15 +70,14 @@ export interface WorkflowNotification {
 export interface Template {
 	id: number;
 	name: string;
-	eventTrigger: NotificationEventTrigger;
+	event_trigger: NotificationEventTrigger;
 	description?: string;
-	subjectLine: string;
+	subject_line: string;
 	content: string;
 }
 
 export interface WorkflowData {
 	documentReferencePattern: string;
-
 	stages: Stage[];
 	routingRules: RoutingRule[];
 	notifications: WorkflowNotification[];
