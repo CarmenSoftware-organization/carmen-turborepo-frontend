@@ -106,8 +106,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
         defaultValues: transformInitialValues()
     });
 
-
-
     const onSubmit = async (data: ProductFormValues) => {
         try {
             // Create a copy of the data and remove .data properties
@@ -167,6 +165,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
         }
     };
 
+
     return (
         <div className="container mx-auto">
             <Form {...form}>
@@ -179,23 +178,23 @@ export default function FormProduct({ mode, initialValues }: Props) {
                             {currentMode === formType.VIEW ? (
                                 <>
                                     <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                        <ArrowLeft className="h-4 w-4" /> กลับ
+                                        <ArrowLeft className="h-4 w-4" /> Back
                                     </Button>
                                     <Button variant="default" size={'sm'} onClick={handleEditClick}>
-                                        <Pencil className="h-4 w-4" /> แก้ไข
+                                        <Pencil className="h-4 w-4" /> Edit
                                     </Button>
                                 </>
                             ) : (
                                 <>
                                     <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                        <X className="h-4 w-4" /> ยกเลิก
+                                        <X className="h-4 w-4" /> Cancel
                                     </Button>
                                     <Button
                                         variant="default"
                                         size={'sm'}
                                         type="submit"
                                     >
-                                        <Save className="h-4 w-4" /> บันทึก
+                                        <Save className="h-4 w-4" /> Save
                                     </Button>
                                 </>
                             )}
@@ -203,6 +202,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
                     </div>
                     <ScrollArea className="h-[calc(100vh-160px)]">
                         <BasicInfo control={form.control} currentMode={currentMode} />
+
                         <Tabs defaultValue="priceInfo" className="mt-2">
                             <TabsList>
                                 <TabsTrigger value="priceInfo">Price Info</TabsTrigger>
@@ -235,8 +235,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
                     </ScrollArea>
                 </form>
             </Form>
-
-            {/* <pre>{JSON.stringify(form.getValues(), null, 2)}</pre> */}
         </div>
     );
 } 

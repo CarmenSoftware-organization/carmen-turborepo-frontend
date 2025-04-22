@@ -4,6 +4,7 @@ export const getProductService = async (accessToken: string, tenantId: string, p
     page?: string;
     perPage?: string;
     sort?: string;
+    filter?: string;
 }) => {
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {

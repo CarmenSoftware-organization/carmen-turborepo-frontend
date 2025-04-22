@@ -8,8 +8,9 @@ import { useEffect, useState } from "react";
 import SignInDialog from "@/components/SignInDialog";
 import FormProduct from "../components/form/FormProduct";
 import { ProductFormValues } from "../pd-schema";
+
 export default function ProductEdit() {
-    const { token, tenantId } = useAuth();
+    const { token, tenantId, isLoading: authLoading } = useAuth();
     const params = useParams();
     const id = typeof params.id === 'string' ? params.id : params.id[0];
     const [product, setProduct] = useState<ProductFormValues | undefined>(undefined);
@@ -17,6 +18,11 @@ export default function ProductEdit() {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
     useEffect(() => {
+        // Only fetch product when token and tenantId are available and auth is not loading
+        if (!token || !tenantId || authLoading) {
+            return;
+        }
+
         const fetchProduct = async () => {
             try {
                 const data = await getProductIdService(token, tenantId, id);
@@ -33,9 +39,10 @@ export default function ProductEdit() {
         };
 
         fetchProduct();
-    }, [token, tenantId, id]);
+    }, [token, tenantId, id, authLoading]);
 
-    if (loading) {
+    // Show loading state if auth is still loading or we're fetching product data
+    if (authLoading || (loading && token && tenantId)) {
         return <div>Loading product information...</div>;
     }
 
