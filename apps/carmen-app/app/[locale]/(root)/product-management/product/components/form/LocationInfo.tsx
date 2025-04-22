@@ -1,9 +1,8 @@
 import { Control, useFieldArray, useFormContext } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { ProductFormValues } from "../../pd-schema";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
@@ -70,7 +69,7 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
         name: "locations.add"
     });
 
-    const { fields: locationRemoveFields, append: appendLocationRemove, remove: removeLocationRemove } = useFieldArray({
+    const { append: appendLocationRemove } = useFieldArray({
         control,
         name: "locations.remove"
     });
@@ -114,154 +113,152 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
 
             {/* Locations Table */}
             {hasLocations && (
-                <div className="rounded-md border">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Location Name</TableHead>
-                                <TableHead>Type</TableHead>
-                                <TableHead>Description</TableHead>
-                                <TableHead>Delivery Point</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Action</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {/* Existing Locations */}
-                            {displayLocations.map((location) => {
-                                const storeLocation = storeLocations.find(loc => loc.id === location.location_id) as StoreLocation;
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Location Name</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Delivery Point</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Action</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {/* Existing Locations */}
+                        {displayLocations.map((location) => {
+                            const storeLocation = storeLocations.find(loc => loc.id === location.location_id) as StoreLocation;
 
-                                return (
-                                    <TableRow key={location.id}>
-                                        <TableCell className="font-medium">
-                                            {storeLocation?.name ?? "Unknown Location"}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                variant="secondary"
-                                                className={getLocationTypeColor(storeLocation?.location_type ?? '')}
-                                            >
-                                                {storeLocation?.location_type ?? 'Unknown Type'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-gray-500">
-                                            {storeLocation?.description || '-'}
-                                        </TableCell>
-                                        <TableCell className="text-gray-500">
-                                            {storeLocation?.delivery_point?.name || '-'}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary" className={storeLocation?.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                                                {storeLocation?.is_active ? 'Active' : 'Inactive'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
+                            return (
+                                <TableRow key={location.id}>
+                                    <TableCell className="font-medium">
+                                        {storeLocation?.name ?? "Unknown Location"}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant="secondary"
+                                            className={getLocationTypeColor(storeLocation?.location_type ?? '')}
+                                        >
+                                            {storeLocation?.location_type ?? 'Unknown Type'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-gray-500">
+                                        {storeLocation?.description || '-'}
+                                    </TableCell>
+                                    <TableCell className="text-gray-500">
+                                        {storeLocation?.delivery_point?.name || '-'}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="secondary" className={storeLocation?.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                                            {storeLocation?.is_active ? 'Active' : 'Inactive'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Remove Location</AlertDialogTitle>
+                                                    <AlertDialogDescription className="space-y-2">
+                                                        <p>Are you sure you want to remove this location?</p>
+                                                        <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
+                                                            <p><span className="font-semibold">Location ID:</span> {location.id}</p>
+                                                            <p><span className="font-semibold">Name:</span> {storeLocation?.name}</p>
+                                                            <p><span className="font-semibold">Type:</span> {storeLocation?.location_type}</p>
+                                                        </div>
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        onClick={() => appendLocationRemove({ id: location.id })}
                                                     >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>Remove Location</AlertDialogTitle>
-                                                        <AlertDialogDescription className="space-y-2">
-                                                            <p>Are you sure you want to remove this location?</p>
-                                                            <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
-                                                                <p><span className="font-semibold">Location ID:</span> {location.id}</p>
-                                                                <p><span className="font-semibold">Name:</span> {storeLocation?.name}</p>
-                                                                <p><span className="font-semibold">Type:</span> {storeLocation?.location_type}</p>
-                                                            </div>
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction
-                                                            onClick={() => appendLocationRemove({ id: location.id })}
-                                                        >
-                                                            Remove
-                                                        </AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
+                                                        Remove
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
 
-                            {/* New Locations */}
-                            {locationFields.map((field, index) => {
-                                const selectedLocationId = watch(`locations.add.${index}.location_id`);
-                                const storeLocation = storeLocations.find(loc => loc.id === selectedLocationId) as StoreLocation;
+                        {/* New Locations */}
+                        {locationFields.map((field, index) => {
+                            const selectedLocationId = watch(`locations.add.${index}.location_id`);
+                            const storeLocation = storeLocations.find(loc => loc.id === selectedLocationId) as StoreLocation;
 
-                                return (
-                                    <TableRow key={field.id}>
-                                        <TableCell className="font-medium">
-                                            <FormField
-                                                control={control}
-                                                name={`locations.add.${index}.location_id`}
-                                                render={({ field }) => (
-                                                    <FormItem className="flex-1 space-y-0">
-                                                        <FormControl>
-                                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Select location" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {storeLocations.map((location) => (
-                                                                        <SelectItem
-                                                                            key={location.id}
-                                                                            value={location.id?.toString() ?? ""}
-                                                                        >
-                                                                            {location.name}
-                                                                        </SelectItem>
-                                                                    ))}
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge
-                                                variant="secondary"
-                                                className={getLocationTypeColor(storeLocation?.location_type ?? '')}
-                                            >
-                                                {storeLocation?.location_type ?? 'Select Location'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-gray-500">
-                                            {storeLocation?.description || '-'}
-                                        </TableCell>
-                                        <TableCell className="text-gray-500">
-                                            {storeLocation?.delivery_point?.name || '-'}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary" className={storeLocation?.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                                                {storeLocation?.is_active ? 'Active' : 'Inactive'}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => removeLocation(index)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </div>
+                            return (
+                                <TableRow key={field.id}>
+                                    <TableCell className="font-medium">
+                                        <FormField
+                                            control={control}
+                                            name={`locations.add.${index}.location_id`}
+                                            render={({ field }) => (
+                                                <FormItem className="flex-1 space-y-0">
+                                                    <FormControl>
+                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                            <SelectTrigger>
+                                                                <SelectValue placeholder="Select location" />
+                                                            </SelectTrigger>
+                                                            <SelectContent>
+                                                                {storeLocations.map((location) => (
+                                                                    <SelectItem
+                                                                        key={location.id}
+                                                                        value={location.id?.toString() ?? ""}
+                                                                    >
+                                                                        {location.name}
+                                                                    </SelectItem>
+                                                                ))}
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge
+                                            variant="secondary"
+                                            className={getLocationTypeColor(storeLocation?.location_type ?? '')}
+                                        >
+                                            {storeLocation?.location_type ?? 'Select Location'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-gray-500">
+                                        {storeLocation?.description || '-'}
+                                    </TableCell>
+                                    <TableCell className="text-gray-500">
+                                        {storeLocation?.delivery_point?.name || '-'}
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant="secondary" className={storeLocation?.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                                            {storeLocation?.is_active ? 'Active' : 'Inactive'}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => removeLocation(index)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
             )}
         </div>
     );
