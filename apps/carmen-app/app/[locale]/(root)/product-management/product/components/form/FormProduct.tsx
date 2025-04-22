@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/tabs"
 import { mockStockInventoryData } from "@/mock-data/stock-invent";
 import InventoryInfo from "./InventoryInfo";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface Props {
     readonly mode: formType;
@@ -130,21 +131,24 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 }
             };
 
-            console.log('>>> submitData', submitData);
-
-            let response;
             if (mode === formType.ADD) {
-                response = await createProductService(token, tenantId, submitData);
-                console.log('>>> create res', response);
+                const result = await createProductService(token, tenantId, submitData);
+                toastSuccess({ message: "Product created successfully" });
+                setCurrentMode(formType.VIEW);
+                if (result?.id) {
+                    router.replace(`/product-management/product/${result.id}`);
+                }
             } else {
                 if (!submitData.id) {
                     throw new Error('Product ID is required for update');
                 }
-                response = await updateProductService(token, tenantId, submitData.id, submitData);
-                console.log('>>> update res', response);
+                await updateProductService(token, tenantId, submitData.id, submitData);
+                toastSuccess({ message: "Product updated successfully" });
+                setCurrentMode(formType.VIEW);
             }
         } catch (error) {
             console.error('Error submitting form:', error);
+            toastError({ message: "Error submitting form" });
         }
     };
 

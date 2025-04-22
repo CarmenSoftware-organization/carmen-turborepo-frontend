@@ -25,30 +25,49 @@ export const useUnit = () => {
         if (search) {
             setPage('');
             setSort('');
-
         }
     }, [search, setPage, setSort]);
 
     useEffect(() => {
         const fetchUnits = async () => {
-            if (!token) return;
+            if (!token || !tenantId) {
+                setIsUnauthorized(true);
+                setIsLoading(false);
+                return;
+            }
+
             try {
                 setIsLoading(true);
-                const data = await getAllUnits(token, tenantId, {
-                    search,
-                    page,
-                    sort,
-                    filter
-                });
+
+                const safeParams = {
+                    search: search || undefined,
+                    page: page || undefined,
+                    sort: sort || undefined,
+                    filter: filter || undefined
+                };
+
+                const data = await getAllUnits(token, tenantId, safeParams);
+
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     return;
                 }
+
+                if (!data.data || !data.paginate) {
+                    console.error('Unexpected API response format:', data);
+                    toastError({ message: 'Unexpected data format from API' });
+                    setUnits([]);
+                    setTotalPages(1);
+                    return;
+                }
+
                 setUnits(data.data);
                 setTotalPages(data.paginate.pages);
             } catch (error) {
                 console.error('Error fetching units:', error);
                 toastError({ message: 'Error fetching units' });
+                setUnits([]);
+                setTotalPages(1);
             } finally {
                 setIsLoading(false);
             }

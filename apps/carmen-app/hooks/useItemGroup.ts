@@ -11,22 +11,41 @@ export const useItemGroup = () => {
     const [itemGroups, setItemGroups] = useState<ItemGroupDto[]>([]);
     const [isPending, startTransition] = useTransition();
     const [isUnauthorized, setIsUnauthorized] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     const fetchItemGroups = useCallback(() => {
-        if (!token) return;
+        if (!token || !tenantId) {
+            setIsUnauthorized(true);
+            setIsLoading(false);
+            return;
+        }
 
         const fetchData = async () => {
             try {
+                setIsLoading(true);
                 setIsUnauthorized(false);
+
                 const data = await getItemGroupService(token, tenantId);
+
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     return;
                 }
+
+                if (!data.data) {
+                    console.error('Unexpected API response format:', data);
+                    toastError({ message: 'Unexpected data format from API' });
+                    setItemGroups([]);
+                    return;
+                }
+
                 setItemGroups(data.data);
             } catch (error) {
                 console.error('Error fetching item groups:', error);
                 toastError({ message: 'Error fetching item groups' });
+                setItemGroups([]);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -38,38 +57,57 @@ export const useItemGroup = () => {
     }, [fetchItemGroups]);
 
     const handleSubmit = useCallback((data: ItemGroupDto, mode: formType, selectedItemGroup?: ItemGroupDto) => {
-        if (!token) return Promise.reject(new Error('No token available'));
+        if (!token || !tenantId) {
+            toastError({ message: 'Authentication required' });
+            return Promise.reject(new Error('No token or tenant ID available'));
+        }
 
         const submitAdd = async () => {
             try {
                 const result = await createItemGroupService(token, tenantId, data);
+
+                if (!result || !result.id) {
+                    toastError({ message: 'Failed to create item group' });
+                    return null;
+                }
+
                 const newItemGroup: ItemGroupDto = {
                     ...data,
                     id: result.id,
                 };
-                setItemGroups([...itemGroups, newItemGroup]);
+                setItemGroups(prev => [...prev, newItemGroup]);
                 return result;
             } catch (error) {
                 console.error('Error creating item group:', error);
+                toastError({ message: 'Error creating item group' });
                 throw error;
             }
         };
 
         const submitEdit = async () => {
+            if (!selectedItemGroup || !selectedItemGroup.id) {
+                toastError({ message: 'Item group ID is required for update' });
+                return Promise.reject(new Error('Item group ID is required'));
+            }
+
             try {
                 const updatedItemGroup: ItemGroupDto = {
                     ...data,
-                    id: selectedItemGroup!.id,
+                    id: selectedItemGroup.id,
                 };
                 const result = await updateItemGroupService(token, tenantId, updatedItemGroup);
+
+                if (!result) {
+                    toastError({ message: 'Failed to update item group' });
+                    return null;
+                }
+
                 const id = updatedItemGroup.id;
-                const updatedItemGroups = itemGroups.map(c =>
-                    c.id === id ? updatedItemGroup : c
-                );
-                setItemGroups(updatedItemGroups);
+                setItemGroups(prev => prev.map(c => c.id === id ? updatedItemGroup : c));
                 return result;
             } catch (error) {
                 console.error('Error updating item group:', error);
+                toastError({ message: 'Error updating item group' });
                 throw error;
             }
         };
@@ -82,28 +120,43 @@ export const useItemGroup = () => {
     }, [token, tenantId, itemGroups]);
 
     const handleDelete = useCallback((itemGroup: ItemGroupDto) => {
-        if (!token) return Promise.reject(new Error('No token available'));
+        if (!token || !tenantId) {
+            toastError({ message: 'Authentication required' });
+            return Promise.reject(new Error('No token or tenant ID available'));
+        }
+
+        if (!itemGroup || !itemGroup.id) {
+            toastError({ message: 'Item group ID is required for deletion' });
+            return Promise.reject(new Error('Item group ID is required'));
+        }
 
         const submitDelete = async () => {
             try {
-                const result = await deleteItemGroupService(token, tenantId, itemGroup.id ?? '');
-                const updatedItemGroups = itemGroups.filter(c => c.id !== itemGroup.id);
-                setItemGroups(updatedItemGroups);
+                const result = await deleteItemGroupService(token, tenantId, itemGroup.id);
+
+                if (!result) {
+                    toastError({ message: 'Failed to delete item group' });
+                    return null;
+                }
+
+                setItemGroups(prev => prev.filter(c => c.id !== itemGroup.id));
                 return result;
             } catch (error) {
                 console.error('Error deleting item group:', error);
+                toastError({ message: 'Error deleting item group' });
                 throw error;
             }
         };
 
         return submitDelete();
-    }, [token, tenantId, itemGroups]);
+    }, [token, tenantId]);
 
 
     return {
         itemGroups,
         isPending,
         isUnauthorized,
+        isLoading,
         fetchItemGroups,
         handleSubmit,
         handleDelete
