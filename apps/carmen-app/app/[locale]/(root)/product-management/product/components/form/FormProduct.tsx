@@ -36,10 +36,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
     const { token, tenantId } = useAuth();
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const router = useRouter();
-
-    console.log('>>> initialValues', initialValues);
-
-    // Transform initialValues to match form structure
     const transformInitialValues = () => {
         if (!initialValues) return undefined;
 
@@ -239,6 +235,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
                     </ScrollArea>
                 </form>
             </Form>
+
+            {/* <pre>{JSON.stringify(form.getValues(), null, 2)}</pre> */}
         </div>
     );
 } 

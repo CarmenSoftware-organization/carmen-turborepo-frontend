@@ -32,6 +32,7 @@ export default function ProductInfo({ control, currentMode }: ProductInfoProps) 
                     size="sm"
                     onClick={handleAddAttribute}
                     className="flex items-center gap-2"
+                    disabled={currentMode === formType.VIEW}
                 >
                     <Plus className="h-4 w-4" />
                     Add Attribute

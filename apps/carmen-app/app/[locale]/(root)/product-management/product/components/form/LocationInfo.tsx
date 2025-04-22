@@ -3,7 +3,7 @@ import { formType } from "@/dtos/form.dto";
 import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
 import { Badge } from "@/components/ui/badge";
@@ -103,6 +103,7 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                     variant="default"
                     size="sm"
                     onClick={() => appendLocation({ location_id: "" })}
+                    disabled={currentMode === formType.VIEW}
                 >
                     <Plus />
                     Add Location
@@ -157,9 +158,11 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
-                                                    size="icon"
+                                                    size="sm"
+                                                    className="text-destructive"
+                                                    disabled={currentMode === formType.VIEW}
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    <Trash className="h-4 w-4" />
                                                 </Button>
                                             </AlertDialogTrigger>
                                             <AlertDialogContent>
@@ -249,7 +252,7 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                                             size="icon"
                                             onClick={() => removeLocation(index)}
                                         >
-                                            <Trash2 className="h-4 w-4" />
+                                            <Trash className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
                                 </TableRow>

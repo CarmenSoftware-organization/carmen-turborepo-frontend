@@ -43,7 +43,7 @@ export const productFormSchema = z.object({
             is_default: z.boolean()
         })),
         update: z.array(z.object({
-            id: z.string().uuid(),
+            product_order_unit_id: z.string().uuid(),
             from_unit_id: z.string().uuid(),
             from_unit_qty: z.number().min(0),
             to_unit_id: z.string().uuid(),
@@ -67,7 +67,7 @@ export const productFormSchema = z.object({
             is_default: z.boolean()
         })),
         update: z.array(z.object({
-            id: z.string().uuid(),
+            product_ingredient_unit_id: z.string().uuid(),
             from_unit_id: z.string().uuid(),
             from_unit_qty: z.number().min(0),
             to_unit_id: z.string().uuid(),

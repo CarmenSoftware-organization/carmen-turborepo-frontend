@@ -8,18 +8,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect } from "react";
 
 export default function TenantList() {
     const { user, tenantId, handleChangeTenant, isLoading } = useAuth();
 
-    useEffect(() => {
-        console.log('TenantList rendered with:', {
-            tenantId,
-            businessUnits: user?.business_unit,
-            isLoading
-        });
-    }, [tenantId, user, isLoading]);
 
     // Don't render while loading or if we don't have the necessary data
     if (isLoading || !user?.business_unit?.length) {

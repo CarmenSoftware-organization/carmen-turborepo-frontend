@@ -28,6 +28,7 @@ export default function PriceInfo({ control, currentMode }: PriceInfoProps) {
                                     placeholder="Enter price"
                                     {...field}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                    disabled={currentMode === formType.VIEW}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -41,7 +42,7 @@ export default function PriceInfo({ control, currentMode }: PriceInfoProps) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Tax Type</FormLabel>
-                            <Select onValueChange={field.onChange} value={field.value}>
+                            <Select onValueChange={field.onChange} value={field.value} disabled={currentMode === formType.VIEW}>
                                 <FormControl>
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select tax type" />
@@ -70,6 +71,7 @@ export default function PriceInfo({ control, currentMode }: PriceInfoProps) {
                                     placeholder="Enter tax rate"
                                     {...field}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                    disabled={currentMode === formType.VIEW}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -89,6 +91,7 @@ export default function PriceInfo({ control, currentMode }: PriceInfoProps) {
                                     placeholder="Enter price deviation limit"
                                     {...field}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                    disabled={currentMode === formType.VIEW}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -108,6 +111,7 @@ export default function PriceInfo({ control, currentMode }: PriceInfoProps) {
                                     placeholder="Enter quantity deviation limit"
                                     {...field}
                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                    disabled={currentMode === formType.VIEW}
                                 />
                             </FormControl>
                             <FormMessage />
@@ -124,6 +128,7 @@ export default function PriceInfo({ control, currentMode }: PriceInfoProps) {
                                 <Switch
                                     checked={field.value}
                                     onCheckedChange={field.onChange}
+                                    disabled={currentMode === formType.VIEW}
                                 />
                             </FormControl>
                             <FormLabel>Is Ingredients</FormLabel>
