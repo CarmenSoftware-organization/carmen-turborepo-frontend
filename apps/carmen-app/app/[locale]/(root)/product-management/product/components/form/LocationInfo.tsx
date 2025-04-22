@@ -98,17 +98,15 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
         <div className="rounded-lg border p-6 space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">Locations</h2>
-                <div className="space-x-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => appendLocation({ location_id: "" })}
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Location
-                    </Button>
-                </div>
+                <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    onClick={() => appendLocation({ location_id: "" })}
+                >
+                    <Plus />
+                    Add Location
+                </Button>
             </div>
 
             {/* Locations Table */}
