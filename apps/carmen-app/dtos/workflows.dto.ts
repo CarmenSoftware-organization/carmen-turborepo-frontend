@@ -1,36 +1,29 @@
-import { z } from 'zod';
-
+import { z } from "zod";
 
 export enum enum_workflow_type {
-  purchase_request = 'purchase_request',
-  purchase_order = 'purchase_order',
-  store_requisition = 'store_requisition',
+  purchase_request = "purchase_request",
+  purchase_order = "purchase_order",
+  store_requisition = "store_requisition",
 }
 
 export const workflowTypeField = [
-  { label: 'Purchase Request', value: enum_workflow_type.purchase_request },
-  { label: 'Purchase Order', value: enum_workflow_type.purchase_order },
-  { label: 'Store Requisition', value: enum_workflow_type.store_requisition },
+  { label: "Purchase Request", value: enum_workflow_type.purchase_request },
+  { label: "Purchase Order", value: enum_workflow_type.purchase_order },
+  { label: "Store Requisition", value: enum_workflow_type.store_requisition },
 ];
 
 export enum enum_sla_unit {
-  minutes = 'minutes',
-  hours = 'hours',
-  days = 'days',
+  minutes = "minutes",
+  hours = "hours",
+  days = "days",
 }
 
+export type OperatorType = "eq" | "lt" | "gt" | "lte" | "gte";
+export type ActionType = "SKIP_STAGE" | "NEXT_STAGE";
+export type NotificationChannel = "Email" | "System";
+export type NotificationEventTrigger = "onSubmit" | "onApprove" | "onReject" | "onSendBack" | "onSLA";
 
-export type OperatorType = 'eq' | 'lt' | 'gt' | 'lte' | 'gte';
-export type ActionType = 'SKIP_STAGE' | 'NEXT_STAGE';
-export type NotificationChannel = 'Email' | 'System';
-export type NotificationEventTrigger =
-  | 'onSubmit'
-  | 'onApprove'
-  | 'onReject'
-  | 'onSendBack'
-  | 'onSLA';
-
-export type PageMode = 'add' | 'edit' | 'view';
+export type PageMode = "add" | "edit" | "view";
 
 export interface Product {
   id: number;
@@ -149,11 +142,7 @@ export const wfFormSchema = z.object({
           name: z.string().min(1).max(50),
           description: z.string(),
           sla: z.string(),
-          sla_unit: z.enum([
-            enum_sla_unit.minutes,
-            enum_sla_unit.hours,
-            enum_sla_unit.days,
-          ]),
+          sla_unit: z.enum([enum_sla_unit.minutes, enum_sla_unit.hours, enum_sla_unit.days]),
           available_actions: z.object({
             submit: z.object({
               is_active: z.boolean(),
@@ -206,14 +195,14 @@ export const wfFormSchema = z.object({
         z.object({
           name: z.string(),
           description: z.string(),
-          triggerStage: z.string(),
+          trigger_stage: z.string(),
           condition: z.object({
             field: z.string(),
-            operator: z.enum(['eq', 'lt', 'gt', 'lte', 'gte']),
+            operator: z.enum(["eq", "lt", "gt", "lte", "gte"]),
             value: z.string(),
           }),
           action: z.object({
-            type: z.enum(['SKIP_STAGE', 'NEXT_STAGE']),
+            type: z.enum(["SKIP_STAGE", "NEXT_STAGE"]),
             target_stage: z.string(),
           }),
         })

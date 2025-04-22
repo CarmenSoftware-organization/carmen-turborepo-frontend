@@ -76,7 +76,7 @@ const WorkflowNotifications: React.FC<WorkflowNotificationsProps> = ({
 		const newNotification: WorkflowNotification = {
 			id: Math.max(0, ...notifications.map((n) => n.id)) + 1,
 			event: '',
-			eventTrigger: 'onSubmit',
+			event_trigger: 'onSubmit',
 			description: '',
 			recipients: [],
 			channels: [],
@@ -146,14 +146,14 @@ const WorkflowNotifications: React.FC<WorkflowNotificationsProps> = ({
 								/>
 							</div>
 							<div>
-								<Label htmlFor="eventTrigger">Event Trigger</Label>
+								<Label htmlFor="event_trigger">Event Trigger</Label>
 								<Select
-									value={selectedNotification.eventTrigger}
+									value={selectedNotification.event_trigger}
 									onValueChange={(value) =>
-										handleSelectChange('eventTrigger', value)
+										handleSelectChange('event_trigger', value)
 									}
 								>
-									<SelectTrigger id="eventTrigger">
+									<SelectTrigger id="event_trigger">
 										<SelectValue placeholder="Select event trigger" />
 									</SelectTrigger>
 									<SelectContent>

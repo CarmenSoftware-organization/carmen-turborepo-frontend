@@ -140,7 +140,7 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 			id: Math.max(0, ...rules.map((r) => r.id)) + 1,
 			name: '',
 			description: '',
-			triggerStage: stages[0] || '',
+			trigger_stage: stages[0] || '',
 			condition: { field: '', operator: 'eq', value: '' },
 			action: { type: 'NEXT_STAGE', parameters: { targetStage: '' } },
 		};
@@ -244,17 +244,17 @@ const WorkflowRouting: React.FC<WorkflowRoutingProps> = ({
 								/>
 							</div>
 							<div>
-								<Label htmlFor="triggerStage">Trigger Stage</Label>
+								<Label htmlFor="trigger_stage">Trigger Stage</Label>
 								<Select
-									value={selectedRule.triggerStage}
+									value={selectedRule.trigger_stage}
 									onValueChange={(value) =>
 										handleInputChange({
-											target: { id: 'triggerStage', value },
+											target: { id: 'trigger_stage', value },
 										} as never)
 									}
 									disabled={!isRuleEditing}
 								>
-									<SelectTrigger id="triggerStage">
+									<SelectTrigger id="trigger_stage">
 										<SelectValue placeholder="Select trigger stage" />
 									</SelectTrigger>
 									<SelectContent>
