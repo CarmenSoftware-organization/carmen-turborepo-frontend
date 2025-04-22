@@ -7,8 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PriceInfoProps {
-    control: Control<ProductFormValues>;
-    currentMode: formType;
+    readonly control: Control<ProductFormValues>;
+    readonly currentMode: formType;
 }
 
 export default function PriceInfo({ control, currentMode }: PriceInfoProps) {

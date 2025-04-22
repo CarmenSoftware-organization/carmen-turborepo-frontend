@@ -12,7 +12,20 @@ import PriceInfo from "./PriceInfo";
 import LocationInfo from "./LocationInfo";
 import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
+import ProductInfo from "./ProductInfo";
 import { ProductFormValues, productFormSchema } from "../../pd-schema";
+import { useState } from "react";
+import { useRouter } from "@/lib/navigation";
+import { ArrowLeft, Pencil, Save, X } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs"
+import { mockStockInventoryData } from "@/mock-data/stock-invent";
+import InventoryInfo from "./InventoryInfo";
 
 interface Props {
     readonly mode: formType;
@@ -21,6 +34,10 @@ interface Props {
 
 export default function FormProduct({ mode, initialValues }: Props) {
     const { token, tenantId } = useAuth();
+    const [currentMode, setCurrentMode] = useState<formType>(mode);
+    const router = useRouter();
+
+    console.log('>>> initialValues', initialValues);
 
     // Transform initialValues to match form structure
     const transformInitialValues = () => {
@@ -76,6 +93,14 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 add: [],
                 update: [],
                 remove: []
+            },
+            product_category: {
+                id: initialValues.product_category?.id,
+                name: initialValues.product_category?.name,
+            },
+            product_sub_category: {
+                id: initialValues.product_sub_category?.id,
+                name: initialValues.product_sub_category?.name,
             }
         };
     };
@@ -84,6 +109,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
         resolver: zodResolver(productFormSchema),
         defaultValues: transformInitialValues()
     });
+
+
 
     const onSubmit = async (data: ProductFormValues) => {
         try {
@@ -127,29 +154,91 @@ export default function FormProduct({ mode, initialValues }: Props) {
         }
     };
 
-    return (
-        <div className="space-y-6">
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <BasicInfo control={form.control} currentMode={mode} />
-                    <PriceInfo control={form.control} currentMode={mode} />
-                    <LocationInfo control={form.control} currentMode={mode} />
-                    <OrderUnit control={form.control} currentMode={mode} />
-                    <IngredientUnit control={form.control} currentMode={mode} />
+    const handleEditClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Edit button clicked, current mode:', currentMode);
+        setCurrentMode(formType.EDIT);
+    };
 
-                    <Button type="submit" className="w-full">
-                        {mode === formType.ADD ? "Create Product" : "Update Product"}
-                    </Button>
+    const handleCancelClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentMode === formType.ADD || currentMode === formType.VIEW) {
+            router.push("/product-management/product");
+        } else {
+            setCurrentMode(formType.VIEW);
+        }
+    };
+
+    return (
+        <div className="container mx-auto">
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4"
+                >
+                    <div className="flex flex-row gap-2 justify-end">
+                        <div className="flex flex-row gap-2 justify-end">
+                            {currentMode === formType.VIEW ? (
+                                <>
+                                    <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                        <ArrowLeft className="h-4 w-4" /> กลับ
+                                    </Button>
+                                    <Button variant="default" size={'sm'} onClick={handleEditClick}>
+                                        <Pencil className="h-4 w-4" /> แก้ไข
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                        <X className="h-4 w-4" /> ยกเลิก
+                                    </Button>
+                                    <Button
+                                        variant="default"
+                                        size={'sm'}
+                                        type="submit"
+                                    >
+                                        <Save className="h-4 w-4" /> บันทึก
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    <ScrollArea className="h-[calc(100vh-160px)]">
+                        <BasicInfo control={form.control} currentMode={currentMode} />
+                        <Tabs defaultValue="priceInfo" className="mt-2">
+                            <TabsList>
+                                <TabsTrigger value="priceInfo">Price Info</TabsTrigger>
+                                <TabsTrigger value="location">Location</TabsTrigger>
+                                <TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
+                                <TabsTrigger value="ingredientUnit">Ingredient Unit</TabsTrigger>
+                                <TabsTrigger value="inventory">Inventory</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="priceInfo">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <PriceInfo control={form.control} currentMode={currentMode} />
+                                    <ProductInfo control={form.control} currentMode={currentMode} />
+                                </div>
+                            </TabsContent>
+                            <TabsContent value="location">
+                                <LocationInfo control={form.control} currentMode={currentMode} />
+                            </TabsContent>
+                            <TabsContent value="orderUnit">
+                                <OrderUnit control={form.control} currentMode={currentMode} />
+                            </TabsContent>
+                            <TabsContent value="ingredientUnit">
+                                <IngredientUnit control={form.control} currentMode={currentMode} />
+                            </TabsContent>
+                            <TabsContent value="inventory">
+                                {(currentMode === formType.EDIT || currentMode === formType.VIEW) && (
+                                    <InventoryInfo inventoryData={mockStockInventoryData} />
+                                )}
+                            </TabsContent>
+                        </Tabs>
+                    </ScrollArea>
                 </form>
             </Form>
-
-            {/* Debug View */}
-            <div className="rounded-lg border p-4 mt-8">
-                <h2 className="text-lg font-semibold mb-2">Form State (Debug)</h2>
-                <pre className="bg-gray-100 p-4 rounded overflow-auto">
-                    {JSON.stringify(form.watch(), null, 2)}
-                </pre>
-            </div>
         </div>
     );
 } 

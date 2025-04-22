@@ -79,6 +79,14 @@ export const productFormSchema = z.object({
         remove: z.array(z.object({
             id: z.string().uuid()
         })).optional()
+    }),
+    product_category: z.object({
+        id: z.string().uuid(),
+        name: z.string()
+    }),
+    product_sub_category: z.object({
+        id: z.string().uuid(),
+        name: z.string()
     })
 });
 

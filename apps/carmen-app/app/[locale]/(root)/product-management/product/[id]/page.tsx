@@ -6,7 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 import SignInDialog from "@/components/SignInDialog";
-import FormProduct, { ProductFormValues } from "../components/form/FormProduct";
+import FormProduct from "../components/form/FormProduct";
+import { ProductFormValues } from "../pd-schema";
 export default function ProductEdit() {
     const { token, tenantId } = useAuth();
     const params = useParams();
@@ -37,10 +38,6 @@ export default function ProductEdit() {
     if (loading) {
         return <div>Loading product information...</div>;
     }
-
-    console.log('product', product);
-
-
 
     return (
         <>

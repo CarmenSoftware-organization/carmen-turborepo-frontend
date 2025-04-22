@@ -66,7 +66,7 @@ export const createProductService = async (accessToken: string, tenantId: string
         return {
             error: true,
             status: response.status,
-            message: data.message || `Error creating product: ${response.statusText}`,
+            message: data.message ?? `Error creating product: ${response.statusText}`,
             data: null
         };
     }
@@ -87,22 +87,32 @@ export const updateProductService = async (accessToken: string, tenantId: string
         body: JSON.stringify(product)
     };
     const response = await fetch(url, options);
-
-    console.log('>>> update response', response);
-
     const data = await response.json();
-    console.log("update response data", data);
 
-    // Check if response was not successful
     if (!response.ok) {
         return {
             error: true,
             status: response.status,
-            message: data.message || `Error updating product: ${response.statusText}`,
+            message: data.message ?? `Error updating product: ${response.statusText}`,
             data: null
         };
     }
+    return data;
+}
 
+
+export const getCategoryListByItemGroup = async (accessToken: string, tenantId: string, id: string) => {
+    const url = `${backendApi}/api/config/products/item-group/${id}`;
+    const options = {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${accessToken}`,
+            "x-tenant-id": tenantId
+        },
+    };
+    const response = await fetch(url, options);
+    const data = await response.json();
     return data;
 }
 
