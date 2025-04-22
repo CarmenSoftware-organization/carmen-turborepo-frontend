@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getCategoryListByItemGroup } from "@/services/product.service";
 import { useEffect, useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 
 interface BasicInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -266,6 +267,24 @@ export default function BasicInfo({ control, currentMode }: BasicInfoProps) {
                                     </Select>
                                 </FormControl>
                             )}
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={control}
+                    name="product_info.is_ingredients"
+                    render={({ field }) => (
+                        <FormItem className="flex flex-col mt-2">
+                            <FormLabel>Is Ingredients</FormLabel>
+                            <FormControl>
+                                <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    disabled={currentMode === formType.VIEW}
+                                />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
