@@ -79,9 +79,9 @@ export default function BasicInfo({ control, currentMode }: BasicInfoProps) {
     }, [productItemGroupId, currentMode]);
 
     return (
-        <div className="rounded-lg border p-6 space-y-4">
+        <div className="rounded-lg border space-y-2 p-4">
             <h2 className="text-lg font-semibold">Basic Information</h2>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2">
                 <FormField
                     control={control}
                     name="name"

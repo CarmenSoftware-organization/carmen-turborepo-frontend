@@ -112,7 +112,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                             <TableHead>From Qty</TableHead>
                             <TableHead>To Unit</TableHead>
                             <TableHead>To Qty</TableHead>
-                            <TableHead>Description</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Default</TableHead>
                             <TableHead>Action</TableHead>
@@ -126,7 +125,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                 <TableCell>{ingredientUnit.from_unit_qty}</TableCell>
                                 <TableCell>{getUnitName(ingredientUnit.to_unit_id)}</TableCell>
                                 <TableCell>{ingredientUnit.to_unit_qty}</TableCell>
-                                <TableCell>{ingredientUnit.description ?? '-'}</TableCell>
                                 <TableCell>
                                     <Badge variant="secondary" className={ingredientUnit.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                         {ingredientUnit.is_active ? 'Active' : 'Inactive'}
@@ -259,20 +257,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                         {...field}
                                                         onChange={(e) => field.onChange(Number(e.target.value))}
                                                     />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`ingredient_units.add.${index}.description`}
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-0">
-                                                <FormControl>
-                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

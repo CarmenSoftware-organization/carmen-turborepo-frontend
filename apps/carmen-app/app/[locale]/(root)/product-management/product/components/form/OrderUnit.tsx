@@ -112,7 +112,6 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                             <TableHead>From Qty</TableHead>
                             <TableHead>To Unit</TableHead>
                             <TableHead>To Qty</TableHead>
-                            <TableHead>Description</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Default</TableHead>
                             <TableHead>Action</TableHead>
@@ -126,7 +125,6 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                 <TableCell>{orderUnit.from_unit_qty}</TableCell>
                                 <TableCell>{getUnitName(orderUnit.to_unit_id)}</TableCell>
                                 <TableCell>{orderUnit.to_unit_qty}</TableCell>
-                                <TableCell>{orderUnit.description ?? '-'}</TableCell>
                                 <TableCell>
                                     <Badge variant="secondary" className={orderUnit.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                         {orderUnit.is_active ? 'Active' : 'Inactive'}
@@ -265,20 +263,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                         )}
                                     />
                                 </TableCell>
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`order_units.add.${index}.description`}
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-0">
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
+
                                 <TableCell>
                                     <Badge variant="secondary" className="bg-green-100 text-green-800">
                                         Active

@@ -176,7 +176,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4"
+                    className="space-y-2"
                 >
                     <div className="flex flex-row gap-2 justify-end">
                         <div className="flex flex-row gap-2 justify-end">
