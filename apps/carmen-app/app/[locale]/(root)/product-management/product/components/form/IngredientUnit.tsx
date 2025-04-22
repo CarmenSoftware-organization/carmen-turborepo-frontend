@@ -77,7 +77,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
     const hasIngredientUnits = displayIngredientUnits.length > 0 || newIngredientUnits.length > 0;
 
     const getUnitName = (unitId: string) => {
-        return units.find(unit => unit.id === unitId)?.name || '-';
+        return units.find(unit => unit.id === unitId)?.name ?? '-';
     };
 
     return (
@@ -126,7 +126,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                 <TableCell>{ingredientUnit.from_unit_qty}</TableCell>
                                 <TableCell>{getUnitName(ingredientUnit.to_unit_id)}</TableCell>
                                 <TableCell>{ingredientUnit.to_unit_qty}</TableCell>
-                                <TableCell>{ingredientUnit.description || '-'}</TableCell>
+                                <TableCell>{ingredientUnit.description ?? '-'}</TableCell>
                                 <TableCell>
                                     <Badge variant="secondary" className={ingredientUnit.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                         {ingredientUnit.is_active ? 'Active' : 'Inactive'}
@@ -156,7 +156,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                     <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
                                                         <p><span className="font-semibold">From Unit:</span> {getUnitName(ingredientUnit.from_unit_id)}</p>
                                                         <p><span className="font-semibold">To Unit:</span> {getUnitName(ingredientUnit.to_unit_id)}</p>
-                                                        <p><span className="font-semibold">Description:</span> {ingredientUnit.description || '-'}</p>
+                                                        <p><span className="font-semibold">Description:</span> {ingredientUnit.description ?? '-'}</p>
                                                     </div>
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
@@ -190,7 +190,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {units.map((unit) => (
-                                                                <SelectItem key={unit.id} value={unit.id || ""}>
+                                                                <SelectItem key={unit.id} value={unit.id ?? ""}>
                                                                     {unit.name}
                                                                 </SelectItem>
                                                             ))}
@@ -234,7 +234,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {units.map((unit) => (
-                                                                <SelectItem key={unit.id} value={unit.id || ""}>
+                                                                <SelectItem key={unit.id} value={unit.id ?? ""}>
                                                                     {unit.name}
                                                                 </SelectItem>
                                                             ))}

@@ -67,14 +67,14 @@ export function ProductComponent() {
                 }
 
                 if (data.statusCode && data.statusCode >= 400) {
-                    setError(`Error: ${data.message || 'Unknown error occurred'}`);
+                    setError(`Error: ${data.message ?? 'Unknown error occurred'}`);
                     setProducts([]);
                     setTotalPages(1);
                     return;
                 }
 
-                setProducts(data.data || []);
-                setTotalPages(data.paginate?.pages || 1);
+                setProducts(data.data ?? []);
+                setTotalPages(data.paginate?.pages ?? 1);
                 setError(null);
             } catch (error: any) {
                 if (!isMounted) return;

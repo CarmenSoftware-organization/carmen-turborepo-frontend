@@ -77,7 +77,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
     const hasOrderUnits = displayOrderUnits.length > 0 || newOrderUnits.length > 0;
 
     const getUnitName = (unitId: string) => {
-        return units.find(unit => unit.id === unitId)?.name || '-';
+        return units.find(unit => unit.id === unitId)?.name ?? '-';
     };
 
     return (
@@ -126,7 +126,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                 <TableCell>{orderUnit.from_unit_qty}</TableCell>
                                 <TableCell>{getUnitName(orderUnit.to_unit_id)}</TableCell>
                                 <TableCell>{orderUnit.to_unit_qty}</TableCell>
-                                <TableCell>{orderUnit.description || '-'}</TableCell>
+                                <TableCell>{orderUnit.description ?? '-'}</TableCell>
                                 <TableCell>
                                     <Badge variant="secondary" className={orderUnit.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                                         {orderUnit.is_active ? 'Active' : 'Inactive'}
@@ -156,7 +156,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                                     <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
                                                         <p><span className="font-semibold">From Unit:</span> {getUnitName(orderUnit.from_unit_id)}</p>
                                                         <p><span className="font-semibold">To Unit:</span> {getUnitName(orderUnit.to_unit_id)}</p>
-                                                        <p><span className="font-semibold">Description:</span> {orderUnit.description || '-'}</p>
+                                                        <p><span className="font-semibold">Description:</span> {orderUnit.description ?? '-'}</p>
                                                     </div>
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
@@ -190,7 +190,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {units.map((unit) => (
-                                                                <SelectItem key={unit.id} value={unit.id || ""}>
+                                                                <SelectItem key={unit.id} value={unit.id ?? ""}>
                                                                     {unit.name}
                                                                 </SelectItem>
                                                             ))}
@@ -234,7 +234,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                                         </SelectTrigger>
                                                         <SelectContent>
                                                             {units.map((unit) => (
-                                                                <SelectItem key={unit.id} value={unit.id || ""}>
+                                                                <SelectItem key={unit.id} value={unit.id ?? ""}>
                                                                     {unit.name}
                                                                 </SelectItem>
                                                             ))}
