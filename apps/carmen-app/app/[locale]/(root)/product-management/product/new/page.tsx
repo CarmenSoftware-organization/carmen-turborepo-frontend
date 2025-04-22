@@ -1,6 +1,6 @@
 import { formType } from "@/dtos/form.dto";
-import ProductDetail from "../components/ProductDetail";
+import FormProduct from "../components/form/FormProduct";
 
 export default function ProductNew() {
-    return <ProductDetail mode={formType.ADD} />
+    return <FormProduct mode={formType.ADD} />
 }

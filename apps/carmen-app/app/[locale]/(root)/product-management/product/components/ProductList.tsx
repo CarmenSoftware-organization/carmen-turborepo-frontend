@@ -27,20 +27,23 @@ import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 interface ProductListProps {
-    readonly products: ProductGetDto[];
+    readonly products?: ProductGetDto[];
     readonly isLoading: boolean;
     readonly currentPage: number;
-    readonly totalPages: number;
     readonly onPageChange: (page: number) => void;
+    readonly totalPages: number | undefined;
+    readonly error?: string | null;
 }
 
 export default function ProductList({
-    products,
+    products = [],
     isLoading,
     currentPage,
-    totalPages,
-    onPageChange
+    onPageChange,
+    totalPages = 1,
+    error = null
 }: ProductListProps) {
+
     const t = useTranslations('TableHeader');
 
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -54,6 +57,10 @@ export default function ProductList({
     };
 
     const handleSelectAll = () => {
+        if (!products || products.length === 0) {
+            return;
+        }
+
         if (selectedItems.length === products.length) {
             setSelectedItems([]);
         } else {
@@ -62,12 +69,26 @@ export default function ProductList({
         }
     };
 
-    const isAllSelected = products.length > 0 && selectedItems.length === products.length;
+    const isAllSelected = products?.length > 0 && selectedItems.length === products?.length;
 
     const renderDesktopTableContent = () => {
         if (isLoading) return <TableBodySkeleton columns={7} />;
 
-        if (products.length === 0) {
+        if (error) {
+            return (
+                <TableBody>
+                    <TableRow>
+                        <TableCell colSpan={8} className="h-24 text-center">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                                <p className="text-sm text-destructive">{error}</p>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                </TableBody>
+            );
+        }
+
+        if (!products || products.length === 0) {
             return (
                 <TableBody>
                     <TableRow>
@@ -104,9 +125,9 @@ export default function ProductList({
                                 </span>
                             </div>
                         </TableCell>
-                        <TableCell>{pd.product_category.name}</TableCell>
-                        <TableCell>{pd.product_sub_category.name}</TableCell>
-                        <TableCell>{pd.product_item_group.name}</TableCell>
+                        <TableCell>{pd.product_category?.name}</TableCell>
+                        <TableCell>{pd.product_sub_category?.name}</TableCell>
+                        <TableCell>{pd.product_item_group?.name}</TableCell>
                         <TableCell>
                             <Badge variant={pd.product_status_type === "active" ? "default" : "destructive"}>
                                 {pd.product_status_type === "active" ? "Active" : "Inactive"}
@@ -147,7 +168,17 @@ export default function ProductList({
             );
         }
 
-        if (products.length === 0) {
+        if (error) {
+            return (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-center text-destructive">{error}</CardTitle>
+                    </CardHeader>
+                </Card>
+            );
+        }
+
+        if (!products || products.length === 0) {
             return (
                 <Card>
                     <CardHeader>
@@ -215,13 +246,11 @@ export default function ProductList({
                 {renderMobileContent()}
             </div>
 
-            {totalPages > 1 && (
-                <PaginationComponent
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={onPageChange}
-                />
-            )}
+            <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages || 1}
+                onPageChange={onPageChange}
+            />
         </div>
     );
 }

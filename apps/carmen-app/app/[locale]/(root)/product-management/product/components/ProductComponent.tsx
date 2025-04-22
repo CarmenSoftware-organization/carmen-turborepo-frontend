@@ -27,9 +27,10 @@ export function ProductComponent() {
     const [sort, setSort] = useURL('sort');
     const [page, setPage] = useURL('page');
     const [products, setProducts] = useState<ProductGetDto[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (search) {
@@ -38,23 +39,63 @@ export function ProductComponent() {
     }, [search, setPage]);
 
     useEffect(() => {
+        let isMounted = true;
+        setIsLoading(true);
+        setError(null);
+
         const fetchProducts = async () => {
-            setIsLoading(true);
-            const data = await getProductService(token, tenantId, {
-                search,
-                sort,
-                page: search ? undefined : page
-            });
-            if (data.statusCode === 401) {
-                setLoginDialogOpen(true);
-                return;
+            try {
+                const data = await getProductService(token, tenantId, {
+                    search,
+                    sort,
+                    page,
+                    ...(status ? { filter: status } : {})
+                });
+
+                if (!isMounted) return;
+
+                if (data.statusCode === 401) {
+                    setLoginDialogOpen(true);
+                    return;
+                }
+
+                if (data.statusCode === 400) {
+                    setError("Invalid request parameters");
+                    setProducts([]);
+                    setTotalPages(1);
+                    return;
+                }
+
+                if (data.statusCode && data.statusCode >= 400) {
+                    setError(`Error: ${data.message || 'Unknown error occurred'}`);
+                    setProducts([]);
+                    setTotalPages(1);
+                    return;
+                }
+
+                setProducts(data.data || []);
+                setTotalPages(data.paginate?.pages || 1);
+                setError(null);
+            } catch (error: any) {
+                if (!isMounted) return;
+
+                console.error("Error fetching products:", error);
+                setError("Failed to load products");
+                setProducts([]);
+                setTotalPages(1);
+            } finally {
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
-            setProducts(data.data);
-            setTotalPages(data.paginate.pages);
-            setIsLoading(false);
-        }
+        };
+
         fetchProducts();
-    }, [token, tenantId, search, sort, page]);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [token, tenantId, search, sort, page, status]);
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage.toString());
@@ -129,9 +170,10 @@ export function ProductComponent() {
             products={products}
             isLoading={isLoading}
             currentPage={parseInt(page || '1')}
-            totalPages={totalPages}
             onPageChange={handlePageChange}
+            totalPages={totalPages}
             data-id="product-list-template"
+            error={error}
         />
     );
 

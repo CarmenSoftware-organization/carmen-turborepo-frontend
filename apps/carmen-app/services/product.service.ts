@@ -6,24 +6,18 @@ export const getProductService = async (accessToken: string, tenantId: string, p
     sort?: string;
 }) => {
     const query = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== '') {
+            query.append(key, String(value));
+        }
+    });
 
-    if (params.search) {
-        query.append('search', params.search);
-    }
+    const queryString = query.toString();
 
-    if (params.page) {
-        query.append('page', params.page);
-    }
+    const url = queryString
+        ? `${backendApi}/api/config/products?${queryString}`
+        : `${backendApi}/api/config/products`;
 
-    if (params.perPage) {
-        query.append('perPage', params.perPage);
-    }
-
-    if (params.sort) {
-        query.append('sort', params.sort);
-    }
-
-    const url = `${backendApi}/api/config/products?${query}`;
     const options = {
         method: "GET",
         headers: {
@@ -66,6 +60,17 @@ export const createProductService = async (accessToken: string, tenantId: string
     };
     const response = await fetch(url, options);
     const data = await response.json();
+
+    // Check if response was not successful
+    if (!response.ok) {
+        return {
+            error: true,
+            status: response.status,
+            message: data.message || `Error creating product: ${response.statusText}`,
+            data: null
+        };
+    }
+
     return data;
 }
 
@@ -87,6 +92,17 @@ export const updateProductService = async (accessToken: string, tenantId: string
 
     const data = await response.json();
     console.log("update response data", data);
+
+    // Check if response was not successful
+    if (!response.ok) {
+        return {
+            error: true,
+            status: response.status,
+            message: data.message || `Error updating product: ${response.statusText}`,
+            data: null
+        };
+    }
+
     return data;
 }
 

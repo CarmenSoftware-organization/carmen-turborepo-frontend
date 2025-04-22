@@ -27,6 +27,7 @@ import { createProductService, updateProductService } from "@/services/product.s
 import { useAuth } from "@/context/AuthContext";
 import InventoryInfo from "./InventoryInfo";
 import { mockStockInventoryData } from "@/mock-data/stock-invent";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 // สร้าง schema validation ด้วย Zod
 const productFormSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -42,29 +43,24 @@ const productFormSchema = z.object({
         tax_type: z.enum(["none", "included", "excluded"]),
         tax_rate: z.number().min(0, "Tax rate must be 0 or higher"),
         price_deviation_limit: z.number().min(0, "Price deviation limit must be 0 or higher"),
-        qtn_deviation: z.number().min(0, "Quantity deviation must be 0 or higher"),
+        qty_deviation_limit: z.number().min(0, "Quantity deviation limit must be 0 or higher"),
         info: z.array(z.object({
-            attributes: z.array(z.object({
-                label: z.string().optional(),
-                value: z.string().optional(),
-            }))
+            label: z.string().optional(),
+            value: z.string().optional(),
+            data_type: z.string().optional()
         })).optional(),
     }),
     locations: z.object({
         add: z.array(
             z.object({
                 location_id: z.string().uuid(),
-                location_name: z.string().optional(),
-                location_type: z.string().optional(),
-                delivery_point: z.any().optional(),
-                is_active: z.boolean().optional(),
             })
         ),
         remove: z.array(
             z.object({
                 location_id: z.string().uuid(),
             })
-        ),
+        ).optional().default([]),
     }),
     order_units: z.object({
         add: z.array(
@@ -87,12 +83,12 @@ const productFormSchema = z.object({
                 description: z.string(),
                 is_default: z.boolean(),
             })
-        ),
+        ).optional().default([]),
         remove: z.array(
             z.object({
                 product_order_unit_id: z.string().uuid(),
             })
-        ),
+        ).optional().default([]),
     }).optional(),
     ingredient_units: z.object({
         add: z.array(
@@ -102,8 +98,8 @@ const productFormSchema = z.object({
                 to_unit_id: z.string().uuid(),
                 to_unit_qty: z.number().min(0),
                 description: z.string().optional(),
-                is_active: z.boolean(),
                 is_default: z.boolean(),
+                is_active: z.boolean().optional(),
             })
         ),
         update: z.array(
@@ -114,15 +110,15 @@ const productFormSchema = z.object({
                 to_unit_id: z.string().uuid(),
                 to_unit_qty: z.number().min(0),
                 description: z.string().optional(),
-                is_active: z.boolean(),
                 is_default: z.boolean(),
+                is_active: z.boolean().optional(),
             })
-        ),
+        ).optional().default([]),
         remove: z.array(
             z.object({
                 product_ingredient_unit_id: z.string().uuid(),
             })
-        ),
+        ).optional().default([]),
     }).optional(),
     image: z.string().optional(),
 });
@@ -166,7 +162,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 tax_type: initValues?.product_info?.tax_type ?? "none",
                 tax_rate: initValues?.product_info?.tax_rate ?? 0,
                 price_deviation_limit: initValues?.product_info?.price_deviation_limit ?? 0,
-                qtn_deviation: initValues?.product_info?.qtn_deviation ?? 0,
+                qty_deviation_limit: initValues?.product_info?.qty_deviation_limit ?? 0,
                 info: initValues?.product_info?.info ?? [],
             },
             locations: {
@@ -190,14 +186,13 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
             ingredient_units: {
                 add: [],
                 update: mode === formType.EDIT && initValues?.ingredient_units ?
-                    initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_active: boolean; is_default: boolean; }) => ({
+                    initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_default: boolean; }) => ({
                         product_ingredient_unit_id: unit.id,
                         from_unit_id: unit.from_unit_id,
                         from_unit_qty: unit.from_unit_qty,
                         to_unit_id: unit.to_unit_id,
                         to_unit_qty: unit.to_unit_qty,
                         description: unit.description || '',
-                        is_active: unit.is_active,
                         is_default: unit.is_default
                     })) : [],
                 remove: [],
@@ -237,14 +232,13 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
             }
             if (initValues.ingredient_units && initValues.ingredient_units.length > 0) {
                 form.setValue('ingredient_units.update',
-                    initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_active: boolean; is_default: boolean; }) => ({
+                    initValues.ingredient_units.map((unit: { id: string; from_unit_id: string; from_unit_qty: number; to_unit_id: string; to_unit_qty: number; description: string; is_default: boolean; }) => ({
                         product_ingredient_unit_id: unit.id,
                         from_unit_id: unit.from_unit_id,
                         from_unit_qty: unit.from_unit_qty,
                         to_unit_id: unit.to_unit_id,
                         to_unit_qty: unit.to_unit_qty,
                         description: unit.description || '',
-                        is_active: unit.is_active,
                         is_default: unit.is_default
                     }))
                 );
@@ -320,8 +314,8 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                         to_unit_qty: unit.to_unit_qty,
                         unit_type: "ingredient_unit",
                         description: unit.description || "",
-                        is_active: unit.is_active,
-                        is_default: unit.is_default
+                        is_default: unit.is_default,
+                        is_active: unit.is_active ?? true
                     }));
                 }
             } else if (currentMode === formType.EDIT) {
@@ -345,14 +339,14 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 }
 
                 // Process existing order units and removals
-                if (initValues?.order_units) {
-                    const removedOrderUnitIds = data.order_units?.remove?.map(unit => unit.product_order_unit_id) || [];
+                if (initValues?.order_units && data.order_units) {
+                    const removedOrderUnitIds = data.order_units.remove.map(unit => unit.product_order_unit_id);
                     updatedOrderUnits = initValues.order_units
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .filter((unit: any) => !removedOrderUnitIds.includes(unit.id));
 
                     // Update existing order units
-                    if (data.order_units?.update && data.order_units.update.length > 0) {
+                    if (data.order_units.update.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         updatedOrderUnits = updatedOrderUnits.map((unit: any) => {
                             const updatedUnit = data.order_units?.update.find(u => u.product_order_unit_id === unit.id);
@@ -393,14 +387,14 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                 }
 
                 // Process existing ingredient units and removals
-                if (initValues?.ingredient_units) {
-                    const removedIngredientUnitIds = data.ingredient_units?.remove?.map(unit => unit.product_ingredient_unit_id) || [];
+                if (initValues?.ingredient_units && data.ingredient_units) {
+                    const removedIngredientUnitIds = data.ingredient_units.remove.map(unit => unit.product_ingredient_unit_id);
                     updatedIngredientUnits = initValues.ingredient_units
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         .filter((unit: any) => !removedIngredientUnitIds.includes(unit.id));
 
                     // Update existing ingredient units
-                    if (data.ingredient_units?.update && data.ingredient_units.update.length > 0) {
+                    if (data.ingredient_units.update.length > 0) {
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         updatedIngredientUnits = updatedIngredientUnits.map((unit: any) => {
                             const updatedUnit = data.ingredient_units?.update.find(u => u.product_ingredient_unit_id === unit.id);
@@ -414,8 +408,8 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                                     to_unit_name: units.find(u => u.id === updatedUnit.to_unit_id)?.name || unit.to_unit_name,
                                     to_unit_qty: updatedUnit.to_unit_qty,
                                     description: updatedUnit.description || "",
-                                    is_active: updatedUnit.is_active,
-                                    is_default: updatedUnit.is_default
+                                    is_default: updatedUnit.is_default,
+                                    is_active: updatedUnit.is_active ?? true
                                 };
                             }
                             return unit;
@@ -435,8 +429,8 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                         to_unit_qty: unit.to_unit_qty,
                         unit_type: "ingredient_unit",
                         description: unit.description ?? '',
-                        is_active: unit.is_active,
-                        is_default: unit.is_default
+                        is_default: unit.is_default,
+                        is_active: unit.is_active ?? true
                     }));
                     updatedIngredientUnits = [...updatedIngredientUnits, ...newIngredientUnits];
                 }
@@ -444,26 +438,57 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
 
             // Make API call first
             let response;
-            if (currentMode === formType.ADD) {
-                console.log('Making create API call');
-                response = await createProductService(token, tenantId, data);
-                if (!response) {
-                    throw new Error('Failed to create product');
+            try {
+                if (currentMode === formType.ADD) {
+                    console.log('Making create API call');
+                    response = await createProductService(token, tenantId, data);
+                    if (!response) {
+                        throw new Error('Failed to create product: No response from server');
+                    }
+
+                    // Check if API returned an ID or has error
+                    if (response.error) {
+                        throw new Error(response.message || 'API error: Failed to create product');
+                    }
+
+                    if (!response.id) {
+                        throw new Error('API did not return product ID after creation');
+                    }
+                } else {
+                    console.log('Making update API call with ID:', initValues?.id);
+                    response = await updateProductService(token, tenantId, initValues?.id, data);
+                    if (!response) {
+                        throw new Error('Failed to update product: No response from server');
+                    }
+
+                    // Check if API returned an ID or has error
+                    if (response.error) {
+                        throw new Error(response.message || 'API error: Failed to update product');
+                    }
+
+                    if (!response.id) {
+                        throw new Error('API did not return product ID after update');
+                    }
                 }
-            } else {
-                console.log('Making update API call with ID:', initValues?.id);
-                response = await updateProductService(token, tenantId, initValues?.id, data);
-                if (!response) {
-                    throw new Error('Failed to update product');
-                }
+            } catch (apiError) {
+                console.error('API call error:', apiError);
+                throw apiError;
             }
 
             // Only update UI state after successful API call
             setUpdatedInitValues({
                 ...data,
+                id: response.id, // Store the returned ID
                 locations: updatedLocations,
                 order_units: updatedOrderUnits,
                 ingredient_units: updatedIngredientUnits
+            });
+
+            // Show success message
+            toastSuccess({
+                message: currentMode === formType.ADD
+                    ? 'Product created successfully'
+                    : 'Product updated successfully'
             });
 
             // Update mode and navigate after successful API call
@@ -472,8 +497,13 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
 
         } catch (error) {
             console.error('Error in onSubmit:', error);
-            // You might want to show an error toast or notification here
-            // For example: toast.error('Failed to save product. Please try again.');
+
+            // Show error toast notification
+            toastError({
+                message: error instanceof Error
+                    ? error.message
+                    : 'Failed to save product. Please try again.'
+            });
         }
     };
 
@@ -547,9 +577,7 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                                 <TabsTrigger value="location">Location</TabsTrigger>
                                 <TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
                                 <TabsTrigger value="ingredientUnit">Ingredient Unit</TabsTrigger>
-                                {currentMode === formType.EDIT || currentMode === formType.VIEW && (
-                                    <TabsTrigger value="inventory">Inventory</TabsTrigger>
-                                )}
+                                <TabsTrigger value="inventory">Inventory</TabsTrigger>
                             </TabsList>
                             <TabsContent value="basicInfo">
                                 <BasicInfo control={form.control} currentMode={currentMode} />
@@ -579,7 +607,9 @@ export default function ProductDetail({ mode, initValues }: ProductDetailProps) 
                                 />
                             </TabsContent>
                             <TabsContent value="inventory">
-                                <InventoryInfo inventoryData={mockStockInventoryData} />
+                                {(currentMode === formType.EDIT || currentMode === formType.VIEW) && (
+                                    <InventoryInfo inventoryData={mockStockInventoryData} />
+                                )}
                             </TabsContent>
                         </Tabs>
                     </ScrollArea>

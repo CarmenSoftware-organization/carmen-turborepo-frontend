@@ -24,7 +24,7 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
     const [previewImage, setPreviewImage] = useState<string | undefined>(undefined);
 
     const handleAddInfo = () => {
-        append({ attributes: [{ label: "", value: "" }] });
+        append({ label: "", value: "", data_type: "string" });
     };
 
     return (
@@ -51,20 +51,21 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
                             <div key={field.id} className="flex gap-4 items-end">
                                 <FormField
                                     control={control}
-                                    name={`product_info.info.${index}.attributes.0.value`}
+                                    name={`product_info.info.${index}.value`}
                                     render={({ field: valueField }) => (
                                         <FormItem className="flex-1">
                                             <FormLabel>
                                                 <FormField
                                                     control={control}
-                                                    name={`product_info.info.${index}.attributes.0.label`}
+                                                    name={`product_info.info.${index}.label`}
                                                     render={({ field: labelField }) => (
                                                         currentMode === formType.VIEW ? (
-                                                            <p>{labelField.value}</p>
+                                                            <p>{String(labelField.value || '')}</p>
                                                         ) : (
                                                             <Input
                                                                 placeholder="Enter label"
                                                                 {...labelField}
+                                                                value={String(labelField.value || '')}
                                                             />
                                                         )
                                                     )}
@@ -74,6 +75,7 @@ export const BasicInfo = ({ control, currentMode }: BasicInfoProps) => {
                                                 <Input
                                                     placeholder="Enter value"
                                                     {...valueField}
+                                                    value={String(valueField.value || '')}
                                                     disabled={currentMode === formType.VIEW}
                                                 />
                                             </FormControl>

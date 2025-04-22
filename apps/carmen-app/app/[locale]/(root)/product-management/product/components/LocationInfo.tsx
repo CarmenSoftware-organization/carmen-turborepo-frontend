@@ -99,10 +99,6 @@ export const LocationInfo = ({ control, currentMode, initValues, storeLocations 
             // Update the form state with the selected location's details
             update(index, {
                 location_id: value,
-                location_name: location.name,
-                location_type: location.location_type,
-                delivery_point: location.delivery_point,
-                is_active: location.is_active
             });
         }
     };
