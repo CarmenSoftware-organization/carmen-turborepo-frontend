@@ -38,19 +38,61 @@ export default function FormProduct({ mode, initialValues }: Props) {
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const router = useRouter();
     const transformInitialValues = () => {
-        if (!initialValues) return undefined;
+        if (!initialValues) return {
+            name: '',
+            code: '',
+            local_name: '',
+            description: '',
+            inventory_unit_id: '',
+            product_status_type: 'active' as const,
+            product_info: {
+                product_item_group_id: '',
+                is_ingredients: false,
+                price: 0,
+                tax_type: 'none' as const,
+                tax_rate: 0,
+                price_deviation_limit: 0,
+                qty_deviation_limit: 0,
+                info: []
+            },
+            locations: {
+                data: [],
+                add: [],
+                remove: []
+            },
+            order_units: {
+                data: [],
+                add: [],
+                update: [],
+                remove: []
+            },
+            ingredient_units: {
+                data: [],
+                add: [],
+                update: [],
+                remove: []
+            },
+            product_category: {
+                id: '',
+                name: ''
+            },
+            product_sub_category: {
+                id: '',
+                name: ''
+            }
+        };
 
         return {
-            id: initialValues.id,
-            name: initialValues.name,
-            code: initialValues.code,
-            local_name: initialValues.local_name,
-            description: initialValues.description,
-            inventory_unit_id: initialValues.inventory_unit?.id,
-            product_status_type: initialValues.product_status_type,
+            id: initialValues.id ?? '',
+            name: initialValues.name ?? '',
+            code: initialValues.code ?? '',
+            local_name: initialValues.local_name ?? '',
+            description: initialValues.description ?? '',
+            inventory_unit_id: initialValues.inventory_unit?.id ?? '',
+            product_status_type: initialValues.product_status_type ?? 'active',
             product_info: {
-                id: initialValues.product_info?.id,
-                product_item_group_id: initialValues.product_item_group?.id,
+                id: initialValues.product_info?.id ?? '',
+                product_item_group_id: initialValues.product_item_group?.id ?? '',
                 is_ingredients: initialValues.product_info?.is_ingredients ?? false,
                 price: initialValues.product_info?.price ?? 0,
                 tax_type: initialValues.product_info?.tax_type ?? "none",
@@ -61,19 +103,19 @@ export default function FormProduct({ mode, initialValues }: Props) {
             },
             locations: {
                 data: initialValues.locations?.map((location: any) => ({
-                    id: location.id,
-                    location_id: location.location_id
+                    id: location.id ?? '',
+                    location_id: location.location_id ?? ''
                 })) ?? [],
                 add: [],
                 remove: [],
             },
             order_units: {
                 data: initialValues.order_units?.map((unit: any) => ({
-                    id: unit.id,
-                    from_unit_id: unit.from_unit_id,
-                    from_unit_qty: unit.from_unit_qty,
-                    to_unit_id: unit.to_unit_id,
-                    to_unit_qty: unit.to_unit_qty,
+                    id: unit.id ?? '',
+                    from_unit_id: unit.from_unit_id ?? '',
+                    from_unit_qty: unit.from_unit_qty ?? 0,
+                    to_unit_id: unit.to_unit_id ?? '',
+                    to_unit_qty: unit.to_unit_qty ?? 0,
                 })) ?? [],
                 add: [],
                 update: [],
@@ -81,23 +123,23 @@ export default function FormProduct({ mode, initialValues }: Props) {
             },
             ingredient_units: {
                 data: initialValues.ingredient_units?.map((unit: any) => ({
-                    id: unit.id,
-                    from_unit_id: unit.from_unit_id,
-                    from_unit_qty: unit.from_unit_qty,
-                    to_unit_id: unit.to_unit_id,
-                    to_unit_qty: unit.to_unit_qty,
+                    id: unit.id ?? '',
+                    from_unit_id: unit.from_unit_id ?? '',
+                    from_unit_qty: unit.from_unit_qty ?? 0,
+                    to_unit_id: unit.to_unit_id ?? '',
+                    to_unit_qty: unit.to_unit_qty ?? 0,
                 })) ?? [],
                 add: [],
                 update: [],
                 remove: []
             },
             product_category: {
-                id: initialValues.product_category?.id,
-                name: initialValues.product_category?.name,
+                id: initialValues.product_category?.id ?? '',
+                name: initialValues.product_category?.name ?? '',
             },
             product_sub_category: {
-                id: initialValues.product_sub_category?.id,
-                name: initialValues.product_sub_category?.name,
+                id: initialValues.product_sub_category?.id ?? '',
+                name: initialValues.product_sub_category?.name ?? '',
             }
         };
     };
@@ -135,6 +177,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 const result = await createProductService(token, tenantId, submitData);
                 toastSuccess({ message: "Product created successfully" });
                 setCurrentMode(formType.VIEW);
+                console.log('result', result);
+
                 if (result?.id) {
                     router.replace(`/product-management/product/${result.id}`);
                 }
@@ -142,9 +186,11 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 if (!submitData.id) {
                     throw new Error('Product ID is required for update');
                 }
-                await updateProductService(token, tenantId, submitData.id, submitData);
-                toastSuccess({ message: "Product updated successfully" });
-                setCurrentMode(formType.VIEW);
+                const result = await updateProductService(token, tenantId, submitData.id, submitData);
+                if (result?.id) {
+                    toastSuccess({ message: "Product updated successfully" });
+                    setCurrentMode(formType.VIEW);
+                }
             }
         } catch (error) {
             console.error('Error submitting form:', error);

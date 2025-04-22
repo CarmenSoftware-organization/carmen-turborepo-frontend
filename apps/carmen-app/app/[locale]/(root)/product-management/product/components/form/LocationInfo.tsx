@@ -206,7 +206,7 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                                             render={({ field }) => (
                                                 <FormItem className="flex-1 space-y-0">
                                                     <FormControl>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
+                                                        <Select onValueChange={field.onChange} value={field.value} disabled={currentMode === formType.VIEW}>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Select location" />
                                                             </SelectTrigger>

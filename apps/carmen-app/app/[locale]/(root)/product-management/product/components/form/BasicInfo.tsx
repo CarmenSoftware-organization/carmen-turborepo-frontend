@@ -188,8 +188,9 @@ export default function BasicInfo({ control, currentMode }: BasicInfoProps) {
                                     <Select
                                         onValueChange={(value) => {
                                             handleItemGroupChange(value);
+                                            field.onChange(value);
                                         }}
-                                        value={field.value}
+                                        value={field.value || ''}
                                     >
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select product item group" />
@@ -251,7 +252,7 @@ export default function BasicInfo({ control, currentMode }: BasicInfoProps) {
                                 </p>
                             ) : (
                                 <FormControl>
-                                    <Select onValueChange={field.onChange} value={field.value}>
+                                    <Select onValueChange={field.onChange} value={field.value || ''}>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select inventory unit" />
                                         </SelectTrigger>
