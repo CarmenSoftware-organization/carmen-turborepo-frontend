@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-interface ProductInfoProps {
+interface ProductAttributeProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
 
-export default function ProductInfo({ control, currentMode }: ProductInfoProps) {
+export default function ProductAttribute({ control, currentMode }: ProductAttributeProps) {
     const { fields, append, remove } = useFieldArray({
         control,
         name: "product_info.info"

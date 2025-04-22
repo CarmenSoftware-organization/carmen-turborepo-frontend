@@ -12,7 +12,7 @@ import PriceInfo from "./PriceInfo";
 import LocationInfo from "./LocationInfo";
 import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
-import ProductInfo from "./ProductInfo";
+import ProductAttribute from "./ProductAttribute";
 import { ProductFormValues, productFormSchema } from "../../pd-schema";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
@@ -264,7 +264,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
                             <TabsContent value="priceInfo">
                                 <div className="grid grid-cols-2 gap-4">
                                     <PriceInfo control={form.control} currentMode={currentMode} />
-                                    <ProductInfo control={form.control} currentMode={currentMode} />
+                                    <ProductAttribute control={form.control} currentMode={currentMode} />
                                 </div>
                             </TabsContent>
                             <TabsContent value="location">
