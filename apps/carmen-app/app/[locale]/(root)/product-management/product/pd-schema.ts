@@ -92,3 +92,91 @@ export const productFormSchema = z.object({
 
 // Form type from schema
 export type ProductFormValues = z.infer<typeof productFormSchema>;
+
+
+export interface ProductInitialValues {
+    id?: string;
+    name?: string;
+    code?: string;
+    local_name?: string;
+    description?: string;
+    inventory_unit?: { id: string };
+    product_status_type?: 'active';
+    product_info?: {
+        id?: string;
+        is_ingredients?: boolean;
+        price?: number;
+        tax_type?: 'none' | 'included' | 'excluded';
+        tax_rate?: number;
+        price_deviation_limit?: number;
+        qty_deviation_limit?: number;
+        info?: Array<{
+            label: string;
+            value: string;
+            data_type: string;
+        }>;
+    };
+    product_item_group?: { id: string };
+    locations?: {
+        add: { location_id: string; }[];
+        remove?: { id: string; }[];
+    } | Array<{ id: string; location_id: string }>;
+    order_units?: {
+        add: {
+            from_unit_id: string;
+            from_unit_qty: number;
+            to_unit_id: string;
+            to_unit_qty: number;
+            description: string;
+            is_active: boolean;
+            is_default: boolean;
+        }[];
+        update?: {
+            product_order_unit_id: string;
+            from_unit_id: string;
+            from_unit_qty: number;
+            to_unit_id: string;
+            to_unit_qty: number;
+            description: string;
+            is_active: boolean;
+            is_default: boolean;
+        }[];
+        remove?: { id: string; }[];
+    } | Array<{
+        id: string;
+        from_unit_id: string;
+        from_unit_qty: number;
+        to_unit_id: string;
+        to_unit_qty: number;
+    }>;
+    ingredient_units?: {
+        add: {
+            from_unit_id: string;
+            from_unit_qty: number;
+            to_unit_id: string;
+            to_unit_qty: number;
+            description: string;
+            is_active: boolean;
+            is_default: boolean;
+        }[];
+        update?: {
+            product_ingredient_unit_id: string;
+            from_unit_id: string;
+            from_unit_qty: number;
+            to_unit_id: string;
+            to_unit_qty: number;
+            description: string;
+            is_active: boolean;
+            is_default: boolean;
+        }[];
+        remove?: { id: string; }[];
+    } | Array<{
+        id: string;
+        from_unit_id: string;
+        from_unit_qty: number;
+        to_unit_id: string;
+        to_unit_qty: number;
+    }>;
+    product_category?: { id: string; name: string };
+    product_sub_category?: { id: string; name: string };
+}

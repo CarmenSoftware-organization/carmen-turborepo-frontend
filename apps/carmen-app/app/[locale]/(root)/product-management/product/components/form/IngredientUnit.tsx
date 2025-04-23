@@ -71,22 +71,27 @@ interface IngredientUnitsFormData {
     remove: { id: string }[];
 }
 
+interface UnitData {
+    id?: string;
+    name: string;
+    description?: string;
+    is_active?: boolean;
+}
+
 const EditableRow = ({
-    ingredientUnit,
     editForm,
     onSave,
     onCancel,
     setEditForm,
     units
 }: {
-    ingredientUnit: IngredientUnitData;
     editForm: IngredientUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<IngredientUnitData | null>>;
-    units: any[];
+    units: UnitData[];
 }) => {
-    const handleFieldChange = (field: keyof IngredientUnitData, value: any) => {
+    const handleFieldChange = (field: keyof IngredientUnitData, value: string | number | boolean) => {
         if (!editForm) return;
         setEditForm({ ...editForm, [field]: value });
     };
@@ -390,7 +395,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                         <TableRow key={ingredientUnit.id}>
                             {editingId === ingredientUnit.id ? (
                                 <EditableRow
-                                    ingredientUnit={ingredientUnit}
                                     editForm={editForm}
                                     onSave={() => handleSaveEdit(ingredientUnit)}
                                     onCancel={() => {

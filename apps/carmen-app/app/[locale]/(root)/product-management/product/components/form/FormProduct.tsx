@@ -13,7 +13,7 @@ import LocationInfo from "./LocationInfo";
 import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
 import ProductAttribute from "./ProductAttribute";
-import { ProductFormValues, productFormSchema } from "../../pd-schema";
+import { ProductFormValues, ProductInitialValues, productFormSchema } from "../../pd-schema";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
 import { ArrowLeft, Pencil, Save, X } from "lucide-react";
@@ -30,7 +30,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface Props {
     readonly mode: formType;
-    readonly initialValues?: any;
+    readonly initialValues?: ProductInitialValues;
 }
 
 export default function FormProduct({ mode, initialValues }: Props) {
@@ -89,46 +89,52 @@ export default function FormProduct({ mode, initialValues }: Props) {
             local_name: initialValues.local_name ?? '',
             description: initialValues.description ?? '',
             inventory_unit_id: initialValues.inventory_unit?.id ?? '',
-            product_status_type: initialValues.product_status_type ?? 'active',
+            product_status_type: 'active',
             product_info: {
                 id: initialValues.product_info?.id ?? '',
                 product_item_group_id: initialValues.product_item_group?.id ?? '',
                 is_ingredients: initialValues.product_info?.is_ingredients ?? false,
                 price: initialValues.product_info?.price ?? 0,
-                tax_type: initialValues.product_info?.tax_type ?? "none",
+                tax_type: (initialValues.product_info?.tax_type as 'none' | 'included' | 'excluded') ?? 'none',
                 tax_rate: initialValues.product_info?.tax_rate ?? 0,
                 price_deviation_limit: initialValues.product_info?.price_deviation_limit ?? 0,
                 qty_deviation_limit: initialValues.product_info?.qty_deviation_limit ?? 0,
                 info: initialValues.product_info?.info ?? []
             },
             locations: {
-                data: initialValues.locations?.map((location: any) => ({
-                    id: location.id ?? '',
-                    location_id: location.location_id ?? ''
-                })) ?? [],
+                data: Array.isArray(initialValues.locations)
+                    ? initialValues.locations.map((location) => ({
+                        id: location.id ?? '',
+                        location_id: location.location_id ?? ''
+                    }))
+                    : [],
                 add: [],
                 remove: [],
             },
             order_units: {
-                data: initialValues.order_units?.map((unit: any) => ({
-                    id: unit.id ?? '',
-                    from_unit_id: unit.from_unit_id ?? '',
-                    from_unit_qty: unit.from_unit_qty ?? 0,
-                    to_unit_id: unit.to_unit_id ?? '',
-                    to_unit_qty: unit.to_unit_qty ?? 0,
-                })) ?? [],
+                data: Array.isArray(initialValues.order_units)
+                    ? initialValues.order_units.map((unit) => ({
+                        id: unit.id ?? '',
+                        from_unit_id: unit.from_unit_id ?? '',
+                        from_unit_qty: unit.from_unit_qty ?? 0,
+                        to_unit_id: unit.to_unit_id ?? '',
+                        to_unit_qty: unit.to_unit_qty ?? 0,
+                    }))
+                    : [],
                 add: [],
                 update: [],
                 remove: []
             },
             ingredient_units: {
-                data: initialValues.ingredient_units?.map((unit: any) => ({
-                    id: unit.id ?? '',
-                    from_unit_id: unit.from_unit_id ?? '',
-                    from_unit_qty: unit.from_unit_qty ?? 0,
-                    to_unit_id: unit.to_unit_id ?? '',
-                    to_unit_qty: unit.to_unit_qty ?? 0,
-                })) ?? [],
+                data: Array.isArray(initialValues.ingredient_units)
+                    ? initialValues.ingredient_units.map((unit) => ({
+                        id: unit.id ?? '',
+                        from_unit_id: unit.from_unit_id ?? '',
+                        from_unit_qty: unit.from_unit_qty ?? 0,
+                        to_unit_id: unit.to_unit_id ?? '',
+                        to_unit_qty: unit.to_unit_qty ?? 0,
+                    }))
+                    : [],
                 add: [],
                 update: [],
                 remove: []
@@ -146,7 +152,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
 
     const form = useForm<ProductFormValues>({
         resolver: zodResolver(productFormSchema),
-        defaultValues: transformInitialValues()
+        defaultValues: transformInitialValues() as ProductFormValues
     });
 
     const onSubmit = async (data: ProductFormValues) => {

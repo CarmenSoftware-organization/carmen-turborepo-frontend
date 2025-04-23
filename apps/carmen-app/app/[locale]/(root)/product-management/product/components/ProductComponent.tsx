@@ -89,7 +89,7 @@ export function ProductComponent() {
                 setProducts(data.data ?? []);
                 setTotalPages(data.paginate?.pages ?? 1);
                 setError(null);
-            } catch (error: any) {
+            } catch (error) {
                 if (!isMounted) return;
 
                 console.error("Error fetching products:", error);

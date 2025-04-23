@@ -6,9 +6,14 @@ export const getProductService = async (accessToken: string, tenantId: string, p
     sort?: string;
     filter?: string;
 }) => {
+
+    if (!accessToken || !tenantId) {
+        throw new Error("Authorization token and tenant ID are required");
+    }
+
     const query = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
+        if (value !== undefined && value !== null && value !== '') {
             query.append(key, String(value));
         }
     });
@@ -27,6 +32,7 @@ export const getProductService = async (accessToken: string, tenantId: string, p
             "x-tenant-id": tenantId
         },
     };
+
     const response = await fetch(url, options);
     const data = await response.json();
     return data;

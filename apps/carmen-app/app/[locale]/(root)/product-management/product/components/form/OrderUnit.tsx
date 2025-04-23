@@ -71,6 +71,13 @@ interface OrderUnitsFormData {
     remove: { id: string }[];
 }
 
+interface UnitData {
+    id?: string;
+    name: string;
+    description?: string;
+    is_active?: boolean;
+}
+
 const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
     orderUnit: OrderUnitData;
     onEdit: () => void;
@@ -141,21 +148,19 @@ const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
 );
 
 const EditableRow = ({
-    orderUnit,
     editForm,
     onSave,
     onCancel,
     setEditForm,
     units
 }: {
-    orderUnit: OrderUnitData;
     editForm: OrderUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<OrderUnitData | null>>;
-    units: any[];
+    units: UnitData[];
 }) => {
-    const handleFieldChange = (field: keyof OrderUnitData, value: any) => {
+    const handleFieldChange = (field: keyof OrderUnitData, value: string | number | boolean) => {
         if (!editForm) return;
         setEditForm({ ...editForm, [field]: value });
     };
@@ -259,7 +264,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
     const { watch, setValue } = useFormContext<ProductFormValues>();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<OrderUnitData | null>(null);
-    const orderUnits = watch("order_units") as { data: OrderUnitData[]; add: OrderUnitData[]; update: any[]; remove: { id: string }[] };
+    const orderUnits = watch("order_units") as OrderUnitsFormData;
     const existingOrderUnits = orderUnits?.data || [];
     const newOrderUnits = watch("order_units.add") || [];
     const removedOrderUnits = watch("order_units.remove") || [];
@@ -390,7 +395,6 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                             <TableRow key={orderUnit.id}>
                                 {editingId === orderUnit.id ? (
                                     <EditableRow
-                                        orderUnit={orderUnit}
                                         editForm={editForm}
                                         onSave={() => handleSaveEdit(orderUnit)}
                                         onCancel={() => {
