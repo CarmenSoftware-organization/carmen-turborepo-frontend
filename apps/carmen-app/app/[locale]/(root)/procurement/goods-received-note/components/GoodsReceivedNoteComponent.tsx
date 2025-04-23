@@ -11,6 +11,7 @@ import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
 import { mockGoodsReceivedNotes } from "@/mock-data/procurement";
+import { Link } from "@/lib/navigation";
 
 const grnStatusOptions = [
     { label: 'Pending', value: 'pending' },
@@ -38,9 +39,11 @@ export default function GoodsReceivedNoteComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="grn-action-buttons">
-            <Button size={'sm'}>
-                <Plus className="h-4 w-4" />
-                New Goods Received Note
+            <Button size={'sm'} asChild>
+                <Link href="/procurement/goods-received-note/new">
+                    <Plus className="h-4 w-4" />
+                    New Goods Received Note
+                </Link>
             </Button>
             <Button
                 variant="outline"

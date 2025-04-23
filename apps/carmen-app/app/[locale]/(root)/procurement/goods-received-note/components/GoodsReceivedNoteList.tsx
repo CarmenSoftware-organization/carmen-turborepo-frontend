@@ -15,6 +15,7 @@ import { Eye, MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Link } from "@/lib/navigation";
 
 const grnColor = (status: string) => {
     if (status === 'Pending') {
@@ -71,12 +72,9 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                 />
                             </TableHead>
                             <TableHead>{t('grn_number')}</TableHead>
-                            <TableHead>{t('date')}</TableHead>
-                            <TableHead>{t('invoice_date')}</TableHead>
+
                             <TableHead>{t('vendor')}</TableHead>
-                            <TableHead>{t('currency')}</TableHead>
-                            <TableHead>{t('net_amount')}</TableHead>
-                            <TableHead>{t('tax_amount')}</TableHead>
+                            <TableHead>{t('date')}</TableHead>
                             <TableHead>{t('amount')}</TableHead>
                             <TableHead>{t('status')}</TableHead>
                             <TableHead className="w-[100px] text-right">{t('action')}</TableHead>
@@ -94,12 +92,8 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                     />
                                 </TableCell>
                                 <TableCell className="font-medium">{grn.grn_number}</TableCell>
-                                <TableCell>{grn.date_created}</TableCell>
-                                <TableCell>{grn.invoice_date}</TableCell>
                                 <TableCell>{grn.department}</TableCell>
-                                <TableCell>{grn.currency}</TableCell>
-                                <TableCell>{grn.net_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                                <TableCell>{grn.tax_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
+                                <TableCell>{grn.date_created}</TableCell>
                                 <TableCell>{grn.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
                                 <TableCell>
                                     <Badge variant="outline" className={`${grnColor(grn.status)} rounded-full`}>
@@ -108,11 +102,10 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center justify-end">
-                                        <Button variant="ghost" size={'sm'}>
-                                            <Eye />
-                                        </Button>
-                                        <Button variant="ghost" size={'sm'}>
-                                            <Pencil />
+                                        <Button variant="ghost" size={'sm'} asChild>
+                                            <Link href={`/procurement/goods-received-note/${grn.id}`}>
+                                                <Eye />
+                                            </Link>
                                         </Button>
                                         <Button variant="ghost" size={'sm'}>
                                             <Trash className="text-destructive" />
