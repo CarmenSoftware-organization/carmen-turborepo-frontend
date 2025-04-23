@@ -170,11 +170,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                     </Button>
                                 </div>
                             </div>
-                            <GrnFormHeader
-                                control={form.control}
-                                setValue={form.setValue}
-                                watch={form.watch}
-                            />
+                            <GrnFormHeader control={form.control} mode={currentMode} />
                             <Tabs defaultValue="items" onValueChange={handleTabChange} value={activeTab}>
                                 <TabsList>
                                     <TabsTrigger value="items">Items</TabsTrigger>

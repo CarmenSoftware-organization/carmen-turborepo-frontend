@@ -19,7 +19,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Edit, Eye, Plus, Trash } from "lucide-react";
+import { useState } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ItemGrnProps {
     readonly control: Control<GrnFormValues>;
@@ -27,10 +29,32 @@ interface ItemGrnProps {
 }
 
 export default function ItemGrn({ control, mode }: ItemGrnProps) {
+    const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
     const { fields } = useFieldArray({
         control,
         name: "items",
     });
+
+
+    const handleSelectItem = (id: string) => {
+        setSelectedItems(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedItems.length === fields.length) {
+            setSelectedItems([]);
+        } else {
+            const allIds = fields.map(field => field.id ?? '').filter(Boolean);
+            setSelectedItems(allIds);
+        }
+    };
+
+    const isAllSelected = fields.length > 0 && selectedItems.length === fields.length;
 
     return (
         <div className="space-y-2">
@@ -43,6 +67,16 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        {mode !== formType.VIEW && (
+                            <TableHead className="w-10 text-center">
+                                <Checkbox
+                                    id="select-all"
+                                    checked={isAllSelected}
+                                    onCheckedChange={handleSelectAll}
+                                    aria-label="Select all purchase requests"
+                                />
+                            </TableHead>
+                        )}
                         <TableHead className="w-[200px]">Location</TableHead>
                         <TableHead>Product</TableHead>
                         <TableHead>Lot No.</TableHead>
@@ -52,6 +86,10 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                         <TableHead className="text-right">Price</TableHead>
                         <TableHead className="text-right">Net Amount</TableHead>
                         <TableHead className="text-right">Tax Amount</TableHead>
+                        <TableHead className="text-right">Total Amount</TableHead>
+                        {mode !== formType.VIEW && (
+                            <TableHead className="text-right">Action</TableHead>
+                        )}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -64,15 +102,29 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                     ) : (
                         fields.map((field, index) => (
                             <TableRow key={field.id}>
+                                {mode !== formType.VIEW && (
+                                    <TableCell className="text-center w-10">
+                                        <Checkbox
+                                            id={`checkbox-${field.id}`}
+                                            checked={selectedItems.includes(field.id ?? '')}
+                                            onCheckedChange={() => handleSelectItem(field.id ?? '')}
+                                            aria-label={`Select ${field.id}`}
+                                        />
+                                    </TableCell>
+                                )}
                                 <TableCell>
                                     <FormField
                                         control={control}
                                         name={`items.${index}.locations.name`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -84,9 +136,13 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.products.name`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -98,9 +154,13 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.lot_no`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -112,16 +172,20 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.qty_order`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -133,16 +197,20 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.qty_received`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -154,9 +222,13 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.unit.name`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -168,17 +240,21 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.price`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -190,17 +266,21 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.net_amount`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -212,22 +292,67 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         name={`items.${index}.tax_amount`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
                                 </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`items.${index}.total_amount`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                {mode !== formType.VIEW && (
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end">
+                                            <Button variant="ghost" size="sm">
+                                                <Eye className="h-4 w-4" />
+                                            </Button>
+                                            <Button variant="ghost" size="sm">
+                                                <Edit className="h-4 w-4" />
+                                            </Button>
+                                            <Button variant="ghost" size="sm">
+                                                <Trash className="h-4 w-4 text-red-500" />
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))
                     )}

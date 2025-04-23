@@ -34,6 +34,7 @@ export type GrnItemDto = {
     price: number;
     net_amount: number;
     tax_amount: number;
+    total_amount: number;
 };
 
 // Extra Cost
@@ -172,6 +173,7 @@ export const GrnItemSchema = z.object({
     price: z.number().nonnegative("Price must be non-negative"),
     net_amount: z.number().nonnegative("Net amount must be non-negative"),
     tax_amount: z.number().nonnegative("Tax amount must be non-negative"),
+    total_amount: z.number().nonnegative("Total amount must be non-negative"),
 });
 
 export const ExtraCostSchema = z.object({
@@ -313,6 +315,7 @@ export const mockGrnDataById: GrnDto = {
             price: 1000,
             net_amount: 700,
             tax_amount: 1300,
+            total_amount: 2000,
         },
         {
             id: "zRw-xj",
@@ -335,6 +338,7 @@ export const mockGrnDataById: GrnDto = {
             price: 10000,
             net_amount: 7000,
             tax_amount: 1300,
+            total_amount: 2000,
         },
         {
             id: "XZdZTR",
@@ -357,6 +361,7 @@ export const mockGrnDataById: GrnDto = {
             price: 1000,
             net_amount: 700,
             tax_amount: 1300,
+            total_amount: 2000,
         },
 
 
