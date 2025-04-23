@@ -1165,3 +1165,4 @@ export const mockVendorComparisonData: VendorComparisonDto[] = [
         delivery_time: 9,
     }
 ];
+
