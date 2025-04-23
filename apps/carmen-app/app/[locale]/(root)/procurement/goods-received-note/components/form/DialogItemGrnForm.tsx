@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -30,10 +30,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 interface DialogGrnFormProps {
     readonly mode: formType;
     readonly onAddItem: (item: GrnItemFormValues) => void;
+    readonly initialData?: GrnItemFormValues | null;
+    readonly isOpen?: boolean;
+    readonly onOpenChange?: (open: boolean) => void;
 }
 
-export default function DialogItemGrnForm({ mode, onAddItem }: DialogGrnFormProps) {
+export default function DialogItemGrnForm({
+    mode,
+    onAddItem,
+    initialData = null,
+    isOpen,
+    onOpenChange
+}: DialogGrnFormProps) {
     const [dialogOpen, setDialogOpen] = useState(false);
+
+    // Use external control if provided
+    const isDialogOpen = isOpen ?? dialogOpen;
+    const setIsDialogOpen = onOpenChange || setDialogOpen;
 
     // Create a form using useForm with the GrnItemSchema validation
     const form = useForm<z.infer<typeof GrnItemSchema>>({
@@ -63,6 +76,13 @@ export default function DialogItemGrnForm({ mode, onAddItem }: DialogGrnFormProp
         },
     });
 
+    // Update form values when initialData changes
+    useEffect(() => {
+        if (initialData) {
+            form.reset(initialData);
+        }
+    }, [initialData, form]);
+
     const onSubmit = (data: z.infer<typeof GrnItemSchema>) => {
         // Calculate derived values
         const netAmount = data.qty_order * data.price;
@@ -73,19 +93,24 @@ export default function DialogItemGrnForm({ mode, onAddItem }: DialogGrnFormProp
         data.net_amount = netAmount;
         data.tax_amount = taxAmount;
         data.total_amount = totalAmount;
-        data.qty_received = data.qty_order; // Set received qty equal to ordered qty by default
+        data.qty_received = data.qty_received || data.qty_order; // Set received qty equal to ordered qty by default if not set
+
+        // Preserve the id if editing
+        if (initialData?.id) {
+            data.id = initialData.id;
+        }
 
         // Pass the complete item to parent
         onAddItem(data);
 
         // Close dialog and reset form
-        setDialogOpen(false);
+        setIsDialogOpen(false);
         form.reset();
     };
 
     const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        setDialogOpen(false);
+        setIsDialogOpen(false);
         form.reset();
     }
 
@@ -99,14 +124,18 @@ export default function DialogItemGrnForm({ mode, onAddItem }: DialogGrnFormProp
         console.log("openOnOrder");
     }
 
+    const dialogTitle = initialData ? "Edit Item" : "Add Item";
+
     return (
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-                <Button variant="default" size="sm" disabled={mode === formType.VIEW}>
-                    <Plus />
-                    Add Item
-                </Button>
-            </DialogTrigger>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            {!onOpenChange && (
+                <DialogTrigger asChild>
+                    <Button variant="default" size="sm" disabled={mode === formType.VIEW}>
+                        <Plus />
+                        Add Item
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[1200px] overflow-y-auto h-[80vh]">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 py-2">
@@ -114,7 +143,7 @@ export default function DialogItemGrnForm({ mode, onAddItem }: DialogGrnFormProp
                         <div className="border-b pb-4">
 
                             <div className="flex justify-between items-center">
-                                <p className="text-base font-bold">Basic Information</p>
+                                <p className="text-base font-bold">{dialogTitle}</p>
                                 <div className="flex items-center gap-2">
                                     <Button variant="outline" size="sm" onClick={handleCancel}>
                                         Cancel

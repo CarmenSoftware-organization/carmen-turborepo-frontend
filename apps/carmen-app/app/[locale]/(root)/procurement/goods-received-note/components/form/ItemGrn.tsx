@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Edit, Eye, Trash } from "lucide-react";
+import { Edit, Eye, Trash, Plus } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import DialogItemGrnForm from "./DialogItemGrnForm";
@@ -24,8 +24,10 @@ interface ItemGrnProps {
 
 export default function ItemGrn({ control, mode }: ItemGrnProps) {
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [editItem, setEditItem] = useState<GrnItemFormValues | null>(null);
 
-    const { fields, append } = useFieldArray({
+    const { fields, append, update } = useFieldArray({
         control,
         name: "items",
     });
@@ -48,7 +50,34 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
     };
 
     const handleAddItem = (newItem: GrnItemFormValues) => {
-        append(newItem);
+        if (editItem?.id) {
+            // Find the index of the item being edited
+            const itemIndex = fields.findIndex(field => field.id === editItem.id);
+            if (itemIndex !== -1) {
+                update(itemIndex, newItem);
+            }
+        } else {
+            append(newItem);
+        }
+        setEditItem(null);
+    };
+
+    const handleRowClick = (item: GrnItemFormValues) => {
+        if (mode !== formType.VIEW) {
+            setEditItem(item);
+            setDialogOpen(true);
+        }
+    };
+
+    const handleEditClick = (e: React.MouseEvent, item: GrnItemFormValues) => {
+        e.stopPropagation();
+        setEditItem(item);
+        setDialogOpen(true);
+    };
+
+    const handleAddNewClick = () => {
+        setEditItem(null);
+        setDialogOpen(true);
     };
 
     const isAllSelected = fields.length > 0 && selectedItems.length === fields.length;
@@ -56,7 +85,17 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
     return (
         <div className="space-y-2">
             <div className="flex justify-end">
-                <DialogItemGrnForm mode={mode} onAddItem={handleAddItem} />
+                <Button variant="default" size="sm" disabled={mode === formType.VIEW} onClick={handleAddNewClick}>
+                    <Plus />
+                    Add Item
+                </Button>
+                <DialogItemGrnForm
+                    mode={mode}
+                    onAddItem={handleAddItem}
+                    initialData={editItem}
+                    isOpen={dialogOpen}
+                    onOpenChange={setDialogOpen}
+                />
             </div>
             <Table>
                 <TableHeader>
@@ -95,9 +134,13 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                         </TableRow>
                     ) : (
                         fields.map((field) => (
-                            <TableRow key={field.id}>
+                            <TableRow
+                                key={field.id}
+                                onClick={() => handleRowClick(field)}
+                                className={mode !== formType.VIEW ? "cursor-pointer hover:bg-muted/50" : ""}
+                            >
                                 {mode !== formType.VIEW && (
-                                    <TableCell className="text-center w-10">
+                                    <TableCell className="text-center w-10" onClick={(e) => e.stopPropagation()}>
                                         <Checkbox
                                             id={`checkbox-${field.id}`}
                                             checked={selectedItems.includes(field.id ?? '')}
@@ -117,12 +160,16 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                 <TableCell className="text-right">{field.tax_amount}</TableCell>
                                 <TableCell className="text-right">{field.total_amount}</TableCell>
                                 {mode !== formType.VIEW && (
-                                    <TableCell className="text-right">
+                                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                                         <div className="flex justify-end">
                                             <Button variant="ghost" size="sm">
                                                 <Eye className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="ghost" size="sm">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => handleEditClick(e, field)}
+                                            >
                                                 <Edit className="h-4 w-4" />
                                             </Button>
                                             <Button variant="ghost" size="sm">
