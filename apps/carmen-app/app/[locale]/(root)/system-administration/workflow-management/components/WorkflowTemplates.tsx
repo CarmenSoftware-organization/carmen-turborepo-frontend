@@ -60,7 +60,7 @@ export function WorkflowTemplates() {
 
 	useEffect(() => {
 		setTemplates(initialTemplates);
-	}, [initialTemplates]);
+	}, []);
 
 	const selectedTemplate = templates.find(
 		(template) => template.id === selectedTemplateId

@@ -78,7 +78,9 @@ export interface RoutingCondition {
 
 export interface RoutingAction {
   type: ActionType;
-  target_stage: string;
+  parameters: {
+    target_stage: string;
+  };
 }
 
 export interface RoutingRule {
@@ -203,7 +205,7 @@ export const wfFormSchema = z.object({
           }),
           action: z.object({
             type: z.enum(["SKIP_STAGE", "NEXT_STAGE"]),
-            target_stage: z.string(),
+            parameters: z.object({ target_stage: z.string() }),
           }),
         })
       ),

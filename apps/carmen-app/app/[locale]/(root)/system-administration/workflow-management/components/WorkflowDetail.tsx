@@ -19,13 +19,11 @@ import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 
 interface WorkflowDetailProps {
-  wfData: WorkflowCreateModel | null;
   mode: formType;
-  isRefresh: boolean;
-  setRefresh: React.Dispatch<React.SetStateAction<boolean>>;
+  initialValues: WorkflowCreateModel | null;
 }
 
-const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfData, mode, isRefresh, setRefresh }) => {
+const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) => {
   const { token, tenantId } = useAuth();
   const router = useRouter();
 
@@ -34,8 +32,8 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfData, mode, isRefresh
   const form = useForm<WorkflowCreateModel>({
     resolver: zodResolver(wfFormSchema),
     defaultValues:
-      mode === formType.EDIT && wfData
-        ? { ...wfData }
+      mode === formType.EDIT && initialValues
+        ? { ...initialValues }
         : {
             name: "",
             workflow_type: enum_workflow_type.purchase_request,
@@ -145,12 +143,12 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfData, mode, isRefresh
   });
 
   useEffect(() => {
-    if (wfData) {
+    if (initialValues) {
       form.reset({
-        ...wfData,
+        ...initialValues,
       });
     }
-  }, [isRefresh, wfData, form]);
+  }, [initialValues, form]);
 
   const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -160,8 +158,10 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfData, mode, isRefresh
   const handleCancelEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setIsEditing(false);
-    if (wfData) {
-      form.reset({ ...wfData });
+    if (initialValues) {
+      form.reset({ ...initialValues });
+    } else {
+      router.push("/system-administration/workflow-management");
     }
   };
 
@@ -194,13 +194,10 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ wfData, mode, isRefresh
       if (result) {
         form.reset();
         console.log(mode === formType.ADD ? "Workflow created successfully" : "Workflow updated successfully");
-
         if (mode === formType.ADD && result.id) {
           router.replace(`/system-administration/workflow-management/${result.id}`);
-          setRefresh(true);
           setIsEditing(true);
         } else {
-          setRefresh(true);
           setIsEditing(false);
         }
       }
