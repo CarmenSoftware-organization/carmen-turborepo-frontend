@@ -1,54 +1,60 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import WorkflowDetail from "../components/WorkflowDetail";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { WorkflowCreateModel } from "@/dtos/workflows.dto";
 import { getWorkflowId } from "@/services/workflow";
 import { formType } from "@/dtos/form.dto";
 import { useAuth } from "@/context/AuthContext";
+import { useParams } from "next/navigation";
+import SignInDialog from "@/components/SignInDialog";
 
-const WorkflowDetailPage = ({ params }: { params: { id: string } }) => {
-  const { token, tenantId } = useAuth();
+const WorkflowDetailPage = () => {
+  const { token, tenantId, isLoading: authLoading } = useAuth();
+  const params = useParams();
+  const id = typeof params.id === "string" ? params.id : params.id[0];
   const [wfData, setWfdata] = useState<WorkflowCreateModel | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefresh, setRefresh] = useState(false);
-
-  const fetchById = async () => {
-    if (!params.id || !token) return;
-    try {
-      const data = await getWorkflowId(token, tenantId, params.id);
-      setWfdata(data);
-      setIsLoading(false);
-      setRefresh(false);
-    } catch (err) {
-      console.error("Failed to fetch data:", err);
-    }
-  };
+  const [loading, setLoading] = useState(true);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   useEffect(() => {
+    // Only fetch product when token and tenantId are available and auth is not loading
+    if (!token || !tenantId || authLoading) {
+      return;
+    }
+    const fetchById = async () => {
+      try {
+        const data = await getWorkflowId(token, tenantId, id);
+        if (data.statusCode === 401) {
+          setLoginDialogOpen(true);
+          return;
+        }
+        setWfdata(data);
+      } catch (error) {
+        console.error("Error fetching workflow:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchById();
-  }, [token, isRefresh]);
+  }, [token, tenantId, id, authLoading]);
 
-  if (isLoading) {
-    return (
-      <div className="m-4 space-y-4 mt-20">
-        <Card>
-          <Skeleton className="h-[125px] w-full rounded-xl" />
-        </Card>
-        <Card>
-          <Skeleton className="h-[400px] w-full rounded-xl" />
-        </Card>
-      </div>
-    );
+  // Show loading state if auth is still loading or we're fetching product data
+  if (authLoading || (loading && token && tenantId)) {
+    return <div>Loading product information...</div>;
   }
 
-  if (!setWfdata) {
-    return null;
+  // Show loading state if auth is still loading or we're fetching product data
+  if (authLoading || (loading && token && tenantId)) {
+    return <div>Loading product information...</div>;
   }
 
   // eslint-disable-next-line react/react-in-jsx-scope
-  return <WorkflowDetail wfData={wfData} mode={formType.EDIT} isRefresh={isRefresh} setRefresh={setRefresh} />;
+  return (
+    <>
+      <WorkflowDetail mode={formType.EDIT} initialValues={wfData} />
+      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
+    </>
+  );
 };
 
 export default WorkflowDetailPage;

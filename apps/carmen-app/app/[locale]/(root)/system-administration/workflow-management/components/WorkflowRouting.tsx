@@ -39,7 +39,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
       description: "",
       trigger_stage: stagesName[0] || "",
       condition: { field: "", operator: "eq", value: "" },
-      action: { type: "NEXT_STAGE", target_stage: "" },
+      action: { type: "NEXT_STAGE", parameters: { target_stage: "Completed" } },
     });
 
     setSelectedRuleName(`rule ${rules.length + 1}`);
@@ -236,10 +236,10 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                           />
                           <Form.FormField
                             control={control}
-                            name={`data.routing_rules.${index}.action.target_stage`}
+                            name={`data.routing_rules.${index}.action.parameters.target_stage`}
                             render={({ field }) => (
                               <Form.FormItem>
-                                <Select onValueChange={field.onChange} disabled={!isEditing}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isEditing}>
                                   <Form.FormControl>
                                     <SelectTrigger>
                                       <SelectValue placeholder="Select target stage" />

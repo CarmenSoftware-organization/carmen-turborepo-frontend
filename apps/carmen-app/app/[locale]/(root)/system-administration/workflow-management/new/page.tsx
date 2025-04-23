@@ -1,19 +1,10 @@
-'use client';
-import React, { useState } from 'react';
-import WorkflowDetail from '../components/WorkflowDetail';
-import { formType } from '@/dtos/form.dto';
+"use client";
+import React from "react";
+import WorkflowDetail from "../components/WorkflowDetail";
+import { formType } from "@/dtos/form.dto";
 
 const NewWorkflowPage = () => {
-	const [isRefresh, setIsRefresh] = useState(false);
-
-	return (
-		<WorkflowDetail
-			wfData={null}
-			mode={formType.ADD}
-			isRefresh={isRefresh}
-			setRefresh={setIsRefresh}
-		/>
-	);
+  return <WorkflowDetail mode={formType.ADD} initialValues={null} />;
 };
 
 export default NewWorkflowPage;

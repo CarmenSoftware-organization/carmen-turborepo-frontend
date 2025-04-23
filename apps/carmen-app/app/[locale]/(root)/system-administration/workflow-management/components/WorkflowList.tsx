@@ -6,17 +6,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import Link from "next/link";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Eye, PlusCircle } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { FieldConfig } from "@/constants/uiConfig";
 import { Badge } from "@/components/ui/badge";
 import { useWorkflow } from "@/hooks/useWorkflow";
-import { statusOptions } from "@/constants/options";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 import { useTranslations } from "next-intl";
-import { useURL } from "@/hooks/useURL";
+import SignInDialog from "@/components/SignInDialog";
 
 interface WorkflowListProps {
   id: string;
@@ -76,15 +76,17 @@ const WorkflowList = () => {
     setStatusOpen,
     search,
     setSearch,
-    status,
-    setStatus,
+    filter,
+    setFilter,
+    sort,
+    setSort,
     page,
-    pages,
-
+    totalPages,
+    loginDialogOpen,
+    setLoginDialogOpen,
+    // Functions
     handlePageChange,
   } = useWorkflow();
-
-  const [sort, setSort] = useURL("sort");
 
   // if (error) {
   // 	return <ErrorCard message={error} data-id="workflow-error-card" />;
@@ -111,13 +113,14 @@ const WorkflowList = () => {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={statusOptions}
-          value={status}
-          onChange={setStatus}
+          options={boolFilterOptions}
+          value={filter}
+          onChange={setFilter}
           open={statusOpen}
           onOpenChange={setStatusOpen}
           data-id="workflow-status-search-dropdown"
         />
+
         <SortComponent fieldConfigs={sortFields} sort={sort} setSort={setSort} data-id="workflow-list-sort-dropdown" />
       </div>
     </div>
@@ -171,18 +174,21 @@ const WorkflowList = () => {
           </TableBody>
         )}
       </Table>
-      <PaginationComponent currentPage={+page} totalPages={+pages} onPageChange={handlePageChange} />
+      <PaginationComponent currentPage={+page} totalPages={totalPages} onPageChange={handlePageChange} />
     </>
   );
 
   return (
-    <DataDisplayTemplate
-      title="Workflow"
-      actionButtons={actionButtons}
-      filters={filters}
-      content={content}
-      data-id="workflow-list-data-display-template"
-    />
+    <>
+      <DataDisplayTemplate
+        title="Workflow"
+        actionButtons={actionButtons}
+        filters={filters}
+        content={content}
+        data-id="workflow-list-data-display-template"
+      />
+      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
+    </>
   );
 };
 

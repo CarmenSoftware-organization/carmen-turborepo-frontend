@@ -2,6 +2,7 @@ import { useCallback, useState, useEffect } from "react";
 import { useURL } from "@/hooks/useURL";
 import { getWorkflowList } from "@/services/workflow";
 import { useAuth } from "@/context/AuthContext";
+import { toastError } from "@/components/ui-custom/Toast";
 
 interface WorkflowListProps {
   id: string;
@@ -14,52 +15,70 @@ export const useWorkflow = () => {
   const { token, tenantId } = useAuth();
   const [workflows, setWorkflows] = useState<WorkflowListProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [statusOpen, setStatusOpen] = useState(false);
   const [search, setSearch] = useURL("search");
-  const [status, setStatus] = useURL("status");
+  const [filter, setFilter] = useURL("filter");
+  const [statusOpen, setStatusOpen] = useState(false);
   const [page, setPage] = useURL("page");
-  const [pages, setPages] = useURL("pages");
   const [sort, setSort] = useURL("sort");
+  const [totalPages, setTotalPages] = useState(1);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (search) {
+      setPage("");
+      setSort("");
+    }
+  }, [search, setPage, setSort]);
 
   const fetchData = useCallback(async () => {
+    if (!tenantId) return;
     try {
       setIsLoading(true);
       const data = await getWorkflowList(token, tenantId, {
         search,
-        status,
         page,
         sort,
+        filter,
       });
+      if (data.statusCode === 401) {
+        setLoginDialogOpen(true);
+        return;
+      }
       setWorkflows(data.data);
-      setPage(data.pagination.page);
-      setPages(data.pagination.pages);
+      setTotalPages(data.paginate.pages);
     } catch (error) {
-      console.log("error", error);
-      console.log("Failed to fetch workflow");
+      console.error("Error fetching workflows:", error);
+      toastError({ message: "Error fetching workflows" });
     } finally {
       setIsLoading(false);
     }
-  }, [token, tenantId, search, status, page, sort, setPage, setPages]);
-
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      const numericTotalPages = Number(pages);
-      if (newPage < 1 || newPage > numericTotalPages) return;
-      setPage(newPage.toString());
-    },
-    [pages, setPage]
-  );
-
-  const handleSortChange = useCallback(
-    (newSort: string) => {
-      setSort(newSort);
-    },
-    [setSort]
-  );
+  }, [token, tenantId, search, page, sort, filter]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setPage(newPage.toString());
+    },
+    [setPage]
+  );
+
+  const handleSetSort = useCallback(
+    (sortValue: string) => {
+      setSort(sortValue);
+    },
+    [setSort]
+  );
+
+  const handleSetFilter = useCallback(
+    (filterValue: string) => {
+      setFilter(filterValue);
+      setPage("");
+    },
+    [setFilter, setPage]
+  );
 
   return {
     workflows,
@@ -68,12 +87,22 @@ export const useWorkflow = () => {
     setStatusOpen,
     search,
     setSearch,
-    status,
-    setStatus,
+    filter,
+    setFilter,
     page,
-    pages,
     sort,
+    setSort,
+    totalPages,
+    loginDialogOpen,
+    setLoginDialogOpen,
+
+    // Status helper
+    handleSetFilter,
+
+    // Sort helper
+    handleSetSort,
+
+    // Functions
     handlePageChange,
-    handleSortChange,
   };
 };

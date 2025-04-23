@@ -7,34 +7,23 @@ export const getWorkflowList = async (
   tenantId: string,
   params: {
     search?: string;
-    status?: string;
     page?: string;
     perPage?: string;
     sort?: string;
-  }
+    filter?: string;
+  } = {}
 ) => {
   const query = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== "") {
+      query.append(key, String(value));
+    }
+  });
 
-  if (params.search) {
-    query.append("search", params.search);
-  }
-  if (params.status) {
-    query.append("status", params.status);
-  }
+  const queryString = query.toString();
 
-  if (params.page) {
-    query.append("page", params.page);
-  }
+  const url = queryString ? `${backendApi}/api/config/workflows?${queryString}` : `${backendApi}/api/config/workflows`;
 
-  if (params.perPage) {
-    query.append("perPage", params.perPage);
-  }
-
-  if (params.sort) {
-    query.append("sort", params.sort);
-  }
-
-  const url = `${backendApi}/api/config/workflows?${query}`;
   const options = {
     method: "GET",
     headers: {
@@ -101,15 +90,9 @@ export const handleSubmit = async (
   mode: formType
 ): Promise<WorkflowCreateModel | null> => {
   try {
+    const url = values?.id ? `${backendApi}/api/config/workflows/${values.id}` : `${backendApi}/api/config/workflows`;
 
-console.log(values);
-
-
-    const url = values?.id
-      ? `${backendApi}/api/config/workflows/${values.id}`
-      : `${backendApi}/api/config/workflows`;
-
-    const method = mode === formType.ADD ? "POST" : "PATCH";
+    const method = mode === formType.ADD ? "POST" : "PUT";
     const response = await fetch(url, {
       method,
       headers: {
