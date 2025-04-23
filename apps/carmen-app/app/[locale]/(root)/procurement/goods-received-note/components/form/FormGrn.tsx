@@ -3,12 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { useRouter } from "@/lib/navigation";
-import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Pencil, Printer } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Pencil, Printer, Save, X } from "lucide-react";
 import { useState } from "react";
 import ActivityLog from "../ActivityLog";
 import CommentGrn from "../CommentGrn";
 import { Card } from "@/components/ui/card";
-import { GrnDto } from "../../type.dto";
+import {
+    GrnDto,
+    GrnFormSchema,
+    GrnFormValues,
+} from "../../type.dto";
 import GrnFormHeader from "./GrnFormHeader";
 import {
     Tabs,
@@ -21,142 +25,194 @@ import ExtraCost from "./ExtraCost";
 import StockMovement from "./StockMovement";
 import TaxEntries from "./TaxEntries";
 import JournalEntries from "./JournalEntries";
+import { Badge } from "@/components/ui/badge";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form } from "@/components/ui/form";
+
 interface FormGrnProps {
     readonly mode: formType;
     readonly initialValues?: GrnDto;
 }
 
-const ActionButtons = ({
-    currentMode,
-    handleModeChange,
-    handleSave,
-    onBack
-}: {
-    currentMode: formType;
-    handleModeChange: (mode: formType) => void;
-    handleSave: () => void;
-    onBack: () => void;
-}) => {
-
-    if (currentMode === formType.ADD) {
-        return (
-            <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={onBack}>
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                </Button>
-                <Button variant="default" size="sm" onClick={handleSave}>
-                    Save
-                </Button>
-            </div>
-        );
-    }
-
-    if (currentMode === formType.VIEW) {
-        return (
-            <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={onBack}>
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                </Button>
-                <Button variant="default" size="sm" onClick={() => handleModeChange(formType.EDIT)}>
-                    <Pencil className="h-4 w-4" />
-                    Edit
-                </Button>
-            </div>
-        );
-    }
-
-    if (currentMode === formType.EDIT) {
-        return (
-            <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => handleModeChange(formType.VIEW)}>
-                    Cancel
-                </Button>
-                <Button variant="default" size="sm" onClick={handleSave}>
-                    Save
-                </Button>
-            </div>
-        );
-    }
-
-    return null;
-};
-
 export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     const router = useRouter();
-    const [currentMode, setCurrentMode] = useState(mode);
-    const [openLog, setOpenLog] = useState(false);
+    const [currentMode, setCurrentMode] = useState<formType>(mode);
+    const [openLog, setOpenLog] = useState<boolean>(false);
+    const [activeTab, setActiveTab] = useState<string>("items");
 
-    const handleModeChange = (mode: formType) => {
-        setCurrentMode(mode);
-    };
+    // Full form state that includes all sections
+    const form = useForm<GrnFormValues>({
+        resolver: zodResolver(GrnFormSchema),
+        defaultValues: {
+            id: initialValues?.id,
+            status: initialValues?.status ?? "draft",
+            info: {
+                grn_no: initialValues?.info?.grn_no ?? "",
+                date: initialValues?.info?.date ?? "",
+                vendor: initialValues?.info?.vendor ?? "",
+                invoice_no: initialValues?.info?.invoice_no ?? "",
+                invoice_date: initialValues?.info?.invoice_date ?? "",
+                description: initialValues?.info?.description ?? "",
+                currency: initialValues?.info?.currency ?? "",
+                exchange_rate: initialValues?.info?.exchange_rate ?? 0,
+                consignment: initialValues?.info?.consignment ?? false,
+                cash: initialValues?.info?.cash ?? false,
+                credit_term: initialValues?.info?.credit_term ?? 0,
+                due_date: initialValues?.info?.due_date ?? "",
+            },
+            items: initialValues?.items ?? [],
+            extra_cost: initialValues?.extra_cost ?? [],
+            stock_movement: initialValues?.stock_movement ?? [],
+            journal_entries: initialValues?.journal_entries ?? {
+                id: "",
+                type: "",
+                code: "",
+                transaction_date: "",
+                status: "",
+                ref_no: "",
+                soruce: "",
+                description: "",
+                lists: [],
+            },
+            tax_entries: initialValues?.tax_entries ?? {
+                id: "",
+                tax_invoice_no: "",
+                date: "",
+                status: "",
+                period: "",
+                base_amount: 0,
+                base: "",
+                tax_rates: 0,
+                tax_amount: 0,
+                tax_cal: [],
+                filling_period: "",
+                filling_date: "",
+                vat_return: "",
+                filing_status: "",
+            },
+        },
+    });
 
     const handleOpenLog = () => {
         setOpenLog(!openLog);
     };
 
-    const handleSave = () => {
-        alert('save');
+    const onSubmit = (data: GrnFormValues) => {
+        console.log("Form data submitted:", data);
+        // Here you would typically send the data to the server
+        alert('Form saved successfully');
         setCurrentMode(formType.VIEW);
     };
+    const handleEditClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Edit button clicked, current mode:', currentMode);
+        setCurrentMode(formType.EDIT);
+    };
 
-    const handleBack = () => {
-        router.back();
+    const handleCancelClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (currentMode === formType.ADD || currentMode === formType.VIEW) {
+            router.push("/procurement/goods-received-note");
+        } else {
+            setCurrentMode(formType.VIEW);
+        }
+    };
+
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
     };
 
     return (
         <div className="space-y-4 relative">
             <div className="flex gap-4 relative">
                 <Card className={`${openLog ? 'w-3/4' : 'w-full'} p-4 transition-all duration-300 ease-in-out`}>
-                    <div className="flex items-center justify-between">
-                        <h1>Mode: {currentMode}</h1>
-                        <div className="flex items-center gap-2">
-                            <ActionButtons
-                                currentMode={currentMode}
-                                handleModeChange={handleModeChange}
-                                handleSave={handleSave}
-                                onBack={handleBack}
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <h1>Goods Received Note</h1>
+                                    <Badge>{initialValues?.status}</Badge>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    {currentMode === formType.VIEW ? (
+                                        <>
+                                            <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                <ArrowLeft className="h-4 w-4" /> Back
+                                            </Button>
+                                            <Button variant="default" size={'sm'} onClick={handleEditClick}>
+                                                <Pencil className="h-4 w-4" /> Edit
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                <X className="h-4 w-4" /> Cancel
+                                            </Button>
+                                            <Button
+                                                variant="default"
+                                                size={'sm'}
+                                                type="submit"
+                                            >
+                                                <Save className="h-4 w-4" /> Save
+                                            </Button>
+                                        </>
+                                    )}
+                                    <Button type="button" variant="outline" size="sm">
+                                        <Printer className="h-4 w-4" />
+                                        Print
+                                    </Button>
+                                    <Button type="button" variant="outline" size="sm">
+                                        <MessageCircle className="h-4 w-4" />
+                                        Comment
+                                    </Button>
+                                </div>
+                            </div>
+                            <GrnFormHeader
+                                control={form.control}
+                                setValue={form.setValue}
+                                watch={form.watch}
                             />
-                            <Button variant="outline" size="sm">
-                                <Printer className="h-4 w-4" />
-                                Print
-                            </Button>
-                            <Button variant="outline" size="sm">
-                                <MessageCircle className="h-4 w-4" />
-                                Comment
-                            </Button>
-                        </div>
-                    </div>
-                    <GrnFormHeader info={initialValues?.info} />
-
-                    <Tabs defaultValue="items">
-                        <TabsList>
-                            <TabsTrigger value="items">Items</TabsTrigger>
-                            <TabsTrigger value="extraCost">Extra Cost</TabsTrigger>
-                            <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
-                            <TabsTrigger value="journalEntries">Journal Entries</TabsTrigger>
-                            <TabsTrigger value="taxEntries">Tax Entries</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="items">
-                            <ItemGrn items={initialValues?.items} />
-                        </TabsContent>
-                        <TabsContent value="extraCost">
-                            <ExtraCost extraCost={initialValues?.extra_cost} />
-                        </TabsContent>
-                        <TabsContent value="stockMovement">
-                            <StockMovement stockMovement={initialValues?.stock_movement} />
-                        </TabsContent>
-                        <TabsContent value="journalEntries">
-                            <JournalEntries journalEntries={initialValues?.journal_entries} />
-                        </TabsContent>
-                        <TabsContent value="taxEntries">
-                            <TaxEntries taxEntries={initialValues?.tax_entries} />
-                        </TabsContent>
-                    </Tabs>
+                            <Tabs defaultValue="items" onValueChange={handleTabChange} value={activeTab}>
+                                <TabsList>
+                                    <TabsTrigger value="items">Items</TabsTrigger>
+                                    <TabsTrigger value="extraCost">Extra Cost</TabsTrigger>
+                                    <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
+                                    <TabsTrigger value="journalEntries">Journal Entries</TabsTrigger>
+                                    <TabsTrigger value="taxEntries">Tax Entries</TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="items">
+                                    <ItemGrn
+                                        control={form.control}
+                                        mode={currentMode}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="extraCost">
+                                    <ExtraCost
+                                        control={form.control}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="stockMovement">
+                                    <StockMovement
+                                        control={form.control}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="journalEntries">
+                                    <JournalEntries
+                                        control={form.control}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="taxEntries">
+                                    <TaxEntries
+                                        control={form.control}
+                                    />
+                                </TabsContent>
+                            </Tabs>
+                        </form>
+                    </Form>
                 </Card>
-
-
 
                 {openLog && (
                     <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">

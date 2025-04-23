@@ -1,13 +1,229 @@
-import { StockMovementGrnDto } from "../../type.dto";
+"use client";
+
+import { GrnFormValues } from "../../type.dto";
+import { Control, useFieldArray } from "react-hook-form";
+import {
+    FormControl,
+    FormField,
+    FormItem,
+    FormMessage,
+} from "@/components/ui/form";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 
 interface StockMovementProps {
-    readonly stockMovement?: StockMovementGrnDto[];
+    readonly control: Control<GrnFormValues>;
 }
-export default function StockMovement({ stockMovement }: StockMovementProps) {
+
+export default function StockMovement({ control }: StockMovementProps) {
+    const { fields } = useFieldArray({
+        control,
+        name: "stock_movement",
+    });
+
     return (
-        <div>
-            <pre>{JSON.stringify(stockMovement, null, 2)}</pre>
+        <div className="rounded-md border">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-[150px]">Location</TableHead>
+                        <TableHead>Product</TableHead>
+                        <TableHead>Lot No.</TableHead>
+                        <TableHead className="text-right">Stock In</TableHead>
+                        <TableHead className="text-right">Stock Out</TableHead>
+                        <TableHead>Unit</TableHead>
+                        <TableHead className="text-right">Unit Cost</TableHead>
+                        <TableHead className="text-right">Extra Cost</TableHead>
+                        <TableHead className="text-right">Total Cost</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {fields.length === 0 ? (
+                        <TableRow>
+                            <TableCell colSpan={9} className="text-center">
+                                No stock movements available
+                            </TableCell>
+                        </TableRow>
+                    ) : (
+                        fields.map((field, index) => (
+                            <TableRow key={field.id}>
+                                <TableCell>
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.location.name`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.product.name`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.lot_no`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.stock_in`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        className="text-right"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.stock_out`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        className="text-right"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.unit.name`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.unit_cost`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        className="text-right"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.extra_cost`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        className="text-right"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`stock_movement.${index}.total_cost`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        min="0"
+                                                        step="0.01"
+                                                        className="text-right"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        ))
+                    )}
+                </TableBody>
+            </Table>
         </div>
-    )
+    );
 }
 

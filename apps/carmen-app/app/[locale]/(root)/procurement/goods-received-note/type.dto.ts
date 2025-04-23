@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 // Common Types
 export type UnitGrnDto = {
     id: string;
@@ -107,24 +109,163 @@ export type TaxEntryGrnDto = {
     filing_status: string;
 };
 
-export type GrnHeaderDto = {
-    id?: string;
+export interface GrnHeaderDto {
     grn_no: string;
     date: string;
     vendor: string;
     invoice_no: string;
     invoice_date: string;
-    description: string;
+    description?: string;
     currency: string;
     exchange_rate: number;
     consignment: boolean;
     cash: boolean;
-    credit_term: number;
-    due_date: string;
+    credit_term?: number;
+    due_date?: string;
 }
 
-// Main GRN Type
+// Zod schemas for validation
+export const GrnHeaderSchema = z.object({
+    grn_no: z.string().min(1, "GRN number is required"),
+    date: z.string().min(1, "Date is required"),
+    vendor: z.string().min(1, "Vendor is required"),
+    invoice_no: z.string().min(1, "Invoice number is required"),
+    invoice_date: z.string().min(1, "Invoice date is required"),
+    description: z.string().optional(),
+    currency: z.string().min(1, "Currency is required"),
+    exchange_rate: z.number().positive("Exchange rate must be positive"),
+    consignment: z.boolean().default(false),
+    cash: z.boolean().default(false),
+    credit_term: z.number().int().nonnegative("Credit term must be a positive number").optional(),
+    due_date: z.string().optional(),
+});
+
+export const UnitSchema = z.object({
+    id: z.string(),
+    name: z.string().min(1, "Unit name is required"),
+});
+
+export const LocationSchema = z.object({
+    id: z.string(),
+    name: z.string().min(1, "Location name is required"),
+});
+
+export const ProductSchema = z.object({
+    id: z.string(),
+    name: z.string().min(1, "Product name is required"),
+    description: z.string(),
+});
+
+export const DepartmentSchema = z.object({
+    id: z.string(),
+    name: z.string().min(1, "Department name is required"),
+});
+
+export const GrnItemSchema = z.object({
+    id: z.string().optional(),
+    locations: LocationSchema,
+    products: ProductSchema,
+    lot_no: z.string().min(1, "Lot number is required"),
+    qty_order: z.number().nonnegative("Order quantity must be non-negative"),
+    qty_received: z.number().nonnegative("Received quantity must be non-negative"),
+    unit: UnitSchema,
+    price: z.number().nonnegative("Price must be non-negative"),
+    net_amount: z.number().nonnegative("Net amount must be non-negative"),
+    tax_amount: z.number().nonnegative("Tax amount must be non-negative"),
+});
+
+export const ExtraCostSchema = z.object({
+    id: z.string().optional(),
+    type: z.string().min(1, "Cost type is required"),
+    amount: z.number().nonnegative("Amount must be non-negative"),
+});
+
+export const StockMovementSchema = z.object({
+    id: z.string().optional(),
+    location: LocationSchema,
+    product: ProductSchema,
+    unit: UnitSchema,
+    lot_no: z.string().min(1, "Lot number is required"),
+    stock_in: z.number().nonnegative("Stock in must be non-negative"),
+    stock_out: z.number().nonnegative("Stock out must be non-negative"),
+    unit_cost: z.number().nonnegative("Unit cost must be non-negative"),
+    extra_cost: z.number().nonnegative("Extra cost must be non-negative"),
+    total_cost: z.number().nonnegative("Total cost must be non-negative"),
+});
+
+export const JournalEntryListSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1, "Entry name is required"),
+    amount: z.number().nonnegative("Amount must be non-negative"),
+    department: DepartmentSchema,
+    description: z.string(),
+    debit: z.number().nonnegative("Debit must be non-negative"),
+    credit: z.number().nonnegative("Credit must be non-negative"),
+    base_debit: z.number().nonnegative("Base debit must be non-negative"),
+    base_credit: z.number().nonnegative("Base credit must be non-negative"),
+});
+
+export const JournalEntrySchema = z.object({
+    id: z.string().optional(),
+    type: z.string().min(1, "Entry type is required"),
+    code: z.string().min(1, "Code is required"),
+    transaction_date: z.string().min(1, "Transaction date is required"),
+    status: z.string().min(1, "Status is required"),
+    ref_no: z.string().min(1, "Reference number is required"),
+    soruce: z.string(),
+    description: z.string(),
+    lists: z.array(JournalEntryListSchema),
+});
+
+export const TaxCalculationSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1, "Tax name is required"),
+    description: z.string(),
+    amount: z.number().nonnegative("Amount must be non-negative"),
+    base_amount: z.number().nonnegative("Base amount must be non-negative"),
+    tax_rate: z.number().nonnegative("Tax rate must be non-negative"),
+});
+
+export const TaxEntrySchema = z.object({
+    id: z.string().optional(),
+    tax_invoice_no: z.string().min(1, "Tax invoice number is required"),
+    date: z.string().min(1, "Date is required"),
+    status: z.string().min(1, "Status is required"),
+    period: z.string().min(1, "Period is required"),
+    base_amount: z.number().nonnegative("Base amount must be non-negative"),
+    base: z.string().min(1, "Base is required"),
+    tax_rates: z.number().nonnegative("Tax rate must be non-negative"),
+    tax_amount: z.number().nonnegative("Tax amount must be non-negative"),
+    tax_cal: z.array(TaxCalculationSchema),
+    filling_period: z.string().min(1, "Filling period is required"),
+    filling_date: z.string().min(1, "Filling date is required"),
+    vat_return: z.string().min(1, "VAT return is required"),
+    filing_status: z.string().min(1, "Filing status is required"),
+});
+
+// Complete GRN Form Schema
+export const GrnFormSchema = z.object({
+    id: z.string().optional(),
+    status: z.string(),
+    info: GrnHeaderSchema,
+    items: z.array(GrnItemSchema),
+    extra_cost: z.array(ExtraCostSchema),
+    stock_movement: z.array(StockMovementSchema),
+    journal_entries: JournalEntrySchema,
+    tax_entries: TaxEntrySchema,
+});
+
+export type GrnHeaderFormValues = z.infer<typeof GrnHeaderSchema>;
+export type GrnItemFormValues = z.infer<typeof GrnItemSchema>;
+export type ExtraCostFormValues = z.infer<typeof ExtraCostSchema>;
+export type StockMovementFormValues = z.infer<typeof StockMovementSchema>;
+export type JournalEntryFormValues = z.infer<typeof JournalEntrySchema>;
+export type TaxEntryFormValues = z.infer<typeof TaxEntrySchema>;
+export type GrnFormValues = z.infer<typeof GrnFormSchema>;
+
 export type GrnDto = {
+    id: string;
+    status: string;
     info: GrnHeaderDto;
     items: GrnItemDto[];
     extra_cost: ExtraCostGrnDto[];
@@ -133,10 +274,10 @@ export type GrnDto = {
     tax_entries: TaxEntryGrnDto;
 };
 
-
 export const mockGrnDataById: GrnDto = {
+    id: "jyWYyw",
+    status: "received",
     info: {
-        id: "jyWYyw",
         grn_no: "GRN-2023-006",
         date: "2023-01-15",
         vendor: "PTT",
