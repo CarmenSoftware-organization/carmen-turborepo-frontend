@@ -1,13 +1,7 @@
 "use client";
 
-import { GrnFormValues } from "../../type.dto";
+import { GrnFormValues, GrnItemFormValues } from "../../type.dto";
 import { Control, useFieldArray } from "react-hook-form";
-import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage,
-} from "@/components/ui/form";
 import {
     Table,
     TableBody,
@@ -16,12 +10,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Edit, Eye, Plus, Trash } from "lucide-react";
+import { Edit, Eye, Trash } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import DialogItemGrnForm from "./DialogItemGrnForm";
 
 interface ItemGrnProps {
     readonly control: Control<GrnFormValues>;
@@ -31,11 +25,10 @@ interface ItemGrnProps {
 export default function ItemGrn({ control, mode }: ItemGrnProps) {
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-    const { fields } = useFieldArray({
+    const { fields, append } = useFieldArray({
         control,
         name: "items",
     });
-
 
     const handleSelectItem = (id: string) => {
         setSelectedItems(prev =>
@@ -54,15 +47,16 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
         }
     };
 
+    const handleAddItem = (newItem: GrnItemFormValues) => {
+        append(newItem);
+    };
+
     const isAllSelected = fields.length > 0 && selectedItems.length === fields.length;
 
     return (
         <div className="space-y-2">
             <div className="flex justify-end">
-                <Button variant="default" size="sm" disabled={mode === formType.VIEW}>
-                    <Plus className="h-4 w-4" />
-                    Add Item
-                </Button>
+                <DialogItemGrnForm mode={mode} onAddItem={handleAddItem} />
             </div>
             <Table>
                 <TableHeader>
@@ -95,12 +89,12 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                 <TableBody>
                     {fields.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={9} className="text-center">
+                            <TableCell colSpan={mode !== formType.VIEW ? 12 : 10} className="text-center">
                                 No items available
                             </TableCell>
                         </TableRow>
                     ) : (
-                        fields.map((field, index) => (
+                        fields.map((field) => (
                             <TableRow key={field.id}>
                                 {mode !== formType.VIEW && (
                                     <TableCell className="text-center w-10">
@@ -112,232 +106,16 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                         />
                                     </TableCell>
                                 )}
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.locations.name`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input {...field} />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.products.name`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input {...field} />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.lot_no`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input {...field} />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.qty_order`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            className="text-right"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.qty_received`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            className="text-right"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.unit.name`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input {...field} />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.price`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            className="text-right"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.net_amount`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            className="text-right"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.tax_amount`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            className="text-right"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <FormField
-                                        control={control}
-                                        name={`items.${index}.total_amount`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                {mode === formType.VIEW ? (
-                                                    <p className="text-xs text-muted-foreground">{field.value}</p>
-                                                ) : (
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            className="text-right"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                )}
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
+                                <TableCell>{field.locations.name}</TableCell>
+                                <TableCell>{field.products.name}</TableCell>
+                                <TableCell>{field.lot_no}</TableCell>
+                                <TableCell className="text-right">{field.qty_order}</TableCell>
+                                <TableCell className="text-right">{field.qty_received}</TableCell>
+                                <TableCell>{field.unit.name}</TableCell>
+                                <TableCell className="text-right">{field.price}</TableCell>
+                                <TableCell className="text-right">{field.net_amount}</TableCell>
+                                <TableCell className="text-right">{field.tax_amount}</TableCell>
+                                <TableCell className="text-right">{field.total_amount}</TableCell>
                                 {mode !== formType.VIEW && (
                                     <TableCell className="text-right">
                                         <div className="flex justify-end">
