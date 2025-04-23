@@ -405,13 +405,15 @@ export default function DialogItemGrnForm({ mode, onAddItem }: DialogGrnFormProp
                                         name="tax_inclusive"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Tax Incl.</FormLabel>
-                                                <FormControl>
-                                                    <Checkbox
-                                                        checked={field.value}
-                                                        onCheckedChange={field.onChange}
-                                                    />
-                                                </FormControl>
+                                                <div className="flex flex-col gap-2 mt-2">
+                                                    <FormLabel>Tax Incl.</FormLabel>
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
