@@ -33,6 +33,7 @@ interface ProductListProps {
     readonly onPageChange: (page: number) => void;
     readonly totalPages: number | undefined;
     readonly error?: string | null;
+    readonly onDelete: (id: string) => void;
 }
 
 export default function ProductList({
@@ -41,7 +42,8 @@ export default function ProductList({
     currentPage,
     onPageChange,
     totalPages = 1,
-    error = null
+    error = null,
+    onDelete
 }: ProductListProps) {
 
     const t = useTranslations('TableHeader');
@@ -140,7 +142,13 @@ export default function ProductList({
                                         <Eye />
                                     </Link>
                                 </Button>
-                                <Button variant="ghost" size={'sm'} className="text-destructive">
+                                <Button
+                                    variant="ghost"
+                                    size={'sm'}
+                                    className="text-destructive"
+                                    onClick={() => onDelete(pd.id ?? '')}
+                                    aria-label={`Delete ${pd.name}`}
+                                >
                                     <Trash />
                                 </Button>
                             </div>
@@ -206,7 +214,13 @@ export default function ProductList({
                                 <Eye />
                             </Link>
                         </Button>
-                        <Button variant="ghost" size={'sm'} className="text-destructive">
+                        <Button
+                            variant="ghost"
+                            size={'sm'}
+                            className="text-destructive"
+                            onClick={() => onDelete(pd.id ?? '')}
+                            aria-label={`Delete ${pd.name}`}
+                        >
                             <Trash />
                         </Button>
                     </div>

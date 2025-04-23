@@ -15,6 +15,16 @@ import { ProductGetDto } from "@/dtos/product.dto";
 import { getProductService } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
 import SignInDialog from "@/components/SignInDialog";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function ProductComponent() {
     const { token, tenantId } = useAuth();
@@ -31,6 +41,9 @@ export function ProductComponent() {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
     const [error, setError] = useState<string | null>(null);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         if (search) {
@@ -96,6 +109,19 @@ export function ProductComponent() {
             isMounted = false;
         };
     }, [token, tenantId, search, sort, page, status]);
+
+    const handleDelete = (id: string) => {
+        setDeleteId(id);
+        setDeleteDialogOpen(true);
+    }
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        setProducts((prevProducts) =>
+            prevProducts.filter((product) => product.id !== deleteId)
+        );
+        setIsDeleting(true);
+    };
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage.toString());
@@ -174,6 +200,7 @@ export function ProductComponent() {
             totalPages={totalPages}
             data-id="product-list-template"
             error={error}
+            onDelete={handleDelete}
         />
     );
 
@@ -189,6 +216,28 @@ export function ProductComponent() {
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}
             />
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete this product?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isDeleting}>
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            disabled={isDeleting}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }
