@@ -30,6 +30,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import TransactionSummary from "./TransactionSummary";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FormGrnProps {
     readonly mode: formType;
@@ -129,8 +130,8 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     return (
         <div className="relative">
             <div className="flex gap-4 relative">
-                <div className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out space-y-4`}>
-                    <Card className="p-4">
+                <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
+                    <Card className="p-4 mb-4">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -216,7 +217,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                         </Form>
                     </Card>
                     <TransactionSummary />
-                </div>
+                </ScrollArea>
 
 
                 {openLog && (
