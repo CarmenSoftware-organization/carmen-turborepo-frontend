@@ -20,13 +20,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-
+import { formType } from "@/dtos/form.dto";
 interface JournalEntriesProps {
     readonly control: Control<GrnFormValues>;
-    readonly readOnly?: boolean;
+    readonly mode: formType;
 }
 
-export default function JournalEntries({ control, readOnly = false }: JournalEntriesProps) {
+export default function JournalEntries({ control, mode }: JournalEntriesProps) {
     const { fields, append, remove } = useFieldArray({
         control,
         name: "journal_entries.lists",
@@ -57,7 +57,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Type" {...field} disabled={readOnly} />
+                                    <Input placeholder="Type" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -69,7 +69,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Code" {...field} disabled={readOnly} />
+                                    <Input placeholder="Code" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -85,7 +85,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                         type="date"
                                         placeholder="Transaction Date"
                                         {...field}
-                                        disabled={readOnly}
+
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -98,7 +98,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Reference No" {...field} disabled={readOnly} />
+                                    <Input placeholder="Reference No" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -112,7 +112,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Description" {...field} disabled={readOnly} />
+                                    <Input placeholder="Description" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -132,13 +132,13 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                 <TableHead className="text-right">Credit</TableHead>
                                 <TableHead className="text-right">Base Debit</TableHead>
                                 <TableHead className="text-right">Base Credit</TableHead>
-                                {!readOnly && <TableHead className="w-[80px]">Action</TableHead>}
+                                <TableHead className="w-[80px]">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {fields.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={readOnly ? 7 : 8} className="text-center">
+                                    <TableCell className="text-center">
                                         No entries
                                     </TableCell>
                                 </TableRow>
@@ -152,7 +152,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input {...field} disabled={readOnly} />
+                                                            <Input {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -166,7 +166,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input {...field} disabled={readOnly} />
+                                                            <Input {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -180,7 +180,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input {...field} disabled={readOnly} />
+                                                            <Input {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -202,7 +202,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                                 {...field}
                                                                 onChange={(e) => field.onChange(Number(e.target.value))}
                                                                 value={field.value}
-                                                                disabled={readOnly}
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -225,7 +225,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                                 {...field}
                                                                 onChange={(e) => field.onChange(Number(e.target.value))}
                                                                 value={field.value}
-                                                                disabled={readOnly}
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -248,7 +248,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                                 {...field}
                                                                 onChange={(e) => field.onChange(Number(e.target.value))}
                                                                 value={field.value}
-                                                                disabled={readOnly}
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -271,7 +271,7 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                                 {...field}
                                                                 onChange={(e) => field.onChange(Number(e.target.value))}
                                                                 value={field.value}
-                                                                disabled={readOnly}
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -279,34 +279,30 @@ export default function JournalEntries({ control, readOnly = false }: JournalEnt
                                                 )}
                                             />
                                         </TableCell>
-                                        {!readOnly && (
-                                            <TableCell>
-                                                <Button
-                                                    type="button"
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    onClick={() => remove(index)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
-                                        )}
+                                        <TableCell>
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => remove(index)}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))
                             )}
                         </TableBody>
                     </Table>
-                    {!readOnly && (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleAddEntry}
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Entry
-                        </Button>
-                    )}
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddEntry}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Entry
+                    </Button>
                 </div>
             </CardContent>
         </Card>

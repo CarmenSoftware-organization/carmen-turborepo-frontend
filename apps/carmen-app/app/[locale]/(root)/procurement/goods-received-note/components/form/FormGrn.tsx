@@ -188,21 +188,25 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                 <TabsContent value="extraCost">
                                     <ExtraCost
                                         control={form.control}
+                                        mode={currentMode}
                                     />
                                 </TabsContent>
                                 <TabsContent value="stockMovement">
                                     <StockMovement
                                         control={form.control}
+                                        mode={currentMode}
                                     />
                                 </TabsContent>
                                 <TabsContent value="journalEntries">
                                     <JournalEntries
                                         control={form.control}
+                                        mode={currentMode}
                                     />
                                 </TabsContent>
                                 <TabsContent value="taxEntries">
                                     <TaxEntries
                                         control={form.control}
+                                        mode={currentMode}
                                     />
                                 </TabsContent>
                             </Tabs>

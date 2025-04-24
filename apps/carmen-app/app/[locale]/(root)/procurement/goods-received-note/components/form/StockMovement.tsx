@@ -17,19 +17,22 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { formType } from "@/dtos/form.dto";
 
 interface StockMovementProps {
     readonly control: Control<GrnFormValues>;
+    readonly mode: formType;
 }
 
-export default function StockMovement({ control }: StockMovementProps) {
+export default function StockMovement({ control, mode }: StockMovementProps) {
     const { fields } = useFieldArray({
         control,
         name: "stock_movement",
     });
 
     return (
-        <div className="rounded-md border">
+        <div className="p-2">
+            <p className="pl-2 text-base font-medium">Stock Movement</p>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -60,9 +63,13 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.location.name`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -74,9 +81,13 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.product.name`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -88,9 +99,13 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.lot_no`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -102,16 +117,20 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.stock_in`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -123,16 +142,20 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.stock_out`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -144,9 +167,13 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.unit.name`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input {...field} />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -158,17 +185,21 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.unit_cost`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -180,17 +211,21 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.extra_cost`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -202,17 +237,21 @@ export default function StockMovement({ control }: StockMovementProps) {
                                         name={`stock_movement.${index}.total_cost`}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.01"
-                                                        className="text-right"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
-                                                </FormControl>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            className="text-right"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
                                                 <FormMessage />
                                             </FormItem>
                                         )}

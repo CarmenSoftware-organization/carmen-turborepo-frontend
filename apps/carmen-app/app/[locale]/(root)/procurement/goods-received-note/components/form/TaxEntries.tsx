@@ -20,13 +20,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
+import { formType } from "@/dtos/form.dto";
 
 interface TaxEntriesProps {
     readonly control: Control<GrnFormValues>;
-    readonly readOnly?: boolean;
+    readonly mode: formType;
 }
 
-export default function TaxEntries({ control, readOnly = false }: TaxEntriesProps) {
+export default function TaxEntries({ control, mode }: TaxEntriesProps) {
     const { fields, append, remove } = useFieldArray({
         control,
         name: "tax_entries.tax_cal",
@@ -54,7 +55,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Tax Invoice No" {...field} disabled={readOnly} />
+                                    <Input placeholder="Tax Invoice No" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -66,7 +67,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input type="date" placeholder="Date" {...field} disabled={readOnly} />
+                                    <Input type="date" placeholder="Date" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -78,7 +79,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Status" {...field} disabled={readOnly} />
+                                    <Input placeholder="Status" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -90,7 +91,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Period" {...field} disabled={readOnly} />
+                                    <Input placeholder="Period" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -104,7 +105,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Filling Period" {...field} disabled={readOnly} />
+                                    <Input placeholder="Filling Period" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -116,7 +117,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input type="date" placeholder="Filling Date" {...field} disabled={readOnly} />
+                                    <Input type="date" placeholder="Filling Date" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -128,7 +129,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="Filing Status" {...field} disabled={readOnly} />
+                                    <Input placeholder="Filing Status" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -140,7 +141,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
-                                    <Input placeholder="VAT Return" {...field} disabled={readOnly} />
+                                    <Input placeholder="VAT Return" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -162,7 +163,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                         {...field}
                                         onChange={(e) => field.onChange(Number(e.target.value))}
                                         value={field.value}
-                                        disabled={readOnly}
+
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -183,7 +184,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                         {...field}
                                         onChange={(e) => field.onChange(Number(e.target.value))}
                                         value={field.value}
-                                        disabled={readOnly}
+
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -204,7 +205,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                         {...field}
                                         onChange={(e) => field.onChange(Number(e.target.value))}
                                         value={field.value}
-                                        disabled={readOnly}
+
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -224,13 +225,13 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                 <TableHead className="text-right">Amount</TableHead>
                                 <TableHead className="text-right">Base Amount</TableHead>
                                 <TableHead className="text-right">Tax Rate (%)</TableHead>
-                                {!readOnly && <TableHead className="w-[80px]">Action</TableHead>}
+                                <TableHead className="w-[80px]">Action</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {fields.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={readOnly ? 5 : 6} className="text-center">
+                                    <TableCell className="text-center">
                                         No tax calculations
                                     </TableCell>
                                 </TableRow>
@@ -244,7 +245,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input {...field} disabled={readOnly} />
+                                                            <Input {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -258,7 +259,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                                 render={({ field }) => (
                                                     <FormItem>
                                                         <FormControl>
-                                                            <Input {...field} disabled={readOnly} />
+                                                            <Input {...field} />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
@@ -280,7 +281,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                                                 {...field}
                                                                 onChange={(e) => field.onChange(Number(e.target.value))}
                                                                 value={field.value}
-                                                                disabled={readOnly}
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -303,7 +304,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                                                 {...field}
                                                                 onChange={(e) => field.onChange(Number(e.target.value))}
                                                                 value={field.value}
-                                                                disabled={readOnly}
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -326,7 +327,7 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                                                 {...field}
                                                                 onChange={(e) => field.onChange(Number(e.target.value))}
                                                                 value={field.value}
-                                                                disabled={readOnly}
+
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
@@ -334,34 +335,30 @@ export default function TaxEntries({ control, readOnly = false }: TaxEntriesProp
                                                 )}
                                             />
                                         </TableCell>
-                                        {!readOnly && (
-                                            <TableCell>
-                                                <Button
-                                                    type="button"
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    onClick={() => remove(index)}
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
-                                        )}
+                                        <TableCell>
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={() => remove(index)}
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
                                     </TableRow>
                                 ))
                             )}
                         </TableBody>
                     </Table>
-                    {!readOnly && (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={handleAddTaxCalculation}
-                        >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add Tax Calculation
-                        </Button>
-                    )}
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddTaxCalculation}
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Tax Calculation
+                    </Button>
                 </div>
             </CardContent>
         </Card>

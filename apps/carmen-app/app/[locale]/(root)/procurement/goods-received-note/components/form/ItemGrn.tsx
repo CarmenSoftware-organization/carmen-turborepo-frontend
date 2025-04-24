@@ -84,7 +84,8 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
 
     return (
         <div className="space-y-2">
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center p-2">
+                <p className="text-base font-medium">Items Details</p>
                 <Button variant="default" size="sm" disabled={mode === formType.VIEW} onClick={handleAddNewClick}>
                     <Plus />
                     Add Item
