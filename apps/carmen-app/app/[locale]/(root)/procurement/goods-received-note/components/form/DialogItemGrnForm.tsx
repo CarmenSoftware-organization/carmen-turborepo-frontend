@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
-import { GrnItemFormValues, GrnItemSchema } from "../../type.dto";
+import { GrnItemFormValues, GrnItemSchema, mockCalulateAmount, mockOnHand, mockOnOrder } from "../../type.dto";
 import {
     Form,
     FormControl,
@@ -48,6 +48,8 @@ export default function DialogItemGrnForm({
     const [dialogOpen, setDialogOpen] = useState(false);
     const [onHandDialogOpen, setOnHandDialogOpen] = useState(false);
     const [onOrderDialogOpen, setOnOrderDialogOpen] = useState(false);
+    const [isDiscRateEnabled, setIsDiscRateEnabled] = useState(false);
+    const [isTaxRateEnabled, setIsTaxRateEnabled] = useState(false);
 
     // Use external control if provided
     const isDialogOpen = isOpen ?? dialogOpen;
@@ -81,12 +83,23 @@ export default function DialogItemGrnForm({
         },
     });
 
-    // Update form values when initialData changes
     useEffect(() => {
         if (initialData) {
             form.reset(initialData);
+            setIsDiscRateEnabled(initialData.adj_disc_rate > 0);
+            setIsTaxRateEnabled(initialData.adj_tax_rate > 0);
         }
     }, [initialData, form]);
+
+    // Reset adj_disc_rate when checkbox is unchecked
+    useEffect(() => {
+        if (!isDiscRateEnabled) {
+            form.setValue('adj_disc_rate', 0);
+        }
+        if (!isTaxRateEnabled) {
+            form.setValue('adj_tax_rate', 0);
+        }
+    }, [isDiscRateEnabled, isTaxRateEnabled, form]);
 
     const onSubmit = (data: z.infer<typeof GrnItemSchema>) => {
         // Calculate derived values
@@ -460,7 +473,16 @@ export default function DialogItemGrnForm({
                                             name="adj_disc_rate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Adj. Disc. Rate (%)</FormLabel>
+                                                    <FormLabel className="flex items-center gap-2 mt-2">
+                                                        <p>Adj. Disc. Rate (%)</p>
+                                                        <Checkbox
+                                                            checked={isDiscRateEnabled}
+                                                            onCheckedChange={(checked) => {
+                                                                setIsDiscRateEnabled(checked === true);
+                                                            }}
+                                                        />
+                                                    </FormLabel>
+
                                                     <FormControl>
                                                         <Input
                                                             type="number"
@@ -469,6 +491,7 @@ export default function DialogItemGrnForm({
                                                             {...field}
                                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                                             value={field.value}
+                                                            disabled={!isDiscRateEnabled}
                                                         />
                                                     </FormControl>
                                                     <FormMessage />
@@ -500,7 +523,16 @@ export default function DialogItemGrnForm({
                                             name="adj_tax_rate"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Adj. Tax Rate (%)</FormLabel>
+
+                                                    <FormLabel className="flex items-center gap-2 mt-2">
+                                                        <p>Adj. Tax Rate (%)</p>
+                                                        <Checkbox
+                                                            checked={isTaxRateEnabled}
+                                                            onCheckedChange={(checked) => {
+                                                                setIsTaxRateEnabled(checked === true);
+                                                            }}
+                                                        />
+                                                    </FormLabel>
                                                     <FormControl>
                                                         <Input
                                                             type="number"
@@ -509,6 +541,7 @@ export default function DialogItemGrnForm({
                                                             {...field}
                                                             onChange={(e) => field.onChange(Number(e.target.value))}
                                                             value={field.value}
+                                                            disabled={!isTaxRateEnabled}
                                                         />
                                                     </FormControl>
                                                     <FormMessage />
@@ -551,10 +584,8 @@ export default function DialogItemGrnForm({
                                                 <p className="text-xs text-muted-foreground">Last Vendor</p>
                                                 <p className="text-xs text-muted-foreground">N/A</p>
                                             </div>
-
                                         </div>
                                     </div>
-
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-base font-bold">Calculated Amounts</p>
@@ -567,31 +598,13 @@ export default function DialogItemGrnForm({
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            <TableRow>
-                                                <TableCell>Sub Total Amount</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Discount Amount</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Net Amount</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Tax Amount</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Total Amount</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                                <TableCell>0.00</TableCell>
-                                            </TableRow>
+                                            {mockCalulateAmount.map((item) => (
+                                                <TableRow key={item.id}>
+                                                    <TableCell>{item.description}</TableCell>
+                                                    <TableCell>{item.total}</TableCell>
+                                                    <TableCell>{item.base}</TableCell>
+                                                </TableRow>
+                                            ))}
                                         </TableBody>
                                     </Table>
                                 </div>
@@ -633,36 +646,8 @@ export default function DialogItemGrnForm({
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {[
-                                {
-                                    location: "Warehouse A",
-                                    quantity: 500,
-                                    units: "pcs",
-                                    par: 600,
-                                    reorderPoint: 400,
-                                    minStock: 300,
-                                    maxStock: 800
-                                },
-                                {
-                                    location: "Store B",
-                                    quantity: 150,
-                                    units: "pcs",
-                                    par: 200,
-                                    reorderPoint: 100,
-                                    minStock: 50,
-                                    maxStock: 250
-                                },
-                                {
-                                    location: "Distribution Center C",
-                                    quantity: 1000,
-                                    units: "pcs",
-                                    par: 1200,
-                                    reorderPoint: 800,
-                                    minStock: 600,
-                                    maxStock: 1500
-                                }
-                            ].map((item, index) => (
-                                <TableRow key={index}>
+                            {mockOnHand.map((item) => (
+                                <TableRow key={item.id}>
                                     <TableCell>{item.location}</TableCell>
                                     <TableCell>{item.quantity}</TableCell>
                                     <TableCell>{item.units}</TableCell>
@@ -709,33 +694,8 @@ export default function DialogItemGrnForm({
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {[
-                                {
-                                    poNumber: "PO-001",
-                                    vendor: "Acme Supplies",
-                                    deliveryDate: "2023-07-15",
-                                    remainingQty: 100,
-                                    units: "pcs",
-                                    locations: "Warehouse A, Store B"
-                                },
-                                {
-                                    poNumber: "PO-002",
-                                    vendor: "Global Goods",
-                                    deliveryDate: "2023-07-20",
-                                    remainingQty: 50,
-                                    units: "boxes",
-                                    locations: "Store C"
-                                },
-                                {
-                                    poNumber: "PO-003",
-                                    vendor: "Tech Solutions",
-                                    deliveryDate: "2023-07-25",
-                                    remainingQty: 200,
-                                    units: "units",
-                                    locations: "Warehouse B, Store A, Store D"
-                                }
-                            ].map((item, index) => (
-                                <TableRow key={index}>
+                            {mockOnOrder.map((item) => (
+                                <TableRow key={item.id}>
                                     <TableCell>{item.poNumber}</TableCell>
                                     <TableCell>{item.vendor}</TableCell>
                                     <TableCell>{item.deliveryDate}</TableCell>

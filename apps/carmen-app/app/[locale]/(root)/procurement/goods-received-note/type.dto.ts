@@ -605,3 +605,74 @@ export const mockCommentGrn: CommentGrn[] = [
         attachments: []
     }
 ];
+
+export const mockOnHand = [
+    {
+        id: "ko-1",
+        location: "Warehouse A",
+        quantity: 500,
+        units: "pcs",
+        par: 600,
+        reorderPoint: 400,
+        minStock: 300,
+        maxStock: 800
+    },
+    {
+        id: "ko-2",
+        location: "Store B",
+        quantity: 150,
+        units: "pcs",
+        par: 200,
+        reorderPoint: 100,
+        minStock: 50,
+        maxStock: 250
+    },
+    {
+        id: "ko-3",
+        location: "Distribution Center C",
+        quantity: 1000,
+        units: "pcs",
+        par: 1200,
+        reorderPoint: 800,
+        minStock: 600,
+        maxStock: 1500
+    }
+];
+
+export const mockOnOrder = [
+    {
+        id: "poc-1",
+        poNumber: "PO-001",
+        vendor: "Acme Supplies",
+        deliveryDate: "2023-07-15",
+        remainingQty: 100,
+        units: "pcs",
+        locations: "Warehouse A, Store B"
+    },
+    {
+        id: "poc-2",
+        poNumber: "PO-002",
+        vendor: "Global Goods",
+        deliveryDate: "2023-07-20",
+        remainingQty: 50,
+        units: "boxes",
+        locations: "Store C"
+    },
+    {
+        id: "poc-3",
+        poNumber: "PO-003",
+        vendor: "Tech Solutions",
+        deliveryDate: "2023-07-25",
+        remainingQty: 200,
+        units: "units",
+        locations: "Warehouse B, Store A, Store D"
+    }
+];
+
+export const mockCalulateAmount = [
+    { id: "cm-1", description: 'Sub Total Amount', total: '0.00', base: '0.00' },
+    { id: "cm-2", description: 'Discount Amount', total: '0.00', base: '0.00' },
+    { id: "cm-3", description: 'Net Amount', total: '0.00', base: '0.00' },
+    { id: "cm-4", description: 'Tax Amount', total: '0.00', base: '0.00' },
+    { id: "cm-5", description: 'Total Amount', total: '0.00', base: '0.00' },
+];
