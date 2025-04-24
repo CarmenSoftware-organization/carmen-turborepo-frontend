@@ -33,6 +33,22 @@ import { Card } from "@/components/ui/card";
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
+    readonly initialValues?: IngredientUnitInitialValues;
+}
+
+interface IngredientUnitInitialValues {
+    ingredient_units?: IngredientUnitValueItem[];
+}
+
+interface IngredientUnitValueItem {
+    id: string;
+    from_unit_id: string;
+    from_unit_qty: number;
+    to_unit_id: string;
+    to_unit_qty: number;
+    description?: string;
+    is_active?: boolean;
+    is_default?: boolean;
 }
 
 interface IngredientUnitData {
@@ -72,26 +88,17 @@ interface IngredientUnitsFormData {
     remove: { id: string }[];
 }
 
-interface UnitData {
-    id?: string;
-    name: string;
-    description?: string;
-    is_active?: boolean;
-}
-
 const EditableRow = ({
     editForm,
     onSave,
     onCancel,
     setEditForm,
-    units,
     getUnitName
 }: {
     editForm: IngredientUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<IngredientUnitData | null>>;
-    units: UnitData[];
     getUnitName: (id: string) => string;
 }) => {
     const handleFieldChange = (field: keyof IngredientUnitData, value: string | number | boolean) => {
@@ -116,11 +123,7 @@ const EditableRow = ({
                         <SelectValue placeholder="Unit" />
                     </SelectTrigger>
                     <SelectContent>
-                        {units.map((unit) => (
-                            <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                {unit.name}
-                            </SelectItem>
-                        ))}
+                        {Array.isArray(editForm?.to_unit_id) ? [] : null}
                     </SelectContent>
                 </Select>
             </TableCell>
@@ -135,10 +138,16 @@ const EditableRow = ({
             <TableCell className="text-left w-16">
                 <Switch checked={editForm?.is_default} onCheckedChange={() => handleFieldChange('is_default', !editForm?.is_default)} />
             </TableCell>
+            <TableCell className="text-left">
+                <ArrowLeftRight className="h-4 w-4 text-gray-500" />
+            </TableCell>
             <TableCell className="text-left w-28">
-                {editForm?.from_unit_id && editForm?.to_unit_id ?
-                    `1 ${getUnitName(editForm.from_unit_id)} = ${editForm.to_unit_qty} ${getUnitName(editForm.to_unit_id)}` :
-                    ''}
+                {editForm?.from_unit_id && editForm?.to_unit_id ? (
+                    <div>
+                        <p className="text-xs font-medium">{`1 ${getUnitName(editForm.from_unit_id)} = ${editForm.to_unit_qty} ${getUnitName(editForm.to_unit_id)}`}</p>
+                        <p className="text-muted-foreground text-[11px]">{`Qty x ${editForm.to_unit_qty * editForm.from_unit_qty}`}</p>
+                    </div>
+                ) : ''}
             </TableCell>
             <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-2">
@@ -397,7 +406,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                 setEditForm(null);
                                             }}
                                             setEditForm={setEditForm}
-                                            units={units}
                                             getUnitName={getUnitName}
                                         />
                                     ) : (
@@ -479,10 +487,16 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                             )}
                                         />
                                     </TableCell>
+                                    <TableCell className="text-left">
+                                        <ArrowLeftRight className="h-4 w-4 text-gray-500" />
+                                    </TableCell>
                                     <TableCell className="text-left w-28">
-                                        {field.from_unit_id && field.to_unit_id ?
-                                            `1 ${getUnitName(field.from_unit_id)} = ${field.to_unit_qty || 0} ${getUnitName(field.to_unit_id)}` :
-                                            ''}
+                                        {field.from_unit_id && field.to_unit_id ? (
+                                            <div>
+                                                <p className="text-xs font-medium">{`1 ${getUnitName(field.from_unit_id)} = ${field.to_unit_qty || 0} ${getUnitName(field.to_unit_id)}`}</p>
+                                                <p className="text-muted-foreground text-[11px]">{`Qty x ${(field.to_unit_qty || 0) * field.from_unit_qty}`}</p>
+                                            </div>
+                                        ) : ''}
                                     </TableCell>
                                     {currentMode !== formType.VIEW && (
                                         <TableCell className="text-right">

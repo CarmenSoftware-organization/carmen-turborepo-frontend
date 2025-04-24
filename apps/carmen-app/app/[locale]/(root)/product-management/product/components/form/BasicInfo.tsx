@@ -19,7 +19,6 @@ import { ArrowLeft, Pencil, Save, X } from "lucide-react";
 interface BasicInfoProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
-    readonly initialValues?: any;
     readonly handleEditClick?: (e: React.MouseEvent) => void;
     readonly handleCancelClick?: (e: React.MouseEvent) => void;
 }
@@ -29,7 +28,7 @@ interface CategoryData {
     subCategory: { id: string; name: string };
 }
 
-export default function BasicInfo({ control, currentMode, initialValues, handleEditClick, handleCancelClick }: BasicInfoProps) {
+export default function BasicInfo({ control, currentMode, handleEditClick, handleCancelClick }: BasicInfoProps) {
     const { token, tenantId } = useAuth();
     const { units } = useUnit();
     const { itemGroups } = useItemGroup();

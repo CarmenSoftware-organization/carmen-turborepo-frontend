@@ -231,7 +231,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
                         <BasicInfo
                             control={form.control}
                             currentMode={currentMode}
-                            initialValues={initialValues}
                             handleEditClick={handleEditClick}
                             handleCancelClick={handleCancelClick}
                         />
