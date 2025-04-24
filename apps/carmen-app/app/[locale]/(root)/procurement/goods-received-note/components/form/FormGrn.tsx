@@ -175,12 +175,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                 </div>
                                 <GrnFormHeader control={form.control} mode={currentMode} />
                                 <Tabs defaultValue="items" onValueChange={handleTabChange} value={activeTab}>
-                                    <TabsList>
-                                        <TabsTrigger value="items">Items</TabsTrigger>
-                                        <TabsTrigger value="extraCost">Extra Cost</TabsTrigger>
-                                        <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
-                                        <TabsTrigger value="journalEntries">Journal Entries</TabsTrigger>
-                                        <TabsTrigger value="taxEntries">Tax Entries</TabsTrigger>
+                                    <TabsList className="w-full">
+                                        <TabsTrigger className="w-full" value="items">Items</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="extraCost">Extra Cost</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="stockMovement">Stock Movement</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="journalEntries">Journal Entries</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="taxEntries">Tax Entries</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="items">
                                         <ItemGrn
