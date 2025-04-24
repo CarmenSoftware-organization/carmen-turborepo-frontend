@@ -4,7 +4,7 @@ import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
@@ -81,13 +81,12 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                 ) : (
                     <>
                         {fields.map((field, index) => (
-                            <div key={field.id} className="grid grid-cols-3 gap-4 items-end">
+                            <div key={field.id} className="flex items-center gap-2">
                                 <FormField
                                     control={control}
                                     name={`product_info.info.${index}.label`}
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Label</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Enter label"
@@ -104,7 +103,6 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                     name={`product_info.info.${index}.value`}
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Value</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     placeholder="Enter value"
@@ -116,8 +114,17 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                     )}
                                 />
 
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => remove(index)}
+                                >
+                                    <Trash className="h-4 w-4 text-destructive" />
+                                </Button>
+
                                 <div className="flex gap-2">
-                                    <FormField
+                                    {/* <FormField
                                         control={control}
                                         name={`product_info.info.${index}.data_type`}
                                         render={({ field }) => (
@@ -142,17 +149,9 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                                 <FormMessage />
                                             </FormItem>
                                         )}
-                                    />
+                                    /> */}
 
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => remove(index)}
-                                        className="self-end"
-                                    >
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
+
                                 </div>
                             </div>
                         ))}

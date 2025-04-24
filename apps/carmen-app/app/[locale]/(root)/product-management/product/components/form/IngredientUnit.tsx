@@ -364,7 +364,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                     size="sm"
                     onClick={() => appendIngredientUnit({
                         from_unit_id: "",
-                        from_unit_qty: 0,
+                        from_unit_qty: 1,
                         to_unit_id: "",
                         to_unit_qty: 0,
                         description: "",
@@ -456,6 +456,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                     className="w-[100px]"
                                                     {...field}
                                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    disabled
                                                 />
                                             </FormControl>
                                             <FormMessage />

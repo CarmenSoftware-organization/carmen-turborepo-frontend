@@ -3,12 +3,10 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { createProductService, updateProductService } from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import BasicInfo from "./BasicInfo";
-import PriceInfo from "./PriceInfo";
 import LocationInfo from "./LocationInfo";
 import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
@@ -16,7 +14,6 @@ import ProductAttribute from "./ProductAttribute";
 import { ProductFormValues, ProductInitialValues, productFormSchema } from "../../pd-schema";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
-import { ArrowLeft, Pencil, Save, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
     Tabs,
@@ -27,7 +24,6 @@ import {
 import { mockStockInventoryData } from "@/mock-data/stock-invent";
 import InventoryInfo from "./InventoryInfo";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { usePathname } from "next/navigation";
 
 interface Props {
     readonly mode: formType;
@@ -38,7 +34,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
     const { token, tenantId } = useAuth();
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const router = useRouter();
-    const pathname = usePathname();
 
     const transformInitialValues = () => {
         if (!initialValues) return {
@@ -232,54 +227,30 @@ export default function FormProduct({ mode, initialValues }: Props) {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-2"
                 >
-                    <div className="flex flex-row gap-2 justify-between">
-                        {pathname.includes('/product-management/product/new') ? (
-                            <h1>Create New Product</h1>
-                        ) : (
-                            <h1>{initialValues?.name ?? 'Product Details'}</h1>
-                        )}
-                        <div className="flex flex-row gap-2 justify-end">
-                            {currentMode === formType.VIEW ? (
-                                <>
-                                    <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                        <ArrowLeft className="h-4 w-4" /> Back
-                                    </Button>
-                                    <Button variant="default" size={'sm'} onClick={handleEditClick}>
-                                        <Pencil className="h-4 w-4" /> Edit
-                                    </Button>
-                                </>
-                            ) : (
-                                <>
-                                    <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                        <X className="h-4 w-4" /> Cancel
-                                    </Button>
-                                    <Button
-                                        variant="default"
-                                        size={'sm'}
-                                        type="submit"
-                                    >
-                                        <Save className="h-4 w-4" /> Save
-                                    </Button>
-                                </>
-                            )}
-                        </div>
-                    </div>
                     <ScrollArea className="h-[calc(100vh-160px)]">
-                        <BasicInfo control={form.control} currentMode={currentMode} />
+                        <BasicInfo
+                            control={form.control}
+                            currentMode={currentMode}
+                            initialValues={initialValues}
+                            handleEditClick={handleEditClick}
+                            handleCancelClick={handleCancelClick}
+                        />
 
-                        <Tabs defaultValue="priceInfo" className="mt-2">
+                        <Tabs defaultValue="general" className="mt-2">
                             <TabsList>
-                                <TabsTrigger value="priceInfo">Price Info</TabsTrigger>
+                                <TabsTrigger value="general">General</TabsTrigger>
                                 <TabsTrigger value="location">Location</TabsTrigger>
                                 <TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
                                 <TabsTrigger value="ingredientUnit">Ingredient Unit</TabsTrigger>
                                 <TabsTrigger value="inventory">Inventory</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="priceInfo">
-                                <div className="grid grid-cols-2 gap-4">
+                            <TabsContent value="general">
+                                {/* <div className="grid grid-cols-2 gap-4">
                                     <PriceInfo control={form.control} currentMode={currentMode} />
                                     <ProductAttribute control={form.control} currentMode={currentMode} />
-                                </div>
+                                </div> */}
+                                <ProductAttribute control={form.control} currentMode={currentMode} />
+
                             </TabsContent>
                             <TabsContent value="location">
                                 <LocationInfo control={form.control} currentMode={currentMode} />

@@ -7,7 +7,7 @@ import { Check, PenIcon, Plus, Trash, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useUnit } from "@/hooks/useUnit";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Table,
     TableBody,
@@ -28,10 +28,12 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
+    readonly initialValues?: any;
 }
 
 interface OrderUnitData {
@@ -87,18 +89,18 @@ const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
 }) => (
     <>
         <TableCell>{getUnitName(orderUnit.from_unit_id)}</TableCell>
-        <TableCell>{orderUnit.from_unit_qty}</TableCell>
-        <TableCell>{getUnitName(orderUnit.to_unit_id)}</TableCell>
-        <TableCell>{orderUnit.to_unit_qty}</TableCell>
-        <TableCell>
+        <TableCell className="text-right w-32">
+            {orderUnit.to_unit_qty} {getUnitName(orderUnit.to_unit_id)}
+        </TableCell>
+        {/* <TableCell>
             <Badge variant="secondary" className={orderUnit.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                 {orderUnit.is_active ? 'Active' : 'Inactive'}
             </Badge>
-        </TableCell>
+        </TableCell> */}
         <TableCell>
-            <Badge variant="secondary" className={orderUnit.is_default ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}>
-                {orderUnit.is_default ? 'Default' : 'Not Default'}
-            </Badge>
+            <Switch
+                checked={orderUnit.is_default}
+            />
         </TableCell>
         <TableCell>
             <Button
@@ -152,17 +154,45 @@ const EditableRow = ({
     onSave,
     onCancel,
     setEditForm,
-    units
+    units,
+    inventoryUnitId
 }: {
     editForm: OrderUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<OrderUnitData | null>>;
     units: UnitData[];
+    inventoryUnitId?: string;
 }) => {
     const handleFieldChange = (field: keyof OrderUnitData, value: string | number | boolean) => {
         if (!editForm) return;
-        setEditForm({ ...editForm, [field]: value });
+
+        const updatedForm = { ...editForm, [field]: value };
+        setEditForm(updatedForm);
+
+        // Auto-update to_unit_qty based on from_unit changes
+        if (field === 'from_unit_id' || field === 'from_unit_qty' || field === 'to_unit_id') {
+            const { from_unit_id, to_unit_id, from_unit_qty } = updatedForm;
+
+            // Only proceed if all required values are set
+            if (from_unit_id && to_unit_id && from_unit_qty) {
+                // Check if units are the same
+                if (from_unit_id === to_unit_id) {
+                    setEditForm({
+                        ...updatedForm,
+                        to_unit_qty: from_unit_qty
+                    });
+                } else if (field === 'from_unit_id' || field === 'from_unit_qty' || field === 'to_unit_id') {
+                    // If we're directly changing unit-related fields and to_unit_qty is 0, set a default
+                    if (updatedForm.to_unit_qty === 0) {
+                        setEditForm({
+                            ...updatedForm,
+                            to_unit_qty: 1
+                        });
+                    }
+                }
+            }
+        }
     };
 
     return (
@@ -170,7 +200,17 @@ const EditableRow = ({
             <TableCell>
                 <Select
                     value={editForm?.from_unit_id}
-                    onValueChange={(value) => handleFieldChange('from_unit_id', value)}
+                    onValueChange={(value) => {
+                        // First update the from_unit_id
+                        handleFieldChange('from_unit_id', value);
+
+                        // If to_unit_id is empty or equals from_unit_id, try to use inventory_unit_id
+                        if (editForm && inventoryUnitId && inventoryUnitId !== value) {
+                            if (!editForm.to_unit_id || editForm.to_unit_id === editForm.from_unit_id) {
+                                handleFieldChange('to_unit_id', inventoryUnitId);
+                            }
+                        }
+                    }}
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select unit" />
@@ -217,7 +257,7 @@ const EditableRow = ({
                     onChange={(e) => handleFieldChange('to_unit_qty', Number(e.target.value))}
                 />
             </TableCell>
-            <TableCell>
+            {/* <TableCell>
                 <Badge
                     variant="secondary"
                     className={editForm?.is_active ? 'bg-green-100 text-green-800 cursor-pointer' : 'bg-gray-100 text-gray-800 cursor-pointer'}
@@ -225,7 +265,7 @@ const EditableRow = ({
                 >
                     {editForm?.is_active ? 'Active' : 'Inactive'}
                 </Badge>
-            </TableCell>
+            </TableCell> */}
             <TableCell>
                 <Badge
                     variant="secondary"
@@ -259,7 +299,7 @@ const EditableRow = ({
     );
 };
 
-export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
+export default function OrderUnit({ control, currentMode, initialValues }: OrderUnitProps) {
     const { units } = useUnit();
     const { watch, setValue } = useFormContext<ProductFormValues>();
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -273,6 +313,60 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
         control,
         name: "order_units.add"
     });
+
+    // Initialize form data from initialValues if available
+    useEffect(() => {
+        if (initialValues?.order_units && Array.isArray(initialValues.order_units)) {
+            // Transform array format to the expected form format
+            const formattedOrderUnits = {
+                data: initialValues.order_units.map((unit: any) => ({
+                    id: unit.id,
+                    from_unit_id: unit.from_unit_id,
+                    from_unit_qty: unit.from_unit_qty,
+                    to_unit_id: unit.to_unit_id,
+                    to_unit_qty: unit.to_unit_qty,
+                    description: unit.description ?? '',
+                    is_active: unit.is_active ?? true,
+                    is_default: unit.is_default ?? false
+                })),
+                add: [],
+                remove: [],
+                update: []
+            };
+
+            setValue("order_units", formattedOrderUnits);
+        }
+    }, [initialValues, setValue]);
+
+    // Auto-initialize and calculate order unit values
+    useEffect(() => {
+        // Get the current fields from watch since orderUnitFields might be stale
+        const currentAddFields = watch("order_units.add") || [];
+        const inventoryUnitId = watch("inventory_unit_id");
+
+        currentAddFields.forEach((field, index) => {
+            const fromUnitId = field.from_unit_id;
+            const toUnitId = field.to_unit_id;
+
+            // If from_unit_id is set but to_unit_id is empty, use inventory_unit_id
+            if (fromUnitId && !toUnitId && inventoryUnitId && fromUnitId !== inventoryUnitId) {
+                setValue(`order_units.add.${index}.to_unit_id`, inventoryUnitId);
+            }
+
+            // Calculate to_unit_qty if both units are set
+            if (fromUnitId && toUnitId) {
+                const fromUnitQty = field.from_unit_qty;
+
+                // If units are the same, match quantities
+                if (fromUnitId === toUnitId) {
+                    setValue(`order_units.add.${index}.to_unit_qty`, fromUnitQty);
+                } else if (field.to_unit_qty === 0) {
+                    // For different units, set a default value if to_unit_qty is 0
+                    setValue(`order_units.add.${index}.to_unit_qty`, 1);
+                }
+            }
+        });
+    }, [watch, setValue]);
 
     const { append: appendOrderUnitRemove } = useFieldArray({
         control,
@@ -297,6 +391,18 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
 
     const handleStartEdit = (orderUnit: OrderUnitData) => {
         setEditingId(orderUnit.id ?? null);
+
+        // If to_unit_id is empty, pre-fill with inventory_unit_id
+        if (!orderUnit.to_unit_id) {
+            const inventoryUnitId = watch("inventory_unit_id");
+            if (inventoryUnitId && inventoryUnitId !== orderUnit.from_unit_id) {
+                orderUnit = {
+                    ...orderUnit,
+                    to_unit_id: inventoryUnitId
+                };
+            }
+        }
+
         setEditForm(orderUnit);
     };
 
@@ -359,15 +465,18 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                     type="button"
                     variant="default"
                     size="sm"
-                    onClick={() => appendOrderUnit({
-                        from_unit_id: "",
-                        from_unit_qty: 0,
-                        to_unit_id: "",
-                        to_unit_qty: 0,
-                        description: "",
-                        is_active: true,
-                        is_default: false
-                    })}
+                    onClick={() => {
+                        const inventoryUnitId = watch("inventory_unit_id");
+                        appendOrderUnit({
+                            from_unit_id: "",
+                            from_unit_qty: 1,
+                            to_unit_id: inventoryUnitId || "",
+                            to_unit_qty: 0,
+                            description: "",
+                            is_active: true,
+                            is_default: false
+                        });
+                    }}
                     disabled={currentMode === formType.VIEW}
                 >
                     <Plus />
@@ -377,14 +486,12 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
 
             {/* Order Units Table */}
             {hasOrderUnits && (
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>From Unit</TableHead>
-                            <TableHead>From Qty</TableHead>
-                            <TableHead>To Unit</TableHead>
-                            <TableHead>To Qty</TableHead>
-                            <TableHead>Status</TableHead>
+                <Table className="rounded-t-lg">
+                    <TableHeader className="bg-muted">
+                        <TableRow >
+                            <TableHead>Order Unit</TableHead>
+                            <TableHead>Conversion Factor</TableHead>
+                            {/* <TableHead>Status</TableHead> */}
                             <TableHead>Default</TableHead>
                             <TableHead>Action</TableHead>
                         </TableRow>
@@ -403,6 +510,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                         }}
                                         setEditForm={setEditForm}
                                         units={units}
+                                        inventoryUnitId={watch("inventory_unit_id")}
                                     />
                                 ) : (
                                     <DisplayRow
@@ -426,51 +534,12 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                         render={({ field }) => (
                                             <FormItem className="space-y-0">
                                                 <FormControl>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
-                                                        <SelectTrigger className="w-[180px]">
-                                                            <SelectValue placeholder="Select unit" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {units.map((unit) => (
-                                                                <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                                                    {unit.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`order_units.add.${index}.from_unit_qty`}
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-0">
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        className="w-[100px]"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <FormField
-                                        control={control}
-                                        name={`order_units.add.${index}.to_unit_id`}
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-0">
-                                                <FormControl>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                    <Select
+                                                        onValueChange={(value) => {
+                                                            field.onChange(value);
+                                                        }}
+                                                        value={field.value}
+                                                    >
                                                         <SelectTrigger className="w-[180px]">
                                                             <SelectValue placeholder="Select unit" />
                                                         </SelectTrigger>
@@ -508,11 +577,11 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                     />
                                 </TableCell>
 
-                                <TableCell>
+                                {/* <TableCell>
                                     <Badge variant="secondary" className="bg-green-100 text-green-800">
                                         Active
                                     </Badge>
-                                </TableCell>
+                                </TableCell> */}
                                 <TableCell>
                                     <FormField
                                         control={control}
@@ -520,13 +589,10 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                         render={({ field }) => (
                                             <FormItem className="space-y-0">
                                                 <FormControl>
-                                                    <Badge
-                                                        variant="secondary"
-                                                        className={field.value ? 'bg-blue-100 text-blue-800 cursor-pointer' : 'bg-gray-100 text-gray-800 cursor-pointer'}
-                                                        onClick={() => field.onChange(!field.value)}
-                                                    >
-                                                        {field.value ? 'Default' : 'Not Default'}
-                                                    </Badge>
+                                                    <Switch
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
