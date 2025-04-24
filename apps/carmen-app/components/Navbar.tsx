@@ -4,6 +4,7 @@ import ModuleMobile from "./ModuleMobile";
 import { SwitchTheme } from "./SwitchTheme";
 import TenantList from "./TenantList";
 import UserAvatar from "./UserAvatar";
+import Notification from "./Notification";
 
 export default function Navbar() {
     return (
@@ -19,6 +20,7 @@ export default function Navbar() {
                 <SwitchTheme />
                 <LanguageSwitcher />
             </div>
+            <Notification />
             <UserAvatar />
         </div>
     );
