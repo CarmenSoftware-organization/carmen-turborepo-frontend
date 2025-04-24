@@ -11,7 +11,7 @@ import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
 import { mockGoodsReceivedNotes } from "@/mock-data/procurement";
-import { Link } from "@/lib/navigation";
+import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
 
 const grnStatusOptions = [
     { label: 'Pending', value: 'pending' },
@@ -26,6 +26,7 @@ export default function GoodsReceivedNoteComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -35,15 +36,17 @@ export default function GoodsReceivedNoteComponent() {
         { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
-    const title = "Goods Received Note"
+    const title = "Goods Received Note";
 
     const actionButtons = (
         <div className="action-btn-container" data-id="grn-action-buttons">
-            <Button size={'sm'} asChild>
-                <Link href="/procurement/goods-received-note/new">
-                    <Plus className="h-4 w-4" />
-                    New Goods Received Note
-                </Link>
+            <Button
+                size={'sm'}
+                onClick={() => setDialogOpen(true)}
+                data-id="grn-new-button"
+            >
+                <Plus className="h-4 w-4" />
+                New Goods Received Note
             </Button>
             <Button
                 variant="outline"
@@ -99,11 +102,17 @@ export default function GoodsReceivedNoteComponent() {
     const content = <GoodsReceivedNoteList goodsReceivedNotes={mockGoodsReceivedNotes} />
 
     return (
-        <DataDisplayTemplate
-            title={title}
-            actionButtons={actionButtons}
-            filters={filters}
-            content={content}
-        />
+        <>
+            <DataDisplayTemplate
+                title={title}
+                actionButtons={actionButtons}
+                filters={filters}
+                content={content}
+            />
+            <GoodsReceivedNoteDialog
+                open={dialogOpen}
+                onOpenChange={setDialogOpen}
+            />
+        </>
     )
 } 
