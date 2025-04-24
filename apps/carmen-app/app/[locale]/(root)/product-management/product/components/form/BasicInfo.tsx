@@ -13,6 +13,7 @@ import { getCategoryListByItemGroup } from "@/services/product.service";
 import { useEffect, useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 interface BasicInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -246,27 +247,30 @@ export default function BasicInfo({ control, currentMode }: BasicInfoProps) {
                     name="inventory_unit_id"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Inventory Unit</FormLabel>
-                            {currentMode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground">
-                                    {units.find(unit => unit.id === field.value)?.name ?? field.value}
-                                </p>
-                            ) : (
-                                <FormControl>
-                                    <Select onValueChange={field.onChange} value={field.value || ''}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select inventory unit" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {units.map((unit) => (
-                                                <SelectItem key={unit.id ?? ''} value={unit.id ?? ""}>
-                                                    {unit.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </FormControl>
-                            )}
+                            <div className="flex flex-col mt-2">
+                                <FormLabel>Inventory Unit</FormLabel>
+                                {currentMode === formType.VIEW ? (
+                                    <Badge className="bg-blue-200 text-blue-800 mt-2 w-10 hover:bg-blue-300">
+                                        {units.find(unit => unit.id === field.value)?.name ?? field.value}
+                                    </Badge>
+                                ) : (
+                                    <FormControl>
+                                        <Select onValueChange={field.onChange} value={field.value || ''}>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select inventory unit" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {units.map((unit) => (
+                                                    <SelectItem key={unit.id ?? ''} value={unit.id ?? ""}>
+                                                        {unit.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                )}
+                            </div>
+
                             <FormMessage />
                         </FormItem>
                     )}

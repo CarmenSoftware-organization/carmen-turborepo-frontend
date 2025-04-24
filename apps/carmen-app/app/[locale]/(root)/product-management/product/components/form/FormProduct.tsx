@@ -27,6 +27,7 @@ import {
 import { mockStockInventoryData } from "@/mock-data/stock-invent";
 import InventoryInfo from "./InventoryInfo";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { usePathname } from "next/navigation";
 
 interface Props {
     readonly mode: formType;
@@ -37,6 +38,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
     const { token, tenantId } = useAuth();
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const router = useRouter();
+    const pathname = usePathname();
+
     const transformInitialValues = () => {
         if (!initialValues) return {
             name: '',
@@ -229,7 +232,12 @@ export default function FormProduct({ mode, initialValues }: Props) {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className="space-y-2"
                 >
-                    <div className="flex flex-row gap-2 justify-end">
+                    <div className="flex flex-row gap-2 justify-between">
+                        {pathname.includes('/product-management/product/new') ? (
+                            <h1>Create New Product</h1>
+                        ) : (
+                            <h1>{initialValues?.name ?? 'Product Details'}</h1>
+                        )}
                         <div className="flex flex-row gap-2 justify-end">
                             {currentMode === formType.VIEW ? (
                                 <>
