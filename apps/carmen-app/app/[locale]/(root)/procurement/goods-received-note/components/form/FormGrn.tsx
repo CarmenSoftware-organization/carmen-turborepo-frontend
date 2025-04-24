@@ -29,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
+import TransactionSummary from "./TransactionSummary";
 
 interface FormGrnProps {
     readonly mode: formType;
@@ -126,93 +127,97 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     };
 
     return (
-        <div className="space-y-4 relative">
+        <div className="relative">
             <div className="flex gap-4 relative">
-                <Card className={`${openLog ? 'w-3/4' : 'w-full'} p-4 transition-all duration-300 ease-in-out`}>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <h1>Goods Received Note</h1>
-                                    <Badge>{initialValues?.status}</Badge>
+                <div className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out space-y-4`}>
+                    <Card className="p-4">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <h1>Goods Received Note</h1>
+                                        <Badge>{initialValues?.status}</Badge>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {currentMode === formType.VIEW ? (
+                                            <>
+                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                    <ArrowLeft className="h-4 w-4" /> Back
+                                                </Button>
+                                                <Button variant="default" size={'sm'} onClick={handleEditClick}>
+                                                    <Pencil className="h-4 w-4" /> Edit
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                    <X className="h-4 w-4" /> Cancel
+                                                </Button>
+                                                <Button
+                                                    variant="default"
+                                                    size={'sm'}
+                                                    type="submit"
+                                                >
+                                                    <Save className="h-4 w-4" /> Save
+                                                </Button>
+                                            </>
+                                        )}
+                                        <Button type="button" variant="outline" size="sm">
+                                            <Printer className="h-4 w-4" />
+                                            Print
+                                        </Button>
+                                        <Button type="button" variant="outline" size="sm">
+                                            <MessageCircle className="h-4 w-4" />
+                                            Comment
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    {currentMode === formType.VIEW ? (
-                                        <>
-                                            <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                                <ArrowLeft className="h-4 w-4" /> Back
-                                            </Button>
-                                            <Button variant="default" size={'sm'} onClick={handleEditClick}>
-                                                <Pencil className="h-4 w-4" /> Edit
-                                            </Button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                                <X className="h-4 w-4" /> Cancel
-                                            </Button>
-                                            <Button
-                                                variant="default"
-                                                size={'sm'}
-                                                type="submit"
-                                            >
-                                                <Save className="h-4 w-4" /> Save
-                                            </Button>
-                                        </>
-                                    )}
-                                    <Button type="button" variant="outline" size="sm">
-                                        <Printer className="h-4 w-4" />
-                                        Print
-                                    </Button>
-                                    <Button type="button" variant="outline" size="sm">
-                                        <MessageCircle className="h-4 w-4" />
-                                        Comment
-                                    </Button>
-                                </div>
-                            </div>
-                            <GrnFormHeader control={form.control} mode={currentMode} />
-                            <Tabs defaultValue="items" onValueChange={handleTabChange} value={activeTab}>
-                                <TabsList>
-                                    <TabsTrigger value="items">Items</TabsTrigger>
-                                    <TabsTrigger value="extraCost">Extra Cost</TabsTrigger>
-                                    <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
-                                    <TabsTrigger value="journalEntries">Journal Entries</TabsTrigger>
-                                    <TabsTrigger value="taxEntries">Tax Entries</TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="items">
-                                    <ItemGrn
-                                        control={form.control}
-                                        mode={currentMode}
-                                    />
-                                </TabsContent>
-                                <TabsContent value="extraCost">
-                                    <ExtraCost
-                                        control={form.control}
-                                        mode={currentMode}
-                                    />
-                                </TabsContent>
-                                <TabsContent value="stockMovement">
-                                    <StockMovement
-                                        control={form.control}
-                                        mode={currentMode}
-                                    />
-                                </TabsContent>
-                                <TabsContent value="journalEntries">
-                                    <JournalEntries
-                                        control={form.control}
-                                        mode={currentMode}
-                                    />
-                                </TabsContent>
-                                <TabsContent value="taxEntries">
-                                    <TaxEntries
-                                        control={form.control}
-                                        mode={currentMode}
-                                    />
-                                </TabsContent>
-                            </Tabs>
-                        </form>
-                    </Form>
-                </Card>
+                                <GrnFormHeader control={form.control} mode={currentMode} />
+                                <Tabs defaultValue="items" onValueChange={handleTabChange} value={activeTab}>
+                                    <TabsList>
+                                        <TabsTrigger value="items">Items</TabsTrigger>
+                                        <TabsTrigger value="extraCost">Extra Cost</TabsTrigger>
+                                        <TabsTrigger value="stockMovement">Stock Movement</TabsTrigger>
+                                        <TabsTrigger value="journalEntries">Journal Entries</TabsTrigger>
+                                        <TabsTrigger value="taxEntries">Tax Entries</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="items">
+                                        <ItemGrn
+                                            control={form.control}
+                                            mode={currentMode}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="extraCost">
+                                        <ExtraCost
+                                            control={form.control}
+                                            mode={currentMode}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="stockMovement">
+                                        <StockMovement
+                                            control={form.control}
+                                            mode={currentMode}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="journalEntries">
+                                        <JournalEntries
+                                            control={form.control}
+                                            mode={currentMode}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="taxEntries">
+                                        <TaxEntries
+                                            control={form.control}
+                                            mode={currentMode}
+                                        />
+                                    </TabsContent>
+                                </Tabs>
+                            </form>
+                        </Form>
+                    </Card>
+                    <TransactionSummary />
+                </div>
+
 
                 {openLog && (
                     <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
@@ -222,7 +227,9 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                         </div>
                     </div>
                 )}
+
             </div>
+
 
             <Button
                 aria-label={openLog ? "Close log panel" : "Open log panel"}

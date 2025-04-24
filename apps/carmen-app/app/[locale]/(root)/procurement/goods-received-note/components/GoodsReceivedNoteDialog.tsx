@@ -13,11 +13,6 @@ interface GoodsReceivedNoteDialogProps {
 export default function GoodsReceivedNoteDialog({ open, onOpenChange }: GoodsReceivedNoteDialogProps) {
     const router = useRouter();
 
-    const handleCreate = () => {
-        router.push('/procurement/goods-received-note/new');
-        onOpenChange(false);
-    };
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[525px]">
