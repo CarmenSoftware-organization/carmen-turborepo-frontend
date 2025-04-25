@@ -9,22 +9,16 @@ import { Separator } from "@/components/ui/separator";
 import { formType } from "@/dtos/form.dto";
 import { VendorFormDto, VendorGetDto } from "@/dtos/vendor-management";
 import { Link } from "@/lib/navigation";
-import { formatDate } from "date-fns";
 import { Building2, ChevronLeft, Globe, Mail, MapPin, Phone, SquarePen } from "lucide-react";
 import VendorFormDialog from "./VendorFormDialog";
 import { v4 as uuidv4 } from 'uuid';
 
 interface FormVendorProps {
-    mode: formType;
     initialValues?: VendorFormDto;
     onSuccess?: () => void;
 }
-export default function FormVendor({ mode, initialValues, onSuccess }: FormVendorProps) {
+export default function VendorDetail({ initialValues, onSuccess }: FormVendorProps) {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
-
-    if (!initialValues && mode !== formType.ADD) {
-        return <div className="p-4">Loading vendor information...</div>;
-    }
 
     // Convert initialValues to VendorGetDto for the edit dialog
     const vendorData: VendorGetDto | undefined = initialValues ? {

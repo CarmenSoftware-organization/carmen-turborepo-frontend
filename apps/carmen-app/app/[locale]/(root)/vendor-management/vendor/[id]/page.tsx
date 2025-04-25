@@ -2,12 +2,11 @@
 
 import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
-import { formType } from "@/dtos/form.dto";
 import { VendorFormDto } from "@/dtos/vendor-management";
 import { getVendorIdService } from "@/services/vendor.service";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import FormVendor from "../components/FormVendor";
+import VendorDetail from "../components/VendorDetail";
 
 export default function VendorIdPage() {
 
@@ -46,7 +45,7 @@ export default function VendorIdPage() {
 
     return (
         <>
-            <FormVendor mode={formType.VIEW} initialValues={vendor} />
+            <VendorDetail initialValues={vendor} />
             <SignInDialog
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}

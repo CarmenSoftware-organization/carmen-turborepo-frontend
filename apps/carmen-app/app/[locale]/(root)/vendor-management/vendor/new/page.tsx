@@ -1,5 +1,5 @@
-import { formType } from "@/dtos/form.dto";
-import FormVendor from "../components/FormVendor";
-export default function VendorNewPage() {
-    return <FormVendor mode={formType.ADD} />
+import VendorForm from "../components/VendorForm";
+
+export default function NewVendorPage() {
+    return <VendorForm />;
 }
