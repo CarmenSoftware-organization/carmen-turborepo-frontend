@@ -87,6 +87,13 @@ interface IngredientUnitsFormData {
         is_default: boolean;
     }[];
     remove: { product_ingredient_unit_id: string }[];
+};
+
+interface UnitDataDto {
+    id?: string;
+    name: string;
+    description?: string;
+    is_active?: boolean;
 }
 
 const EditableRow = ({
@@ -95,14 +102,14 @@ const EditableRow = ({
     onCancel,
     setEditForm,
     getUnitName,
-    units
+    filteredUnits
 }: {
     editForm: IngredientUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<IngredientUnitData | null>>;
     getUnitName: (id: string) => string;
-    units: any[];
+    filteredUnits: UnitDataDto[];
 }) => {
     const handleFieldChange = (field: keyof IngredientUnitData, value: string | number | boolean) => {
         if (!editForm) return;
@@ -133,7 +140,7 @@ const EditableRow = ({
                             <SelectValue placeholder="Unit" />
                         </SelectTrigger>
                         <SelectContent>
-                            {units.map((unit) => (
+                            {filteredUnits.map((unit) => (
                                 <SelectItem key={unit.id} value={unit.id ?? ""}>
                                     {unit.name}
                                 </SelectItem>
@@ -215,18 +222,16 @@ const DisplayRow = ({ ingredientUnit, onEdit, onRemove, currentMode, getUnitName
         {currentMode !== formType.VIEW && (
             <TableCell className="text-right">
                 <div className="flex items-center justify-end gap-1">
-                    {currentMode !== formType.ADD && (
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={onEdit}
-                            aria-label="Edit order unit"
-                            className="h-7 w-7"
-                        >
-                            <SquarePen className="h-4 w-4" />
-                        </Button>
-                    )}
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={onEdit}
+                        aria-label="Edit ingredient unit"
+                        className="h-7 w-7"
+                    >
+                        <SquarePen className="h-4 w-4" />
+                    </Button>
 
                     <AlertDialog>
                         <AlertDialogTrigger asChild>
@@ -274,6 +279,26 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
     const ingredientUnits = watch("ingredient_units") as unknown as IngredientUnitsFormData;
     const existingIngredientUnits = ingredientUnits?.data || [];
     const removedIngredientUnits = watch("ingredient_units.remove") || [];
+    const inventoryUnitId = watch("inventory_unit_id");
+
+    // Filter units based on inventory unit ID and current ingredient units
+    const filteredUnits: UnitDataDto[] = units
+        .filter((unit) => !!unit.id) // Only include units with an id
+        .filter((unit) => {
+            // Don't include inventory unit in the list of selectable units
+            if (unit.id === inventoryUnitId) return false;
+
+            // Get ingredient units excluding the one currently being edited
+            const otherIngredientUnits = existingIngredientUnits.filter(iu =>
+                iu.id !== editingId
+            );
+
+            // Get all to_unit_ids from other existing ingredient units
+            const existingToUnitIds = otherIngredientUnits.map(iu => iu.to_unit_id || "");
+
+            // Check if the unit is not used as to_unit_id in any other existing ingredient units
+            return !existingToUnitIds.includes(unit.id ?? "");
+        }) as UnitDataDto[];
 
     const { fields: ingredientUnitFields, append: appendIngredientUnit, remove: removeIngredientUnit } = useFieldArray({
         control,
@@ -302,13 +327,12 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
     };
 
     const handleStartEdit = (ingredientUnit: IngredientUnitData) => {
-        if (currentMode === formType.ADD) return;
         setEditingId(ingredientUnit.id ?? null);
         setEditForm(ingredientUnit);
     };
 
     const handleSaveEdit = (ingredientUnit: IngredientUnitData) => {
-        if (!editForm || !ingredientUnit.id || currentMode === formType.ADD) return;
+        if (!editForm || !ingredientUnit.id) return;
 
         const updatedIngredientUnit = {
             product_ingredient_unit_id: ingredientUnit.id,
@@ -340,21 +364,24 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                     : item
             );
 
-            // Update the form state - only send properties allowed by schema
-            setValue("ingredient_units", {
-                add: [],
-                remove: currentIngredientUnits.remove || [],
-                update: [...(currentIngredientUnits.update || []), updatedIngredientUnit]
-            });
-
             // Keep the complete data structure for local use
-            currentIngredientUnits.data = updatedData;
+            const updatedIngredientUnits = {
+                ...currentIngredientUnits,
+                data: updatedData,
+                update: [...(currentIngredientUnits.update || []), updatedIngredientUnit]
+            };
+
+            // Update the form state while preserving the data property
+            setValue("ingredient_units", updatedIngredientUnits);
+        } else {
+            // Add to update array if data array doesn't exist
+            appendIngredientUnitUpdate(updatedIngredientUnit);
         }
 
-        appendIngredientUnitUpdate(updatedIngredientUnit);
         setEditingId(null);
         setEditForm(null);
     };
+
 
     return (
         <Card className="p-4 space-y-4">
@@ -366,7 +393,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                         variant="default"
                         size="sm"
                         onClick={() => {
-                            const inventoryUnitId = watch("inventory_unit_id");
                             appendIngredientUnit({
                                 from_unit_id: inventoryUnitId,
                                 from_unit_qty: 1,
@@ -410,7 +436,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                             }}
                                             setEditForm={setEditForm}
                                             getUnitName={getUnitName}
-                                            units={units}
+                                            filteredUnits={filteredUnits}
                                         />
                                     ) : (
                                         <DisplayRow
@@ -466,7 +492,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                                     <SelectValue placeholder="Unit" />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
-                                                                    {units.map((unit) => (
+                                                                    {filteredUnits.map((unit) => (
                                                                         <SelectItem key={unit.id} value={unit.id ?? ""}>
                                                                             {unit.name}
                                                                         </SelectItem>
@@ -527,29 +553,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
             ) : (
                 <div className="flex flex-col items-center justify-center py-12 px-4">
                     <p className="text-gray-500 mb-4">No ingredient units defined yet</p>
-                    {currentMode !== formType.VIEW && (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                                const inventoryUnitId = watch("inventory_unit_id");
-                                appendIngredientUnit({
-                                    from_unit_id: inventoryUnitId,
-                                    from_unit_qty: 1,
-                                    to_unit_id: "",
-                                    to_unit_qty: 1,
-                                    description: "",
-                                    is_active: true,
-                                    is_default: false
-                                });
-                            }}
-                            className="flex items-center gap-1.5"
-                        >
-                            <Plus className="h-4 w-4" />
-                            Add First Ingredient Unit
-                        </Button>
-                    )}
                 </div>
             )}
         </Card>

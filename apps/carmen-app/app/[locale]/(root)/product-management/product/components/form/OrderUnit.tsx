@@ -88,6 +88,12 @@ interface OrderUnitsFormData {
     remove: { product_order_unit_id: string }[];
 }
 
+interface UnitDataDto {
+    id?: string;
+    name: string;
+    description?: string;
+    is_active?: boolean;
+}
 const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
     orderUnit: OrderUnitData;
     onEdit: () => void;
@@ -172,14 +178,14 @@ const EditableRow = ({
     onCancel,
     setEditForm,
     getUnitName,
-    units
+    filteredUnits
 }: {
     editForm: OrderUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<OrderUnitData | null>>;
     getUnitName: (id: string) => string;
-    units: any[];
+    filteredUnits: UnitDataDto[];
 }) => {
     const handleFieldChange = (field: keyof OrderUnitData, value: string | number | boolean) => {
         if (!editForm) return;
@@ -226,7 +232,7 @@ const EditableRow = ({
                             <SelectValue placeholder="Unit" />
                         </SelectTrigger>
                         <SelectContent>
-                            {units.map((unit) => (
+                            {filteredUnits.map((unit) => (
                                 <SelectItem key={unit.id} value={unit.id ?? ""}>
                                     {unit.name}
                                 </SelectItem>
@@ -332,6 +338,18 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
     const currentAddFields = watch("order_units.add") || [];
     const inventoryUnitId = watch("inventory_unit_id");
 
+    const filteredUnits: UnitDataDto[] = units
+        .filter((unit) => !!unit.id) // Only include units with an id
+        .filter((unit) => {
+            if (unit.id === inventoryUnitId) return false;
+            const otherOrderUnits = existingOrderUnits.filter(ou =>
+                ou.id !== editingId // Skip the currently edited order unit
+            );
+            const existingFromUnitIds = otherOrderUnits.map(ou => ou.from_unit_id || "");
+            return !existingFromUnitIds.includes(unit.id ?? "");
+        }) as UnitDataDto[];
+
+
     // Auto-initialize and calculate order unit values
     useEffect(() => {
         // Get the current fields from watch since orderUnitFields might be stale
@@ -370,7 +388,6 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
         name: "order_units.update"
     });
 
-    // Filter out removed order units
     const displayOrderUnits = existingOrderUnits.filter(
         orderUnit => !removedOrderUnits.some(removed => removed.product_order_unit_id === orderUnit.id)
     );
@@ -522,7 +539,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                                             }}
                                             setEditForm={setEditForm}
                                             getUnitName={getUnitName}
-                                            units={units}
+                                            filteredUnits={filteredUnits}
                                         />
                                     ) : (
                                         <DisplayRow
@@ -580,7 +597,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                                                                     <SelectValue placeholder="Unit" />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
-                                                                    {units.map((unit) => (
+                                                                    {filteredUnits.map((unit) => (
                                                                         <SelectItem key={unit.id} value={unit.id ?? ""}>
                                                                             {unit.name}
                                                                         </SelectItem>
