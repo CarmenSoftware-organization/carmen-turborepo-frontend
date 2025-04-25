@@ -43,8 +43,8 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
     return (
         <div className="space-y-4">
             <div className="hidden md:block">
-                <Table>
-                    <TableHeader>
+                <Table className="border">
+                    <TableHeader className="bg-muted">
                         <TableRow>
                             <TableHead className="w-10 text-center">
                                 <Checkbox

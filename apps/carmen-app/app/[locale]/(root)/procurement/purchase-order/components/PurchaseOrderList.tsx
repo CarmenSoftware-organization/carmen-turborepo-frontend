@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PurchaseOrderlDto } from "@/dtos/procurement.dto";
-import { Eye, MoreVertical, Pencil, Trash } from "lucide-react";
+import { Eye, MoreVertical, SquarePen, Trash } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -113,18 +113,18 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center justify-end">
-                                        <Button variant="ghost" size={'sm'}>
+                                        <Button variant="ghost" size={'sm'} className="h-7 w-7">
                                             <Eye className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size={'sm'}>
-                                            <Pencil className="h-4 w-4" />
+                                        <Button variant="ghost" size={'sm'} className="h-7 w-7">
+                                            <SquarePen className="h-4 w-4" />
                                         </Button>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 rounded-full"
+                                                    className="h-7 w-7"
                                                     onClick={(e) => e.stopPropagation()}
                                                 >
                                                     <span className="sr-only">More options</span>
@@ -207,7 +207,7 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
                                         <Eye className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-accent">
-                                        <Pencil className="h-4 w-4" />
+                                        <SquarePen className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
                                         <Trash className="h-4 w-4" />
