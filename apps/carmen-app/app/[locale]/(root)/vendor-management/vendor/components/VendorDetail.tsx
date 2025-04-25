@@ -59,7 +59,7 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <Button variant="ghost" size="sm" asChild>
-                                        <Link href="/vendor-management">
+                                        <Link href="/vendor-management/vendor">
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
                                     </Button>
