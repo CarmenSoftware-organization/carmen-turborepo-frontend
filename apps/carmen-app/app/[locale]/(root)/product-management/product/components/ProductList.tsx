@@ -50,6 +50,9 @@ export default function ProductList({
 
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
+    console.log('aaaa products', products);
+
+
     const handleSelectItem = (id: string) => {
         setSelectedItems(prev =>
             prev.includes(id)
@@ -116,13 +119,12 @@ export default function ProductList({
                                 aria-label={`Select ${pd.name}`}
                             />
                         </TableCell>
-                        <TableCell>{pd.code}</TableCell>
                         <TableCell>
                             <div className="flex flex-col gap-1">
                                 <span className="font-medium">
                                     {pd.name}
                                 </span>
-                                <span className="text-sm text-muted-foreground">
+                                <span className="text-xs text-muted-foreground">
                                     {pd.description}
                                 </span>
                             </div>
@@ -130,6 +132,7 @@ export default function ProductList({
                         <TableCell>{pd.product_category?.name}</TableCell>
                         <TableCell>{pd.product_sub_category?.name}</TableCell>
                         <TableCell>{pd.product_item_group?.name}</TableCell>
+                        <TableCell>{pd.inventory_unit_name}</TableCell>
                         <TableCell>
                             <Badge variant={pd.product_status_type === "active" ? "default" : "destructive"}>
                                 {pd.product_status_type === "active" ? "Active" : "Inactive"}
@@ -232,8 +235,8 @@ export default function ProductList({
     return (
         <div className="space-y-4">
             <div className="hidden md:block">
-                <Table>
-                    <TableHeader>
+                <Table className="border">
+                    <TableHeader className="bg-muted">
                         <TableRow>
                             <TableHead className="w-10 text-center">
                                 <Checkbox
@@ -243,11 +246,12 @@ export default function ProductList({
                                     aria-label="Select all purchase requests"
                                 />
                             </TableHead>
-                            <TableHead>{t('code')}</TableHead>
-                            <TableHead>{t('name')}</TableHead>
+                            <TableHead className="text-left w-1/2">{t('name')}</TableHead>
                             <TableHead>Category</TableHead>
                             <TableHead>Sub Category</TableHead>
                             <TableHead>Item Group</TableHead>
+                            <TableHead>Inventory Unit</TableHead>
+                            {/* <TableHead>Base Price</TableHead> */}
                             <TableHead>{t('status')}</TableHead>
                             <TableHead className="w-20 text-right">{t('action')}</TableHead>
                         </TableRow>

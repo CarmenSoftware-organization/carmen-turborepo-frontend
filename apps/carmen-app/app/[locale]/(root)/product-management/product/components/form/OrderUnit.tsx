@@ -3,7 +3,7 @@ import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftRight, Check, PenIcon, Plus, Trash, X } from "lucide-react";
+import { Check, PenIcon, Plus, Trash, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useUnit } from "@/hooks/useUnit";
@@ -105,9 +105,6 @@ const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
                 checked={orderUnit.is_default}
                 disabled
             />
-        </TableCell>
-        <TableCell className="text-left">
-            <ArrowLeftRight className="h-4 w-4 text-gray-500" />
         </TableCell>
         <TableCell className="text-left w-28">
             <div>
@@ -227,9 +224,6 @@ const EditableRow = ({
                     checked={editForm?.is_default}
                     onCheckedChange={() => handleFieldChange('is_default', !editForm?.is_default)}
                 />
-            </TableCell>
-            <TableCell className="text-left">
-                <ArrowLeftRight className="h-4 w-4 text-gray-500" />
             </TableCell>
             <TableCell className="text-left w-28">
                 {editForm?.from_unit_id && editForm?.to_unit_id ? (
@@ -463,7 +457,6 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                                 <TableHead className="text-left w-24 font-medium">Order Unit</TableHead>
                                 <TableHead className="text-left w-28 font-medium">Qty</TableHead>
                                 <TableHead className="text-left w-20 font-medium">Default</TableHead>
-                                <TableHead className="text-left w-20 font-medium">Direction</TableHead>
                                 <TableHead className="text-left w-28 font-medium">Conversion</TableHead>
                                 {currentMode !== formType.VIEW && <TableHead className="text-right w-20 font-medium">Actions</TableHead>}
                             </TableRow>
@@ -563,9 +556,6 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                                                 </FormItem>
                                             )}
                                         />
-                                    </TableCell>
-                                    <TableCell className="text-left">
-                                        <ArrowLeftRight className="h-4 w-4 text-gray-500" />
                                     </TableCell>
                                     <TableCell className="text-left w-28">
                                         {field.from_unit_id && field.to_unit_id ? (

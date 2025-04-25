@@ -3,7 +3,7 @@ import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { ArrowLeftRight, Check, PenIcon, Plus, Trash2, X } from "lucide-react";
+import { Check, PenIcon, Plus, Trash2, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useUnit } from "@/hooks/useUnit";
@@ -138,9 +138,6 @@ const EditableRow = ({
             <TableCell className="text-left w-16">
                 <Switch checked={editForm?.is_default} onCheckedChange={() => handleFieldChange('is_default', !editForm?.is_default)} />
             </TableCell>
-            <TableCell className="text-left">
-                <ArrowLeftRight className="h-4 w-4 text-gray-500" />
-            </TableCell>
             <TableCell className="text-left w-28">
                 {editForm?.from_unit_id && editForm?.to_unit_id ? (
                     <div>
@@ -191,13 +188,16 @@ const DisplayRow = ({ ingredientUnit, onEdit, onRemove, currentMode, getUnitName
                 <span>{getUnitName(ingredientUnit.from_unit_id)}</span>
             </div>
         </TableCell>
-        <TableCell className="text-left w-24">{getUnitName(ingredientUnit.to_unit_id)}</TableCell>
-        <TableCell className="text-left w-16">{ingredientUnit.to_unit_qty}</TableCell>
+        <TableCell className="text-left w-16">
+            <div className="flex items-center gap-2">
+                <span className="font-medium">{ingredientUnit.to_unit_qty}</span>
+                <span>{getUnitName(ingredientUnit.to_unit_id)}</span>
+            </div>
+        </TableCell>
+        {/* <TableCell className="text-left w-16">{ingredientUnit.to_unit_qty}</TableCell>
+        <TableCell className="text-left w-24">{getUnitName(ingredientUnit.to_unit_id)}</TableCell> */}
         <TableCell className="text-left w-16">
             <Switch checked={ingredientUnit.is_default} disabled />
-        </TableCell>
-        <TableCell className="text-left">
-            <ArrowLeftRight className="h-4 w-4 text-gray-500" />
         </TableCell>
         <TableCell className="text-left w-28">
             <div>
@@ -385,11 +385,9 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                     <Table>
                         <TableHeader className="bg-muted">
                             <TableRow>
-                                <TableHead className="text-left w-24 font-medium">Ingredient</TableHead>
+                                <TableHead className="text-left w-24 font-medium">Ingredient Unit</TableHead>
                                 <TableHead className="text-left w-24 font-medium">To Unit</TableHead>
-                                <TableHead className="text-left w-16 font-medium">Qty</TableHead>
                                 <TableHead className="text-left w-16 font-medium">Default</TableHead>
-                                <TableHead className="text-left w-20 font-medium">Direction</TableHead>
                                 <TableHead className="text-left w-28 font-medium">Conversion</TableHead>
                                 {currentMode !== formType.VIEW && <TableHead className="text-right w-20 font-medium">Actions</TableHead>}
                             </TableRow>
@@ -429,6 +427,27 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                             <span>{getUnitName(field.from_unit_id)}</span>
                                         </div>
                                     </TableCell>
+
+                                    <TableCell className="text-left w-16">
+                                        <FormField
+                                            control={control}
+                                            name={`ingredient_units.add.${index}.to_unit_qty`}
+                                            render={({ field }) => (
+                                                <FormItem className="space-y-0">
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            className="w-16 h-9"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </TableCell>
+
                                     <TableCell className="text-left w-24">
                                         <FormField
                                             control={control}
@@ -454,25 +473,8 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                             )}
                                         />
                                     </TableCell>
-                                    <TableCell className="text-left w-16">
-                                        <FormField
-                                            control={control}
-                                            name={`ingredient_units.add.${index}.to_unit_qty`}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            className="w-16 h-9"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </TableCell>
+
+
                                     <TableCell className="text-left w-16">
                                         <FormField
                                             control={control}
@@ -486,9 +488,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                 </FormItem>
                                             )}
                                         />
-                                    </TableCell>
-                                    <TableCell className="text-left">
-                                        <ArrowLeftRight className="h-4 w-4 text-gray-500" />
                                     </TableCell>
                                     <TableCell className="text-left w-28">
                                         {field.from_unit_id && field.to_unit_id ? (

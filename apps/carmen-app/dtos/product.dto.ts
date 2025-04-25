@@ -5,6 +5,7 @@ const BaseProductSchema = z.object({
     code: z.string(),
     local_name: z.string(),
     description: z.string(),
+    inventory_unit_name: z.string(),
     inventory_unit: z.object({
         id: z.string(),
         name: z.string(),
