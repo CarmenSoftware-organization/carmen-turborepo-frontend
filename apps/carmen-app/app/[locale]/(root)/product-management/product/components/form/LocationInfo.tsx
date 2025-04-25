@@ -221,16 +221,14 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                                                                     <div className="flex items-center justify-center py-2 text-sm text-gray-500">
                                                                         No locations available
                                                                     </div>
-                                                                ) : (
-                                                                    filteredStoreLocations.map((location) => (
-                                                                        <SelectItem
-                                                                            key={location.id}
-                                                                            value={location.id?.toString() ?? ""}
-                                                                        >
-                                                                            {location.name}
-                                                                        </SelectItem>
-                                                                    ))
-                                                                )}
+                                                                ) : filteredStoreLocations.map((location) => (
+                                                                    <SelectItem
+                                                                        key={location.id}
+                                                                        value={location.id?.toString() ?? ""}
+                                                                    >
+                                                                        {location.name}
+                                                                    </SelectItem>
+                                                                ))}
                                                             </SelectContent>
                                                         </Select>
                                                     </FormControl>
