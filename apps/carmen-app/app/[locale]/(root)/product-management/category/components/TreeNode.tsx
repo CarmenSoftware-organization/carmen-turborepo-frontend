@@ -62,11 +62,12 @@ export default function TreeNode({
                     {node.type === "itemGroup" && <div className="text-xs text-muted-foreground">{node.itemCount}</div>}
                 </div>
 
-                <div className="flex items-center">
+                <div className="flex items-center gap-1">
                     <Button
                         variant="ghost"
                         size={'sm'}
                         onClick={() => onEdit(node)}
+                        className="h-6 w-6"
                     >
                         <Edit className="h-4 w-4" />
                     </Button>
@@ -74,7 +75,7 @@ export default function TreeNode({
                         variant="ghost"
                         size={'sm'}
                         onClick={() => onDelete(node)}
-                        className="text-destructive hover:text-destructive/80"
+                        className="text-destructive hover:text-destructive/80 h-6 w-6   "
                     >
                         <Trash className="h-4 w-4" />
                     </Button>
@@ -83,6 +84,7 @@ export default function TreeNode({
                             variant="ghost"
                             size={'sm'}
                             onClick={() => onAdd(node)}
+                            className="h-6 w-6"
                         >
                             <Plus className="h-4 w-4" />
                         </Button>
