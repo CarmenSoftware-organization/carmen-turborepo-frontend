@@ -94,20 +94,23 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
 
     const hasLocations = displayLocations.length > 0 || newLocations.length > 0;
 
+    const filteredStoreLocations = storeLocations.filter(location => !existingLocations.some(existing => existing.location_id === location.id));
+
     return (
-        <div className="rounded-lg border p-6 space-y-4">
+        <div className="rounded-lg border p-4 space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">Locations</h2>
-                <Button
-                    type="button"
-                    variant="default"
-                    size="sm"
-                    onClick={() => appendLocation({ location_id: "" })}
-                    disabled={currentMode === formType.VIEW}
-                >
-                    <Plus />
-                    Add Location
-                </Button>
+                {currentMode !== formType.VIEW && (
+                    <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={() => appendLocation({ location_id: "" })}
+                    >
+                        <Plus />
+                        Add Location
+                    </Button>
+                )}
             </div>
 
             {/* Locations Table */}
@@ -120,7 +123,9 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                             <TableHead>Description</TableHead>
                             <TableHead>Delivery Point</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead>Action</TableHead>
+                            {currentMode !== formType.VIEW && (
+                                <TableHead>Action</TableHead>
+                            )}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -152,42 +157,43 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                                             {storeLocation?.is_active ? 'Active' : 'Inactive'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="text-destructive"
-                                                    disabled={currentMode === formType.VIEW}
-                                                >
-                                                    <Trash className="h-4 w-4" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Remove Location</AlertDialogTitle>
-                                                    <AlertDialogDescription className="space-y-2">
-                                                        <p>Are you sure you want to remove this location?</p>
-                                                        <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
-                                                            <p><span className="font-semibold">Location ID:</span> {location.id}</p>
-                                                            <p><span className="font-semibold">Name:</span> {storeLocation?.name}</p>
-                                                            <p><span className="font-semibold">Type:</span> {storeLocation?.location_type}</p>
-                                                        </div>
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction
-                                                        onClick={() => appendLocationRemove({ id: location.id })}
+                                    {currentMode !== formType.VIEW && (
+                                        <TableCell>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="text-destructive"
                                                     >
-                                                        Remove
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </TableCell>
+                                                        <Trash className="h-4 w-4" />
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Remove Location</AlertDialogTitle>
+                                                        <AlertDialogDescription className="space-y-2">
+                                                            <p>Are you sure you want to remove this location?</p>
+                                                            <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
+                                                                <p><span className="font-semibold">Location ID:</span> {location.id}</p>
+                                                                <p><span className="font-semibold">Name:</span> {storeLocation?.name}</p>
+                                                                <p><span className="font-semibold">Type:</span> {storeLocation?.location_type}</p>
+                                                            </div>
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction
+                                                            onClick={() => appendLocationRemove({ id: location.id })}
+                                                        >
+                                                            Remove
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             );
                         })}
@@ -211,14 +217,20 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                                                                 <SelectValue placeholder="Select location" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {storeLocations.map((location) => (
-                                                                    <SelectItem
-                                                                        key={location.id}
-                                                                        value={location.id?.toString() ?? ""}
-                                                                    >
-                                                                        {location.name}
-                                                                    </SelectItem>
-                                                                ))}
+                                                                {filteredStoreLocations.length === 0 ? (
+                                                                    <div className="flex items-center justify-center py-2 text-sm text-gray-500">
+                                                                        No locations available
+                                                                    </div>
+                                                                ) : (
+                                                                    filteredStoreLocations.map((location) => (
+                                                                        <SelectItem
+                                                                            key={location.id}
+                                                                            value={location.id?.toString() ?? ""}
+                                                                        >
+                                                                            {location.name}
+                                                                        </SelectItem>
+                                                                    ))
+                                                                )}
                                                             </SelectContent>
                                                         </Select>
                                                     </FormControl>
@@ -245,16 +257,19 @@ export default function LocationInfo({ control, currentMode }: LocationInfoProps
                                             {storeLocation?.is_active ? 'Active' : 'Inactive'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => removeLocation(index)}
-                                        >
-                                            <Trash className="h-4 w-4" />
-                                        </Button>
-                                    </TableCell>
+                                    {currentMode !== formType.VIEW && (
+                                        <TableCell>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => removeLocation(index)}
+                                                className="h-6 w-6 text-destructive hover:text-destructive/80"
+                                            >
+                                                <Trash className="h-4 w-4" />
+                                            </Button>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             );
                         })}
