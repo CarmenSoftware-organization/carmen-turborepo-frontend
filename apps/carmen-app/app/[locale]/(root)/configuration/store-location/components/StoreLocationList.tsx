@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Trash } from "lucide-react";
+import { SquarePen, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -72,7 +72,7 @@ export default function StoreLocationList({
                         <TableCell className="hidden md:table-cell">{storeLocation.description}</TableCell>
                         <TableCell>{storeLocation.delivery_point.name}</TableCell>
                         <TableCell>
-                            <Badge variant={storeLocation.is_active ? "default" : "destructive"}>
+                            <Badge variant={storeLocation.is_active ? "active" : "inactive"}>
                                 {storeLocation.is_active ? "Active" : "Inactive"}
                             </Badge>
                         </TableCell>
@@ -83,18 +83,19 @@ export default function StoreLocationList({
                                     size="sm"
                                     onClick={() => onEdit(storeLocation)}
                                     aria-label="Edit store location"
+                                    className="h-7 w-7"
                                 >
-                                    <Pencil className="h-4 w-4" />
+                                    <SquarePen className="h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => onStatusChange(storeLocation)}
-                                    className={storeLocation.is_active ? "hover:text-destructive" : "hover:text-primary"}
                                     aria-label={`${storeLocation.is_active ? 'Deactivate' : 'Activate'} store location`}
                                     disabled={!storeLocation.is_active}
+                                    className="h-7 w-7 text-destructive hover:text-destructive/80"
                                 >
-                                    <Trash className="h-4 w-4 text-destructive" />
+                                    <Trash className="h-4 w-4" />
                                 </Button>
                             </div>
                         </TableCell>
@@ -107,8 +108,8 @@ export default function StoreLocationList({
     return (
         <div className="space-y-4">
             <ScrollArea className="relative">
-                <Table>
-                    <TableHeader className="sticky top-0 bg-background">
+                <Table className="border">
+                    <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead className="w-10">#</TableHead>
                             <TableHead className="md:w-56">{t('name')}</TableHead>

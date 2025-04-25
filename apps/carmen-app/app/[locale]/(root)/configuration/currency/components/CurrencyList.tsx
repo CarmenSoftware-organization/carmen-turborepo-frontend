@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Trash } from "lucide-react";
+import { SquarePen, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 
@@ -74,7 +74,7 @@ export default function CurrencyList({
                         <TableCell className="w-10 md:w-24 hidden md:table-cell">{currency.symbol}</TableCell>
                         <TableCell className="w-32 md:text-center">{currency.exchange_rate}</TableCell>
                         <TableCell className="w-10 md:w-24 md:text-center">
-                            <Badge variant={currency.is_active ? "default" : "destructive"}>
+                            <Badge variant={currency.is_active ? "active" : "inactive"}>
                                 {currency.is_active ? 'Active' : 'Inactive'}
                             </Badge>
                         </TableCell>
@@ -85,8 +85,9 @@ export default function CurrencyList({
                                     size={'sm'}
                                     onClick={() => handleEdit(currency)}
                                     aria-label="Edit currency"
+                                    className="h-7 w-7"
                                 >
-                                    <Pencil className="h-4 w-4" />
+                                    <SquarePen className="h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
@@ -94,8 +95,9 @@ export default function CurrencyList({
                                     onClick={() => handleToggleStatus(currency)}
                                     aria-label={currency.is_active ? "Deactivate currency" : "Activate currency"}
                                     disabled={!currency.is_active}
+                                    className="h-7 w-7 text-destructive hover:text-destructive/80"
                                 >
-                                    <Trash className="h-4 w-4 text-destructive" />
+                                    <Trash className="h-4 w-4" />
                                 </Button>
                             </div>
                         </TableCell>
@@ -107,8 +109,8 @@ export default function CurrencyList({
 
     return (
         <div className="space-y-4">
-            <Table>
-                <TableHeader className="sticky top-0">
+            <Table className="border">
+                <TableHeader className="sticky top-0 bg-muted">
                     <TableRow>
                         <TableHead className="w-10 hidden md:table-cell">#</TableHead>
                         <TableHead className="w-10 md:w-24 md:table-cell">{t('name')}</TableHead>

@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Trash } from "lucide-react";
+import { SquarePen, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -66,7 +66,7 @@ export default function DepartmentList({
                             {department.name}
                         </TableCell>
                         <TableCell>
-                            <Badge variant={department.is_active ? "default" : "destructive"}>
+                            <Badge variant={department.is_active ? "active" : "inactive"}>
                                 {department.is_active ? "Active" : "Inactive"}
                             </Badge>
                         </TableCell>
@@ -77,8 +77,9 @@ export default function DepartmentList({
                                     size={'sm'}
                                     onClick={() => onEdit(department)}
                                     aria-label="Edit department"
+                                    className="h-7 w-7"
                                 >
-                                    <Pencil className="h-4 w-4" />
+                                    <SquarePen className="h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
@@ -86,8 +87,9 @@ export default function DepartmentList({
                                     onClick={() => onToggleStatus(department)}
                                     aria-label={`${department.is_active ? 'Deactivate' : 'Activate'} department`}
                                     disabled={!department.is_active}
+                                    className="h-7 w-7 text-destructive hover:text-destructive/80"
                                 >
-                                    <Trash className="h-4 w-4 text-destructive" />
+                                    <Trash className="h-4 w-4" />
                                 </Button>
                             </div>
                         </TableCell>
@@ -100,8 +102,8 @@ export default function DepartmentList({
     return (
         <div className="space-y-4">
             <ScrollArea className="h-[calc(102vh-250px)] w-full">
-                <Table>
-                    <TableHeader className="sticky top-0">
+                <Table className="border">
+                    <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead>#</TableHead>
                             <TableHead>{t('name')}</TableHead>

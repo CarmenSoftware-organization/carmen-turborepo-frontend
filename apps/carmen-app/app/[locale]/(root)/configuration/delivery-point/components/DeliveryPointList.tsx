@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Trash } from "lucide-react";
+import { SquarePen, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -69,7 +69,7 @@ export default function DeliveryPointList({
                         <TableCell className="w-10">{index + 1}</TableCell>
                         <TableCell className="md:w-56">{deliveryPoint.name}</TableCell>
                         <TableCell>
-                            <Badge variant={deliveryPoint.is_active ? "default" : "destructive"}>
+                            <Badge variant={deliveryPoint.is_active ? "active" : "inactive"}>
                                 {deliveryPoint.is_active ? "Active" : "Inactive"}
                             </Badge>
                         </TableCell>
@@ -80,8 +80,9 @@ export default function DeliveryPointList({
                                     size={'sm'}
                                     onClick={() => onEdit(deliveryPoint)}
                                     aria-label="Edit delivery point"
+                                    className="h-7 w-7"
                                 >
-                                    <Pencil className="h-4 w-4" />
+                                    <SquarePen className="h-4 w-4" />
                                 </Button>
                                 <Button
                                     variant="ghost"
@@ -89,8 +90,9 @@ export default function DeliveryPointList({
                                     onClick={() => onToggleStatus(deliveryPoint)}
                                     disabled={!deliveryPoint.is_active}
                                     aria-label={deliveryPoint.is_active ? "Deactivate delivery point" : "Activate delivery point"}
+                                    className="h-7 w-7 text-destructive hover:text-destructive/80"
                                 >
-                                    <Trash className="h-4 w-4 text-destructive" />
+                                    <Trash className="h-4 w-4" />
                                 </Button>
                             </div>
                         </TableCell>
@@ -103,8 +105,8 @@ export default function DeliveryPointList({
     return (
         <div className="space-y-4">
             <div className="relative">
-                <Table>
-                    <TableHeader className="sticky top-0 bg-background">
+                <Table className="border">
+                    <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead className="w-10">#</TableHead>
                             <TableHead
