@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
-import { useRouter } from "@/lib/navigation";
-import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Pencil, Printer, Save, X } from "lucide-react";
+import { Link, useRouter } from "@/lib/navigation";
+import { ChevronLeft, ChevronRight, MessageCircle, Pencil, Printer, Save, X } from "lucide-react";
 import { useState } from "react";
 import ActivityLog from "../ActivityLog";
 import CommentGrn from "../CommentGrn";
@@ -136,14 +136,17 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <h1>Goods Received Note</h1>
-                                        <Badge>{initialValues?.status}</Badge>
+                                        <Link href="/procurement/goods-received-note">
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Link>
+                                        <p className="text-lg font-bold">Goods Received Note</p>
+                                        <Badge className="rounded-full">{initialValues?.status}</Badge>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {currentMode === formType.VIEW ? (
                                             <>
                                                 <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                                    <ArrowLeft className="h-4 w-4" /> Back
+                                                    <ChevronLeft className="h-4 w-4" /> Back
                                                 </Button>
                                                 <Button variant="default" size={'sm'} onClick={handleEditClick}>
                                                     <Pencil className="h-4 w-4" /> Edit

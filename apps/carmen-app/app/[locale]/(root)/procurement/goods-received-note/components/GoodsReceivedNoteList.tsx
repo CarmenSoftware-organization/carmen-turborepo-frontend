@@ -102,17 +102,17 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center justify-end">
-                                        <Button variant="ghost" size={'sm'} asChild>
+                                        <Button variant="ghost" size={'sm'} asChild className="h-7 w-7">
                                             <Link href={`/procurement/goods-received-note/${grn.id}`}>
-                                                <Eye />
+                                                <Eye className="h-4 w-4" />
                                             </Link>
                                         </Button>
-                                        <Button variant="ghost" size={'sm'}>
-                                            <Trash className="text-destructive" />
+                                        <Button variant="ghost" size={'sm'} className="h-7 w-7">
+                                            <Trash className="h-4 w-4 text-destructive" />
                                         </Button>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                                <Button variant="ghost" size="icon" className="h-7 w-7">
                                                     <MoreHorizontal className="h-4 w-4" />
                                                 </Button>
                                             </DropdownMenuTrigger>
