@@ -1,0 +1,160 @@
+import { useState, useCallback, useEffect } from "react";
+import { useURL } from "@/hooks/useURL";
+import { getAllVendorService, deleteVendorService } from "@/services/vendor.service";
+import { VendorGetDto, VendorFormDto } from "@/dtos/vendor-management";
+import { formType } from "@/dtos/form.dto";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+
+export const useVendor = (token: string, tenantId: string) => {
+    const [search, setSearch] = useURL('search');
+    const [filter, setFilter] = useURL('filter');
+    const [statusOpen, setStatusOpen] = useState(false);
+    const [sort, setSort] = useURL('sort');
+    const [page, setPage] = useURL('page');
+    const [vendors, setVendors] = useState<VendorGetDto[]>([]);
+    const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [selectedVendor, setSelectedVendor] = useState<VendorGetDto | undefined>(undefined);
+    const [currentMode, setCurrentMode] = useState<formType>(formType.ADD);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [vendorToDelete, setVendorToDelete] = useState<VendorGetDto | undefined>(undefined);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isUnauthorized, setIsUnauthorized] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+            setFilter('');
+        }
+    }, [search, setPage, setFilter]);
+
+    const fetchVendors = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const data = await getAllVendorService(token, tenantId, {
+                search,
+                sort,
+                page,
+                filter
+            });
+            if (data.statusCode === 401) {
+                setLoginDialogOpen(true);
+                setIsUnauthorized(true);
+                return;
+            }
+            setVendors(data.data);
+            setTotalPages(data.paginate.pages);
+        } catch (error) {
+            console.error("Error fetching vendors:", error);
+            toastError({ message: "Failed to fetch vendors" });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [token, tenantId, search, sort, page, filter]);
+
+    useEffect(() => {
+        fetchVendors();
+    }, [fetchVendors]);
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage.toString());
+    }, [setPage]);
+
+    const handleAddClick = useCallback(() => {
+        setCurrentMode(formType.ADD);
+        setSelectedVendor(undefined);
+        setOpenAddDialog(true);
+    }, []);
+
+    const handleEditClick = useCallback((vendor: VendorGetDto) => {
+        setCurrentMode(formType.EDIT);
+        setSelectedVendor(vendor);
+        setOpenAddDialog(true);
+    }, []);
+
+    const handleDeleteClick = useCallback((vendor: VendorGetDto) => {
+        setVendorToDelete(vendor);
+        setDeleteDialogOpen(true);
+    }, []);
+
+    const handleConfirmDelete = useCallback(async () => {
+        if (!vendorToDelete) return;
+
+        try {
+            setIsDeleting(true);
+            // For delete operation, only id is needed
+            const vendorData: VendorFormDto = {
+                id: vendorToDelete.id,
+                name: vendorToDelete.name,
+                info: vendorToDelete.info,
+                vendor_address: [],
+                vendor_contact: []
+            };
+
+            const response = await deleteVendorService(token, tenantId, vendorData);
+            if (response) {
+                toastSuccess({ message: "Vendor deleted successfully" });
+                fetchVendors();
+            } else {
+                toastError({ message: "Failed to delete vendor" });
+            }
+        } catch (error) {
+            console.error("Error deleting vendor:", error);
+            toastError({ message: `Failed to delete vendor: ${error instanceof Error ? error.message : 'Unknown error'}` });
+        } finally {
+            setIsDeleting(false);
+            setDeleteDialogOpen(false);
+            setVendorToDelete(undefined);
+        }
+    }, [fetchVendors, token, tenantId, vendorToDelete]);
+
+    const handleFormSuccess = useCallback(() => {
+        fetchVendors();
+    }, [fetchVendors]);
+
+    const sortFields = [
+        { key: 'code', label: 'Code' },
+        { key: 'name', label: 'Name' },
+        { key: 'is_active', label: 'Status' },
+    ];
+
+    return {
+        // State
+        search,
+        filter,
+        statusOpen,
+        sort,
+        page,
+        vendors,
+        openAddDialog,
+        loginDialogOpen,
+        selectedVendor,
+        currentMode,
+        deleteDialogOpen,
+        vendorToDelete,
+        isDeleting,
+        isLoading,
+        isUnauthorized,
+        totalPages,
+        sortFields,
+
+        // Actions
+        setSearch,
+        setFilter,
+        setStatusOpen,
+        setSort,
+        setPage,
+        setOpenAddDialog,
+        setLoginDialogOpen,
+        setDeleteDialogOpen,
+        fetchVendors,
+        handlePageChange,
+        handleAddClick,
+        handleEditClick,
+        handleDeleteClick,
+        handleConfirmDelete,
+        handleFormSuccess
+    };
+}; 

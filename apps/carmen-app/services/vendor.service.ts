@@ -1,4 +1,4 @@
-import { VendorDto, VendorFormDto } from "@/dtos/vendor-management";
+import { VendorFormDto } from "@/dtos/vendor-management";
 import { backendApi } from "@/lib/backend-api";
 
 
@@ -40,6 +40,23 @@ export const getAllVendorService = async (token: string, tenantId: string,
     return data;
 }
 
+export const getVendorIdService = async (token: string, tenantId: string, id: string) => {
+    const url = `${backendApi}/api/config/vendors/${id}`;
+    const options = {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'x-tenant-id': tenantId,
+            'Content-Type': 'application/json',
+        },
+    };
+    const response = await fetch(url, options);
+    const data = await response.json();
+    return data;
+}
+
+
+
 export const createVendorService = async (token: string, tenantId: string, vendor: VendorFormDto) => {
     const url = `${backendApi}/api/config/vendors`;
     const options = {
@@ -57,7 +74,7 @@ export const createVendorService = async (token: string, tenantId: string, vendo
 };
 
 
-export const updateVendorService = async (token: string, tenantId: string, vendor: VendorDto) => {
+export const updateVendorService = async (token: string, tenantId: string, vendor: VendorFormDto) => {
     const url = `${backendApi}/api/config/vendors/${vendor.id}`;
     const options = {
         method: 'PUT',
@@ -73,7 +90,7 @@ export const updateVendorService = async (token: string, tenantId: string, vendo
     return data;
 };
 
-export const deleteVendorService = async (token: string, tenantId: string, vendor: VendorDto) => {
+export const deleteVendorService = async (token: string, tenantId: string, vendor: VendorFormDto) => {
     const url = `${backendApi}/api/config/vendors/${vendor.id}`;
     const options = {
         method: 'DELETE',

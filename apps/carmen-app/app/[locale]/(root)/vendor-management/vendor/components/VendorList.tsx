@@ -1,4 +1,4 @@
-import { VendorDto } from "@/dtos/vendor-management";
+import { VendorGetDto } from "@/dtos/vendor-management";
 import {
     Table,
     TableBody,
@@ -13,11 +13,12 @@ import { Eye, Pencil, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PaginationComponent from "@/components/PaginationComponent";
+import { Link } from "@/lib/navigation";
+import { Badge } from "@/components/ui/badge";
 
 interface VendorListProps {
-    readonly vendors: VendorDto[];
-    readonly onEditClick?: (vendor: VendorDto) => void;
-    readonly onDeleteClick?: (vendor: VendorDto) => void;
+    readonly vendors: VendorGetDto[];
+    readonly onDeleteClick?: (vendor: VendorGetDto) => void;
     readonly isLoading?: boolean;
     readonly currentPage: number;
     readonly totalPages: number;
@@ -26,37 +27,29 @@ interface VendorListProps {
 
 export default function VendorList({
     vendors,
-    onEditClick,
     onDeleteClick,
     isLoading = false,
     currentPage,
     totalPages,
     onPageChange
 }: VendorListProps) {
-    const handleEditClick = (vendor: VendorDto) => {
-        if (onEditClick) {
-            onEditClick(vendor);
-        }
-    };
 
-    const handleDeleteClick = (vendor: VendorDto) => {
+    const handleDeleteClick = (vendor: VendorGetDto) => {
         if (onDeleteClick) {
             onDeleteClick(vendor);
         }
     };
 
-    console.log('vendor', vendors);
-
     return (
         <div className="space-y-4">
             <div className="hidden md:block relative">
-                <Table>
-                    <TableHeader className="sticky top-0 bg-background">
+                <Table className="border">
+                    <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead className="w-10 text-center">#</TableHead>
                             <TableHead className="w-60 text-left">Name</TableHead>
                             <TableHead className="w-60 text-left">Description</TableHead>
-                            <TableHead className="w-60 text-left">Vendor Type</TableHead>
+                            <TableHead className="w-60 text-left">Status</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -64,12 +57,12 @@ export default function VendorList({
                 <ScrollArea className="h-[calc(102vh-300px)] w-full">
                     <Table>
                         {isLoading ? (
-                            <TableBodySkeleton columns={6} />
+                            <TableBodySkeleton columns={5} />
                         ) : (
                             <TableBody>
                                 {vendors.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="text-center">No vendors found</TableCell>
+                                        <TableCell colSpan={5} className="text-center">No vendors found</TableCell>
                                     </TableRow>
                                 ) : (
                                     vendors.map((vendor, index) => (
@@ -77,24 +70,24 @@ export default function VendorList({
                                             <TableCell className="text-center w-10">{index + 1}</TableCell>
                                             <TableCell className="font-medium w-60">{vendor.name}</TableCell>
                                             <TableCell className="text-left w-60">{vendor.description}</TableCell>
-                                            <TableCell className="text-left w-60">{vendor.vendor_type}</TableCell>
+                                            <TableCell className="text-left w-60">
+                                                <Badge variant={vendor.is_active ? "active" : "inactive"}>
+                                                    {vendor.is_active ? "Active" : "Inactive"}
+                                                </Badge>
+                                            </TableCell>
                                             <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon">
-                                                    <Eye className="h-4 w-4" />
+                                                <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                                                    <Link href={`/vendor-management/vendor/${vendor.id}`}>
+                                                        <Eye className="h-4 w-4" />
+                                                    </Link>
                                                 </Button>
                                                 <Button
                                                     variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleEditClick(vendor)}
-                                                >
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
+                                                    size="sm"
                                                     onClick={() => handleDeleteClick(vendor)}
+                                                    className="text-destructive hover:text-destructive/80 h-7 w-7"
                                                 >
-                                                    <Trash className="h-4 w-4 text-destructive" />
+                                                    <Trash className="h-4 w-4" />
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -128,23 +121,20 @@ export default function VendorList({
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-2">
                                         <p className="text-sm font-medium">{vendor.name}</p>
+                                        <span className={`px-2 py-1 rounded-full text-xs ${vendor.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                            {vendor.is_active ? 'Active' : 'Inactive'}
+                                        </span>
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                            <Eye className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                                            <Link href={`/vendor-management/vendor/${vendor.id}`}>
+                                                <Eye className="h-4 w-4" />
+                                            </Link>
                                         </Button>
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-8 w-8 hover:bg-accent"
-                                            onClick={() => handleEditClick(vendor)}
-                                        >
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                                            className="h-7 w-7 hover:bg-destructive/80 text-destructive"
                                             onClick={() => handleDeleteClick(vendor)}
                                         >
                                             <Trash className="h-4 w-4" />
@@ -158,12 +148,19 @@ export default function VendorList({
                                         <p className="text-sm text-muted-foreground">Description</p>
                                         <p className="text-sm font-medium">{vendor.description}</p>
                                     </div>
-                                    <div className="space-y-1">
-                                        <p className="text-sm text-muted-foreground">Vendor Type</p>
-                                        <p className="text-sm font-medium">
-                                            {vendor.vendor_type}
-                                        </p>
-                                    </div>
+                                    {vendor.info.length > 0 && (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-muted-foreground">Additional Information</p>
+                                            <div className="grid gap-2">
+                                                {vendor.info.map((item, index) => (
+                                                    <div key={index} className="flex justify-between">
+                                                        <p className="text-sm">{item.label}</p>
+                                                        <p className="text-sm font-medium">{item.value}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </CardContent>
                         </Card>
