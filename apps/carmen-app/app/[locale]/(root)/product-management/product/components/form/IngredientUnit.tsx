@@ -368,10 +368,10 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                         onClick={() => {
                             const inventoryUnitId = watch("inventory_unit_id");
                             appendIngredientUnit({
-                                from_unit_id: inventoryUnitId || "",
+                                from_unit_id: inventoryUnitId,
                                 from_unit_qty: 1,
                                 to_unit_id: "",
-                                to_unit_qty: 0,
+                                to_unit_qty: 1,
                                 description: "",
                                 is_active: true,
                                 is_default: false
@@ -535,10 +535,10 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                             onClick={() => {
                                 const inventoryUnitId = watch("inventory_unit_id");
                                 appendIngredientUnit({
-                                    from_unit_id: inventoryUnitId || "",
+                                    from_unit_id: inventoryUnitId,
                                     from_unit_qty: 1,
                                     to_unit_id: "",
-                                    to_unit_qty: 0,
+                                    to_unit_qty: 1,
                                     description: "",
                                     is_active: true,
                                     is_default: false
