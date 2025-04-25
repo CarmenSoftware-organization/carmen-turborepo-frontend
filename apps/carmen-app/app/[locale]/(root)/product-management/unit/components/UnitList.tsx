@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Pencil, Trash } from "lucide-react";
+import { SquarePen, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -54,8 +54,8 @@ export default function UnitList({
             return (
                 <TableBody>
                     <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center">
-                            <div className="flex flex-col items-center justify-center gap-2">
+                        <TableCell colSpan={5} className="h-12 text-center">
+                            <div className="flex flex-col items-center justify-center gap-1">
                                 <p className="text-sm text-muted-foreground">No units found</p>
                             </div>
                         </TableCell>
@@ -70,35 +70,37 @@ export default function UnitList({
                     <TableRow
                         key={`unit-row-${unit.id}`}
                         className={cn(
+                            "h-12",
                             !unit.is_active && "line-through opacity-70"
                         )}
                     >
-                        <TableCell className="w-10">{index + 1}</TableCell>
-                        <TableCell className="md:w-56">{unit.name}</TableCell>
-                        <TableCell>{unit.description}</TableCell>
-                        <TableCell>
-                            <Badge variant={unit.is_active ? "default" : "destructive"}>
+                        <TableCell className="w-10 text-center py-2">{index + 1}</TableCell>
+                        <TableCell className="w-32 md:w-40 text-left py-2 truncate">{unit.name}</TableCell>
+                        <TableCell className="text-left py-2 max-w-md truncate hidden md:table-cell">{unit.description}</TableCell>
+                        <TableCell className="w-24 text-left py-2">
+                            <Badge variant={unit.is_active ? "active" : "inactive"}>
                                 {unit.is_active ? 'Active' : 'Inactive'}
                             </Badge>
                         </TableCell>
-                        <TableCell className="text-right">
-                            <div className="flex items-center justify-end">
+                        <TableCell className="w-16 text-right py-2">
+                            <div className="flex items-center justify-end space-x-1">
                                 <Button
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => handleEdit(unit)}
                                     disabled={!unit.is_active}
+                                    className="h-6 w-6"
                                 >
-                                    <Pencil className="h-4 w-4" />
+                                    <SquarePen className="h-3.5 w-3.5" />
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="hover:text-destructive"
+                                    className="text-destructive hover:text-destructive/80 h-6 w-6"
                                     onClick={() => handleDelete(unit)}
                                     disabled={!unit.is_active}
                                 >
-                                    <Trash className="h-4 w-4 text-destructive" />
+                                    <Trash className="h-3.5 w-3.5" />
                                 </Button>
                             </div>
                         </TableCell>
@@ -109,21 +111,21 @@ export default function UnitList({
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
             <div className="relative">
-                <Table>
-                    <TableHeader className="sticky top-0 bg-background">
-                        <TableRow>
-                            <TableHead className="w-10">#</TableHead>
-                            <TableHead className="md:w-56">{t('name')}</TableHead>
-                            <TableHead>{t('description')}</TableHead>
-                            <TableHead>{t('status')}</TableHead>
-                            <TableHead className="text-right">{t('action')}</TableHead>
+                <Table className="border">
+                    <TableHeader className="sticky top-0 bg-muted">
+                        <TableRow className="h-10">
+                            <TableHead className="w-10 text-center py-2">#</TableHead>
+                            <TableHead className="w-32 md:w-40 text-left py-2">{t('name')}</TableHead>
+                            <TableHead className="text-left py-2 hidden md:table-cell">{t('description')}</TableHead>
+                            <TableHead className="w-24 text-left py-2">{t('status')}</TableHead>
+                            <TableHead className="w-16 text-right py-2">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
                 </Table>
-                <ScrollArea className="h-[calc(102vh-300px)] w-full">
-                    <Table>
+                <ScrollArea className="h-[calc(100vh-280px)] w-full">
+                    <Table className="border-collapse">
                         {renderTableContent()}
                     </Table>
                 </ScrollArea>

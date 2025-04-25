@@ -50,9 +50,6 @@ export default function ProductList({
 
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-    console.log('aaaa products', products);
-
-
     const handleSelectItem = (id: string) => {
         setSelectedItems(prev =>
             prev.includes(id)
