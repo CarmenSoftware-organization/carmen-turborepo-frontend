@@ -171,14 +171,14 @@ export default function FormProduct({ mode, initialValues }: Props) {
                     add: order_units.add,
                     update: order_units.update,
                     remove: order_units.remove?.map(item => ({
-                        product_order_unit_id: item.id
+                        product_order_unit_id: item.product_order_unit_id
                     }))
                 },
                 ingredient_units: {
                     add: ingredient_units.add,
                     update: ingredient_units.update,
                     remove: ingredient_units.remove?.map(item => ({
-                        product_ingredient_unit_id: item.id
+                        product_ingredient_unit_id: item.product_ingredient_unit_id
                     }))
                 }
             };

@@ -305,6 +305,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
     const existingOrderUnits = orderUnits?.data || [];
     const newOrderUnits = watch("order_units.add") || [];
     const removedOrderUnits = watch("order_units.remove") || [];
+    const inventoryUnitId = watch("inventory_unit_id");
 
     const { fields: orderUnitFields, append: appendOrderUnit, remove: removeOrderUnit } = useFieldArray({
         control,
@@ -335,9 +336,6 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
         }
     }, [initialValues, setValue]);
 
-    const currentAddFields = watch("order_units.add") || [];
-    const inventoryUnitId = watch("inventory_unit_id");
-
     const filteredUnits: UnitDataDto[] = units
         .filter((unit) => !!unit.id) // Only include units with an id
         .filter((unit) => {
@@ -352,7 +350,8 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
 
     // Auto-initialize and calculate order unit values
     useEffect(() => {
-        // Get the current fields from watch since orderUnitFields might be stale
+        // Get the current fields from watch directly inside the effect
+        const currentAddFields = watch("order_units.add") || [];
 
         currentAddFields.forEach((field, index) => {
             // Always ensure from_unit_id is set to inventoryUnitId
@@ -376,7 +375,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                 }
             }
         });
-    }, [currentAddFields, inventoryUnitId, setValue]);
+    }, [watch, inventoryUnitId, setValue]);
 
     const { append: appendOrderUnitRemove } = useFieldArray({
         control,
