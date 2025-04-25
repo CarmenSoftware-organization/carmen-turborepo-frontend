@@ -71,7 +71,7 @@ export default function DepartmentList({
                             </Badge>
                         </TableCell>
                         <TableCell className="w-20">
-                            <div className="flex items-center justify-end gap-2">
+                            <div className="flex items-center justify-end">
                                 <Button
                                     variant="ghost"
                                     size={'sm'}
