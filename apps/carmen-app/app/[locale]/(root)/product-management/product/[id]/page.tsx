@@ -46,9 +46,6 @@ export default function ProductEdit() {
         return <div>Loading product information...</div>;
     }
 
-    console.log('dddaaa', product);
-
-
     return (
         <>
             <FormProduct mode={formType.VIEW} initialValues={product} />
