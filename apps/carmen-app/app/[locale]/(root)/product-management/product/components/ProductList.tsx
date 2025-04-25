@@ -121,38 +121,45 @@ export default function ProductList({
                         </TableCell>
                         <TableCell>
                             <div className="flex flex-col gap-1">
-                                <span className="font-medium">
-                                    {pd.name}
-                                </span>
+
+                                <div className="flex items-center gap-2">
+                                    <span className="font-semibold">
+                                        {pd.name}
+                                    </span>
+                                    <Badge variant="secondary" className="text-xs rounded-full text-gray-700">
+                                        {pd.code}
+                                    </Badge>
+                                </div>
+
                                 <span className="text-xs text-muted-foreground">
                                     {pd.description}
                                 </span>
                             </div>
                         </TableCell>
-                        <TableCell>{pd.product_category?.name}</TableCell>
-                        <TableCell>{pd.product_sub_category?.name}</TableCell>
-                        <TableCell>{pd.product_item_group?.name}</TableCell>
-                        <TableCell>{pd.inventory_unit_name}</TableCell>
+                        <TableCell className="text-muted-foreground">{pd.product_category?.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{pd.product_sub_category?.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{pd.product_item_group?.name}</TableCell>
+                        <TableCell className="text-muted-foreground">{pd.inventory_unit_name}</TableCell>
                         <TableCell>
-                            <Badge variant={pd.product_status_type === "active" ? "default" : "destructive"}>
+                            <Badge variant={pd.product_status_type === "active" ? "active" : "inactive"}>
                                 {pd.product_status_type === "active" ? "Active" : "Inactive"}
                             </Badge>
                         </TableCell>
                         <TableCell>
                             <div className="flex items-center justify-end">
-                                <Button variant="ghost" size={'sm'} asChild>
+                                <Button variant="ghost" className="w-4 h-4" asChild>
                                     <Link href={`/product-management/product/${pd.id}`}>
-                                        <Eye />
+                                        <Eye className="w-3 h-3 text-muted-foreground" />
                                     </Link>
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size={'sm'}
-                                    className="text-destructive"
+                                    className="text-destructive w-4 h-4 hover:text-destructive/80"
                                     onClick={() => onDelete(pd.id ?? '')}
                                     aria-label={`Delete ${pd.name}`}
                                 >
-                                    <Trash />
+                                    <Trash className="w-3 h-3" />
                                 </Button>
                             </div>
                         </TableCell>

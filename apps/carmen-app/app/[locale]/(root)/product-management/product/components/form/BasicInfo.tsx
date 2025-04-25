@@ -14,7 +14,8 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Pencil, Save, X } from "lucide-react";
+import { ChevronLeft, Pencil, Save, X } from "lucide-react";
+import { useRouter } from "@/lib/navigation";
 
 interface BasicInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -33,6 +34,7 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
     const { units } = useUnit();
     const { itemGroups } = useItemGroup();
     const { watch, setValue } = useFormContext<ProductFormValues>();
+    const router = useRouter();
 
     const [categoryData, setCategoryData] = useState<CategoryData>({
         category: { id: '', name: '' },
@@ -132,47 +134,56 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
         <Card className="p-4">
             <div className="flex flex-row gap-2 justify-between border-b pb-2">
                 <div className="flex gap-6 items-start ">
-                    <FormField
-                        control={control}
-                        name="code"
-                        render={({ field }) => (
-                            <FormItem>
-                                <p className="text-xs text-muted-foreground font-semibold">Product Code</p>
-                                {currentMode === formType.VIEW ? (
-                                    <p className="text-base font-medium">{field.value}</p>
-                                ) : (
-                                    <FormControl>
-                                        <Input placeholder="Enter product code" {...field} />
-                                    </FormControl>
-                                )}
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
 
-                    <div className="flex items-start gap-2">
+                    <div className="flex items-center gap-2">
+                        <Button variant="ghost" size={'sm'} onClick={(e) => {
+                            e.preventDefault();
+                            router.push("/product-management/product");
+                        }}>
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
                         <FormField
                             control={control}
-                            name="name"
+                            name="code"
                             render={({ field }) => (
                                 <FormItem>
-                                    <p className="text-xs text-muted-foreground font-semibold">Product Name</p>
+                                    <p className="text-xs text-muted-foreground font-semibold">Product Code</p>
                                     {currentMode === formType.VIEW ? (
                                         <p className="text-base font-medium">{field.value}</p>
                                     ) : (
                                         <FormControl>
-                                            <Input placeholder="Enter product name" {...field} />
+                                            <Input placeholder="Enter product code" {...field} />
                                         </FormControl>
                                     )}
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        {status && (
-                            <Badge>
-                                {status}
-                            </Badge>
-                        )}
+
+                        <div className="flex items-start gap-2">
+                            <FormField
+                                control={control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <p className="text-xs text-muted-foreground font-semibold">Product Name</p>
+                                        {currentMode === formType.VIEW ? (
+                                            <p className="text-base font-medium">{field.value}</p>
+                                        ) : (
+                                            <FormControl>
+                                                <Input placeholder="Enter product name" {...field} />
+                                            </FormControl>
+                                        )}
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            {status && (
+                                <Badge variant={status === "active" ? "active" : "inactive"}>
+                                    {status}
+                                </Badge>
+                            )}
+                        </div>
                     </div>
                 </div>
 
@@ -180,7 +191,7 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     {currentMode === formType.VIEW ? (
                         <>
                             <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                <ArrowLeft className="h-4 w-4" /> Back
+                                <ChevronLeft className="h-4 w-4" /> Back
                             </Button>
                             <Button variant="default" size={'sm'} onClick={handleEditClick}>
                                 <Pencil className="h-4 w-4" /> Edit
@@ -311,30 +322,25 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     name="inventory_unit_id"
                     render={({ field }) => (
                         <FormItem>
-                            <div className="flex flex-col">
-                                <p className="text-xs text-muted-foreground font-semibold">Primary Inventory Unit</p>
-                                {currentMode === formType.VIEW ? (
-                                    <Badge className="bg-blue-200 text-blue-800 mt-2 w-10 hover:bg-blue-300">
-                                        {units.find(unit => unit.id === field.value)?.name ?? field.value}
-                                    </Badge>
-                                ) : (
-                                    <FormControl>
-                                        <Select onValueChange={field.onChange} value={field.value || ''}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select inventory unit" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {units.map((unit) => (
-                                                    <SelectItem key={unit.id ?? ''} value={unit.id ?? ""}>
-                                                        {unit.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                )}
-                            </div>
-
+                            <p className="text-xs text-muted-foreground font-semibold">Primary Inventory Unit</p>
+                            {currentMode === formType.VIEW ? (
+                                <p className="text-xs">{units.find(unit => unit.id === field.value)?.name ?? field.value}</p>
+                            ) : (
+                                <FormControl>
+                                    <Select onValueChange={field.onChange} value={field.value || ''}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select inventory unit" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {units.map((unit) => (
+                                                <SelectItem key={unit.id ?? ''} value={unit.id ?? ""}>
+                                                    {unit.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                            )}
                             <FormMessage />
                         </FormItem>
                     )}

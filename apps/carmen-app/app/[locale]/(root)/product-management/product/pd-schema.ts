@@ -6,7 +6,7 @@ export const productFormSchema = z.object({
     name: z.string().min(1, "Name is required"),
     code: z.string().min(1, "Code is required"),
     local_name: z.string().min(1, "Local name is required"),
-    description: z.string(),
+    description: z.string().optional(),
     inventory_unit_id: z.string().uuid(),
     product_status_type: z.literal("active"),
     product_info: z.object({
@@ -38,7 +38,7 @@ export const productFormSchema = z.object({
             from_unit_qty: z.number().min(0),
             to_unit_id: z.string().uuid(),
             to_unit_qty: z.number().min(0),
-            description: z.string(),
+            description: z.string().optional(),
             is_active: z.boolean(),
             is_default: z.boolean()
         })),
@@ -48,12 +48,12 @@ export const productFormSchema = z.object({
             from_unit_qty: z.number().min(0),
             to_unit_id: z.string().uuid(),
             to_unit_qty: z.number().min(0),
-            description: z.string(),
+            description: z.string().optional(),
             is_active: z.boolean(),
             is_default: z.boolean()
         })).optional(),
         remove: z.array(z.object({
-            id: z.string().uuid()
+            product_order_unit_id: z.string().uuid()
         })).optional()
     }),
     ingredient_units: z.object({
@@ -62,7 +62,7 @@ export const productFormSchema = z.object({
             from_unit_qty: z.number().min(0),
             to_unit_id: z.string().uuid(),
             to_unit_qty: z.number().min(0),
-            description: z.string(),
+            description: z.string().optional(),
             is_active: z.boolean(),
             is_default: z.boolean()
         })),
@@ -77,7 +77,7 @@ export const productFormSchema = z.object({
             is_default: z.boolean()
         })).optional(),
         remove: z.array(z.object({
-            id: z.string().uuid()
+            product_ingredient_unit_id: z.string().uuid()
         })).optional()
     }),
     product_category: z.object({
@@ -127,7 +127,7 @@ export interface ProductInitialValues {
             from_unit_qty: number;
             to_unit_id: string;
             to_unit_qty: number;
-            description: string;
+            description?: string;
             is_active: boolean;
             is_default: boolean;
         }[];
@@ -137,11 +137,11 @@ export interface ProductInitialValues {
             from_unit_qty: number;
             to_unit_id: string;
             to_unit_qty: number;
-            description: string;
+            description?: string;
             is_active: boolean;
             is_default: boolean;
         }[];
-        remove?: { id: string; }[];
+        remove?: { product_order_unit_id: string; }[];
     } | Array<{
         id: string;
         from_unit_id: string;
@@ -155,7 +155,7 @@ export interface ProductInitialValues {
             from_unit_qty: number;
             to_unit_id: string;
             to_unit_qty: number;
-            description: string;
+            description?: string;
             is_active: boolean;
             is_default: boolean;
         }[];
@@ -165,11 +165,11 @@ export interface ProductInitialValues {
             from_unit_qty: number;
             to_unit_id: string;
             to_unit_qty: number;
-            description: string;
+            description?: string;
             is_active: boolean;
             is_default: boolean;
         }[];
-        remove?: { id: string; }[];
+        remove?: { product_ingredient_unit_id: string; }[];
     } | Array<{
         id: string;
         from_unit_id: string;

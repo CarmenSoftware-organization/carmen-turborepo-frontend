@@ -3,7 +3,7 @@ import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Check, PenIcon, Plus, Trash, X } from "lucide-react";
+import { Check, SquarePen, Plus, Trash, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useUnit } from "@/hooks/useUnit";
@@ -85,7 +85,7 @@ interface OrderUnitsFormData {
         is_active: boolean;
         is_default: boolean;
     }[];
-    remove: { id: string }[];
+    remove: { product_order_unit_id: string }[];
 }
 
 const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
@@ -96,7 +96,9 @@ const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
     getUnitName: (id: string) => string;
 }) => (
     <>
-        <TableCell className="text-left w-24 font-medium">{getUnitName(orderUnit.from_unit_id)}</TableCell>
+        <TableCell className="text-left w-24 font-medium">
+            {orderUnit.from_unit_qty} {getUnitName(orderUnit.from_unit_id)}
+        </TableCell>
         <TableCell className="text-left w-28">
             {orderUnit.to_unit_qty} {getUnitName(orderUnit.to_unit_id)}
         </TableCell>
@@ -109,21 +111,21 @@ const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
         <TableCell className="text-left w-28">
             <div>
                 <p className="text-xs font-medium">{`1 ${getUnitName(orderUnit.from_unit_id)} = ${orderUnit.to_unit_qty} ${getUnitName(orderUnit.to_unit_id)}`}</p>
-                <p className="text-muted-foreground text-[11px]">{`Qty x ${orderUnit.to_unit_qty * orderUnit.from_unit_qty}`}</p>
+                <p className="text-muted-foreground text-[11px]">{`Qty x ${orderUnit.to_unit_qty}`}</p>
             </div>
         </TableCell>
         {currentMode !== formType.VIEW && (
             <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-1">
+                <div className="flex items-center justify-end">
                     <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={onEdit}
-                        className="text-blue-500 rounded-full p-2"
                         aria-label="Edit order unit"
+                        className="h-7 w-7"
                     >
-                        <PenIcon className="h-4 w-4" />
+                        <SquarePen className="h-4 w-4" />
                     </Button>
 
                     <AlertDialog>
@@ -132,7 +134,7 @@ const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-500 rounded-full p-2"
+                                className="h-7 w-7 text-destructive hover:text-destructive/80"
                                 aria-label="Remove order unit"
                             >
                                 <Trash className="h-4 w-4" />
@@ -169,13 +171,15 @@ const EditableRow = ({
     onSave,
     onCancel,
     setEditForm,
-    getUnitName
+    getUnitName,
+    units
 }: {
     editForm: OrderUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<OrderUnitData | null>>;
     getUnitName: (id: string) => string;
+    units: any[];
 }) => {
     const handleFieldChange = (field: keyof OrderUnitData, value: string | number | boolean) => {
         if (!editForm) return;
@@ -211,12 +215,36 @@ const EditableRow = ({
     return (
         <>
             <TableCell className="text-left w-24">
-                <p className="font-medium">{getUnitName(editForm?.from_unit_id ?? "")}</p>
+                <div className="flex items-center gap-1">
+                    <p className="text-xs font-medium">{editForm?.from_unit_qty ?? 1}</p>
+                    <p className="text-xs font-medium">
+                        {getUnitName(editForm?.from_unit_id ?? "")}
+                    </p>
+                </div>
             </TableCell>
             <TableCell className="text-left w-28">
                 <div className="flex items-center gap-2">
-                    <span className="font-medium">{editForm?.from_unit_qty}</span>
-                    <span>{getUnitName(editForm?.to_unit_id ?? "")}</span>
+                    <Input
+                        type="number"
+                        value={editForm?.to_unit_qty ?? 1}
+                        onChange={(e) => handleFieldChange('to_unit_qty', Number(e.target.value))}
+                        className="w-16 h-7"
+                    />
+                    <Select
+                        value={editForm?.to_unit_id ?? ""}
+                        onValueChange={(value) => handleFieldChange('to_unit_id', value)}
+                    >
+                        <SelectTrigger className="w-20 h-7">
+                            <SelectValue placeholder="Unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {units.map((unit) => (
+                                <SelectItem key={unit.id} value={unit.id ?? ""}>
+                                    {unit.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
             </TableCell>
             <TableCell className="text-left">
@@ -229,18 +257,18 @@ const EditableRow = ({
                 {editForm?.from_unit_id && editForm?.to_unit_id ? (
                     <div>
                         <p className="text-xs font-medium">{`1 ${getUnitName(editForm.from_unit_id)} = ${editForm.to_unit_qty} ${getUnitName(editForm.to_unit_id)}`}</p>
-                        <p className="text-muted-foreground text-[11px]">{`Qty x ${editForm.to_unit_qty * editForm.from_unit_qty}`}</p>
+                        <p className="text-muted-foreground text-[11px]">{`Qty x ${editForm.to_unit_qty}`}</p>
                     </div>
                 ) : ''}
             </TableCell>
             <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end">
                     <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={onSave}
-                        className="text-green-500 rounded-full p-2"
+                        className="h-7 w-7 text-green-500 hover:text-green-500/80"
                         aria-label="Save changes"
                     >
                         <Check className="h-4 w-4" />
@@ -250,7 +278,7 @@ const EditableRow = ({
                         variant="ghost"
                         size="sm"
                         onClick={onCancel}
-                        className="text-red-500 rounded-full p-2"
+                        className="h-7 w-7 text-destructive hover:text-destructive/80"
                         aria-label="Cancel edit"
                     >
                         <X className="h-4 w-4" />
@@ -284,9 +312,9 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                 data: initialValues.order_units.map((unit) => ({
                     id: unit.id,
                     from_unit_id: unit.from_unit_id,
-                    from_unit_qty: unit.from_unit_qty,
+                    from_unit_qty: unit.from_unit_qty ?? 1,
                     to_unit_id: unit.to_unit_id,
-                    to_unit_qty: unit.to_unit_qty,
+                    to_unit_qty: unit.to_unit_qty ?? 1,
                     description: unit.description ?? '',
                     is_active: unit.is_active ?? true,
                     is_default: unit.is_default ?? false
@@ -300,20 +328,21 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
         }
     }, [initialValues, setValue]);
 
+    const currentAddFields = watch("order_units.add") || [];
+    const inventoryUnitId = watch("inventory_unit_id");
+
     // Auto-initialize and calculate order unit values
     useEffect(() => {
         // Get the current fields from watch since orderUnitFields might be stale
-        const currentAddFields = watch("order_units.add") || [];
-        const inventoryUnitId = watch("inventory_unit_id");
 
         currentAddFields.forEach((field, index) => {
-            const fromUnitId = field.from_unit_id;
-            const toUnitId = field.to_unit_id;
-
-            // If from_unit_id is set but to_unit_id is empty, use inventory_unit_id
-            if (fromUnitId && !toUnitId && inventoryUnitId && fromUnitId !== inventoryUnitId) {
-                setValue(`order_units.add.${index}.to_unit_id`, inventoryUnitId);
+            // Always ensure from_unit_id is set to inventoryUnitId
+            if (inventoryUnitId && (!field.from_unit_id || field.from_unit_id === "")) {
+                setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId);
             }
+
+            const fromUnitId = field.from_unit_id || inventoryUnitId || "";
+            const toUnitId = field.to_unit_id;
 
             // Calculate to_unit_qty if both units are set
             if (fromUnitId && toUnitId) {
@@ -328,7 +357,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                 }
             }
         });
-    }, [watch, setValue]);
+    }, [currentAddFields, inventoryUnitId, setValue]);
 
     const { append: appendOrderUnitRemove } = useFieldArray({
         control,
@@ -342,7 +371,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
 
     // Filter out removed order units
     const displayOrderUnits = existingOrderUnits.filter(
-        orderUnit => !removedOrderUnits.some(removed => removed.id === orderUnit.id)
+        orderUnit => !removedOrderUnits.some(removed => removed.product_order_unit_id === orderUnit.id)
     );
 
     const hasOrderUnits = displayOrderUnits.length > 0 || newOrderUnits.length > 0;
@@ -420,7 +449,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
     };
 
     return (
-        <Card className="p-6 space-y-6">
+        <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">Order Units</h2>
                 {currentMode !== formType.VIEW && (
@@ -429,18 +458,18 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                         variant="default"
                         size="sm"
                         onClick={() => {
-                            const inventoryUnitId = watch("inventory_unit_id");
                             appendOrderUnit({
-                                from_unit_id: "",
+                                from_unit_id: inventoryUnitId ?? "",
                                 from_unit_qty: 1,
-                                to_unit_id: inventoryUnitId || "",
-                                to_unit_qty: 0,
+                                to_unit_id: "",
+                                to_unit_qty: 1,
                                 description: "",
                                 is_active: true,
                                 is_default: false
                             });
                         }}
                         className="flex items-center gap-1.5 px-3"
+                        disabled={!inventoryUnitId}
                     >
                         <Plus className="h-4 w-4" />
                         Add Order Unit
@@ -475,12 +504,13 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                                             }}
                                             setEditForm={setEditForm}
                                             getUnitName={getUnitName}
+                                            units={units}
                                         />
                                     ) : (
                                         <DisplayRow
                                             orderUnit={orderUnit}
                                             onEdit={() => handleStartEdit(orderUnit)}
-                                            onRemove={() => appendOrderUnitRemove({ id: orderUnit.id! })}
+                                            onRemove={() => appendOrderUnitRemove({ product_order_unit_id: orderUnit.id! })}
                                             currentMode={currentMode}
                                             getUnitName={getUnitName}
                                         />
@@ -492,53 +522,103 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                             {orderUnitFields.map((field, index) => (
                                 <TableRow key={field.id}>
                                     <TableCell className="text-left w-24">
-                                        <FormField
-                                            control={control}
-                                            name={`order_units.add.${index}.from_unit_id`}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Select
-                                                            onValueChange={(value) => {
-                                                                field.onChange(value);
-                                                            }}
-                                                            value={field.value}
-                                                        >
-                                                            <SelectTrigger className="w-20 h-9">
-                                                                <SelectValue placeholder="Unit" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {units.map((unit) => (
-                                                                    <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                                                        {unit.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex items-center gap-1">
+                                            <FormField
+                                                control={control}
+                                                name={`order_units.add.${index}.from_unit_qty`}
+                                                render={({ field }) => (
+                                                    <FormItem className="space-y-0">
+                                                        <FormControl>
+
+                                                            <>
+                                                                <p className="text-xs font-medium">
+                                                                    {field.value}
+                                                                </p>
+                                                                <input
+                                                                    type="hidden"
+                                                                    {...field}
+                                                                    value={field.value}
+                                                                />
+                                                            </>
+
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                            <FormField
+                                                control={control}
+                                                name={`order_units.add.${index}.from_unit_id`}
+                                                render={({ field }) => (
+                                                    <FormItem className="space-y-0">
+                                                        <FormControl>
+                                                            <>
+                                                                <p className="text-xs font-medium">
+                                                                    {getUnitName(field.value || inventoryUnitId || "")}
+                                                                </p>
+                                                                <input
+                                                                    type="hidden"
+                                                                    {...field}
+                                                                    value={field.value || inventoryUnitId || ""}
+                                                                />
+                                                            </>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
                                     </TableCell>
-                                    <TableCell className="text-left">
-                                        <FormField
-                                            control={control}
-                                            name={`order_units.add.${index}.to_unit_qty`}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            className="w-16 h-9"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                    <TableCell className="text-left w-28">
+                                        <div className="flex items-center gap-2">
+                                            <FormField
+                                                control={control}
+                                                name={`order_units.add.${index}.to_unit_qty`}
+                                                render={({ field }) => (
+                                                    <FormItem className="space-y-0">
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                className="w-20 h-7"
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={control}
+                                                name={`order_units.add.${index}.to_unit_id`}
+                                                render={({ field }) => (
+                                                    <FormItem >
+                                                        <FormControl>
+                                                            <Select
+                                                                onValueChange={(value) => {
+                                                                    field.onChange(value);
+                                                                }}
+                                                                value={field.value}
+                                                            >
+                                                                <SelectTrigger className="w-20 h-7">
+                                                                    <SelectValue placeholder="Unit" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {units.map((unit) => (
+                                                                        <SelectItem key={unit.id} value={unit.id ?? ""}>
+                                                                            {unit.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
                                     </TableCell>
                                     <TableCell className="text-left">
                                         <FormField
@@ -560,8 +640,8 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                                     <TableCell className="text-left w-28">
                                         {field.from_unit_id && field.to_unit_id ? (
                                             <div>
-                                                <p className="text-xs font-medium">{`1 ${getUnitName(field.from_unit_id)} = ${field.to_unit_qty || 0} ${getUnitName(field.to_unit_id)}`}</p>
-                                                <p className="text-muted-foreground text-[11px]">{`Qty x ${(field.to_unit_qty || 0) * field.from_unit_qty}`}</p>
+                                                <p className="text-xs font-medium">{`1 ${getUnitName(field.from_unit_id)} = ${field.to_unit_qty || 1} ${getUnitName(field.to_unit_id)}`}</p>
+                                                <p className="text-muted-foreground text-[11px]">{`Qty x ${(field.to_unit_qty || 1)}`}</p>
                                             </div>
                                         ) : ''}
                                     </TableCell>
@@ -593,18 +673,18 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                             variant="outline"
                             size="sm"
                             onClick={() => {
-                                const inventoryUnitId = watch("inventory_unit_id");
                                 appendOrderUnit({
-                                    from_unit_id: "",
+                                    from_unit_id: inventoryUnitId ?? "",
                                     from_unit_qty: 1,
-                                    to_unit_id: inventoryUnitId || "",
-                                    to_unit_qty: 0,
+                                    to_unit_id: "",
+                                    to_unit_qty: 1,
                                     description: "",
                                     is_active: true,
                                     is_default: false
                                 });
                             }}
                             className="flex items-center gap-1.5"
+                            disabled={!inventoryUnitId}
                         >
                             <Plus className="h-4 w-4" />
                             Add First Order Unit

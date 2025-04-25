@@ -154,6 +154,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
     });
 
     const onSubmit = async (data: ProductFormValues) => {
+
+        console.log('data submit', data);
         try {
             // Create a copy of the data and remove .data properties
             const { locations, order_units, ingredient_units, ...restData } = data;
@@ -168,12 +170,16 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 order_units: {
                     add: order_units.add,
                     update: order_units.update,
-                    remove: order_units.remove
+                    remove: order_units.remove?.map(item => ({
+                        product_order_unit_id: item.id
+                    }))
                 },
                 ingredient_units: {
                     add: ingredient_units.add,
                     update: ingredient_units.update,
-                    remove: ingredient_units.remove
+                    remove: ingredient_units.remove?.map(item => ({
+                        product_ingredient_unit_id: item.id
+                    }))
                 }
             };
 

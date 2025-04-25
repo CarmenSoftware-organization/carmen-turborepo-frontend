@@ -3,7 +3,7 @@ import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Check, PenIcon, Plus, Trash2, X } from "lucide-react";
+import { Check, Plus, SquarePen, Trash, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useUnit } from "@/hooks/useUnit";
@@ -72,8 +72,9 @@ interface IngredientUnitFormData {
     is_default: boolean;
 }
 
+// Interface to match schema but with optional data field for internal use
 interface IngredientUnitsFormData {
-    data: IngredientUnitData[];
+    data?: IngredientUnitData[];
     add: IngredientUnitFormData[];
     update: {
         product_ingredient_unit_id: string;
@@ -85,7 +86,7 @@ interface IngredientUnitsFormData {
         is_active: boolean;
         is_default: boolean;
     }[];
-    remove: { id: string }[];
+    remove: { product_ingredient_unit_id: string }[];
 }
 
 const EditableRow = ({
@@ -93,13 +94,15 @@ const EditableRow = ({
     onSave,
     onCancel,
     setEditForm,
-    getUnitName
+    getUnitName,
+    units
 }: {
     editForm: IngredientUnitData | null;
     onSave: () => void;
     onCancel: () => void;
     setEditForm: React.Dispatch<React.SetStateAction<IngredientUnitData | null>>;
     getUnitName: (id: string) => string;
+    units: any[];
 }) => {
     const handleFieldChange = (field: keyof IngredientUnitData, value: string | number | boolean) => {
         if (!editForm) return;
@@ -115,25 +118,29 @@ const EditableRow = ({
                 </div>
             </TableCell>
             <TableCell className="text-left w-24">
-                <Select
-                    value={editForm?.to_unit_id}
-                    onValueChange={(value) => handleFieldChange('to_unit_id', value)}
-                >
-                    <SelectTrigger className="w-20 h-9">
-                        <SelectValue placeholder="Unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {Array.isArray(editForm?.to_unit_id) ? [] : null}
-                    </SelectContent>
-                </Select>
-            </TableCell>
-            <TableCell className="text-left w-16">
-                <Input
-                    type="number"
-                    className="w-16 h-9"
-                    value={editForm?.to_unit_qty}
-                    onChange={(e) => handleFieldChange('to_unit_qty', Number(e.target.value))}
-                />
+                <div className="flex items-center gap-2">
+                    <Input
+                        type="number"
+                        className="w-16 h-7"
+                        value={editForm?.to_unit_qty}
+                        onChange={(e) => handleFieldChange('to_unit_qty', Number(e.target.value))}
+                    />
+                    <Select
+                        value={editForm?.to_unit_id}
+                        onValueChange={(value) => handleFieldChange('to_unit_id', value)}
+                    >
+                        <SelectTrigger className="w-20 h-7">
+                            <SelectValue placeholder="Unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {units.map((unit) => (
+                                <SelectItem key={unit.id} value={unit.id ?? ""}>
+                                    {unit.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </TableCell>
             <TableCell className="text-left w-16">
                 <Switch checked={editForm?.is_default} onCheckedChange={() => handleFieldChange('is_default', !editForm?.is_default)} />
@@ -147,13 +154,13 @@ const EditableRow = ({
                 ) : ''}
             </TableCell>
             <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-2">
+                <div className="flex items-center justify-end gap-1">
                     <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={onSave}
-                        className="text-green-500 rounded-full p-2"
+                        className="h-7 w-7 text-green-500 hover:text-green-500/80"
                         aria-label="Save changes"
                     >
                         <Check className="h-4 w-4" />
@@ -163,7 +170,7 @@ const EditableRow = ({
                         variant="ghost"
                         size="sm"
                         onClick={onCancel}
-                        className="text-red-500 rounded-full p-2"
+                        className="h-7 w-7 text-destructive hover:text-destructive/80"
                         aria-label="Cancel edit"
                     >
                         <X className="h-4 w-4" />
@@ -214,10 +221,10 @@ const DisplayRow = ({ ingredientUnit, onEdit, onRemove, currentMode, getUnitName
                             variant="ghost"
                             size="sm"
                             onClick={onEdit}
-                            className="text-blue-500 rounded-full p-2"
-                            aria-label="Edit ingredient unit"
+                            aria-label="Edit order unit"
+                            className="h-7 w-7"
                         >
-                            <PenIcon className="h-4 w-4" />
+                            <SquarePen className="h-4 w-4" />
                         </Button>
                     )}
 
@@ -227,10 +234,10 @@ const DisplayRow = ({ ingredientUnit, onEdit, onRemove, currentMode, getUnitName
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-500 rounded-full p-2"
+                                className="h-7 w-7 text-destructive hover:text-destructive/80"
                                 aria-label="Remove ingredient unit"
                             >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash className="h-4 w-4" />
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="max-w-md">
@@ -264,7 +271,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
     const { watch, setValue } = useFormContext<ProductFormValues>();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<IngredientUnitData | null>(null);
-    const ingredientUnits = watch("ingredient_units") as IngredientUnitsFormData;
+    const ingredientUnits = watch("ingredient_units") as unknown as IngredientUnitsFormData;
     const existingIngredientUnits = ingredientUnits?.data || [];
     const removedIngredientUnits = watch("ingredient_units.remove") || [];
 
@@ -285,7 +292,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
 
     // Filter out removed ingredient units
     const displayIngredientUnits = existingIngredientUnits.filter(
-        ingredientUnit => !removedIngredientUnits.some(removed => removed.id === ingredientUnit.id)
+        ingredientUnit => !removedIngredientUnits.some(removed => removed.product_ingredient_unit_id === ingredientUnit.id)
     );
 
     const hasIngredientUnits = displayIngredientUnits.length > 0 || ingredientUnitFields.length > 0;
@@ -315,7 +322,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
         };
 
         // Update the form state
-        const currentIngredientUnits = watch("ingredient_units") as IngredientUnitsFormData;
+        const currentIngredientUnits = watch("ingredient_units") as unknown as IngredientUnitsFormData;
         if (currentIngredientUnits?.data) {
             // Update the data array for UI
             const updatedData = currentIngredientUnits.data.map((item: IngredientUnitData) =>
@@ -333,17 +340,15 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                     : item
             );
 
-            // Update the form state
+            // Update the form state - only send properties allowed by schema
             setValue("ingredient_units", {
                 add: [],
                 remove: currentIngredientUnits.remove || [],
                 update: [...(currentIngredientUnits.update || []), updatedIngredientUnit]
             });
 
-            // Force update the display data
-            const newIngredientUnits = { ...currentIngredientUnits };
-            newIngredientUnits.data = updatedData;
-            setValue("ingredient_units", newIngredientUnits);
+            // Keep the complete data structure for local use
+            currentIngredientUnits.data = updatedData;
         }
 
         appendIngredientUnitUpdate(updatedIngredientUnit);
@@ -352,7 +357,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
     };
 
     return (
-        <Card className="p-6 space-y-6">
+        <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">Ingredient Units</h2>
                 {currentMode !== formType.VIEW && (
@@ -405,12 +410,13 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                             }}
                                             setEditForm={setEditForm}
                                             getUnitName={getUnitName}
+                                            units={units}
                                         />
                                     ) : (
                                         <DisplayRow
                                             ingredientUnit={ingredientUnit}
                                             onEdit={() => handleStartEdit(ingredientUnit)}
-                                            onRemove={() => appendIngredientUnitRemove({ id: ingredientUnit.id! })}
+                                            onRemove={() => appendIngredientUnitRemove({ product_ingredient_unit_id: ingredientUnit.id! })}
                                             currentMode={currentMode}
                                             getUnitName={getUnitName}
                                         />
@@ -429,49 +435,51 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                     </TableCell>
 
                                     <TableCell className="text-left w-16">
-                                        <FormField
-                                            control={control}
-                                            name={`ingredient_units.add.${index}.to_unit_qty`}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            className="w-16 h-9"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </TableCell>
 
-                                    <TableCell className="text-left w-24">
-                                        <FormField
-                                            control={control}
-                                            name={`ingredient_units.add.${index}.to_unit_id`}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger className="w-20 h-9">
-                                                                <SelectValue placeholder="Unit" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {units.map((unit) => (
-                                                                    <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                                                        {unit.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                        <div className="flex items-center gap-2">
+                                            <FormField
+                                                control={control}
+                                                name={`ingredient_units.add.${index}.to_unit_qty`}
+                                                render={({ field }) => (
+                                                    <FormItem className="space-y-0">
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                className="w-16 h-7"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                            <FormField
+                                                control={control}
+                                                name={`ingredient_units.add.${index}.to_unit_id`}
+                                                render={({ field }) => (
+                                                    <FormItem className="space-y-0">
+                                                        <FormControl>
+                                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                                <SelectTrigger className="w-20 h-7">
+                                                                    <SelectValue placeholder="Unit" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {units.map((unit) => (
+                                                                        <SelectItem key={unit.id} value={unit.id ?? ""}>
+                                                                            {unit.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+
                                     </TableCell>
 
 
@@ -504,10 +512,10 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => removeIngredientUnit(index)}
-                                                className="text-red-500 rounded-full p-2"
                                                 aria-label="Remove ingredient unit"
+                                                className="h-7 w-7 text-destructive hover:text-destructive/80"
                                             >
-                                                <Trash2 className="h-4 w-4" />
+                                                <Trash className="h-4 w-4" />
                                             </Button>
                                         </TableCell>
                                     )}
