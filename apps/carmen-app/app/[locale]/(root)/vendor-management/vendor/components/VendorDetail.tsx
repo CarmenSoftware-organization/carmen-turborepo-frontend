@@ -53,7 +53,7 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
     return (
         <div className="p-2 space-y-2">
             <Card>
-                <CardHeader className="pb-3">
+                <CardHeader className="p-4">
                     <div className="flex justify-between items-start">
                         <div>
                             <div className="flex items-center justify-between">
@@ -63,12 +63,12 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
                                     </Button>
-                                    <CardTitle className="text-2xl font-bold">{initialValues?.name}</CardTitle>
+                                    <CardTitle className="text-xl font-bold">{initialValues?.name}</CardTitle>
                                     <Badge variant={initialValues?.is_active ? "active" : "inactive"}>{initialValues?.is_active ? "Active" : "Inactive"}</Badge>
                                 </div>
 
                             </div>
-                            <CardDescription className="mt-2">{initialValues?.description}</CardDescription>
+                            <CardDescription className="my-1 mx-4">{initialValues?.description}</CardDescription>
                         </div>
                         <Button
                             variant="default"
@@ -85,23 +85,12 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                                <Building2 className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium">Vendor Code:</span>
-                                <span className="text-sm">{initialValues?.info?.[0]?.value}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Globe className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium">Website:</span>
-                                {initialValues?.info?.[1]?.value && (
-                                    <Link
-                                        href={initialValues.info[1].value}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm text-primary hover:underline"
-                                    >
-                                        {initialValues.info[1].value}
-                                    </Link>
-                                )}
+                                {initialValues?.info?.map((info, index) => (
+                                    <div key={index} className="flex items-center gap-2">
+                                        <span className="text-xs font-medium">{info.label}:</span>
+                                        <span className="text-xs">{info.value ? info.value : "-"}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -113,76 +102,73 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
                     <CardTitle className="text-xl">Address Information</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    {initialValues?.vendor_address && initialValues.vendor_address.map((address, index) => (
-                        <div key={index} className="space-y-3">
-                            <div className="flex items-start gap-2">
-                                <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-                                <div>
-                                    <div className="font-medium">
-                                        {address.address_type === "contact_address" ? "Contact Address" : address.address_type}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground mt-1">
-                                        〒{address.address.postal_code}
-                                        <br />
-                                        {address.address.province}
-                                        {address.address.district}
-                                        {address.address.sub_district}
-                                        <br />
-                                        {address.address.line_1}
-                                        <br />
-                                        {address.address.line_2}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {initialValues?.vendor_address && initialValues.vendor_address.map((address, index) => (
+                            <div key={index} className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                    <MapPin className="h-4 w-4 text-muted-foreground" />
+                                    <div>
+                                        <div className="font-medium">
+                                            {address.address_type === "contact_address" ? "Contact Address" : address.address_type}
+                                        </div>
+                                        <div className="text-xs text-muted-foreground">
+                                            {address.address.postal_code}
+                                            <br />
+                                            {address.address.province}
+                                            {address.address.district}
+                                            {address.address.sub_district}
+                                            <br />
+                                            {address.address.line_1}
+                                            <br />
+                                            {address.address.line_2}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Map placeholder - in a real app, you might integrate with Google Maps or similar */}
-                            <div className="mt-4 bg-muted rounded-md h-48 flex items-center justify-center">
-                                <span className="text-muted-foreground">Map</span>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+
+                        {initialValues?.vendor_contact && initialValues.vendor_contact.length > 0 && (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {initialValues.vendor_contact.map((contact, index) => (
+                                    <div key={index} className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            {contact.contact_type === "phone" ? (
+                                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                            ) : (
+                                                <Mail className="h-4 w-4 text-muted-foreground" />
+                                            )}
+                                            <span className="text-xs font-medium">{contact.description}</span>
+                                        </div>
+                                        <Separator />
+                                        <div>
+                                            {contact.info.map((info, infoIndex) => (
+                                                <div key={infoIndex} className="flex flex-col gap-1">
+                                                    <span className="text-xs text-muted-foreground">{info.label}</span>
+                                                    {contact.contact_type === "phone" ? (
+                                                        <Link href={`tel:${info.value}`} className="text-xs text-primary hover:underline">
+                                                            {info.value}
+                                                        </Link>
+                                                    ) : (
+                                                        <Link href={`mailto:${info.value}`} className="text-xs text-primary hover:underline">
+                                                            {info.value}
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                    <div className="bg-muted rounded-md h-48 flex items-center justify-center mt-4">
+                        <span className="text-muted-foreground">Map</span>
+                    </div>
+
                 </CardContent>
             </Card>
-            {initialValues?.vendor_contact && initialValues.vendor_contact.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-xl">Contact Information</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {initialValues.vendor_contact.map((contact, index) => (
-                                <div key={index} className="space-y-2">
-                                    <div className="flex items-center gap-2">
-                                        {contact.contact_type === "phone" ? (
-                                            <Phone className="h-5 w-5 text-muted-foreground" />
-                                        ) : (
-                                            <Mail className="h-5 w-5 text-muted-foreground" />
-                                        )}
-                                        <span className="font-medium">{contact.description}</span>
-                                    </div>
-                                    <Separator />
-                                    <div className="pt-2">
-                                        {contact.info.map((info, infoIndex) => (
-                                            <div key={infoIndex} className="flex flex-col gap-1">
-                                                <span className="text-sm text-muted-foreground">{info.label}</span>
-                                                {contact.contact_type === "phone" ? (
-                                                    <Link href={`tel:${info.value}`} className="text-primary hover:underline">
-                                                        {info.value}
-                                                    </Link>
-                                                ) : (
-                                                    <Link href={`mailto:${info.value}`} className="text-primary hover:underline">
-                                                        {info.value}
-                                                    </Link>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            )}
+
 
             {/* Vendor Edit Dialog */}
             {vendorData && (

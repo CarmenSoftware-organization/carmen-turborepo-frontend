@@ -33,7 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { ChevronLeft, Plus, Trash } from "lucide-react";
+import { ChevronLeft, Plus, Save, Trash } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@/lib/navigation";
 import { Switch } from "@/components/ui/switch";
@@ -107,17 +107,19 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
             <Card>
                 <CardContent>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
 
-                            <div className="flex justify-end space-x-2 pt-4">
+                            <div className="flex justify-end gap-2 pt-4">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={handleCancel}
+                                    size="sm"
                                 >
                                     {tCommon('cancel')}
                                 </Button>
-                                <Button type="submit" disabled={loading}>
+                                <Button type="submit" disabled={loading} size="sm">
+                                    <Save className="mr-1 h-4 w-4" />
                                     {submitButtonText}
                                 </Button>
 
@@ -127,7 +129,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Name *</FormLabel>
+                                        <FormLabel>Name</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Enter vendor name" {...field} />
                                         </FormControl>
@@ -179,10 +181,10 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                             {/* Info Section */}
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <FormLabel className="text-lg">Information</FormLabel>
+                                    <FormLabel className="text-base">Information</FormLabel>
                                     <Button
                                         type="button"
-                                        variant="outline"
+                                        variant="default"
                                         size="sm"
                                         onClick={() => {
                                             const currentInfo = form.getValues("info") || [];
@@ -192,7 +194,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                             ]);
                                         }}
                                     >
-                                        <Plus className="mr-1 h-4 w-4" /> Add Info
+                                        <Plus className="h-4 w-4" /> Add Info
                                     </Button>
                                 </div>
 
@@ -208,6 +210,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                                         const currentInfo = form.getValues("info") || [];
                                                         form.setValue("info", currentInfo.filter((_, i) => i !== index));
                                                     }}
+                                                    className="w-7 h-7 text-destructive hover:text-destructive/80"
                                                 >
                                                     <Trash className="h-4 w-4" />
                                                 </Button>
@@ -271,10 +274,10 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                             {/* Vendor Address Section */}
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <FormLabel className="text-lg">Vendor Addresses</FormLabel>
+                                    <FormLabel className="text-base">Vendor Addresses</FormLabel>
                                     <Button
                                         type="button"
-                                        variant="outline"
+                                        variant="default"
                                         size="sm"
                                         onClick={() => {
                                             const currentAddresses = form.getValues("vendor_address") || [];
@@ -295,7 +298,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                             ]);
                                         }}
                                     >
-                                        <Plus className="mr-1 h-4 w-4" /> Add Address
+                                        <Plus className="h-4 w-4" /> Add Address
                                     </Button>
                                 </div>
 
@@ -311,6 +314,8 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                                         const currentAddresses = form.getValues("vendor_address") || [];
                                                         form.setValue("vendor_address", currentAddresses.filter((_, i) => i !== index));
                                                     }}
+                                                    className="w-7 h-7 text-destructive hover:text-destructive/80"
+
                                                 >
                                                     <Trash className="h-4 w-4" />
                                                 </Button>
@@ -416,24 +421,24 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                             {/* Vendor Contact Section */}
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <FormLabel className="text-lg">Vendor Contacts</FormLabel>
+                                    <FormLabel className="text-base">Vendor Contacts</FormLabel>
                                     <Button
                                         type="button"
-                                        variant="outline"
+                                        variant="default"
                                         size="sm"
                                         onClick={() => {
                                             const currentContacts = form.getValues("vendor_contact") || [];
                                             form.setValue("vendor_contact", [
                                                 ...currentContacts,
                                                 {
-                                                    contact_type: "",
+                                                    contact_type: "phone",
                                                     description: "",
                                                     info: []
                                                 }
                                             ]);
                                         }}
                                     >
-                                        <Plus className="mr-1 h-4 w-4" /> Add Contact
+                                        <Plus className="h-4 w-4" /> Add Contact
                                     </Button>
                                 </div>
 
@@ -449,6 +454,8 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                                         const currentContacts = form.getValues("vendor_contact") || [];
                                                         form.setValue("vendor_contact", currentContacts.filter((_, i) => i !== index));
                                                     }}
+                                                    className="w-7 h-7 text-destructive hover:text-destructive/80"
+
                                                 >
                                                     <Trash className="h-4 w-4" />
                                                 </Button>
@@ -461,7 +468,14 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                                         <FormItem>
                                                             <FormLabel>Contact Type</FormLabel>
                                                             <FormControl>
-                                                                <Input {...field} />
+                                                                <select
+                                                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                                                    {...field}
+                                                                >
+                                                                    <option value="">Select type</option>
+                                                                    <option value="phone">Phone</option>
+                                                                    <option value="email">Email</option>
+                                                                </select>
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -488,7 +502,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                                     <FormLabel>Contact Information</FormLabel>
                                                     <Button
                                                         type="button"
-                                                        variant="outline"
+                                                        variant="default"
                                                         size="sm"
                                                         onClick={() => {
                                                             const currentContactInfo = form.getValues(`vendor_contact.${index}.info`) || [];
@@ -498,7 +512,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                                             ]);
                                                         }}
                                                     >
-                                                        <Plus className="mr-1 h-4 w-4" /> Add Info
+                                                        <Plus className="h-4 w-4" /> Add Info
                                                     </Button>
                                                 </div>
 
@@ -516,6 +530,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                                                         currentContactInfo.filter((_, i) => i !== infoIndex)
                                                                     );
                                                                 }}
+                                                                className="w-7 h-7 text-destructive hover:text-destructive/80"
                                                             >
                                                                 <Trash className="h-4 w-4" />
                                                             </Button>
@@ -578,8 +593,6 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                     </Card>
                                 ))}
                             </div>
-
-
                         </form>
                     </Form>
                 </CardContent>
