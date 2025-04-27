@@ -5,7 +5,7 @@ interface ModuleItem {
     children?: ModuleItem[];
 }
 
-import { ShoppingCart, Settings, Package, Users, Store, CalendarClock, Factory, BarChart2, DollarSign, HelpCircle } from "lucide-react";
+import { ShoppingCart, Settings, Package, Users, Store, CalendarClock, Factory, BarChart2, DollarSign, HelpCircle, User } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
     {
@@ -379,6 +379,11 @@ export const moduleItems: ModuleItem[] = [
                 href: "/system-integration/pos",
             },
         ]
+    },
+    {
+        labelKey: "Modules.profile",
+        href: "/profile",
+        icon: User,
     }
 ];
 

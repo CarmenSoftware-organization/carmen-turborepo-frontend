@@ -89,6 +89,7 @@ export const useVendor = (token: string, tenantId: string) => {
                 id: vendorToDelete.id,
                 name: vendorToDelete.name,
                 info: vendorToDelete.info,
+                is_active: vendorToDelete.is_active,
                 vendor_address: [],
                 vendor_contact: []
             };

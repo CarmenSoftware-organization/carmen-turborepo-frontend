@@ -157,7 +157,8 @@
     "systemIntegration": "การรวมระบบ",
     "SystemIntegration": {
       "pos": "ระบบสะสมคะแนน"
-    }
+    },
+    "profile": "โปรไฟล์"
   },
   "Error": {
     "notFoundTitle": "ไม่พบหน้า",

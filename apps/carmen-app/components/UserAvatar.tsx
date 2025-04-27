@@ -11,7 +11,8 @@ import {
     DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "./ui/avatar";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
+import { Link } from "@/lib/navigation";
 
 export default function UserAvatar() {
     const { logout, user } = useAuth();
@@ -54,9 +55,17 @@ export default function UserAvatar() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                     className="cursor-pointer"
+                >
+                    <Link href="/profile" className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span>Profile</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    className="cursor-pointer"
                     onClick={logout}
                 >
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <LogOut className="h-4 w-4" />
                     <span>Logout</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>

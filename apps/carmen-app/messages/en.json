@@ -163,7 +163,8 @@
     "systemIntegration": "System Integration",
     "SystemIntegration": {
       "pos": "POS Integrations"
-    }
+    },
+    "profile": "Profile"
   },
   "UserManagement": {
     "title": "User Management"
