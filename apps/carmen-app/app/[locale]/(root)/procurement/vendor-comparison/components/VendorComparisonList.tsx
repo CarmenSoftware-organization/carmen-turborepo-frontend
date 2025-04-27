@@ -18,9 +18,10 @@ export default function VendorComparisonList({ vendorComparisons }: VendorCompar
     return (
         <div className="space-y-4">
             <div className="hidden md:block">
-                <Table>
+                <Table className="border">
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="bg-muted">
+                            <TableHead className="w-10 text-center">#</TableHead>
                             <TableHead>Vendor</TableHead>
                             <TableHead>Status</TableHead>
                             <TableHead>Rating</TableHead>
@@ -31,11 +32,12 @@ export default function VendorComparisonList({ vendorComparisons }: VendorCompar
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {vendorComparisons.map((vendorComparison) => (
+                        {vendorComparisons.map((vendorComparison, index) => (
                             <TableRow key={vendorComparison.id}>
+                                <TableCell className="text-center">{index + 1}</TableCell>
                                 <TableCell>{vendorComparison.vendor_name}</TableCell>
                                 <TableCell>
-                                    <Badge variant={vendorComparison.status ? 'default' : 'destructive'}>
+                                    <Badge variant={vendorComparison.status ? 'active' : 'inactive'}>
                                         {vendorComparison.status ? 'Active' : 'Inactive'}
                                     </Badge>
                                 </TableCell>
@@ -49,10 +51,10 @@ export default function VendorComparisonList({ vendorComparisons }: VendorCompar
                                 <TableCell>{vendorComparison.score}%</TableCell>
                                 <TableCell>{vendorComparison.res_time}</TableCell>
                                 <TableCell className="text-right">
-                                    <Button size={'sm'} variant={'ghost'}>
+                                    <Button size={'sm'} variant={'ghost'} className="h-7 w-7">
                                         <Eye className="h-4 w-4" />
                                     </Button>
-                                    <Button size={'sm'} variant={'ghost'}>
+                                    <Button size={'sm'} variant={'ghost'} className="h-7 w-7">
                                         <Trash className="h-4 w-4 text-destructive" />
                                     </Button>
                                 </TableCell>

@@ -9,7 +9,7 @@ import {
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, SquarePen, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AccountCodeMappingDto } from "@/dtos/finance.dto";
 
@@ -22,9 +22,9 @@ export default function AccountCodeMappingList({ mappings }: AccountCodeMappingL
         <ScrollArea className="h-[calc(100vh-230px)]">
             <div className="space-y-4">
                 <div className="hidden md:block">
-                    <Table>
+                    <Table className="border">
                         <TableHeader>
-                            <TableRow>
+                            <TableRow className="bg-muted">
                                 <TableHead className="w-10 text-center">#</TableHead>
                                 <TableHead>Location</TableHead>
                                 <TableHead>Category</TableHead>
@@ -46,13 +46,13 @@ export default function AccountCodeMappingList({ mappings }: AccountCodeMappingL
                                     <TableCell>{mapping.account_code}</TableCell>
                                     <TableCell>{mapping.department_count}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon">
+                                        <Button variant="ghost" size="sm" className="h-7 w-7">
                                             <Eye className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon">
-                                            <Pencil className="h-4 w-4" />
+                                        <Button variant="ghost" size="sm" className="h-7 w-7">
+                                            <SquarePen className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon">
+                                        <Button variant="ghost" size="sm" className="h-7 w-7 text-destructive hover:text-destructive/80">
                                             <Trash className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
@@ -78,7 +78,7 @@ export default function AccountCodeMappingList({ mappings }: AccountCodeMappingL
                                             <Eye className="h-4 w-4" />
                                         </Button>
                                         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                            <Pencil className="h-4 w-4" />
+                                            <SquarePen className="h-4 w-4" />
                                         </Button>
                                         <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
                                             <Trash className="h-4 w-4" />

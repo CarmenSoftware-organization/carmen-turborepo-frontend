@@ -64,9 +64,9 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
 
 
             <div className="hidden md:block">
-                <Table>
+                <Table className="border">
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="bg-muted">
                             <TableHead className="w-10 text-center">
                                 <Checkbox
                                     id="select-all"

@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, SquarePen, Trash } from "lucide-react";
 
 interface PurchaseRequestTemplateListProps {
     readonly purchaseRequestTemplates: PurchaseRequestTemplateDto[];
@@ -20,9 +20,9 @@ export default function PurchaseRequestTemplateList({ purchaseRequestTemplates }
     return (
         <div className="space-y-4">
             <div className="hidden md:block">
-                <Table>
+                <Table className="border">
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="bg-muted">
                             <TableHead className="w-10 text-center">#</TableHead>
                             <TableHead>PRT No.</TableHead>
                             <TableHead>Title</TableHead>
@@ -51,13 +51,13 @@ export default function PurchaseRequestTemplateList({ purchaseRequestTemplates }
                                 </TableCell>
                                 <TableCell>
                                     <div className="flex items-center justify-end gap-1">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 ">
                                             <Eye className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                            <Pencil className="h-4 w-4" />
+                                        <Button variant="ghost" size="icon" className="h-7 w-7">
+                                            <SquarePen className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive">
                                             <Trash className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -79,13 +79,13 @@ export default function PurchaseRequestTemplateList({ purchaseRequestTemplates }
                                     <CardTitle className="text-base">{prt.prt_number}</CardTitle>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
                                         <Eye className="h-4 w-4" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                        <Pencil className="h-4 w-4" />
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                        <SquarePen className="h-4 w-4" />
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80">
                                         <Trash className="h-4 w-4" />
                                     </Button>
                                 </div>
