@@ -21,7 +21,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCategoryTree } from "@/hooks/useCategoryTree";
 import { useCategoryDialog } from "@/hooks/useCategoryDialog";
 import { useCategoryDelete } from "@/hooks/useCategoryDelete";
@@ -36,6 +36,14 @@ export default function CategoryComponent() {
         handleDelete: deleteCategory,
         isUnauthorized
     } = useCategory();
+
+
+    // Set dialog to open when unauthorized
+    useEffect(() => {
+        if (isUnauthorized) {
+            setSignInOpen(true);
+        }
+    }, [isUnauthorized]);
 
     const { subCategories, isPending: isSubCategoriesPending, handleSubmit: submitSubCategory } = useSubCategory();
     const { itemGroups, isPending: isItemGroupsPending, handleSubmit: submitItemGroup } = useItemGroup();
@@ -268,14 +276,16 @@ export default function CategoryComponent() {
         }
     };
 
+    if (isUnauthorized) {
+        return <SignInDialog open={signInOpen} onOpenChange={setSignInOpen} />;
+    }
+
     const renderContent = () => {
         if (isLoading) {
             return <div>Loading...</div>;
         }
 
-        if (isUnauthorized) {
-            return <SignInDialog open={signInOpen} onOpenChange={setSignInOpen} />;
-        }
+
 
         // Default return when not loading and authorized
         return (
