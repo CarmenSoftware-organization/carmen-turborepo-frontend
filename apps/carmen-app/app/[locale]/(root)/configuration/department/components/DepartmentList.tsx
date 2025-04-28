@@ -63,7 +63,10 @@ export default function DepartmentList({
                     >
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>
-                            {department.name}
+                            <div>
+                                <p className="text-xs font-medium">{department.name}</p>
+                                <p className="text-xs text-muted-foreground">{department.description}</p>
+                            </div>
                         </TableCell>
                         <TableCell>
                             <Badge variant={department.is_active ? "active" : "inactive"}>

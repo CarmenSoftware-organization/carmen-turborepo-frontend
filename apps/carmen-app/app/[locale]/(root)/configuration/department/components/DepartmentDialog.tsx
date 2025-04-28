@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 interface DepartmentDialogProps {
     readonly open: boolean;
@@ -111,7 +112,7 @@ export default function DepartmentDialog({
                                 <FormItem>
                                     <FormLabel>Description</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Textarea {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

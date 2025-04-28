@@ -39,7 +39,6 @@ export const getCurrenciesService = async (
         return data;
     } catch (error) {
         console.error('Failed to fetch currencies:', error);
-        throw error;
     }
 };
 

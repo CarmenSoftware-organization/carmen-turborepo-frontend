@@ -15,7 +15,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
-
 interface StoreLocationListProps {
     readonly isLoading: boolean;
     readonly storeLocations: StoreLocationDto[];
@@ -33,7 +32,7 @@ export default function StoreLocationList({
     onStatusChange,
     currentPage,
     totalPages,
-    onPageChange
+    onPageChange,
 }: StoreLocationListProps) {
     const t = useTranslations('TableHeader');
 
@@ -52,9 +51,7 @@ export default function StoreLocationList({
                     </TableRow>
                 </TableBody>
             );
-        }
-
-        console.log('storeLocations', storeLocations);
+        };
 
         return (
             <TableBody>
@@ -70,7 +67,9 @@ export default function StoreLocationList({
                             </Badge>
                         </TableCell>
                         <TableCell className="hidden md:table-cell">{storeLocation.description}</TableCell>
-                        <TableCell>{storeLocation.delivery_point.name}</TableCell>
+                        <TableCell className="min-w-[150px]">
+                            {storeLocation.delivery_point?.name}
+                        </TableCell>
                         <TableCell>
                             <Badge variant={storeLocation.is_active ? "active" : "inactive"}>
                                 {storeLocation.is_active ? "Active" : "Inactive"}

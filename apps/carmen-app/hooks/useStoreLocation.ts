@@ -19,10 +19,9 @@ const handleAddStoreLocation = async (token: string, tenantId: string, data: Cre
         location_type: data.location_type,
         description: data.description,
         is_active: data.is_active,
-        info: data.info,
         delivery_point: {
             id: data.delivery_point_id,
-            name: result.delivery_point?.name || '',
+            name: result.delivery_point?.name ?? '',
             is_active: result.delivery_point?.is_active ?? true
         }
     };
@@ -46,7 +45,6 @@ const handleUpdateStoreLocation = async (token: string, tenantId: string, data: 
         location_type: data.location_type,
         description: data.description,
         is_active: data.is_active,
-        info: data.info,
         delivery_point: {
             id: data.delivery_point_id,
             name: result?.delivery_point?.name ?? '',
@@ -64,7 +62,6 @@ const handleUpdateStoreLocationStatus = async (token: string, tenantId: string, 
         location_type: storeLocation.location_type,
         description: storeLocation.description,
         is_active: !storeLocation.is_active,
-        info: storeLocation.info,
         delivery_point_id: storeLocation.delivery_point?.id ?? '',
         id: storeLocation.id
     };

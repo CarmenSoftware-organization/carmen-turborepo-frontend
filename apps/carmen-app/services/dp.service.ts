@@ -12,30 +12,34 @@ export const getAllDeliveryPoints = async (
         filter?: string;
     } = {}
 ) => {
-    const query = new URLSearchParams();
+    try {
+        const query = new URLSearchParams();
 
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
-            query.append(key, String(value));
-        }
-    });
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== '') {
+                query.append(key, String(value));
+            }
+        });
 
-    const queryString = query.toString();
+        const queryString = query.toString();
 
-    const url = queryString
-        ? `${backendApi}/api/config/delivery-point?${queryString}`
-        : `${backendApi}/api/config/delivery-point`;
+        const url = queryString
+            ? `${backendApi}/api/config/delivery-point?${queryString}`
+            : `${backendApi}/api/config/delivery-point`;
 
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    });
-    const data = await response.json();
-    return data;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching delivery points:', error);
+    }
 }
 
 export const createDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {

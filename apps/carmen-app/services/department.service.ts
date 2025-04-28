@@ -10,30 +10,34 @@ export const getAllDepartments = async (token: string, tenantId: string,
         filter?: string;
     } = {}
 ) => {
-    const query = new URLSearchParams();
+    try {
+        const query = new URLSearchParams();
 
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
-            query.append(key, String(value));
-        }
-    });
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== '') {
+                query.append(key, String(value));
+            }
+        });
 
-    const queryString = query.toString();
+        const queryString = query.toString();
 
-    const url = queryString
-        ? `${backendApi}/api/config/departments?${queryString}`
-        : `${backendApi}/api/config/departments`;
+        const url = queryString
+            ? `${backendApi}/api/config/departments?${queryString}`
+            : `${backendApi}/api/config/departments`;
 
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    });
-    const data = await response.json();
-    return data;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch departments:', error);
+    }
 };
 
 export const createDepartment = async (token: string, tenantId: string, department: DepartmentDto) => {

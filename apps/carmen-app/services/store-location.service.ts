@@ -10,30 +10,34 @@ export const getAllStoreLocations = async (token: string, tenantId: string,
         filter?: string;
     } = {}
 ) => {
-    const query = new URLSearchParams();
+    try {
+        const query = new URLSearchParams();
 
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
-            query.append(key, String(value));
-        }
-    });
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== '') {
+                query.append(key, String(value));
+            }
+        });
 
-    const queryString = query.toString();
+        const queryString = query.toString();
 
-    const url = queryString
-        ? `${backendApi}/api/config/locations?${queryString}`
-        : `${backendApi}/api/config/locations`;
+        const url = queryString
+            ? `${backendApi}/api/config/locations?${queryString}`
+            : `${backendApi}/api/config/locations`;
 
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    });
-    const data = await response.json();
-    return data;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+        });
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch store locations:', error);
+    }
 }
 
 export const createStoreLocation = async (token: string, tenantId: string, storeLocation: CreateStoreLocationDto) => {

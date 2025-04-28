@@ -11,33 +11,36 @@ export const getAllVendorService = async (token: string, tenantId: string,
         filter?: string;
     } = {}
 ) => {
-    const query = new URLSearchParams();
+    try {
+        const query = new URLSearchParams();
 
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
-            query.append(key, String(value));
-        }
-    });
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== '') {
+                query.append(key, String(value));
+            }
+        });
 
-    const queryString = query.toString();
+        const queryString = query.toString();
 
-    const url = queryString
-        ? `${backendApi}/api/config/vendors?${queryString}`
-        : `${backendApi}/api/config/vendors`;
+        const url = queryString
+            ? `${backendApi}/api/config/vendors?${queryString}`
+            : `${backendApi}/api/config/vendors`;
 
-    const options = {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    };
+        const options = {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+        };
 
-    const response = await fetch(url, options);
-    const data = await response.json();
-
-    return data;
+        const response = await fetch(url, options);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch vendors:', error);
+    }
 }
 
 export const getVendorIdService = async (token: string, tenantId: string, id: string) => {

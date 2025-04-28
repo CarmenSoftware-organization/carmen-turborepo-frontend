@@ -26,6 +26,7 @@ import { Loader2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
     readonly open: boolean;
@@ -46,14 +47,6 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
         description: '',
         is_active: true,
         delivery_point_id: '',
-        info: {
-            floor: 0,
-            building: '',
-            capacity: 0,
-            responsibleDepartment: '',
-            itemCount: 0,
-            lastCount: ''
-        }
     }), []);
 
     const form = useForm<CreateStoreLocationDto>({
@@ -103,170 +96,108 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="name"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Name</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="location_type"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Location Type</FormLabel>
-                                        <FormControl>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a location type" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value={INVENTORY_TYPE.INVENTORY}>Inventory</SelectItem>
-                                                    <SelectItem value={INVENTORY_TYPE.DIRECT}>Direct</SelectItem>
-                                                    <SelectItem value={INVENTORY_TYPE.CONSIGNMENT}>Consignment</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem className="md:col-span-2">
-                                        <FormLabel>Description</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="info.floor"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Floor</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                {...field}
-                                                onChange={(e) => field.onChange(Number(e.target.value))}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="info.building"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Building</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="info.capacity"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Capacity</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                {...field}
-                                                onChange={(e) => field.onChange(Number(e.target.value))}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="info.responsibleDepartment"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Responsible Department</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="delivery_point_id"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Delivery Point</FormLabel>
-                                        <FormControl>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Select a delivery point" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {deliveryPoints
-                                                        .filter((dp): dp is DeliveryPointDto & { id: string } => !!dp.id)
-                                                        .map((deliveryPoint) => (
-                                                            <SelectItem key={deliveryPoint.id} value={deliveryPoint.id}>
-                                                                {deliveryPoint.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                        <div className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="is_active"
-                                render={({ field }) => (
-                                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                        <div className="space-y-0.5">
-                                            <FormLabel className="text-base">
-                                                Status
-                                            </FormLabel>
-                                        </div>
-                                        <FormControl>
-                                            <Switch
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                                className="data-[state=checked]:bg-blue-600"
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Name</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="location_type"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Location Type</FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a location type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={INVENTORY_TYPE.INVENTORY}>Inventory</SelectItem>
+                                                <SelectItem value={INVENTORY_TYPE.DIRECT}>Direct</SelectItem>
+                                                <SelectItem value={INVENTORY_TYPE.CONSIGNMENT}>Consignment</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+
+                        <FormField
+                            control={form.control}
+                            name="delivery_point_id"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Delivery Point</FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select a delivery point" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {deliveryPoints
+                                                    .filter((dp): dp is DeliveryPointDto & { id: string } => !!dp.id)
+                                                    .map((deliveryPoint) => (
+                                                        <SelectItem key={deliveryPoint.id} value={deliveryPoint.id}>
+                                                            {deliveryPoint.name}
+                                                        </SelectItem>
+                                                    ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem className="md:col-span-2">
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Textarea {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="is_active"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                    <div className="space-y-0.5">
+                                        <FormLabel className="text-base">
+                                            Status
+                                        </FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <Switch
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                            className="data-[state=checked]:bg-blue-600"
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
                         <DialogFooter>
                             <Button
                                 type="button"
