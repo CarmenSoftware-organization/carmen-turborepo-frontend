@@ -237,7 +237,7 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     name="local_name"
                     render={({ field }) => (
                         <FormItem>
-                            <p className="text-xs text-muted-foreground font-semibold">Local Description</p>
+                            <p className="text-xs text-muted-foreground font-semibold">Local Name</p>
                             {currentMode === formType.VIEW ? (
                                 <p className="text-xs">{field.value}</p>
                             ) : (
@@ -322,7 +322,7 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     name="inventory_unit_id"
                     render={({ field }) => (
                         <FormItem>
-                            <p className="text-xs text-muted-foreground font-semibold">Primary Inventory Unit</p>
+                            <p className="text-xs text-muted-foreground font-semibold">Inventory Unit</p>
                             {currentMode === formType.VIEW ? (
                                 <p className="text-xs">{units.find(unit => unit.id === field.value)?.name ?? field.value}</p>
                             ) : (

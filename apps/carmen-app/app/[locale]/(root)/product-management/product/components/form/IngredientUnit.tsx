@@ -404,6 +404,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                             });
                         }}
                         className="flex items-center gap-1.5 px-3"
+                        disabled={!inventoryUnitId}
                     >
                         <Plus className="h-4 w-4" />
                         Add Ingredient Unit
@@ -552,7 +553,11 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-12 px-4">
-                    <p className="text-gray-500 mb-4">No ingredient units defined yet</p>
+                    {!inventoryUnitId ? (
+                        <p className="text-gray-500 mb-4">Please select inventory unit first</p>
+                    ) : (
+                        <p className="text-gray-500 mb-4">No ingredient units defined yet</p>
+                    )}
                 </div>
             )}
         </Card>

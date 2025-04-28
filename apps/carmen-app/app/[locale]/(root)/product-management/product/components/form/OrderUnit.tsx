@@ -150,11 +150,11 @@ const DisplayRow = ({ orderUnit, onEdit, onRemove, currentMode, getUnitName }: {
                             <AlertDialogHeader>
                                 <AlertDialogTitle className="text-xl">Remove Order Unit</AlertDialogTitle>
                                 <AlertDialogDescription className="space-y-2 text-gray-600">
-                                    <p>Are you sure you want to remove this order unit?</p>
+                                    Are you sure you want to remove this order unit?
                                     <div className="mt-2 p-4 space-y-1.5 text-sm">
-                                        <p><span className="font-semibold">From Unit:</span> {getUnitName(orderUnit.from_unit_id)}</p>
-                                        <p><span className="font-semibold">To Unit:</span> {getUnitName(orderUnit.to_unit_id)}</p>
-                                        <p><span className="font-semibold">Description:</span> {orderUnit.description ?? '-'}</p>
+                                        <div><span className="font-semibold">From Unit:</span> {getUnitName(orderUnit.from_unit_id)}</div>
+                                        <div><span className="font-semibold">To Unit:</span> {getUnitName(orderUnit.to_unit_id)}</div>
+                                        <div><span className="font-semibold">Description:</span> {orderUnit.description ?? '-'}</div>
                                     </div>
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
@@ -700,29 +700,10 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                 </div>
             ) : (
                 <div className="flex flex-col items-center justify-center py-12 px-4">
-                    <p className="text-gray-500 mb-4">No order units defined yet</p>
-                    {currentMode !== formType.VIEW && (
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                                appendOrderUnit({
-                                    from_unit_id: "",
-                                    from_unit_qty: 1,
-                                    to_unit_id: inventoryUnitId,
-                                    to_unit_qty: 1,
-                                    description: "",
-                                    is_active: true,
-                                    is_default: false
-                                });
-                            }}
-                            className="flex items-center gap-1.5"
-                            disabled={!inventoryUnitId}
-                        >
-                            <Plus className="h-4 w-4" />
-                            Add First Order Unit
-                        </Button>
+                    {!inventoryUnitId ? (
+                        <p className="text-gray-500 mb-4">Please select inventory unit first</p>
+                    ) : (
+                        <p className="text-gray-500 mb-4">No order units defined yet</p>
                     )}
                 </div>
             )}
