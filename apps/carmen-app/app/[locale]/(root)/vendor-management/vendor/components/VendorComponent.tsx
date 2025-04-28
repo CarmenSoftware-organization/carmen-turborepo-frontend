@@ -15,12 +15,11 @@ import SignInDialog from "@/components/SignInDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 import { useVendor } from "@/hooks/useVendor";
-import { Link, useRouter } from "@/lib/navigation";
+import { Link } from "@/lib/navigation";
 
 export default function VendorComponent() {
     const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
-    const router = useRouter();
     const {
         search,
         setSearch,
@@ -47,7 +46,6 @@ export default function VendorComponent() {
         totalPages,
         sortFields,
         handlePageChange,
-        handleEditClick,
         handleDeleteClick,
         handleConfirmDelete,
         handleFormSuccess

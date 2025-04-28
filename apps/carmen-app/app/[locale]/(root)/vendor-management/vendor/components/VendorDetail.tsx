@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { formType } from "@/dtos/form.dto";
 import { VendorFormDto, VendorGetDto } from "@/dtos/vendor-management";
 import { Link } from "@/lib/navigation";
-import { Building2, ChevronLeft, Globe, Mail, MapPin, Phone, SquarePen } from "lucide-react";
+import { ChevronLeft, Mail, MapPin, Phone, SquarePen } from "lucide-react";
 import VendorFormDialog from "./VendorFormDialog";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -17,6 +16,34 @@ interface FormVendorProps {
     initialValues?: VendorFormDto;
     onSuccess?: () => void;
 }
+
+interface VendorAddressWithId {
+    id: string;
+    address_type: string;
+    address: {
+        line_1: string;
+        line_2: string;
+        sub_district: string;
+        district: string;
+        province: string;
+        postal_code: string;
+        country: string;
+    };
+    is_active: boolean;
+}
+
+interface VendorContactWithId {
+    id: string;
+    contact_type: string;
+    description: string;
+    info: Array<{
+        label: string;
+        value: string;
+        data_type: string;
+    }>;
+    is_active: boolean;
+}
+
 export default function VendorDetail({ initialValues, onSuccess }: FormVendorProps) {
     const [editDialogOpen, setEditDialogOpen] = useState(false);
 
@@ -28,23 +55,21 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
         is_active: initialValues.is_active,
         info: initialValues.info || [],
         vendor_address: initialValues.vendor_address?.map(address => ({
-            id: (address as any).id || uuidv4(),
+            id: (address as VendorAddressWithId).id || uuidv4(),
             address_type: address.address_type,
             address: address.address,
-            is_active: (address as any).is_active || true
+            is_active: (address as VendorAddressWithId).is_active || true
         })),
         vendor_contact: initialValues.vendor_contact?.map(contact => ({
-            id: (contact as any).id || uuidv4(),
+            id: (contact as VendorContactWithId).id || uuidv4(),
             contact_type: contact.contact_type,
             description: contact.description,
             info: contact.info,
-            is_active: (contact as any).is_active || true
+            is_active: (contact as VendorContactWithId).is_active || true
         }))
     } : undefined;
 
     const handleEditSuccess = () => {
-
-
         if (onSuccess) {
             onSuccess();
         }
@@ -66,7 +91,6 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
                                     <CardTitle className="text-xl font-bold">{initialValues?.name}</CardTitle>
                                     <Badge variant={initialValues?.is_active ? "active" : "inactive"}>{initialValues?.is_active ? "Active" : "Inactive"}</Badge>
                                 </div>
-
                             </div>
                             <CardDescription className="my-1 mx-4">{initialValues?.description}</CardDescription>
                         </div>
@@ -124,7 +148,6 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         ))}
 
@@ -165,10 +188,8 @@ export default function VendorDetail({ initialValues, onSuccess }: FormVendorPro
                     <div className="bg-muted rounded-md h-48 flex items-center justify-center mt-4">
                         <span className="text-muted-foreground">Map</span>
                     </div>
-
                 </CardContent>
             </Card>
-
 
             {/* Vendor Edit Dialog */}
             {vendorData && (

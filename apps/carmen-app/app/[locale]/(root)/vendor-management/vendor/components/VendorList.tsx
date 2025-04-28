@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PaginationComponent from "@/components/PaginationComponent";

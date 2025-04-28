@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { VendorFormDto, VendorFormUpdateSchema, VendorGetDto } from "@/dtos/vendor-management";
-import { formType } from "@/dtos/form.dto";
+import { VendorFormDto, VendorFormUpdateSchema } from "@/dtos/vendor-management";
 import { useAuth } from "@/context/AuthContext";
-import { createVendorService, updateVendorService } from "@/services/vendor.service";
+import { createVendorService } from "@/services/vendor.service";
 import { useRouter } from "next/navigation";
 
 import {
@@ -17,25 +16,18 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-    FormDescription,
 } from "@/components/ui/form";
 
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card";
 
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { ChevronLeft, Plus, Save, Trash } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "@/lib/navigation";
+import { Plus, Save, Trash } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 interface VendorFormProps {
@@ -95,8 +87,6 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
     const handleCancel = () => {
         router.push("/vendor-management/vendor");
     };
-
-    const pageTitle = "Add Vendor";
 
     const submitButtonText = loading
         ? "Creating..."
