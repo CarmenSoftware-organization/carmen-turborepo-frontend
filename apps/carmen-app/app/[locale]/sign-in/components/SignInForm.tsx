@@ -7,15 +7,14 @@ import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { Button } from "@/components/ui/button"
-import { PasswordInput } from "@/components/ui-custom/PasswordInput"
 import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { toast } from "sonner";
 import { signInService } from "@/services/auth.service";
+import InputCustom from "@/components/ui-custom/InputCustom";
 
 export default function SignInForm() {
     const [isPending, startTransition] = useTransition()
@@ -86,14 +85,14 @@ export default function SignInForm() {
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('email')}</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    placeholder="email@example.com"
-                                                    type="email"
-                                                    autoComplete="email"
-                                                    disabled={isPending}
+                                                <InputCustom
+                                                    label={t('email')}
+                                                    labelPlacement="inside"
+                                                    placeholder="This shows when input has value"
+                                                    required
                                                     {...field}
+                                                    className="h-10"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -105,14 +104,15 @@ export default function SignInForm() {
                                     name="password"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('password')}</FormLabel>
                                             <FormControl>
-                                                <PasswordInput
-                                                    placeholder="••••••••"
+                                                <InputCustom
+                                                    label={t('password')}
+                                                    labelPlacement="inside"
+                                                    placeholder="This shows when input has value"
+                                                    required
                                                     type="password"
-                                                    autoComplete="current-password"
-                                                    disabled={isPending}
                                                     {...field}
+                                                    className="h-10"
                                                 />
                                             </FormControl>
                                             <FormMessage />
