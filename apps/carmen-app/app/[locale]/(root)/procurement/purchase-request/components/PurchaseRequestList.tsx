@@ -57,7 +57,6 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                             <TableHead>{t('pr_no')}</TableHead>
                             <TableHead>{t('date')}</TableHead>
                             <TableHead>{t('type')}</TableHead>
-                            <TableHead>{t('description')}</TableHead>
                             <TableHead>{t('requestor')}</TableHead>
                             <TableHead>{t('department')}</TableHead>
                             <TableHead>{t('amount')}</TableHead>
@@ -78,8 +77,12 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                                 </TableCell>
                                 <TableCell>{pr.pr_no}</TableCell>
                                 <TableCell>{pr.date_created}</TableCell>
-                                <TableCell>{pr.type}</TableCell>
-                                <TableCell className="w-[300px]">{pr.description}</TableCell>
+                                <TableCell>
+                                    <div className="flex flex-col">
+                                        <p className="text-xs font-semibold">{pr.type}</p>
+                                        <p className="text-xs text-muted-foreground">{pr.description}</p>
+                                    </div>
+                                </TableCell>
                                 <TableCell>{pr.requestor}</TableCell>
                                 <TableCell>{pr.department}</TableCell>
                                 <TableCell>{formatCurrency(pr.amount)}</TableCell>

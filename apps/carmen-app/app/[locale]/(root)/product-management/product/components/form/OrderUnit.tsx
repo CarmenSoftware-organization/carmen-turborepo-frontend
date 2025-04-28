@@ -262,6 +262,7 @@ const EditableRow = ({
                         value={editForm?.to_unit_qty ?? 1}
                         onChange={(e) => handleFieldChange('to_unit_qty', Number(e.target.value))}
                         className="w-16 h-7"
+                        min={1}
                     />
                     <p className="text-xs font-medium">
                         {getUnitName(editForm?.to_unit_id ?? "")}
@@ -642,6 +643,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                                                                     {...field}
                                                                     onChange={(e) => field.onChange(Number(e.target.value))}
                                                                     className="w-20 h-7"
+                                                                    min={1}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />

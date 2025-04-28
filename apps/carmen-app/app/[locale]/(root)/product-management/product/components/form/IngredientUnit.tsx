@@ -145,6 +145,7 @@ const EditableRow = ({
                         className="w-16 h-7"
                         value={editForm?.to_unit_qty}
                         onChange={(e) => handleFieldChange('to_unit_qty', Number(e.target.value))}
+                        min={1}
                     />
                     <Select
                         value={editForm?.to_unit_id}
@@ -492,6 +493,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                                                                     className="w-16 h-7"
                                                                     {...field}
                                                                     onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    min={1}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />

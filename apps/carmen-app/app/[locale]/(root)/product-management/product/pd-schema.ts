@@ -13,11 +13,11 @@ export const productFormSchema = z.object({
         id: z.string().uuid().optional(),
         product_item_group_id: z.string().uuid(),
         is_ingredients: z.boolean(),
-        price: z.number().min(0, "Price must be greater than or equal to 0"),
+        price: z.number().min(0.01, "Price must be greater than or equal to 0.01"),
         tax_type: z.enum(["none", "included", "excluded"]).default("none"),
         tax_rate: z.number().min(0, "Tax rate must be greater than or equal to 0"),
-        price_deviation_limit: z.number().min(0),
-        qty_deviation_limit: z.number().min(0),
+        price_deviation_limit: z.number().min(1, "Price deviation limit must be greater than or equal to 1"),
+        qty_deviation_limit: z.number().min(1, "Quantity deviation limit must be greater than or equal to 1"),
         info: z.array(z.object({
             label: z.string(),
             value: z.string(),
@@ -35,9 +35,9 @@ export const productFormSchema = z.object({
     order_units: z.object({
         add: z.array(z.object({
             from_unit_id: z.string().uuid(),
-            from_unit_qty: z.number().min(0),
+            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
             to_unit_id: z.string().uuid(),
-            to_unit_qty: z.number().min(0),
+            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
             description: z.string().optional(),
             is_active: z.boolean(),
             is_default: z.boolean()
@@ -45,9 +45,9 @@ export const productFormSchema = z.object({
         update: z.array(z.object({
             product_order_unit_id: z.string().uuid(),
             from_unit_id: z.string().uuid(),
-            from_unit_qty: z.number().min(0),
+            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
             to_unit_id: z.string().uuid(),
-            to_unit_qty: z.number().min(0),
+            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
             description: z.string().optional(),
             is_active: z.boolean(),
             is_default: z.boolean()
@@ -59,9 +59,9 @@ export const productFormSchema = z.object({
     ingredient_units: z.object({
         add: z.array(z.object({
             from_unit_id: z.string().uuid(),
-            from_unit_qty: z.number().min(0),
+            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
             to_unit_id: z.string().uuid(),
-            to_unit_qty: z.number().min(0),
+            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
             description: z.string().optional(),
             is_active: z.boolean(),
             is_default: z.boolean()
@@ -69,9 +69,9 @@ export const productFormSchema = z.object({
         update: z.array(z.object({
             product_ingredient_unit_id: z.string().uuid(),
             from_unit_id: z.string().uuid(),
-            from_unit_qty: z.number().min(0),
+            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
             to_unit_id: z.string().uuid(),
-            to_unit_qty: z.number().min(0),
+            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
             description: z.string(),
             is_active: z.boolean(),
             is_default: z.boolean()

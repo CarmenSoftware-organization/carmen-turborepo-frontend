@@ -213,7 +213,8 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     )}
                 </div>
             </div>
-            <div className="grid grid-cols-4 gap-2 pt-2 space-y-2">
+
+            <div className={`grid ${currentMode === formType.EDIT ? 'grid-cols-1' : 'grid-cols-4'} gap-2 pt-2 space-y-2`}>
                 <FormField
                     control={control}
                     name="description"
@@ -237,7 +238,7 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     name="local_name"
                     render={({ field }) => (
                         <FormItem>
-                            <p className="text-xs text-muted-foreground font-semibold">Local Name</p>
+                            <p className="text-xs text-muted-foreground font-semibold">Local Description</p>
                             {currentMode === formType.VIEW ? (
                                 <p className="text-xs">{field.value}</p>
                             ) : (
@@ -249,36 +250,6 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                         </FormItem>
                     )}
                 />
-
-                <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground font-semibold">Category</p>
-                    {currentMode === formType.VIEW ? (
-                        <p className="text-xs">
-                            {categoryData.category.name}
-                        </p>
-                    ) : (
-                        <Input
-                            placeholder="Select Category"
-                            value={categoryData.category.name}
-                            disabled
-                        />
-                    )}
-                </div>
-
-                <div className="space-y-2">
-                    <p className="text-xs text-muted-foreground font-semibold">Sub Category</p>
-                    {currentMode === formType.VIEW ? (
-                        <p className="text-xs">
-                            {categoryData.subCategory.name}
-                        </p>
-                    ) : (
-                        <Input
-                            placeholder="Select Sub Category"
-                            value={categoryData.subCategory.name}
-                            disabled
-                        />
-                    )}
-                </div>
 
                 <FormField
                     control={control}
@@ -317,12 +288,42 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     )}
                 />
 
+                <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground font-semibold">Sub Category</p>
+                    {currentMode === formType.VIEW ? (
+                        <p className="text-xs">
+                            {categoryData.subCategory.name}
+                        </p>
+                    ) : (
+                        <Input
+                            placeholder="Select Sub Category"
+                            value={categoryData.subCategory.name}
+                            disabled
+                        />
+                    )}
+                </div>
+                <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground font-semibold">Category</p>
+                    {currentMode === formType.VIEW ? (
+                        <p className="text-xs">
+                            {categoryData.category.name}
+                        </p>
+                    ) : (
+                        <Input
+                            placeholder="Select Category"
+                            value={categoryData.category.name}
+                            disabled
+                        />
+                    )}
+                </div>
+
+
                 <FormField
                     control={control}
                     name="inventory_unit_id"
                     render={({ field }) => (
                         <FormItem>
-                            <p className="text-xs text-muted-foreground font-semibold">Inventory Unit</p>
+                            <p className="text-xs text-muted-foreground font-semibold">Primary Inventory Unit</p>
                             {currentMode === formType.VIEW ? (
                                 <p className="text-xs">{units.find(unit => unit.id === field.value)?.name ?? field.value}</p>
                             ) : (
