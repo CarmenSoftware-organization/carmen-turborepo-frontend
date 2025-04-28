@@ -187,6 +187,20 @@ const EditableRow = ({
     getUnitName: (id: string) => string;
     filteredUnits: UnitDataDto[];
 }) => {
+    const [conversionPreview, setConversionPreview] = useState<{ unitRatio: string; qtyMultiplier: string }>({
+        unitRatio: '',
+        qtyMultiplier: ''
+    });
+
+    useEffect(() => {
+        if (editForm?.from_unit_id && editForm?.to_unit_id) {
+            setConversionPreview({
+                unitRatio: `1 ${getUnitName(editForm.from_unit_id)} = ${editForm.to_unit_qty} ${getUnitName(editForm.to_unit_id)}`,
+                qtyMultiplier: `Qty x ${editForm.to_unit_qty}`
+            });
+        }
+    }, [editForm?.from_unit_id, editForm?.to_unit_id, editForm?.to_unit_qty, getUnitName]);
+
     const handleFieldChange = (field: keyof OrderUnitData, value: string | number | boolean) => {
         if (!editForm) return;
 
@@ -263,8 +277,8 @@ const EditableRow = ({
             <TableCell className="text-left w-28">
                 {editForm?.from_unit_id && editForm?.to_unit_id ? (
                     <div>
-                        <p className="text-xs font-medium">{`1 ${getUnitName(editForm.from_unit_id)} = ${editForm.to_unit_qty} ${getUnitName(editForm.to_unit_id)}`}</p>
-                        <p className="text-muted-foreground text-[11px]">{`Qty x ${editForm.to_unit_qty}`}</p>
+                        <p className="text-xs font-medium">{conversionPreview.unitRatio}</p>
+                        <p className="text-muted-foreground text-[11px]">{conversionPreview.qtyMultiplier}</p>
                     </div>
                 ) : ''}
             </TableCell>
@@ -553,148 +567,154 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
                             ))}
 
                             {/* New Order Units */}
-                            {orderUnitFields.map((field, index) => (
-                                <TableRow key={field.id}>
-                                    <TableCell className="text-left w-24">
-                                        <div className="flex items-center gap-1">
-                                            <FormField
-                                                control={control}
-                                                name={`order_units.add.${index}.from_unit_qty`}
-                                                render={({ field }) => (
-                                                    <FormItem className="space-y-0">
-                                                        <FormControl>
+                            {orderUnitFields.map((field, index) => {
+                                const currentToUnitQty = watch(`order_units.add.${index}.to_unit_qty`) || 1;
+                                const currentFromUnitId = watch(`order_units.add.${index}.from_unit_id`) || "";
+                                const currentToUnitId = watch(`order_units.add.${index}.to_unit_id`) || inventoryUnitId || "";
 
-                                                            <>
-                                                                <p className="text-xs font-medium">
-                                                                    {field.value}
-                                                                </p>
-                                                                <input
-                                                                    type="hidden"
-                                                                    {...field}
+                                return (
+                                    <TableRow key={field.id}>
+                                        <TableCell className="text-left w-24">
+                                            <div className="flex items-center gap-1">
+                                                <FormField
+                                                    control={control}
+                                                    name={`order_units.add.${index}.from_unit_qty`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="space-y-0">
+                                                            <FormControl>
+
+                                                                <>
+                                                                    <p className="text-xs font-medium">
+                                                                        {field.value}
+                                                                    </p>
+                                                                    <input
+                                                                        type="hidden"
+                                                                        {...field}
+                                                                        value={field.value}
+                                                                    />
+                                                                </>
+
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={control}
+                                                    name={`order_units.add.${index}.from_unit_id`}
+                                                    render={({ field }) => (
+                                                        <FormItem >
+                                                            <FormControl>
+                                                                <Select
+                                                                    onValueChange={(value) => {
+                                                                        field.onChange(value);
+                                                                    }}
                                                                     value={field.value}
+                                                                >
+                                                                    <SelectTrigger className="w-20 h-7">
+                                                                        <SelectValue placeholder="Unit" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        {filteredUnits.map((unit) => (
+                                                                            <SelectItem key={unit.id} value={unit.id ?? ""}>
+                                                                                {unit.name}
+                                                                            </SelectItem>
+                                                                        ))}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-left w-28">
+                                            <div className="flex items-center gap-2">
+                                                <FormField
+                                                    control={control}
+                                                    name={`order_units.add.${index}.to_unit_qty`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="space-y-0">
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    className="w-20 h-7"
                                                                 />
-                                                            </>
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={control}
+                                                    name={`order_units.add.${index}.to_unit_id`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="space-y-0">
+                                                            <FormControl>
+                                                                <>
+                                                                    <p className="text-xs font-medium">
+                                                                        {getUnitName(field.value || inventoryUnitId || "")}
+                                                                    </p>
+                                                                    <input
+                                                                        type="hidden"
+                                                                        {...field}
+                                                                        value={field.value || inventoryUnitId || ""}
+                                                                    />
+                                                                </>
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
 
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
+                                            </div>
+
+                                        </TableCell>
+                                        <TableCell className="text-left">
                                             <FormField
                                                 control={control}
-                                                name={`order_units.add.${index}.from_unit_id`}
-                                                render={({ field }) => (
-                                                    <FormItem >
-                                                        <FormControl>
-                                                            <Select
-                                                                onValueChange={(value) => {
-                                                                    field.onChange(value);
-                                                                }}
-                                                                value={field.value}
-                                                            >
-                                                                <SelectTrigger className="w-20 h-7">
-                                                                    <SelectValue placeholder="Unit" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {filteredUnits.map((unit) => (
-                                                                        <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                                                            {unit.name}
-                                                                        </SelectItem>
-                                                                    ))}
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-left w-28">
-                                        <div className="flex items-center gap-2">
-                                            <FormField
-                                                control={control}
-                                                name={`order_units.add.${index}.to_unit_qty`}
+                                                name={`order_units.add.${index}.is_default`}
                                                 render={({ field }) => (
                                                     <FormItem className="space-y-0">
                                                         <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                {...field}
-                                                                onChange={(e) => field.onChange(Number(e.target.value))}
-                                                                className="w-20 h-7"
+                                                            <Switch
+                                                                checked={field.value}
+                                                                onCheckedChange={field.onChange}
                                                             />
                                                         </FormControl>
                                                         <FormMessage />
                                                     </FormItem>
                                                 )}
                                             />
-                                            <FormField
-                                                control={control}
-                                                name={`order_units.add.${index}.to_unit_id`}
-                                                render={({ field }) => (
-                                                    <FormItem className="space-y-0">
-                                                        <FormControl>
-                                                            <>
-                                                                <p className="text-xs font-medium">
-                                                                    {getUnitName(field.value || inventoryUnitId || "")}
-                                                                </p>
-                                                                <input
-                                                                    type="hidden"
-                                                                    {...field}
-                                                                    value={field.value || inventoryUnitId || ""}
-                                                                />
-                                                            </>
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-
-                                        </div>
-
-                                    </TableCell>
-                                    <TableCell className="text-left">
-                                        <FormField
-                                            control={control}
-                                            name={`order_units.add.${index}.is_default`}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Switch
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </TableCell>
-                                    <TableCell className="text-left w-28">
-                                        {field.from_unit_id && field.to_unit_id ? (
-                                            <div>
-                                                <p className="text-xs font-medium">{`1 ${getUnitName(field.from_unit_id)} = ${field.to_unit_qty || 1} ${getUnitName(field.to_unit_id)}`}</p>
-                                                <p className="text-muted-foreground text-[11px]">{`Qty x ${(field.to_unit_qty || 1)}`}</p>
-                                            </div>
-                                        ) : ''}
-                                    </TableCell>
-                                    {currentMode === formType.EDIT && (
-                                        <TableCell className="text-right">
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="sm"
-                                                onClick={() => removeOrderUnit(index)}
-                                                className="text-red-500 rounded-full p-2"
-                                                aria-label="Remove order unit"
-                                            >
-                                                <Trash className="h-4 w-4" />
-                                            </Button>
                                         </TableCell>
-                                    )}
-                                </TableRow>
-                            ))}
+                                        <TableCell className="text-left w-28">
+                                            {currentFromUnitId && currentToUnitId ? (
+                                                <div>
+                                                    <p className="text-xs font-medium">{`1 ${getUnitName(currentFromUnitId)} = ${currentToUnitQty} ${getUnitName(currentToUnitId)}`}</p>
+                                                    <p className="text-muted-foreground text-[11px]">{`Qty x ${currentToUnitQty}`}</p>
+                                                </div>
+                                            ) : ''}
+                                        </TableCell>
+                                        {currentMode === formType.EDIT && (
+                                            <TableCell className="text-right">
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => removeOrderUnit(index)}
+                                                    className="text-red-500 rounded-full p-2"
+                                                    aria-label="Remove order unit"
+                                                >
+                                                    <Trash className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
+                                        )}
+                                    </TableRow>
+                                )
+                            })}
                         </TableBody>
                     </Table>
                 </div>
