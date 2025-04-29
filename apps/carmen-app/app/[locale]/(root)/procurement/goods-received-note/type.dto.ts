@@ -676,3 +676,137 @@ export const mockCalulateAmount = [
     { id: "cm-4", description: 'Tax Amount', total: '0.00', base: '0.00' },
     { id: "cm-5", description: 'Total Amount', total: '0.00', base: '0.00' },
 ];
+
+
+export interface NewVendorDto {
+    id: string;
+    no: string;
+    name: string;
+}
+
+export const mockVendor: NewVendorDto[] = [
+    {
+        id: "eD6CL0IH30Wy",
+        no: "bu-001",
+        name: "Vendor 1"
+    },
+    {
+        id: "IMBiiNegXDg6",
+        no: "bu-002",
+        name: "Vendor 2"
+    },
+    {
+        id: "y0jAWMt3bbm_",
+        no: "bu-003",
+        name: "Vendor 3"
+    },
+    {
+        id: "G7NW3ZhbPp6h",
+        no: "bu-004",
+        name: "Vendor 4"
+    },
+];
+
+export interface NewPoDto {
+    id: string;
+    no: string;
+    name: string;
+    pr_ref: string;
+    order_date: string;
+    items: number;
+    status: string;
+    total_amount: number;
+}
+
+export const mockPo: NewPoDto[] = [
+    {
+        id: "AsMVgaVT1Ak6",
+        no: "po-001",
+        name: "Purchase Order 1",
+        pr_ref: "PR-001",
+        order_date: "2021-01-01",
+        items: 3,
+        status: "open",
+        total_amount: 1000
+    },
+    {
+        id: "pNXMkyOkYqvm",
+        no: "po-002",
+        name: "Purchase Order 2",
+        pr_ref: "PR-002",
+        order_date: "2021-01-02",
+        items: 2,
+        status: "open",
+        total_amount: 2000
+    },
+    {
+        id: "jPyUdZ6ciPCi",
+        no: "po-003",
+        name: "Purchase Order 3",
+        pr_ref: "PR-003",
+        order_date: "2021-01-03",
+        items: 1,
+        status: "open",
+        total_amount: 3000
+    },
+];
+
+
+export interface NewItemDto {
+    id: string;
+    name: string;
+    description: string;
+    location: string;
+    po_no: string;
+    ordered: number;
+    received: number;
+    remaining_qty: number;
+    received_qty: number;
+    unit: string;
+}
+
+export const mockItem: NewItemDto[] = [
+    {
+        id: "b-LKYIl1Tl1g",
+        name: "Item 1",
+        description: "Item 1 Description",
+        location: "Location 1",
+        po_no: "PO-001",
+        ordered: 10,
+        received: 2,
+        remaining_qty: 10,
+        received_qty: 45,
+        unit: "pcs",
+    },
+    {
+        id: "tB_R2fX0JdQX",
+        name: "Item 2",
+        description: "Item 2 Description",
+        location: "Location 2",
+        po_no: "PO-002",
+        ordered: 10,
+        received: 2,
+        remaining_qty: 10,
+        received_qty: 45,
+        unit: "pcs",
+    },
+    {
+        id: "925OTeKYj95x",
+        name: "Item 3",
+        description: "Item 3 Description",
+        location: "Location 3",
+        po_no: "PO-003",
+        ordered: 10,
+        received: 2,
+        remaining_qty: 10,
+        received_qty: 45,
+        unit: "pcs",
+    }
+];
+
+export interface InitGrnDto {
+    vendors?: NewVendorDto[];
+    po?: NewPoDto[];
+    items?: NewItemDto[];
+}
+

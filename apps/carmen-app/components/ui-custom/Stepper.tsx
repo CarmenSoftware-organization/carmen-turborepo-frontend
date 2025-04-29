@@ -10,9 +10,10 @@ interface StepProps {
     description?: string
     isCompleted?: boolean
     isActive?: boolean
+    stepNumber: number
 }
 
-const Step: React.FC<StepProps> = ({ title, description, isCompleted, isActive }) => {
+const Step: React.FC<StepProps> = ({ title, description, isCompleted, isActive, stepNumber }) => {
     const getStepClassName = () => {
         if (isCompleted) return "border-primary bg-primary text-primary-foreground";
         if (isActive) return "border-primary";
@@ -28,7 +29,7 @@ const Step: React.FC<StepProps> = ({ title, description, isCompleted, isActive }
                         getStepClassName()
                     )}
                 >
-                    {isCompleted ? <Check className="w-4 h-4" /> : <span className="text-sm font-medium">{title[0]}</span>}
+                    {isCompleted ? <Check className="w-4 h-4" /> : <span className="text-sm font-medium">{stepNumber}</span>}
                 </div>
             </div>
             <div className="ml-4">
@@ -45,9 +46,10 @@ interface StepperProps {
     readonly steps: Array<{ title: string; description?: string }>
     readonly currentStep: number
     readonly onStepChange: (step: number) => void
-}
+    readonly isStepValid: boolean
+};
 
-export function Stepper({ steps, currentStep, onStepChange }: StepperProps) {
+export function Stepper({ steps, currentStep, onStepChange, isStepValid }: StepperProps) {
     return (
         <div className="w-full max-w-3xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -58,6 +60,7 @@ export function Stepper({ steps, currentStep, onStepChange }: StepperProps) {
                             description={step.description}
                             isCompleted={index < currentStep}
                             isActive={index === currentStep}
+                            stepNumber={index + 1}
                         />
                         {index < steps.length - 1 && <ChevronRight className="hidden md:block text-muted-foreground" />}
                     </React.Fragment>
@@ -67,7 +70,11 @@ export function Stepper({ steps, currentStep, onStepChange }: StepperProps) {
                 <Button variant="outline" onClick={() => onStepChange(currentStep - 1)} disabled={currentStep === 0}>
                     Previous
                 </Button>
-                <Button onClick={() => onStepChange(currentStep + 1)} disabled={currentStep === steps.length - 1}>
+                <Button
+                    onClick={() => onStepChange(currentStep + 1)}
+                    disabled={currentStep === steps.length - 1 || !isStepValid}
+                    className={!isStepValid ? "opacity-50 cursor-not-allowed" : ""}
+                >
                     {currentStep === steps.length - 1 ? "Finish" : "Next"}
                 </Button>
             </div>
