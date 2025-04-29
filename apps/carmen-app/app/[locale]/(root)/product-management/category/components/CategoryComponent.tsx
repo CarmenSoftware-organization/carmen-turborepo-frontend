@@ -310,11 +310,11 @@ export default function CategoryComponent() {
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <Button onClick={expandAll} size={'sm'}>
+                        <Button onClick={expandAll} size={'sm'} variant={'outline'}>
                             <ChevronDown className="h-4 w-4" />
                             Expand All
                         </Button>
-                        <Button onClick={collapseAll} size={'sm'}>
+                        <Button onClick={collapseAll} size={'sm'} variant={'outline'}>
                             <ChevronUp className="h-4 w-4" />
                             Collapse All
                         </Button>

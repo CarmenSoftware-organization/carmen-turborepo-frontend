@@ -11,6 +11,7 @@ export const CategorySchema = z.object({
     is_active: z.boolean(),
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
+    is_edit_type: z.boolean().optional(),
 });
 
 export type CategoryDto = z.infer<typeof CategorySchema>;
@@ -26,6 +27,7 @@ export const SubCategorySchema = z.object({
     product_category_id: z.string(),
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
+    is_edit_type: z.boolean().optional(),
 });
 
 export const ItemGroupSchema = z.object({
@@ -39,6 +41,7 @@ export const ItemGroupSchema = z.object({
     product_subcategory_id: z.string(),
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
+    is_edit_type: z.boolean().optional(),
 });
 
 // Form schemas for create/edit operations

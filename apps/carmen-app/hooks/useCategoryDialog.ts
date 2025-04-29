@@ -5,7 +5,7 @@ import { formType } from "@/dtos/form.dto";
 type formSubmitType = CategoryFormData | SubCategoryFormData | ItemGroupFormData;
 
 export interface UseCategoryDialogProps {
-    onFormSubmit: (data: formSubmitType) => Promise<void> | void;
+    onFormSubmit: (data: formSubmitType & { is_edit_type?: boolean }) => Promise<void> | void;
     categoryData?: CategoryNode[];
 }
 
@@ -17,7 +17,7 @@ export interface UseCategoryDialogReturn {
     handleDialogChange: (open: boolean) => void;
     handleEdit: (node: CategoryNode) => void;
     handleAdd: (parent?: CategoryNode) => void;
-    handleFormSubmit: (data: formSubmitType) => void;
+    handleFormSubmit: (data: formSubmitType & { is_edit_type?: boolean }) => void;
 }
 
 export const useCategoryDialog = ({
@@ -94,8 +94,7 @@ export const useCategoryDialog = ({
         setDialogOpen(true);
     }, []);
 
-    const handleFormSubmit = useCallback((data: CategoryFormData | SubCategoryFormData | ItemGroupFormData) => {
-        // Submit form data directly - no need to create a node here as it's handled by the component
+    const handleFormSubmit = useCallback((data: formSubmitType & { is_edit_type?: boolean }) => {
         try {
             onFormSubmit(data);
         } catch (error) {

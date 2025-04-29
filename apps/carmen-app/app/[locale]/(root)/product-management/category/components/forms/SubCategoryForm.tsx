@@ -8,6 +8,7 @@ import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 interface SubCategoryFormProps {
     readonly mode: formType;
@@ -20,6 +21,8 @@ interface SubCategoryFormProps {
 export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCancel }: SubCategoryFormProps) {
     const [parentName, setParentName] = useState("");
     const [parentId, setParentId] = useState("");
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [pendingData, setPendingData] = useState<SubCategoryFormData | null>(null);
 
     // Set parent information when editing or creating
     useEffect(() => {
@@ -60,115 +63,189 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
         }
     }, [parentId, form]);
 
+    const handleSubmit = (data: SubCategoryFormData) => {
+        // Check if is_used_in_recipe or is_sold_directly has changed
+        const isRecipeChanged = selectedNode?.is_used_in_recipe !== data.is_used_in_recipe;
+        const isSoldChanged = selectedNode?.is_sold_directly !== data.is_sold_directly;
+
+        // If either has changed and we're in edit mode, show confirmation dialog
+        if ((isRecipeChanged || isSoldChanged) && mode === formType.EDIT) {
+            setPendingData(data);
+            setShowConfirmDialog(true);
+            return;
+        }
+
+        // If no changes to these fields or in add mode, submit directly
+        onSubmit(data);
+    };
+
+    const handleConfirm = () => {
+        if (pendingData) {
+            onSubmit({ ...pendingData, is_edit_type: true });
+            setShowConfirmDialog(false);
+            setPendingData(null);
+        }
+    };
+
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                    control={form.control}
-                    name="product_category_id"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Category</FormLabel>
-                            <FormControl>
-                                <Input
-                                    value={parentName}
-                                    disabled
-                                    className="bg-muted"
+        <>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="product_category_id"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Category</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        value={parentName}
+                                        disabled
+                                        className="bg-muted"
+                                    />
+                                </FormControl>
+                                <input
+                                    type="hidden"
+                                    {...field}
+                                    value={parentId || field.value}
                                 />
-                            </FormControl>
-                            <input
-                                type="hidden"
-                                {...field}
-                                value={parentId || field.value}
-                            />
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="code"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Code</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                     <FormField
                         control={form.control}
-                        name="price_deviation_limit"
+                        name="code"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Price Deviation Limit</FormLabel>
+                                <FormLabel>Code</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        placeholder="Enter Price Deviation Limit"
-                                        {...field}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            field.onChange(value === "" ? "" : Number(value));
-                                        }}
-                                    />
+                                    <Input {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
-                        name="qty_deviation_limit"
+                        name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Quantity Deviation Limit</FormLabel>
+                                <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
-                                        step="1"
-                                        min="0"
-                                        placeholder="Enter Quantity Deviation Limit"
-                                        {...field}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            field.onChange(value === "" ? "" : Number(value));
-                                        }}
-                                    />
+                                    <Input {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <FormField
+                            control={form.control}
+                            name="price_deviation_limit"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Price Deviation Limit</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            placeholder="Enter Price Deviation Limit"
+                                            {...field}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                field.onChange(value === "" ? "" : Number(value));
+                                            }}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <FormField
+                            control={form.control}
+                            name="qty_deviation_limit"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Quantity Deviation Limit</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            type="number"
+                                            step="1"
+                                            min="0"
+                                            placeholder="Enter Quantity Deviation Limit"
+                                            {...field}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                field.onChange(value === "" ? "" : Number(value));
+                                            }}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <FormField
+                            control={form.control}
+                            name="is_used_in_recipe"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
+                                    <div>
+                                        <FormLabel className="text-xs">Used in Recipe</FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <Switch
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="is_sold_directly"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
+                                    <div>
+                                        <FormLabel className="text-xs">Sold Directly</FormLabel>
+                                    </div>
+                                    <FormControl>
+                                        <Switch
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
                     <FormField
                         control={form.control}
-                        name="is_used_in_recipe"
+                        name="description"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
-                                <div>
-                                    <FormLabel className="text-xs">Used in Recipe</FormLabel>
+                            <FormItem>
+                                <FormLabel>Description</FormLabel>
+                                <FormControl>
+                                    <Textarea {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="is_active"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                    <FormLabel className="text-base">Active</FormLabel>
                                 </div>
                                 <FormControl>
                                     <Switch
@@ -179,65 +256,32 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="is_sold_directly"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
-                                <div>
-                                    <FormLabel className="text-xs">Sold Directly</FormLabel>
-                                </div>
-                                <FormControl>
-                                    <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                </div>
 
-                <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <FormControl>
-                                <Textarea {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="is_active"
-                    render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                            <div className="space-y-0.5">
-                                <FormLabel className="text-base">Active</FormLabel>
-                            </div>
-                            <FormControl>
-                                <Switch
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                />
-                            </FormControl>
-                        </FormItem>
-                    )}
-                />
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={onCancel}>
+                            Cancel
+                        </Button>
+                        <Button type="submit">
+                            {mode === formType.EDIT ? "Save changes" : "Create"}
+                        </Button>
+                    </div>
+                </form>
+            </Form>
 
-                <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={onCancel}>
-                        Cancel
-                    </Button>
-                    <Button type="submit">
-                        {mode === formType.EDIT ? "Save changes" : "Create"}
-                    </Button>
-                </div>
-            </form>
-        </Form>
+            <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Edit</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You are about to change the subcategory type. This action may affect related items. Do you want to proceed?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirm}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 } 
