@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { VendorFormDto, VendorFormUpdateSchema } from "@/dtos/vendor-management";
 import { useAuth } from "@/context/AuthContext";
-import { createVendorService } from "@/services/vendor.service";
+import { createVendorService, updateVendorService } from "@/services/vendor.service";
 import { useRouter } from "next/navigation";
 
 import {
@@ -31,18 +31,20 @@ import { Plus, Save, Trash } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 interface VendorFormProps {
+    initialValues?: VendorFormDto;
     onSuccess?: () => void;
 }
 
-export default function VendorForm({ onSuccess }: VendorFormProps) {
+export default function VendorForm({ initialValues, onSuccess }: VendorFormProps) {
     const { token, tenantId } = useAuth();
     const [loading, setLoading] = useState(false);
     const tCommon = useTranslations('Common');
     const router = useRouter();
+    const isEdit = !!initialValues;
 
     const form = useForm<VendorFormDto>({
         resolver: zodResolver(VendorFormUpdateSchema),
-        defaultValues: {
+        defaultValues: initialValues || {
             name: "",
             description: "",
             info: [],
@@ -56,8 +58,12 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
         try {
             setLoading(true);
 
-            // Create new vendor
-            const response = await createVendorService(token, tenantId, data);
+            let response;
+            if (isEdit) {
+                response = await updateVendorService(token, tenantId, { ...data, id: initialValues?.id });
+            } else {
+                response = await createVendorService(token, tenantId, data);
+            }
 
             if (response.statusCode === 401) {
                 toastError({ message: "Authentication failed. Please login again." });
@@ -68,17 +74,17 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                 throw new Error(response.message || "An error occurred");
             }
 
-            toastSuccess({ message: "Vendor created successfully" });
+            toastSuccess({ message: `Vendor ${isEdit ? 'updated' : 'created'} successfully` });
 
             if (onSuccess) {
                 onSuccess();
             } else {
                 // Navigate back to vendor list
-                router.push("/vendor-management");
+                router.push("/vendor-management/vendor");
             }
         } catch (error) {
-            console.error("Error creating vendor:", error);
-            toastError({ message: `Failed to create vendor: ${error instanceof Error ? error.message : 'Unknown error'}` });
+            console.error(`Error ${isEdit ? 'updating' : 'creating'} vendor:`, error);
+            toastError({ message: `Failed to ${isEdit ? 'update' : 'create'} vendor: ${error instanceof Error ? error.message : 'Unknown error'}` });
         } finally {
             setLoading(false);
         }
@@ -89,7 +95,7 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
     };
 
     const submitButtonText = loading
-        ? "Creating..."
+        ? isEdit ? "Updating..." : "Creating..."
         : tCommon('save');
 
     return (
@@ -98,7 +104,6 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                 <CardContent>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-
                             <div className="flex justify-end gap-2 pt-4">
                                 <Button
                                     type="button"
@@ -112,7 +117,6 @@ export default function VendorForm({ onSuccess }: VendorFormProps) {
                                     <Save className="mr-1 h-4 w-4" />
                                     {submitButtonText}
                                 </Button>
-
                             </div>
                             <FormField
                                 control={form.control}

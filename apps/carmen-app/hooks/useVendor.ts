@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from "react";
 import { useURL } from "@/hooks/useURL";
 import { getAllVendorService, deleteVendorService } from "@/services/vendor.service";
 import { VendorGetDto, VendorFormDto } from "@/dtos/vendor-management";
-import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 export const useVendor = (token: string, tenantId: string) => {
@@ -12,10 +11,7 @@ export const useVendor = (token: string, tenantId: string) => {
     const [sort, setSort] = useURL('sort');
     const [page, setPage] = useURL('page');
     const [vendors, setVendors] = useState<VendorGetDto[]>([]);
-    const [openAddDialog, setOpenAddDialog] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-    const [selectedVendor, setSelectedVendor] = useState<VendorGetDto | undefined>(undefined);
-    const [currentMode, setCurrentMode] = useState<formType>(formType.ADD);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [vendorToDelete, setVendorToDelete] = useState<VendorGetDto | undefined>(undefined);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -61,18 +57,6 @@ export const useVendor = (token: string, tenantId: string) => {
     const handlePageChange = useCallback((newPage: number) => {
         setPage(newPage.toString());
     }, [setPage]);
-
-    const handleAddClick = useCallback(() => {
-        setCurrentMode(formType.ADD);
-        setSelectedVendor(undefined);
-        setOpenAddDialog(true);
-    }, []);
-
-    const handleEditClick = useCallback((vendor: VendorGetDto) => {
-        setCurrentMode(formType.EDIT);
-        setSelectedVendor(vendor);
-        setOpenAddDialog(true);
-    }, []);
 
     const handleDeleteClick = useCallback((vendor: VendorGetDto) => {
         setVendorToDelete(vendor);
@@ -129,10 +113,7 @@ export const useVendor = (token: string, tenantId: string) => {
         sort,
         page,
         vendors,
-        openAddDialog,
         loginDialogOpen,
-        selectedVendor,
-        currentMode,
         deleteDialogOpen,
         vendorToDelete,
         isDeleting,
@@ -147,13 +128,10 @@ export const useVendor = (token: string, tenantId: string) => {
         setStatusOpen,
         setSort,
         setPage,
-        setOpenAddDialog,
         setLoginDialogOpen,
         setDeleteDialogOpen,
         fetchVendors,
         handlePageChange,
-        handleAddClick,
-        handleEditClick,
         handleDeleteClick,
         handleConfirmDelete,
         handleFormSuccess

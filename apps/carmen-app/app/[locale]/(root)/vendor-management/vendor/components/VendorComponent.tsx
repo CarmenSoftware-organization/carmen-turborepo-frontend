@@ -9,7 +9,6 @@ import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
-import VendorFormDialog from "./VendorFormDialog";
 import { useAuth } from "@/context/AuthContext";
 import SignInDialog from "@/components/SignInDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
@@ -31,12 +30,8 @@ export default function VendorComponent() {
         setSort,
         page,
         vendors,
-        openAddDialog,
-        setOpenAddDialog,
         loginDialogOpen,
         setLoginDialogOpen,
-        selectedVendor,
-        currentMode,
         deleteDialogOpen,
         setDeleteDialogOpen,
         vendorToDelete,
@@ -140,13 +135,6 @@ export default function VendorComponent() {
                 content={content}
             />
 
-            <VendorFormDialog
-                open={openAddDialog}
-                onOpenChange={setOpenAddDialog}
-                onSuccess={handleFormSuccess}
-                mode={currentMode}
-                initialData={selectedVendor}
-            />
             <SignInDialog
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}
