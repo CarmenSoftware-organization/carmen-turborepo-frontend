@@ -12,6 +12,13 @@ export const workflowTypeField = [
   { label: "Store Requisition", value: enum_workflow_type.store_requisition },
 ];
 
+export enum enum_available_actions {
+  submit = "submit",
+  approve = "approve",
+  reject = "reject",
+  sendback = "sendback",
+}
+
 export enum enum_sla_unit {
   minutes = "minutes",
   hours = "hours",

@@ -1,4 +1,4 @@
-import { enum_available_actions, RoutingRule, Template, Workflow, Product } from "../types/workflow";
+import { RoutingRule, Template, Workflow, Product } from "@/dtos/workflows.dto";
 
 const notification_templates: Template[] = [
   {
@@ -56,12 +56,44 @@ export const sampleWorkflows: Workflow[] = [
       document_reference_pattern: "GP-{YYYY}-{00000}",
       stages: [
         {
-          id: 1,
           name: "Request Creation",
           description: "Initial stage for creating and submitting requests",
           sla: "4",
           sla_unit: "hours",
-          available_actions: [enum_available_actions.submit],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -69,16 +101,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 2,
           name: "Purchasing Review",
           description: "Review by purchasing staff for accuracy and completeness",
           sla: "8",
           sla_unit: "hours",
-          available_actions: [
-            enum_available_actions.approve,
-            enum_available_actions.reject,
-            enum_available_actions.sendback,
-          ],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -86,16 +146,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 3,
           name: "Department Approval",
           description: "Review and approval by department head",
           sla: "12",
           sla_unit: "hours",
-          available_actions: [
-            enum_available_actions.approve,
-            enum_available_actions.reject,
-            enum_available_actions.sendback,
-          ],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -103,16 +191,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 4,
           name: "Finance Review",
           description: "Financial review and budget verification",
           sla: "24",
           sla_unit: "hours",
-          available_actions: [
-            enum_available_actions.approve,
-            enum_available_actions.reject,
-            enum_available_actions.sendback,
-          ],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -120,16 +236,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 5,
           name: "Final Approval",
           description: "Final approval by general manager",
           sla: "48",
           sla_unit: "hours",
-          available_actions: [
-            enum_available_actions.approve,
-            enum_available_actions.reject,
-            enum_available_actions.sendback,
-          ],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -137,12 +281,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 6,
           name: "Completed",
           description: "Request has been completed",
           sla: "0",
           sla_unit: "hours",
-          available_actions: [],
+          available_actions: {
+            submit: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -225,12 +401,44 @@ export const sampleWorkflows: Workflow[] = [
       document_reference_pattern: "ML-{YYYY}-{00000}",
       stages: [
         {
-          id: 1,
           name: "Request Creation",
           description: "Initial stage for creating market list requests",
           sla: "2",
           sla_unit: "hours",
-          available_actions: [enum_available_actions.submit],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -238,16 +446,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 2,
           name: "Department Approval",
           description: "Department head review of market list",
           sla: "4",
           sla_unit: "hours",
-          available_actions: [
-            enum_available_actions.approve,
-            enum_available_actions.reject,
-            enum_available_actions.sendback,
-          ],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -255,16 +491,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 3,
           name: "Purchasing Review",
           description: "Review by purchasing for market list items",
           sla: "6",
           sla_unit: "hours",
-          available_actions: [
-            enum_available_actions.approve,
-            enum_available_actions.reject,
-            enum_available_actions.sendback,
-          ],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
@@ -272,12 +536,44 @@ export const sampleWorkflows: Workflow[] = [
           assigned_users: [],
         },
         {
-          id: 4,
           name: "Completed",
           description: "Market list request has been completed",
           sla: "0",
           sla_unit: "hours",
-          available_actions: [],
+          available_actions: {
+            submit: {
+              is_active: true,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            approve: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            reject: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+            sendback: {
+              is_active: false,
+              recipients: {
+                requestor: false,
+                current_approve: false,
+                next_step: false,
+              },
+            },
+          },
           hide_fields: {
             price_per_unit: false,
             total_price: false,
