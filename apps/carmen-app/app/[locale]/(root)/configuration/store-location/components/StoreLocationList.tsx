@@ -60,14 +60,18 @@ export default function StoreLocationList({
                         key={storeLocation.id}
                     >
                         <TableCell className="w-10">{index + 1}</TableCell>
-                        <TableCell className="md:w-56">{storeLocation.name}</TableCell>
+                        <TableCell>
+                            <div>
+                                <p className="text-xs font-bold">{storeLocation.name}</p>
+                                <p className="text-xs text-muted-foreground">{storeLocation.description}</p>
+                            </div>
+                        </TableCell>
                         <TableCell className="hidden md:table-cell">
                             <Badge className={STORE_LOCATION_TYPE_COLOR(storeLocation.location_type)}>
                                 {storeLocation.location_type.toUpperCase()}
                             </Badge>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">{storeLocation.description}</TableCell>
-                        <TableCell className="min-w-[150px]">
+                        <TableCell>
                             {storeLocation.delivery_point?.name}
                         </TableCell>
                         <TableCell>
@@ -111,9 +115,8 @@ export default function StoreLocationList({
                     <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead className="w-10">#</TableHead>
-                            <TableHead className="md:w-56">{t('name')}</TableHead>
+                            <TableHead>{t('name')}</TableHead>
                             <TableHead className="hidden md:table-cell">{t('type')}</TableHead>
-                            <TableHead className="hidden md:table-cell">{t('description')}</TableHead>
                             <TableHead className="hidden md:table-cell">{t('delivery_point')}</TableHead>
                             <TableHead>{t('status')}</TableHead>
                             <TableHead className="text-right">{t('action')}</TableHead>

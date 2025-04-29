@@ -135,7 +135,8 @@ export const useStoreLocation = () => {
         setStoreLocations(prev => [...prev, newStoreLocation]);
         toastSuccess({ message: 'Store location created successfully' });
         setDialogOpen(false);
-    }, []);
+        fetchStoreLocations();
+    }, [fetchStoreLocations]);
 
     const handleSubmitEdit = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto, selectedId: string) => {
         const newStoreLocation = await handleUpdateStoreLocation(token, tenantId, data, selectedId);

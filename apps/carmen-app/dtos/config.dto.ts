@@ -32,14 +32,14 @@ export const departmentSchema = z.object({
 export type DepartmentDto = z.infer<typeof departmentSchema>;
 
 export const storeLocationSchema = z.object({
-    name: z.string().min(1),
+    name: z.string().min(1, "Name is required"),
     location_type: z.nativeEnum(INVENTORY_TYPE),
-    description: z.string().min(1).optional(),
+    description: z.string().optional(),
     is_active: z.boolean(),
 });
 
 export const createStoreLocationSchema = storeLocationSchema.extend({
-    delivery_point_id: z.string().min(1),
+    delivery_point_id: z.string().min(1, "Delivery point is required"),
 });
 
 export type CreateStoreLocationDto = z.infer<typeof createStoreLocationSchema>;
