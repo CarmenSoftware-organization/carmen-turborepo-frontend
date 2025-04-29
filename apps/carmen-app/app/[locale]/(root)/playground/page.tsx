@@ -1,16 +1,30 @@
 import { Link } from "@/lib/navigation";
 
+const itemsPlayground = [
+    {
+        title: "Input Component Examples",
+        href: "/playground/input"
+    },
+    {
+        title: "Lookup Component Examples",
+        href: "/playground/lookup"
+    },
+    {
+        title: "Stepper Component Examples",
+        href: "/playground/stepper",
+    }
+]
+
 export default function Playground() {
     return (
         <div className="p-6 space-y-4 max-w-3xl mx-auto">
             <h1 className="text-2xl font-bold mb-4">Component Playground</h1>
             <ul className="space-y-2 list-disc">
-                <li>
-                    <Link href="/playground/input" className="text-blue-500 hover:underline">Input Component Examples</Link>
-                </li>
-                <li>
-                    <Link href="/playground/lookup" className="text-blue-500 hover:underline">Lookup Component Examples</Link>
-                </li>
+                {itemsPlayground.map((item) => (
+                    <li key={item.title} className="hover:underline text-primary">
+                        <Link href={item.href}>{item.title}</Link>
+                    </li>
+                ))}
             </ul>
         </div>
     );
