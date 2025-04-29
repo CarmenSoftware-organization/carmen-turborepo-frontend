@@ -3,11 +3,13 @@ import { useURL } from "@/hooks/useURL";
 import { getWorkflowList } from "@/services/workflow";
 import { useAuth } from "@/context/AuthContext";
 import { toastError } from "@/components/ui-custom/Toast";
+import { WorkflowData, AvailableActions } from "@/dtos/workflows.dto";
 
 interface WorkflowListProps {
   id: string;
   name: string;
   workflow_type: string;
+  data: WorkflowData;
   is_active: string;
 }
 
@@ -80,6 +82,87 @@ export const useWorkflow = () => {
     [setFilter, setPage]
   );
 
+  // Get the entire workflow configuration
+  const getWorkflowConfig = (workflowId: string) => {
+    const workflow = workflows.find((w) => w.id === workflowId);
+    return workflow;
+  };
+
+  // Get Stages
+  const getStages = (workflowId: string) => {
+    const workflow = getWorkflowConfig(workflowId);
+    return workflow?.data.stages;
+  };
+
+  // Get a specific stage by name
+  const getCurrentStage = (workflowId: string, stageName: string) => {
+    const workflow = getWorkflowConfig(workflowId);
+    const stage = workflow?.data.stages.find((s) => s.name === stageName);
+    return stage;
+  };
+
+  // Check if a button is active in a specific stage
+  const isButtonActive = (workflowId: string, stageName: string, buttonType: keyof AvailableActions) => {
+    const stage = getCurrentStage(workflowId, stageName);
+
+    if (!stage) {
+      return false;
+    }
+
+    return stage.available_actions[buttonType].is_active;
+  };
+
+  // Enable or disable a button in a specific stage
+  const setButtonActive = (
+    workflowId: string,
+    stageName: string,
+    buttonType: keyof AvailableActions,
+    isActive: boolean
+  ) => {
+    const stage = getCurrentStage(workflowId, stageName);
+    if (!stage) {
+      return false;
+    }
+    stage.available_actions[buttonType].is_active = isActive;
+    return true;
+  };
+
+  // Get the next stage based on conditions and item value
+  const getNextStage = (workflowId: string, stageName: string, itemValue: string) => {
+    const workflow = getWorkflowConfig(workflowId);
+    const otherStage = workflow?.data.stages.find((s) => s.name !== stageName);
+    const routingRules = workflow?.data.routing_rules;
+    if (!routingRules) {
+      // If there are no routing rules, return the other stage
+      return otherStage?.name;
+    }
+    const matchingRule = routingRules.find((rule) => {
+      if (rule.trigger_stage === stageName) {
+        const condition = rule.condition;
+        if (!condition) {
+          // If there is no condition, return the other stage
+          return otherStage?.name;
+        }
+        const { operator, value } = condition;
+        if (operator === "eq") {
+          return itemValue === value;
+        }
+        if (operator === "gt") {
+          return itemValue > value;
+        }
+        if (operator === "lt") {
+          return itemValue < value;
+        }
+      }
+      // If there is no matching rule, return the other stage
+      return otherStage?.name;
+    });
+    if (!matchingRule) {
+      return otherStage?.name;
+    }
+    return matchingRule.action.parameters.target_stage;
+  };
+
   return {
     workflows,
     isLoading,
@@ -104,5 +187,13 @@ export const useWorkflow = () => {
 
     // Functions
     handlePageChange,
+
+    // Getters
+    getWorkflowConfig,
+    getStages,
+    getCurrentStage,
+    getNextStage,
+    isButtonActive,
+    setButtonActive,
   };
 };
