@@ -72,7 +72,7 @@ export default function SignInForm() {
                         <p className="text-4xl font-semibold">
                             {tHome('CarmenSoftware')}
                         </p>
-                        <p className="text-muted-foreground text-sm">
+                        <p className="text-muted-foreground text-base font-normal">
                             {tHome('HotelFinanceManagementSoftware')}
                         </p>
                     </div>
@@ -92,7 +92,7 @@ export default function SignInForm() {
                                                     placeholder="This shows when input has value"
                                                     required
                                                     {...field}
-                                                    className="h-10"
+                                                    className="h-11"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -112,7 +112,7 @@ export default function SignInForm() {
                                                     required
                                                     type="password"
                                                     {...field}
-                                                    className="h-10"
+                                                    className="h-11"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -127,7 +127,7 @@ export default function SignInForm() {
                                 <div className="flex justify-end">
                                     <Button
                                         type="submit"
-                                        className="w-40 h-10 bg-blue-700 hover:bg-blue-600 text-white rounded-full"
+                                        className="w-40 h-10 bg-primary hover:bg-primary/80 text-white rounded-full"
                                         disabled={isPending}
                                     >
                                         {isPending ? t('signingIn') : t('signIn')}
@@ -137,9 +137,15 @@ export default function SignInForm() {
                         </Form>
                     </div>
                 </div>
-                <p className="text-muted-foreground text-sm mt-10">
-                    <LanguageSwitch />
-                </p>
+                <div className="flex justify-between items-center mt-10">
+                    <p className="text-muted-foreground text-sm">
+                        <LanguageSwitch />
+                    </p>
+                    <div className="flex items-center gap-2">
+                        <p className="text-muted-foreground text-xs">Terms of Service</p>
+                        <p className="text-muted-foreground text-xs">Privacy Policy</p>
+                    </div>
+                </div>
             </div>
         </div>
     )
