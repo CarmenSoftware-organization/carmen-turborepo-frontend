@@ -26,6 +26,7 @@ import { useCategoryTree } from "@/hooks/useCategoryTree";
 import { useCategoryDialog } from "@/hooks/useCategoryDialog";
 import { useCategoryDelete } from "@/hooks/useCategoryDelete";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import CategoryLoading from "@/components/loading/CategoryLoading";
 
 export default function CategoryComponent() {
     const [signInOpen, setSignInOpen] = useState(false);
@@ -300,7 +301,7 @@ export default function CategoryComponent() {
 
     const renderContent = () => {
         if (isLoading) {
-            return <div>Loading...</div>;
+            return <CategoryLoading />
         }
 
         // Default return when not loading and authorized
