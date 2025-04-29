@@ -1,6 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { CategoryNode } from "@/dtos/category.dto";
 import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash } from "lucide-react";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const getIconColor = (type: CategoryNode["type"]) => {
     if (type === "category") return "";
@@ -63,14 +69,44 @@ export default function TreeNode({
                 </div>
 
                 <div className="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size={'sm'}
-                        onClick={() => onEdit(node)}
-                        className="h-6 w-6"
-                    >
-                        <Edit className="h-4 w-4" />
-                    </Button>
+                    {node.type !== "itemGroup" && (
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        size={'sm'}
+                                        onClick={() => onAdd(node)}
+                                        className="h-6 w-6"
+                                    >
+                                        <Plus className="h-4 w-4" />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent className="bg-background text-foreground">
+                                    {node.type === "category" ? "Add to Sub category" : "Add to Item Group"}
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+
+                    )}
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size={'sm'}
+                                    onClick={() => onEdit(node)}
+                                    className="h-6 w-6"
+                                >
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-background text-foreground">
+                                {node.type === "category" ? "Edit Sub category" : "Edit Item Group"}
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
                     <Button
                         variant="ghost"
                         size={'sm'}
@@ -79,16 +115,9 @@ export default function TreeNode({
                     >
                         <Trash className="h-4 w-4" />
                     </Button>
-                    {node.type !== "itemGroup" && (
-                        <Button
-                            variant="ghost"
-                            size={'sm'}
-                            onClick={() => onAdd(node)}
-                            className="h-6 w-6"
-                        >
-                            <Plus className="h-4 w-4" />
-                        </Button>
-                    )}
+
+
+
                 </div>
             </div>
 

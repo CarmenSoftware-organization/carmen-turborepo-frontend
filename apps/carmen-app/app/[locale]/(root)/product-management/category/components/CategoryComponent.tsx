@@ -88,8 +88,10 @@ export default function CategoryComponent() {
                             name: data.name,
                             description: data.description,
                             is_active: true,
-                            price_deviation_limit: data.price_deviation_limit || 0,
-                            qty_deviation_limit: data.qty_deviation_limit || 0
+                            price_deviation_limit: data.price_deviation_limit ?? 0,
+                            qty_deviation_limit: data.qty_deviation_limit ?? 0,
+                            is_used_in_recipe: data.is_used_in_recipe ?? false,
+                            is_sold_directly: data.is_sold_directly ?? false
                         };
                         result = await submitCategory(categoryDto, dialogMode, categoryDto);
                         success = !!result;
@@ -100,9 +102,11 @@ export default function CategoryComponent() {
                             name: data.name,
                             description: data.description,
                             is_active: true,
-                            product_category_id: parentNode?.id || selectedNode.product_category_id || "",
-                            price_deviation_limit: data.price_deviation_limit || 0,
-                            qty_deviation_limit: data.qty_deviation_limit || 0
+                            product_category_id: parentNode?.id ?? selectedNode.product_category_id ?? "",
+                            price_deviation_limit: data.price_deviation_limit ?? 0,
+                            qty_deviation_limit: data.qty_deviation_limit ?? 0,
+                            is_used_in_recipe: data.is_used_in_recipe ?? false,
+                            is_sold_directly: data.is_sold_directly ?? false
                         };
                         result = await submitSubCategory(subCategoryDto, dialogMode, subCategoryDto);
                         success = !!result;
@@ -113,9 +117,11 @@ export default function CategoryComponent() {
                             name: data.name,
                             description: data.description,
                             is_active: true,
-                            product_subcategory_id: parentNode?.id || selectedNode.product_subcategory_id || "",
-                            price_deviation_limit: data.price_deviation_limit || 0,
-                            qty_deviation_limit: data.qty_deviation_limit || 0
+                            product_subcategory_id: parentNode?.id ?? selectedNode.product_subcategory_id ?? "",
+                            price_deviation_limit: data.price_deviation_limit ?? 0,
+                            qty_deviation_limit: data.qty_deviation_limit ?? 0,
+                            is_used_in_recipe: data.is_used_in_recipe ?? false,
+                            is_sold_directly: data.is_sold_directly ?? false
                         };
                         result = await submitItemGroup(itemGroupDto, dialogMode, itemGroupDto);
                         success = !!result;
@@ -132,8 +138,10 @@ export default function CategoryComponent() {
                             name: data.name,
                             description: data.description,
                             is_active: true,
-                            price_deviation_limit: data.price_deviation_limit || 0,
-                            qty_deviation_limit: data.qty_deviation_limit || 0
+                            price_deviation_limit: data.price_deviation_limit ?? 0,
+                            qty_deviation_limit: data.qty_deviation_limit ?? 0,
+                            is_used_in_recipe: data.is_used_in_recipe ?? false,
+                            is_sold_directly: data.is_sold_directly ?? false
                         };
                         result = await submitCategory(categoryDto, dialogMode);
                         success = !!result;
@@ -145,8 +153,10 @@ export default function CategoryComponent() {
                             description: data.description,
                             is_active: true,
                             product_category_id: parentNode!.id,
-                            price_deviation_limit: data.price_deviation_limit || 0,
-                            qty_deviation_limit: data.qty_deviation_limit || 0
+                            price_deviation_limit: data.price_deviation_limit ?? 0,
+                            qty_deviation_limit: data.qty_deviation_limit ?? 0,
+                            is_used_in_recipe: data.is_used_in_recipe ?? false,
+                            is_sold_directly: data.is_sold_directly ?? false
                         };
                         result = await submitSubCategory(subCategoryDto, dialogMode);
                         success = !!result;
@@ -158,8 +168,10 @@ export default function CategoryComponent() {
                             description: data.description,
                             is_active: true,
                             product_subcategory_id: parentNode!.id,
-                            price_deviation_limit: data.price_deviation_limit || 0,
-                            qty_deviation_limit: data.qty_deviation_limit || 0
+                            price_deviation_limit: data.price_deviation_limit ?? 0,
+                            qty_deviation_limit: data.qty_deviation_limit ?? 0,
+                            is_used_in_recipe: data.is_used_in_recipe ?? false,
+                            is_sold_directly: data.is_sold_directly ?? false
                         };
                         result = await submitItemGroup(itemGroupDto, dialogMode);
                         success = !!result;
@@ -202,8 +214,10 @@ export default function CategoryComponent() {
                         name: node.name,
                         description: node.description,
                         is_active: true,
-                        price_deviation_limit: node.price_deviation_limit || 0,
-                        qty_deviation_limit: node.qty_deviation_limit || 0
+                        price_deviation_limit: node.price_deviation_limit ?? 0,
+                        qty_deviation_limit: node.qty_deviation_limit ?? 0,
+                        is_used_in_recipe: node.is_used_in_recipe ?? false,
+                        is_sold_directly: node.is_sold_directly ?? false
                     };
                     result = await deleteCategory(categoryDto);
                     success = !!result;
@@ -214,9 +228,11 @@ export default function CategoryComponent() {
                         name: node.name,
                         description: node.description,
                         is_active: false,
-                        product_category_id: node.product_category_id || "",
-                        price_deviation_limit: node.price_deviation_limit || 0,
-                        qty_deviation_limit: node.qty_deviation_limit || 0
+                        product_category_id: node.product_category_id ?? "",
+                        price_deviation_limit: node.price_deviation_limit ?? 0,
+                        qty_deviation_limit: node.qty_deviation_limit ?? 0,
+                        is_used_in_recipe: node.is_used_in_recipe ?? false,
+                        is_sold_directly: node.is_sold_directly ?? false
                     };
                     result = await submitSubCategory(subCategoryDto, formType.EDIT, subCategoryDto);
                     success = !!result;
@@ -228,9 +244,11 @@ export default function CategoryComponent() {
                         name: node.name,
                         description: node.description,
                         is_active: false,
-                        product_subcategory_id: node.product_subcategory_id || "",
-                        price_deviation_limit: node.price_deviation_limit || 0,
-                        qty_deviation_limit: node.qty_deviation_limit || 0
+                        product_subcategory_id: node.product_subcategory_id ?? "",
+                        price_deviation_limit: node.price_deviation_limit ?? 0,
+                        qty_deviation_limit: node.qty_deviation_limit ?? 0,
+                        is_used_in_recipe: node.is_used_in_recipe ?? false,
+                        is_sold_directly: node.is_sold_directly ?? false
                     };
                     result = await submitItemGroup(itemGroupDto, formType.EDIT, itemGroupDto);
                     success = !!result;

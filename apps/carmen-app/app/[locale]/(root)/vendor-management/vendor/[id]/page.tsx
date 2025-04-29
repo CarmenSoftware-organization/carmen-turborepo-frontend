@@ -1,32 +1,34 @@
 "use client";
 
-import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
-import { VendorFormDto } from "@/dtos/vendor-management";
 import { getVendorIdService } from "@/services/vendor.service";
-import { useParams, notFound } from "next/navigation";
-import { useEffect, useState } from "react";
-import VendorDetail from "../components/VendorDetail";
+import { notFound, useParams } from "next/navigation";
 import VendorForm from "../components/VendorForm";
-import { getVendorByIdService } from "@/services/vendor.service";
+import { useEffect, useState } from "react";
+import { VendorFormDto } from "@/dtos/vendor-management";
 
-interface EditVendorProps {
-    params: {
-        id: string;
-    };
-}
-
-export default async function EditVendor({ params }: EditVendorProps) {
+export default function EditVendor() {
     const { token, tenantId } = useAuth();
-    const vendor = await getVendorIdService(token, tenantId, params.id);
+    const params = useParams();
+    const [vendor, setVendor] = useState<VendorFormDto | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    if (!vendor) {
-        notFound();
-    }
+    useEffect(() => {
+        const fetchVendor = async () => {
+            try {
+                const data = await getVendorIdService(token, tenantId, params.id as string);
+                setVendor(data);
+            } catch (error) {
+                console.error('Error fetching vendor:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchVendor();
+    }, [token, tenantId, params.id]);
 
-    return (
-        <div className="container mx-auto py-6">
-            <VendorForm initialValues={vendor} />
-        </div>
-    );
+    if (loading) return <div>Loading...</div>;
+    if (!vendor) return notFound();
+
+    return <VendorForm initialValues={vendor} />
 }

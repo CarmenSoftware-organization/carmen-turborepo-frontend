@@ -25,7 +25,9 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
             description: selectedNode?.description ?? "",
             is_active: true,
             price_deviation_limit: selectedNode?.price_deviation_limit ?? 0,
-            qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0
+            qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0,
+            is_used_in_recipe: selectedNode?.is_used_in_recipe ?? false,
+            is_sold_directly: selectedNode?.is_sold_directly ?? false,
         }
     });
 
@@ -106,6 +108,43 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                                     />
                                 </FormControl>
                                 <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <FormField
+                        control={form.control}
+                        name="is_used_in_recipe"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
+                                <div>
+                                    <FormLabel className="text-xs">Used in Recipe</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="is_sold_directly"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
+                                <div>
+                                    <FormLabel className="text-xs">Sold Directly</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
                             </FormItem>
                         )}
                     />

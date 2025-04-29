@@ -9,6 +9,8 @@ export const CategorySchema = z.object({
     qty_deviation_limit: z.number(),
     description: z.string().optional(),
     is_active: z.boolean(),
+    is_used_in_recipe: z.boolean(),
+    is_sold_directly: z.boolean(),
 });
 
 export type CategoryDto = z.infer<typeof CategorySchema>;
@@ -22,6 +24,8 @@ export const SubCategorySchema = z.object({
     description: z.string().optional(),
     is_active: z.boolean(),
     product_category_id: z.string(),
+    is_used_in_recipe: z.boolean(),
+    is_sold_directly: z.boolean(),
 });
 
 export const ItemGroupSchema = z.object({
@@ -33,6 +37,8 @@ export const ItemGroupSchema = z.object({
     description: z.string().optional(),
     is_active: z.boolean(),
     product_subcategory_id: z.string(),
+    is_used_in_recipe: z.boolean(),
+    is_sold_directly: z.boolean(),
 });
 
 // Form schemas for create/edit operations
@@ -63,4 +69,6 @@ export type CategoryNode = {
     product_subcategory_id?: string;
     price_deviation_limit?: number;
     qty_deviation_limit?: number;
+    is_used_in_recipe?: boolean;
+    is_sold_directly?: boolean;
 }; 

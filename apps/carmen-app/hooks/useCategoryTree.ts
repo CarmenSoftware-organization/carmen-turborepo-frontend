@@ -39,6 +39,7 @@ export const useCategoryTree = ({
 
         // Map ItemGroup to CategoryNode
         const mapItemGroups = (subcategoryId: string): CategoryNode[] => {
+            const parentSubCategory = subCategories.find(sub => sub.id === subcategoryId);
             return itemGroups
                 .filter(item => item.product_subcategory_id === subcategoryId)
                 .map(item => ({
@@ -51,12 +52,15 @@ export const useCategoryTree = ({
                     product_subcategory_id: item.product_subcategory_id,
                     is_active: item.is_active,
                     price_deviation_limit: item.price_deviation_limit,
-                    qty_deviation_limit: item.qty_deviation_limit
+                    qty_deviation_limit: item.qty_deviation_limit,
+                    is_used_in_recipe: item.is_used_in_recipe ?? parentSubCategory?.is_used_in_recipe ?? false,
+                    is_sold_directly: item.is_sold_directly ?? parentSubCategory?.is_sold_directly ?? false
                 }));
         };
 
         // Map SubCategory to CategoryNode
         const mapSubCategories = (categoryId: string): CategoryNode[] => {
+            const parentCategory = categories.find(cat => cat.id === categoryId);
             return subCategories
                 .filter(sub => sub.product_category_id === categoryId)
                 .map(sub => ({
@@ -69,7 +73,9 @@ export const useCategoryTree = ({
                     product_category_id: sub.product_category_id,
                     is_active: sub.is_active,
                     price_deviation_limit: sub.price_deviation_limit,
-                    qty_deviation_limit: sub.qty_deviation_limit
+                    qty_deviation_limit: sub.qty_deviation_limit,
+                    is_used_in_recipe: sub.is_used_in_recipe ?? parentCategory?.is_used_in_recipe ?? false,
+                    is_sold_directly: sub.is_sold_directly ?? parentCategory?.is_sold_directly ?? false
                 }));
         };
 
@@ -83,7 +89,9 @@ export const useCategoryTree = ({
             children: mapSubCategories(cat.id || ''),
             is_active: cat.is_active,
             price_deviation_limit: cat.price_deviation_limit,
-            qty_deviation_limit: cat.qty_deviation_limit
+            qty_deviation_limit: cat.qty_deviation_limit,
+            is_used_in_recipe: cat.is_used_in_recipe,
+            is_sold_directly: cat.is_sold_directly
         }));
     }, [categories, subCategories, itemGroups]);
 

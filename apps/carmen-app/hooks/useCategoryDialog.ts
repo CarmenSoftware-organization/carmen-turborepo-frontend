@@ -1,11 +1,12 @@
 import { useState, useCallback, useEffect } from "react";
-import { CategoryNode } from "@/dtos/category.dto";
+import { CategoryNode, CategoryFormData, SubCategoryFormData, ItemGroupFormData } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
-import { CategoryFormData, SubCategoryFormData, ItemGroupFormData } from "@/dtos/category.dto";
+
+type formSubmitType = CategoryFormData | SubCategoryFormData | ItemGroupFormData;
 
 export interface UseCategoryDialogProps {
-    onFormSubmit: (data: CategoryFormData | SubCategoryFormData | ItemGroupFormData) => Promise<void> | void;
-    categoryData?: CategoryNode[]; // Add categoryData to find parent nodes
+    onFormSubmit: (data: formSubmitType) => Promise<void> | void;
+    categoryData?: CategoryNode[];
 }
 
 export interface UseCategoryDialogReturn {
@@ -16,7 +17,7 @@ export interface UseCategoryDialogReturn {
     handleDialogChange: (open: boolean) => void;
     handleEdit: (node: CategoryNode) => void;
     handleAdd: (parent?: CategoryNode) => void;
-    handleFormSubmit: (data: CategoryFormData | SubCategoryFormData | ItemGroupFormData) => void;
+    handleFormSubmit: (data: formSubmitType) => void;
 }
 
 export const useCategoryDialog = ({
