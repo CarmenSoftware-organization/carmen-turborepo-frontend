@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/tooltip"
 
 const getIconColor = (type: CategoryNode["type"]) => {
-    if (type === "category") return "";
-    if (type === "subcategory") return "text-blue-500";
-    return "text-green-500";
+    if (type === "category") return "text-primary";
+    if (type === "subcategory") return "text-gray-500";
+    return "text-emerald-500";
 };
 
 interface TreeNodeProps {
@@ -59,13 +59,13 @@ export default function TreeNode({
                 )}
 
                 <Icon
-                    className={`h-4 w-4 mr-2 ${getIconColor(node.type)}`}
+                    className={`h-5 w-5 mr-2 ${getIconColor(node.type)}`}
                 />
 
                 <div className="flex-1">
-                    <div className="font-medium">{node.name}</div>
-                    <div className="text-xs text-muted-foreground">{node.description}</div>
-                    {node.type === "itemGroup" && <div className="text-xs text-muted-foreground">{node.itemCount}</div>}
+                    <p className="text-xs font-medium">{node.name}</p>
+                    <p className="text-xs text-muted-foreground">{node.description}</p>
+                    {node.type === "itemGroup" && <p className="text-xs text-muted-foreground">{node.itemCount}</p>}
                 </div>
 
                 <div className="flex items-center gap-1">

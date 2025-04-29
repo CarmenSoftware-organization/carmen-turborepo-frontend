@@ -303,12 +303,11 @@ export default function CategoryComponent() {
             return <div>Loading...</div>;
         }
 
-
-
         // Default return when not loading and authorized
         return (
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
+                    <h1 className="text-2xl font-bold">Category</h1>
                     <div className="flex items-center gap-2">
                         <Button onClick={expandAll} size={'sm'} variant={'outline'}>
                             <ChevronDown className="h-4 w-4" />
@@ -318,11 +317,12 @@ export default function CategoryComponent() {
                             <ChevronUp className="h-4 w-4" />
                             Collapse All
                         </Button>
+                        <Button onClick={() => handleAdd()} size={'sm'}>
+                            <Plus className="h-4 w-4" />
+                            Add Category
+                        </Button>
                     </div>
-                    <Button onClick={() => handleAdd()} size={'sm'}>
-                        <Plus className="h-4 w-4" />
-                        Add Category
-                    </Button>
+
                 </div>
 
                 <ScrollArea className="h-[calc(98vh-120px)] border rounded-lg">

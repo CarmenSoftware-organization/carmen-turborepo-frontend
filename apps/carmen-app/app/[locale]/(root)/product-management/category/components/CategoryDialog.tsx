@@ -78,8 +78,8 @@ export function CategoryDialog({
     };
 
     const renderForm = () => {
+        // Edit mode
         if (mode === formType.EDIT && selectedNode) {
-            // For edit mode, use the selectedNode type
             if (selectedNode.type === "category") {
                 return <CategoryForm
                     mode={mode}
@@ -104,29 +104,29 @@ export function CategoryDialog({
                     onCancel={handleClose}
                 />;
             }
+        }
+
+        // Add mode
+        if (!parentNode) {
+            return <CategoryForm
+                mode={mode}
+                onSubmit={handleFormSubmit}
+                onCancel={handleClose}
+            />;
+        } else if (parentNode.type === "category") {
+            return <SubCategoryForm
+                mode={mode}
+                parentNode={effectiveParentNode}
+                onSubmit={handleFormSubmit}
+                onCancel={handleClose}
+            />;
         } else {
-            // For add mode, use the parentNode type
-            if (!parentNode) {
-                return <CategoryForm
-                    mode={mode}
-                    onSubmit={handleFormSubmit}
-                    onCancel={handleClose}
-                />;
-            } else if (parentNode.type === "category") {
-                return <SubCategoryForm
-                    mode={mode}
-                    parentNode={effectiveParentNode}
-                    onSubmit={handleFormSubmit}
-                    onCancel={handleClose}
-                />;
-            } else {
-                return <ItemGroupForm
-                    mode={mode}
-                    parentNode={effectiveParentNode}
-                    onSubmit={handleFormSubmit}
-                    onCancel={handleClose}
-                />;
-            }
+            return <ItemGroupForm
+                mode={mode}
+                parentNode={effectiveParentNode}
+                onSubmit={handleFormSubmit}
+                onCancel={handleClose}
+            />;
         }
     };
 
