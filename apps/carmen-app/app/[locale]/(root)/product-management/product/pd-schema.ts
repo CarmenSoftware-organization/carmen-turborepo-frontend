@@ -5,19 +5,22 @@ export const productFormSchema = z.object({
     id: z.string().uuid().optional(),
     name: z.string().min(1, "Name is required"),
     code: z.string().min(1, "Code is required"),
-    local_name: z.string().min(1, "Local name is required"),
-    description: z.string().optional(),
     inventory_unit_id: z.string().uuid(),
     product_status_type: z.literal("active"),
+    local_name: z.string().min(1, "Local name is required"),
+    description: z.string().optional(),
     product_info: z.object({
         id: z.string().uuid().optional(),
         product_item_group_id: z.string().uuid(),
+        is_used_in_recipe: z.boolean(),
+        is_sold_directly: z.boolean(),
+        barcode: z.string(),
+        price_deviation_limit: z.number().min(1, "Price deviation limit must be greater than or equal to 1"),
+        qty_deviation_limit: z.number().min(1, "Quantity deviation limit must be greater than or equal to 1"),
         is_ingredients: z.boolean(),
         price: z.number().min(0.01, "Price must be greater than or equal to 0.01"),
         tax_type: z.enum(["none", "included", "excluded"]).default("none"),
         tax_rate: z.number().min(0, "Tax rate must be greater than or equal to 0"),
-        price_deviation_limit: z.number().min(1, "Price deviation limit must be greater than or equal to 1"),
-        qty_deviation_limit: z.number().min(1, "Quantity deviation limit must be greater than or equal to 1"),
         info: z.array(z.object({
             label: z.string(),
             value: z.string(),
@@ -110,6 +113,9 @@ export interface ProductInitialValues {
         tax_rate?: number;
         price_deviation_limit?: number;
         qty_deviation_limit?: number;
+        is_used_in_recipe?: boolean;
+        is_sold_directly?: boolean;
+        barcode?: string;
         info?: Array<{
             label: string;
             value: string;

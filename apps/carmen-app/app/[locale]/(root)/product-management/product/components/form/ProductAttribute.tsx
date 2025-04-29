@@ -1,12 +1,13 @@
 import { Control, useFieldArray, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { ProductFormValues } from "../../pd-schema";
-import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
+import { FormField, FormItem, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 
 interface ProductAttributeProps {
     readonly control: Control<ProductFormValues>;
@@ -63,6 +64,130 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
             </div>
 
             <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Price Fields */}
+                    <FormField
+                        control={control}
+                        name="product_info.price"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Price</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        step="0.01"
+                                        min="0.01"
+                                        placeholder="Enter price"
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                        disabled={isViewMode}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={control}
+                        name="product_info.price_deviation_limit"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Price Deviation Limit (%)</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        min="1"
+                                        placeholder="Enter price deviation limit"
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                        disabled={isViewMode}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={control}
+                        name="product_info.qty_deviation_limit"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Quantity Deviation Limit (%)</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        min="1"
+                                        placeholder="Enter quantity deviation limit"
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                        disabled={isViewMode}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    {/* Existing fields */}
+                    <FormField
+                        control={control}
+                        name="product_info.barcode"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Barcode</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        placeholder="Enter barcode"
+                                        {...field}
+                                        disabled={isViewMode}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={control}
+                        name="product_info.is_used_in_recipe"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                    <FormLabel>Used in Recipe</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        disabled={isViewMode}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={control}
+                        name="product_info.is_sold_directly"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                <div className="space-y-0.5">
+                                    <FormLabel>Sold Directly</FormLabel>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        disabled={isViewMode}
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
                 {isViewMode ? (
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                         {attributeValues && attributeValues.length > 0 ? (

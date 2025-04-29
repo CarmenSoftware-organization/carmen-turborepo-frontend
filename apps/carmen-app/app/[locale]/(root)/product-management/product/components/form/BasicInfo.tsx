@@ -1,5 +1,5 @@
 import { formType } from "@/dtos/form.dto";
-import { Control, useFormContext } from "react-hook-form";
+import { Control, useFormContext, useWatch } from "react-hook-form";
 import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Pencil, Save, X } from "lucide-react";
+import { ChevronLeft, Save, X, Edit } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 
 interface BasicInfoProps {
@@ -130,6 +130,37 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
         setSelectedItemGroup(value);
     };
 
+    // Watch required fields
+    const watchedFields = useWatch({
+        control,
+        name: [
+            'name',
+            'code',
+            'local_name',
+            'inventory_unit_id',
+            'product_info.price',
+            'product_info.price_deviation_limit',
+            'product_info.qty_deviation_limit',
+            'product_info.product_item_group_id'
+        ]
+    });
+
+    // Check if all required fields are filled
+    const isFormValid = () => {
+        const [name, code, localName, inventoryUnitId, price, priceDeviation, qtyDeviation, itemGroupId] = watchedFields;
+
+        return Boolean(
+            name &&
+            code &&
+            localName &&
+            inventoryUnitId &&
+            price >= 0.01 &&
+            priceDeviation >= 1 &&
+            qtyDeviation >= 1 &&
+            itemGroupId
+        );
+    };
+
     return (
         <Card className="p-4">
             <div className="flex flex-row gap-2 justify-between border-b pb-2">
@@ -194,7 +225,7 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                                 <ChevronLeft className="h-4 w-4" /> Back
                             </Button>
                             <Button variant="default" size={'sm'} onClick={handleEditClick}>
-                                <Pencil className="h-4 w-4" /> Edit
+                                <Edit className="h-4 w-4" /> Edit
                             </Button>
                         </>
                     ) : (
@@ -206,6 +237,7 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                                 variant="default"
                                 size={'sm'}
                                 type="submit"
+                                disabled={!isFormValid()}
                             >
                                 <Save className="h-4 w-4" /> Save
                             </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { createProductService, updateProductService } from "@/services/product.service";
@@ -12,7 +12,7 @@ import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
 import ProductAttribute from "./ProductAttribute";
 import { ProductFormValues, ProductInitialValues, productFormSchema } from "../../pd-schema";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "@/lib/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -51,6 +51,9 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 tax_rate: 0,
                 price_deviation_limit: 0,
                 qty_deviation_limit: 0,
+                is_used_in_recipe: false,
+                is_sold_directly: false,
+                barcode: '',
                 info: []
             },
             locations: {
@@ -97,6 +100,9 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 tax_rate: initialValues.product_info?.tax_rate ?? 0,
                 price_deviation_limit: initialValues.product_info?.price_deviation_limit ?? 0,
                 qty_deviation_limit: initialValues.product_info?.qty_deviation_limit ?? 0,
+                is_used_in_recipe: initialValues.product_info?.is_used_in_recipe ?? false,
+                is_sold_directly: initialValues.product_info?.is_sold_directly ?? false,
+                barcode: initialValues.product_info?.barcode ?? '',
                 info: initialValues.product_info?.info ?? []
             },
             locations: {
@@ -153,9 +159,23 @@ export default function FormProduct({ mode, initialValues }: Props) {
         defaultValues: transformInitialValues() as ProductFormValues
     });
 
-    const onSubmit = async (data: ProductFormValues) => {
+    const formValues = useWatch({
+        control: form.control
+    });
 
-        console.log('data submit', data);
+    useEffect(() => {
+        console.log('Current form values:', formValues);
+        console.log('Form errors:', form.formState.errors);
+        console.log('Is form valid:', form.formState.isValid);
+        console.log('Is form dirty:', form.formState.isDirty);
+        console.log('Is form submitting:', form.formState.isSubmitting);
+    }, [formValues, form.formState]);
+
+    const onSubmit = async (data: ProductFormValues) => {
+        console.log('Form submission started');
+        console.log('Form values before submit:', form.getValues());
+        console.log('Form errors before submit:', form.formState.errors);
+
         try {
             // Create a copy of the data and remove .data properties
             const { locations, order_units, ingredient_units, ...restData } = data;
