@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { VendorGetDto } from "./vendor-management";
 
 export const infoItemSchema = z.object({
     label: z.string().min(1, "Label is required"),
@@ -32,4 +33,28 @@ export const vendorFormSchema = z.object({
     vendor_contact: z.array(contactSchema),
 })
 
-export type VendorFormValues = z.infer<typeof vendorFormSchema>
+export type VendorFormValues = z.infer<typeof vendorFormSchema>;
+
+export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
+    return {
+        id: data.id,
+        name: data.name,
+        description: data.description || "",
+        info: data.info || [],
+        vendor_address: data.vendor_address?.map(addr => ({
+            address_type: addr.address_type,
+            data: {
+                street: addr.address.line_1 ?? "",
+                city: addr.address.sub_district ?? "",
+                state: addr.address.province ?? "",
+                zip: addr.address.postal_code ?? "",
+                country: addr.address.country ?? "",
+            }
+        })) || [],
+        vendor_contact: data.vendor_contact?.map(contact => ({
+            contact_type: contact.contact_type as "phone" | "email" | "website" | "other",
+            description: contact.description || "",
+            info: contact.info || []
+        })) || []
+    };
+};

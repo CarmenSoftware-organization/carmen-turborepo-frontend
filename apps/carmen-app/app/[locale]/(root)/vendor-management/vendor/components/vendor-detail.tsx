@@ -2,12 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Edit, Trash2, Download, Mail, Phone, Globe, MapPin } from "lucide-react"
+import { ArrowLeft, Edit, Download, Mail, Phone, Globe, MapPin } from "lucide-react"
 import { format } from "date-fns"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { VendorFormValues } from "@/dtos/vendor.dto"
 import VendorForm from "./vendor-form"
@@ -15,20 +14,14 @@ import { formType } from "@/dtos/form.dto"
 import { Card } from "@/components/ui/card"
 
 interface VendorDetailProps {
-    vendor: VendorFormValues & {
-        status?: string;
-        created_at?: string;
-        updated_at?: string;
-    }
+    vendor: VendorFormValues
 }
 
 export default function VendorDetail({ vendor }: VendorDetailProps) {
     const [activeTab, setActiveTab] = useState("info")
     const [isEditMode, setIsEditMode] = useState(false)
-
     // Handle toggling edit mode
     const handleEdit = () => setIsEditMode(true)
-    const handleBack = () => setIsEditMode(false)
 
     const formatDate = (dateString: string | undefined, includeTime = false) => {
         if (!dateString) return "N/A"
@@ -83,9 +76,6 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                     <div>
                         <div className="flex items-center gap-2">
                             <h1 className="text-lg font-medium text-gray-800">{vendor.name}</h1>
-                            <Badge variant={vendor.status === "active" ? "default" : "secondary"} className="text-[10px] h-5">
-                                {vendor.status?.toUpperCase() || "N/A"}
-                            </Badge>
                         </div>
                         <p className="text-xs text-gray-500">Vendor ID: {vendor.id || "N/A"}</p>
                     </div>
@@ -94,10 +84,6 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                     <Button variant="outline" size="sm" className="h-7 text-xs">
                         <Download className="mr-1 h-3 w-3" />
                         Export
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-7 text-xs">
-                        <Trash2 className="mr-1 h-3 w-3" />
-                        Delete
                     </Button>
                     <Button size="sm" className="h-7 text-xs" onClick={handleEdit}>
                         <Edit className="mr-1 h-3 w-3" />
@@ -111,14 +97,6 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                     <div>
                         <p className="text-xs font-medium text-gray-500">Description</p>
                         <p className="text-sm">{vendor.description || "No description available"}</p>
-                    </div>
-                    <div>
-                        <p className="text-xs font-medium text-gray-500">Created</p>
-                        <p className="text-sm">{formatDate(vendor.created_at, true)}</p>
-                    </div>
-                    <div>
-                        <p className="text-xs font-medium text-gray-500">Last Updated</p>
-                        <p className="text-sm">{formatDate(vendor.updated_at, true)}</p>
                     </div>
                 </div>
             </div>

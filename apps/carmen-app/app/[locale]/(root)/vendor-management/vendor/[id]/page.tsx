@@ -2,52 +2,63 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { getVendorIdService } from "@/services/vendor.service";
-import { notFound, useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { VendorFormValues } from "@/dtos/vendor.dto";
-import { formType } from "@/dtos/form.dto";
+import { transformVendorData, VendorFormValues } from "@/dtos/vendor.dto";
 import VendorDetail from "../components/vendor-detail";
-import VendorForm from "../components/vendor-form";
+import SignInDialog from "@/components/SignInDialog";
+
 
 export default function VendorPage() {
     const { token, tenantId } = useAuth();
     const params = useParams();
-    const searchParams = useSearchParams();
-    const mode = searchParams.get('mode');
-    const isEditMode = mode === 'edit';
-
-    const [vendor, setVendor] = useState<VendorFormValues | null>(null);
+    const [vendor, setVendor] = useState<VendorFormValues>();
     const [loading, setLoading] = useState(true);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const id = params.id as string;
 
     useEffect(() => {
         const fetchVendor = async () => {
+            if (!id) {
+                setLoading(false);
+                return;
+            }
+            setLoading(true);
             try {
-                const data = await getVendorIdService(token, tenantId, params.id as string);
-                setVendor(data);
+                const response = await getVendorIdService(token, tenantId, id);
+                console.log('response', response);
+                if (response && (response.status === 401 || response.statusCode === 401)) {
+                    setLoginDialogOpen(true);
+                    setLoading(false);
+                    return;
+                }
+                if (response.error) {
+                    setLoading(false);
+                    return;
+                }
+                const transformedData = transformVendorData(response);
+                setVendor(transformedData);
             } catch (error) {
                 console.error('Error fetching vendor:', error);
+                if (error instanceof Error && error.message.includes('401')) {
+                    setLoginDialogOpen(true);
+                }
             } finally {
                 setLoading(false);
             }
         };
         fetchVendor();
-    }, [token, tenantId, params.id]);
+    }, [token, tenantId, id]);
 
-    if (loading) return <div>Loading...</div>;
-    if (!vendor) return notFound();
-
-    if (isEditMode) {
-        return (
-            <div className="p-4 bg-gray-50 min-h-screen">
-                <div className="max-w-screen-xl mx-auto">
-                    <h1 className="text-lg font-medium text-gray-800 mb-4">Edit Vendor</h1>
-                    <VendorForm mode={formType.EDIT} initData={vendor} />
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="p-4">Loading...</div>;
 
     return (
-        <VendorDetail vendor={vendor} />
+        <>
+            {vendor && <VendorDetail vendor={vendor} />}
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+            />
+        </>
     );
 }
