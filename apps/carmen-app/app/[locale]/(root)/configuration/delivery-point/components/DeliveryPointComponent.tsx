@@ -7,14 +7,14 @@ import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo } from "react";
 import DeliveryPointList from "./DeliveryPointList";
 import DeliveryPointDialog from "./DeliveryPointDialog";
 import { DeliveryPointDto } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import SignInDialog from "@/components/SignInDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
-import { useDeliveryPointQuery } from "@/hooks/useDeliveryPointQuery";
+import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
 import { SortConfig, SortDirection } from "@/utils/table-sort";
 import {
     AlertDialog,
@@ -27,150 +27,44 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { boolFilterOptions } from "@/constants/options";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { useAuth } from "@/context/AuthContext";
 
 export function DeliveryPointComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
     const tDeliveryPoint = useTranslations('DeliveryPoint');
-    const { token } = useAuth();
 
-    // State management
-    const [isUnauthorized, setIsUnauthorized] = useState(false);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-    const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointDto | undefined>();
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-
-    // URL params state
-    const [search, setSearch] = useState('');
-    const [sort, setSort] = useState('');
-    const [page, setPage] = useState('1');
-    const [filter, setFilter] = useState('');
-
-    // Get the query functions from our hook
+    // Use the combined hook that includes all functionality
     const {
-        useGetDeliveryPoints,
-        createDeliveryPointMutation,
-        updateDeliveryPointMutation,
-        toggleDeliveryPointStatusMutation
-    } = useDeliveryPointQuery();
-
-    // Fetch data with the query hook
-    const {
-        data,
+        deliveryPoints,
         isPending,
-        refetch: fetchDeliveryPoints
-    } = useGetDeliveryPoints({
+        isUnauthorized,
+        isSubmitting,
+        dialogOpen,
+        setDialogOpen,
+        confirmDialogOpen,
+        setConfirmDialogOpen,
+        selectedDeliveryPoint,
+        statusOpen,
+        setStatusOpen,
+        loginDialogOpen,
+        setLoginDialogOpen,
+        totalPages,
+        currentPage,
         search,
-        page,
-        perPage: '10',
+        setSearch,
         sort,
-        filter
-    });
-
-    const deliveryPoints = data?.data ?? [];
-    const totalPages = data?.paginate?.pages ?? 1;
-    const currentPage = parseInt(page ?? '1');
-
-    // Check for unauthorized responses
-    useEffect(() => {
-        if (data?.statusCode === 401) {
-            setIsUnauthorized(true);
-            setLoginDialogOpen(true);
-        }
-    }, [data]);
-
-    // Reset pagination when search changes
-    useEffect(() => {
-        if (search) {
-            setPage('1');
-        }
-    }, [search]);
-
-    const handleAdd = useCallback(() => {
-        setSelectedDeliveryPoint(undefined);
-        setDialogOpen(true);
-    }, []);
-
-    const handleEdit = useCallback((deliveryPoint: DeliveryPointDto) => {
-        setSelectedDeliveryPoint(deliveryPoint);
-        setDialogOpen(true);
-    }, []);
-
-    const handleToggleStatus = useCallback((deliveryPoint: DeliveryPointDto) => {
-        if (!deliveryPoint.id) {
-            toastError({ message: 'Invalid delivery point ID' });
-            return;
-        }
-
-        if (deliveryPoint.is_active) {
-            setSelectedDeliveryPoint(deliveryPoint);
-            setConfirmDialogOpen(true);
-        } else {
-            toggleDeliveryPointStatusMutation.mutate(deliveryPoint, {
-                onSuccess: () => {
-                    toastSuccess({ message: 'Delivery point activated successfully' });
-                },
-                onError: () => {
-                    toastError({ message: 'Error toggling delivery point status' });
-                }
-            });
-        }
-    }, [toggleDeliveryPointStatusMutation]);
-
-    const handleConfirmToggle = useCallback(() => {
-        if (selectedDeliveryPoint) {
-            toggleDeliveryPointStatusMutation.mutate(selectedDeliveryPoint, {
-                onSuccess: () => {
-                    toastSuccess({ message: 'Delivery point deactivated successfully' });
-                    setConfirmDialogOpen(false);
-                    setSelectedDeliveryPoint(undefined);
-                },
-                onError: () => {
-                    toastError({ message: 'Error toggling delivery point status' });
-                }
-            });
-        }
-    }, [selectedDeliveryPoint, toggleDeliveryPointStatusMutation]);
-
-    const handleSubmit = useCallback((data: DeliveryPointDto, mode: formType, selectedDP?: DeliveryPointDto) => {
-        if (!token) return;
-
-        if (mode === formType.ADD) {
-            createDeliveryPointMutation.mutate(data, {
-                onSuccess: () => {
-                    toastSuccess({ message: 'Delivery point created successfully' });
-                    setDialogOpen(false);
-                },
-                onError: () => {
-                    toastError({ message: 'Error creating delivery point' });
-                }
-            });
-        } else {
-            const updatedDeliveryPoint: DeliveryPointDto = {
-                ...data,
-                id: selectedDP?.id
-            };
-
-            updateDeliveryPointMutation.mutate(updatedDeliveryPoint, {
-                onSuccess: () => {
-                    toastSuccess({ message: 'Delivery point updated successfully' });
-                    setDialogOpen(false);
-                    setSelectedDeliveryPoint(undefined);
-                },
-                onError: () => {
-                    toastError({ message: 'Error updating delivery point' });
-                }
-            });
-        }
-    }, [token, createDeliveryPointMutation, updateDeliveryPointMutation]);
-
-    const handlePageChange = useCallback((newPage: number) => {
-        setPage(newPage.toString());
-    }, []);
+        setSort,
+        filter,
+        handleSetFilter,
+        handleSetSort,
+        fetchDeliveryPoints,
+        handleToggleStatus,
+        handleConfirmToggle,
+        handleSubmit,
+        handlePageChange,
+        handleAdd,
+        handleEdit
+    } = useDeliveryPoint();
 
     const sortFields = useMemo(() => [
         { key: 'name', label: tHeader('name') },
@@ -220,7 +114,7 @@ export function DeliveryPointComponent() {
                 <StatusSearchDropdown
                     options={boolFilterOptions}
                     value={filter}
-                    onChange={setFilter}
+                    onChange={handleSetFilter}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
                     data-id="delivery-point-status-search-dropdown"
@@ -228,12 +122,12 @@ export function DeliveryPointComponent() {
                 <SortComponent
                     fieldConfigs={sortFields}
                     sort={sort}
-                    setSort={setSort}
+                    setSort={handleSetSort}
                     data-id="delivery-point-sort-dropdown"
                 />
             </div>
         </div>
-    ), [search, setSearch, tCommon, filter, setFilter, statusOpen, setStatusOpen, sortFields, sort, setSort]);
+    ), [search, setSearch, tCommon, filter, handleSetFilter, statusOpen, setStatusOpen, sortFields, sort, handleSetSort]);
 
     // Parse the sort string into field and direction
     const parsedSort = useMemo((): SortConfig | undefined => {
@@ -248,31 +142,33 @@ export function DeliveryPointComponent() {
         };
     }, [sort]);
 
-    const content = useMemo(() => (
-        <>
-            {isUnauthorized ? (
-                <UnauthorizedMessage
-                    onRetry={fetchDeliveryPoints}
-                    onLogin={() => setLoginDialogOpen(true)}
-                />
-            ) : (
-                <DeliveryPointList
-                    deliveryPoints={deliveryPoints}
-                    onEdit={handleEdit}
-                    onToggleStatus={handleToggleStatus}
-                    isLoading={isPending}
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    sort={parsedSort}
-                    onSort={(field) => {
-                        const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
-                        setSort(`${field}:${direction}`);
-                    }}
-                />
-            )}
-        </>
-    ), [deliveryPoints, handleEdit, handleToggleStatus, isPending, isUnauthorized, fetchDeliveryPoints, setLoginDialogOpen, currentPage, totalPages, handlePageChange, parsedSort, setSort]);
+    const content = useMemo(() => {
+        return (
+            <>
+                {isUnauthorized ? (
+                    <UnauthorizedMessage
+                        onRetry={fetchDeliveryPoints}
+                        onLogin={() => setLoginDialogOpen(true)}
+                    />
+                ) : (
+                    <DeliveryPointList
+                        deliveryPoints={deliveryPoints}
+                        onEdit={handleEdit}
+                        onToggleStatus={handleToggleStatus}
+                        isLoading={isPending}
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                        sort={parsedSort}
+                        onSort={(field) => {
+                            const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
+                            setSort(`${field}:${direction}`);
+                        }}
+                    />
+                )}
+            </>
+        );
+    }, [deliveryPoints, isUnauthorized, fetchDeliveryPoints, setLoginDialogOpen, handleEdit, handleToggleStatus, isPending, currentPage, totalPages, handlePageChange, parsedSort, setSort]);
 
     const handleDialogSubmit = (data: DeliveryPointDto) => {
         handleSubmit(data, selectedDeliveryPoint ? formType.EDIT : formType.ADD, selectedDeliveryPoint);
@@ -292,6 +188,7 @@ export function DeliveryPointComponent() {
                 mode={selectedDeliveryPoint ? formType.EDIT : formType.ADD}
                 deliveryPoint={selectedDeliveryPoint}
                 onSubmit={handleDialogSubmit}
+                isLoading={isSubmitting}
             />
             <SignInDialog
                 open={loginDialogOpen}

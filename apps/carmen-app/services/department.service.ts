@@ -1,5 +1,9 @@
 import { backendApi } from "@/lib/backend-api";
 import { DepartmentDto } from "@/dtos/config.dto";
+import axios from "axios";
+import { requestHeaders } from "@/lib/config.api";
+
+const API_URL = `${backendApi}/api/config/departments`;
 
 export const getAllDepartments = async (token: string, tenantId: string,
     params: {
@@ -10,6 +14,16 @@ export const getAllDepartments = async (token: string, tenantId: string,
         filter?: string;
     } = {}
 ) => {
+    if (!token || !tenantId) {
+        console.error('Token or tenantId is missing');
+        // ส่งค่ากลับเป็น object ว่างเพื่อให้สามารถใช้งานต่อได้โดยไม่เกิด error
+        return {
+            data: [],
+            paginate: { pages: 1 },
+            message: 'Token or tenantId is missing'
+        };
+    }
+
     try {
         const query = new URLSearchParams();
 
@@ -20,39 +34,34 @@ export const getAllDepartments = async (token: string, tenantId: string,
         });
 
         const queryString = query.toString();
+        const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
-        const url = queryString
-            ? `${backendApi}/api/config/departments?${queryString}`
-            : `${backendApi}/api/config/departments`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
+        const response = await axios.get(url, {
+            headers: requestHeaders(token, tenantId)
         });
-        const data = await response.json();
-        return data;
+        console.log('response', response);
+
+        return response.data;
     } catch (error) {
         console.error('Failed to fetch departments:', error);
+        // ส่งค่ากลับเป็น object ว่างเพื่อให้สามารถใช้งานต่อได้โดยไม่เกิด error
+        return {
+            data: [],
+            paginate: { pages: 1 },
+            error: error
+        };
     }
 };
 
 export const createDepartment = async (token: string, tenantId: string, department: DepartmentDto) => {
-    const url = `${backendApi}/api/config/departments`;
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(department),
-    });
-    const data = await response.json();
-    return data;
+    try {
+        const response = await axios.post(API_URL, department, {
+            headers: requestHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to create department:', error);
+    }
 };
 
 export const updateDepartment = async (token: string, tenantId: string, department: DepartmentDto) => {

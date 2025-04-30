@@ -18,16 +18,6 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 
-interface Unit {
-    id: string;
-    name: string;
-    description: string;
-    is_active: boolean;
-    created_at: string;
-    created_by_id: string;
-    updated_at: string;
-    updated_by_id: string | null;
-}
 
 export default function LookupPage() {
     const { units } = useUnit();

@@ -1,14 +1,9 @@
 import { backendApi } from "@/lib/backend-api";
 import { DeliveryPointDto } from "@/dtos/config.dto";
 import axios from "axios";
+import { requestHeaders } from "@/lib/config.api";
 
 const API_URL = `${backendApi}/api/config/delivery-point`;
-
-const getHeaders = (token: string, tenantId: string) => ({
-    'Authorization': `Bearer ${token}`,
-    'x-tenant-id': tenantId,
-    'Content-Type': 'application/json',
-});
 
 export const getAllDeliveryPoints = async (
     token: string,
@@ -34,20 +29,19 @@ export const getAllDeliveryPoints = async (
         const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
         const response = await axios.get(url, {
-            headers: getHeaders(token, tenantId)
+            headers: requestHeaders(token, tenantId)
         });
 
         return response.data;
     } catch (error) {
         console.log('error', error);
-        throw error;
     }
 }
 
 export const createDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
     try {
         const response = await axios.post(API_URL, deliveryPoint, {
-            headers: getHeaders(token, tenantId)
+            headers: requestHeaders(token, tenantId)
         });
         return response.data;
     } catch (error) {
@@ -59,7 +53,7 @@ export const createDeliveryPoint = async (token: string, tenantId: string, deliv
 export const updateDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
     try {
         const response = await axios.patch(`${API_URL}/${deliveryPoint.id}`, deliveryPoint, {
-            headers: getHeaders(token, tenantId)
+            headers: requestHeaders(token, tenantId)
         });
         return response.data;
     } catch (error) {
@@ -72,7 +66,7 @@ export const inactiveDeliveryPoint = async (token: string, tenantId: string, del
     try {
         const response = await axios.put(`${API_URL}/${deliveryPoint.id}`,
             { ...deliveryPoint, is_active: !deliveryPoint.is_active },
-            { headers: getHeaders(token, tenantId) }
+            { headers: requestHeaders(token, tenantId) }
         );
         return response.data;
     } catch (error) {
