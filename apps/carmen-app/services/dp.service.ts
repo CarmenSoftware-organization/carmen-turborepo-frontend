@@ -1,5 +1,14 @@
 import { backendApi } from "@/lib/backend-api";
 import { DeliveryPointDto } from "@/dtos/config.dto";
+import axios from "axios";
+
+const API_URL = `${backendApi}/api/config/delivery-point`;
+
+const getHeaders = (token: string, tenantId: string) => ({
+    'Authorization': `Bearer ${token}`,
+    'x-tenant-id': tenantId,
+    'Content-Type': 'application/json',
+});
 
 export const getAllDeliveryPoints = async (
     token: string,
@@ -22,68 +31,53 @@ export const getAllDeliveryPoints = async (
         });
 
         const queryString = query.toString();
+        const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
-        const url = queryString
-            ? `${backendApi}/api/config/delivery-point?${queryString}`
-            : `${backendApi}/api/config/delivery-point`;
-
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
+        const response = await axios.get(url, {
+            headers: getHeaders(token, tenantId)
         });
-        const data = await response.json();
-        return data;
+
+        return response.data;
     } catch (error) {
-        console.error('Error fetching delivery points:', error);
+        console.log('error', error);
+        throw error;
     }
 }
 
 export const createDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
-    const url = `${backendApi}/api/config/delivery-point`;
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(deliveryPoint),
-    });
-    const data = await response.json();
-    return data;
+    try {
+        const response = await axios.post(API_URL, deliveryPoint, {
+            headers: getHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.log('error', error);
+        throw error;
+    }
 }
 
 export const updateDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
-    const url = `${backendApi}/api/config/delivery-point/${deliveryPoint.id}`;
-    const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(deliveryPoint),
-    });
-    const data = await response.json();
-    return data;
+    try {
+        const response = await axios.patch(`${API_URL}/${deliveryPoint.id}`, deliveryPoint, {
+            headers: getHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.log('error', error);
+        throw error;
+    }
 }
 
 export const inactiveDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
-    const url = `${backendApi}/api/config/delivery-point/${deliveryPoint.id}`;
-    const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...deliveryPoint, is_active: !deliveryPoint.is_active }),
-    });
-    const data = await response.json();
-    return data;
+    try {
+        const response = await axios.put(`${API_URL}/${deliveryPoint.id}`,
+            { ...deliveryPoint, is_active: !deliveryPoint.is_active },
+            { headers: getHeaders(token, tenantId) }
+        );
+        return response.data;
+    } catch (error) {
+        console.log('error', error);
+        throw error;
+    }
 }
 
