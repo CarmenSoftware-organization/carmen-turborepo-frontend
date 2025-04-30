@@ -1,4 +1,4 @@
-import { VendorFormDto } from "@/dtos/vendor-management";
+import { VendorFormValues } from "@/dtos/vendor.dto";
 import { backendApi } from "@/lib/backend-api";
 
 
@@ -40,6 +40,7 @@ export const getAllVendorService = async (token: string, tenantId: string,
         return data;
     } catch (error) {
         console.error('Failed to fetch vendors:', error);
+        return { data: [], paginate: { pages: 1 } };
     }
 }
 
@@ -53,60 +54,80 @@ export const getVendorIdService = async (token: string, tenantId: string, id: st
             'Content-Type': 'application/json',
         },
     };
-    const response = await fetch(url, options);
-    const data = await response.json();
-    return data;
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch vendor:', error);
+        return { data: {} };
+    }
 }
 
 
 
-export const createVendorService = async (token: string, tenantId: string, vendor: VendorFormDto) => {
-    const url = `${backendApi}/api/config/vendors`;
-    const options = {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vendor),
-    };
-    const response = await fetch(url, options);
-    const data = await response.json();
-    return data;
+export const createVendorService = async (token: string, tenantId: string, vendor: VendorFormValues) => {
+    try {
+        const url = `${backendApi}/api/config/vendors`;
+        const options = {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(vendor),
+        };
+        const response = await fetch(url, options);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to create vendor:', error);
+        return { success: false, message: 'Failed to create vendor' };
+    }
 };
 
 
-export const updateVendorService = async (token: string, tenantId: string, vendor: VendorFormDto) => {
-    const url = `${backendApi}/api/config/vendors/${vendor.id}`;
-    const options = {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vendor),
-    };
-    const response = await fetch(url, options);
-    const data = await response.json();
-    return data;
+export const updateVendorService = async (token: string, tenantId: string, vendor: VendorFormValues) => {
+    try {
+        const url = `${backendApi}/api/config/vendors/${vendor.id}`;
+        const options = {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(vendor),
+        };
+        const response = await fetch(url, options);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to update vendor:', error);
+        return { success: false, message: 'Failed to update vendor' };
+    }
 };
 
-export const deleteVendorService = async (token: string, tenantId: string, vendor: VendorFormDto) => {
-    const url = `${backendApi}/api/config/vendors/${vendor.id}`;
-    const options = {
-        method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    };
-    const response = await fetch(url, options);
-    if (response.ok) {
-        return true;
-    } else {
+export const deleteVendorService = async (token: string, tenantId: string, id: string) => {
+    try {
+        const url = `${backendApi}/api/config/vendors/${id}`;
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'x-tenant-id': tenantId,
+                'Content-Type': 'application/json',
+            },
+        };
+        const response = await fetch(url, options);
+        if (response.ok) {
+            return true;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        console.error('Failed to delete vendor:', error);
         return false;
-    };
+    }
 };

@@ -1,5 +1,6 @@
-import VendorForm from "../components/VendorForm";
+import { formType } from "@/dtos/form.dto";
+import VendorForm from "../components/vendor-form";
 
 export default function NewVendor() {
-    return <VendorForm />
+    return <VendorForm mode={formType.ADD} />
 }

@@ -49,6 +49,7 @@ export default function VendorList({
                             <TableHead className="w-10 text-center">#</TableHead>
                             <TableHead className="w-60 text-left">Name</TableHead>
                             <TableHead className="w-60 text-left">Description</TableHead>
+                            <TableHead className="w-60 text-left">Business Type</TableHead>
                             <TableHead className="w-60 text-left">Status</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>
@@ -70,6 +71,7 @@ export default function VendorList({
                                             <TableCell className="text-center w-10">{index + 1}</TableCell>
                                             <TableCell className="font-medium w-60">{vendor.name}</TableCell>
                                             <TableCell className="text-left w-60">{vendor.description}</TableCell>
+                                            <TableCell className="text-left w-60">{vendor.business_type_name ?? "-"}</TableCell>
                                             <TableCell className="text-left w-60">
                                                 <Badge variant={vendor.is_active ? "active" : "inactive"}>
                                                     {vendor.is_active ? "Active" : "Inactive"}
@@ -147,6 +149,10 @@ export default function VendorList({
                                     <div className="space-y-1">
                                         <p className="text-sm text-muted-foreground">Description</p>
                                         <p className="text-sm font-medium">{vendor.description}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-sm text-muted-foreground">Business Type</p>
+                                        <p className="text-sm font-medium">{vendor.business_type_name ?? "-"}</p>
                                     </div>
                                     {vendor.info.length > 0 && (
                                         <div className="space-y-3">

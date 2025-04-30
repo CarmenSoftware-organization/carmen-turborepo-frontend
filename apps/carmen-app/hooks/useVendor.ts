@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { useURL } from "@/hooks/useURL";
 import { getAllVendorService, deleteVendorService } from "@/services/vendor.service";
-import { VendorGetDto, VendorFormDto } from "@/dtos/vendor-management";
+import { VendorGetDto } from "@/dtos/vendor-management";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 export const useVendor = (token: string, tenantId: string) => {
@@ -35,16 +35,27 @@ export const useVendor = (token: string, tenantId: string) => {
                 page,
                 filter
             });
+
+            if (!data) {
+                setVendors([]);
+                setTotalPages(1);
+                return;
+            }
+
             if (data.statusCode === 401) {
                 setLoginDialogOpen(true);
                 setIsUnauthorized(true);
                 return;
             }
-            setVendors(data.data);
-            setTotalPages(data.paginate.pages);
+
+            // Safely handle data and pagination
+            setVendors(Array.isArray(data.data) ? data.data : []);
+            setTotalPages(data.paginate && typeof data.paginate.pages === 'number' ? data.paginate.pages : 1);
         } catch (error) {
             console.error("Error fetching vendors:", error);
             toastError({ message: "Failed to fetch vendors" });
+            setVendors([]);
+            setTotalPages(1);
         } finally {
             setIsLoading(false);
         }
@@ -68,17 +79,9 @@ export const useVendor = (token: string, tenantId: string) => {
 
         try {
             setIsDeleting(true);
-            // For delete operation, only id is needed
-            const vendorData: VendorFormDto = {
-                id: vendorToDelete.id,
-                name: vendorToDelete.name,
-                info: vendorToDelete.info,
-                is_active: vendorToDelete.is_active,
-                vendor_address: [],
-                vendor_contact: []
-            };
+            // Pass only the id to deleteVendorService
+            const response = await deleteVendorService(token, tenantId, vendorToDelete.id);
 
-            const response = await deleteVendorService(token, tenantId, vendorData);
             if (response) {
                 toastSuccess({ message: "Vendor deleted successfully" });
                 fetchVendors();

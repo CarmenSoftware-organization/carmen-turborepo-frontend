@@ -54,6 +54,8 @@ export interface VendorGetDto {
     id: string;
     name: string;
     description: string;
+    business_type_id: string;
+    business_type_name: string;
     info: {
         label: string;
         value: string;
