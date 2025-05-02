@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import SignInDialog from "@/components/SignInDialog";
 import FormProduct from "../components/form/FormProduct";
 import { ProductFormValues } from "../pd-schema";
+import { DetailLoading } from "@/components/loading/DetailLoading";
 
 export default function ProductEdit() {
     const { token, tenantId, isLoading: authLoading } = useAuth();
@@ -43,7 +44,7 @@ export default function ProductEdit() {
 
     // Show loading state if auth is still loading or we're fetching product data
     if (authLoading || (loading && token && tenantId)) {
-        return <div>Loading product information...</div>;
+        return <DetailLoading />;
     }
 
     return (
