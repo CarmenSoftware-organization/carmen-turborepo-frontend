@@ -69,11 +69,6 @@
     },
     "inventoryManagement": "การจัดการสินค้า",
     "InventoryManagement": {
-      "storeOperation": {
-        "title": "การดำเนินการร้านค้า",
-        "storeRequisition": "ขอสินค้าจากร้าน",
-        "stockReplenishment": "ซื้อสินค้าเพิ่ม"
-      },
       "stockOverview": "ตรวจสอบสินค้า",
       "StockOverview": {
         "inventoryBalance": "ยอดคงเหลือสินค้า",

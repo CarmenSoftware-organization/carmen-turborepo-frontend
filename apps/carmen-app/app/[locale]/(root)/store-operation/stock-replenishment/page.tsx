@@ -1,5 +1,6 @@
 import StockReplenishmentComponent from "./components/StockReplenishmentComponent";
 
-export default function StockReplenishmentPage() {
+export default function StockReplenishment() {
     return <StockReplenishmentComponent />
 }
+

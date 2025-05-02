@@ -61,8 +61,8 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
             {/* Desktop Table View */}
             <div className="hidden md:block">
                 <Table>
-                    <TableHeader>
-                        <TableRow>
+                    <TableHeader className="border">
+                        <TableRow className="bg-muted">
                             <TableHead className="w-10 text-center">
                                 <Checkbox
                                     id="select-all"
@@ -72,7 +72,6 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                 />
                             </TableHead>
                             <TableHead>{t('grn_number')}</TableHead>
-
                             <TableHead>{t('vendor')}</TableHead>
                             <TableHead>{t('date')}</TableHead>
                             <TableHead>{t('amount')}</TableHead>

@@ -75,12 +75,6 @@
     "inventoryManagement": "Inventory Management",
     "InventoryManagement": {
       "stockOverview": "Stock Overview",
-      "storeOperation": {
-        "title": "Store Operation",
-        "storeRequisition": "Store Requisitions",
-        "stockReplenishment": "Stock Replenishment"
-      },
-
       "inventoryAdjustments": "Inventory Adjustments",
       "spotCheck": "Spot Check",
       "physicalCountManagement": "Physical Count Management",
