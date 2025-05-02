@@ -10,7 +10,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, Trash } from "lucide-react";
+import { Link } from "@/lib/navigation";
 interface Props {
     readonly storeRequisitions: StoreRequisitionDto[]
 }
@@ -48,14 +49,13 @@ export default function StoreRequisitionList({ storeRequisitions }: Props) {
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <div className="flex items-center justify-end gap-1">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                            <Eye className="h-4 w-4" />
+                                    <div className="flex items-center justify-end">
+                                        <Button variant="ghost" size="sm" className="h-7 w-7" asChild>
+                                            <Link href={`/store-operation/store-requisition/${prt.id}`}>
+                                                <Eye className="h-4 w-4" />
+                                            </Link>
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                                        <Button variant="ghost" size="sm" className="h-7 w-7 text-destructive hover:text-destructive/80">
                                             <Trash className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -77,13 +77,12 @@ export default function StoreRequisitionList({ storeRequisitions }: Props) {
                                     <CardTitle className="text-base">{prt.ref_no}</CardTitle>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                        <Eye className="h-4 w-4" />
+                                    <Button variant="ghost" size="sm" className="h-7 w-7" asChild>
+                                        <Link href={`/store-operation/store-requisition/${prt.id}`}>
+                                            <Eye className="h-4 w-4" />
+                                        </Link>
                                     </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
+                                    <Button variant="ghost" size="sm" className="h-7 w-7 text-destructive hover:text-destructive/80">
                                         <Trash className="h-4 w-4" />
                                     </Button>
                                 </div>

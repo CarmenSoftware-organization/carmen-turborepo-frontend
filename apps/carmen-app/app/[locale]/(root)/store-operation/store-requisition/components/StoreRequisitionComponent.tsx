@@ -12,6 +12,7 @@ import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import StoreRequisitionList from "./StoreRequisitionList";
 import { mockStoreRequisitions } from "@/mock-data/store-operation";
+import { Link } from "@/lib/navigation";
 
 export default function StoreRequisitionComponent() {
 
@@ -30,9 +31,11 @@ export default function StoreRequisitionComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="store-requisition-action-buttons">
-            <Button size={'sm'}>
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
+            <Button size={'sm'} asChild>
+                <Link href="/store-operation/store-requisition/new">
+                    <Plus className="h-4 w-4" />
+                    {tCommon('add')}
+                </Link>
             </Button>
             <Button
                 variant="outline"
