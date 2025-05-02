@@ -1,4 +1,10 @@
-import { StoreRequisitionDto } from "@/dtos/store-operation.dto";
+import {
+    JournalEntriesDto,
+    StockMovementDto,
+    StoreRequisitionDetailDto,
+    StoreRequisitionDto,
+    StoreRequisitionItemDto
+} from "@/dtos/store-operation.dto";
 
 export const mockStoreRequisitions: StoreRequisitionDto[] = [
     {
@@ -200,24 +206,20 @@ export const mockWastageRecords = [
     }
 ];
 
-export const mockStoreRequisitionId = [
-    {
-        id: "SR-001",
-        ref_no: "REQ-20240301-001",
-        item_name: "Thai Milk Tea",
-        status: "Pending",
-        date: "2024-03-01",
-        expected_delivery_date: "2024-03-05",
-        dp_req_from: "Main Store",
-        job_code: "JOB-20240301-001",
-        dp_req_to: "Marketing Store",
-        description: "Request for Thai Milk Tea",
+export const mockStoreRequisitionId: StoreRequisitionDetailDto = {
+    id: "SR-001",
+    ref_no: "REQ-20240301-001",
+    item_name: "Thai Milk Tea",
+    status: "Pending",
+    date: "2024-03-01",
+    expected_delivery_date: "2024-03-05",
+    dp_req_from: "Main Store",
+    job_code: "JOB-20240301-001",
+    dp_req_to: "Marketing Store",
+    description: "Request for Thai Milk Tea",
+}
 
-
-    }
-]
-
-export const mockStoreRequisitionItems = [
+export const mockStoreRequisitionItems: StoreRequisitionItemDto[] = [
     {
         id: "SR-001-001",
         name: "Kitchen",
@@ -229,6 +231,7 @@ export const mockStoreRequisitionItems = [
         issued_qty: 0,
         total_amount: 459.9,
         status: "Pending",
+        product_name: "Thai Milk Tea",
     },
     {
         id: "SR-001-002",
@@ -241,6 +244,7 @@ export const mockStoreRequisitionItems = [
         issued_qty: 0,
         total_amount: 129.5,
         status: "Pending",
+        product_name: "Soft Drinks",
     },
     {
         id: "SR-001-003",
@@ -253,6 +257,7 @@ export const mockStoreRequisitionItems = [
         issued_qty: 0,
         total_amount: 890.0,
         status: "Pending",
+        product_name: "Sofa",
     },
     {
         id: "SR-001-004",
@@ -265,6 +270,7 @@ export const mockStoreRequisitionItems = [
         issued_qty: 0,
         total_amount: 250.75,
         status: "Pending",
+        product_name: "Pen",
     },
     {
         id: "SR-001-005",
@@ -277,10 +283,11 @@ export const mockStoreRequisitionItems = [
         issued_qty: 0,
         total_amount: 315.6,
         status: "Pending",
+        product_name: "Ped Pro สีม่วง",
     },
 ];
 
-export const stockMovement = [
+export const mockStockMovement: StockMovementDto[] = [
     {
         id: "SM-001",
         code: "SM-2024-001",
@@ -348,7 +355,7 @@ export const stockMovement = [
     },
 ];
 
-export const mockJournalEntries = {
+export const mockJournalEntries: JournalEntriesDto = {
     id: "aasf98q2ed",
     je_code: "JE-2024-001",
     doc_type: "Store Requisition",
