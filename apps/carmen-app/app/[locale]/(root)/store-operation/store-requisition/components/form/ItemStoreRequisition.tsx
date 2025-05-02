@@ -50,8 +50,8 @@ export default function ItemStoreRequisition({ mode, items }: ItemStoreRequisiti
                     </Button>
                 </div>
             </div>
-            <Table>
-                <TableHeader>
+            <Table className="border">
+                <TableHeader className="bg-muted">
                     <TableRow>
                         <TableHead>
                             <Checkbox

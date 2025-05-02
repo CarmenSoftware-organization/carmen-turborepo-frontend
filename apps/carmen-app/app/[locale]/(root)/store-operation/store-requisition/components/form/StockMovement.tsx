@@ -54,8 +54,8 @@ export default function StockMovement({ items, mode }: StockMovementProps) {
                 data-id="grn-list-search-input"
             />
 
-            <Table>
-                <TableHeader>
+            <Table className="border">
+                <TableHeader className="bg-muted">
                     <TableRow>
                         <TableHead>Location</TableHead>
                         <TableHead>Product</TableHead>
