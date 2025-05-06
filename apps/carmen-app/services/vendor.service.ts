@@ -12,6 +12,7 @@ export const getAllVendorService = async (token: string, tenantId: string,
     } = {}
 ) => {
     try {
+
         const query = new URLSearchParams();
 
         Object.entries(params).forEach(([key, value]) => {

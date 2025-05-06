@@ -2,9 +2,8 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Edit, Download, Mail, Phone, Globe, MapPin } from "lucide-react"
+import { Edit, Download, Mail, Phone, Globe, MapPin, ChevronLeft } from "lucide-react"
 import { format } from "date-fns"
-
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
@@ -17,100 +16,86 @@ interface VendorDetailProps {
     vendor: VendorFormValues
 }
 
+const formatDate = (dateString: string | undefined, includeTime = false) => {
+    if (!dateString) return "N/A"
+    try {
+        const date = new Date(dateString)
+        return includeTime ? format(date, "MMM d, yyyy 'at' h:mm a") : format(date, "MMM d, yyyy")
+    } catch (error) {
+        console.error("Error formatting date:", error)
+        return dateString
+    }
+};
+const formatValue = (value: string, dataType: string) => {
+    switch (dataType) {
+        case "date":
+        case "datetime":
+            return formatDate(value, dataType === "datetime")
+        case "number":
+            return new Intl.NumberFormat().format(Number(value))
+        default:
+            return value
+    }
+};
+
+const getContactIcon = (type: string) => {
+    switch (type) {
+        case "phone":
+            return <Phone className="h-3 w-3" />
+        case "email":
+            return <Mail className="h-3 w-3" />
+        case "website":
+            return <Globe className="h-3 w-3" />
+        default:
+            return null
+    }
+};
+
 export default function VendorDetail({ vendor }: VendorDetailProps) {
-    const [activeTab, setActiveTab] = useState("info")
-    const [isEditMode, setIsEditMode] = useState(false)
-    // Handle toggling edit mode
-    const handleEdit = () => setIsEditMode(true)
+    const [isEditMode, setIsEditMode] = useState(false);
+    const handleEdit = () => setIsEditMode(true);
 
-    const formatDate = (dateString: string | undefined, includeTime = false) => {
-        if (!dateString) return "N/A"
-        try {
-            const date = new Date(dateString)
-            return includeTime ? format(date, "MMM d, yyyy 'at' h:mm a") : format(date, "MMM d, yyyy")
-        } catch (error) {
-            console.error("Error formatting date:", error)
-            return dateString
-        }
-    }
-    const formatValue = (value: string, dataType: string) => {
-        switch (dataType) {
-            case "date":
-            case "datetime":
-                return formatDate(value, dataType === "datetime")
-            case "number":
-                return new Intl.NumberFormat().format(Number(value))
-            default:
-                return value
-        }
-    }
-
-    // Get icon for contact type
-    const getContactIcon = (type: string) => {
-        switch (type) {
-            case "phone":
-                return <Phone className="h-3 w-3" />
-            case "email":
-                return <Mail className="h-3 w-3" />
-            case "website":
-                return <Globe className="h-3 w-3" />
-            default:
-                return null
-        }
-    }
-
-    // If in edit mode, render the VendorForm component
     if (isEditMode) {
         return <VendorForm mode={formType.EDIT} initData={vendor} />;
-    }
+    };
 
     return (
         <Card className="p-4">
             <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                    <Link href={`/vendor-management/vendor`}>
-                        <Button variant="ghost" size="sm" className="h-7 w-7 p-0">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                    </Link>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-lg font-medium text-gray-800">{vendor.name}</h1>
-                        </div>
-                        <p className="text-xs text-gray-500">Vendor ID: {vendor.id || "N/A"}</p>
-                    </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" asChild>
+                        <Link href={`/vendor-management/vendor`}>
+                            <ChevronLeft className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <p className="text-lg font-medium">{vendor.name}</p>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex gap-2">
                     <Button variant="outline" size="sm" className="h-7 text-xs">
-                        <Download className="mr-1 h-3 w-3" />
+                        <Download className="h-3 w-3" />
                         Export
                     </Button>
                     <Button size="sm" className="h-7 text-xs" onClick={handleEdit}>
-                        <Edit className="mr-1 h-3 w-3" />
+                        <Edit className="h-3 w-3" />
                         Edit
                     </Button>
                 </div>
             </div>
-            {/* Basic Info */}
-            <div className="p-4 border-b border-gray-200">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <p className="text-xs font-medium text-gray-500">Description</p>
-                        <p className="text-sm">{vendor.description || "No description available"}</p>
-                    </div>
-                </div>
+
+            <div className="p-4">
+                <p className="text-xs font-medium text-gray-500">Description</p>
+                <p className="text-sm">{vendor.description || "No description available"}</p>
             </div>
 
-            {/* Tabbed Content */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="w-full grid grid-cols-3 h-9 bg-gray-50 rounded-none border-b">
-                    <TabsTrigger value="info" className="text-xs font-medium rounded-none data-[state=active]:bg-white">
-                        Additional Info
+            <Tabs className="w-full" defaultValue="info">
+                <TabsList className="w-full grid grid-cols-3 h-9">
+                    <TabsTrigger value="info">
+                        Info
                     </TabsTrigger>
-                    <TabsTrigger value="address" className="text-xs font-medium rounded-none data-[state=active]:bg-white">
-                        Addresses
+                    <TabsTrigger value="address">
+                        Address
                     </TabsTrigger>
-                    <TabsTrigger value="contact" className="text-xs font-medium rounded-none data-[state=active]:bg-white">
+                    <TabsTrigger value="contact">
                         Contacts
                     </TabsTrigger>
                 </TabsList>
@@ -128,7 +113,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                 </TabsContent>
 
                 <TabsContent value="address" className="p-4 space-y-3">
-                    <h3 className="text-xs font-medium text-gray-700 mb-3">Addresses</h3>
+                    <h3 className="text-xs font-medium text-gray-700 mb-3">Address</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {vendor.vendor_address.map((address, index) => (
                             <div key={index} className="border border-gray-100 rounded p-3 bg-gray-50">
