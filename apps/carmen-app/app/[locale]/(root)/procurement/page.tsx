@@ -1,7 +1,12 @@
-'use client';
 import { useTranslations } from 'next-intl';
 import { MenuCardGrid, MenuCardItem } from '@/components/ui/menu-card';
 import { ClipboardCheck, ShoppingCart, FileText, Package, UserCheck, Receipt, FileCode, Building } from 'lucide-react';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Procurement",
+};
+
 
 export default function ProcurementPage() {
     const t = useTranslations('Modules');
