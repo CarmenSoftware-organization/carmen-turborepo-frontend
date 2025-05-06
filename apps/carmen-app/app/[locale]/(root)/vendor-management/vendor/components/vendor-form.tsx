@@ -161,13 +161,13 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 <Tabs defaultValue="info" className="w-full border rounded-sm">
                     <TabsList className="w-full grid grid-cols-3 h-9  rounded-none border-b">
                         <TabsTrigger value="info" className="text-xs">
-                            Additional Info
+                            Info
                         </TabsTrigger>
                         <TabsTrigger value="address" className="text-xs">
-                            Addresses
+                            Address
                         </TabsTrigger>
                         <TabsTrigger value="contact" className="text-xs">
-                            Contacts
+                            Contact
                         </TabsTrigger>
                     </TabsList>
 

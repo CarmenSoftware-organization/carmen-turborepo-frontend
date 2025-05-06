@@ -1,7 +1,11 @@
-"use client";
 import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
 import { Package, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Store Operation",
+};
 
 export default function StoreOperation() {
     const t = useTranslations('Modules');
