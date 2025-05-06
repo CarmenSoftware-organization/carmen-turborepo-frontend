@@ -1,8 +1,11 @@
-'use client';
-
 import { CreditCard, MapPin, Building2, Store } from "lucide-react";
 import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
 import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Configuration",
+};
 
 export default function Configuration() {
     const t = useTranslations('Modules');

@@ -38,15 +38,17 @@ export const useCurrency = () => {
                 sort,
                 filter
             });
-            if (data.statusCode === 401) {
+            if (data?.statusCode === 401) {
                 setLoginDialogOpen(true);
                 return;
             }
-            setCurrencies(data.data);
-            setTotalPages(data.paginate.pages);
+            setCurrencies(data?.data ?? []);
+            setTotalPages(data?.paginate?.pages ?? 1);
         } catch (error) {
             console.error('Error fetching currencies:', error);
             toastError({ message: 'Error fetching currencies' });
+            setCurrencies([]);
+            setTotalPages(1);
         } finally {
             setIsLoading(false);
         }

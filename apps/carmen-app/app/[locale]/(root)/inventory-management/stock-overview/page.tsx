@@ -1,3 +1,9 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Stock Overview",
+};
+
 export default function StockOverviewPage() {
     return (
         <div>

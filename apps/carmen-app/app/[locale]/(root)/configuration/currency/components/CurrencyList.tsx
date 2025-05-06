@@ -28,7 +28,7 @@ interface CurrencyListProps {
 
 export default function CurrencyList({
     isLoading,
-    currencies,
+    currencies = [],
     onEdit,
     onToggleStatus,
     currentPage,
@@ -48,7 +48,7 @@ export default function CurrencyList({
     const renderTableContent = () => {
         if (isLoading) return <TableBodySkeleton columns={7} />;
 
-        if (currencies.length === 0) {
+        if (!currencies || currencies.length === 0) {
             return (
                 <TableBody>
                     <TableRow>

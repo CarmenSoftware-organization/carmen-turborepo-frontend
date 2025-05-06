@@ -1,9 +1,11 @@
-"use client";
-
+import { Metadata } from "next";
 import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
 import { Building2, CircleDollarSign, LineChart } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+export const metadata: Metadata = {
+    title: "Vendor Management",
+};
 export default function VendorManagement() {
     const t = useTranslations('Modules');
     const subMenu: MenuCardItem[] = [

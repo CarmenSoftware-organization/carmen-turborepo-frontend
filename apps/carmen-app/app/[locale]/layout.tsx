@@ -40,9 +40,7 @@ export default async function RootLayout({
           </Providers>
           <Toaster />
         </NextIntlClientProvider>
-
       </body>
-
     </html>
   );
 }

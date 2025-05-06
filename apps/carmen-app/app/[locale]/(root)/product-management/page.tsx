@@ -1,8 +1,11 @@
-'use client';
-
 import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
 import { Package, FolderTree, Scale, BarChart } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Product Management",
+};
 
 export default function ProductManagement() {
     const t = useTranslations('Modules');

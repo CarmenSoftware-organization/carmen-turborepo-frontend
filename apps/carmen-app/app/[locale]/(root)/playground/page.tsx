@@ -1,4 +1,9 @@
 import { Link } from "@/lib/navigation";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Playground",
+};
 
 const itemsPlayground = [
     {
