@@ -1,5 +1,9 @@
 import { CreateStoreLocationDto } from "@/dtos/config.dto";
 import { backendApi } from "@/lib/backend-api";
+import axios from "axios";
+import { requestHeaders } from "@/lib/config.api";
+
+const API_URL = `${backendApi}/api/config/locations`;
 
 export const getAllStoreLocations = async (token: string, tenantId: string,
     params: {
@@ -21,55 +25,41 @@ export const getAllStoreLocations = async (token: string, tenantId: string,
 
         const queryString = query.toString();
 
-        const url = queryString
-            ? `${backendApi}/api/config/locations?${queryString}`
-            : `${backendApi}/api/config/locations`;
+        const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
+        const response = await axios.get(url, {
+            headers: requestHeaders(token, tenantId)
         });
-        const data = await response.json();
-        return data;
+        return response.data;
     } catch (error) {
         console.error('Failed to fetch store locations:', error);
+        throw error;
     }
 }
 
 export const createStoreLocation = async (token: string, tenantId: string, storeLocation: CreateStoreLocationDto) => {
-    const url = `${backendApi}/api/config/locations`;
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(storeLocation),
-    });
-    const data = await response.json();
-    console.log('data', data);
-    return data;
+    try {
+        const response = await axios.post(API_URL, storeLocation, {
+            headers: requestHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to create store location:', error);
+        throw error;
+    }
 }
 
 export const updateStoreLocation = async (token: string, tenantId: string, storeLocation: CreateStoreLocationDto & { id: string }) => {
-    const url = `${backendApi}/api/config/locations/${storeLocation.id}`;
-    const response = await fetch(url, {
-        method: 'PATCH',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(storeLocation),
-    });
-    const data = await response.json();
-    return data;
-};
+    try {
+        const response = await axios.patch(`${API_URL}/${storeLocation.id}`, storeLocation, {
+            headers: requestHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to update store location:', error);
+        throw error;
+    }
+}
 
 export const deleteStoreLocation = async (token: string, tenantId: string, id: string) => {
     const url = `${backendApi}/api/config/locations/${id}`;

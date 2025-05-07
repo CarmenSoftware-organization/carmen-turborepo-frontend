@@ -1,7 +1,12 @@
 import { UnitDto } from "@/dtos/unit.dto";
 import { backendApi } from "@/lib/backend-api";
+import axios from "axios";
+import { requestHeaders } from "@/lib/config.api";
 
-export const getAllUnits = async (token: string, tenantId: string,
+const API_URL = `${backendApi}/api/config/units`;
+
+export const getAllUnits = async (
+    token: string, tenantId: string,
     params: {
         search?: string;
         page?: string;
@@ -10,10 +15,6 @@ export const getAllUnits = async (token: string, tenantId: string,
         filter?: string;
     } = {}
 ) => {
-
-    if (!token || !tenantId) {
-        throw new Error("Authorization token and tenant ID are required");
-    }
 
     const query = new URLSearchParams();
 
@@ -25,58 +26,40 @@ export const getAllUnits = async (token: string, tenantId: string,
 
     const queryString = query.toString();
 
-    const url = queryString
-        ? `${backendApi}/api/config/units?${queryString}`
-        : `${backendApi}/api/config/units`;
-
-    const options = {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-    };
+    const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
     try {
-        const response = await fetch(url, options);
-        const data = await response.json();
-        return data;
+        const response = await axios.get(url, {
+            headers: requestHeaders(token, tenantId)
+        });
+        return response.data;
     } catch (error) {
         console.error('Error fetching units:', error);
-        return { data: [], paginate: { pages: 0, total: 0 } };
+        throw error;
     }
 };
 
 export const createUnit = async (token: string, tenantId: string, unit: UnitDto) => {
-    const url = `${backendApi}/api/config/units`;
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(unit),
-    });
-    const data = await response.json();
-    return data;
-};
+    try {
+        const response = await axios.post(API_URL, unit, {
+            headers: requestHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to create unit:', error);
+    }
+}
 
 export const updateUnit = async (token: string, tenantId: string, unit: UnitDto) => {
-    const url = `${backendApi}/api/config/units/${unit.id}`;
-    const response = await fetch(url, {
-        method: 'PUT',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(unit),
-    });
-    const data = await response.json();
-    return data;
-};
+    try {
+        const response = await axios.put(`${API_URL}/${unit.id}`, unit, {
+            headers: requestHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to update unit:', error);
+    }
+}
 
 export const deleteUnit = async (token: string, tenantId: string, unit: UnitDto) => {
     const url = `${backendApi}/api/config/units/${unit.id}`;
