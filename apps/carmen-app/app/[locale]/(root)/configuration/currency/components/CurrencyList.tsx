@@ -36,7 +36,8 @@ export default function CurrencyList({
     onPageChange
 }: CurrencyListProps) {
     const t = useTranslations('TableHeader');
-
+    const tCommon = useTranslations('Common');
+    const tCurrency = useTranslations('Currency');
     const handleEdit = (currency: CurrencyDto) => {
         onEdit(currency);
     };
@@ -54,7 +55,7 @@ export default function CurrencyList({
                     <TableRow>
                         <TableCell colSpan={7} className="h-24 text-center">
                             <div className="flex flex-col items-center justify-center gap-2">
-                                <p className="text-sm text-muted-foreground">No currencies found</p>
+                                <p className="text-sm text-muted-foreground">{tCurrency("notFoundCurrency")}</p>
                             </div>
                         </TableCell>
                     </TableRow>
@@ -75,7 +76,7 @@ export default function CurrencyList({
                         <TableCell className="w-32 md:text-center">{currency.exchange_rate}</TableCell>
                         <TableCell className="w-10 md:w-24 md:text-center">
                             <Badge variant={currency.is_active ? "active" : "inactive"}>
-                                {currency.is_active ? 'Active' : 'Inactive'}
+                                {currency.is_active ? tCommon("active") : tCommon("inactive")}
                             </Badge>
                         </TableCell>
                         <TableCell className="text-right">

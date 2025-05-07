@@ -164,6 +164,7 @@
     "title": "User Management"
   },
   "Common": {
+    "all": "All",
     "search": "Search",
     "add": "Add",
     "edit": "Edit",
@@ -182,7 +183,11 @@
     "signIn": "Sign In",
     "save": "Save",
     "confirm": "Confirm",
-    "confirmAction": "Confirm Action"
+    "confirmAction": "Confirm Action",
+    "name": "Name",
+    "description": "Description",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "TableHeader": {
     "name": "Name",
@@ -226,7 +231,9 @@
     "title": "Product"
   },
   "Unit": {
-    "title": "Unit"
+    "title": "Unit",
+    "add_description": "Fill in the details to create a new unit.",
+    "edit_description": "Update the unit information below."
   },
   "Currency": {
     "title": "Currency",
@@ -234,14 +241,20 @@
     "currency_name": "Currency Name",
     "currency_symbol": "Symbol",
     "currency_status": "Status",
-    "currency_exchange_rate": "Exchange Rate"
+    "currency_exchange_rate": "Exchange Rate",
+    "notFoundCurrency": "No currencies found",
+    "add_currency": "Add Currency",
+    "edit_currency": "Edit Currency",
+    "add_currency_description": "Fill in the details to create a new currency.",
+    "edit_currency_description": "Update the currency information below."
   },
   "DeliveryPoint": {
     "title": "Delivery Point",
     "delivery_point_name": "Delivery Point Name",
     "delivery_point_status": "Status",
     "confirmDeactivate": "Are you sure you want to deactivate this delivery point?",
-    "confirmActivate": "Are you sure you want to activate this delivery point?"
+    "confirmActivate": "Are you sure you want to activate this delivery point?",
+    "notFoundDeliveryPoint": "No delivery points found"
   },
   "Department": {
     "title": "Department",

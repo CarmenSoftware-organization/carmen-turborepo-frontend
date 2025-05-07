@@ -164,6 +164,7 @@
     "title": "การจัดการผู้ใช้งาน"
   },
   "Common": {
+    "all": "ทั้งหมด",
     "search": "ค้นหา",
     "add": "เพิ่ม",
     "edit": "แก้ไข",
@@ -182,7 +183,11 @@
     "signIn": "เข้าสู่ระบบ",
     "save": "บันทึก",
     "confirm": "ยืนยัน",
-    "confirmAction": "ยืนยันการดำเนินการ"
+    "confirmAction": "ยืนยันการดำเนินการ",
+    "name": "ชื่อ",
+    "description": "คำอธิบาย",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน"
   },
   "TableHeader": {
     "name": "ชื่อ",
@@ -225,7 +230,9 @@
     "title": "สินค้า"
   },
   "Unit": {
-    "title": "หน่วยนับ"
+    "title": "หน่วยนับ",
+    "add_description": "กรอกข้อมูลเพื่อสร้างหน่วยนับใหม่",
+    "edit_description": "อัพเดตข้อมูลหน่วยนับด้านล่าง"
   },
   "Currency": {
     "title": "สกุลเงิน",
@@ -233,14 +240,20 @@
     "currency_name": "ชื่อสกุลเงิน",
     "currency_symbol": "สัญลักษณ์สกุลเงิน",
     "currency_status": "สถานะสกุลเงิน",
-    "currency_exchange_rate": "อัตราแลกเปลี่ยนเงิน"
+    "currency_exchange_rate": "อัตราแลกเปลี่ยนเงิน",
+    "notFoundCurrency": "ไม่พบสกุลเงิน",
+    "add_currency": "เพิ่มสกุลเงิน",
+    "edit_currency": "แก้ไขสกุลเงิน",
+    "add_currency_description": "กรอกข้อมูลเพื่อสร้างสกุลเงินใหม่",
+    "edit_currency_description": "อัพเดตข้อมูลสกุลเงินด้านล่าง"
   },
   "DeliveryPoint": {
     "title": "จุดส่งสินค้า",
     "delivery_point_name": "ชื่อจุดส่งสินค้า",
     "delivery_point_status": "สถานะ",
     "confirmDeactivate": "คุณแน่ใจหรือไม่ที่จะปิดการใช้งานจุดส่งสินค้านี้?",
-    "confirmActivate": "คุณแน่ใจหรือไม่ที่จะเปิดการใช้งานจุดส่งสินค้านี้?"
+    "confirmActivate": "คุณแน่ใจหรือไม่ที่จะเปิดการใช้งานจุดส่งสินค้านี้?",
+    "notFoundDeliveryPoint": "ไม่พบจุดส่งสินค้า"
   },
   "Department": {
     "title": "แผนก",

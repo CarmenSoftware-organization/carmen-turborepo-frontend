@@ -74,15 +74,17 @@ export default function UnitList({
                             !unit.is_active && "line-through opacity-70"
                         )}
                     >
-                        <TableCell className="w-10 text-center py-2">{index + 1}</TableCell>
-                        <TableCell className="w-32 md:w-40 text-left py-2 truncate">{unit.name}</TableCell>
-                        <TableCell className="text-left py-2 max-w-md truncate hidden md:table-cell">{unit.description}</TableCell>
-                        <TableCell className="w-24 text-left py-2">
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className="text-left">
+                            <p className="text-xs font-semibold">{unit.name}</p>
+                            <p className="text-xs text-muted-foreground">{unit.description}</p>
+                        </TableCell>
+                        <TableCell className="text-left">
                             <Badge variant={unit.is_active ? "active" : "inactive"}>
                                 {unit.is_active ? 'Active' : 'Inactive'}
                             </Badge>
                         </TableCell>
-                        <TableCell className="w-16 text-right py-2">
+                        <TableCell className="text-right">
                             <div className="flex items-center justify-end space-x-1">
                                 <Button
                                     variant="ghost"
@@ -116,11 +118,10 @@ export default function UnitList({
                 <Table className="border">
                     <TableHeader className="sticky top-0 bg-muted">
                         <TableRow className="h-10">
-                            <TableHead className="w-10 text-center py-2">#</TableHead>
-                            <TableHead className="w-32 md:w-40 text-left py-2">{t('name')}</TableHead>
-                            <TableHead className="text-left py-2 hidden md:table-cell">{t('description')}</TableHead>
-                            <TableHead className="w-24 text-left py-2">{t('status')}</TableHead>
-                            <TableHead className="w-16 text-right py-2">{t('action')}</TableHead>
+                            <TableHead>#</TableHead>
+                            <TableHead className="text-left">{t('name')}</TableHead>
+                            <TableHead className="text-left">{t('status')}</TableHead>
+                            <TableHead className="text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
                 </Table>

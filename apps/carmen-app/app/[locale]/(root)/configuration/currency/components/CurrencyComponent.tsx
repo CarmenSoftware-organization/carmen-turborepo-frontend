@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { boolFilterOptions } from "@/constants/options";
+import { useBoolFilterOptions } from "@/constants/status-option";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { formType } from "@/dtos/form.dto";
@@ -17,6 +17,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 export default function CurrencyComponent() {
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
+    const boolFilterOptions = useBoolFilterOptions();
 
     const {
         // State

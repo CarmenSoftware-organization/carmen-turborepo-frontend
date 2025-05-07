@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useEffect, useMemo } from "react";
 import { formType } from "@/dtos/form.dto";
+import { Textarea } from "@/components/ui/textarea";
+import { useTranslations } from "next-intl";
 
 interface UnitDialogProps {
     readonly open: boolean;
@@ -40,7 +42,8 @@ export default function UnitDialog({
     unit,
     onSubmit,
 }: UnitDialogProps) {
-
+    const tCommon = useTranslations('Common');
+    const tUnit = useTranslations('Unit');
     const defaultUnitValues = useMemo(() => ({
         id: '',
         name: '',
@@ -75,12 +78,12 @@ export default function UnitDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? "Add Unit" : "Edit Unit"}
+                        {mode === formType.ADD ? tCommon('add') : tCommon('edit')}
                     </DialogTitle>
                     <DialogDescription>
                         {mode === formType.ADD
-                            ? "Fill in the details to create a new unit."
-                            : "Update the unit information below."
+                            ? tUnit('add_description')
+                            : tUnit('edit_description')
                         }
                     </DialogDescription>
                 </DialogHeader>
@@ -91,7 +94,7 @@ export default function UnitDialog({
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel>{tCommon('name')}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -104,9 +107,9 @@ export default function UnitDialog({
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Description</FormLabel>
+                                    <FormLabel>{tCommon('description')}</FormLabel>
                                     <FormControl>
-                                        <Input {...field} />
+                                        <Textarea {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -119,7 +122,7 @@ export default function UnitDialog({
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
                                         <FormLabel className="text-base">
-                                            Status
+                                            {tCommon('status')}
                                         </FormLabel>
                                     </div>
                                     <FormControl>
@@ -137,10 +140,10 @@ export default function UnitDialog({
                                 form.reset();
                                 onOpenChange(false);
                             }}>
-                                Cancel
+                                {tCommon('cancel')}
                             </Button>
                             <Button type="submit">
-                                {mode === formType.ADD ? "Add" : "Save"}
+                                {mode === formType.ADD ? tCommon('add') : tCommon('save')}
                             </Button>
                         </DialogFooter>
                     </form>

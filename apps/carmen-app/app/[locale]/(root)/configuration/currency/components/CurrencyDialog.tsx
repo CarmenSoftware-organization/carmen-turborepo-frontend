@@ -26,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslations } from "next-intl";
 
 interface CurrencyDialogProps {
     readonly open: boolean;
@@ -44,6 +45,8 @@ export default function CurrencyDialog({
     onSubmit,
     isLoading = false
 }: CurrencyDialogProps) {
+    const tCurrency = useTranslations('Currency');
+    const tCommon = useTranslations('Common');
 
     const defaultCurrencyValues = useMemo(() => ({
         name: '',
@@ -85,12 +88,12 @@ export default function CurrencyDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? "Add Currency" : "Edit Currency"}
+                        {mode === formType.ADD ? tCurrency("add_currency") : tCurrency("edit_currency")}
                     </DialogTitle>
                     <DialogDescription>
                         {mode === formType.ADD
-                            ? "Add a new currency with name, code, symbol, exchange rate, and status"
-                            : "Edit existing currency details including name, code, symbol, exchange rate, and status"}
+                            ? tCurrency("add_currency_description")
+                            : tCurrency("edit_currency_description")}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -102,7 +105,7 @@ export default function CurrencyDialog({
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Name</FormLabel>
+                                        <FormLabel>{tCurrency("currency_name")}</FormLabel>
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>
@@ -116,7 +119,7 @@ export default function CurrencyDialog({
                                 name="code"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Code</FormLabel>
+                                        <FormLabel>{tCurrency("currency_code")}</FormLabel>
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>
@@ -129,7 +132,7 @@ export default function CurrencyDialog({
                                 name="symbol"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Symbol</FormLabel>
+                                        <FormLabel>{tCurrency("currency_symbol")}</FormLabel>
                                         <FormControl>
                                             <Input {...field} />
                                         </FormControl>
@@ -142,7 +145,7 @@ export default function CurrencyDialog({
                                 name="exchange_rate"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Exchange Rate</FormLabel>
+                                        <FormLabel>{tCurrency("currency_exchange_rate")}</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -161,7 +164,7 @@ export default function CurrencyDialog({
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Description</FormLabel>
+                                    <FormLabel>{tCommon("description")}</FormLabel>
                                     <FormControl>
                                         <Textarea {...field} />
                                     </FormControl>
@@ -176,7 +179,7 @@ export default function CurrencyDialog({
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
                                         <FormLabel className="text-base">
-                                            Status
+                                            {tCommon("status")}
                                         </FormLabel>
                                     </div>
                                     <FormControl>
@@ -196,13 +199,13 @@ export default function CurrencyDialog({
                                 variant="outline"
                                 onClick={() => onOpenChange(false)}
                             >
-                                Cancel
+                                {tCommon("cancel")}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={isLoading || form.formState.isSubmitting}
                             >
-                                {mode === formType.ADD ? "Add" : "Edit"}
+                                {mode === formType.ADD ? tCommon("add") : tCommon("edit")}
                                 {(isLoading || form.formState.isSubmitting) && (
                                     <Loader2 className="w-4 h-4 ml-2 animate-spin" />
                                 )}

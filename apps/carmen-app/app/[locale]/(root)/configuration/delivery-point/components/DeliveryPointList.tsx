@@ -42,7 +42,8 @@ export default function DeliveryPointList({
     onSort
 }: DeliveryPointListProps) {
     const t = useTranslations('TableHeader');
-
+    const tCommon = useTranslations('Common');
+    const tDeliveryPoint = useTranslations('DeliveryPoint');
     const renderTableContent = () => {
         if (isLoading) return <TableBodySkeleton columns={4} />;
 
@@ -52,7 +53,7 @@ export default function DeliveryPointList({
                     <TableRow>
                         <TableCell colSpan={4} className="h-24 text-center">
                             <div className="flex flex-col items-center justify-center gap-2">
-                                <p className="text-sm text-muted-foreground">No delivery points found</p>
+                                <p className="text-sm text-muted-foreground">{tDeliveryPoint("notFoundDeliveryPoint")}</p>
                             </div>
                         </TableCell>
                     </TableRow>
@@ -70,10 +71,10 @@ export default function DeliveryPointList({
                         <TableCell className="md:w-56">{deliveryPoint.name}</TableCell>
                         <TableCell>
                             <Badge variant={deliveryPoint.is_active ? "active" : "inactive"}>
-                                {deliveryPoint.is_active ? "Active" : "Inactive"}
+                                {deliveryPoint.is_active ? tCommon("active") : tCommon("inactive")}
                             </Badge>
                         </TableCell>
-                        <TableCell className="w-20">
+                        <TableCell className="w-40 text-right">
                             <div className="flex items-center justify-end">
                                 <Button
                                     variant="ghost"
@@ -125,7 +126,7 @@ export default function DeliveryPointList({
                                     {renderSortIcon('is_active', sort)}
                                 </div>
                             </TableHead>
-                            <TableHead className="w-20 text-right">{t('action')}</TableHead>
+                            <TableHead className="w-40 text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
                 </Table>
