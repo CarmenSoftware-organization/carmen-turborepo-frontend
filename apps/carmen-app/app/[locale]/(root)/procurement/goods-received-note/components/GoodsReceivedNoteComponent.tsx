@@ -12,6 +12,8 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
 import { mockGoodsReceivedNotes } from "@/mock-data/procurement";
 import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
+import { useGrn } from "@/hooks/useGrn";
+import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 
 const grnStatusOptions = [
     { label: 'Pending', value: 'pending' },
@@ -22,11 +24,15 @@ const grnStatusOptions = [
 ]
 export default function GoodsReceivedNoteComponent() {
     const tCommon = useTranslations('Common');
-    const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
-    const [sort, setSort] = useURL('sort');
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [signInOpen, setSignInOpen] = useState(false);
+    const { grns, isLoading, isError, error, refetch, search, setSearch, page, setPage, sort, setSort, isUnauthorized } = useGrn();
+
+    console.log(grns);
+    console.log('isError', isError);
+
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -99,7 +105,19 @@ export default function GoodsReceivedNoteComponent() {
         </div>
     );
 
-    const content = <GoodsReceivedNoteList goodsReceivedNotes={mockGoodsReceivedNotes} />
+    const content = (
+        <>
+            {isUnauthorized ? (
+                <UnauthorizedMessage
+                    onRetry={refetch}
+                    onLogin={() => setSignInOpen(true)}
+                />
+            ) : (
+                <GoodsReceivedNoteList goodsReceivedNotes={mockGoodsReceivedNotes} />
+            )}
+        </>
+    )
+
 
     return (
         <>
