@@ -4,7 +4,6 @@ import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUnit } from "@/hooks/useUnit";
 import { useItemGroup } from "@/hooks/useItemGroup";
 import { useAuth } from "@/context/AuthContext";
@@ -17,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
+import UnitLookup from "@/components/lookup/UnitLookup";
 
 interface BasicInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -339,7 +339,6 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                     )}
                 </div>
 
-
                 <FormField
                     control={control}
                     name="inventory_unit_id"
@@ -350,18 +349,12 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                                 <p className="text-xs">{units.find(unit => unit.id === field.value)?.name ?? field.value}</p>
                             ) : (
                                 <FormControl>
-                                    <Select onValueChange={field.onChange} value={field.value || ''}>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select inventory unit" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {units.map((unit) => (
-                                                <SelectItem key={unit.id ?? ''} value={unit.id ?? ""}>
-                                                    {unit.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <UnitLookup
+                                        value={field.value}
+                                        onValueChange={(value) => {
+                                            field.onChange(value);
+                                        }}
+                                    />
                                 </FormControl>
                             )}
                             <FormMessage />

@@ -15,31 +15,24 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { useItemGroup } from "@/hooks/useItemGroup";
+import { useUnit } from "@/hooks/useUnit";
 
-interface ItemGroupLookupProps {
+interface UnitLookupProps {
     readonly value?: string;
     readonly onValueChange: (value: string) => void;
     readonly placeholder?: string;
     readonly disabled?: boolean;
 }
 
-export default function ItemGroupLookup({
-    value,
-    onValueChange,
-    placeholder = "Select product item group",
-    disabled = false
-}: ItemGroupLookupProps) {
-    // เรียกใช้ hook โดยเฉพาะเจาะจงแต่ละตัวที่ต้องการ
-    const { itemGroups, isLoading } = useItemGroup();
+export default function UnitLookup({ value, onValueChange, placeholder = "Select unit", disabled = false }: UnitLookupProps) {
+    const { units, isLoading } = useUnit();
     const [open, setOpen] = useState(false);
 
-    // ใช้ useMemo เพื่อหาชื่อกลุ่มที่เลือก และป้องกันการคำนวณซ้ำ
-    const selectedItemName = useMemo(() => {
-        if (!value || !itemGroups || !Array.isArray(itemGroups)) return null;
-        const found = itemGroups.find(group => group?.id === value);
+    const selectedUnitName = useMemo(() => {
+        if (!value || !units || !Array.isArray(units)) return null;
+        const found = units.find(unit => unit.id === value);
         return found?.name ?? null;
-    }, [value, itemGroups]);
+    }, [value, units]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -50,7 +43,7 @@ export default function ItemGroupLookup({
                     className="w-full justify-between"
                     disabled={disabled}
                 >
-                    {value && selectedItemName ? selectedItemName : placeholder}
+                    {value && selectedUnitName ? selectedUnitName : placeholder}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -60,7 +53,7 @@ export default function ItemGroupLookup({
                     if (value.toLowerCase().includes(search.toLowerCase())) return 1;
                     return 0;
                 }}>
-                    <CommandInput placeholder="Search item group..." />
+                    <CommandInput placeholder="Search unit..." />
                     <CommandList>
                         {isLoading ? (
                             <div className="flex items-center justify-center py-6">
@@ -68,30 +61,31 @@ export default function ItemGroupLookup({
                             </div>
                         ) : (
                             <>
-                                <CommandEmpty>No item group found.</CommandEmpty>
+                                <CommandEmpty>No units found.</CommandEmpty>
                                 <CommandGroup>
-                                    {itemGroups && itemGroups.length > 0 ? (
-                                        itemGroups.map((group) => (
+                                    {units && units.length > 0 ? (
+                                        units.map((unit) => (
                                             <CommandItem
-                                                key={group.id}
-                                                value={group.name}
+                                                key={unit.id}
+                                                value={unit.name}
                                                 onSelect={() => {
-                                                    onValueChange(group.id);
+                                                    if (unit.id) {
+                                                        onValueChange(unit.id);
+                                                    }
                                                     setOpen(false);
                                                 }}
                                             >
-
-                                                {group.name}
+                                                {unit.name}
                                                 <Check
                                                     className={cn(
-                                                        "mr-2 h-4 w-4",
-                                                        value === group.id ? "opacity-100" : "opacity-0"
+                                                        "ml-auto h-4 w-4",
+                                                        value === unit.id ? "opacity-100" : "opacity-0"
                                                     )}
                                                 />
                                             </CommandItem>
                                         ))
                                     ) : (
-                                        <CommandItem disabled>No item groups available.</CommandItem>
+                                        <CommandItem disabled>No units available.</CommandItem>
                                     )}
                                 </CommandGroup>
                             </>
