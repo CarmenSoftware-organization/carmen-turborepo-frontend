@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
+import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 
 interface BasicInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -295,24 +296,13 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                                 </p>
                             ) : (
                                 <FormControl>
-                                    <Select
+                                    <ItemGroupLookup
+                                        value={field.value}
                                         onValueChange={(value) => {
                                             handleItemGroupChange(value);
                                             field.onChange(value);
                                         }}
-                                        value={field.value || ''}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select product item group" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {itemGroups.map((group) => (
-                                                <SelectItem key={group.id} value={group.id}>
-                                                    {group.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    />
                                 </FormControl>
                             )}
                             <FormMessage />

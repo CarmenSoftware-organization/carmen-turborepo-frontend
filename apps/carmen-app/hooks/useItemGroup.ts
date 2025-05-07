@@ -66,7 +66,7 @@ export const useItemGroup = () => {
             try {
                 const result = await createItemGroupService(token, tenantId, data);
 
-                if (!result || !result.id) {
+                if (!result?.id) {
                     toastError({ message: 'Failed to create item group' });
                     return null;
                 }
@@ -85,7 +85,7 @@ export const useItemGroup = () => {
         };
 
         const submitEdit = async () => {
-            if (!selectedItemGroup || !selectedItemGroup.id) {
+            if (!selectedItemGroup?.id) {
                 toastError({ message: 'Item group ID is required for update' });
                 return Promise.reject(new Error('Item group ID is required'));
             }
@@ -117,7 +117,7 @@ export const useItemGroup = () => {
         } else {
             return submitEdit();
         }
-    }, [token, tenantId, itemGroups]);
+    }, [token, tenantId]);
 
     const handleDelete = useCallback((itemGroup: ItemGroupDto) => {
         if (!token || !tenantId) {
@@ -125,7 +125,7 @@ export const useItemGroup = () => {
             return Promise.reject(new Error('No token or tenant ID available'));
         }
 
-        if (!itemGroup || !itemGroup.id) {
+        if (!itemGroup?.id) {
             toastError({ message: 'Item group ID is required for deletion' });
             return Promise.reject(new Error('Item group ID is required'));
         }
