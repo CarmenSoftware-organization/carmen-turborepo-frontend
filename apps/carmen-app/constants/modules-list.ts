@@ -285,7 +285,7 @@ export const moduleItems: ModuleItem[] = [
             },
             {
                 labelKey: "Modules.Configuration.exchangeRates",
-                href: "/configuration/exchange-rates",
+                href: "/configuration/exchange-rate",
             },
             {
                 labelKey: "Modules.Configuration.deliveryPoint",
