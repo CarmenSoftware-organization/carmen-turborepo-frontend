@@ -14,15 +14,6 @@ export const getAllDepartments = async (token: string, tenantId: string,
         filter?: string;
     } = {}
 ) => {
-    if (!token || !tenantId) {
-        console.error('Token or tenantId is missing');
-        return {
-            data: [],
-            paginate: { pages: 1 },
-            message: 'Token or tenantId is missing'
-        };
-    }
-
     try {
         const query = new URLSearchParams();
 
@@ -38,11 +29,10 @@ export const getAllDepartments = async (token: string, tenantId: string,
         const response = await axios.get(url, {
             headers: requestHeaders(token, tenantId)
         });
-
         return response.data;
     } catch (error) {
         console.error('Failed to fetch departments:', error);
-        throw error;
+        return error;
     }
 };
 

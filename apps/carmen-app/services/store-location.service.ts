@@ -33,7 +33,7 @@ export const getAllStoreLocations = async (token: string, tenantId: string,
         return response.data;
     } catch (error) {
         console.error('Failed to fetch store locations:', error);
-        throw error;
+        return error;
     }
 }
 
@@ -45,7 +45,7 @@ export const createStoreLocation = async (token: string, tenantId: string, store
         return response.data;
     } catch (error) {
         console.error('Failed to create store location:', error);
-        throw error;
+        return error;
     }
 }
 
@@ -57,7 +57,7 @@ export const updateStoreLocation = async (token: string, tenantId: string, store
         return response.data;
     } catch (error) {
         console.error('Failed to update store location:', error);
-        throw error;
+        return error;
     }
 }
 

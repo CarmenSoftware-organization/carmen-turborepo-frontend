@@ -35,7 +35,7 @@ export const getAllUnits = async (
         return response.data;
     } catch (error) {
         console.error('Error fetching units:', error);
-        throw error;
+        return error;
     }
 };
 
@@ -47,6 +47,7 @@ export const createUnit = async (token: string, tenantId: string, unit: UnitDto)
         return response.data;
     } catch (error) {
         console.error('Failed to create unit:', error);
+        return error;
     }
 }
 
@@ -58,6 +59,7 @@ export const updateUnit = async (token: string, tenantId: string, unit: UnitDto)
         return response.data;
     } catch (error) {
         console.error('Failed to update unit:', error);
+        return error;
     }
 }
 

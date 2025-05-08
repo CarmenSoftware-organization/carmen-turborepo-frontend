@@ -29,17 +29,6 @@ export const useDepartment = () => {
     }, [search, setPage]);
 
     const fetchDepartments = useCallback(async () => {
-        if (!token) {
-            console.error('Token is missing');
-            return;
-        }
-
-        if (!tenantId) {
-            setIsLoading(false);
-            setDepartments([]);
-            return;
-        }
-
         try {
             setIsLoading(true);
             const data = await getAllDepartments(token, tenantId, {
@@ -49,6 +38,8 @@ export const useDepartment = () => {
                 filter
             });
 
+            console.log('data >>>', data);
+
             if (data.message === 'Token or tenantId is missing') {
                 console.warn('API response: Token or tenantId is missing');
                 setDepartments([]);
@@ -56,7 +47,9 @@ export const useDepartment = () => {
                 return;
             }
 
-            if (data.statusCode === 401) {
+
+
+            if (data.status === 401) {
                 setLoginDialogOpen(true);
                 return;
             }

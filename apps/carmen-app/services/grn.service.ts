@@ -1,5 +1,5 @@
 import { backendApi } from "@/lib/backend-api";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
 
 const API_URL = `${backendApi}/api/good-received-note`;
@@ -33,22 +33,6 @@ export const getGrn = async (
 
         return response.data;
     } catch (error) {
-        const axiosError = error as AxiosError;
-
-        if (axiosError.response?.status === 401) {
-            // Return specific error object for 401 errors
-            return {
-                status: 401,
-                message: "Unauthorized - Your session may have expired. Please login again.",
-                isAuthError: true,
-            };
-        }
-
-        console.log('error', error);
-        return {
-            status: axiosError.response?.status ?? 500,
-            message: axiosError.message ?? "An unknown error occurred",
-            error: axiosError
-        };
+        return error
     }
 };
