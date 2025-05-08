@@ -98,11 +98,10 @@ const WorkflowNotifications: React.FC<WorkflowNotificationsProps> = ({
 						{notifications.map((notification) => (
 							<li
 								key={notification.id}
-								className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${
-									selectedNotificationId === notification.id
+								className={`flex items-center justify-between p-2 rounded-md cursor-pointer ${selectedNotificationId === notification.id
 										? 'bg-secondary'
 										: 'hover:bg-secondary/50'
-								}`}
+									}`}
 								onClick={() => handleNotificationSelect(notification.id)}
 							>
 								<span className="flex-1">
