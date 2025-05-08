@@ -91,6 +91,7 @@ export default function SignInForm() {
                                                     labelPlacement="inside"
                                                     placeholder="This shows when input has value"
                                                     required
+                                                    autoComplete="username"
                                                     {...field}
                                                     className="h-11"
                                                 />
@@ -111,6 +112,7 @@ export default function SignInForm() {
                                                     placeholder="This shows when input has value"
                                                     required
                                                     type="password"
+                                                    autoComplete="current-password"
                                                     {...field}
                                                     className="h-11"
                                                 />

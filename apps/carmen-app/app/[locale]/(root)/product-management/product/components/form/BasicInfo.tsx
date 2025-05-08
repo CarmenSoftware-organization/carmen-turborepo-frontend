@@ -179,13 +179,15 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                             name="code"
                             render={({ field }) => (
                                 <FormItem>
-                                    <p className="text-xs text-muted-foreground font-semibold">Product Code</p>
                                     {currentMode === formType.VIEW ? (
                                         <p className="text-base font-medium">{field.value}</p>
                                     ) : (
-                                        <FormControl>
-                                            <Input placeholder="Enter product code" {...field} />
-                                        </FormControl>
+                                        <>
+                                            <p className="text-xs text-muted-foreground font-semibold">Product Code</p>
+                                            <FormControl>
+                                                <Input placeholder="Enter product code" {...field} />
+                                            </FormControl>
+                                        </>
                                     )}
                                     <FormMessage />
                                 </FormItem>
@@ -198,13 +200,16 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <p className="text-xs text-muted-foreground font-semibold">Product Name</p>
                                         {currentMode === formType.VIEW ? (
                                             <p className="text-base font-medium">{field.value}</p>
                                         ) : (
-                                            <FormControl>
-                                                <Input placeholder="Enter product name" {...field} />
-                                            </FormControl>
+                                            <>
+                                                <p className="text-xs text-muted-foreground font-semibold">Product Name</p>
+                                                <FormControl>
+                                                    <Input placeholder="Enter product name" {...field} />
+                                                </FormControl>
+                                            </>
+
                                         )}
                                         <FormMessage />
                                     </FormItem>
