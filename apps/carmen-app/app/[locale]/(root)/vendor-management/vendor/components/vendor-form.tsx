@@ -99,6 +99,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     })
 
     const onSubmit = async (data: VendorFormValues) => {
+        console.log('data', data)
         setIsSubmitting(true)
 
         try {
@@ -145,7 +146,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                         <Label htmlFor="name" className="text-xs font-medium text-foreground">
                             Vendor Name
                         </Label>
-                        <Input id="name" {...form.register("name")} className="h-9 text-sm" />
+                        <Input id="name" {...form.register("name")} />
                         {form.formState.errors.name && (
                             <p className="text-xs text-destructive mt-1">{form.formState.errors.name.message}</p>
                         )}
@@ -154,7 +155,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                         <Label htmlFor="description" className="text-xs font-medium text-foreground">
                             Description
                         </Label>
-                        <Textarea id="description" {...form.register("description")} className="h-9 text-sm min-h-[2.25rem] py-1.5" />
+                        <Textarea id="description" {...form.register("description")} />
                     </div>
                 </div>
 

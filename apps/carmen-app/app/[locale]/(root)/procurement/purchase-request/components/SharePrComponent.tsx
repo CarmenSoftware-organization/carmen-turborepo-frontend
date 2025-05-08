@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Eye, Mail, MoreHorizontal, SquarePen, Trash } from "lucide-react";
+import { FileText, Mail, MoreHorizontal, SquarePen, Trash2 } from "lucide-react";
 
 export interface SelectionProps {
     selectedItems: string[];
@@ -48,7 +48,7 @@ export const ActionButtons = ({ prId }: { prId: string }) => {
                 aria-label="View purchase request"
                 data-id={`view-pr-${prId}`}
             >
-                <Eye className="h-4 w-4" />
+                <FileText className="h-4 w-4" />
             </Button>
             <Button
                 variant="ghost"
@@ -62,11 +62,11 @@ export const ActionButtons = ({ prId }: { prId: string }) => {
             <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 w-7 text-destructive hover:text-destructive/80"
+                className="h-7 w-7"
                 aria-label="Delete purchase request"
                 data-id={`delete-pr-${prId}`}
             >
-                <Trash />
+                <Trash2 />
             </Button>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>

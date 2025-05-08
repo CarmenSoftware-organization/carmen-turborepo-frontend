@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { VendorFormValues } from "@/dtos/vendor.dto"
 import VendorForm from "./vendor-form"
 import { formType } from "@/dtos/form.dto"
-import { Card } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 
 interface VendorDetailProps {
     vendor: VendorFormValues
@@ -82,9 +82,9 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                 </div>
             </div>
 
-            <div className="p-4">
-                <p className="text-xs font-medium text-gray-500">Description</p>
-                <p className="text-sm">{vendor.description || "No description available"}</p>
+            <div className="p-4 space-y-1">
+                <p className="text-xs font-semibold">Description</p>
+                <p className="text-xs">{vendor.description || "No description available"}</p>
             </div>
 
             <Tabs className="w-full" defaultValue="info">
@@ -101,12 +101,12 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                 </TabsList>
 
                 <TabsContent value="info" className="p-4 space-y-3">
-                    <h3 className="text-xs font-medium text-gray-700 mb-3">Additional Information</h3>
+                    <h3 className="text-xs font-medium">Additional Information</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {vendor.info.map((item, index) => (
-                            <div key={index} className="border border-gray-100 rounded p-2 bg-gray-50">
-                                <p className="text-xs font-medium text-gray-500">{item.label}</p>
-                                <p className="text-sm">{formatValue(item.value, item.data_type)}</p>
+                            <div key={index} className="space-y-1 mt-1">
+                                <p className="text-xs font-semibold">{item.label}</p>
+                                <p className="text-xs">{formatValue(item.value, item.data_type)}</p>
                             </div>
                         ))}
                     </div>
@@ -124,7 +124,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                                     </p>
                                 </div>
                                 <Separator className="my-2" />
-                                <div className="space-y-1 text-sm">
+                                <div className="space-y-1 text-xs">
                                     <p>{address.data.street}</p>
                                     <p>
                                         {address.data.city}, {address.data.state} {address.data.zip}
@@ -136,22 +136,22 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                     </div>
                 </TabsContent>
 
-                <TabsContent value="contact" className="p-4 space-y-3">
-                    <h3 className="text-xs font-medium text-gray-700 mb-3">Contact Information</h3>
+                <TabsContent value="contact" className="p-2 space-y-3">
+                    <h3 className="text-xs">Contact Information</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {vendor.vendor_contact.map((contact, index) => (
-                            <div key={index} className="border border-gray-100 rounded p-3 bg-gray-50">
+                            <div key={index} className="p-2">
                                 <div className="flex items-center gap-1 mb-1">
                                     {getContactIcon(contact.contact_type)}
-                                    <p className="text-xs font-medium text-gray-700">
+                                    <p className="text-xs">
                                         {contact.contact_type.replace(/\b\w/g, (l) => l.toUpperCase())}
                                     </p>
                                 </div>
-                                <p className="text-xs text-gray-500 mb-2">{contact.description}</p>
+                                <p className="text-xs mb-2">{contact.description}</p>
                                 <Separator className="my-2" />
                                 <div className="space-y-2">
                                     {contact.info.map((item, infoIndex) => (
-                                        <div key={infoIndex} className="bg-white p-2 rounded border border-gray-100">
+                                        <div key={infoIndex} className="p-2">
                                             <p className="text-xs font-medium text-gray-500">{item.label}</p>
                                             <p className="text-sm">{formatValue(item.value, item.data_type)}</p>
                                         </div>
