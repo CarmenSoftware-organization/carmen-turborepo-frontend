@@ -1,51 +1,60 @@
 import { backendApi } from "@/lib/backend-api";
+import axios from "axios";
+import { requestHeaders } from "@/lib/config.api";
+
 
 
 export const signInService = async (email: string, password: string) => {
     const url = `${backendApi}/api/auth/login`
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, password })
+    try {
+        const response = await axios.post(url, { email, password });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to sign in:', error);
     }
-    const response = await fetch(url, options);
-    const data = await response.json();
-    return data;
 }
 
 
 export const getUserProfileService = async (accessToken: string) => {
     const url = `${backendApi}/api/user/profile`
-    const options = {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`
-        }
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json',
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to get user profile:', error);
     }
-    const response = await fetch(url, options);
-    const data = await response.json();
-    return data;
 }
 
+// export const updateUserBusinessUnitService = async (accessToken: string, buId: string) => {
+//     const url = `${backendApi}/api/business-unit/default`
+//     const options = {
+//         method: 'POST',
+//         headers: {
+//             'Authorization': `Bearer ${accessToken}`,
+//             'Content-Type': 'application/json',
+//             'x-tenant-id': buId
+//         },
+//     }
+//     const response = await fetch(url, options);
+//     const data = await response.json();
+//     console.log('data response >>>', data);
+
+//     return data;
+// }
+
 export const updateUserBusinessUnitService = async (accessToken: string, buId: string) => {
-
-    console.log('accessToken >>>', accessToken);
-    console.log('buId >>>', buId);
-
     const url = `${backendApi}/api/business-unit/default`
-    const options = {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-            'x-tenant-id': buId
-        },
+    try {
+        const response = await axios.post(url, {
+            headers: requestHeaders(accessToken, buId)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to update user business unit:', error);
     }
-    const response = await fetch(url, options);
-    const data = await response.json();
-    console.log('data response >>>', data);
-
-    return data;
 }

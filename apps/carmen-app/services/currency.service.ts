@@ -36,7 +36,6 @@ export const getCurrenciesService = async (
         return response.data;
     } catch (error) {
         console.error('Failed to fetch currencies:', error);
-        throw error;
     }
 };
 
@@ -48,7 +47,6 @@ export const createCurrency = async (token: string, tenantId: string, currency: 
         return response.data;
     } catch (error) {
         console.error('Failed to create currency:', error);
-        throw error;
     }
 }
 
@@ -60,7 +58,6 @@ export const updateCurrency = async (token: string, tenantId: string, currency: 
         return response.data;
     } catch (error) {
         console.error('Failed to update currency:', error);
-        throw error;
     }
 }
 

@@ -53,7 +53,7 @@ export default function CurrencyDialog({
         code: '',
         symbol: '',
         description: '',
-        exchange_rate: 0,
+        exchange_rate: 0.01,
         is_active: true,
     }), []);
 
@@ -151,6 +151,7 @@ export default function CurrencyDialog({
                                                 type="number"
                                                 {...field}
                                                 onChange={(e) => field.onChange(Number(e.target.value))}
+                                                min={0.01}
                                             />
                                         </FormControl>
                                         <FormMessage />

@@ -8,7 +8,7 @@ export const currencySchema = z.object({
     description: z.string().min(1).optional(),
     is_active: z.boolean(),
     symbol: z.string().min(1),
-    exchange_rate: z.number(),
+    exchange_rate: z.number().min(0.01),
 });
 
 export type CurrencyDto = z.infer<typeof currencySchema>;

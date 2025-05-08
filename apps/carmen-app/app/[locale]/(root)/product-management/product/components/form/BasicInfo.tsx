@@ -174,52 +174,54 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                         }}>
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <FormField
-                            control={control}
-                            name="code"
-                            render={({ field }) => (
-                                <FormItem>
-                                    {currentMode === formType.VIEW ? (
-                                        <p className="text-base font-medium">{field.value}</p>
-                                    ) : (
-                                        <>
-                                            <p className="text-xs text-muted-foreground font-semibold">Product Code</p>
-                                            <FormControl>
-                                                <Input placeholder="Enter product code" {...field} />
-                                            </FormControl>
-                                        </>
-                                    )}
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
 
-                        <div className="flex items-start gap-2">
+                        <div className={`flex gap-2 ${currentMode === formType.VIEW ? 'flex-col' : 'flex-row'}`}>
+                            <div className="flex items-center gap-2">
+                                <FormField
+                                    control={control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            {currentMode === formType.VIEW ? (
+                                                <p className="text-2xl font-semibold">{field.value}</p>
+                                            ) : (
+                                                <>
+                                                    <p className="text-xs text-muted-foreground font-semibold">Product Name</p>
+                                                    <FormControl>
+                                                        <Input placeholder="Enter product name" {...field} />
+                                                    </FormControl>
+                                                </>
+                                            )}
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                {status && (
+                                    <Badge variant={status === "active" ? "active" : "inactive"}>
+                                        {status}
+                                    </Badge>
+                                )}
+                            </div>
                             <FormField
                                 control={control}
-                                name="name"
+                                name="code"
                                 render={({ field }) => (
                                     <FormItem>
                                         {currentMode === formType.VIEW ? (
-                                            <p className="text-base font-medium">{field.value}</p>
+                                            <p className="text-xs text-muted-foreground font-semibold">{field.value}</p>
                                         ) : (
                                             <>
-                                                <p className="text-xs text-muted-foreground font-semibold">Product Name</p>
+                                                <p className="text-xs text-muted-foreground font-semibold">Product Code</p>
                                                 <FormControl>
-                                                    <Input placeholder="Enter product name" {...field} />
+                                                    <Input placeholder="Enter product code" {...field} />
                                                 </FormControl>
                                             </>
-
                                         )}
+
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            {status && (
-                                <Badge variant={status === "active" ? "active" : "inactive"}>
-                                    {status}
-                                </Badge>
-                            )}
                         </div>
                     </div>
                 </div>

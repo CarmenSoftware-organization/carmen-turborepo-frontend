@@ -60,7 +60,10 @@ export function getServerSideToken(): string {
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
-    const [tenantId, setTenantId] = useState<string>('');
+    const [tenantId, setTenantId] = useState<string>(() => {
+        // Initialize from sessionStorage if available to prevent 400 errors on refresh
+        return typeof window !== 'undefined' ? (sessionStorage.getItem('tenant_id') ?? '') : '';
+    });
     const router = useRouter();
     const pathname = usePathname();
     const token = typeof window !== 'undefined' ? (sessionStorage.getItem('access_token') ?? '') : '';
@@ -68,17 +71,21 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     // Initialize tenantId when user changes
     useEffect(() => {
         if (user?.business_unit?.length) {
-            const defaultBu = user.business_unit.find(bu => bu.is_default === true);
+            const defaultBu = user.business_unit.find((bu: BusinessUnit) => bu.is_default === true);
             const firstBu = user.business_unit[0];
-            setTenantId(defaultBu?.id ?? firstBu?.id ?? '');
-        } else {
-            setTenantId('');
+            const newTenantId = defaultBu?.id ?? firstBu?.id ?? '';
+            setTenantId(newTenantId);
+
+            // Store tenantId in sessionStorage to preserve across refreshes
+            if (typeof window !== 'undefined' && newTenantId) {
+                sessionStorage.setItem('tenant_id', newTenantId);
+            }
         }
     }, [user]);
 
     // Check for existing user data on load
     useEffect(() => {
-        const checkAuth = () => {
+        const checkAuth = async () => {
             try {
                 // Extract locale from pathname dynamically
                 const locale = pathname?.split('/')[1];
@@ -90,9 +97,11 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
                     if (typeof window !== 'undefined') {
                         sessionStorage.removeItem('access_token');
                         sessionStorage.removeItem('refresh_token');
+                        sessionStorage.removeItem('tenant_id');
                         localStorage.removeItem('user');
                     }
                     setUser(null);
+                    setTenantId('');
                     setIsLoading(false);
                     return;
                 }
@@ -129,6 +138,18 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
                 localStorage.setItem('user', JSON.stringify(data));
             }
             setUser(data);
+
+            // Set initial tenant ID when user logs in
+            if (data?.business_unit?.length) {
+                const defaultBu = data.business_unit.find((bu: BusinessUnit) => bu.is_default === true);
+                const firstBu = data.business_unit[0];
+                const newTenantId = defaultBu?.id ?? firstBu?.id ?? '';
+
+                if (newTenantId && typeof window !== 'undefined') {
+                    sessionStorage.setItem('tenant_id', newTenantId);
+                    setTenantId(newTenantId);
+                }
+            }
         }
 
         if (refreshToken && typeof window !== 'undefined') {
@@ -143,10 +164,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         if (typeof window !== 'undefined') {
             sessionStorage.removeItem('access_token');
             sessionStorage.removeItem('refresh_token');
+            sessionStorage.removeItem('tenant_id');
             // Also clear user data from localStorage
             localStorage.removeItem('user');
         }
         setUser(null);
+        setTenantId('');
         // Redirect to sign-in with the current locale
         router.push(`/${locale}/sign-in`);
     }, [router, pathname]);
@@ -169,6 +192,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         const data = await updateUserBusinessUnitService(token, id);
         if (data) {
             setTenantId(id);
+            // Store the updated tenant ID in sessionStorage
+            if (typeof window !== 'undefined') {
+                sessionStorage.setItem('tenant_id', id);
+            }
         }
     }, [token]);
 
