@@ -15,8 +15,8 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Template } from '../types/workflow';
 import { sampleWorkflows } from '../data/mockData';
+import { Template } from '@/dtos/workflows.dto';
 
 // Define variable groups and their items
 const templateVariables = {

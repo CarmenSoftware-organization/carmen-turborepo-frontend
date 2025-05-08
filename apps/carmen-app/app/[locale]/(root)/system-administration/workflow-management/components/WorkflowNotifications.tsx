@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Pencil, Plus } from 'lucide-react';
-import { WorkflowNotification } from '../types/workflow';
+import { WorkflowNotification } from '@/dtos/workflows.dto';
 
 interface WorkflowNotificationsProps {
 	notifications: WorkflowNotification[];
