@@ -386,8 +386,6 @@ export default function BasicInfo({ control, currentMode, handleEditClick, handl
                         </FormItem>
                     )}
                 />
-
-
             </div>
         </Card>
     );
