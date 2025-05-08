@@ -208,7 +208,7 @@ export default function ExchangeRateComponent() {
 
     const renderSearchResultsMessage = () => {
         if (filteredCurrencies.length === 0) {
-            return <p className="text-sm mt-2 text-muted-foreground">No results found for "{searchQuery}"</p>;
+            return <p className="text-sm mt-2 text-muted-foreground">No results found for &quot;{searchQuery}&quot;</p>;
         }
 
         if (filteredCurrencies.length !== currencies.length) {

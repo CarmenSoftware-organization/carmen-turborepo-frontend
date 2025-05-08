@@ -13,7 +13,6 @@ import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
 import { mockGoodsReceivedNotes } from "@/mock-data/procurement";
 import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
 import { useGrn } from "@/hooks/useGrn";
-import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 
 const grnStatusOptions = [
     { label: 'Pending', value: 'pending' },
@@ -27,8 +26,7 @@ export default function GoodsReceivedNoteComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [signInOpen, setSignInOpen] = useState(false);
-    const { grns, isLoading, isError, error, refetch, search, setSearch, page, setPage, sort, setSort, isUnauthorized } = useGrn();
+    const { grns, isError, search, setSearch, sort, setSort } = useGrn();
 
     console.log(grns);
     console.log('isError', isError);
@@ -105,18 +103,7 @@ export default function GoodsReceivedNoteComponent() {
         </div>
     );
 
-    const content = (
-        <>
-            {isUnauthorized ? (
-                <UnauthorizedMessage
-                    onRetry={refetch}
-                    onLogin={() => setSignInOpen(true)}
-                />
-            ) : (
-                <GoodsReceivedNoteList goodsReceivedNotes={mockGoodsReceivedNotes} />
-            )}
-        </>
-    )
+    const content = <GoodsReceivedNoteList goodsReceivedNotes={mockGoodsReceivedNotes} />;
 
 
     return (

@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { VendorFormValues } from "@/dtos/vendor.dto"
 import VendorForm from "./vendor-form"
 import { formType } from "@/dtos/form.dto"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 
 interface VendorDetailProps {
     vendor: VendorFormValues
