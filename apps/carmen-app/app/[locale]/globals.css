@@ -101,6 +101,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  body:lang(th) {
+    font-family: var(--font-noto-thai), var(--font-geist-sans);
+  }
+  :lang(th) {
+    font-family: var(--font-noto-thai), var(--font-geist-sans);
+  }
   h1 {
     @apply text-2xl font-bold;
   }

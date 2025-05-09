@@ -12,7 +12,9 @@
     "signIn": "เข้าสู่ระบบ",
     "signingIn": "กำลังเข้าสู่ระบบ...",
     "signInSuccess": "เข้าสู่ระบบสำเร็จ",
-    "signInError": "อีเมลหรือรหัสผ่านไม่ถูกต้อง"
+    "signInError": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+    "termsOfService": "ข้อตกลงการใช้บริการ",
+    "privacyPolicy": "นโยบายความเป็นส่วนตัว"
   },
   "DashboardPage": {
     "dashboardTitle": "แดชบอร์ด",
@@ -37,6 +39,7 @@
     "dashboard": "แดชบอร์ด",
     "procurement": "การจัดซื้อ",
     "configuration": "การตั้งค่า",
+    "configurationTitle": "การตั้งค่า",
     "Procurement": {
       "dashboard": "แดชบอร์ด",
       "myApproval": "การอนุมัติของฉัน",

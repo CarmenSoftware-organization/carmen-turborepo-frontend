@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -18,6 +19,13 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const notoSansThai = Noto_Sans_Thai({
+  weight: ["400", "500", "600", "700"],
+  subsets: ["thai", "latin"],
+  variable: "--font-noto-thai",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Carmen",
   description: "Carmen Description",
@@ -33,7 +41,7 @@ export default async function RootLayout({
   const messages = await getMessages({ locale });
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansThai.variable} antialiased`}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
             {children}

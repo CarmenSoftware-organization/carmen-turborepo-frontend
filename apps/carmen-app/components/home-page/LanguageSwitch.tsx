@@ -46,7 +46,7 @@ export default function LanguageSwitch() {
             <SelectTrigger className="w-[100px] border-none focus:ring-ring">
                 <SelectValue>
                     <div className="flex items-center gap-2">
-                        <span>{currentLocale === 'en' ? 'English' : 'Thai'}</span>
+                        <span>{currentLocale === 'en' ? 'English' : 'ไทย'}</span>
                     </div>
                 </SelectValue>
             </SelectTrigger>
@@ -58,7 +58,7 @@ export default function LanguageSwitch() {
                         className="cursor-pointer"
                     >
                         <div className="flex items-center">
-                            <span>{locale === 'en' ? 'English' : 'Thai'}</span>
+                            <span>{locale === 'en' ? 'English' : 'ไทย'}</span>
                         </div>
                     </SelectItem>
                 ))}

@@ -143,9 +143,9 @@ export default function SignInForm() {
                     <p className="text-muted-foreground text-sm">
                         <LanguageSwitch />
                     </p>
-                    <div className="flex items-center gap-2">
-                        <p className="text-muted-foreground text-xs">Terms of Service</p>
-                        <p className="text-muted-foreground text-xs">Privacy Policy</p>
+                    <div className="flex items-center gap-4">
+                        <p className="text-muted-foreground text-xs">{t('termsOfService')}</p>
+                        <p className="text-muted-foreground text-xs">{t('privacyPolicy')}</p>
                     </div>
                 </div>
             </div>

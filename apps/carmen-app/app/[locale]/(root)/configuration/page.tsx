@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 
 export default function Configuration() {
     const t = useTranslations('Modules');
+
     const subMenu: MenuCardItem[] = [
         {
             name: t('Configuration.currency'),
@@ -35,11 +36,13 @@ export default function Configuration() {
             href: '/configuration/store-location',
             icon: Store
         }
-    ]
+    ];
+
+    const title = t('configurationTitle');
 
     return (
         <div className="container">
-            <h1 className="text-3xl font-bold mb-8">{t('configuration')}</h1>
+            <h1 className="text-3xl font-bold mb-8">{title}</h1>
             <MenuCardGrid items={subMenu} />
         </div>
     )

@@ -12,7 +12,9 @@
     "signIn": "Sign In",
     "signingIn": "Signing in...",
     "signInSuccess": "Sign in successful",
-    "signInError": "Invalid email or password"
+    "signInError": "Invalid email or password",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy"
   },
   "DashboardPage": {
     "dashboardTitle": "Dashboard Page",
@@ -42,6 +44,7 @@
     "dashboard": "Dashboard",
     "procurement": "Procurement",
     "configuration": "Configuration",
+    "configurationTitle": "Configuration",
     "Procurement": {
       "dashboard": "Dashboard",
       "myApproval": "My Approval",
