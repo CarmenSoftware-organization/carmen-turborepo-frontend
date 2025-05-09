@@ -15,6 +15,8 @@ import { useTranslations } from "next-intl";
 import { SquarePen, Trash } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { SortConfig, getSortableColumnProps, renderSortIcon } from "@/utils/table-sort";
 
 interface CurrencyListProps {
     readonly isLoading: boolean;
@@ -24,6 +26,8 @@ interface CurrencyListProps {
     readonly currentPage: number;
     readonly totalPages: number;
     readonly onPageChange: (page: number) => void;
+    readonly sort?: SortConfig;
+    readonly onSort?: (field: string) => void;
 }
 
 export default function CurrencyList({
@@ -33,7 +37,9 @@ export default function CurrencyList({
     onToggleStatus,
     currentPage,
     totalPages,
-    onPageChange
+    onPageChange,
+    sort,
+    onSort
 }: CurrencyListProps) {
     const t = useTranslations('TableHeader');
     const tCommon = useTranslations('Common');
@@ -69,12 +75,12 @@ export default function CurrencyList({
                     <TableRow
                         key={currency.id}
                     >
-                        <TableCell className="w-10 hidden md:table-cell">{index + 1}</TableCell>
-                        <TableCell className="w-10 md:w-24 md:table-cell">{currency.name}</TableCell>
-                        <TableCell className="w-10 hidden md:table-cell">{currency.code}</TableCell>
-                        <TableCell className="w-10 md:w-24 hidden md:table-cell">{currency.symbol}</TableCell>
-                        <TableCell className="w-32 md:text-center">{currency.exchange_rate}</TableCell>
-                        <TableCell className="w-10 md:w-24 md:text-center">
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell className="text-left">{currency.name}</TableCell>
+                        <TableCell>{currency.code}</TableCell>
+                        <TableCell>{currency.symbol}</TableCell>
+                        <TableCell>{currency.exchange_rate}</TableCell>
+                        <TableCell>
                             <Badge variant={currency.is_active ? "active" : "inactive"}>
                                 {currency.is_active ? tCommon("active") : tCommon("inactive")}
                             </Badge>
@@ -110,20 +116,55 @@ export default function CurrencyList({
 
     return (
         <div className="space-y-4">
-            <Table className="border">
-                <TableHeader className="sticky top-0 bg-muted">
-                    <TableRow>
-                        <TableHead className="w-10 hidden md:table-cell">#</TableHead>
-                        <TableHead className="w-10 md:w-24 md:table-cell">{t('name')}</TableHead>
-                        <TableHead className="w-10 hidden md:table-cell">{t('code')}</TableHead>
-                        <TableHead className="w-10 md:w-24 hidden md:table-cell">{t('symbol')}</TableHead>
-                        <TableHead className="w-32 md:text-center">{t('exchangeRate')}</TableHead>
-                        <TableHead className="w-10 md:w-24 md:text-center">{t('status')}</TableHead>
-                        <TableHead className="text-right">{t('action')}</TableHead>
-                    </TableRow>
-                </TableHeader>
-                {renderTableContent()}
-            </Table>
+            <div className="relative">
+                <Table className="border">
+                    <TableHeader className="sticky top-0 bg-muted">
+                        <TableRow>
+                            <TableHead className="w-10">#</TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('name', sort, onSort)}
+                                className="text-left"
+                            >
+                                <div className="flex items-center gap-2">
+                                    {t('name')}
+                                    {renderSortIcon('name', sort)}
+                                </div>
+                            </TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('code', sort, onSort)}
+                            >
+                                <div className="flex items-center">
+                                    {t('code')}
+                                    {renderSortIcon('code', sort)}
+                                </div>
+                            </TableHead>
+                            <TableHead>{t('symbol')}</TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('exchange_rate', sort, onSort)}
+                            >
+                                <div className="flex items-center justify-center">
+                                    {t('exchangeRate')}
+                                    {renderSortIcon('exchange_rate', sort)}
+                                </div>
+                            </TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('is_active', sort, onSort)}
+                            >
+                                <div className="flex items-center justify-center">
+                                    {t('status')}
+                                    {renderSortIcon('is_active', sort)}
+                                </div>
+                            </TableHead>
+                            <TableHead className="text-right">{t('action')}</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                </Table>
+                <ScrollArea className="h-[calc(102vh-300px)] w-full">
+                    <Table>
+                        {renderTableContent()}
+                    </Table>
+                </ScrollArea>
+            </div>
 
             <PaginationComponent
                 currentPage={currentPage}

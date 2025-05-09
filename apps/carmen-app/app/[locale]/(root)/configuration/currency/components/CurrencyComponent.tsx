@@ -13,6 +13,8 @@ import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import SignInDialog from "@/components/SignInDialog";
 import { useCurrency } from "@/hooks/useCurrency";
+import { useMemo } from "react";
+import { SortConfig, SortDirection } from "@/utils/table-sort";
 
 export default function CurrencyComponent() {
     const tCurrency = useTranslations('Currency');
@@ -51,6 +53,19 @@ export default function CurrencyComponent() {
         handleConfirmToggle,
         handleSubmit
     } = useCurrency();
+
+    // Parse the sort string into field and direction
+    const parsedSort = useMemo((): SortConfig | undefined => {
+        if (!sort) return undefined;
+
+        const parts = sort.split(':');
+        if (parts.length !== 2) return undefined;
+
+        return {
+            field: parts[0],
+            direction: parts[1] as SortDirection
+        };
+    }, [sort]);
 
     const title = tCurrency('title');
 
@@ -116,6 +131,11 @@ export default function CurrencyComponent() {
             currentPage={parseInt(page || '1')}
             totalPages={totalPages}
             onPageChange={handlePageChange}
+            sort={parsedSort}
+            onSort={(field) => {
+                const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
+                setSort(`${field}:${direction}`);
+            }}
         />
     );
 
