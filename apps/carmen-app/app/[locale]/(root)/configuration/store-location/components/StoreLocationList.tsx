@@ -15,6 +15,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
+import { SortConfig, getSortableColumnProps, renderSortIcon } from "@/utils/table-sort";
+
 interface StoreLocationListProps {
     readonly isLoading: boolean;
     readonly storeLocations: StoreLocationDto[];
@@ -23,6 +25,8 @@ interface StoreLocationListProps {
     readonly currentPage: number;
     readonly totalPages: number;
     readonly onPageChange: (page: number) => void;
+    readonly sort?: SortConfig;
+    readonly onSort?: (field: string) => void;
 }
 
 export default function StoreLocationList({
@@ -33,8 +37,11 @@ export default function StoreLocationList({
     currentPage,
     totalPages,
     onPageChange,
+    sort,
+    onSort,
 }: StoreLocationListProps) {
     const t = useTranslations('TableHeader');
+    const tCommon = useTranslations('Common');
 
     const renderTableContent = () => {
         if (isLoading) return <TableBodySkeleton columns={8} />;
@@ -76,7 +83,7 @@ export default function StoreLocationList({
                         </TableCell>
                         <TableCell>
                             <Badge variant={storeLocation.is_active ? "active" : "inactive"}>
-                                {storeLocation.is_active ? "Active" : "Inactive"}
+                                {storeLocation.is_active ? tCommon("active") : tCommon("inactive")}
                             </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -110,21 +117,39 @@ export default function StoreLocationList({
 
     return (
         <div className="space-y-4">
-            <ScrollArea className="relative">
+            <div className="relative">
                 <Table className="border">
                     <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead className="w-10">#</TableHead>
-                            <TableHead>{t('name')}</TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('name', sort, onSort)}
+                            >
+                                <div className="flex items-center">
+                                    {t('name')}
+                                    {renderSortIcon('name', sort)}
+                                </div>
+                            </TableHead>
                             <TableHead className="hidden md:table-cell">{t('type')}</TableHead>
                             <TableHead className="hidden md:table-cell">{t('delivery_point')}</TableHead>
-                            <TableHead>{t('status')}</TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('is_active', sort, onSort)}
+                            >
+                                <div className="flex items-center">
+                                    {t('status')}
+                                    {renderSortIcon('is_active', sort)}
+                                </div>
+                            </TableHead>
                             <TableHead className="text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
-                    {renderTableContent()}
                 </Table>
-            </ScrollArea>
+                <ScrollArea className="h-[calc(102vh-300px)] w-full">
+                    <Table>
+                        {renderTableContent()}
+                    </Table>
+                </ScrollArea>
+            </div>
             <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}

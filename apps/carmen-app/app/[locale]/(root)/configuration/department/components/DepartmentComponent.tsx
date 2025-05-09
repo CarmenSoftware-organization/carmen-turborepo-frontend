@@ -13,6 +13,8 @@ import DepartmentDialog from "./DepartmentDialog";
 import SignInDialog from "@/components/SignInDialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useDepartment } from "@/hooks/useDepartment";
+import { SortConfig, SortDirection } from "@/utils/table-sort";
+import { useMemo } from "react";
 
 export default function DepartmentComponent() {
     const tDepartment = useTranslations('Department');
@@ -49,6 +51,19 @@ export default function DepartmentComponent() {
         handleConfirmStatusChange,
         handleSubmit
     } = useDepartment();
+
+    // Parse the sort string into field and direction
+    const parsedSort = useMemo((): SortConfig | undefined => {
+        if (!sort) return undefined;
+
+        const parts = sort.split(':');
+        if (parts.length !== 2) return undefined;
+
+        return {
+            field: parts[0],
+            direction: parts[1] as SortDirection
+        };
+    }, [sort]);
 
     const title = tDepartment('title');
 
@@ -113,6 +128,11 @@ export default function DepartmentComponent() {
             currentPage={parseInt(page || '1')}
             totalPages={totalPages}
             onPageChange={handlePageChange}
+            sort={parsedSort}
+            onSort={(field) => {
+                const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
+                setSort(`${field}:${direction}`);
+            }}
         />
     )
 

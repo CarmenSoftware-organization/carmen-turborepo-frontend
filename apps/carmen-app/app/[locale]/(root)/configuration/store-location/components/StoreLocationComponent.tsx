@@ -14,6 +14,8 @@ import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import StoreLocationDialog from "./StoreLocationDialog";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useMemo } from "react";
+import { SortConfig, SortDirection } from "@/utils/table-sort";
 
 export default function StoreLocationComponent() {
     const tCommon = useTranslations('Common');
@@ -54,6 +56,19 @@ export default function StoreLocationComponent() {
         handleConfirmStatusChange,
         fetchStoreLocations
     } = useStoreLocation();
+
+    // Parse the sort string into field and direction
+    const parsedSort = useMemo((): SortConfig | undefined => {
+        if (!sort) return undefined;
+
+        const parts = sort.split(':');
+        if (parts.length !== 2) return undefined;
+
+        return {
+            field: parts[0],
+            direction: parts[1] as SortDirection
+        };
+    }, [sort]);
 
     const actionButtons = (
         <div className="action-btn-container" data-id="store-location-list-action-buttons">
@@ -124,6 +139,11 @@ export default function StoreLocationComponent() {
                     currentPage={parseInt(page || '1')}
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
+                    sort={parsedSort}
+                    onSort={(field) => {
+                        const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
+                        setSort(`${field}:${direction}`);
+                    }}
                 />
             )}
         </>

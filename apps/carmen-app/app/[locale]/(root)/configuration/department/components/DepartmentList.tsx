@@ -16,6 +16,7 @@ import { SquarePen, Trash } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
+import { SortConfig, getSortableColumnProps, renderSortIcon } from "@/utils/table-sort";
 
 interface DepartmentListProps {
     readonly departments: DepartmentDto[];
@@ -25,6 +26,8 @@ interface DepartmentListProps {
     readonly currentPage: number;
     readonly totalPages: number;
     readonly onPageChange: (page: number) => void;
+    readonly sort?: SortConfig;
+    readonly onSort?: (field: string) => void;
 }
 
 export default function DepartmentList({
@@ -34,9 +37,12 @@ export default function DepartmentList({
     isLoading,
     currentPage,
     totalPages,
-    onPageChange
+    onPageChange,
+    sort,
+    onSort
 }: DepartmentListProps) {
     const t = useTranslations('TableHeader');
+    const tCommon = useTranslations('Common');
 
     const renderTableContent = () => {
         if (isLoading) return <TableBodySkeleton columns={4} />;
@@ -70,7 +76,7 @@ export default function DepartmentList({
                         </TableCell>
                         <TableCell>
                             <Badge variant={department.is_active ? "active" : "inactive"}>
-                                {department.is_active ? "Active" : "Inactive"}
+                                {department.is_active ? tCommon("active") : tCommon("inactive")}
                             </Badge>
                         </TableCell>
                         <TableCell className="w-20">
@@ -104,19 +110,37 @@ export default function DepartmentList({
 
     return (
         <div className="space-y-4">
-            <ScrollArea className="h-[calc(102vh-250px)] w-full">
+            <div className="relative">
                 <Table className="border">
                     <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead>#</TableHead>
-                            <TableHead>{t('name')}</TableHead>
-                            <TableHead>{t('status')}</TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('name', sort, onSort)}
+                            >
+                                <div className="flex items-center">
+                                    {t('name')}
+                                    {renderSortIcon('name', sort)}
+                                </div>
+                            </TableHead>
+                            <TableHead
+                                {...getSortableColumnProps('is_active', sort, onSort)}
+                            >
+                                <div className="flex items-center">
+                                    {t('status')}
+                                    {renderSortIcon('is_active', sort)}
+                                </div>
+                            </TableHead>
                             <TableHead className="w-20 text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
-                    {renderTableContent()}
                 </Table>
-            </ScrollArea>
+                <ScrollArea className="h-[calc(102vh-300px)] w-full">
+                    <Table>
+                        {renderTableContent()}
+                    </Table>
+                </ScrollArea>
+            </div>
             <PaginationComponent
                 currentPage={currentPage}
                 totalPages={totalPages}

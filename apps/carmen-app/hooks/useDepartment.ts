@@ -38,8 +38,6 @@ export const useDepartment = () => {
                 filter
             });
 
-            console.log('data >>>', data);
-
             if (data.message === 'Token or tenantId is missing') {
                 console.warn('API response: Token or tenantId is missing');
                 setDepartments([]);
