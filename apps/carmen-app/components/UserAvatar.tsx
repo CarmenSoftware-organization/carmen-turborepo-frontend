@@ -13,10 +13,10 @@ import {
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { LogOut, User } from "lucide-react";
 import { Link } from "@/lib/navigation";
-
+import { useTranslations } from "next-intl";
 export default function UserAvatar() {
     const { logout, user } = useAuth();
-
+    const t = useTranslations('Common');
     const getInitials = () => {
         if (!user?.user_info) return "U";
         const { firstname, lastname } = user.user_info;
@@ -58,7 +58,7 @@ export default function UserAvatar() {
                 >
                     <Link href="/profile" className="flex items-center gap-2">
                         <User className="h-4 w-4" />
-                        <span>Profile</span>
+                        <span>{t('profile')}</span>
                     </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -66,7 +66,7 @@ export default function UserAvatar() {
                     onClick={logout}
                 >
                     <LogOut className="h-4 w-4" />
-                    <span>Logout</span>
+                    <span>{t('signOut')}</span>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

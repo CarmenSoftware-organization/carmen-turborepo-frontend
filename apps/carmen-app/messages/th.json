@@ -3,7 +3,9 @@
     "title": "หน้าหลัก",
     "welcome": "ยินดีต้อนรับสู่หน้าหลัก!",
     "CarmenSoftware": "Carmen Software",
-    "HotelFinanceManagementSoftware": "ซอฟต์แวร์การบริหารการกิจการโรงแรม"
+    "HotelFinanceManagementSoftware": "ซอฟต์แวร์การบริหารการกิจการโรงแรม",
+    "carmenTitle": "Carmen",
+    "HospitalitySupplyChain": "Supply Chain อุตสาหกรรมที่มีคุณภาพ"
   },
   "SignInPage": {
     "title": "เข้าสู่ระบบ",
@@ -72,6 +74,7 @@
     },
     "inventoryManagement": "การจัดการสินค้า",
     "InventoryManagement": {
+      "storeOperations": "การดำเนินการร้านค้า",
       "stockOverview": "ตรวจสอบสินค้า",
       "StockOverview": {
         "inventoryBalance": "ยอดคงเหลือสินค้า",
@@ -190,7 +193,9 @@
     "name": "ชื่อ",
     "description": "คำอธิบาย",
     "active": "ใช้งาน",
-    "inactive": "ไม่ใช้งาน"
+    "inactive": "ไม่ใช้งาน",
+    "profile": "โปรไฟล์",
+    "signOut": "ออกจากระบบ"
   },
   "TableHeader": {
     "name": "ชื่อ",

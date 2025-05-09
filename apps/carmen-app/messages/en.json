@@ -3,7 +3,9 @@
     "title": "Home Page",
     "welcome": "Welcome to the home page!",
     "CarmenSoftware": "Carmen Software",
-    "HotelFinanceManagementSoftware": "Hotel finance management software"
+    "HotelFinanceManagementSoftware": "Hotel finance management software",
+    "carmenTitle": "Carmen",
+    "HospitalitySupplyChain": "Hospitality Supply Chain"
   },
   "SignInPage": {
     "title": "Sign In",
@@ -77,6 +79,7 @@
     },
     "inventoryManagement": "Inventory Management",
     "InventoryManagement": {
+      "storeOperations": "Store Operations",
       "stockOverview": "Stock Overview",
       "inventoryAdjustments": "Inventory Adjustments",
       "spotCheck": "Spot Check",
@@ -190,7 +193,9 @@
     "name": "Name",
     "description": "Description",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "profile": "Profile",
+    "signOut": "Sign Out"
   },
   "TableHeader": {
     "name": "Name",

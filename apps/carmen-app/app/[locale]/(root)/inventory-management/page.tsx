@@ -8,11 +8,6 @@ export default function InventoryManagementPage() {
 
     const subMenu: MenuCardItem[] = [
         {
-            name: t('InventoryManagement.storeOperation.title'),
-            href: '/inventory-management/store-operation',
-            icon: Boxes
-        },
-        {
             name: t('InventoryManagement.stockOverview'),
             href: '/inventory-management/stock-overview',
             icon: Boxes
