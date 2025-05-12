@@ -182,7 +182,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                         <TabsTrigger className="w-full" value="items">Items</TabsTrigger>
                                         <TabsTrigger className="w-full" value="extraCost">Extra Cost</TabsTrigger>
                                         <TabsTrigger className="w-full" value="stockMovement">Stock Movement</TabsTrigger>
-                                        <TabsTrigger className="w-full" value="journalEntries">Journal Entries</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="journalEntries">Financial</TabsTrigger>
                                         <TabsTrigger className="w-full" value="taxEntries">Tax Entries</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="items">

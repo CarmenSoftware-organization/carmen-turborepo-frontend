@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -47,10 +47,10 @@ export default function VendorList({
                     <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead className="w-10 text-center">#</TableHead>
-                            <TableHead className="w-60 text-left">Name</TableHead>
-                            <TableHead className="w-60 text-left">Description</TableHead>
-                            <TableHead className="w-60 text-left">Business Type</TableHead>
-                            <TableHead className="w-60 text-left">Status</TableHead>
+                            <TableHead className="w-40 text-left">Name</TableHead>
+                            <TableHead className="w-60">Description</TableHead>
+                            <TableHead>Business Type</TableHead>
+                            <TableHead className="w-20 text-left">Status</TableHead>
                             <TableHead className="text-right">Action</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -69,10 +69,10 @@ export default function VendorList({
                                     vendors.map((vendor, index) => (
                                         <TableRow key={vendor.id}>
                                             <TableCell className="text-center w-10">{index + 1}</TableCell>
-                                            <TableCell className="font-medium w-60">{vendor.name}</TableCell>
-                                            <TableCell className="text-left w-60">{vendor.description}</TableCell>
-                                            <TableCell className="text-left w-60">{vendor.business_type_name ?? "-"}</TableCell>
-                                            <TableCell className="text-left w-60">
+                                            <TableCell className="w-40 text-left">{vendor.name}</TableCell>
+                                            <TableCell className="w-60 text-left">{vendor.description}</TableCell>
+                                            <TableCell>{vendor.business_type_name ?? "-"}</TableCell>
+                                            <TableCell className="text-left w-20">
                                                 <Badge variant={vendor.is_active ? "active" : "inactive"}>
                                                     {vendor.is_active ? "Active" : "Inactive"}
                                                 </Badge>
@@ -87,9 +87,9 @@ export default function VendorList({
                                                     variant="ghost"
                                                     size="sm"
                                                     onClick={() => handleDeleteClick(vendor)}
-                                                    className="text-destructive hover:text-destructive/80 h-7 w-7"
+                                                    className="h-7 w-7"
                                                 >
-                                                    <Trash className="h-4 w-4" />
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -136,10 +136,10 @@ export default function VendorList({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-7 w-7 hover:bg-destructive/80 text-destructive"
+                                            className="h-7 w-7"
                                             onClick={() => handleDeleteClick(vendor)}
                                         >
-                                            <Trash className="h-4 w-4" />
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 </div>

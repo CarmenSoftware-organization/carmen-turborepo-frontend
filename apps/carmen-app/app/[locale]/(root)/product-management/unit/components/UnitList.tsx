@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { SquarePen, Trash } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -98,11 +98,11 @@ export default function UnitList({
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-destructive hover:text-destructive/80 h-6 w-6"
+                                    className="h-6 w-6"
                                     onClick={() => handleDelete(unit)}
                                     disabled={!unit.is_active}
                                 >
-                                    <Trash className="h-3.5 w-3.5" />
+                                    <Trash2 className="h-3.5 w-3.5" />
                                 </Button>
                             </div>
                         </TableCell>

@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { SquarePen, Trash } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -96,9 +96,9 @@ export default function DepartmentList({
                                     onClick={() => onToggleStatus(department)}
                                     aria-label={`${department.is_active ? 'Deactivate' : 'Activate'} department`}
                                     disabled={!department.is_active}
-                                    className="h-7 w-7 text-destructive hover:text-destructive/80"
+                                    className="h-7 w-7"
                                 >
-                                    <Trash className="h-4 w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                 </Button>
                             </div>
                         </TableCell>

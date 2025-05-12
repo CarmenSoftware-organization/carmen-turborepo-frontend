@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CategoryNode } from "@/dtos/category.dto";
-import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash } from "lucide-react";
+import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -111,9 +111,9 @@ export default function TreeNode({
                         variant="ghost"
                         size={'sm'}
                         onClick={() => onDelete(node)}
-                        className="text-destructive hover:text-destructive/80 h-6 w-6   "
+                        className="h-6 w-6"
                     >
-                        <Trash className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                     </Button>
 
 

@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { SquarePen, Trash } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -102,9 +102,9 @@ export default function CurrencyList({
                                     onClick={() => handleToggleStatus(currency)}
                                     aria-label={currency.is_active ? "Deactivate currency" : "Activate currency"}
                                     disabled={!currency.is_active}
-                                    className="h-7 w-7 text-destructive hover:text-destructive/80"
+                                    className="h-7 w-7"
                                 >
-                                    <Trash className="h-4 w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                 </Button>
                             </div>
                         </TableCell>

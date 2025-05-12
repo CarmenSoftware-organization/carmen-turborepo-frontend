@@ -19,7 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Eye, Trash } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -152,11 +152,11 @@ export default function ProductList({
                                 <Button
                                     variant="ghost"
                                     size={'sm'}
-                                    className="text-destructive w-4 h-4 hover:text-destructive/80"
+                                    className="w-4 h-4"
                                     onClick={() => onDelete(pd.id ?? '')}
                                     aria-label={`Delete ${pd.name}`}
                                 >
-                                    <Trash className="w-3 h-3" />
+                                    <Trash2 className="w-3 h-3" />
                                 </Button>
                             </div>
                         </TableCell>
@@ -224,11 +224,11 @@ export default function ProductList({
                         <Button
                             variant="ghost"
                             size={'sm'}
-                            className="text-destructive"
+                            className="w-4 h-4"
                             onClick={() => onDelete(pd.id ?? '')}
                             aria-label={`Delete ${pd.name}`}
                         >
-                            <Trash />
+                            <Trash2 className="w-3 h-3" />
                         </Button>
                     </div>
                 </CardContent>
