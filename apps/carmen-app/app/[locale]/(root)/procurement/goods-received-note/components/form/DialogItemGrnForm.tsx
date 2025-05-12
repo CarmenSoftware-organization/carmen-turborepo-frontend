@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import {
     Dialog,
     DialogContent,
-    DialogFooter,
     DialogTrigger,
     DialogHeader,
     DialogTitle,
@@ -29,6 +28,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
 
 interface DialogGrnFormProps {
     readonly mode: formType;
@@ -71,7 +71,7 @@ export default function DialogItemGrnForm({
             total_amount: 0,
             po_ref_no: "",
             job_code: "",
-            foc: false,
+            foc: { unit_id: "", unit_name: "", qty: 0 },
             delivery_point: "",
             currency: "",
             exchange_rate: 0,
@@ -80,6 +80,7 @@ export default function DialogItemGrnForm({
             adj_tax_rate: 0,
             override_disc_amount: 0,
             override_tax_amount: 0,
+            note: "",
         },
     });
 
@@ -159,23 +160,24 @@ export default function DialogItemGrnForm({
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2 py-2">
 
-                            <div className="border-b pb-4">
-
-                                <div className="flex justify-between items-center">
-                                    <p className="text-base font-bold">{dialogTitle}</p>
-                                    <div className="flex items-center gap-2">
-                                        <Button variant="outline" size="sm" onClick={handleCancel}>
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            variant="default"
-                                            size="sm"
-                                            disabled={!form.formState.isValid}
-                                        >
-                                            Save
-                                        </Button>
-                                    </div>
+                            <div className="flex justify-between items-center">
+                                <p className="text-base font-bold">{dialogTitle}</p>
+                                <div className="flex items-center gap-2">
+                                    <Button variant="outline" size="sm" onClick={handleCancel}>
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        variant="default"
+                                        size="sm"
+                                        disabled={!form.formState.isValid}
+                                    >
+                                        Save
+                                    </Button>
                                 </div>
+                            </div>
+
+                            <Card className="p-4 space-y-4 mt-4">
+                                <p className="text-sm font-bold">Basic Information</p>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                                     <FormField
                                         control={form.control}
@@ -196,7 +198,20 @@ export default function DialogItemGrnForm({
                                         name="products.name"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Product</FormLabel>
+                                                <FormLabel>Product Name</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="products.description"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Description</FormLabel>
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
@@ -210,9 +225,51 @@ export default function DialogItemGrnForm({
                                         name="po_ref_no"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>PO Ref No.</FormLabel>
+                                                <FormLabel>PO Reference.</FormLabel>
                                                 <FormControl>
                                                     <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="note"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Note</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                            </Card>
+
+                            <Card className="p-4 space-y-4 mt-4">
+                                <p className="text-sm font-bold">Additional Information</p>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
+
+                                    <FormField
+                                        control={form.control}
+                                        name="project_code"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Project Code</FormLabel>
+                                                <FormControl>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select a project code" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="1">Project 1</SelectItem>
+                                                            <SelectItem value="2">Project 2</SelectItem>
+                                                            <SelectItem value="3">Project 3</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -235,10 +292,33 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="products.description"
+                                        name="market_segment"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Description</FormLabel>
+                                                <FormLabel>Market Segment</FormLabel>
+                                                <FormControl>
+                                                    <Select onValueChange={field.onChange} value={field.value}>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select a market segment" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="1">Market Segment 1</SelectItem>
+                                                            <SelectItem value="2">Market Segment 2</SelectItem>
+                                                            <SelectItem value="3">Market Segment 3</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="lot_no"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Lot No.</FormLabel>
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
@@ -246,10 +326,11 @@ export default function DialogItemGrnForm({
                                             </FormItem>
                                         )}
                                     />
-                                </div>
-                            </div>
 
-                            <div className="border-b pb-4 space-y-2">
+                                </div>
+                            </Card>
+
+                            <Card className="p-4 space-y-4 mt-4">
                                 <div className="flex justify-between">
                                     <p className="text-base font-bold">Quantity and Delivery</p>
                                     <div className="flex items-center gap-2">
@@ -264,12 +345,17 @@ export default function DialogItemGrnForm({
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                                     <FormField
                                         control={form.control}
-                                        name="unit.name"
+                                        name="qty_order"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Ord. Unit</FormLabel>
+                                                <FormLabel>Ordered Qty</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input
+                                                        type="number"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -278,17 +364,12 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="qty_order"
+                                        name="unit.name"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Order Quantity</FormLabel>
+                                                <FormLabel>Ordered Unit</FormLabel>
                                                 <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        {...field}
-                                                        onChange={(e) => field.onChange(Number(e.target.value))}
-                                                        value={field.value}
-                                                    />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -300,7 +381,7 @@ export default function DialogItemGrnForm({
                                         name="qty_received"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Receiving Quantity</FormLabel>
+                                                <FormLabel>Receiving Qty</FormLabel>
                                                 <FormControl>
                                                     <Input
                                                         type="number"
@@ -316,10 +397,37 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="lot_no"
+                                        name="foc.qty"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Lot No.</FormLabel>
+                                                <FormLabel>FOC Qty</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="unit.name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Unit</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="foc.unit_id"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>FOC Unit</FormLabel>
                                                 <FormControl>
                                                     <Input {...field} />
                                                 </FormControl>
@@ -341,279 +449,252 @@ export default function DialogItemGrnForm({
                                             </FormItem>
                                         )}
                                     />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="foc"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <div className="flex flex-col gap-2">
-                                                    <FormLabel>FOC</FormLabel>
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                </div>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
                                 </div>
+                            </Card>
+                            <Card className="p-4 space-y-4 mt-4">
+                                <p className="text-base font-bold">Pricing & Calculation</p>
+                                <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
 
-                                <div className="bg-muted p-2 rounded-md">
-                                    <div className="flex justify-between items-center">
+                                    <div className="space-y-4">
                                         <div>
-                                            <p className="text-xs">On Hand</p>
-                                            <p className="text-xs">0 kg</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs">On Ordered</p>
-                                            <p className="text-xs">0 kg</p>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs">Reorder Level</p>
-                                            <p className="text-xs">0 kg</p>
-                                        </div>
+                                            <p className="text-sm font-bold">Pricing</p>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="currency"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Currency</FormLabel>
+                                                            <FormControl>
+                                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Select a currency" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectItem value="USD">USD</SelectItem>
+                                                                        <SelectItem value="EUR">EUR</SelectItem>
+                                                                        <SelectItem value="GBP">GBP</SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
 
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col md:flex-row gap-2">
-                                <div className="space-y-2">
-                                    <p className="text-base font-bold">Pricing</p>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="currency"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Currency</FormLabel>
-                                                    <FormControl>
-                                                        <Select onValueChange={field.onChange} value={field.value}>
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select a currency" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="USD">USD</SelectItem>
-                                                                <SelectItem value="EUR">EUR</SelectItem>
-                                                                <SelectItem value="GBP">GBP</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="exchange_rate"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Exchange Rate</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="price"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Price</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="tax_inclusive"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <div className="flex flex-col gap-2 mt-2">
-                                                        <FormLabel>Tax Incl.</FormLabel>
-                                                        <FormControl>
-                                                            <Checkbox
-                                                                checked={field.value}
-                                                                onCheckedChange={field.onChange}
-                                                            />
-                                                        </FormControl>
-                                                    </div>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <FormField
-                                            control={form.control}
-                                            name="adj_disc_rate"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel className="flex items-center gap-2 mt-2">
-                                                        <p>Adj. Disc. Rate (%)</p>
-                                                        <Checkbox
-                                                            checked={isDiscRateEnabled}
-                                                            onCheckedChange={(checked) => {
-                                                                setIsDiscRateEnabled(checked === true);
-                                                            }}
-                                                        />
-                                                    </FormLabel>
-
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                            disabled={!isDiscRateEnabled}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="override_disc_amount"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Override Discount Amount</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                        <FormField
-                                            control={form.control}
-                                            name="adj_tax_rate"
-                                            render={({ field }) => (
-                                                <FormItem>
-
-                                                    <FormLabel className="flex items-center gap-2 mt-2">
-                                                        <p>Adj. Tax Rate (%)</p>
-                                                        <Checkbox
-                                                            checked={isTaxRateEnabled}
-                                                            onCheckedChange={(checked) => {
-                                                                setIsTaxRateEnabled(checked === true);
-                                                            }}
-                                                        />
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                            disabled={!isTaxRateEnabled}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={form.control}
-                                            name="override_tax_amount"
-                                            render={({ field }) => (
-                                                <FormItem>
-                                                    <FormLabel>Override Tax Amount</FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            min="0"
-                                                            step="0.01"
-                                                            {...field}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            value={field.value}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                    <div className="bg-muted p-2 rounded-md">
-                                        <div className="flex justify-between items-center">
-                                            <div>
-                                                <p className="text-xs text-muted-foreground">Last Price</p>
-                                                <p className="text-xs text-muted-foreground">0.00 per Kg</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-muted-foreground">Last Order Date</p>
-                                                <p className="text-xs text-muted-foreground">4/23/2025</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-muted-foreground">Last Vendor</p>
-                                                <p className="text-xs text-muted-foreground">N/A</p>
+                                                <FormField
+                                                    control={form.control}
+                                                    name="exchange_rate"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Exchange Rate</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="price"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Price</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="tax_inclusive"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <div className="flex flex-col gap-2 mt-2">
+                                                                <FormLabel>Tax Incl.</FormLabel>
+                                                                <FormControl>
+                                                                    <Checkbox
+                                                                        checked={field.value}
+                                                                        onCheckedChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                            </div>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
                                             </div>
                                         </div>
+                                        <div>
+                                            <p className="text-sm font-bold">Adjustments</p>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="adj_disc_rate"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="flex items-center gap-2 mt-2">
+                                                                <p>Disc. Rate (%)</p>
+                                                                <Checkbox
+                                                                    checked={isDiscRateEnabled}
+                                                                    onCheckedChange={(checked) => {
+                                                                        setIsDiscRateEnabled(checked === true);
+                                                                    }}
+                                                                />
+                                                            </FormLabel>
+
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                    disabled={!isDiscRateEnabled}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="override_disc_amount"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Override Discount Amount</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="adj_tax_rate"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+
+                                                            <FormLabel className="flex items-center gap-2 mt-2">
+                                                                <p>Tax Rate (%)</p>
+                                                                <Checkbox
+                                                                    checked={isTaxRateEnabled}
+                                                                    onCheckedChange={(checked) => {
+                                                                        setIsTaxRateEnabled(checked === true);
+                                                                    }}
+                                                                />
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                    disabled={!isTaxRateEnabled}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={form.control}
+                                                    name="override_tax_amount"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Override Tax Amount</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="flex-1">
-                                    <p className="text-base font-bold">Calculated Amounts</p>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Description</TableHead>
-                                                <TableHead>Total Amount (USD)</TableHead>
-                                                <TableHead>Base Amount (USD)</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {mockCalulateAmount.map((item) => (
-                                                <TableRow key={item.id}>
-                                                    <TableCell>{item.description}</TableCell>
-                                                    <TableCell>{item.total}</TableCell>
-                                                    <TableCell>{item.base}</TableCell>
+
+                                    <div>
+                                        <p className="text-sm font-bold">Calculated Amounts</p>
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Description</TableHead>
+                                                    <TableHead>Total Amount (USD)</TableHead>
+                                                    <TableHead>Base Amount (USD)</TableHead>
                                                 </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {mockCalulateAmount.map((item) => (
+                                                    <TableRow key={item.id}>
+                                                        <TableCell>{item.description}</TableCell>
+                                                        <TableCell>{item.total}</TableCell>
+                                                        <TableCell>{item.base}</TableCell>
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                        <Card className="bg-blue-100 p-4 space-y-2">
+                                            <p className="text-sm font-bold text-blue-800">Item Information</p>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <p className="text-xs">Inventory On Hand</p>
+                                                    <p className="text-xs">5 piece</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs">Last Purchase Price</p>
+                                                    <p className="text-xs">฿399.99</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs">Last Order Date</p>
+                                                    <p className="text-xs">Aug 10, 2023</p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs">Last Vendor</p>
+                                                    <p className="text-xs">Professional Kitchen Supplies</p>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </div>
                                 </div>
-
-                            </div>
-
-                            <DialogFooter>
-
-                            </DialogFooter>
+                            </Card>
                         </form>
                     </Form>
                 </DialogContent>

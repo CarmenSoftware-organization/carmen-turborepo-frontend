@@ -176,7 +176,11 @@ export const GrnItemSchema = z.object({
     total_amount: z.number().nonnegative("Total amount must be non-negative"),
     po_ref_no: z.string().optional(),
     job_code: z.string().optional(),
-    foc: z.boolean().optional(),
+    foc: z.object({
+        unit_id: z.string().optional(),
+        unit_name: z.string().min(1, "Foc name is required"),
+        qty: z.number().nonnegative("Foc quantity must be non-negative"),
+    }),
     delivery_point: z.string().optional(),
     currency: z.string().optional(),
     exchange_rate: z.number().nonnegative("Exchange rate must be non-negative"),
@@ -185,6 +189,9 @@ export const GrnItemSchema = z.object({
     adj_tax_rate: z.number().nonnegative("Adjustment tax rate must be non-negative"),
     override_disc_amount: z.number().nonnegative("Override discount amount must be non-negative"),
     override_tax_amount: z.number().nonnegative("Override tax amount must be non-negative"),
+    note: z.string().optional(),
+    project_code: z.string().optional(),
+    market_segment: z.string().optional(),
 });
 
 export const ExtraCostSchema = z.object({
