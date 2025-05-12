@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PurchaseOrderlDto } from "@/dtos/procurement.dto";
-import { Eye, MoreVertical, SquarePen, Trash } from "lucide-react";
+import { FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -114,7 +114,7 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
                                 <TableCell>
                                     <div className="flex items-center justify-end">
                                         <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                            <Eye className="h-4 w-4" />
+                                            <FileText className="h-4 w-4" />
                                         </Button>
                                         <Button variant="ghost" size={'sm'} className="h-7 w-7">
                                             <SquarePen className="h-4 w-4" />
@@ -204,13 +204,13 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
                                 </div>
                                 <div className="flex items-center gap-1">
                                     <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-accent">
-                                        <Eye className="h-4 w-4" />
+                                        <FileText className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-accent">
                                         <SquarePen className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                                        <Trash className="h-4 w-4" />
+                                        <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>

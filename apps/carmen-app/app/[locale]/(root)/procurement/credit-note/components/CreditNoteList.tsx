@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, SquarePen, Trash } from "lucide-react";
+import { FileText, SquarePen, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -110,13 +110,13 @@ export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
                                 <TableCell>
                                     <div className="flex items-center justify-end">
                                         <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                            <Eye className="h-4 w-4" />
+                                            <FileText className="h-4 w-4" />
                                         </Button>
                                         <Button variant="ghost" size={'sm'} className="h-7 w-7">
                                             <SquarePen className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size={'sm'} className="h-7 w-7 text-destructive hover:text-destructive/80">
-                                            <Trash className="h-4 w-4" />
+                                        <Button variant="ghost" size={'sm'} className="h-7 w-7">
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 </TableCell>
@@ -162,13 +162,13 @@ export default function CreditNoteList({ creditNotes }: CreditNoteListProps) {
                                 </div>
                                 <div className="flex items-center">
                                     <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                        <Eye className="h-4 w-4" />
+                                        <FileText className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'} className="h-7 w-7">
                                         <SquarePen className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'} className="h-7 w-7 text-destructive hover:text-destructive/80">
-                                        <Trash className="h-4 w-4" />
+                                        <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>

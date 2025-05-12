@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { FileText, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -103,11 +103,11 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                     <div className="flex items-center justify-end">
                                         <Button variant="ghost" size={'sm'} asChild className="h-7 w-7">
                                             <Link href={`/procurement/goods-received-note/${grn.id}`}>
-                                                <Eye className="h-4 w-4" />
+                                                <FileText className="h-4 w-4" />
                                             </Link>
                                         </Button>
                                         <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                            <Trash className="h-4 w-4 text-destructive" />
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -170,13 +170,13 @@ export default function GoodsReceivedNoteList({ goodsReceivedNotes }: GoodsRecei
                                 </div>
                                 <div className="flex items-center">
                                     <Button variant="ghost" size={'sm'}>
-                                        <Eye className="h-4 w-4" />
+                                        <FileText className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'}>
                                         <Pencil className="h-4 w-4" />
                                     </Button>
                                     <Button variant="ghost" size={'sm'}>
-                                        <Trash className="h-4 w-4 text-destructive" />
+                                        <Trash2 className="h-4 w-4 text-destructive" />
                                     </Button>
                                 </div>
                             </div>
