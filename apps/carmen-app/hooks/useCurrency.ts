@@ -38,7 +38,7 @@ export const useCurrency = () => {
                 sort,
                 filter
             });
-            if (data?.statusCode === 401) {
+            if (data?.status === 401) {
                 setLoginDialogOpen(true);
                 return;
             }

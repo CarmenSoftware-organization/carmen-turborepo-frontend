@@ -108,7 +108,7 @@ export const useStoreLocation = () => {
                 page,
                 filter
             });
-            if (data.statusCode === 401) {
+            if (data.status === 401) {
                 setIsUnauthorized(true);
                 setLoginDialogOpen(true);
                 return;
