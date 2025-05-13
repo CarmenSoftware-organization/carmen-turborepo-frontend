@@ -318,7 +318,11 @@
     "delivery_point_status": "Status",
     "confirmDeactivate": "Are you sure you want to deactivate this delivery point?",
     "confirmActivate": "Are you sure you want to activate this delivery point?",
-    "notFoundDeliveryPoint": "No delivery points found"
+    "notFoundDeliveryPoint": "No delivery points found",
+    "add_delivery_point": "Add Delivery Point",
+    "edit_delivery_point": "Edit Delivery Point",
+    "add_delivery_point_description": "Fill in the details to create a new delivery point.",
+    "edit_delivery_point_description": "Update the delivery point information below."
   },
   "Department": {
     "title": "Department",

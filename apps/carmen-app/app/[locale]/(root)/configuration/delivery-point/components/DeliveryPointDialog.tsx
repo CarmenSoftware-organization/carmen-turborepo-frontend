@@ -45,6 +45,8 @@ export default function DeliveryPointDialog({
     isLoading = false
 }: DeliveryPointDialogProps) {
     const tCommon = useTranslations('Common');
+    const tDeliveryPoint = useTranslations('DeliveryPoint');
+
     const defaultDeliveryPointValues = useMemo(() => ({
         name: '',
         is_active: true,
@@ -89,12 +91,12 @@ export default function DeliveryPointDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? "Add Delivery Point" : "Edit Delivery Point"}
+                        {mode === formType.ADD ? tDeliveryPoint("add_delivery_point") : tDeliveryPoint("edit_delivery_point")}
                     </DialogTitle>
                     <DialogDescription>
                         {mode === formType.ADD
-                            ? "Add a new delivery point with name and status"
-                            : "Edit existing delivery point details including name and status"}
+                            ? tDeliveryPoint("add_delivery_point_description")
+                            : tDeliveryPoint("edit_delivery_point_description")}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -104,7 +106,7 @@ export default function DeliveryPointDialog({
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel>{tCommon("name")}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -119,7 +121,7 @@ export default function DeliveryPointDialog({
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
                                         <FormLabel className="text-base">
-                                            Status
+                                            {tCommon("status")}
                                         </FormLabel>
                                     </div>
                                     <FormControl>

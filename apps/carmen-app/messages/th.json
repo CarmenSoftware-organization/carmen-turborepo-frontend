@@ -317,7 +317,11 @@
     "delivery_point_status": "สถานะ",
     "confirmDeactivate": "คุณแน่ใจหรือไม่ที่จะปิดการใช้งานจุดส่งสินค้านี้?",
     "confirmActivate": "คุณแน่ใจหรือไม่ที่จะเปิดการใช้งานจุดส่งสินค้านี้?",
-    "notFoundDeliveryPoint": "ไม่พบจุดส่งสินค้า"
+    "notFoundDeliveryPoint": "ไม่พบจุดส่งสินค้า",
+    "add_delivery_point": "เพิ่มจุดส่งสินค้า",
+    "edit_delivery_point": "แก้ไขจุดส่งสินค้า",
+    "add_delivery_point_description": "กรอกข้อมูลเพื่อสร้างจุดส่งสินค้าใหม่",
+    "edit_delivery_point_description": "อัพเดตข้อมูลจุดส่งสินค้าด้านล่าง"
   },
   "Department": {
     "title": "แผนก",
