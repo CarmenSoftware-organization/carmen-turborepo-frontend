@@ -48,7 +48,7 @@ export const useUnit = () => {
 
                 const data = await getAllUnits(token, tenantId, safeParams);
 
-                if (data.statusCode === 401) {
+                if (data.status === 401) {
                     setIsUnauthorized(true);
                     return;
                 }
