@@ -113,11 +113,14 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                         )}
                         <TableHead className="w-[200px]">Location</TableHead>
                         <TableHead>Product</TableHead>
-                        <TableHead>Lot No.</TableHead>
-                        <TableHead className="text-right">Qty Order</TableHead>
-                        <TableHead className="text-right">Qty Received</TableHead>
-                        <TableHead>Unit</TableHead>
+                        <TableHead className="text-right">Order Qty</TableHead>
+                        <TableHead className="text-right">Order Unit</TableHead>
+                        <TableHead className="text-right">Received Qty</TableHead>
+                        <TableHead className="text-right">Received Unit</TableHead>
+                        <TableHead className="text-right">FOC Qty</TableHead>
+                        <TableHead className="text-right">FOC Unit</TableHead>
                         <TableHead className="text-right">Price</TableHead>
+                        <TableHead className="text-right">Discount</TableHead>
                         <TableHead className="text-right">Net Amount</TableHead>
                         <TableHead className="text-right">Tax Amount</TableHead>
                         <TableHead className="text-right">Total Amount</TableHead>
@@ -152,11 +155,14 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                 )}
                                 <TableCell>{field.locations.name}</TableCell>
                                 <TableCell>{field.products.name}</TableCell>
-                                <TableCell>{field.lot_no}</TableCell>
                                 <TableCell className="text-right">{field.qty_order}</TableCell>
+                                <TableCell className="text-right">mock order unit 30</TableCell>
                                 <TableCell className="text-right">{field.qty_received}</TableCell>
-                                <TableCell>{field.unit.name}</TableCell>
+                                <TableCell className="text-right">{field.unit.name}</TableCell>
+                                <TableCell className="text-right">mock foc qty 10</TableCell>
+                                <TableCell className="text-right">mock foc unit 30</TableCell>
                                 <TableCell className="text-right">{field.price}</TableCell>
+                                <TableCell className="text-right">mock discount 10</TableCell>
                                 <TableCell className="text-right">{field.net_amount}</TableCell>
                                 <TableCell className="text-right">{field.tax_amount}</TableCell>
                                 <TableCell className="text-right">{field.total_amount}</TableCell>
