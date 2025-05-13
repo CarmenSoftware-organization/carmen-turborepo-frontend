@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CategoryNode } from "@/dtos/category.dto";
+import { CategoryNode, NODE_TYPE } from "@/dtos/category.dto";
 import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
 import {
     Tooltip,
@@ -7,10 +7,11 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useTranslations } from "next-intl";
 
 const getIconColor = (type: CategoryNode["type"]) => {
-    if (type === "category") return "text-primary";
-    if (type === "subcategory") return "text-gray-500";
+    if (type === NODE_TYPE.CATEGORY) return "text-primary";
+    if (type === NODE_TYPE.SUBCATEGORY) return "text-gray-500";
     return "text-emerald-500";
 };
 
@@ -33,13 +34,15 @@ export default function TreeNode({
     onAdd,
     onDelete
 }: TreeNodeProps) {
+
+    const tCategory = useTranslations("Category");
     const isExpanded = expanded[node.id] ?? false;
     const hasChildren = node.children && node.children.length > 0;
 
-    // Determine icon based on node type
+
     let Icon = Layers
-    if (node.type === "subcategory") Icon = FolderTree
-    if (node.type === "itemGroup") Icon = Package
+    if (node.type === NODE_TYPE.SUBCATEGORY) Icon = FolderTree
+    if (node.type === NODE_TYPE.ITEM_GROUP) Icon = Package
 
     return (
         <div className="tree-node">
@@ -65,11 +68,11 @@ export default function TreeNode({
                 <div className="flex-1">
                     <p className="text-xs font-medium">{node.name}</p>
                     <p className="text-xs text-muted-foreground">{node.description}</p>
-                    {node.type === "itemGroup" && <p className="text-xs text-muted-foreground">{node.itemCount}</p>}
+                    {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-xs text-muted-foreground">{node.itemCount}</p>}
                 </div>
 
                 <div className="flex items-center gap-1">
-                    {node.type !== "itemGroup" && (
+                    {node.type !== NODE_TYPE.ITEM_GROUP && (
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger asChild>
@@ -83,7 +86,7 @@ export default function TreeNode({
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent className="bg-background text-foreground">
-                                    {node.type === "category" ? "Add to Sub category" : "Add to Item Group"}
+                                    {node.type === NODE_TYPE.CATEGORY ? tCategory("add_subcategory") : tCategory("add_item_group")}
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
@@ -102,7 +105,7 @@ export default function TreeNode({
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-background text-foreground">
-                                {node.type === "category" ? "Edit Sub category" : "Edit Item Group"}
+                                {node.type === NODE_TYPE.CATEGORY ? tCategory("edit_subcategory") : tCategory("edit_item_group")}
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
@@ -115,9 +118,6 @@ export default function TreeNode({
                     >
                         <Trash2 className="h-4 w-4" />
                     </Button>
-
-
-
                 </div>
             </div>
 

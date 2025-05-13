@@ -10,7 +10,7 @@ import { useItemGroup } from "@/hooks/useItemGroup";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
 import { formType } from "@/dtos/form.dto";
-import { CategoryDto, SubCategoryDto, ItemGroupDto, CategoryNode } from "@/dtos/category.dto";
+import { CategoryDto, SubCategoryDto, ItemGroupDto, CategoryNode, NODE_TYPE } from "@/dtos/category.dto";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -27,8 +27,10 @@ import { useCategoryDialog } from "@/hooks/useCategoryDialog";
 import { useCategoryDelete } from "@/hooks/useCategoryDelete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CategoryLoading from "@/components/loading/CategoryLoading";
-
+import { useTranslations } from "next-intl";
 export default function CategoryComponent() {
+    const tCategory = useTranslations("Category");
+    const tCommon = useTranslations("Common");
     const [signInOpen, setSignInOpen] = useState(false);
     const {
         categories,
@@ -82,7 +84,7 @@ export default function CategoryComponent() {
 
                 if (dialogMode === formType.EDIT && selectedNode) {
                     // Edit mode
-                    if (selectedNode.type === "category") {
+                    if (selectedNode.type === NODE_TYPE.CATEGORY) {
                         const categoryDto: CategoryDto = {
                             id: selectedNode.id,
                             code: data.code,
@@ -96,7 +98,7 @@ export default function CategoryComponent() {
                         };
                         result = await submitCategory(categoryDto, dialogMode, categoryDto);
                         success = !!result;
-                    } else if (selectedNode.type === "subcategory") {
+                    } else if (selectedNode.type === NODE_TYPE.SUBCATEGORY) {
                         const subCategoryDto: SubCategoryDto = {
                             id: selectedNode.id,
                             code: data.code,
@@ -130,7 +132,7 @@ export default function CategoryComponent() {
                 } else {
                     // Add mode
                     const isCategory = !parentNode;
-                    const isSubCategory = parentNode?.type === "category";
+                    const isSubCategory = parentNode?.type === NODE_TYPE.CATEGORY;
 
                     if (isCategory) {
                         const categoryDto: CategoryDto = {
@@ -180,15 +182,14 @@ export default function CategoryComponent() {
                 }
 
                 if (success) {
-                    toastSuccess({ message: "Operation completed successfully" });
-                    handleDialogChange(false); // Close dialog only on success
+                    toastSuccess({ message: tCategory("add_success") });
+                    handleDialogChange(false);
                 } else {
-                    toastError({ message: "Operation failed. Please try again." });
+                    toastError({ message: tCategory("add_error") });
                 }
             } catch (error) {
                 console.error("Error submitting form:", error);
-                toastError({ message: "Operation failed. Please try again." });
-                // Don't close dialog on error
+                toastError({ message: tCategory("add_error") });
             }
         }
     });
@@ -207,7 +208,7 @@ export default function CategoryComponent() {
                 const nodeType = node.type;
                 let result;
 
-                if (nodeType === "category") {
+                if (nodeType === NODE_TYPE.CATEGORY) {
                     // Use direct deleteCategory service instead of setting is_active flag
                     const categoryDto: CategoryDto = {
                         id: node.id,
@@ -222,7 +223,7 @@ export default function CategoryComponent() {
                     };
                     result = await deleteCategory(categoryDto);
                     success = !!result;
-                } else if (nodeType === "subcategory") {
+                } else if (nodeType === NODE_TYPE.SUBCATEGORY) {
                     const subCategoryDto: SubCategoryDto = {
                         id: node.id,
                         code: node.code,
@@ -256,14 +257,14 @@ export default function CategoryComponent() {
                 }
 
                 if (success) {
-                    toastSuccess({ message: "Item deleted successfully" });
+                    toastSuccess({ message: tCategory("delete_success") });
                     handleDeleteDialogChange(false); // Close dialog only on success
                 } else {
-                    toastError({ message: "Delete operation failed. Please try again." });
+                    toastError({ message: tCategory("delete_error") });
                 }
             } catch (error) {
                 console.error("Error deleting item:", error);
-                toastError({ message: "Delete operation failed. Please try again." });
+                toastError({ message: tCategory("delete_error") });
                 // Don't close dialog on error
             }
         }
@@ -284,14 +285,14 @@ export default function CategoryComponent() {
 
     const getNodeTypeLabel = (type?: string) => {
         switch (type) {
-            case "category":
-                return "Category";
-            case "subcategory":
-                return "Subcategory";
-            case "itemGroup":
-                return "Item Group";
+            case NODE_TYPE.CATEGORY:
+                return tCategory("category");
+            case NODE_TYPE.SUBCATEGORY:
+                return tCategory("subcategory");
+            case NODE_TYPE.ITEM_GROUP:
+                return tCategory("itemGroup");
             default:
-                return "Item";
+                return tCategory("itemGroup");
         }
     };
 
@@ -308,19 +309,19 @@ export default function CategoryComponent() {
         return (
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">Category</h1>
+                    <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
                     <div className="flex items-center gap-2">
                         <Button onClick={expandAll} size={'sm'} variant={'outline'}>
                             <ChevronDown className="h-4 w-4" />
-                            Expand All
+                            {tCategory("expand_all")}
                         </Button>
                         <Button onClick={collapseAll} size={'sm'} variant={'outline'}>
                             <ChevronUp className="h-4 w-4" />
-                            Collapse All
+                            {tCategory("collapse_all")}
                         </Button>
                         <Button onClick={() => handleAdd()} size={'sm'}>
                             <Plus className="h-4 w-4" />
-                            Add Category
+                            {tCategory("add_category")}
                         </Button>
                     </div>
 
@@ -341,7 +342,7 @@ export default function CategoryComponent() {
                         ))
                     ) : (
                         <div className="flex justify-center items-center h-full">
-                            <p className="text-muted-foreground">No categories found</p>
+                            <p className="text-muted-foreground">{tCategory("no_category")}</p>
                         </div>
                     )}
                 </ScrollArea>
@@ -358,14 +359,14 @@ export default function CategoryComponent() {
                 <AlertDialog open={deleteDialogOpen} onOpenChange={handleDeleteDialogChange}>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Delete {getNodeTypeLabel(nodeToDelete?.type)}</AlertDialogTitle>
+                            <AlertDialogTitle>{tCommon("delete")} {getNodeTypeLabel(nodeToDelete?.type)}</AlertDialogTitle>
                             <AlertDialogDescription>
                                 {nodeToDelete && getDeleteMessage(nodeToDelete)}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+                            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleConfirmDelete}>{tCommon("delete")}</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

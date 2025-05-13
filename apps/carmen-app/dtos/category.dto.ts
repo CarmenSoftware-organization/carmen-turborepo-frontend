@@ -59,12 +59,18 @@ export type SubCategoryFormData = z.infer<typeof SubCategoryFormSchema>;
 export type ItemGroupFormData = z.infer<typeof ItemGroupFormSchema>;
 
 // Tree node type
+export enum NODE_TYPE {
+    CATEGORY = "category",
+    SUBCATEGORY = "subcategory",
+    ITEM_GROUP = "itemGroup"
+}
+
 export type CategoryNode = {
     id: string;
     name: string;
     code: string;
     description?: string;
-    type: "category" | "subcategory" | "itemGroup";
+    type: NODE_TYPE;
     children?: CategoryNode[];
     itemCount?: number;
     is_active?: boolean;

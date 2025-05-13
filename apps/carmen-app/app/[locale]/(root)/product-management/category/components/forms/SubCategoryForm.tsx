@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-
+import { useTranslations } from "next-intl";
 interface SubCategoryFormProps {
     readonly mode: formType;
     readonly selectedNode?: CategoryNode;
@@ -19,6 +19,11 @@ interface SubCategoryFormProps {
 }
 
 export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCancel }: SubCategoryFormProps) {
+
+    const tCommon = useTranslations("Common");
+    const tCategory = useTranslations("Category");
+    const tAction = useTranslations("Action");
+
     const [parentName, setParentName] = useState("");
     const [parentId, setParentId] = useState("");
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -96,7 +101,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         name="product_category_id"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Category</FormLabel>
+                                <FormLabel>{tCategory("category")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         value={parentName}
@@ -118,7 +123,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         name="code"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Code</FormLabel>
+                                <FormLabel>{tCommon("code")}</FormLabel>
                                 <FormControl>
                                     <Input {...field} />
                                 </FormControl>
@@ -131,7 +136,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel>{tCommon("name")}</FormLabel>
                                 <FormControl>
                                     <Input {...field} />
                                 </FormControl>
@@ -145,7 +150,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                             name="price_deviation_limit"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Price Deviation Limit</FormLabel>
+                                    <FormLabel>{tCategory("price_deviation_limit")}</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
@@ -169,7 +174,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                             name="qty_deviation_limit"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Quantity Deviation Limit</FormLabel>
+                                    <FormLabel>{tCategory("qty_deviation_limit")}</FormLabel>
                                     <FormControl>
                                         <Input
                                             type="number"
@@ -196,7 +201,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
                                     <div>
-                                        <FormLabel className="text-xs">Used in Recipe</FormLabel>
+                                        <FormLabel className="text-xs">{tCategory("used_in_recipe")}</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Switch
@@ -213,7 +218,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-2">
                                     <div>
-                                        <FormLabel className="text-xs">Sold Directly</FormLabel>
+                                        <FormLabel className="text-xs">{tCategory("sold_directly")}</FormLabel>
                                     </div>
                                     <FormControl>
                                         <Switch
@@ -231,7 +236,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         name="description"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Description</FormLabel>
+                                <FormLabel>{tCommon("description")}</FormLabel>
                                 <FormControl>
                                     <Textarea {...field} />
                                 </FormControl>
@@ -245,7 +250,7 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
                         render={({ field }) => (
                             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                 <div className="space-y-0.5">
-                                    <FormLabel className="text-base">Active</FormLabel>
+                                    <FormLabel className="text-base">{tCommon("status")}</FormLabel>
                                 </div>
                                 <FormControl>
                                     <Switch
@@ -259,10 +264,10 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
 
                     <div className="flex justify-end gap-2">
                         <Button variant="outline" onClick={onCancel}>
-                            Cancel
+                            {tCommon("cancel")}
                         </Button>
                         <Button type="submit">
-                            {mode === formType.EDIT ? "Save changes" : "Create"}
+                            {mode === formType.EDIT ? tAction("edit") : tAction("add")}
                         </Button>
                     </div>
                 </form>
@@ -271,14 +276,14 @@ export function SubCategoryForm({ mode, selectedNode, parentNode, onSubmit, onCa
             <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Edit</AlertDialogTitle>
+                        <AlertDialogTitle>{tCategory("confirm_edit")}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            You are about to change the subcategory type. This action may affect related items. Do you want to proceed?
+                            {tCategory("confirm_edit_description")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleConfirm}>Continue</AlertDialogAction>
+                        <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirm}>{tAction("continue")}</AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>

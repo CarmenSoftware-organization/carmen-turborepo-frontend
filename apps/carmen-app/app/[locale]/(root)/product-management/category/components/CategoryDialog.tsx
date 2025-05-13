@@ -5,14 +5,14 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { CategoryNode } from "@/dtos/category.dto";
+import { CategoryNode, NODE_TYPE } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { CategoryForm } from "./forms/CategoryForm";
 import { SubCategoryForm } from "./forms/SubCategoryForm";
 import { ItemGroupForm } from "./forms/ItemGroupForm";
 import type { CategoryFormData, SubCategoryFormData, ItemGroupFormData } from "@/dtos/category.dto";
 import { useEffect, useState } from "react";
-
+import { useTranslations } from "next-intl";
 interface CategoryDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
@@ -30,6 +30,8 @@ export function CategoryDialog({
     parentNode,
     onSubmit
 }: CategoryDialogProps) {
+    const tCategory = useTranslations("Category");
+    const tCommon = useTranslations("Common");
     const [effectiveParentNode, setEffectiveParentNode] = useState<CategoryNode | undefined>(parentNode);
 
     // Update parent node when props change
@@ -39,33 +41,29 @@ export function CategoryDialog({
 
     const getNodeTypeLabel = (type?: string) => {
         switch (type) {
-            case "category": return "Category";
-            case "subcategory": return "Sub Category";
-            case "itemGroup": return "Item Group";
-            default: return "Category";
+            case NODE_TYPE.CATEGORY: return tCategory("category");
+            case NODE_TYPE.SUBCATEGORY: return tCategory("subcategory");
+            case NODE_TYPE.ITEM_GROUP: return tCategory("itemGroup");
+            default: return tCategory("category");
         }
     };
 
     const getTitle = () => {
-        const prefix = mode === formType.EDIT ? "Edit" : "New";
+        const prefix = mode === formType.EDIT ? tCommon("edit") : tCommon("add");
         if (mode === formType.EDIT && selectedNode) {
             return `${prefix} ${getNodeTypeLabel(selectedNode.type)}`;
         }
 
         if (!parentNode) {
-            return `${prefix} Category`;
+            return `${prefix} ${tCategory("category")}`;
         }
 
-        if (parentNode.type === "category") {
-            return `${prefix} Sub Category`;
+        if (parentNode.type === NODE_TYPE.CATEGORY) {
+            return `${prefix} ${tCategory("subcategory")}`;
         }
 
-        return `${prefix} Item Group`;
+        return `${prefix} ${tCategory("itemGroup")}`;
     };
-
-    const description = mode === formType.EDIT
-        ? "Edit the details of the selected item"
-        : "Add a new item to the hierarchy";
 
     const handleFormSubmit = (data: CategoryFormData | SubCategoryFormData | ItemGroupFormData) => {
         if (onSubmit) {
@@ -80,14 +78,14 @@ export function CategoryDialog({
     const renderForm = () => {
         // Edit mode
         if (mode === formType.EDIT && selectedNode) {
-            if (selectedNode.type === "category") {
+            if (selectedNode.type === NODE_TYPE.CATEGORY) {
                 return <CategoryForm
                     mode={mode}
                     selectedNode={selectedNode}
                     onSubmit={handleFormSubmit}
                     onCancel={handleClose}
                 />;
-            } else if (selectedNode.type === "subcategory") {
+            } else if (selectedNode.type === NODE_TYPE.SUBCATEGORY) {
                 return <SubCategoryForm
                     mode={mode}
                     selectedNode={selectedNode}
@@ -113,7 +111,7 @@ export function CategoryDialog({
                 onSubmit={handleFormSubmit}
                 onCancel={handleClose}
             />;
-        } else if (parentNode.type === "category") {
+        } else if (parentNode.type === NODE_TYPE.CATEGORY) {
             return <SubCategoryForm
                 mode={mode}
                 parentNode={effectiveParentNode}
@@ -135,7 +133,6 @@ export function CategoryDialog({
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>{getTitle()}</DialogTitle>
-                    <DialogDescription>{description}</DialogDescription>
                 </DialogHeader>
                 {open && renderForm()}
             </DialogContent>

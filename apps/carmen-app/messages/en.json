@@ -50,7 +50,8 @@
     "deleting": "Deleting",
     "cancel": "Cancel",
     "save": "Save",
-    "filter": "Filter"
+    "filter": "Filter",
+    "continue": "Continue"
   },
   "Vendor": {
     "title": "Vendor",
@@ -250,7 +251,8 @@
     "email": "Email",
     "website": "Website",
     "fax": "Fax",
-    "other": "Other"
+    "other": "Other",
+    "code": "Code"
   },
   "TableHeader": {
     "name": "Name",
@@ -377,5 +379,38 @@
       "title": "Cuisine Type",
       "description": "Manage your cuisine type"
     }
+  },
+  "Category": {
+    "title": "Category",
+    "category": "Category",
+    "subcategory": "Sub Category",
+    "itemGroup": "Item Group",
+    "add_category": "Add Category",
+    "edit_category": "Edit Category",
+    "add_category_description": "Fill in the details to create a new category.",
+    "edit_category_description": "Update the category information below.",
+    "add_subcategory": "Add Sub Category",
+    "edit_subcategory": "Edit Sub Category",
+    "add_subcategory_description": "Fill in the details to create a new sub category.",
+    "edit_subcategory_description": "Update the sub category information below.",
+    "add_item_group": "Add Item Group",
+    "edit_item_group": "Edit Item Group",
+    "add_item_group_description": "Fill in the details to create a new item group.",
+    "edit_item_group_description": "Update the item group information below.",
+    "add_success": "Added successfully",
+    "add_error": "Failed to add",
+    "edit_success": "Updated successfully",
+    "edit_error": "Failed to update",
+    "delete_success": "Deleted successfully",
+    "delete_error": "Failed to delete",
+    "expand_all": "Expand All",
+    "collapse_all": "Collapse All",
+    "no_category": "No category found!",
+    "price_deviation_limit": "Price Deviation Limit",
+    "qty_deviation_limit": "Quantity Deviation Limit",
+    "used_in_recipe": "Used in Recipe",
+    "sold_directly": "Sold Directly",
+    "confirm_edit": "Are you sure you want to edit this category?",
+    "confirm_edit_description": "You are about to change the category type. This action may affect related items. Do you want to proceed?"
   }
 }
