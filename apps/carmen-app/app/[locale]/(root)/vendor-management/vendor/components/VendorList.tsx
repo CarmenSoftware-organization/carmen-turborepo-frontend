@@ -15,6 +15,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PaginationComponent from "@/components/PaginationComponent";
 import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
 
 interface VendorListProps {
     readonly vendors: VendorGetDto[];
@@ -34,6 +35,8 @@ export default function VendorList({
     onPageChange
 }: VendorListProps) {
 
+    const tHeader = useTranslations('TableHeader');
+
     const handleDeleteClick = (vendor: VendorGetDto) => {
         if (onDeleteClick) {
             onDeleteClick(vendor);
@@ -47,11 +50,11 @@ export default function VendorList({
                     <TableHeader className="sticky top-0 bg-muted">
                         <TableRow>
                             <TableHead className="w-10 text-center">#</TableHead>
-                            <TableHead className="w-40 text-left">Name</TableHead>
-                            <TableHead className="w-60">Description</TableHead>
-                            <TableHead>Business Type</TableHead>
-                            <TableHead className="w-20 text-left">Status</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
+                            <TableHead className="w-40 text-left">{tHeader('name')}</TableHead>
+                            <TableHead className="w-60">{tHeader('description')}</TableHead>
+                            <TableHead>{tHeader('business_type')}</TableHead>
+                            <TableHead className="w-20 text-left">{tHeader('status')}</TableHead>
+                            <TableHead className="text-right">{tHeader('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
                 </Table>

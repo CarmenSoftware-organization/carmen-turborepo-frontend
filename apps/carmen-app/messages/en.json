@@ -42,6 +42,47 @@
     "notFoundMessage": "Could not find the requested resource",
     "backToHome": "Go to Home"
   },
+  "Action": {
+    "title": "Action",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleting": "Deleting",
+    "cancel": "Cancel",
+    "save": "Save",
+    "filter": "Filter"
+  },
+  "Vendor": {
+    "title": "Vendor",
+    "add_vendor": "Add Vendor",
+    "edit_vendor": "Edit Vendor",
+    "add_vendor_description": "Fill in the details to create a new vendor.",
+    "edit_vendor_description": "Update the vendor information below.",
+    "delete_vendor": "Delete Vendor",
+    "delete_vendor_description": "Are you sure you want to delete vendor",
+    "info": "Info",
+    "address": "Address",
+    "contact": "Contact",
+    "additional_info": "Additional Information",
+    "add_info": "Add Info",
+    "add_address": "Add Address",
+    "address_type": "Address Type",
+    "mailing_address": "Mailing Address",
+    "billing_address": "Billing Address",
+    "shipping_address": "Shipping Address",
+    "street": "Street",
+    "city": "City",
+    "state_province": "State/Province",
+    "zip_code": "Zip Code",
+    "country": "Country",
+    "add_contact": "Add Contact",
+    "contact_info": "Contact Information",
+    "contact_type": "Contact Type",
+    "vendor_contact_placeholder": "E.g., Primary Contact, Support, etc.",
+    "contact_details": "Contact Details",
+    "add_detail": "Add Detail",
+    "detail_type": "Detail Type"
+  },
   "Modules": {
     "dashboard": "Dashboard",
     "procurement": "Procurement",
@@ -195,7 +236,21 @@
     "active": "Active",
     "inactive": "Inactive",
     "profile": "Profile",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "label": "Label",
+    "value": "Value",
+    "data_type": "Data Type",
+    "text": "Text",
+    "number": "Number",
+    "date": "Date",
+    "datetime": "Date and Time",
+    "boolean": "Boolean",
+    "dataset": "Dataset",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "fax": "Fax",
+    "other": "Other"
   },
   "TableHeader": {
     "name": "Name",
@@ -233,7 +288,8 @@
     "grn_number": "GRN Number",
     "delivery_point": "Delivery Point",
     "pr_no": "PR Number",
-    "vendor": "Vendor"
+    "vendor": "Vendor",
+    "business_type": "Business Type"
   },
   "Product": {
     "title": "Product"

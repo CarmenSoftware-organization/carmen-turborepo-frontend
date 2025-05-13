@@ -10,6 +10,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 interface DeleteConfirmDialogProps {
     readonly open: boolean;
@@ -28,6 +29,7 @@ export default function DeleteConfirmDialog({
     description = "Are you sure you want to delete this item?",
     isLoading = false
 }: DeleteConfirmDialogProps) {
+    const tAction = useTranslations('Action');
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -41,13 +43,13 @@ export default function DeleteConfirmDialog({
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isLoading}>{tAction('cancel')}</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={onConfirm}
                         disabled={isLoading}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >
-                        {isLoading ? "Deleting..." : "Delete"}
+                        {isLoading ? `${tAction('deleting')}...` : tAction('delete')}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

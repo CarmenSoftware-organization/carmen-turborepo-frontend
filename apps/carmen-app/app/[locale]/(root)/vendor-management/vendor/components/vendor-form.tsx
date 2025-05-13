@@ -23,6 +23,7 @@ import { toastSuccess, toastError } from "@/components/ui-custom/Toast"
 import { vendorFormSchema, VendorFormValues, infoItemSchema, contactSchema } from "@/dtos/vendor.dto"
 import { Link } from "@/lib/navigation"
 import { Card } from "@/components/ui/card"
+import { useTranslations } from "next-intl"
 
 const defaultValues: VendorFormValues = {
     id: "",
@@ -56,6 +57,10 @@ interface VendorFormProps {
 }
 
 export default function VendorForm({ mode, initData }: VendorFormProps) {
+    const tAction = useTranslations('Action');
+    const tVendor = useTranslations('Vendor');
+    const tCommon = useTranslations('Common');
+
     const { token, tenantId } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -139,12 +144,12 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
 
     return (
         <Card className="p-4">
-            <h1 className="text-lg font-medium text-foreground">{mode === formType.ADD ? "Add Vendor" : "Edit Vendor"}</h1>
+            <h1 className="text-lg font-medium text-foreground">{mode === formType.ADD ? tVendor("add_vendor") : tVendor("edit_vendor")}</h1>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
                         <Label htmlFor="name" className="text-xs font-medium text-foreground">
-                            Vendor Name
+                            {tVendor("title")}
                         </Label>
                         <Input id="name" {...form.register("name")} />
                         {form.formState.errors.name && (
@@ -153,7 +158,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                     </div>
                     <div className="space-y-1">
                         <Label htmlFor="description" className="text-xs font-medium text-foreground">
-                            Description
+                            {tCommon("description")}
                         </Label>
                         <Textarea id="description" {...form.register("description")} />
                     </div>
@@ -162,19 +167,19 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 <Tabs defaultValue="info" className="w-full border rounded-sm">
                     <TabsList className="w-full grid grid-cols-3 h-9  rounded-none border-b">
                         <TabsTrigger value="info" className="text-xs">
-                            Info
+                            {tVendor("info")}
                         </TabsTrigger>
                         <TabsTrigger value="address" className="text-xs">
-                            Address
+                            {tVendor("address")}
                         </TabsTrigger>
                         <TabsTrigger value="contact" className="text-xs">
-                            Contact
+                            {tVendor("contact")}
                         </TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="info" className="p-3 space-y-3">
                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-xs font-medium text-foreground">Additional Information</h3>
+                            <h3 className="text-xs font-medium text-foreground">{tVendor("additional_info")}</h3>
                             <Button
                                 type="button"
                                 variant="outline"
@@ -183,7 +188,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                 className="h-7 text-xs"
                             >
                                 <Plus className="h-3 w-3" />
-                                Add Info
+                                {tVendor("add_info")}
                             </Button>
                         </div>
 
@@ -195,13 +200,13 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                 >
                                     <div className="col-span-4 space-y-1">
                                         <Label htmlFor={`info.${index}.label`} className="text-xs font-medium text-foreground">
-                                            Label
+                                            {tCommon("label")}
                                         </Label>
                                         <Input id={`info.${index}.label`} {...form.register(`info.${index}.label`)} className="h-7 text-xs" />
                                     </div>
                                     <div className="col-span-5 space-y-1">
                                         <Label htmlFor={`info.${index}.value`} className="text-xs font-medium text-foreground">
-                                            Value
+                                            {tCommon("value")}
                                         </Label>
                                         {form.watch(`info.${index}.data_type`) === "date" ? (
                                             <Popover>
@@ -243,7 +248,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                     </div>
                                     <div className="col-span-2 space-y-1">
                                         <Label htmlFor={`info.${index}.data_type`} className="text-xs font-medium text-foreground">
-                                            Type
+                                            {tCommon("data_type")}
                                         </Label>
                                         <Select
                                             onValueChange={(value) => form.setValue(`info.${index}.data_type`, value as z.infer<typeof infoItemSchema>["data_type"])}
@@ -254,22 +259,22 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="string" className="text-xs">
-                                                    Text
+                                                    {tCommon("text")}
                                                 </SelectItem>
                                                 <SelectItem value="number" className="text-xs">
-                                                    Number
+                                                    {tCommon("number")}
                                                 </SelectItem>
                                                 <SelectItem value="date" className="text-xs">
-                                                    Date
+                                                    {tCommon("date")}
                                                 </SelectItem>
                                                 <SelectItem value="datetime" className="text-xs">
-                                                    DateTime
+                                                    {tCommon("datetime")}
                                                 </SelectItem>
                                                 <SelectItem value="boolean" className="text-xs">
-                                                    Boolean
+                                                    {tCommon("boolean")}
                                                 </SelectItem>
                                                 <SelectItem value="dataset" className="text-xs">
-                                                    Dataset
+                                                    {tCommon("dataset")}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>
@@ -284,7 +289,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                             className="h-7 w-7 p-0"
                                         >
                                             <Trash2 className="h-3 w-3 text-muted-foreground" />
-                                            <span className="sr-only">Remove</span>
+                                            <span className="sr-only">{tAction("delete")}</span>
                                         </Button>
                                     </div>
                                 </div>
@@ -294,7 +299,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
 
                     <TabsContent value="address" className="p-3 space-y-3">
                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-xs font-medium text-foreground">Addresses</h3>
+                            <h3 className="text-xs font-medium text-foreground">{tVendor("address")}</h3>
                             <Button
                                 type="button"
                                 variant="outline"
@@ -313,8 +318,8 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                 }
                                 className="h-7 text-xs"
                             >
-                                <Plus className="mr-1 h-3 w-3" />
-                                Add Address
+                                <Plus className="h-3 w-3" />
+                                {tVendor("add_address")}
                             </Button>
                         </div>
 
@@ -327,7 +332,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                 htmlFor={`vendor_address.${index}.address_type`}
                                                 className="text-xs font-medium text-foreground"
                                             >
-                                                Address Type
+                                                {tVendor("address_type")}
                                             </Label>
                                             <Select
                                                 onValueChange={(value) => form.setValue(`vendor_address.${index}.address_type`, value)}
@@ -338,13 +343,13 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                 </SelectTrigger>
                                                 <SelectContent>
                                                     <SelectItem value="mailing_address" className="text-xs">
-                                                        Mailing Address
+                                                        {tVendor("mailing_address")}
                                                     </SelectItem>
                                                     <SelectItem value="billing_address" className="text-xs">
-                                                        Billing Address
+                                                        {tVendor("billing_address")}
                                                     </SelectItem>
                                                     <SelectItem value="shipping_address" className="text-xs">
-                                                        Shipping Address
+                                                        {tVendor("shipping_address")}
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
@@ -358,7 +363,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                             className="h-7 w-7 p-0"
                                         >
                                             <Trash2 className="h-3 w-3 text-muted-foreground" />
-                                            <span className="sr-only">Remove</span>
+                                            <span className="sr-only">{tAction("delete")}</span>
                                         </Button>
                                     </div>
 
@@ -368,7 +373,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                 htmlFor={`vendor_address.${index}.data.street`}
                                                 className="text-xs font-medium text-foreground"
                                             >
-                                                Street
+                                                {tVendor("street")}
                                             </Label>
                                             <Input
                                                 id={`vendor_address.${index}.data.street`}
@@ -378,7 +383,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                         </div>
                                         <div className="col-span-6 space-y-1">
                                             <Label htmlFor={`vendor_address.${index}.data.city`} className="text-xs font-medium text-foreground">
-                                                City
+                                                {tVendor("city")}
                                             </Label>
                                             <Input
                                                 id={`vendor_address.${index}.data.city`}
@@ -388,7 +393,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                         </div>
                                         <div className="col-span-6 space-y-1">
                                             <Label htmlFor={`vendor_address.${index}.data.state`} className="text-xs font-medium text-foreground">
-                                                State/Province
+                                                {tVendor("state_province")}
                                             </Label>
                                             <Input
                                                 id={`vendor_address.${index}.data.state`}
@@ -398,7 +403,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                         </div>
                                         <div className="col-span-6 space-y-1">
                                             <Label htmlFor={`vendor_address.${index}.data.zip`} className="text-xs font-medium text-foreground">
-                                                ZIP/Postal Code
+                                                {tVendor("zip_code")}
                                             </Label>
                                             <Input
                                                 id={`vendor_address.${index}.data.zip`}
@@ -411,7 +416,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                 htmlFor={`vendor_address.${index}.data.country`}
                                                 className="text-xs font-medium text-foreground"
                                             >
-                                                Country
+                                                {tVendor("country")}
                                             </Label>
                                             <Input
                                                 id={`vendor_address.${index}.data.country`}
@@ -427,7 +432,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
 
                     <TabsContent value="contact" className="p-3 space-y-3">
                         <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-xs font-medium text-foreground">Contact Information</h3>
+                            <h3 className="text-xs font-medium text-foreground">{tVendor("contact_info")}</h3>
                             <Button
                                 type="button"
                                 variant="outline"
@@ -442,7 +447,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                 className="h-7 text-xs"
                             >
                                 <Plus className="h-3 w-3" />
-                                Add Contact
+                                {tVendor("add_contact")}
                             </Button>
                         </div>
 
@@ -459,7 +464,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                     htmlFor={`vendor_contact.${contactIndex}.contact_type`}
                                                     className="text-xs font-medium text-foreground"
                                                 >
-                                                    Contact Type
+                                                    {tVendor("contact_type")}
                                                 </Label>
                                                 <Select
                                                     onValueChange={(value) =>
@@ -472,16 +477,16 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="phone" className="text-xs">
-                                                            Phone
+                                                            {tCommon("phone")}
                                                         </SelectItem>
                                                         <SelectItem value="email" className="text-xs">
-                                                            Email
+                                                            {tCommon("email")}
                                                         </SelectItem>
                                                         <SelectItem value="website" className="text-xs">
-                                                            Website
+                                                            {tCommon("website")}
                                                         </SelectItem>
                                                         <SelectItem value="other" className="text-xs">
-                                                            Other
+                                                            {tCommon("other")}
                                                         </SelectItem>
                                                     </SelectContent>
                                                 </Select>
@@ -491,12 +496,12 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                     htmlFor={`vendor_contact.${contactIndex}.description`}
                                                     className="text-xs font-medium text-foreground"
                                                 >
-                                                    Description
+                                                    {tCommon("description")}
                                                 </Label>
                                                 <Input
                                                     id={`vendor_contact.${contactIndex}.description`}
                                                     {...form.register(`vendor_contact.${contactIndex}.description`)}
-                                                    placeholder="E.g., Primary Contact, Support, etc."
+                                                    placeholder={tVendor("vendor_contact_placeholder")}
                                                     className="h-7 text-xs"
                                                 />
                                             </div>
@@ -510,14 +515,14 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                     className="h-7 w-7 p-0"
                                                 >
                                                     <Trash2 className="h-3 w-3 text-muted-foreground" />
-                                                    <span className="sr-only">Remove</span>
+                                                    <span className="sr-only">{tAction("delete")}</span>
                                                 </Button>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-center">
-                                                <h4 className="text-xs font-medium text-foreground">Contact Details</h4>
+                                                <h4 className="text-xs font-medium text-foreground">{tVendor("contact_details")}</h4>
                                                 <Button
                                                     type="button"
                                                     variant="outline"
@@ -525,8 +530,8 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                     onClick={() => addContactInfoField(contactIndex)}
                                                     className="h-6 text-xs"
                                                 >
-                                                    <Plus className="mr-1 h-3 w-3" />
-                                                    Add Detail
+                                                    <Plus className="h-3 w-3" />
+                                                    {tVendor("add_detail")}
                                                 </Button>
                                             </div>
 
@@ -540,7 +545,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                             htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.label`}
                                                             className="text-xs font-medium text-foreground"
                                                         >
-                                                            Label
+                                                            {tCommon("label")}
                                                         </Label>
                                                         <Input
                                                             id={`vendor_contact.${contactIndex}.info.${infoIndex}.label`}
@@ -553,7 +558,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                             htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.value`}
                                                             className="text-xs font-medium text-foreground"
                                                         >
-                                                            Value
+                                                            {tCommon("value")}
                                                         </Label>
                                                         {form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`) === "date" ? (
                                                             <Popover>
@@ -613,7 +618,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                             htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`}
                                                             className="text-xs font-medium text-foreground"
                                                         >
-                                                            Type
+                                                            {tVendor("detail_type")}
                                                         </Label>
                                                         <Select
                                                             onValueChange={(value) =>
@@ -629,22 +634,22 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 <SelectItem value="string" className="text-xs">
-                                                                    Text
+                                                                    {tCommon("text")}
                                                                 </SelectItem>
                                                                 <SelectItem value="number" className="text-xs">
-                                                                    Number
+                                                                    {tCommon("number")}
                                                                 </SelectItem>
                                                                 <SelectItem value="date" className="text-xs">
-                                                                    Date
+                                                                    {tCommon("date")}
                                                                 </SelectItem>
                                                                 <SelectItem value="datetime" className="text-xs">
-                                                                    DateTime
+                                                                    {tCommon("datetime")}
                                                                 </SelectItem>
                                                                 <SelectItem value="boolean" className="text-xs">
-                                                                    Boolean
+                                                                    {tCommon("boolean")}
                                                                 </SelectItem>
                                                                 <SelectItem value="dataset" className="text-xs">
-                                                                    Dataset
+                                                                    {tCommon("dataset")}
                                                                 </SelectItem>
                                                             </SelectContent>
                                                         </Select>
@@ -659,7 +664,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                                                             className="h-7 w-7 p-0"
                                                         >
                                                             <Trash2 className="h-3 w-3 text-muted-foreground" />
-                                                            <span className="sr-only">Remove</span>
+                                                            <span className="sr-only">{tAction("delete")}</span>
                                                         </Button>
                                                     </div>
                                                 </div>

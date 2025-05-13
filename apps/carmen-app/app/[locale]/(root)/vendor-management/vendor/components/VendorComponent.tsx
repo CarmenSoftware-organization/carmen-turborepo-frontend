@@ -19,6 +19,8 @@ import { Link } from "@/lib/navigation";
 export default function VendorComponent() {
     const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
+    const tVendor = useTranslations('Vendor');
+    const tAction = useTranslations('Action');
     const {
         search,
         setSearch,
@@ -46,14 +48,14 @@ export default function VendorComponent() {
         handleFormSuccess
     } = useVendor(token, tenantId);
 
-    const title = "Vendor";
+    const title = tVendor('title');
 
     const actionButtons = (
         <div className="action-btn-container" data-id="vendor-action-buttons">
             <Button size={'sm'} asChild>
                 <Link href={'/vendor-management/vendor/new'}>
                     <Plus className="h-4 w-4" />
-                    {tCommon('add')}
+                    {tVendor('add_vendor')}
                 </Link>
             </Button>
             <Button
@@ -100,7 +102,7 @@ export default function VendorComponent() {
                     data-id="vendor-list-sort-dropdown"
                 />
                 <Button size={'sm'}>
-                    Add Filter
+                    {tAction('filter')}
                 </Button>
             </div>
         </div>
@@ -143,8 +145,8 @@ export default function VendorComponent() {
                 open={deleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleConfirmDelete}
-                title="Delete Vendor"
-                description={`Are you sure you want to delete vendor ${vendorToDelete?.name}?`}
+                title={tVendor('delete_vendor')}
+                description={tVendor('delete_vendor_description')}
                 isLoading={isDeleting}
             />
         </>
