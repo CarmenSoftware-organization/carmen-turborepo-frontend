@@ -1,16 +1,19 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useURL } from "./useURL";
 import { useQuery } from "@tanstack/react-query";
-import { getGrn } from "@/services/grn.service";
+import { getAllGrn } from "@/services/grn.service";
 
 export const useGrn = () => {
     const { token, tenantId } = useAuth();
     const [search, setSearch] = useURL('search');
     const [page, setPage] = useURL('page');
     const [sort, setSort] = useURL('sort');
+    const [isUnauthorized, setIsUnauthorized] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
 
     useEffect(() => {
         if (search) {
@@ -27,9 +30,21 @@ export const useGrn = () => {
         refetch,
     } = useQuery({
         queryKey: ['grns', tenantId, search, page, sort],
-        queryFn: () => getGrn(token || '', tenantId || '', { search, page, sort }),
+        queryFn: () => getAllGrn(token || '', tenantId || '', { search, page, sort }),
         enabled: !!token && !!tenantId
     });
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage.toString());
+    }, [setPage]);
+
+
+    useEffect(() => {
+        if (response?.status === 401) {
+            setIsUnauthorized(true);
+            setLoginDialogOpen(true);
+        }
+    }, [response]);
 
     // Extract the actual GRN data if response is not an error
     const grns = response?.isAuthError ? [] : response ?? [];
@@ -46,6 +61,11 @@ export const useGrn = () => {
         setPage,
         sort,
         setSort,
-        isUnauthorized: response?.isAuthError
+        isUnauthorized,
+        loginDialogOpen,
+        setLoginDialogOpen,
+        dialogOpen,
+        setDialogOpen,
+        handlePageChange
     };
 };

@@ -124,17 +124,42 @@ export interface ActivityPrDto {
 }
 
 
-export interface GoodsReceivedNoteDto {
+export interface GoodsReceivedNoteListDto {
     id: string;
-    department: string;
-    status: string;
-    date_created: string;
-    invoice_date: string;
-    grn_number: string;
-    currency: string;
-    net_amount: number;
-    tax_amount: number;
-    amount: number;
+    name: string;
+    grn_no: string | null;
+    invoice_no: string | null;
+    invoice_date: string | null;
+    description: string | null;
+    doc_status: string;
+    doc_type: string;
+    vendor_id: string | null;
+    vendor_name: string | null;
+    currency_id: string;
+    currency_name: string;
+    currency_rate: string;
+    workflow_id: string | null;
+    workflow_obj: string;
+    workflow_history: string | null;
+    current_workflow_status: string | null;
+    is_consignment: boolean;
+    is_cash: boolean;
+    signature_image_url: string;
+    received_by_id: string | null;
+    received_by_name: string | null;
+    received_at: string | null;
+    credit_term_id: string | null;
+    credit_term_name: string | null;
+    credit_term_days: string | null;
+    payment_due_date: string | null;
+    is_active: boolean;
+    note: string | null;
+    info: string | null;
+    dimension: string | null;
+    created_at: string;
+    created_by_id: string;
+    updated_at: string;
+    updated_by_id: string | null;
 }
 export interface CreditNoteDto {
     id: string;

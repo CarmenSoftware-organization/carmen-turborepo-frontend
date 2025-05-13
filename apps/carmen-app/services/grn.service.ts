@@ -4,7 +4,7 @@ import { requestHeaders } from "@/lib/config.api";
 
 const API_URL = `${backendApi}/api/good-received-note`;
 
-export const getGrn = async (
+export const getAllGrn = async (
     token: string,
     tenantId: string,
     params: {

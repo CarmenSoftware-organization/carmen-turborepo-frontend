@@ -10,9 +10,9 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
-import { mockGoodsReceivedNotes } from "@/mock-data/procurement";
 import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
 import { useGrn } from "@/hooks/useGrn";
+import SignInDialog from "@/components/SignInDialog";
 
 const grnStatusOptions = [
     { label: 'Pending', value: 'pending' },
@@ -25,8 +25,16 @@ export default function GoodsReceivedNoteComponent() {
     const tCommon = useTranslations('Common');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const { grns, isError, search, setSearch, sort, setSort } = useGrn();
+    const {
+        grns,
+        isError,
+        search, setSearch,
+        sort, setSort,
+        isUnauthorized,
+        loginDialogOpen, setLoginDialogOpen,
+        dialogOpen, setDialogOpen,
+        handlePageChange
+    } = useGrn();
 
     console.log(grns);
     console.log('isError', isError);
@@ -103,8 +111,7 @@ export default function GoodsReceivedNoteComponent() {
         </div>
     );
 
-    const content = <GoodsReceivedNoteList goodsReceivedNotes={mockGoodsReceivedNotes} />;
-
+    const content = <GoodsReceivedNoteList goodsReceivedNotes={grns.data} paginate={grns.paginate} currentPage={grns.currentPage} totalPages={grns.totalPages} onPageChange={handlePageChange} />
 
     return (
         <>
@@ -117,6 +124,10 @@ export default function GoodsReceivedNoteComponent() {
             <GoodsReceivedNoteDialog
                 open={dialogOpen}
                 onOpenChange={setDialogOpen}
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
             />
         </>
     )
