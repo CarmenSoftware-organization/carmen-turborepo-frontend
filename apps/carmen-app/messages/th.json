@@ -331,7 +331,17 @@
   "StoreLocation": {
     "title": "สถานที่เก็บสินค้า",
     "store_location_name": "ชื่อสถานที่เก็บสินค้า",
-    "store_location_status": "สถานะสถานที่เก็บสินค้า"
+    "store_location_status": "สถานะสถานที่เก็บสินค้า",
+    "add_store_location": "เพิ่มสถานที่เก็บสินค้า",
+    "edit_store_location": "แก้ไขสถานที่เก็บสินค้า",
+    "add_store_location_description": "กรอกข้อมูลเพื่อสร้างสถานที่เก็บสินค้าใหม่",
+    "edit_store_location_description": "อัพเดตข้อมูลสถานที่เก็บสินค้าด้านล่าง",
+    "location_type": "ประเภทสถานที่เก็บสินค้า",
+    "delivery_point": "จุดส่งสินค้า",
+    "delivery_point_placeholder": "เลือกจุดส่งสินค้า",
+    "inventory": "รายการสินค้า",
+    "direct": "สินค้าตรง",
+    "consignment": "สินค้าฝากขาย"
   },
   "InventoryManagement": {
     "StockOverview": {

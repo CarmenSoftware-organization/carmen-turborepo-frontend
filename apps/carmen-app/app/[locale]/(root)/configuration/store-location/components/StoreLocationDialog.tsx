@@ -27,7 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
 import { Textarea } from "@/components/ui/textarea";
-
+import { useTranslations } from "next-intl";
 interface Props {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
@@ -38,6 +38,8 @@ interface Props {
 }
 
 export default function StoreLocationDialog({ open, onOpenChange, mode, storeLocation, onSubmit, isLoading = false }: Props) {
+    const tCommon = useTranslations('Common');
+    const tStoreLocation = useTranslations('StoreLocation');
 
     const { deliveryPoints } = useDeliveryPoint();
 
@@ -86,12 +88,12 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? "Add Store Location" : "Edit Store Location"}
+                        {mode === formType.ADD ? tStoreLocation("add_store_location") : tStoreLocation("edit_store_location")}
                     </DialogTitle>
                     <DialogDescription>
                         {mode === formType.ADD
-                            ? "Add a new store location with name, type, description, and status"
-                            : "Edit existing store location details including name, type, description, and status"}
+                            ? tStoreLocation("add_store_location_description")
+                            : tStoreLocation("edit_store_location_description")}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -101,7 +103,7 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel>{tCommon("name")}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -114,7 +116,7 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                             name="location_type"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Location Type</FormLabel>
+                                    <FormLabel>{tStoreLocation("location_type")}</FormLabel>
                                     <FormControl>
                                         <Select
                                             onValueChange={field.onChange}
@@ -124,9 +126,9 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                                                 <SelectValue placeholder="Select a location type" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value={INVENTORY_TYPE.INVENTORY}>Inventory</SelectItem>
-                                                <SelectItem value={INVENTORY_TYPE.DIRECT}>Direct</SelectItem>
-                                                <SelectItem value={INVENTORY_TYPE.CONSIGNMENT}>Consignment</SelectItem>
+                                                <SelectItem value={INVENTORY_TYPE.INVENTORY}>{tStoreLocation("inventory")}</SelectItem>
+                                                <SelectItem value={INVENTORY_TYPE.DIRECT}>{tStoreLocation("direct")}</SelectItem>
+                                                <SelectItem value={INVENTORY_TYPE.CONSIGNMENT}>{tStoreLocation("consignment")}</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </FormControl>
@@ -141,14 +143,14 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                             name="delivery_point_id"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Delivery Point</FormLabel>
+                                    <FormLabel>{tStoreLocation("delivery_point")}</FormLabel>
                                     <FormControl>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue placeholder="Select a delivery point" />
+                                                <SelectValue placeholder={tStoreLocation("delivery_point_placeholder")} />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 {deliveryPoints
@@ -170,7 +172,7 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                             name="description"
                             render={({ field }) => (
                                 <FormItem className="md:col-span-2">
-                                    <FormLabel>Description</FormLabel>
+                                    <FormLabel>{tCommon("description")}</FormLabel>
                                     <FormControl>
                                         <Textarea {...field} />
                                     </FormControl>
@@ -184,8 +186,8 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
-                                        <FormLabel className="text-base">
-                                            Status
+                                        <FormLabel className="text-sm">
+                                            {tCommon("status")}
                                         </FormLabel>
                                     </div>
                                     <FormControl>
@@ -204,13 +206,13 @@ export default function StoreLocationDialog({ open, onOpenChange, mode, storeLoc
                                 variant="outline"
                                 onClick={() => onOpenChange(false)}
                             >
-                                Cancel
+                                {tCommon("cancel")}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={isLoading || form.formState.isSubmitting}
                             >
-                                {mode === formType.ADD ? "Add" : "Edit"}
+                                {mode === formType.ADD ? tCommon("add") : tCommon("edit")}
                                 {(isLoading || form.formState.isSubmitting) && (
                                     <Loader2 className="w-4 h-4 ml-2 animate-spin" />
                                 )}

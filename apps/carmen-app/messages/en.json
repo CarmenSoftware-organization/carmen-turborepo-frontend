@@ -332,7 +332,17 @@
   "StoreLocation": {
     "title": "Store Location",
     "store_location_name": "Store Location Name",
-    "store_location_status": "Status"
+    "store_location_status": "Status",
+    "add_store_location": "Add Store Location",
+    "edit_store_location": "Edit Store Location",
+    "add_store_location_description": "Fill in the details to create a new store location.",
+    "edit_store_location_description": "Update the store location information below.",
+    "location_type": "Location Type",
+    "delivery_point": "Delivery Point",
+    "delivery_point_placeholder": "Select a delivery point",
+    "inventory": "Inventory",
+    "direct": "Direct",
+    "consignment": "Consignment"
   },
   "InventoryManagement": {
     "StockOverview": {
