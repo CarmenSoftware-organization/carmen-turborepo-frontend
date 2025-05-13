@@ -326,7 +326,11 @@
   "Department": {
     "title": "แผนก",
     "department_name": "ชื่อแผนก",
-    "department_status": "สถานะแผนก"
+    "department_status": "สถานะแผนก",
+    "add_department": "เพิ่มแผนก",
+    "edit_department": "แก้ไขแผนก",
+    "add_department_description": "กรอกข้อมูลเพื่อสร้างแผนกใหม่",
+    "edit_department_description": "อัพเดตข้อมูลแผนกด้านล่าง"
   },
   "StoreLocation": {
     "title": "สถานที่เก็บสินค้า",

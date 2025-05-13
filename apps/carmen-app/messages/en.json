@@ -327,7 +327,11 @@
   "Department": {
     "title": "Department",
     "department_name": "Department Name",
-    "department_status": "Status"
+    "department_status": "Status",
+    "add_department": "Add Department",
+    "edit_department": "Edit Department",
+    "add_department_description": "Fill in the details to create a new department.",
+    "edit_department_description": "Update the department information below."
   },
   "StoreLocation": {
     "title": "Store Location",

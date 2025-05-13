@@ -26,6 +26,7 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslations } from "next-intl";
 
 interface DepartmentDialogProps {
     readonly open: boolean;
@@ -44,6 +45,9 @@ export default function DepartmentDialog({
     onSubmit,
     isLoading = false
 }: DepartmentDialogProps) {
+
+    const tDepartment = useTranslations("Department");
+    const tCommon = useTranslations("Common");
 
     const defaultDepartmentValues = useMemo(() => ({
         name: '',
@@ -82,12 +86,12 @@ export default function DepartmentDialog({
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? "Add Department" : "Edit Department"}
+                        {mode === formType.ADD ? tDepartment("add_department") : tDepartment("edit_department")}
                     </DialogTitle>
                     <DialogDescription>
                         {mode === formType.ADD
-                            ? "Add a new department with name and status"
-                            : "Edit existing department details including name and status"}
+                            ? tDepartment("add_department_description")
+                            : tDepartment("edit_department_description")}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -97,7 +101,7 @@ export default function DepartmentDialog({
                             name="name"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Name</FormLabel>
+                                    <FormLabel>{tCommon("name")}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
@@ -110,7 +114,7 @@ export default function DepartmentDialog({
                             name="description"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Description</FormLabel>
+                                    <FormLabel>{tCommon("description")}</FormLabel>
                                     <FormControl>
                                         <Textarea {...field} />
                                     </FormControl>
@@ -124,8 +128,8 @@ export default function DepartmentDialog({
                             render={({ field }) => (
                                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                                     <div className="space-y-0.5">
-                                        <FormLabel className="text-base">
-                                            Status
+                                        <FormLabel className="text-sm">
+                                            {tCommon("status")}
                                         </FormLabel>
                                     </div>
                                     <FormControl>
@@ -144,13 +148,13 @@ export default function DepartmentDialog({
                                 variant="outline"
                                 onClick={() => onOpenChange(false)}
                             >
-                                Cancel
+                                {tCommon("cancel")}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={isLoading || form.formState.isSubmitting}
                             >
-                                {mode === formType.ADD ? "Add" : "Edit"}
+                                {mode === formType.ADD ? tCommon("add") : tCommon("edit")}
                                 {(isLoading || form.formState.isSubmitting) && (
                                     <Loader2 className="w-4 h-4 ml-2 animate-spin" />
                                 )}
