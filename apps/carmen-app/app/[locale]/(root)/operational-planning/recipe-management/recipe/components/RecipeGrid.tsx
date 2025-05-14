@@ -46,6 +46,8 @@ export default function RecipeGrid({ data, isLoading }: Props) {
                             src={recipe.image}
                             alt={recipe.name}
                             className="w-full h-24 object-cover rounded-md mb-4"
+                            width={100}
+                            height={100}
                         />
                         <h3 className="text-base font-semibold">{recipe.name}</h3>
                         <div className="space-y-2">

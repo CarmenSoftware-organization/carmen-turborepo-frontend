@@ -59,6 +59,8 @@ export default function RecipeList({ data, isLoading }: RecipeListProps) {
                                         src={recipe.image}
                                         alt={recipe.name}
                                         className="w-16 h-16 object-cover rounded-md"
+                                        width={64}
+                                        height={64}
                                     />
                                 </TableCell>
                                 <TableCell className="font-medium">{recipe.name}</TableCell>
