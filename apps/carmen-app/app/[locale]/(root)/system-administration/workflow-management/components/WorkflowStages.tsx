@@ -237,7 +237,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                     ? "bg-primary text-primary-foreground opacity-80 shadow-lg scale-105 ring-2 ring-primary"
                     : dragOverIndex === idx
                       ? "bg-secondary text-secondary-foreground scale-100 shadow-inner"
-                      : "bg-transparent text-white hover:bg-secondary/60 cursor-grab"
+                      : "bg-transparent hover:bg-secondary/60 cursor-grab"
                 }
                 select-none
               `}
