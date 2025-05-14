@@ -13,18 +13,9 @@ import { Button } from "@/components/ui/button";
 import { FileText, SquarePen, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { creditNoteStatusColor } from "./CreditNoteComponent";
 
-const creditNoteStatusColor = (status: string) => {
-    if (status === 'Pending') {
-        return 'bg-yellow-100 text-yellow-800';
-    } else if (status === 'Draft') {
-        return 'bg-blue-100 text-blue-800';
-    } else if (status === 'Rejected') {
-        return 'bg-red-100 text-red-800';
-    } else if (status === 'Approved') {
-        return 'bg-green-100 text-green-800';
-    }
-}
+
 
 interface CreditNoteListProps {
     readonly creditNotes: CreditNoteDto[];

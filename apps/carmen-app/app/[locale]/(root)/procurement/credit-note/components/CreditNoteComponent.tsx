@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
@@ -12,6 +12,46 @@ import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import CreditNoteList from "./CreditNoteList";
 import { mockCreditNotes } from "@/mock-data/procurement";
+import { VIEW } from "@/constants/enum";
+import CreditNoteGrid from "./CreditNoteGrid";
+
+interface ViewToggleButtonsProps {
+    view: VIEW;
+    setView: (view: VIEW) => void;
+}
+
+export const creditNoteStatusColor = (status: string) => {
+    if (status === 'Pending') {
+        return 'bg-yellow-100 text-yellow-800';
+    } else if (status === 'Draft') {
+        return 'bg-blue-100 text-blue-800';
+    } else if (status === 'Rejected') {
+        return 'bg-red-100 text-red-800';
+    } else if (status === 'Approved') {
+        return 'bg-green-100 text-green-800';
+    }
+}
+
+const ViewToggleButtons = ({ view, setView }: ViewToggleButtonsProps) => (
+    <div className="flex items-center gap-2">
+        <Button
+            variant={view === VIEW.LIST ? 'default' : 'outline'}
+            size={'sm'}
+            onClick={() => setView(VIEW.LIST)}
+            aria-label="List view"
+        >
+            <List className="h-4 w-4" />
+        </Button>
+        <Button
+            variant={view === VIEW.GRID ? 'default' : 'outline'}
+            size={'sm'}
+            onClick={() => setView(VIEW.GRID)}
+            aria-label="Grid view"
+        >
+            <Grid className="h-4 w-4" />
+        </Button>
+    </div>
+);
 
 export default function CreditNoteComponent() {
     const tCommon = useTranslations('Common');
@@ -19,6 +59,7 @@ export default function CreditNoteComponent() {
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
+    const [view, setView] = useState<VIEW>(VIEW.LIST);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -83,11 +124,14 @@ export default function CreditNoteComponent() {
                     <Filter className="h-4 w-4" />
                     Add Filter
                 </Button>
+                <ViewToggleButtons view={view} setView={setView} />
             </div>
         </div>
     );
 
-    const content = <CreditNoteList creditNotes={mockCreditNotes} />
+    const ViewComponent = view === VIEW.LIST ? CreditNoteList : CreditNoteGrid;
+
+    const content = <ViewComponent creditNotes={mockCreditNotes} />
 
     return (
         <DataDisplayTemplate
