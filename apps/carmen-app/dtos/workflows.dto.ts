@@ -80,7 +80,7 @@ export interface Stage {
 export interface RoutingCondition {
   field: string;
   operator: OperatorType;
-  value: string;
+  value: string[];
 }
 
 export interface RoutingAction {
@@ -208,7 +208,7 @@ export const wfFormSchema = z.object({
           condition: z.object({
             field: z.string(),
             operator: z.enum(["eq", "lt", "gt", "lte", "gte"]),
-            value: z.string(),
+            value: z.array(z.string()),
           }),
           action: z.object({
             type: z.enum(["SKIP_STAGE", "NEXT_STAGE"]),
