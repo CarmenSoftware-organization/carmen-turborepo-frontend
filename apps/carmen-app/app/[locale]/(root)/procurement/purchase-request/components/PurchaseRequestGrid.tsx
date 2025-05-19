@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { MobileView } from "./MobileView";
-import { ActionButtons, prStatusColor, formatCurrency } from "./SharePrComponent";
+import { ActionButtons, prStatusColor } from "./SharePrComponent";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";

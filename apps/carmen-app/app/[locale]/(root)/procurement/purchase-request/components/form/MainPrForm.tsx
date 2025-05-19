@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestDto, PurchaseRequestPostDto, purchaseRequestSchema } from "@/dtos/pr.dto";
+import { PurchaseRequestByIdDto, PurchaseRequestPostDto, purchaseRequestSchema } from "@/dtos/pr.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, ChevronRight, MessageCircle, Pencil, Printer, Save, X } from "lucide-react";
@@ -15,7 +15,7 @@ import HeadPrForm from "./HeadPrForm";
 
 interface MainPrFormProps {
     readonly mode: formType;
-    readonly initValues?: PurchaseRequestDto;
+    readonly initValues?: PurchaseRequestByIdDto;
     readonly docType?: string;
 }
 export default function MainPrForm({ mode, initValues, docType }: MainPrFormProps) {
@@ -23,40 +23,56 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
     const [openLog, setOpenLog] = useState<boolean>(false);
     const [currentMode, setCurrentMode] = useState<formType>(mode);
 
+
     const defaultValues: Partial<PurchaseRequestPostDto> = {
-        pr_no: initValues?.pr_no ?? "",
-        pr_date: initValues?.pr_date ?? "",
-        description: initValues?.description ?? "",
-        workflow_id: initValues?.workflow_id ?? "",
-        note: initValues?.note ?? "",
-        workflow_obj: {
-            status: initValues?.workflow_obj?.status ?? "",
-            assigned_to: initValues?.workflow_obj?.assigned_to ?? "",
-        },
-        workflow_history: initValues?.workflow_history ?? [{
-            status: initValues?.workflow_history?.[0]?.status ?? "",
-            timestamp: initValues?.workflow_history?.[0]?.timestamp ?? "",
-            user: initValues?.workflow_history?.[0]?.user ?? "",
-        }],
-        current_workflow_status: initValues?.current_workflow_status ?? "",
+        pr_date: initValues?.pr_date ?? new Date().toISOString(),
+        workflow_id: "",
+        current_workflow_status: "",
         pr_status: initValues?.pr_status ?? "",
         requestor_id: initValues?.requestor_id ?? "",
-        requestor_name: initValues?.requestor_name ?? "",
         department_id: initValues?.department_id ?? "",
-        department_name: initValues?.department_name ?? "",
         is_active: initValues?.is_active ?? true,
-        doc_version: initValues?.doc_version ?? "1",
+        doc_version: typeof initValues?.doc_version === 'string' ? parseInt(initValues.doc_version, 10) : (initValues?.doc_version ?? 1),
+        note: initValues?.note ?? "",
+        description: initValues?.description ?? "",
         info: {
-            priority: "",
-            budget_code: "",
+            priority: initValues?.info?.priority ?? "",
+            budget_code: initValues?.info?.budget_code ?? "",
         },
         dimension: {
-            cost_center: "",
-            project: "",
+            cost_center: initValues?.dimension?.cost_center ?? "",
+            project: initValues?.dimension?.project ?? "",
         },
         purchase_request_detail: {
             add: [
                 {
+                    location_id: "",
+                    product_id: "",
+                    vendor_id: "",
+                    price_list_id: "",
+                    description: "",
+                    requested_qty: 0,
+                    requested_unit_id: "",
+                    approved_qty: 0,
+                    approved_unit_id: "",
+                    currency_id: "",
+                    exchange_rate: 1,
+                    exchange_rate_date: new Date().toISOString(),
+                    price: 0,
+                    total_price: 0,
+                    foc: 0,
+                    foc_unit_id: "",
+                    tax_type_inventory_id: "",
+                    tax_type: "",
+                    tax_rate: 0,
+                    tax_amount: 0,
+                    is_tax_adjustment: false,
+                    is_discount: false,
+                    discount_rate: 0,
+                    discount_amount: 0,
+                    is_discount_adjustment: false,
+                    is_active: true,
+                    note: "",
                     info: {
                         specifications: "",
                     },
@@ -74,7 +90,7 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
         defaultValues,
     })
 
-    const { fields, append, remove } = useFieldArray({
+    const { append, remove } = useFieldArray({
         control: form.control,
         name: "purchase_request_detail.add",
     })
@@ -112,6 +128,33 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
 
     const addNewItem = () => {
         append({
+            location_id: "",
+            product_id: "",
+            vendor_id: "",
+            price_list_id: "",
+            description: "",
+            requested_qty: 0,
+            requested_unit_id: "",
+            approved_qty: 0,
+            approved_unit_id: "",
+            currency_id: "",
+            exchange_rate: 1,
+            exchange_rate_date: new Date().toISOString(),
+            price: 0,
+            total_price: 0,
+            foc: 0,
+            foc_unit_id: "",
+            tax_type_inventory_id: "",
+            tax_type: "",
+            tax_rate: 0,
+            tax_amount: 0,
+            is_tax_adjustment: false,
+            is_discount: false,
+            discount_rate: 0,
+            discount_amount: 0,
+            is_discount_adjustment: false,
+            is_active: true,
+            note: "",
             info: {
                 specifications: "",
             },
@@ -196,7 +239,12 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                     </Button>
                                 </div>
                             </div>
-                            <HeadPrForm control={form.control} mode={currentMode} />
+                            <HeadPrForm
+                                control={form.control}
+                                mode={currentMode}
+                                prNo={initValues?.pr_no}
+                                requestorName={initValues?.requestor_name}
+                            />
                         </form>
                     </Form>
 

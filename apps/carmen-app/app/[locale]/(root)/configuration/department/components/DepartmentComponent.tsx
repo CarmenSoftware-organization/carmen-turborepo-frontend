@@ -9,12 +9,12 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { formType } from "@/dtos/form.dto";
 import DepartmentList from "./DepartmentList";
-import DepartmentDialog from "./DepartmentDialog";
 import SignInDialog from "@/components/SignInDialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useDepartment } from "@/hooks/useDepartment";
 import { SortConfig, SortDirection } from "@/utils/table-sort";
 import { useMemo } from "react";
+import DepartmentDialog from "@/components/shared/DepartmentDialog";
 
 export default function DepartmentComponent() {
     const tDepartment = useTranslations('Department');
