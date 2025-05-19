@@ -45,7 +45,7 @@ export default function DialogNewPr({ open, onOpenChange }: Props) {
 
                     <Card
                         className="cursor-pointer hover:bg-accent/50 transition-all duration-300 ease-in-out"
-                        onClick={() => router.push('/procurement/purchase-request/new')}
+                        onClick={() => router.push('/procurement/purchase-request/new?type=template')}
                     >
                         <CardHeader>
                             <CardTitle>

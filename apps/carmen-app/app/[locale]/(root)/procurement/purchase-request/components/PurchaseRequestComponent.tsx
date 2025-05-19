@@ -2,19 +2,22 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseRequestList from "./PurchaseRequestList";
-import { mockPurchaseRequests } from "@/mock-data/procurement";
+import PurchaseRequestGrid from "./PurchaseRequestGrid";
 import DialogNewPr from "./DialogNewPr";
 import { VIEW } from "@/constants/enum";
-import PurchaseRequestGrid from "./PurchaseRequestGrid";
+import SignInDialog from "@/components/SignInDialog";
+import { PurchaseRequestDto } from "@/dtos/pr.dto";
+import { useAuth } from "@/context/AuthContext";
+import { getAllPr } from "@/services/pr.service";
+import ToggleView from "@/components/ui-custom/ToggleView";
+
 
 const sortFields = [
     { key: 'code', label: 'Code' },
@@ -25,13 +28,51 @@ const sortFields = [
 ];
 
 export default function PurchaseRequestComponent() {
+    const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
-    const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [sort, setSort] = useURL('sort');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [view, setView] = useState<VIEW>(VIEW.LIST);
+    const [search, setSearch] = useURL('search');
+    const [sort, setSort] = useURL('sort');
+    const [prs, setPrs] = useState<PurchaseRequestDto[]>([]);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [page, setPage] = useURL('page');
+    const [totalPages, setTotalPages] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (search) {
+            setPage('');
+        }
+    }, [search, setPage]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+
+            try {
+                const result = await getAllPr(token, tenantId, {
+                    page,
+                    sort,
+                    search
+                });
+                if (result.status === 401) {
+                    setLoginDialogOpen(true);
+                    return;
+                }
+
+                setPrs(result.data);
+                setTotalPages(result.paginate.pages);
+                setPage(result.paginate.page);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchData();
+    }, [token, tenantId, page, setPage, sort, search]);
+
 
     const title = "Purchase Request";
 
@@ -65,27 +106,6 @@ export default function PurchaseRequestComponent() {
         </div>
     );
 
-    const ViewToggleButtons = () => (
-        <div className="flex items-center gap-2">
-            <Button
-                variant={view === VIEW.LIST ? 'default' : 'outline'}
-                size={'sm'}
-                onClick={() => setView(VIEW.LIST)}
-                aria-label="List view"
-            >
-                <List className="h-4 w-4" />
-            </Button>
-            <Button
-                variant={view === VIEW.GRID ? 'default' : 'outline'}
-                size={'sm'}
-                onClick={() => setView(VIEW.GRID)}
-                aria-label="Grid view"
-            >
-                <Grid className="h-4 w-4" />
-            </Button>
-        </div>
-    );
-
     const filters = (
         <div className="filter-container" data-id="pr-list-filters">
             <SearchInput
@@ -95,14 +115,6 @@ export default function PurchaseRequestComponent() {
                 data-id="pr-list-search-input"
             />
             <div className="flex items-center gap-2">
-                <StatusSearchDropdown
-                    options={statusOptions}
-                    value={status}
-                    onChange={setStatus}
-                    open={statusOpen}
-                    onOpenChange={setStatusOpen}
-                    data-id="pr-list-status-search-dropdown"
-                />
                 <SortComponent
                     fieldConfigs={sortFields}
                     sort={sort}
@@ -113,15 +125,33 @@ export default function PurchaseRequestComponent() {
                     <Filter className="h-4 w-4" />
                     Filter
                 </Button>
-                <ViewToggleButtons />
+                <ToggleView view={view} setView={setView} />
             </div>
         </div>
     );
 
-    const ViewComponent = view === VIEW.LIST ? PurchaseRequestList : PurchaseRequestGrid;
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage.toString());
+    };
 
-    const content = (
-        <ViewComponent purchaseRequests={mockPurchaseRequests} />
+    const currentPageNumber = parseInt(page || '1');
+
+    const content = view === VIEW.LIST ? (
+        <PurchaseRequestList
+            purchaseRequests={prs}
+            currentPage={currentPageNumber}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            isLoading={isLoading}
+        />
+    ) : (
+        <PurchaseRequestGrid
+            purchaseRequests={prs}
+            currentPage={currentPageNumber}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            isLoading={isLoading}
+        />
     );
 
     return (
@@ -133,6 +163,10 @@ export default function PurchaseRequestComponent() {
                 content={content}
             />
             <DialogNewPr open={dialogOpen} onOpenChange={setDialogOpen} />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+            />
         </>
     );
 }

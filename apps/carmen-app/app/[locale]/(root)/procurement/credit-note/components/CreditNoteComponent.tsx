@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
@@ -14,11 +14,7 @@ import CreditNoteList from "./CreditNoteList";
 import { mockCreditNotes } from "@/mock-data/procurement";
 import { VIEW } from "@/constants/enum";
 import CreditNoteGrid from "./CreditNoteGrid";
-
-interface ViewToggleButtonsProps {
-    view: VIEW;
-    setView: (view: VIEW) => void;
-}
+import ToggleView from "@/components/ui-custom/ToggleView";
 
 export const creditNoteStatusColor = (status: string) => {
     if (status === 'Pending') {
@@ -32,26 +28,6 @@ export const creditNoteStatusColor = (status: string) => {
     }
 }
 
-const ViewToggleButtons = ({ view, setView }: ViewToggleButtonsProps) => (
-    <div className="flex items-center gap-2">
-        <Button
-            variant={view === VIEW.LIST ? 'default' : 'outline'}
-            size={'sm'}
-            onClick={() => setView(VIEW.LIST)}
-            aria-label="List view"
-        >
-            <List className="h-4 w-4" />
-        </Button>
-        <Button
-            variant={view === VIEW.GRID ? 'default' : 'outline'}
-            size={'sm'}
-            onClick={() => setView(VIEW.GRID)}
-            aria-label="Grid view"
-        >
-            <Grid className="h-4 w-4" />
-        </Button>
-    </div>
-);
 
 export default function CreditNoteComponent() {
     const tCommon = useTranslations('Common');
@@ -124,7 +100,7 @@ export default function CreditNoteComponent() {
                     <Filter className="h-4 w-4" />
                     Add Filter
                 </Button>
-                <ViewToggleButtons view={view} setView={setView} />
+                <ToggleView view={view} setView={setView} />
             </div>
         </div>
     );

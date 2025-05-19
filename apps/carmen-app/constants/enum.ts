@@ -10,3 +10,8 @@ export enum INVENTORY_TYPE {
 }
 
 
+export enum PrDocType {
+    BLANK = 0,
+    TEMPLATE = 1,
+}
+
