@@ -14,56 +14,13 @@ import { useVendor } from "@/hooks/useVendor";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import useProduct from "@/hooks/useProduct";
 import ProductLookup from "@/components/lookup/ProductLookup";
+import { useUnit } from "@/hooks/useUnit";
+import UnitLookup from "@/components/lookup/UnitLookup";
 
 // Create a type that includes the additional fields needed for display
-type FormValues = PurchaseRequestPostDto & {
-    purchase_request_detail: {
-        add: Array<{
-            location_name?: string;
-            product_name?: string;
-            vendor_name?: string;
-            requested_unit_name?: string;
-            approved_unit_name?: string;
-            location_id: string;
-            product_id: string;
-            vendor_id: string;
-            price_list_id: string;
-            description: string;
-            requested_qty: number;
-            requested_unit_id: string;
-            approved_qty: number;
-            approved_unit_id: string;
-            currency_id: string;
-            exchange_rate: number;
-            exchange_rate_date: string;
-            price: number;
-            total_price: number;
-            foc: number;
-            foc_unit_id: string;
-            tax_type_inventory_id: string;
-            tax_type: string;
-            tax_rate: number;
-            tax_amount: number;
-            is_tax_adjustment: boolean;
-            is_discount: boolean;
-            discount_rate: number;
-            discount_amount: number;
-            is_discount_adjustment: boolean;
-            is_active: boolean;
-            note: string;
-            info: {
-                specifications: string;
-            };
-            dimension: {
-                cost_center: string;
-                project: string;
-            };
-        }>;
-    };
-};
 
 interface ItemPrProps {
-    readonly control: Control<FormValues>;
+    readonly control: Control<PurchaseRequestPostDto>;
     readonly mode: formType;
 }
 
@@ -76,7 +33,7 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
     const { getLocationName } = useStoreLocation();
     const { getVendorName } = useVendor();
     const { getProductName } = useProduct();
-
+    const { getUnitName } = useUnit();
     const handleAddItem = () => {
         append({
             location_id: "",
@@ -223,7 +180,16 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                                     control={control}
                                     name={`purchase_request_detail.add.${index}.description`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "-"}</span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{field.value}</span>
+                                            ) : (
+                                                <Input
+                                                    {...field}
+                                                    value={field.value}
+                                                />
+                                            )}
+                                        </FormItem>
                                     )}
                                 />
                             </TableCell>
@@ -232,14 +198,36 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                                     control={control}
                                     name={`purchase_request_detail.add.${index}.requested_qty`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "0"} </span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{field.value}</span>
+                                            ) : (
+                                                <Input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.01"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    value={field.value}
+                                                />
+                                            )}
+                                        </FormItem>
                                     )}
                                 />
                                 <FormField
                                     control={control}
-                                    name={`purchase_request_detail.add.${index}.requested_unit_name`}
+                                    name={`purchase_request_detail.add.${index}.requested_unit_id`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "-"}</span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{getUnitName(field.value)}</span>
+                                            ) : (
+                                                <UnitLookup
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                />
+                                            )}
+                                        </FormItem>
                                     )}
                                 />
                             </TableCell>
@@ -248,16 +236,39 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                                     control={control}
                                     name={`purchase_request_detail.add.${index}.approved_qty`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "0"} </span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{field.value}</span>
+                                            ) : (
+                                                <Input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.01"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    value={field.value}
+                                                />
+                                            )}
+                                        </FormItem>
                                     )}
                                 />
                                 <FormField
                                     control={control}
-                                    name={`purchase_request_detail.add.${index}.approved_unit_name`}
+                                    name={`purchase_request_detail.add.${index}.approved_unit_id`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "-"}</span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{getUnitName(field.value)}</span>
+                                            ) : (
+                                                <UnitLookup
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                />
+                                            )}
+                                        </FormItem>
                                     )}
                                 />
+
                             </TableCell>
                             <TableCell>
                                 <FormField
@@ -282,7 +293,20 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                                     control={control}
                                     name={`purchase_request_detail.add.${index}.price`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "0"}</span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{field.value}</span>
+                                            ) : (
+                                                <Input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.01"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    value={field.value}
+                                                />
+                                            )}
+                                        </FormItem>
                                     )}
                                 />
                             </TableCell>
@@ -291,7 +315,20 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                                     control={control}
                                     name={`purchase_request_detail.add.${index}.total_price`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "0"}</span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{field.value}</span>
+                                            ) : (
+                                                <Input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.01"
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    value={field.value}
+                                                />
+                                            )}
+                                        </FormItem>
                                     )}
                                 />
                             </TableCell>

@@ -17,6 +17,12 @@ export type GetAllPrDto = {
     requestor_name: string;
 };
 
+export type WorkflowHistoryDto = {
+    status: string;
+    timestamp: string;
+    user: string;
+}
+
 export type PurchaseRequestByIdDto = {
     id: string;
     pr_no: string;
@@ -38,11 +44,7 @@ export type PurchaseRequestByIdDto = {
         cost_center: string;
         project: string;
     };
-    workflow_history?: {
-        status: string;
-        timestamp: string;
-        user: string;
-    }[];
+    workflow_history?: WorkflowHistoryDto[];
     purchase_request_detail: ItemPrDetailDto[];
 };
 
@@ -77,6 +79,47 @@ export type ItemPrDetailDto = {
 };
 
 
+export const purchaseRequestDetailSchema = z.object({
+    add: z.array(
+        z.object({
+            location_id: z.string().uuid(),
+            product_id: z.string().uuid(),
+            vendor_id: z.string().uuid(),
+            price_list_id: z.string().uuid(),
+            description: z.string(),
+            requested_qty: z.number(),
+            requested_unit_id: z.string().uuid(),
+            approved_qty: z.number(),
+            approved_unit_id: z.string().uuid(),
+            currency_id: z.string().uuid(),
+            exchange_rate: z.number(),
+            exchange_rate_date: z.string().datetime(),
+            price: z.number(),
+            total_price: z.number(),
+            foc: z.number(),
+            foc_unit_id: z.string().uuid(),
+            tax_type_inventory_id: z.string().uuid(),
+            tax_type: z.string(),
+            tax_rate: z.number(),
+            tax_amount: z.number(),
+            is_tax_adjustment: z.boolean(),
+            is_discount: z.boolean(),
+            discount_rate: z.number(),
+            discount_amount: z.number(),
+            is_discount_adjustment: z.boolean(),
+            is_active: z.boolean(),
+            note: z.string(),
+            info: z.object({
+                specifications: z.string(),
+            }),
+            dimension: z.object({
+                cost_center: z.string(),
+                project: z.string(),
+            }),
+        })
+    ),
+})
+
 export const purchaseRequestSchema = z.object({
     pr_date: z.string().datetime(),
     workflow_id: z.string().uuid(),
@@ -96,47 +139,9 @@ export const purchaseRequestSchema = z.object({
         cost_center: z.string(),
         project: z.string(),
     }),
-    purchase_request_detail: z.object({
-        add: z.array(
-            z.object({
-                location_id: z.string().uuid(),
-                product_id: z.string().uuid(),
-                vendor_id: z.string().uuid(),
-                price_list_id: z.string().uuid(),
-                description: z.string(),
-                requested_qty: z.number(),
-                requested_unit_id: z.string().uuid(),
-                approved_qty: z.number(),
-                approved_unit_id: z.string().uuid(),
-                currency_id: z.string().uuid(),
-                exchange_rate: z.number(),
-                exchange_rate_date: z.string().datetime(),
-                price: z.number(),
-                total_price: z.number(),
-                foc: z.number(),
-                foc_unit_id: z.string().uuid(),
-                tax_type_inventory_id: z.string().uuid(),
-                tax_type: z.string(),
-                tax_rate: z.number(),
-                tax_amount: z.number(),
-                is_tax_adjustment: z.boolean(),
-                is_discount: z.boolean(),
-                discount_rate: z.number(),
-                discount_amount: z.number(),
-                is_discount_adjustment: z.boolean(),
-                is_active: z.boolean(),
-                note: z.string(),
-                info: z.object({
-                    specifications: z.string(),
-                }),
-                dimension: z.object({
-                    cost_center: z.string(),
-                    project: z.string(),
-                }),
-            })
-        ),
-    }),
+    purchase_request_detail: purchaseRequestDetailSchema,
 });
 
 
 export type PurchaseRequestPostDto = z.infer<typeof purchaseRequestSchema>;
+export type PurchaseRequestDetailPostDto = z.infer<typeof purchaseRequestDetailSchema>;

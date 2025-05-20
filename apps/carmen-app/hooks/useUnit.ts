@@ -1,5 +1,5 @@
 import { useURL } from "@/hooks/useURL";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { UnitDto } from "@/dtos/unit.dto";
 import { createUnit, deleteUnit, getAllUnits, updateUnit } from "@/services/unit.service";
 import { useAuth } from "@/context/AuthContext";
@@ -159,6 +159,11 @@ export const useUnit = () => {
         setSelectedUnit(undefined);
     };
 
+    const getUnitName = useCallback((unitId: string) => {
+        const unit = units.find(unit => unit.id === unitId);
+        return unit?.name ?? '';
+    }, [units]);
+
     return {
         // Data
         units,
@@ -188,6 +193,7 @@ export const useUnit = () => {
         deleteDialogOpen,
         handleDelete,
         handleConfirmDelete,
-        handleCancelDelete
+        handleCancelDelete,
+        getUnitName
     };
 };

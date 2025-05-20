@@ -20,6 +20,7 @@ import {
     TabsTrigger,
 } from "@/components/ui/tabs";
 import ItemPr from "./ItemPr";
+import WorkflowPr from "./WorkflowPr";
 
 interface MainPrFormProps {
     readonly mode: formType;
@@ -270,7 +271,9 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                         Budgets
                                     </TabsContent>
                                     <TabsContent value="workflow">
-                                        Workflow
+                                        <WorkflowPr
+                                            workflowData={initValues?.workflow_history}
+                                        />
                                     </TabsContent>
                                 </Tabs>
                             </form>
