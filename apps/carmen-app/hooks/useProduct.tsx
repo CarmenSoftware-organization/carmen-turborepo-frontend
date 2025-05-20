@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { ProductGetDto } from "@/dtos/product.dto";
 import { getProductService, deleteProductService } from "@/services/product.service";
 import { useURL } from "@/hooks/useURL";
@@ -35,14 +35,12 @@ export const useProduct = ({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
-    // Reset page when search changes
     useEffect(() => {
         if (search) {
             setPage("");
         }
     }, [search, setPage]);
 
-    // Fetch products query
     const {
         data,
         isLoading,
@@ -80,7 +78,6 @@ export const useProduct = ({
         refetchOnWindowFocus: false
     });
 
-    // Delete product mutation
     const deleteMutation = useMutation({
         mutationFn: async (productId: string) => {
             const response = await deleteProductService(token, tenantId, productId);
@@ -90,7 +87,6 @@ export const useProduct = ({
             return productId;
         },
         onSuccess: (productId) => {
-            // Optimistically update UI
             queryClient.setQueryData(
                 ["products", search, sort, page, status, tenantId],
                 (oldData: ProductQueryData | undefined) => {
@@ -102,15 +98,11 @@ export const useProduct = ({
                     };
                 }
             );
-
-            // Close dialog and reset state
             setDeleteDialogOpen(false);
             setDeleteId(null);
         },
         onError: (error) => {
-            // Handle error - you might want to show a toast or another UI element
             console.error("Failed to delete product:", error);
-            // Keep the dialog open so user can retry
         }
     });
 
@@ -133,10 +125,14 @@ export const useProduct = ({
         setDeleteId(null);
     };
 
-    // Extract values from query result
-    const products = data?.products ?? [];
+    const products = useMemo(() => data?.products ?? [], [data]);
     const totalPages = data?.totalPages ?? 1;
     const error = isError ? queryError?.message || "Failed to load products" : null;
+
+    const getProductName = useCallback((id: string) => {
+        const product = products.find((product: ProductGetDto) => product.id === id);
+        return product?.name ?? '';
+    }, [products]);
 
     return {
         // Data
@@ -169,6 +165,7 @@ export const useProduct = ({
         handleDelete,
         confirmDelete,
         closeDeleteDialog,
+        getProductName,
     };
 };
 
