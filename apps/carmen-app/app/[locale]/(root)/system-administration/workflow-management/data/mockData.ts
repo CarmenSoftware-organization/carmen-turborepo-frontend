@@ -332,7 +332,7 @@ export const sampleWorkflows: Workflow[] = [
           name: "Amount <= 10,000 BAHT",
           description: "Skip to Completed for amounts less than or equal to 10,000 BAHT",
           trigger_stage: "Finance Review",
-          condition: { field: "amount", operator: "lte", value: "10000" },
+          condition: { field: "amount", operator: "lte", value: ["10000"] },
           action: {
             type: "SKIP_STAGE",
             parameters: { target_stage: "Completed" },
@@ -343,7 +343,7 @@ export const sampleWorkflows: Workflow[] = [
           name: "Amount > 10,000 BAHT",
           description: "Route to GM Approval for amounts greater than 10,000 BAHT",
           trigger_stage: "Finance Review",
-          condition: { field: "amount", operator: "gt", value: "10000" },
+          condition: { field: "amount", operator: "gt", value: ["10000"] },
           action: {
             type: "NEXT_STAGE",
             parameters: { target_stage: "Final Approval" },
@@ -587,7 +587,7 @@ export const sampleWorkflows: Workflow[] = [
           name: "Amount <= 5,000 BAHT",
           description: "Skip to Completed for amounts less than or equal to 5,000 BAHT",
           trigger_stage: "Department Approval",
-          condition: { field: "amount", operator: "lte", value: "5000" },
+          condition: { field: "amount", operator: "lte", value: ["5000"] },
           action: {
             type: "SKIP_STAGE",
             parameters: { target_stage: "Completed" },
