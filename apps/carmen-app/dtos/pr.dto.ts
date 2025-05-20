@@ -43,10 +43,10 @@ export type PurchaseRequestByIdDto = {
         timestamp: string;
         user: string;
     }[];
-    purchase_request_detail: PurchaseRequestDetail[];
+    purchase_request_detail: ItemPrDetailDto[];
 };
 
-export type PurchaseRequestDetail = {
+export type ItemPrDetailDto = {
     location_id: string;
     location_name: string;
     product_id: string;

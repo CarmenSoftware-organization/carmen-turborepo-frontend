@@ -1,9 +1,10 @@
 import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { CurrencyDto } from "@/dtos/config.dto";
 import { createCurrency, getCurrenciesService, updateCurrency, toggleCurrencyStatus } from "@/services/currency.service";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useCurrency = () => {
     const { token, tenantId } = useAuth();
@@ -11,52 +12,55 @@ export const useCurrency = () => {
     const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
-    const [currencies, setCurrencies] = useState<CurrencyDto[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
-    const [totalPages, setTotalPages] = useState(1);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [page, setPage] = useURL("page");
 
-    useEffect(() => {
+    const queryClient = useQueryClient();
+
+    // When search changes, reset page and sort
+    useCallback(() => {
         if (search) {
             setPage('');
             setSort('');
         }
     }, [search, setPage, setSort]);
 
-    const fetchCurrencies = useCallback(async () => {
-        if (!token) return;
-        try {
-            setIsLoading(true);
+    // Fetch currencies query
+    const {
+        data: currenciesData,
+        isLoading,
+        refetch: fetchCurrencies
+    } = useQuery({
+        queryKey: ['currencies', token, tenantId, search, page, sort, filter],
+        queryFn: async () => {
+            if (!token) return { data: [], paginate: { pages: 1 } };
+
             const data = await getCurrenciesService(token, tenantId, {
                 search,
                 page,
                 sort,
                 filter
             });
+
             if (data?.status === 401) {
                 setLoginDialogOpen(true);
-                return;
+                return { data: [], paginate: { pages: 1 } };
             }
-            setCurrencies(data?.data ?? []);
-            setTotalPages(data?.paginate?.pages ?? 1);
-        } catch (error) {
-            console.error('Error fetching currencies:', error);
-            toastError({ message: 'Error fetching currencies' });
-            setCurrencies([]);
-            setTotalPages(1);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [token, tenantId, search, page, sort, filter]);
 
-    useEffect(() => {
-        fetchCurrencies();
-    }, [fetchCurrencies]);
+            return data;
+        },
+        select: (data) => ({
+            currencies: data?.data ?? [],
+            totalPages: data?.paginate?.pages ?? 1,
+        }),
+        enabled: !!token,
+    });
+
+    const currencies = currenciesData?.currencies ?? [];
+    const totalPages = currenciesData?.totalPages ?? 1;
 
     const handleSetFilter = useCallback((filterValue: string) => {
         setFilter(filterValue);
@@ -70,7 +74,6 @@ export const useCurrency = () => {
         { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
-    // Just set the sort string directly without parsing
     const handleSetSort = useCallback((sortValue: string) => {
         setSort(sortValue);
     }, [setSort]);
@@ -85,31 +88,25 @@ export const useCurrency = () => {
         setDialogOpen(true);
     }, []);
 
-    const performToggleStatus = useCallback(async (currency: CurrencyDto) => {
-        try {
-            setIsSubmitting(true);
-            const result = await toggleCurrencyStatus(token, tenantId, currency.id!, currency.is_active);
-            if (result) {
-                setCurrencies(prevCurrencies =>
-                    prevCurrencies.map(c =>
-                        c.id === currency.id
-                            ? { ...c, is_active: !c.is_active }
-                            : c
-                    )
-                );
-                toastSuccess({ message: `Currency ${!currency.is_active ? 'activated' : 'deactivated'} successfully` });
-            } else {
-                toastError({ message: 'Error toggling currency status' });
-            }
-        } catch (error) {
-            console.error('Error toggling currency status:', error);
-            toastError({ message: 'Error toggling currency status' });
-        } finally {
-            setIsSubmitting(false);
+    // Toggle currency status mutation
+    const toggleStatusMutation = useMutation({
+        mutationFn: async (currency: CurrencyDto) => {
+            if (!currency.id) throw new Error('Invalid currency ID');
+            return toggleCurrencyStatus(token, tenantId, currency.id, currency.is_active);
+        },
+        onSuccess: (_, currency) => {
+            queryClient.invalidateQueries({ queryKey: ['currencies'] });
+            toastSuccess({
+                message: `Currency ${!currency.is_active ? 'activated' : 'deactivated'} successfully`
+            });
             setConfirmDialogOpen(false);
             setSelectedCurrency(undefined);
+        },
+        onError: (error) => {
+            console.error('Error toggling currency status:', error);
+            toastError({ message: 'Error toggling currency status' });
         }
-    }, [token, tenantId]);
+    });
 
     const handleToggleStatus = useCallback(async (currency: CurrencyDto) => {
         if (!currency.id) {
@@ -121,57 +118,72 @@ export const useCurrency = () => {
             setSelectedCurrency(currency);
             setConfirmDialogOpen(true);
         } else {
-            await performToggleStatus(currency);
+            toggleStatusMutation.mutate(currency);
         }
-    }, [performToggleStatus]);
+    }, [toggleStatusMutation]);
 
-    const handleConfirmToggle = useCallback(async () => {
+    const handleConfirmToggle = useCallback(() => {
         if (selectedCurrency) {
-            await performToggleStatus(selectedCurrency);
+            toggleStatusMutation.mutate(selectedCurrency);
         }
-    }, [selectedCurrency, performToggleStatus]);
+    }, [selectedCurrency, toggleStatusMutation]);
 
-    const handleSubmit = useCallback(async (data: CurrencyDto) => {
-        try {
-            setIsSubmitting(true);
-            if (selectedCurrency) {
-                const updatedCurrency = { ...data, id: selectedCurrency.id };
-                const result = await updateCurrency(token, tenantId, updatedCurrency);
-                if (result) {
-                    setCurrencies(prevCurrencies =>
-                        prevCurrencies.map(currency =>
-                            currency.id === selectedCurrency.id
-                                ? updatedCurrency
-                                : currency
-                        )
-                    );
-                    toastSuccess({ message: 'Currency updated successfully' });
-                } else {
-                    console.error('Error updating currency:', result);
-                    toastError({ message: 'Error updating currency' });
-                }
-            } else {
-                const result = await createCurrency(token, tenantId, data);
-                const newCurrency: CurrencyDto = {
-                    ...data,
-                    id: result.id,
-                };
-                setCurrencies(prevCurrencies => [...prevCurrencies, newCurrency]);
-                toastSuccess({ message: 'Currency created successfully' });
-            }
+    // Create currency mutation
+    const createCurrencyMutation = useMutation({
+        mutationFn: async (data: CurrencyDto) => {
+            return createCurrency(token, tenantId, data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['currencies'] });
+            toastSuccess({ message: 'Currency created successfully' });
             setDialogOpen(false);
             setSelectedCurrency(undefined);
-        } catch (error) {
-            console.error('Error handling currency submission:', error);
-            toastError({ message: 'Error handling currency submission' });
-        } finally {
-            setIsSubmitting(false);
+        },
+        onError: (error) => {
+            console.error('Error creating currency:', error);
+            toastError({ message: 'Error creating currency' });
         }
-    }, [token, tenantId, selectedCurrency]);
+    });
+
+    // Update currency mutation
+    const updateCurrencyMutation = useMutation({
+        mutationFn: async (data: CurrencyDto) => {
+            if (!data.id) throw new Error('Invalid currency ID');
+            return updateCurrency(token, tenantId, data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['currencies'] });
+            toastSuccess({ message: 'Currency updated successfully' });
+            setDialogOpen(false);
+            setSelectedCurrency(undefined);
+        },
+        onError: (error) => {
+            console.error('Error updating currency:', error);
+            toastError({ message: 'Error updating currency' });
+        }
+    });
+
+    const handleSubmit = useCallback(async (data: CurrencyDto) => {
+        if (selectedCurrency) {
+            updateCurrencyMutation.mutate({ ...data, id: selectedCurrency.id });
+        } else {
+            createCurrencyMutation.mutate(data);
+        }
+    }, [selectedCurrency, updateCurrencyMutation, createCurrencyMutation]);
 
     const handlePageChange = useCallback((newPage: number) => {
         setPage(newPage.toString());
     }, [setPage]);
+
+    const isSubmitting = createCurrencyMutation.isPending ||
+        updateCurrencyMutation.isPending ||
+        toggleStatusMutation.isPending;
+
+    const getCurrencyCode = (currencyId: string): string => {
+        if (!currencyId || !currencies || !Array.isArray(currencies)) return "-";
+        const currency = currencies.find(c => c.id === currencyId);
+        return currency?.code ?? "-";
+    };
 
     return {
         // State
@@ -210,6 +222,7 @@ export const useCurrency = () => {
         handleToggleStatus,
         handleConfirmToggle,
         handleSubmit,
-        fetchCurrencies
+        fetchCurrencies,
+        getCurrencyCode
     };
 }; 

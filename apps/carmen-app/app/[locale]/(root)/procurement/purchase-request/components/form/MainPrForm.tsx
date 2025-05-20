@@ -10,8 +10,16 @@ import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, ChevronRight, MessageCircle, Pencil, Printer, Save, X } from "lucide-react";
 import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import HeadPrForm from "./HeadPrForm";
+import { Card } from "@/components/ui/card";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+} from "@/components/ui/tabs";
+import ItemPr from "./ItemPr";
 
 interface MainPrFormProps {
     readonly mode: formType;
@@ -22,7 +30,6 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
     const router = useRouter();
     const [openLog, setOpenLog] = useState<boolean>(false);
     const [currentMode, setCurrentMode] = useState<formType>(mode);
-
 
     const defaultValues: Partial<PurchaseRequestPostDto> = {
         pr_date: initValues?.pr_date ?? new Date().toISOString(),
@@ -44,26 +51,32 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
             project: initValues?.dimension?.project ?? "",
         },
         purchase_request_detail: {
-            add: [
-                {
-                    location_id: "",
-                    product_id: "",
-                    vendor_id: "",
-                    price_list_id: "",
-                    description: "",
-                    requested_qty: 0,
-                    requested_unit_id: "",
-                    approved_qty: 0,
-                    approved_unit_id: "",
-                    currency_id: "",
-                    exchange_rate: 1,
+            add: initValues?.purchase_request_detail
+                ? initValues.purchase_request_detail.map(item => ({
+                    location_id: item.location_id,
+                    product_id: item.product_id,
+                    vendor_id: item.vendor_id,
+                    price_list_id: item.price_list_id,
+                    description: item.description,
+                    requested_qty: item.requested_qty,
+                    requested_unit_id: item.requested_unit_id,
+                    approved_qty: item.approved_qty,
+                    approved_unit_id: item.approved_unit_id,
+                    currency_id: item.currency_id,
+                    exchange_rate: item.exchange_rate,
+                    price: item.price,
+                    total_price: item.total_price,
+                    foc: item.foc,
+                    foc_unit_id: item.foc_unit_id,
+                    tax_type_inventory_id: item.tax_type_inventory_id,
+                    tax_type: item.tax_type,
+                    dimension: {
+                        cost_center: item.dimension?.cost_center || "",
+                        project: item.dimension?.project || "",
+                    },
+                    is_active: true,
+                    note: "",
                     exchange_rate_date: new Date().toISOString(),
-                    price: 0,
-                    total_price: 0,
-                    foc: 0,
-                    foc_unit_id: "",
-                    tax_type_inventory_id: "",
-                    tax_type: "",
                     tax_rate: 0,
                     tax_amount: 0,
                     is_tax_adjustment: false,
@@ -71,28 +84,60 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                     discount_rate: 0,
                     discount_amount: 0,
                     is_discount_adjustment: false,
-                    is_active: true,
-                    note: "",
                     info: {
                         specifications: "",
                     },
-                    dimension: {
-                        cost_center: "",
-                        project: "",
+                    location_name: item.location_name,
+                    product_name: item.product_name,
+                    vendor_name: item.vendor_name,
+                    requested_unit_name: item.requested_unit_name,
+                    approved_unit_name: item.approved_unit_name,
+                    foc_unit_name: item.foc_unit_name,
+                }))
+                : [
+                    {
+                        location_id: "",
+                        product_id: "",
+                        vendor_id: "",
+                        price_list_id: "",
+                        description: "",
+                        requested_qty: 0,
+                        requested_unit_id: "",
+                        approved_qty: 0,
+                        approved_unit_id: "",
+                        currency_id: "",
+                        exchange_rate: 1,
+                        exchange_rate_date: new Date().toISOString(),
+                        price: 0,
+                        total_price: 0,
+                        foc: 0,
+                        foc_unit_id: "",
+                        tax_type_inventory_id: "",
+                        tax_type: "",
+                        tax_rate: 0,
+                        tax_amount: 0,
+                        is_tax_adjustment: false,
+                        is_discount: false,
+                        discount_rate: 0,
+                        discount_amount: 0,
+                        is_discount_adjustment: false,
+                        is_active: true,
+                        note: "",
+                        info: {
+                            specifications: "",
+                        },
+                        dimension: {
+                            cost_center: "",
+                            project: "",
+                        },
                     },
-                },
-            ],
+                ],
         },
     };
 
     const form = useForm<PurchaseRequestPostDto>({
         resolver: zodResolver(purchaseRequestSchema),
         defaultValues,
-    })
-
-    const { append, remove } = useFieldArray({
-        control: form.control,
-        name: "purchase_request_detail.add",
     })
 
     const onSubmit = (data: PurchaseRequestPostDto) => {
@@ -119,51 +164,7 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
         }
     };
 
-    const calculateTotalPrice = (index: number) => {
-        const qty = form.getValues(`purchase_request_detail.add.${index}.requested_qty`) || 0
-        const price = form.getValues(`purchase_request_detail.add.${index}.price`) || 0
-        const totalPrice = qty * price
-        form.setValue(`purchase_request_detail.add.${index}.total_price`, totalPrice)
-    }
-
-    const addNewItem = () => {
-        append({
-            location_id: "",
-            product_id: "",
-            vendor_id: "",
-            price_list_id: "",
-            description: "",
-            requested_qty: 0,
-            requested_unit_id: "",
-            approved_qty: 0,
-            approved_unit_id: "",
-            currency_id: "",
-            exchange_rate: 1,
-            exchange_rate_date: new Date().toISOString(),
-            price: 0,
-            total_price: 0,
-            foc: 0,
-            foc_unit_id: "",
-            tax_type_inventory_id: "",
-            tax_type: "",
-            tax_rate: 0,
-            tax_amount: 0,
-            is_tax_adjustment: false,
-            is_discount: false,
-            discount_rate: 0,
-            discount_amount: 0,
-            is_discount_adjustment: false,
-            is_active: true,
-            note: "",
-            info: {
-                specifications: "",
-            },
-            dimension: {
-                cost_center: "",
-                project: "",
-            },
-        })
-    }
+    // We've moved item management to the ItemPr component
 
     const isFormValid = () => {
         const watchedValues = form.watch()
@@ -175,7 +176,7 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
             return false
         }
 
-        const itemsValid = watchedValues.purchase_request_detail.add.every((item: any) => {
+        const itemsValid = watchedValues.purchase_request_detail.add.every((item) => {
             return !!item.product_id && item.requested_qty !== undefined && item.requested_qty > 0 && !!item.requested_unit_id
         })
 
@@ -191,63 +192,82 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
         <div className="relative">
             <div className="flex gap-4 relative">
                 <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Link href="/procurement/purchase-request">
-                                        <ChevronLeft className="h-4 w-4" />
-                                    </Link>
-                                    <p className="text-lg font-bold">Purchase Request</p>
+                    <Card className="p-4 mb-4">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Link href="/procurement/purchase-request">
+                                            <ChevronLeft className="h-4 w-4" />
+                                        </Link>
+                                        <p className="text-lg font-bold">Purchase Request</p>
 
-                                    {mode !== formType.ADD && (
-                                        <Badge className="rounded-full">{initValues?.pr_status}</Badge>
-                                    )}
+                                        {mode !== formType.ADD && (
+                                            <Badge className="rounded-full">{initValues?.pr_status}</Badge>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        {currentMode === formType.VIEW ? (
+                                            <>
+                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                    <ChevronLeft className="h-4 w-4" /> Back
+                                                </Button>
+                                                <Button variant="default" size={'sm'} onClick={handleEditClick}>
+                                                    <Pencil className="h-4 w-4" /> Edit
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                    <X className="h-4 w-4" /> Cancel
+                                                </Button>
+                                                <Button
+                                                    variant="default"
+                                                    size={'sm'}
+                                                    type="submit"
+                                                    disabled={!isFormValid()}
+                                                >
+                                                    <Save className="h-4 w-4" /> Save
+                                                </Button>
+                                            </>
+                                        )}
+                                        <Button type="button" variant="outline" size="sm">
+                                            <Printer className="h-4 w-4" />
+                                            Print
+                                        </Button>
+                                        <Button type="button" variant="outline" size="sm">
+                                            <MessageCircle className="h-4 w-4" />
+                                            Comment
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    {currentMode === formType.VIEW ? (
-                                        <>
-                                            <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                                <ChevronLeft className="h-4 w-4" /> Back
-                                            </Button>
-                                            <Button variant="default" size={'sm'} onClick={handleEditClick}>
-                                                <Pencil className="h-4 w-4" /> Edit
-                                            </Button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
-                                                <X className="h-4 w-4" /> Cancel
-                                            </Button>
-                                            <Button
-                                                variant="default"
-                                                size={'sm'}
-                                                type="submit"
-                                                disabled={!isFormValid()}
-                                            >
-                                                <Save className="h-4 w-4" /> Save
-                                            </Button>
-                                        </>
-                                    )}
-                                    <Button type="button" variant="outline" size="sm">
-                                        <Printer className="h-4 w-4" />
-                                        Print
-                                    </Button>
-                                    <Button type="button" variant="outline" size="sm">
-                                        <MessageCircle className="h-4 w-4" />
-                                        Comment
-                                    </Button>
-                                </div>
-                            </div>
-                            <HeadPrForm
-                                control={form.control}
-                                mode={currentMode}
-                                prNo={initValues?.pr_no}
-                                requestorName={initValues?.requestor_name}
-                            />
-                        </form>
-                    </Form>
-
+                                <HeadPrForm
+                                    control={form.control}
+                                    mode={currentMode}
+                                    prNo={initValues?.pr_no}
+                                />
+                                <Tabs defaultValue="items">
+                                    <TabsList className="w-full">
+                                        <TabsTrigger className="w-full" value="items">Items</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="budgets">Budgets</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="workflow">Workflow</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="items">
+                                        <ItemPr
+                                            control={form.control}
+                                            mode={currentMode}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="budgets">
+                                        Budgets
+                                    </TabsContent>
+                                    <TabsContent value="workflow">
+                                        Workflow
+                                    </TabsContent>
+                                </Tabs>
+                            </form>
+                        </Form>
+                    </Card>
                     <h1>Mode {mode}</h1>
                     <h1>Doc Type {docType}</h1>
                     {initValues && <pre>{JSON.stringify(initValues, null, 2)}</pre>}
