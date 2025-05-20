@@ -73,6 +73,7 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
     const { getCurrencyCode } = useCurrency();
     const { getLocationName } = useStoreLocation();
     const { getVendorName } = useVendor();
+
     const handleAddItem = () => {
         append({
             location_id: "",
