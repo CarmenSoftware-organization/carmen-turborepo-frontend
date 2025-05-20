@@ -20,8 +20,6 @@ import { TAB_PR } from "@/constants/tabs";
 import ItemPr from "./ItemPr";
 import BudgetPr from "./BudgetPr";
 import WorkflowPr from "./WorkflowPr";
-import AttachmentPr from "./AttachmentPr";
-import ActivityPr from "./ActivityPr";
 import TransactionSummary from "./TransactionSummary";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeftRightIcon, BookmarkIcon, CheckCircleIcon, FileDown, Printer, SaveIcon, ShareIcon, XCircleIcon } from "lucide-react";
@@ -220,8 +218,6 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                         <TabsTrigger value={TAB_PR.ITEM} className="w-full">Items</TabsTrigger>
                         <TabsTrigger value={TAB_PR.BUDGET} className="w-full">Budget</TabsTrigger>
                         <TabsTrigger value={TAB_PR.WORKFLOW} className="w-full">Workflow</TabsTrigger>
-                        <TabsTrigger value={TAB_PR.ATTACHMENT} className="w-full">Attachments</TabsTrigger>
-                        <TabsTrigger value={TAB_PR.ACTIVITY} className="w-full">Activity</TabsTrigger>
                     </TabsList>
                     <TabsContent value={TAB_PR.ITEM}>
                         <ItemPr />
@@ -231,12 +227,6 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                     </TabsContent>
                     <TabsContent value={TAB_PR.WORKFLOW}>
                         <WorkflowPr />
-                    </TabsContent>
-                    <TabsContent value={TAB_PR.ATTACHMENT}>
-                        <AttachmentPr />
-                    </TabsContent>
-                    <TabsContent value={TAB_PR.ACTIVITY}>
-                        <ActivityPr />
                     </TabsContent>
                 </Tabs>
                 <TransactionSummary />

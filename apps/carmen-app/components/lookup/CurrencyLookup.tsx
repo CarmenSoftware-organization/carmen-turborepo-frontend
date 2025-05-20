@@ -17,15 +17,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCurrency } from "@/hooks/useCurrency";
 import { CurrencyDto } from "@/dtos/config.dto";
+import { PropsLookup } from "@/dtos/lookup.dto";
 
-interface CurrencyLookupProps {
-    readonly value?: string;
-    readonly onValueChange: (value: string) => void;
-    readonly placeholder?: string;
-    readonly disabled?: boolean;
-}
-
-export default function CurrencyLookup({ value, onValueChange, placeholder = "Select currency", disabled = false }: CurrencyLookupProps) {
+export default function CurrencyLookup({
+    value,
+    onValueChange,
+    placeholder = "Select currency",
+    disabled = false
+}: Readonly<PropsLookup>) {
     const { currencies, isLoading } = useCurrency();
     const [open, setOpen] = useState(false);
 

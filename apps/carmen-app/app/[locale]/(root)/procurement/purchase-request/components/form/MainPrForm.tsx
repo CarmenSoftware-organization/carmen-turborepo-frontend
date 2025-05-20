@@ -8,7 +8,7 @@ import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto, PurchaseRequestPostDto, purchaseRequestSchema } from "@/dtos/pr.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronLeft, ChevronRight, MessageCircle, Pencil, Printer, Save, X } from "lucide-react";
+import { BookmarkIcon, ChevronLeft, ChevronRight, FileDown, Pencil, Printer, Save, ShareIcon, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import HeadPrForm from "./HeadPrForm";
@@ -231,13 +231,21 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                                 </Button>
                                             </>
                                         )}
-                                        <Button type="button" variant="outline" size="sm">
-                                            <Printer className="h-4 w-4" />
+                                        <Button variant={'outline'} size={'sm'}>
+                                            <Printer className="w-4 h-4" />
                                             Print
                                         </Button>
-                                        <Button type="button" variant="outline" size="sm">
-                                            <MessageCircle className="h-4 w-4" />
-                                            Comment
+                                        <Button variant={'outline'} size={'sm'}>
+                                            <FileDown className="h-4 w-4" />
+                                            Export
+                                        </Button>
+                                        <Button variant={'outline'} size={'sm'}>
+                                            <ShareIcon className="w-4 h-4" />
+                                            Share
+                                        </Button>
+                                        <Button variant={'outline'} size={'sm'}>
+                                            <BookmarkIcon className="w-4 h-4" />
+                                            Save as Template
                                         </Button>
                                     </div>
                                 </div>

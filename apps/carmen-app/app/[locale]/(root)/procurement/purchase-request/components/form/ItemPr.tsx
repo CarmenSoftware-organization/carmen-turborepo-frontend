@@ -8,6 +8,8 @@ import { FormField, FormItem } from "@/components/ui/form";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { PurchaseRequestPostDto } from "@/dtos/pr.dto";
 import { useCurrency } from "@/hooks/useCurrency";
+import LocationLookup from "@/components/lookup/LocationLookup";
+import { useStoreLocation } from "@/hooks/useStoreLocation";
 
 // Create a type that includes the additional fields needed for display
 type FormValues = PurchaseRequestPostDto & {
@@ -67,7 +69,7 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
         name: "purchase_request_detail.add",
     });
     const { getCurrencyCode } = useCurrency();
-
+    const { getLocationName } = useStoreLocation();
     const handleAddItem = () => {
         append({
             location_id: "",
@@ -157,7 +159,25 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                             <TableCell>
                                 <FormField
                                     control={control}
-                                    name={`purchase_request_detail.add.${index}.location_name`}
+                                    name={`purchase_request_detail.add.${index}.location_id`}
+                                    render={({ field }) => (
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{getLocationName(field.value)}</span>
+                                            ) : (
+                                                <LocationLookup
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                />
+                                            )}
+                                        </FormItem>
+                                    )}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <FormField
+                                    control={control}
+                                    name={`purchase_request_detail.add.${index}.product_id`}
                                     render={({ field }) => (
                                         <span>{field.value ?? "-"}</span>
                                     )}
@@ -166,16 +186,7 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                             <TableCell>
                                 <FormField
                                     control={control}
-                                    name={`purchase_request_detail.add.${index}.product_name`}
-                                    render={({ field }) => (
-                                        <span>{field.value ?? "-"}</span>
-                                    )}
-                                />
-                            </TableCell>
-                            <TableCell>
-                                <FormField
-                                    control={control}
-                                    name={`purchase_request_detail.add.${index}.vendor_name`}
+                                    name={`purchase_request_detail.add.${index}.vendor_id`}
                                     render={({ field }) => (
                                         <span>{field.value ?? "-"}</span>
                                     )}

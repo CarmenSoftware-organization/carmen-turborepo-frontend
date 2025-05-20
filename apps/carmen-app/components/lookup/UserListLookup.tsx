@@ -16,20 +16,15 @@ import {
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PropsLookup } from "@/dtos/lookup.dto";
 
-interface UserListLookupProps {
-    readonly value?: string;
-    readonly onValueChange: (value: string) => void;
-    readonly placeholder?: string;
-    readonly disabled?: boolean;
-}
 
 export default function UserListLookup({
     value,
     onValueChange,
     placeholder = "Select user",
     disabled = false
-}: UserListLookupProps) {
+}: Readonly<PropsLookup>) {
     const { userList, isLoading } = useUserList();
     const [open, setOpen] = useState(false);
 

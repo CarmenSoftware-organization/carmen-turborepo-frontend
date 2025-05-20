@@ -216,6 +216,11 @@ export const useStoreLocation = () => {
         }
     }, [selectedStoreLocation, token, tenantId]);
 
+    const getLocationName = useCallback((id: string) => {
+        const location = storeLocations.find(loc => loc.id === id);
+        return location?.name ?? '';
+    }, [storeLocations]);
+
     return {
         // State
         search,
@@ -250,6 +255,7 @@ export const useStoreLocation = () => {
         handleEdit,
         handleStatusChange,
         handleConfirmStatusChange,
-        fetchStoreLocations
+        fetchStoreLocations,
+        getLocationName
     };
 }; 

@@ -19,15 +19,14 @@ import { useUnit } from "@/hooks/useUnit";
 import UnitDialog from "@/components/shared/UnitDialog";
 import { UnitDto } from "@/dtos/unit.dto";
 import { formType } from "@/dtos/form.dto";
+import { PropsLookup } from "@/dtos/lookup.dto";
 
-interface UnitLookupProps {
-    readonly value?: string;
-    readonly onValueChange: (value: string) => void;
-    readonly placeholder?: string;
-    readonly disabled?: boolean;
-}
-
-export default function UnitLookup({ value, onValueChange, placeholder = "Select unit", disabled = false }: UnitLookupProps) {
+export default function UnitLookup({
+    value,
+    onValueChange,
+    placeholder = "Select unit",
+    disabled = false
+}: Readonly<PropsLookup>) {
     const { units, isLoading, handleSubmit } = useUnit();
     const [open, setOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);

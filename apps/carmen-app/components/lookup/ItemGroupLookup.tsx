@@ -16,20 +16,13 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { useItemGroup } from "@/hooks/useItemGroup";
-
-interface ItemGroupLookupProps {
-    readonly value?: string;
-    readonly onValueChange: (value: string) => void;
-    readonly placeholder?: string;
-    readonly disabled?: boolean;
-}
-
+import { PropsLookup } from "@/dtos/lookup.dto";
 export default function ItemGroupLookup({
     value,
     onValueChange,
     placeholder = "Select product item group",
     disabled = false
-}: ItemGroupLookupProps) {
+}: Readonly<PropsLookup>) {
     // เรียกใช้ hook โดยเฉพาะเจาะจงแต่ละตัวที่ต้องการ
     const { itemGroups, isLoading } = useItemGroup();
     const [open, setOpen] = useState(false);

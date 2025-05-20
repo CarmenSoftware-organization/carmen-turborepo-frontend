@@ -1,4 +1,3 @@
-import { useDepartment } from "@/hooks/useDepartment";
 import { useMemo, useState } from "react";
 import {
     Command,
@@ -17,21 +16,21 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
-
-export default function DepartmentLookup({
+import { useStoreLocation } from "@/hooks/useStoreLocation";
+export default function LocationLookup({
     value,
     onValueChange,
-    placeholder = "Select department",
+    placeholder = "Select location",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { departments, isLoading } = useDepartment();
     const [open, setOpen] = useState(false);
+    const { storeLocations, isLoading } = useStoreLocation();
 
-    const selectedDepartmentName = useMemo(() => {
-        if (!value || !departments || !Array.isArray(departments)) return null;
-        const found = departments.find(department => department.id === value);
+    const selectedLocationName = useMemo(() => {
+        if (!value || !storeLocations || !Array.isArray(storeLocations)) return null;
+        const found = storeLocations.find(location => location.id === value);
         return found?.name ?? null;
-    }, [value, departments]);
+    }, [value, storeLocations]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -42,7 +41,7 @@ export default function DepartmentLookup({
                     className="w-full justify-between"
                     disabled={disabled}
                 >
-                    {value && selectedDepartmentName ? selectedDepartmentName : placeholder}
+                    {value && selectedLocationName ? selectedLocationName : placeholder}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -52,7 +51,7 @@ export default function DepartmentLookup({
                     if (value.toLowerCase().includes(search.toLowerCase())) return 1;
                     return 0;
                 }}>
-                    <CommandInput placeholder="Search department..." className="w-full pr-10" />
+                    <CommandInput placeholder="Search location..." className="w-full pr-10" />
                     <CommandList>
                         {isLoading ? (
                             <div className="flex items-center justify-center py-6">
@@ -60,31 +59,31 @@ export default function DepartmentLookup({
                             </div>
                         ) : (
                             <>
-                                <CommandEmpty>No departments found.</CommandEmpty>
+                                <CommandEmpty>No locations found.</CommandEmpty>
                                 <CommandGroup>
-                                    {departments && departments.length > 0 ? (
-                                        departments.map((department) => (
+                                    {storeLocations && storeLocations.length > 0 ? (
+                                        storeLocations.map((storeLocation) => (
                                             <CommandItem
-                                                key={department.id}
-                                                value={department.name}
+                                                key={storeLocation.id}
+                                                value={storeLocation.name}
                                                 onSelect={() => {
-                                                    if (department.id) {
-                                                        onValueChange(department.id);
+                                                    if (storeLocation.id) {
+                                                        onValueChange(storeLocation.id);
                                                     }
                                                     setOpen(false);
                                                 }}
                                             >
-                                                {department.name}
+                                                {storeLocation.name}
                                                 <Check
                                                     className={cn(
                                                         "ml-auto h-4 w-4",
-                                                        value === department.id ? "opacity-100" : "opacity-0"
+                                                        value === storeLocation.id ? "opacity-100" : "opacity-0"
                                                     )}
                                                 />
                                             </CommandItem>
                                         ))
                                     ) : (
-                                        <CommandItem disabled>No departments available.</CommandItem>
+                                        <CommandItem disabled>No locations available.</CommandItem>
                                     )}
                                 </CommandGroup>
                             </>
@@ -93,5 +92,5 @@ export default function DepartmentLookup({
                 </Command>
             </PopoverContent>
         </Popover>
-    )
+    );
 }
