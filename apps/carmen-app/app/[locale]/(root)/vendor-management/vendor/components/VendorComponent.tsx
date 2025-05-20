@@ -9,7 +9,6 @@ import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
-import { useAuth } from "@/context/AuthContext";
 import SignInDialog from "@/components/SignInDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
@@ -17,7 +16,6 @@ import { useVendor } from "@/hooks/useVendor";
 import { Link } from "@/lib/navigation";
 
 export default function VendorComponent() {
-    const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
     const tVendor = useTranslations('Vendor');
     const tAction = useTranslations('Action');
@@ -36,7 +34,6 @@ export default function VendorComponent() {
         setLoginDialogOpen,
         deleteDialogOpen,
         setDeleteDialogOpen,
-        vendorToDelete,
         isDeleting,
         isLoading,
         isUnauthorized,
@@ -46,7 +43,7 @@ export default function VendorComponent() {
         handleDeleteClick,
         handleConfirmDelete,
         handleFormSuccess
-    } = useVendor(token, tenantId);
+    } = useVendor();
 
     const title = tVendor('title');
 

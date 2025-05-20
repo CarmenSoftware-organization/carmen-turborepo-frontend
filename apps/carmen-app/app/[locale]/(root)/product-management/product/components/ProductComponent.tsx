@@ -5,15 +5,10 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
 import { statusOptions } from "@/constants/options";
-import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 import ProductList from "./ProductList";
 import { Link } from "@/lib/navigation";
-import { ProductGetDto } from "@/dtos/product.dto";
-import { getProductService } from "@/services/product.service";
-import { useAuth } from "@/context/AuthContext";
 import SignInDialog from "@/components/SignInDialog";
 import {
     AlertDialog,
@@ -25,107 +20,44 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import useProduct from "@/hooks/useProduct";
 
 export function ProductComponent() {
-    const { token, tenantId } = useAuth();
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
     const tProduct = useTranslations('Product');
-    const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
-    const [statusOpen, setStatusOpen] = useState(false);
-    const [sort, setSort] = useURL('sort');
-    const [page, setPage] = useURL('page');
-    const [products, setProducts] = useState<ProductGetDto[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-    const [totalPages, setTotalPages] = useState(1);
-    const [error, setError] = useState<string | null>(null);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
 
-    useEffect(() => {
-        if (search) {
-            setPage('');
-        }
-    }, [search, setPage]);
+    const {
+        // Data states
+        products,
+        isLoading,
+        error,
+        totalPages,
+        currentPage,
 
-    useEffect(() => {
-        let isMounted = true;
-        setIsLoading(true);
-        setError(null);
+        // Filter states
+        search,
+        status,
+        statusOpen,
+        sort,
 
-        const fetchProducts = async () => {
-            try {
-                const data = await getProductService(token, tenantId, {
-                    search,
-                    sort,
-                    page,
-                    ...(status ? { filter: status } : {})
-                });
+        // Delete states
+        deleteDialogOpen,
+        isDeleting,
 
-                if (!isMounted) return;
+        // Auth state
+        loginRequired,
 
-                if (data.statusCode === 401) {
-                    setLoginDialogOpen(true);
-                    return;
-                }
-
-                if (data.statusCode === 400) {
-                    setError("Invalid request parameters");
-                    setProducts([]);
-                    setTotalPages(1);
-                    return;
-                }
-
-                if (data.statusCode && data.statusCode >= 400) {
-                    setError(`Error: ${data.message ?? 'Unknown error occurred'}`);
-                    setProducts([]);
-                    setTotalPages(1);
-                    return;
-                }
-
-                setProducts(data.data ?? []);
-                setTotalPages(data.paginate?.pages ?? 1);
-                setError(null);
-            } catch (error) {
-                if (!isMounted) return;
-
-                console.error("Error fetching products:", error);
-                setError("Failed to load products");
-                setProducts([]);
-                setTotalPages(1);
-            } finally {
-                if (isMounted) {
-                    setIsLoading(false);
-                }
-            }
-        };
-
-        fetchProducts();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [token, tenantId, search, sort, page, status]);
-
-    const handleDelete = (id: string) => {
-        setDeleteId(id);
-        setDeleteDialogOpen(true);
-    }
-
-    const confirmDelete = async () => {
-        if (!deleteId) return;
-        setProducts((prevProducts) =>
-            prevProducts.filter((product) => product.id !== deleteId)
-        );
-        setIsDeleting(true);
-    };
-
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage.toString());
-    };
+        // Setters and handlers
+        setSearch,
+        setStatus,
+        setStatusOpen,
+        setSort,
+        handlePageChange,
+        handleDelete,
+        confirmDelete,
+        closeDeleteDialog,
+    } = useProduct();
 
     const sortFields = [
         { key: 'name', label: tHeader('name') },
@@ -195,7 +127,7 @@ export function ProductComponent() {
         <ProductList
             products={products}
             isLoading={isLoading}
-            currentPage={parseInt(page || '1')}
+            currentPage={currentPage}
             onPageChange={handlePageChange}
             totalPages={totalPages}
             data-id="product-list-template"
@@ -213,10 +145,10 @@ export function ProductComponent() {
                 content={content}
             />
             <SignInDialog
-                open={loginDialogOpen}
-                onOpenChange={setLoginDialogOpen}
+                open={loginRequired}
+                onOpenChange={(open) => !open && window.location.reload()}
             />
-            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+            <AlertDialog open={deleteDialogOpen} onOpenChange={closeDeleteDialog}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Confirm Delete</AlertDialogTitle>

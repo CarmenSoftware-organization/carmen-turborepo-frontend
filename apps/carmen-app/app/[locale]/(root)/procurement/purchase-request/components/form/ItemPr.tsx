@@ -10,6 +10,8 @@ import { PurchaseRequestPostDto } from "@/dtos/pr.dto";
 import { useCurrency } from "@/hooks/useCurrency";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useVendor } from "@/hooks/useVendor";
+import VendorLookup from "@/components/lookup/VendorLookup";
 
 // Create a type that includes the additional fields needed for display
 type FormValues = PurchaseRequestPostDto & {
@@ -70,6 +72,7 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
     });
     const { getCurrencyCode } = useCurrency();
     const { getLocationName } = useStoreLocation();
+    const { getVendorName } = useVendor();
     const handleAddItem = () => {
         append({
             location_id: "",
@@ -188,7 +191,17 @@ export default function ItemPr({ mode, control }: ItemPrProps) {
                                     control={control}
                                     name={`purchase_request_detail.add.${index}.vendor_id`}
                                     render={({ field }) => (
-                                        <span>{field.value ?? "-"}</span>
+                                        <FormItem className="col-span-1">
+                                            {mode === formType.VIEW ? (
+                                                <span>{getVendorName(field.value)}</span>
+                                            ) : (
+                                                <VendorLookup
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                />
+                                            )}
+                                        </FormItem>
+
                                     )}
                                 />
                             </TableCell>

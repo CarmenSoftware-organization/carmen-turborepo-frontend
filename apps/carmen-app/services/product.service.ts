@@ -107,6 +107,45 @@ export const updateProductService = async (accessToken: string, tenantId: string
     return data;
 }
 
+export const deleteProductService = async (token: string, tenantId: string, id: string) => {
+    if (!token || !tenantId || !id) {
+        throw new Error("Authorization token, tenant ID, and product ID are required");
+    }
+
+    const url = `${backendApi}/api/config/products/${id}`;
+    const options = {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+            "x-tenant-id": tenantId
+        },
+    };
+
+    try {
+        const response = await fetch(url, options);
+        const data = await response.json();
+
+        if (!response.ok) {
+            return {
+                error: true,
+                status: response.status,
+                message: data.message ?? `Error deleting product: ${response.statusText}`,
+                data: null
+            };
+        }
+
+        return data;
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        return {
+            error: true,
+            status: 500,
+            message: 'Error deleting product',
+            data: null
+        };
+    }
+}
 
 export const getCategoryListByItemGroup = async (accessToken: string, tenantId: string, id: string) => {
     const url = `${backendApi}/api/config/products/item-group/${id}`;

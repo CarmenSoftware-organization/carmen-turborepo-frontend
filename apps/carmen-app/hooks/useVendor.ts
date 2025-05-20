@@ -3,8 +3,10 @@ import { useURL } from "@/hooks/useURL";
 import { getAllVendorService, deleteVendorService } from "@/services/vendor.service";
 import { VendorGetDto } from "@/dtos/vendor-management";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useAuth } from "@/context/AuthContext";
 
-export const useVendor = (token: string, tenantId: string) => {
+export const useVendor = () => {
+    const { token, tenantId } = useAuth();
     const [search, setSearch] = useURL('search');
     const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
@@ -108,6 +110,11 @@ export const useVendor = (token: string, tenantId: string) => {
         { key: 'is_active', label: 'Status' },
     ];
 
+    const getVendorName = useCallback((vendorId: string) => {
+        const vendor = vendors.find(v => v.id === vendorId);
+        return vendor?.name ?? '';
+    }, [vendors]);
+
     return {
         // State
         search,
@@ -137,6 +144,7 @@ export const useVendor = (token: string, tenantId: string) => {
         handlePageChange,
         handleDeleteClick,
         handleConfirmDelete,
-        handleFormSuccess
+        handleFormSuccess,
+        getVendorName
     };
 }; 
