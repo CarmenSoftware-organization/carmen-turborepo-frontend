@@ -9,7 +9,7 @@ const itemPrDetailBase = {
     product_name: z.string().optional(),
     vendor_id: z.string().uuid().optional(),
     vendor_name: z.string().optional(),
-    price_list_id: z.string().uuid().optional(),
+    price_list_id: z.string().uuid().optional().nullable(),
     description: z.string().optional(),
 
     requested_qty: z.number().optional(),
@@ -42,7 +42,7 @@ const itemPrDetailBase = {
     foc: z.number().optional(),
     foc_unit_id: z.string().uuid().optional(),
     foc_unit_name: z.string().optional(),
-    tax_type_inventory_id: z.string().uuid().optional(),
+    tax_type_inventory_id: z.string().uuid().optional().nullable(),
     tax_type: z.string().optional()
 };
 

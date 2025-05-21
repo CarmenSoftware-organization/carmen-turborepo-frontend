@@ -30,6 +30,8 @@ import UnitLookup from "@/components/lookup/UnitLookup";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import { Box } from "lucide-react";
+import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
+import PriceListLookup from "@/components/lookup/PriceListLookup";
 
 interface ItemPrDialogProps {
     readonly open: boolean;
@@ -83,7 +85,8 @@ const createEmptyItem = (): ItemPrDetailDto => ({
     foc_unit_id: '',
     foc_unit_name: '',
     tax_type_inventory_id: '',
-    tax_type: ''
+    tax_type: '',
+
 });
 
 export default function ItemPrDialog({
@@ -500,6 +503,40 @@ export default function ItemPrDialog({
                                                         type="number"
                                                         {...field}
                                                         disabled={true}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={localForm.control}
+                                        name="price_list_id"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Price List</FormLabel>
+                                                <FormControl>
+                                                    <PriceListLookup
+                                                        value={field.value ?? ''}
+                                                        onValueChange={(value) => field.onChange(value)}
+                                                        disabled={isViewMode}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={localForm.control}
+                                        name="tax_type_inventory_id"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Tax Type</FormLabel>
+                                                <FormControl>
+                                                    <TaxTypeLookup
+                                                        value={field.value ?? ''}
+                                                        onValueChange={(value) => field.onChange(value)}
+                                                        disabled={isViewMode}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
