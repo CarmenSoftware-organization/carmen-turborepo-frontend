@@ -126,7 +126,9 @@ export default function ItemPrDialog({
 
     const isViewMode = mode === formType.VIEW;
     const isAddMode = !localFormValues?.id || localFormValues.id.startsWith('temp-');
-    const dialogTitle = isViewMode ? "Item Details" : (isAddMode ? "Add New Item" : "Edit Item");
+
+    const editModeTitle = isAddMode ? "Add New Item" : "Edit Item";
+    const dialogTitle = isViewMode ? "Item Details" : editModeTitle;
 
     const handleSave = () => {
         if (isViewMode || !onSave) return;
@@ -147,10 +149,10 @@ export default function ItemPrDialog({
             }
 
             // Ensure numeric values are properly converted
-            formData.requested_qty = parseFloat(formData.requested_qty?.toString() || "0") || 0;
-            formData.price = parseFloat(formData.price?.toString() || "0") || 0;
-            formData.exchange_rate = parseFloat(formData.exchange_rate?.toString() || "1") || 1;
-            formData.foc = parseFloat(formData.foc?.toString() || "0") || 0;
+            formData.requested_qty = parseFloat(formData.requested_qty?.toString() ?? "0") || 0;
+            formData.price = parseFloat(formData.price?.toString() ?? "0") || 0;
+            formData.exchange_rate = parseFloat(formData.exchange_rate?.toString() ?? "1") || 1;
+            formData.foc = parseFloat(formData.foc?.toString() ?? "0") || 0;
 
             // Calculate total price
             formData.total_price = formData.price * formData.requested_qty;

@@ -9,7 +9,7 @@ const itemPrDetailBase = {
     product_name: z.string().optional(),
     vendor_id: z.string().uuid().optional(),
     vendor_name: z.string().optional(),
-    price_list_id: z.string().uuid().optional().nullable(),
+    price_list_id: z.string().optional().nullable(),
     description: z.string().optional(),
 
     requested_qty: z.number().optional(),
@@ -21,13 +21,13 @@ const itemPrDetailBase = {
     approved_unit_name: z.string().optional(),
 
     approved_base_qty: z.number().optional(),
-    approved_base_unit_id: z.string().uuid().optional(),
+    approved_base_unit_id: z.string().optional().nullable(),
     approved_conversion_rate: z.number().optional(),
     approved_base_unit_name: z.string().optional().nullable(),
 
     requested_conversion_rate: z.number().optional(),
     requested_inventory_qty: z.number().optional(),
-    requested_inventory_unit_id: z.string().uuid().optional(),
+    requested_inventory_unit_id: z.string().optional(),
     requested_inventory_unit_name: z.string().optional(),
 
     currency_id: z.string().uuid().optional(),
@@ -42,7 +42,7 @@ const itemPrDetailBase = {
     foc: z.number().optional(),
     foc_unit_id: z.string().uuid().optional(),
     foc_unit_name: z.string().optional(),
-    tax_type_inventory_id: z.string().uuid().optional().nullable(),
+    tax_type_inventory_id: z.string().optional().nullable(),
     tax_type: z.string().optional()
 };
 
