@@ -56,7 +56,7 @@ export default function PurchaseRequestList({
         }
     };
 
-    const isAllSelected = purchaseRequests.length > 0 && selectedItems.length === purchaseRequests.length;
+    const isAllSelected = purchaseRequests?.length > 0 && selectedItems.length === purchaseRequests.length;
 
     const renderTableContent = () => {
         if (isLoading) return <TableBodySkeleton columns={8} />;

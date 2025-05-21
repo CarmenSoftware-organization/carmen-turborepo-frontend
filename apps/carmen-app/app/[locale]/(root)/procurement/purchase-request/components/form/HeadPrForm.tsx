@@ -2,7 +2,7 @@ import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestPostDto } from "@/dtos/pr.dto";
+import { PurchaseRequestFormDto } from "@/dtos/pr.dto";
 import { Control } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -15,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import UserListLookup from "@/components/lookup/UserListLookup";
 
 interface HeadPrFormProps {
-    readonly control: Control<PurchaseRequestPostDto>;
+    readonly control: Control<PurchaseRequestFormDto>;
     readonly mode: formType;
     readonly prNo?: string;
 }

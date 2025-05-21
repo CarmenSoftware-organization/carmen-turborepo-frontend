@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestByIdDto, PurchaseRequestPostDto, purchaseRequestSchema } from "@/dtos/pr.dto";
+import { ItemPrDetailDto, PurchaseRequestByIdDto, PurchaseRequestFormDto, purchaseRequestFormSchema } from "@/dtos/pr.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BookmarkIcon, ChevronLeft, ChevronRight, FileDown, Pencil, Printer, Save, ShareIcon, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import HeadPrForm from "./HeadPrForm";
 import { Card } from "@/components/ui/card";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/tabs";
 import ItemPr from "./ItemPr";
 import WorkflowPr from "./WorkflowPr";
+import ItemPrDialog from "./ItemPrDialog";
 
 interface MainPrFormProps {
     readonly mode: formType;
@@ -31,16 +32,26 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
     const router = useRouter();
     const [openLog, setOpenLog] = useState<boolean>(false);
     const [currentMode, setCurrentMode] = useState<formType>(mode);
+    const [openDialogItemPr, setOpenDialogItemPr] = useState<boolean>(false);
+    const [currentItemData, setCurrentItemData] = useState<ItemPrDetailDto | undefined>(undefined);
+    const [currentItems, setCurrentItems] = useState<ItemPrDetailDto[]>(initValues?.purchase_request_detail || []);
 
-    const defaultValues: Partial<PurchaseRequestPostDto> = {
+    // Reset current items when initValues changes
+    useEffect(() => {
+        if (initValues?.purchase_request_detail) {
+            setCurrentItems(initValues.purchase_request_detail);
+        }
+    }, [initValues?.purchase_request_detail]);
+
+    const defaultValues: Partial<PurchaseRequestFormDto> = {
         pr_date: initValues?.pr_date ?? new Date().toISOString(),
-        workflow_id: "",
-        current_workflow_status: "",
         pr_status: initValues?.pr_status ?? "",
         requestor_id: initValues?.requestor_id ?? "",
+        requestor_name: undefined, // จะถูกเติมจาก backend หรือดึงจาก ID
         department_id: initValues?.department_id ?? "",
+        department_name: undefined, // จะถูกเติมจาก backend หรือดึงจาก ID
         is_active: initValues?.is_active ?? true,
-        doc_version: typeof initValues?.doc_version === 'string' ? parseInt(initValues.doc_version, 10) : (initValues?.doc_version ?? 1),
+        doc_version: initValues?.doc_version ?? "",
         note: initValues?.note ?? "",
         description: initValues?.description ?? "",
         info: {
@@ -52,100 +63,82 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
             project: initValues?.dimension?.project ?? "",
         },
         purchase_request_detail: {
-            add: initValues?.purchase_request_detail
-                ? initValues.purchase_request_detail.map(item => ({
-                    location_id: item.location_id,
-                    product_id: item.product_id,
-                    vendor_id: item.vendor_id,
-                    price_list_id: item.price_list_id,
-                    description: item.description,
-                    requested_qty: item.requested_qty,
-                    requested_unit_id: item.requested_unit_id,
-                    approved_qty: item.approved_qty,
-                    approved_unit_id: item.approved_unit_id,
-                    currency_id: item.currency_id,
-                    exchange_rate: item.exchange_rate,
-                    price: item.price,
-                    total_price: item.total_price,
-                    foc: item.foc,
-                    foc_unit_id: item.foc_unit_id,
-                    tax_type_inventory_id: item.tax_type_inventory_id,
-                    tax_type: item.tax_type,
-                    dimension: {
-                        cost_center: item.dimension?.cost_center || "",
-                        project: item.dimension?.project || "",
-                    },
-                    is_active: true,
-                    note: "",
-                    exchange_rate_date: new Date().toISOString(),
-                    tax_rate: 0,
-                    tax_amount: 0,
-                    is_tax_adjustment: false,
-                    is_discount: false,
-                    discount_rate: 0,
-                    discount_amount: 0,
-                    is_discount_adjustment: false,
-                    info: {
-                        specifications: "",
-                    },
-                    location_name: item.location_name,
-                    product_name: item.product_name,
-                    vendor_name: item.vendor_name,
-                    requested_unit_name: item.requested_unit_name,
-                    approved_unit_name: item.approved_unit_name,
-                    foc_unit_name: item.foc_unit_name,
-                }))
-                : [
-                    {
-                        location_id: "",
-                        product_id: "",
-                        vendor_id: "",
-                        price_list_id: "",
-                        description: "",
-                        requested_qty: 0,
-                        requested_unit_id: "",
-                        approved_qty: 0,
-                        approved_unit_id: "",
-                        currency_id: "",
-                        exchange_rate: 1,
-                        exchange_rate_date: new Date().toISOString(),
-                        price: 0,
-                        total_price: 0,
-                        foc: 0,
-                        foc_unit_id: "",
-                        tax_type_inventory_id: "",
-                        tax_type: "",
-                        tax_rate: 0,
-                        tax_amount: 0,
-                        is_tax_adjustment: false,
-                        is_discount: false,
-                        discount_rate: 0,
-                        discount_amount: 0,
-                        is_discount_adjustment: false,
-                        is_active: true,
-                        note: "",
-                        info: {
-                            specifications: "",
-                        },
-                        dimension: {
-                            cost_center: "",
-                            project: "",
-                        },
-                    },
-                ],
+            ...initValues?.purchase_request_detail?.map(item => ({
+                ...item,
+                id: (item as { id?: string }).id
+            })) ?? [],
+            add: [],
+            update: [],
+            delete: []
         },
     };
 
-    const form = useForm<PurchaseRequestPostDto>({
-        resolver: zodResolver(purchaseRequestSchema),
+    const form = useForm<PurchaseRequestFormDto>({
+        resolver: zodResolver(purchaseRequestFormSchema),
         defaultValues,
+        mode: "onChange"
     })
 
-    const onSubmit = (data: PurchaseRequestPostDto) => {
-        console.log("Form submitted:", data)
-        // Here you would typically send the data to your API
-        alert("Form submitted successfully! Check console for details.")
-        setCurrentMode(formType.VIEW);
+    // Log when form state changes to help debug
+    useEffect(() => {
+        console.log("Form state updated:", {
+            isDirty: form.formState.isDirty,
+            isValid: form.formState.isValid,
+            errors: form.formState.errors
+        });
+    }, [form.formState]);
+
+    const onSubmit = (data: PurchaseRequestFormDto) => {
+        console.log("onSubmit function called with data:", data);
+
+        try {
+            // Validate that we have all necessary data
+            if (currentItems.length === 0) {
+                alert("Please add at least one item to the purchase request.");
+                return;
+            }
+
+            // Get current items from state - this is what we're showing in the UI
+            const updatedItems = [...currentItems];
+
+            // Prepare data for API submission
+            const finalData = {
+                ...data,
+                purchase_request_detail: {
+                    add: data.purchase_request_detail.add || [],
+                    update: data.purchase_request_detail.update || [],
+                    delete: data.purchase_request_detail.delete || []
+                }
+            };
+
+            console.log("==================== FORM SUBMITTED ====================");
+            console.log("Data for API call:", finalData);
+            console.log("Current items in UI:", updatedItems);
+            console.log("Items to add:", data.purchase_request_detail.add);
+            console.log("Items to update:", data.purchase_request_detail.update);
+            console.log("Items to delete:", data.purchase_request_detail.delete);
+            console.log("Form values:", form.getValues());
+            console.log("Current mode:", currentMode);
+            console.log("=======================================================");
+
+            // Here you would typically send the data to your API
+            // Example: sendDataToApi(finalData)
+            //     .then(() => {
+            //         alert("Form submitted successfully!");
+            //         setCurrentMode(formType.VIEW);
+            //     })
+            //     .catch(error => {
+            //         console.error("Error submitting form:", error);
+            //         alert("Error submitting form");
+            //     });
+
+            // For now, just show an alert and switch to view mode
+            alert("Form submitted successfully! Check console for details.");
+            setCurrentMode(formType.VIEW);
+        } catch (error) {
+            console.error("Error in form submission:", error);
+            alert("Error submitting form. See console for details.");
+        }
     }
 
     const handleEditClick = (e: React.MouseEvent) => {
@@ -165,29 +158,117 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
         }
     };
 
-    // We've moved item management to the ItemPr component
-
-    const isFormValid = () => {
-        const watchedValues = form.watch()
-        const hasRequestor = !!watchedValues.requestor_id
-        const hasDepartment = !!watchedValues.department_id
-        const hasItems = watchedValues.purchase_request_detail?.add?.length > 0
-
-        if (!hasRequestor || !hasDepartment || !hasItems) {
-            return false
-        }
-
-        const itemsValid = watchedValues.purchase_request_detail.add.every((item) => {
-            return !!item.product_id && item.requested_qty !== undefined && item.requested_qty > 0 && !!item.requested_unit_id
-        })
-
-        return itemsValid
-    }
 
     const handleOpenLog = () => {
         setOpenLog(!openLog);
     };
 
+    const handleDialogItemPr = (e: React.MouseEvent, data: ItemPrDetailDto) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Handling dialog for item:', data);
+
+        // Deep clone the data to avoid reference issues
+        const itemData = JSON.parse(JSON.stringify(data));
+
+        // Ensure all required fields have values
+        if (!itemData.dimension) {
+            itemData.dimension = { project: '', cost_center: '' };
+        }
+
+        // Store the data for view mode and dialog
+        setCurrentItemData(itemData);
+
+        // For new items without an ID, add a temp ID and add to the currentItems
+        if (!itemData.id && currentMode !== formType.VIEW) {
+            // Generate a temporary unique ID for tracking
+            const tempId = `temp-${Date.now()}`;
+            itemData.id = tempId;
+
+            // Don't add to the form yet - we'll do that when the user saves
+            // But we can add it to the current items for immediate visibility in UI
+            if (!currentItems.some(item => item.id === tempId)) {
+                setCurrentItems([...currentItems, itemData]);
+            }
+        }
+
+        setOpenDialogItemPr(true);
+    }
+
+    // Handle saving item data from dialog
+    const handleSaveItemDialog = (itemData: ItemPrDetailDto) => {
+        console.log('Saving item data:', itemData);
+        const formItems = form.getValues("purchase_request_detail");
+
+        // For UI update - maintain a separate list of current items
+        let updatedItemsList = [...currentItems];
+
+        if (itemData.id?.startsWith('temp-')) {
+            // New item - remove temp id and add to add array
+            console.log('Adding new item', itemData);
+
+            // For new items, create a copy without the temp ID to match API expectations
+            const newItem = { ...itemData };
+            // Remove the temp ID for API but keep it for UI
+            delete newItem.id; // Remove the temp ID
+
+            const updatedItems = {
+                ...formItems,
+                add: [...(formItems.add || []), newItem]
+            };
+            form.setValue("purchase_request_detail", updatedItems);
+
+            // Add to UI list with temp ID intact
+            updatedItemsList.push({ ...itemData });
+        } else if (itemData.id) {
+            // Update existing item - add to update array
+            console.log('Updating item', itemData);
+
+            const updatedItems = {
+                ...formItems,
+                update: [...(formItems.update || []).filter(item => item.id !== itemData.id), itemData]
+            };
+            form.setValue("purchase_request_detail", updatedItems);
+
+            // Update in UI list
+            updatedItemsList = updatedItemsList.map(item =>
+                item.id === itemData.id ? { ...item, ...itemData } : item
+            );
+        }
+
+        // Update UI list
+        setCurrentItems(updatedItemsList);
+
+        // Close dialog and clean up
+        setOpenDialogItemPr(false);
+    };
+
+    // Function to handle dialog close
+    const handleCloseDialog = (open: boolean) => {
+        setOpenDialogItemPr(open);
+        if (!open) {
+            // Only clear the item data when dialog is closed
+            setTimeout(() => {
+                setCurrentItemData(undefined);
+            }, 100);
+        }
+    };
+
+    // Handle deleting an item
+    const handleDeleteItem = (itemId: string) => {
+        const formItems = form.getValues("purchase_request_detail");
+
+        // Add to delete array if it's an existing item
+        const updatedItems = {
+            ...formItems,
+            delete: [...(formItems.delete || []), itemId]
+        };
+
+        form.setValue("purchase_request_detail", updatedItems);
+
+        // Remove from UI list
+        setCurrentItems(currentItems.filter(item => item.id !== itemId));
+    };
 
     return (
         <div className="relative">
@@ -195,7 +276,17 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                 <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
                     <Card className="p-4 mb-4">
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <form
+                                className="space-y-4"
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    console.log("Form submit event triggered");
+                                    form.handleSubmit((data) => {
+                                        console.log("Form handle submit callback triggered");
+                                        onSubmit(data);
+                                    })();
+                                }}
+                            >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Link href="/procurement/purchase-request">
@@ -225,8 +316,15 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                                 <Button
                                                     variant="default"
                                                     size={'sm'}
-                                                    type="submit"
-                                                    disabled={!isFormValid()}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        console.log("Save button clicked");
+                                                        // Manually trigger form submission
+                                                        form.handleSubmit((data) => {
+                                                            console.log("Form submission started");
+                                                            onSubmit(data);
+                                                        })();
+                                                    }}
                                                 >
                                                     <Save className="h-4 w-4" /> Save
                                                 </Button>
@@ -263,8 +361,12 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                     </TabsList>
                                     <TabsContent value="items">
                                         <ItemPr
-                                            control={form.control}
+                                            itemsPr={currentItems.filter(item =>
+                                                !form.getValues().purchase_request_detail.delete?.includes(item.id || "")
+                                            )}
                                             mode={currentMode}
+                                            openDetail={handleDialogItemPr}
+                                            onDeleteItem={handleDeleteItem}
                                         />
                                     </TabsContent>
                                     <TabsContent value="budgets">
@@ -281,7 +383,7 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                     </Card>
                     <h1>Mode {mode}</h1>
                     <h1>Doc Type {docType}</h1>
-                    {initValues && <pre>{JSON.stringify(initValues, null, 2)}</pre>}
+                    {initValues && <pre>{JSON.stringify(initValues.purchase_request_detail, null, 2)}</pre>}
                 </ScrollArea>
 
                 {openLog && (
@@ -292,6 +394,14 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                         </div>
                     </div>
                 )}
+                <ItemPrDialog
+                    open={openDialogItemPr}
+                    onOpenChange={handleCloseDialog}
+                    isLoading={false}
+                    mode={currentMode}
+                    formValues={currentItemData}
+                    onSave={handleSaveItemDialog}
+                />
             </div>
             <Button
                 aria-label={openLog ? "Close log panel" : "Open log panel"}
