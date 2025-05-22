@@ -342,6 +342,10 @@ export const moduleItems: ModuleItem[] = [
                 labelKey: "Modules.SystemAdministration.businessUnit",
                 href: "/system-administration/business-unit",
             },
+            {
+                labelKey: "Modules.SystemAdministration.user",
+                href: "/system-administration/user",
+            },
         ]
     },
     {

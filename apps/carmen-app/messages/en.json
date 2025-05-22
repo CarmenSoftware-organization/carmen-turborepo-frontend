@@ -194,7 +194,8 @@
         "pos": "POS Integrations"
       },
       "cluster": "Cluster",
-      "businessUnit": "Business Unit"
+      "businessUnit": "Business Unit",
+      "user": "User"
     },
     "helpAndSupport": "Help and Support",
     "HelpAndSupport": {

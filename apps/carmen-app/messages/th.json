@@ -189,7 +189,8 @@
         "pos": "ระบบสะสมคะแนน"
       },
       "cluster": "การจัดการกลุ่ม",
-      "businessUnit": "หน่วยงาน"
+      "businessUnit": "หน่วยงาน",
+      "user": "ผู้ใช้งาน"
     },
     "helpAndSupport": "การสนับสนุน",
     "HelpAndSupport": {
