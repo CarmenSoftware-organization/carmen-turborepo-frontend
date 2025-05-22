@@ -72,7 +72,7 @@ export default function ClusterPage() {
 
 
     return (
-        <div className="p-4 space-y-6">
+        <div className="p-4 space-y-4">
             <h1 className="text-2xl font-bold">Cluster Management</h1>
             <Card className="p-4">
                 <p className="text-base font-semibold">Create a new cluster to the system</p>

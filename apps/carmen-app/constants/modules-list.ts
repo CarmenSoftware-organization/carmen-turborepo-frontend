@@ -338,6 +338,10 @@ export const moduleItems: ModuleItem[] = [
                 labelKey: "Modules.SystemAdministration.cluster",
                 href: "/system-administration/cluster",
             },
+            {
+                labelKey: "Modules.SystemAdministration.businessUnit",
+                href: "/system-administration/business-unit",
+            },
         ]
     },
     {

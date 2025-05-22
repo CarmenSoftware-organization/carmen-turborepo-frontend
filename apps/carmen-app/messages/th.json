@@ -188,7 +188,8 @@
         "title": "การรวมระบบ",
         "pos": "ระบบสะสมคะแนน"
       },
-      "cluster": "การจัดการกลุ่ม"
+      "cluster": "การจัดการกลุ่ม",
+      "businessUnit": "หน่วยงาน"
     },
     "helpAndSupport": "การสนับสนุน",
     "HelpAndSupport": {

@@ -193,7 +193,8 @@
         "title": "System Integrations",
         "pos": "POS Integrations"
       },
-      "cluster": "Cluster"
+      "cluster": "Cluster",
+      "businessUnit": "Business Unit"
     },
     "helpAndSupport": "Help and Support",
     "HelpAndSupport": {
