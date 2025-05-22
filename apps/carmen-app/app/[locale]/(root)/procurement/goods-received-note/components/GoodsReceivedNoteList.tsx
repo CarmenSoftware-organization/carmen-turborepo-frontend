@@ -81,7 +81,7 @@ export default function GoodsReceivedNoteList({
                             <TableHead className="text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
-                    {!isLoading ? (
+                    {isLoading ? (
                         <TableBodySkeleton rows={7} />
                     ) : (
                         <TableBody>
