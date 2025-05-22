@@ -192,7 +192,8 @@
       "SystemIntegrations": {
         "title": "System Integrations",
         "pos": "POS Integrations"
-      }
+      },
+      "cluster": "Cluster"
     },
     "helpAndSupport": "Help and Support",
     "HelpAndSupport": {

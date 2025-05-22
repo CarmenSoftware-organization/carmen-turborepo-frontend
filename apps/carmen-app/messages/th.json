@@ -187,7 +187,8 @@
       "SystemIntegrations": {
         "title": "การรวมระบบ",
         "pos": "ระบบสะสมคะแนน"
-      }
+      },
+      "cluster": "การจัดการกลุ่ม"
     },
     "helpAndSupport": "การสนับสนุน",
     "HelpAndSupport": {

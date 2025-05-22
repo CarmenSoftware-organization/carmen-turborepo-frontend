@@ -30,23 +30,6 @@ export const getUserProfileService = async (accessToken: string) => {
     }
 }
 
-// export const updateUserBusinessUnitService = async (accessToken: string, buId: string) => {
-//     const url = `${backendApi}/api/business-unit/default`
-//     const options = {
-//         method: 'POST',
-//         headers: {
-//             'Authorization': `Bearer ${accessToken}`,
-//             'Content-Type': 'application/json',
-//             'x-tenant-id': buId
-//         },
-//     }
-//     const response = await fetch(url, options);
-//     const data = await response.json();
-//     console.log('data response >>>', data);
-
-//     return data;
-// }
-
 export const updateUserBusinessUnitService = async (accessToken: string, buId: string) => {
     const url = `${backendApi}/api/business-unit/default`
     try {

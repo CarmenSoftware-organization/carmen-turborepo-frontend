@@ -334,6 +334,10 @@ export const moduleItems: ModuleItem[] = [
                 labelKey: "Modules.SystemAdministration.dataBackupAndRecovery",
                 href: "/system-administration/data-backup-and-recovery",
             },
+            {
+                labelKey: "Modules.SystemAdministration.cluster",
+                href: "/system-administration/cluster",
+            },
         ]
     },
     {

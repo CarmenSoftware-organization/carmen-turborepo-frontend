@@ -1,7 +1,7 @@
 export default function GodCarmenPage() {
     return (
         <div>
-            <h1>God Carmen</h1>
+            <h1>God Carmem</h1>
         </div>
     )
 }
