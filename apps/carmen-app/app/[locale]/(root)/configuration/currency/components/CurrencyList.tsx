@@ -53,7 +53,7 @@ export default function CurrencyList({
     };
 
     const renderTableContent = () => {
-        if (isLoading) return <TableBodySkeleton columns={7} />;
+        if (isLoading) return <TableBodySkeleton rows={7} />;
 
         if (!currencies || currencies.length === 0) {
             return (

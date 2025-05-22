@@ -45,7 +45,7 @@ export default function DeliveryPointList({
     const tCommon = useTranslations('Common');
     const tDeliveryPoint = useTranslations('DeliveryPoint');
     const renderTableContent = () => {
-        if (isLoading) return <TableBodySkeleton columns={4} />;
+        if (isLoading) return <TableBodySkeleton rows={4} />;
 
         if (deliveryPoints.length === 0) {
             return (

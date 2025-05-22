@@ -44,7 +44,7 @@ export default function StoreLocationList({
     const tCommon = useTranslations('Common');
 
     const renderTableContent = () => {
-        if (isLoading) return <TableBodySkeleton columns={8} />;
+        if (isLoading) return <TableBodySkeleton rows={8} />;
 
         if (storeLocations.length === 0) {
             return (

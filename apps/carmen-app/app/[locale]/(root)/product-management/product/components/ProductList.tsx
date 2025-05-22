@@ -74,7 +74,7 @@ export default function ProductList({
     const isAllSelected = products?.length > 0 && selectedItems.length === products?.length;
 
     const renderDesktopTableContent = () => {
-        if (isLoading) return <TableBodySkeleton columns={7} />;
+        if (isLoading) return <TableBodySkeleton rows={7} />;
 
         if (error) {
             return (

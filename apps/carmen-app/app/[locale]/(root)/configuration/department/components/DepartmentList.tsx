@@ -45,7 +45,7 @@ export default function DepartmentList({
     const tCommon = useTranslations('Common');
 
     const renderTableContent = () => {
-        if (isLoading) return <TableBodySkeleton columns={4} />;
+        if (isLoading) return <TableBodySkeleton rows={4} />;
 
         if (departments.length === 0) {
             return (

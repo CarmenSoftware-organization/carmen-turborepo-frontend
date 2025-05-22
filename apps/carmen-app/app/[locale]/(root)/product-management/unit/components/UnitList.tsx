@@ -48,7 +48,7 @@ export default function UnitList({
     };
 
     const renderTableContent = () => {
-        if (isLoading) return <TableBodySkeleton columns={5} />;
+        if (isLoading) return <TableBodySkeleton rows={5} />;
 
         if (units.length === 0) {
             return (

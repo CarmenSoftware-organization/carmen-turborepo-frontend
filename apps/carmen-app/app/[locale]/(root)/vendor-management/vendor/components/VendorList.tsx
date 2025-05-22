@@ -61,7 +61,7 @@ export default function VendorList({
                 <ScrollArea className="h-[calc(102vh-300px)] w-full">
                     <Table>
                         {isLoading ? (
-                            <TableBodySkeleton columns={5} />
+                            <TableBodySkeleton rows={5} />
                         ) : (
                             <TableBody>
                                 {vendors.length === 0 ? (

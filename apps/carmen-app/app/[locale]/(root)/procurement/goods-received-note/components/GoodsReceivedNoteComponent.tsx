@@ -27,6 +27,7 @@ export default function GoodsReceivedNoteComponent() {
     const [statusOpen, setStatusOpen] = useState(false);
     const {
         grns,
+        isLoading,
         isError,
         search, setSearch,
         sort, setSort,
@@ -110,7 +111,13 @@ export default function GoodsReceivedNoteComponent() {
         </div>
     );
 
-    const content = <GoodsReceivedNoteList goodsReceivedNotes={grns.data} currentPage={grns.currentPage} totalPages={grns.totalPages} onPageChange={handlePageChange} />
+    const content = <GoodsReceivedNoteList
+        goodsReceivedNotes={grns.data}
+        currentPage={grns.currentPage}
+        totalPages={grns.totalPages}
+        onPageChange={handlePageChange}
+        isLoading={isLoading}
+    />
 
     return (
         <>
