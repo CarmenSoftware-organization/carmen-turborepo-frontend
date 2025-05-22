@@ -8,13 +8,14 @@ import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { formType } from "@/dtos/form.dto";
-import DepartmentList from "./DepartmentList";
 import SignInDialog from "@/components/SignInDialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useDepartment } from "@/hooks/useDepartment";
 import { SortConfig, SortDirection } from "@/utils/table-sort";
 import { useMemo } from "react";
 import DepartmentDialog from "@/components/shared/DepartmentDialog";
+import DepartmentList from "./DepartmentList";
+import { Link } from "@/lib/navigation";
 
 export default function DepartmentComponent() {
     const tDepartment = useTranslations('Department');
@@ -69,9 +70,11 @@ export default function DepartmentComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="department-list-action-buttons">
-            <Button size={'sm'} onClick={handleAdd}>
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
+            <Button size={'sm'} asChild>
+                <Link href="/configuration/department/new">
+                    <Plus className="h-4 w-4" />
+                    {tCommon('add')}
+                </Link>
             </Button>
             <Button
                 variant="outline"
@@ -123,7 +126,6 @@ export default function DepartmentComponent() {
         <DepartmentList
             isLoading={isLoading}
             departments={departments}
-            onEdit={handleEdit}
             onToggleStatus={handleStatusChange}
             currentPage={parseInt(page || '1')}
             totalPages={totalPages}

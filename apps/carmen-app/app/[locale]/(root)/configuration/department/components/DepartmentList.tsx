@@ -12,15 +12,17 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { SquarePen, Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 import { SortConfig, getSortableColumnProps, renderSortIcon } from "@/utils/table-sort";
+import { Link } from "@/lib/navigation";
+
 
 interface DepartmentListProps {
     readonly departments: DepartmentDto[];
-    readonly onEdit: (department: DepartmentDto) => void;
+    // readonly onEdit: (department: DepartmentDto) => void;
     readonly onToggleStatus: (department: DepartmentDto) => void;
     readonly isLoading: boolean;
     readonly currentPage: number;
@@ -32,7 +34,7 @@ interface DepartmentListProps {
 
 export default function DepartmentList({
     departments,
-    onEdit,
+    // onEdit,
     onToggleStatus,
     isLoading,
     currentPage,
@@ -84,11 +86,13 @@ export default function DepartmentList({
                                 <Button
                                     variant="ghost"
                                     size={'sm'}
-                                    onClick={() => onEdit(department)}
                                     aria-label="Edit department"
                                     className="h-7 w-7"
+                                    asChild
                                 >
-                                    <SquarePen className="h-4 w-4" />
+                                    <Link href={`/configuration/department/${department.id}`}>
+                                        <FileText className="h-4 w-4" />
+                                    </Link>
                                 </Button>
                                 <Button
                                     variant="ghost"

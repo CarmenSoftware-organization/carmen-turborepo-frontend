@@ -36,6 +36,18 @@ export const getAllDepartments = async (token: string, tenantId: string,
     }
 };
 
+export const getDepartmentById = async (token: string, tenantId: string, id: string) => {
+    try {
+        const response = await axios.get(`${API_URL}/${id}`, {
+            headers: requestHeaders(token, tenantId)
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Failed to fetch department by id:', error);
+        return error;
+    }
+};
+
 export const createDepartment = async (token: string, tenantId: string, department: DepartmentDto) => {
     try {
         const response = await axios.post(API_URL, department, {

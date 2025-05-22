@@ -1,7 +1,6 @@
+import DepartmentDetail from "../components/DepartmentDetail";
+import { formType } from "@/dtos/form.dto";
+
 export default function DepartmentNewPage() {
-    return (
-        <div>
-            <h1>Department New</h1>
-        </div>
-    )
+    return <DepartmentDetail mode={formType.ADD} />
 }

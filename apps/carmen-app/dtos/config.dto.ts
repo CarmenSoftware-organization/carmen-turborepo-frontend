@@ -31,6 +31,15 @@ export const departmentSchema = z.object({
 
 export type DepartmentDto = z.infer<typeof departmentSchema>;
 
+export const departmentDetailSchema = departmentSchema.extend({
+    id: z.string().min(1).optional(),
+    name: z.string().min(1),
+    description: z.string().min(1),
+    is_active: z.boolean(),
+});
+
+export type DepartmentDetailDto = z.infer<typeof departmentDetailSchema>;
+
 export const storeLocationSchema = z.object({
     name: z.string().min(1, "Name is required"),
     location_type: z.nativeEnum(INVENTORY_TYPE),
