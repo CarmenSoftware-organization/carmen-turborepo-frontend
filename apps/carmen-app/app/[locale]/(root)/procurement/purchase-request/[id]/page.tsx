@@ -6,6 +6,7 @@ import { getPrById } from "@/services/pr.service";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import MainPrForm from "../components/form/MainPrForm";
+import { DetailLoading } from "@/components/loading/DetailLoading";
 
 export default function PurchaseRequestIdPage() {
     const { id } = useParams();
@@ -16,7 +17,7 @@ export default function PurchaseRequestIdPage() {
         queryFn: () => getPrById(token, tenantId, id as string)
     });
 
-    if (isLoading) return <div>Loading...</div>;
+    if (isLoading) return <DetailLoading />
 
     return <MainPrForm mode={formType.VIEW} initValues={purchaseRequest} />
 }

@@ -30,7 +30,6 @@ export default function GoodsReceivedNoteComponent() {
         isError,
         search, setSearch,
         sort, setSort,
-        isUnauthorized,
         loginDialogOpen, setLoginDialogOpen,
         dialogOpen, setDialogOpen,
         handlePageChange
@@ -111,7 +110,7 @@ export default function GoodsReceivedNoteComponent() {
         </div>
     );
 
-    const content = <GoodsReceivedNoteList goodsReceivedNotes={grns.data} paginate={grns.paginate} currentPage={grns.currentPage} totalPages={grns.totalPages} onPageChange={handlePageChange} />
+    const content = <GoodsReceivedNoteList goodsReceivedNotes={grns.data} currentPage={grns.currentPage} totalPages={grns.totalPages} onPageChange={handlePageChange} />
 
     return (
         <>

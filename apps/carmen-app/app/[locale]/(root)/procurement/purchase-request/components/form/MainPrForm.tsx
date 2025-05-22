@@ -22,6 +22,8 @@ import {
 import ItemPr from "./ItemPr";
 import WorkflowPr from "./WorkflowPr";
 import ItemPrDialog from "./ItemPrDialog";
+import { createPrService, updatePrService } from "@/services/pr.service";
+import { useAuth } from "@/context/AuthContext";
 
 interface MainPrFormProps {
     readonly mode: formType;
@@ -30,6 +32,7 @@ interface MainPrFormProps {
 }
 export default function MainPrForm({ mode, initValues, docType }: MainPrFormProps) {
     const router = useRouter();
+    const { token, tenantId } = useAuth();
     const [openLog, setOpenLog] = useState<boolean>(false);
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const [openDialogItemPr, setOpenDialogItemPr] = useState<boolean>(false);
@@ -88,7 +91,7 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
         });
     }, [form.formState]);
 
-    const onSubmit = (data: PurchaseRequestFormDto) => {
+    const onSubmit = async (data: PurchaseRequestFormDto) => {
         console.log("onSubmit function called with data:", data);
 
         try {
@@ -97,9 +100,6 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                 alert("Please add at least one item to the purchase request.");
                 return;
             }
-
-            // Get current items from state - this is what we're showing in the UI
-            const updatedItems = [...currentItems];
 
             // Prepare data for API submission
             const finalData = {
@@ -111,15 +111,28 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                 }
             };
 
-            console.log("==================== FORM SUBMITTED ====================");
-            console.log("Data for API call:", finalData);
-            console.log("Current items in UI:", updatedItems);
-            console.log("Items to add:", data.purchase_request_detail.add);
-            console.log("Items to update:", data.purchase_request_detail.update);
-            console.log("Items to delete:", data.purchase_request_detail.delete);
-            console.log("Form values:", form.getValues());
-            console.log("Current mode:", currentMode);
-            console.log("=======================================================");
+            const response = await updatePrService(token, tenantId, initValues?.id ?? "", finalData);
+
+            // if (mode === formType.ADD) {
+            //     console.log('add');
+
+            //     response = await createPrService(token, tenantId, finalData);
+            // } else if (mode === formType.EDIT) {
+            //     console.log('edit');
+            //     response = await updatePrService(token, tenantId, initValues?.id, finalData);
+            // }
+
+            console.log('response', response);
+
+
+            const msg = mode === formType.ADD ? "Form submitted successfully!" : "Form updated successfully!";
+
+            if (response.status === 200) {
+                alert(msg);
+                setCurrentMode(formType.VIEW);
+            } else {
+                alert("Error submitting form");
+            }
 
             // Here you would typically send the data to your API
             // Example: sendDataToApi(finalData)
@@ -132,12 +145,8 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
             //         alert("Error submitting form");
             //     });
 
-            // For now, just show an alert and switch to view mode
-            alert("Form submitted successfully! Check console for details.");
-            setCurrentMode(formType.VIEW);
         } catch (error) {
             console.error("Error in form submission:", error);
-            alert("Error submitting form. See console for details.");
         }
     }
 

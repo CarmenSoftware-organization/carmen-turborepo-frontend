@@ -1,6 +1,7 @@
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
+import { PurchaseRequestFormDto } from "@/dtos/pr.dto";
 
 const API_URL = `${backendApi}/api/purchase-request`;
 
@@ -50,6 +51,60 @@ export const getPrById = async (
         const response = await axios.get(`${API_URL}/${id}`, {
             headers: requestHeaders(token, tenantId)
         });
+        return response.data;
+    } catch (error) {
+        return error
+    }
+}
+
+export const createPrService = async (
+    token: string,
+    tenantId: string,
+    data: PurchaseRequestFormDto
+) => {
+    console.log('data createPrService', data);
+    try {
+        const response = await axios.post(API_URL, data, {
+            headers: requestHeaders(token, tenantId)
+        });
+
+        return response.data;
+    } catch (error) {
+        return error
+    }
+}
+
+export const updatePrService = async (
+    token: string,
+    tenantId: string,
+    id: string,
+    data: PurchaseRequestFormDto
+) => {
+    console.log('data updatePrService', data);
+
+    try {
+        const response = await axios.put(`${API_URL}/${id}`, data, {
+            headers: requestHeaders(token, tenantId)
+        });
+        console.log('response updatePrService', response);
+
+        return response.data;
+    } catch (error) {
+        console.log('error updatePrService', error);
+        return error
+    }
+}
+
+export const deletePrService = async (
+    token: string,
+    tenantId: string,
+    id: string
+) => {
+    try {
+        const response = await axios.delete(`${API_URL}/${id}`, {
+            headers: requestHeaders(token, tenantId)
+        });
+
         return response.data;
     } catch (error) {
         return error
