@@ -5,23 +5,38 @@ import { useState, useCallback, useEffect } from "react";
 import SelectVendor from "../components/stepper/SelectVendor";
 import SelectPo from "../components/stepper/SelectPo";
 import SelectItemAndLocation from "../components/stepper/SelectItemAndLocation";
-import { InitGrnDto, mockItem, mockPo, mockVendor, NewItemDto, NewPoDto, NewVendorDto } from "../type.dto";
+import { InitGrnDto, mockItem, mockPo, NewItemDto, NewPoDto } from "../type.dto";
+import { useSearchParams } from "next/navigation";
+import FormGrn from "../components/form/FormGrn";
+import { formType } from "@/dtos/form.dto";
+import { useVendor } from "@/hooks/useVendor";
+import { VendorGetDto } from "@/dtos/vendor-management";
 
 export default function GoodsReceivedNoteNewPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [grnData, setGrnData] = useState<InitGrnDto>({});
-    const [selectedVendors, setSelectedVendors] = useState<NewVendorDto[]>([]);
-    const [selectedVendor, setSelectedVendor] = useState<NewVendorDto | undefined>(undefined);
+    const [selectedVendors, setSelectedVendors] = useState<VendorGetDto[]>([]);
+    const [selectedVendor, setSelectedVendor] = useState<VendorGetDto | undefined>(undefined);
     const [selectedPo, setSelectedPo] = useState<NewPoDto[]>([]);
     const [selectedItems, setSelectedItems] = useState<NewItemDto[]>([]);
     const [items, setItems] = useState<NewItemDto[]>(mockItem);
+    const [showForm, setShowForm] = useState(false);
+    const searchParams = useSearchParams();
+    const { vendors } = useVendor();
+    const type = searchParams.get('type');
+
+    useEffect(() => {
+        if (type === 'blank') {
+            setCurrentStep(3);
+        }
+    }, [type]);
 
     useEffect(() => {
         // Initialize items from mockItem when component mounts
         setItems(mockItem);
     }, []);
 
-    const handleVendorSelect = (vendor: NewVendorDto) => {
+    const handleVendorSelect = (vendor: VendorGetDto) => {
         setSelectedVendor(vendor);
         setSelectedVendors([vendor]);
         setGrnData(prev => ({ ...prev, vendors: [vendor] }));
@@ -36,6 +51,10 @@ export default function GoodsReceivedNoteNewPage() {
         setSelectedItems(items);
         setGrnData(prev => ({ ...prev, items }));
     }
+
+    const handleFinish = () => {
+        setShowForm(true);
+    };
 
     const handleQtyChange = useCallback((itemId: string, value: string) => {
         const numValue = Number(value) || 0;
@@ -71,7 +90,7 @@ export default function GoodsReceivedNoteNewPage() {
     };
 
     const handleStepChange = (step: number) => {
-        if (step < currentStep || isStepValid()) {
+        if (step < currentStep || isStepValid() || step === 3) {
             setCurrentStep(step);
         }
     };
@@ -88,8 +107,8 @@ export default function GoodsReceivedNoteNewPage() {
                 return (
                     <SelectVendor
                         key={`vendor-step-${JSON.stringify(selectedVendors)}`}
-                        vendors={mockVendor}
-                        selectedVendor={selectedVendor}
+                        vendors={vendors}
+                        selectedVendor={selectedVendor!}
                         onVendorSelect={handleVendorSelect}
                         onNext={handleNextStep}
                     />
@@ -102,6 +121,7 @@ export default function GoodsReceivedNoteNewPage() {
                         selectedPo={selectedPo}
                         onPoSelect={handlePoSelect}
                         selectedVendor={selectedVendor?.name ?? ""}
+                        onNext={handleNextStep}
                     />
                 );
             case 2:
@@ -114,6 +134,7 @@ export default function GoodsReceivedNoteNewPage() {
                         onQtyChange={handleQtyChange}
                         vendorName={selectedVendor?.name ?? ""}
                         poNo={selectedPo.map(po => po.no).join(", ")}
+                        onFinish={handleFinish}
                     />
                 );
             default:
@@ -136,23 +157,37 @@ export default function GoodsReceivedNoteNewPage() {
         }
     ]
 
+    console.log('type', type);
+
+
+    // If type is blank, show the form directly
+    if (type === 'blank') {
+        return <FormGrn mode={formType.ADD} />
+    }
+
     return (
-        <div className="container mx-auto p-4">
-            <Stepper
-                steps={grnSteps}
-                currentStep={currentStep}
-                onStepChange={handleStepChange}
-                isStepValid={isStepValid()}
-            />
-            <div className="w-full max-w-3xl mx-auto mt-8">
-                {renderStepComponent()}
-            </div>
-            <div className="mt-8">
-                <h3 className="text-lg font-semibold mb-2">Current GRN Data:</h3>
-                <pre className="bg-gray-100 p-4 rounded-lg">
-                    {JSON.stringify(grnData, null, 2)}
-                </pre>
-            </div>
-        </div>
+        <>
+            {showForm ? (
+                <FormGrn mode={formType.ADD} />
+            ) : (
+                <div className="container mx-auto p-4">
+                    <Stepper
+                        steps={grnSteps}
+                        currentStep={currentStep}
+                        onStepChange={handleStepChange}
+                        isStepValid={isStepValid()}
+                    />
+                    <div className="w-full max-w-3xl mx-auto mt-8">
+                        {renderStepComponent()}
+                    </div>
+                    <div className="mt-8">
+                        <h3 className="text-lg font-semibold mb-2">Current GRN Data:</h3>
+                        <pre className="bg-gray-100 p-4 rounded-lg">
+                            {JSON.stringify(grnData, null, 2)}
+                        </pre>
+                    </div>
+                </div>
+            )}
+        </>
     )
 }

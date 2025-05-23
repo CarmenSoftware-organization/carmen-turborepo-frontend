@@ -70,13 +70,16 @@ export function Stepper({ steps, currentStep, onStepChange, isStepValid }: Stepp
                 <Button variant="outline" onClick={() => onStepChange(currentStep - 1)} disabled={currentStep === 0}>
                     Previous
                 </Button>
-                <Button
-                    onClick={() => onStepChange(currentStep + 1)}
-                    disabled={currentStep === steps.length - 1 || !isStepValid}
-                    className={!isStepValid ? "opacity-50 cursor-not-allowed" : ""}
-                >
-                    {currentStep === steps.length - 1 ? "Finish" : "Next"}
-                </Button>
+                {currentStep < steps.length - 1 && (
+                    <Button
+                        onClick={() => onStepChange(currentStep + 1)}
+                        disabled={!isStepValid}
+                        className={!isStepValid ? "opacity-50 cursor-not-allowed" : ""}
+                    >
+                        Next
+                    </Button>
+                )}
+
             </div>
         </div>
     )

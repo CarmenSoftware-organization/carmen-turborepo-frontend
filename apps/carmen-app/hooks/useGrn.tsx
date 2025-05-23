@@ -3,8 +3,9 @@
 import { useAuth } from "@/context/AuthContext";
 import { useCallback, useEffect, useState } from "react";
 import { useURL } from "./useURL";
-import { useQuery } from "@tanstack/react-query";
-import { getAllGrn } from "@/services/grn.service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAllGrn, postGrnService } from "@/services/grn.service";
+import { CreateGRNDto } from "@/dtos/grn.dto";
 
 export const useGrn = () => {
     const { token, tenantId } = useAuth();
@@ -69,3 +70,13 @@ export const useGrn = () => {
         handlePageChange
     };
 };
+
+export const useGrnMutation = (token: string, tenantId: string) => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (data: CreateGRNDto) => postGrnService(token, tenantId, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['grns'] });
+        }
+    });
+}

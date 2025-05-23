@@ -28,17 +28,12 @@ export default function GoodsReceivedNoteComponent() {
     const {
         grns,
         isLoading,
-        isError,
         search, setSearch,
         sort, setSort,
         loginDialogOpen, setLoginDialogOpen,
         dialogOpen, setDialogOpen,
         handlePageChange
     } = useGrn();
-
-    console.log(grns);
-    console.log('isError', isError);
-
 
     const sortFields = [
         { key: 'code', label: 'Code' },

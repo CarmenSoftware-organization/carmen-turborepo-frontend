@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface SelectItemAndLocationProps {
     readonly items: NewItemDto[];
@@ -19,9 +20,10 @@ interface SelectItemAndLocationProps {
     readonly onQtyChange: (itemId: string, value: string) => void;
     readonly vendorName: string;
     readonly poNo: string;
+    readonly onFinish?: () => void;
 }
 
-export default function SelectItemAndLocation({ items, selectedItems, onItemSelect, onQtyChange, vendorName, poNo }: SelectItemAndLocationProps) {
+export default function SelectItemAndLocation({ items, selectedItems, onItemSelect, onQtyChange, vendorName, poNo, onFinish }: SelectItemAndLocationProps) {
     const isAllSelected = useMemo(() => selectedItems.length === items.length, [selectedItems.length, items.length]);
 
     const handleItemToggle = useCallback((item: NewItemDto) => {
@@ -103,6 +105,14 @@ export default function SelectItemAndLocation({ items, selectedItems, onItemSele
                         })}
                     </TableBody>
                 </Table>
+                <div className="mt-4 flex justify-end">
+                    <Button
+                        onClick={onFinish}
+                        disabled={selectedItems.length === 0}
+                    >
+                        Finish
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     )

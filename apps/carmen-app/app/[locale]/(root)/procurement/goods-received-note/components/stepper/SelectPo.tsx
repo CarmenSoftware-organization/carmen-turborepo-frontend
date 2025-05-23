@@ -13,15 +13,17 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import SearchInput from "@/components/ui-custom/SearchInput";
+import { Button } from "@/components/ui/button";
 
 interface SelectPoProps {
     readonly po: NewPoDto[];
     readonly selectedPo: NewPoDto[];
     readonly onPoSelect: (po: NewPoDto[]) => void;
     readonly selectedVendor: string;
+    readonly onNext?: () => void;
 }
 
-export default function SelectPo({ po, selectedPo, onPoSelect, selectedVendor }: SelectPoProps) {
+export default function SelectPo({ po, selectedPo, onPoSelect, selectedVendor, onNext }: SelectPoProps) {
     const [search, setSearch] = useState('');
 
     const isAllSelected = useMemo(() => selectedPo.length === po.length, [selectedPo.length, po.length]);
@@ -94,6 +96,14 @@ export default function SelectPo({ po, selectedPo, onPoSelect, selectedVendor }:
                         })}
                     </TableBody>
                 </Table>
+                <div className="mt-4 flex justify-end">
+                    <Button
+                        onClick={onNext}
+                        disabled={selectedPo.length === 0}
+                    >
+                        Next
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     )

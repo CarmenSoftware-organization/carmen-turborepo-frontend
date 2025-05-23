@@ -56,8 +56,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>Date</FormLabel>
-                            {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground">{format(new Date(field.value), "PPP")}</p>
+                            {field.value}
+                            {/* {mode === formType.VIEW ? (
+                                <p className="text-xs text-muted-foreground">{field.value ? format(field.value, "PPP") : ""}</p>
                             ) : (
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -69,11 +70,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                                                     !field.value && "text-muted-foreground"
                                                 )}
                                             >
-                                                {field.value ? (
-                                                    format(new Date(field.value), "PPP")
-                                                ) : (
-                                                    <span>Pick a date</span>
-                                                )}
+                                                {field.value ? format(field.value, "PPP") : "Pick a date"}
                                                 <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                             </Button>
                                         </FormControl>
@@ -87,7 +84,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                                         />
                                     </PopoverContent>
                                 </Popover>
-                            )}
+                            )} */}
                             <FormMessage />
                         </FormItem>
                     )}
@@ -137,8 +134,10 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                     name="info.invoice_date"
                     render={({ field }) => (
                         <FormItem>
+
                             <FormLabel>Invoice Date</FormLabel>
-                            {mode === formType.VIEW ? (
+                            {field.value}
+                            {/* {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{format(new Date(field.value), "PPP")}</p>
                             ) : (
                                 <Popover>
@@ -169,7 +168,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                                         />
                                     </PopoverContent>
                                 </Popover>
-                            )}
+                            )} */}
                             <FormMessage />
                         </FormItem>
                     )}
