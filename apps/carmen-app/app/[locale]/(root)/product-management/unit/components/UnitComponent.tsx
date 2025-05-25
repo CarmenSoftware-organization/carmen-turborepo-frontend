@@ -11,7 +11,7 @@ import UnitList from "./UnitList";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import UnitDialog from "@/components/shared/UnitDialog";
 import { formType } from "@/dtos/form.dto";
-import { useUnit } from "@/hooks/useUnit";
+import { useUnitQuery } from "@/hooks/useUnitQuery";
 import SignInDialog from "@/components/SignInDialog";
 import { useEffect, useState } from "react";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
@@ -48,7 +48,7 @@ export default function UnitComponent() {
         handleDelete,
         handleConfirmDelete,
         handleCancelDelete
-    } = useUnit();
+    } = useUnitQuery();
 
     useEffect(() => {
         if (isUnauthorized) {

@@ -1,6 +1,5 @@
 "use client";
 
-import { useUnit } from "@/hooks/useUnit";
 import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,17 +16,16 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useUnitQuery } from "@/hooks/useUnitQuery";
+import { UnitDto } from "@/dtos/unit.dto";
 
 
 export default function LookupPage() {
-    const { units } = useUnit();
+    const { units } = useUnitQuery();
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
 
-    const selectedUnit = units.find((unit) => unit.id === value);
-
-    console.log('units', units);
-
+    const selectedUnit = units.find((unit: UnitDto) => unit.id === value);
 
     return (
         <div className="p-4">
@@ -38,11 +36,10 @@ export default function LookupPage() {
                         <PopoverTrigger asChild>
                             <Button
                                 variant="outline"
-                                role="combobox"
                                 aria-expanded={open}
                                 className="w-[200px] justify-between"
                             >
-                                {selectedUnit?.name || "Select unit..."}
+                                {selectedUnit?.name ?? "Select unit..."}
                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
                         </PopoverTrigger>
@@ -51,7 +48,7 @@ export default function LookupPage() {
                                 <CommandInput placeholder="Search unit..." />
                                 <CommandEmpty>No unit found.</CommandEmpty>
                                 <CommandGroup>
-                                    {units.map((unit) => (
+                                    {units.map((unit: UnitDto) => (
                                         <CommandItem
                                             key={unit.id}
                                             value={unit.id}

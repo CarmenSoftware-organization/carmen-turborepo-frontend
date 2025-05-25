@@ -2,53 +2,37 @@ import { UnitDto } from "@/dtos/unit.dto";
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
+import { ParamsGetDto } from "@/dtos/param.dto";
+import { getAllApiRequest, postApiRequest } from "@/utils/api-request";
 
 const API_URL = `${backendApi}/api/config/units`;
 
 export const getAllUnits = async (
-    token: string, tenantId: string,
-    params: {
-        search?: string;
-        page?: string;
-        perPage?: string;
-        sort?: string;
-        filter?: string;
-    } = {}
+    token: string,
+    tenantId: string,
+    params: ParamsGetDto
 ) => {
-
-    const query = new URLSearchParams();
-
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && value !== '') {
-            query.append(key, String(value));
-        }
-    });
-
-    const queryString = query.toString();
-
-    const url = queryString ? `${API_URL}?${queryString}` : API_URL;
-
-    try {
-        const response = await axios.get(url, {
-            headers: requestHeaders(token, tenantId)
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching units:', error);
-        return error;
-    }
+    return getAllApiRequest(
+        API_URL,
+        token,
+        tenantId,
+        params,
+        'Failed to fetch units'
+    );
 };
 
-export const createUnit = async (token: string, tenantId: string, unit: UnitDto) => {
-    try {
-        const response = await axios.post(API_URL, unit, {
-            headers: requestHeaders(token, tenantId)
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Failed to create unit:', error);
-        return error;
-    }
+export const createUnit = async (
+    token: string,
+    tenantId: string,
+    value: UnitDto,
+) => {
+    return postApiRequest(
+        API_URL,
+        token,
+        tenantId,
+        value,
+        'Failed to create unit'
+    );
 }
 
 export const updateUnit = async (token: string, tenantId: string, unit: UnitDto) => {

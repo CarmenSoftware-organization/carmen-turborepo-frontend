@@ -8,7 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
 import { SelectContent, SelectItem, SelectTrigger, SelectValue, Select } from "@/components/ui/select";
-import { useUnit } from "@/hooks/useUnit";
+import { useUnitQuery } from "@/hooks/useUnitQuery";
+import { UnitDto } from "@/dtos/unit.dto";
 
 const prStatusColor = (status: string) => {
     if (status === 'Approved') {
@@ -41,7 +42,7 @@ export default function ItemPr() {
     const [items, setItems] = useState<ItemDetailPrDto[]>(mockItemDetailPrData);
     const [newItem, setNewItem] = useState<Partial<ItemDetailPrDto>>(defaultNewItem);
     const { storeLocations } = useStoreLocation();
-    const { units } = useUnit();
+    const { units } = useUnitQuery();
 
     const handleInputChange = (field: keyof ItemDetailPrDto, value: string | number) => {
         setNewItem(prev => ({
@@ -104,8 +105,8 @@ export default function ItemPr() {
                             <TableCell>{storeLocations.find(loc => loc.id === item.location)?.name ?? item.location}</TableCell>
                             <TableCell>{item.product_name}</TableCell>
                             <TableCell>{item.description}</TableCell>
-                            <TableCell>{units.find(unit => unit.id === item.order_unit)?.name ?? item.order_unit}</TableCell>
-                            <TableCell>{units.find(unit => unit.id === item.inv_unit)?.name ?? item.inv_unit}</TableCell>
+                            <TableCell>{units.find((unit: UnitDto) => unit.id === item.order_unit)?.name ?? item.order_unit}</TableCell>
+                            <TableCell>{units.find((unit: UnitDto) => unit.id === item.inv_unit)?.name ?? item.inv_unit}</TableCell>
                             <TableCell>{item.request_qty}</TableCell>
                             <TableCell>{item.on_order_qty}</TableCell>
                             <TableCell>{item.approved_qty}</TableCell>
@@ -163,11 +164,11 @@ export default function ItemPr() {
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select unit">
-                                            {units.find(unit => unit.id === newItem.order_unit)?.name ?? "Select unit"}
+                                            {units.find((unit: UnitDto) => unit.id === newItem.order_unit)?.name ?? "Select unit"}
                                         </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {units.map((unit) => (
+                                        {units.map((unit: UnitDto) => (
                                             <SelectItem key={unit.id} value={unit.id ?? ''}>
                                                 {unit.name}
                                             </SelectItem>
@@ -182,11 +183,11 @@ export default function ItemPr() {
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Select unit">
-                                            {units.find(unit => unit.id === newItem.inv_unit)?.name ?? "Select unit"}
+                                            {units.find((unit: UnitDto) => unit.id === newItem.inv_unit)?.name ?? "Select unit"}
                                         </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {units.map((unit) => (
+                                        {units.map((unit: UnitDto) => (
                                             <SelectItem key={unit.id} value={unit.id ?? ''}>
                                                 {unit.name}
                                             </SelectItem>

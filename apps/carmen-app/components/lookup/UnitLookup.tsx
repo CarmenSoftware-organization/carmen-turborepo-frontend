@@ -15,11 +15,11 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { useUnit } from "@/hooks/useUnit";
 import UnitDialog from "@/components/shared/UnitDialog";
 import { UnitDto } from "@/dtos/unit.dto";
 import { formType } from "@/dtos/form.dto";
 import { PropsLookup } from "@/dtos/lookup.dto";
+import { useUnitQuery } from "@/hooks/useUnitQuery";
 
 export default function UnitLookup({
     value,
@@ -27,7 +27,7 @@ export default function UnitLookup({
     placeholder = "Select unit",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { units, isLoading, handleSubmit } = useUnit();
+    const { units, isLoading, handleSubmit } = useUnitQuery();
     const [open, setOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -89,7 +89,7 @@ export default function UnitLookup({
                                     <CommandEmpty>No units found.</CommandEmpty>
                                     <CommandGroup>
                                         {units && units.length > 0 ? (
-                                            units.map((unit) => (
+                                            units.map((unit: UnitDto) => (
                                                 <CommandItem
                                                     key={unit.id}
                                                     value={unit.name}
