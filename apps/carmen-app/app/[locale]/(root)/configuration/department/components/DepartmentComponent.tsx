@@ -46,8 +46,6 @@ export default function DepartmentComponent() {
         // Functions
         handlePageChange,
         sortFields,
-        handleAdd,
-        handleEdit,
         handleStatusChange,
         handleConfirmStatusChange,
         handleSubmit

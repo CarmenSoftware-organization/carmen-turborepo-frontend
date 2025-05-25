@@ -1,48 +1,22 @@
+import { ParamsGetDto } from "@/dtos/param.dto";
 import { VendorFormValues } from "@/dtos/vendor.dto";
 import { backendApi } from "@/lib/backend-api";
+import { getAllApiRequest } from "@/utils/api-request";
 
+const API_URL = `${backendApi}/api/config/vendors`;
 
-export const getAllVendorService = async (token: string, tenantId: string,
-    params: {
-        search?: string;
-        page?: string;
-        perPage?: string;
-        sort?: string;
-        filter?: string;
-    } = {}
+export const getAllVendorService = async (
+    token: string,
+    tenantId: string,
+    params: ParamsGetDto
 ) => {
-    try {
-
-        const query = new URLSearchParams();
-
-        Object.entries(params).forEach(([key, value]) => {
-            if (value !== undefined && value !== '') {
-                query.append(key, String(value));
-            }
-        });
-
-        const queryString = query.toString();
-
-        const url = queryString
-            ? `${backendApi}/api/config/vendors?${queryString}`
-            : `${backendApi}/api/config/vendors`;
-
-        const options = {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
-                'Content-Type': 'application/json',
-            },
-        };
-
-        const response = await fetch(url, options);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Failed to fetch vendors:', error);
-        return { data: [], paginate: { pages: 1 } };
-    }
+    return getAllApiRequest(
+        API_URL,
+        token,
+        tenantId,
+        params,
+        'Failed to fetch vendors'
+    );
 }
 
 export const getVendorIdService = async (token: string, tenantId: string, id: string) => {

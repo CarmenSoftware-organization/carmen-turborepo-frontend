@@ -2,17 +2,14 @@ import { backendApi } from "@/lib/backend-api";
 import { DepartmentDto } from "@/dtos/config.dto";
 import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
+import { ParamsGetDto } from "@/dtos/param.dto";
 
 const API_URL = `${backendApi}/api/config/departments`;
 
-export const getAllDepartments = async (token: string, tenantId: string,
-    params: {
-        search?: string;
-        page?: string;
-        perPage?: string;
-        sort?: string;
-        filter?: string;
-    } = {}
+export const getAllDepartments = async (
+    token: string,
+    tenantId: string,
+    params: ParamsGetDto
 ) => {
     try {
         const query = new URLSearchParams();
@@ -31,7 +28,6 @@ export const getAllDepartments = async (token: string, tenantId: string,
         });
         return response.data;
     } catch (error) {
-        console.error('Failed to fetch departments:', error);
         return error;
     }
 };

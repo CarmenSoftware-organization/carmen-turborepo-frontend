@@ -13,8 +13,8 @@ export const getAllClusters = async (token: string) => {
             }
         });
         return response.data;
-    } catch (error: any) {
-        console.error("Get cluster failed:", error.response?.data ?? error.message);
+    } catch (error) {
+        console.error("Get cluster failed:", error);
         return error;
     }
 }
@@ -28,8 +28,8 @@ export const postCluster = async (token: string, clusterData: ClusterPostDto) =>
             }
         });
         return response.data;
-    } catch (error: any) {
-        console.error("Post cluster failed:", error.response?.data ?? error.message);
+    } catch (error) {
+        console.error("Post cluster failed:", error);
         return error;
     }
 }
