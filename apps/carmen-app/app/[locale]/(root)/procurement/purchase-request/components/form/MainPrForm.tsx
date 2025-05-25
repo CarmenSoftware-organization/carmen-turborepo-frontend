@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formType } from "@/dtos/form.dto";
-import { ItemPrDetailDto, PurchaseRequestByIdDto, PurchaseRequestFormDto, purchaseRequestFormSchema } from "@/dtos/pr.dto";
+import { PrSchemaV2Dto, prSchemaV2, PurchaseRequestByIdDto, PurchaseRequestDetailItemDto } from "@/dtos/pr.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookmarkIcon, ChevronLeft, ChevronRight, FileDown, Pencil, Printer, Save, ShareIcon, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pencil, Save, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import HeadPrForm from "./HeadPrForm";
@@ -22,41 +22,43 @@ import {
 import ItemPr from "./ItemPr";
 import WorkflowPr from "./WorkflowPr";
 import ItemPrDialog from "./ItemPrDialog";
-import { createPrService, updatePrService } from "@/services/pr.service";
 import { useAuth } from "@/context/AuthContext";
+import { postPrData } from "./post-pr";
+import { usePrMutation } from "@/hooks/usePr";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+
+type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
 interface MainPrFormProps {
     readonly mode: formType;
     readonly initValues?: PurchaseRequestByIdDto;
-    readonly docType?: string;
 }
-export default function MainPrForm({ mode, initValues, docType }: MainPrFormProps) {
+
+export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     const router = useRouter();
     const { token, tenantId } = useAuth();
     const [openLog, setOpenLog] = useState<boolean>(false);
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const [openDialogItemPr, setOpenDialogItemPr] = useState<boolean>(false);
-    const [currentItemData, setCurrentItemData] = useState<ItemPrDetailDto | undefined>(undefined);
-    const [currentItems, setCurrentItems] = useState<ItemPrDetailDto[]>(initValues?.purchase_request_detail || []);
+    const [currentItemData, setCurrentItemData] = useState<ItemWithId | undefined>(undefined);
+    const [currentItems, setCurrentItems] = useState<ItemWithId[]>([]);
+    const { mutate: createPr, isSuccess, isPending } = usePrMutation(token, tenantId);
 
     // Reset current items when initValues changes
     useEffect(() => {
         if (initValues?.purchase_request_detail) {
-            setCurrentItems(initValues.purchase_request_detail);
+            setCurrentItems(initValues.purchase_request_detail as ItemWithId[]);
         }
     }, [initValues?.purchase_request_detail]);
 
-    const defaultValues: Partial<PurchaseRequestFormDto> = {
-        pr_date: initValues?.pr_date ?? new Date().toISOString(),
-        pr_status: initValues?.pr_status ?? "",
+    const defaultValues: Partial<PrSchemaV2Dto> = {
+        pr_date: new Date(initValues?.pr_date || new Date()) as Date,
+        pr_status: initValues?.pr_status ?? "draft",
         requestor_id: initValues?.requestor_id ?? "",
-        requestor_name: undefined, // จะถูกเติมจาก backend หรือดึงจาก ID
         department_id: initValues?.department_id ?? "",
-        department_name: undefined, // จะถูกเติมจาก backend หรือดึงจาก ID
         is_active: initValues?.is_active ?? true,
-        doc_version: initValues?.doc_version ?? "",
+        doc_version: initValues?.doc_version ? Number(initValues.doc_version) : 1,
         note: initValues?.note ?? "",
-        description: initValues?.description ?? "",
         info: {
             priority: initValues?.info?.priority ?? "",
             budget_code: initValues?.info?.budget_code ?? "",
@@ -65,236 +67,117 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
             cost_center: initValues?.dimension?.cost_center ?? "",
             project: initValues?.dimension?.project ?? "",
         },
+        workflow_id: "f224d743-7cfa-46f6-8f72-85b14c6a355e",
+        current_workflow_status: "",
+        workflow_history: initValues?.workflow_history || [],
         purchase_request_detail: {
-            ...initValues?.purchase_request_detail?.map(item => ({
-                ...item,
-                id: (item as { id?: string }).id
-            })) ?? [],
             add: [],
             update: [],
             delete: []
         },
     };
 
-    const form = useForm<PurchaseRequestFormDto>({
-        resolver: zodResolver(purchaseRequestFormSchema),
+    const form = useForm<PrSchemaV2Dto>({
+        resolver: zodResolver(prSchemaV2),
         defaultValues,
         mode: "onChange"
-    })
+    });
 
-    // Log when form state changes to help debug
+    // Debug form state
     useEffect(() => {
-        console.log("Form state updated:", {
-            isDirty: form.formState.isDirty,
-            isValid: form.formState.isValid,
-            errors: form.formState.errors
+        const { isDirty, errors, isValid } = form.formState;
+        console.log('Form Debug:', {
+            isDirty,
+            isValid,
+            errors,
+            hasErrors: Object.keys(errors).length > 0,
+            errorFields: Object.keys(errors)
         });
-    }, [form.formState]);
+    }, [form.formState.isDirty, form.formState.errors, form.formState.isValid]);
+    console.log("data log", currentItemData);
 
-    const onSubmit = async (data: PurchaseRequestFormDto) => {
-        console.log("onSubmit function called with data:", data);
-
+    const onSubmit = async (data: PrSchemaV2Dto) => {
         try {
-            // Validate that we have all necessary data
-            if (currentItems.length === 0) {
-                alert("Please add at least one item to the purchase request.");
-                return;
-            }
-
-            // Prepare data for API submission
-            const finalData = {
-                ...data,
-                purchase_request_detail: {
-                    add: data.purchase_request_detail.add || [],
-                    update: data.purchase_request_detail.update || [],
-                    delete: data.purchase_request_detail.delete || []
-                }
-            };
-
-            const response = await updatePrService(token, tenantId, initValues?.id ?? "", finalData);
-
-            // if (mode === formType.ADD) {
-            //     console.log('add');
-
-            //     response = await createPrService(token, tenantId, finalData);
-            // } else if (mode === formType.EDIT) {
-            //     console.log('edit');
-            //     response = await updatePrService(token, tenantId, initValues?.id, finalData);
-            // }
-
-            console.log('response', response);
-
-
-            const msg = mode === formType.ADD ? "Form submitted successfully!" : "Form updated successfully!";
-
-            if (response.status === 200) {
-                alert(msg);
+            createPr(data);
+            if (isSuccess) {
                 setCurrentMode(formType.VIEW);
+                toastSuccess({ message: "Purchase Request created successfully" });
             } else {
-                alert("Error submitting form");
+                toastError({ message: "Error creating Purchase Request" });
             }
-
-            // Here you would typically send the data to your API
-            // Example: sendDataToApi(finalData)
-            //     .then(() => {
-            //         alert("Form submitted successfully!");
-            //         setCurrentMode(formType.VIEW);
-            //     })
-            //     .catch(error => {
-            //         console.error("Error submitting form:", error);
-            //         alert("Error submitting form");
-            //     });
-
         } catch (error) {
             console.error("Error in form submission:", error);
         }
     }
 
-    const handleEditClick = (e: React.MouseEvent) => {
+    const handleDialogItemPr = (e: React.MouseEvent, data: Record<string, unknown> & { id?: string }) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log('Edit button clicked, current mode:', currentMode);
-        setCurrentMode(formType.EDIT);
-    };
-
-    const handleCancelClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentMode === formType.ADD || currentMode === formType.VIEW) {
-            router.push("/procurement/purchase-request");
-        } else {
-            setCurrentMode(formType.VIEW);
-        }
-    };
-
-
-    const handleOpenLog = () => {
-        setOpenLog(!openLog);
-    };
-
-    const handleDialogItemPr = (e: React.MouseEvent, data: ItemPrDetailDto) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Handling dialog for item:', data);
-
-        // Deep clone the data to avoid reference issues
-        const itemData = JSON.parse(JSON.stringify(data));
-
-        // Ensure all required fields have values
-        if (!itemData.dimension) {
-            itemData.dimension = { project: '', cost_center: '' };
-        }
-
-        // Store the data for view mode and dialog
-        setCurrentItemData(itemData);
-
-        // For new items without an ID, add a temp ID and add to the currentItems
-        if (!itemData.id && currentMode !== formType.VIEW) {
-            // Generate a temporary unique ID for tracking
-            const tempId = `temp-${Date.now()}`;
-            itemData.id = tempId;
-
-            // Don't add to the form yet - we'll do that when the user saves
-            // But we can add it to the current items for immediate visibility in UI
-            if (!currentItems.some(item => item.id === tempId)) {
-                setCurrentItems([...currentItems, itemData]);
-            }
-        }
-
+        setCurrentItemData(data as ItemWithId);
         setOpenDialogItemPr(true);
     }
 
-    // Handle saving item data from dialog
-    const handleSaveItemDialog = (itemData: ItemPrDetailDto) => {
-        console.log('Saving item data:', itemData);
+    const handleSaveItemDialog = (itemData: Record<string, unknown> & { id?: string }) => {
         const formItems = form.getValues("purchase_request_detail");
-
-        // For UI update - maintain a separate list of current items
         let updatedItemsList = [...currentItems];
 
         if (itemData.id?.startsWith('temp-')) {
-            // New item - remove temp id and add to add array
-            console.log('Adding new item', itemData);
-
-            // For new items, create a copy without the temp ID to match API expectations
+            // New item
             const newItem = { ...itemData };
-            // Remove the temp ID for API but keep it for UI
-            delete newItem.id; // Remove the temp ID
+            delete newItem.id;
 
             const updatedItems = {
                 ...formItems,
-                add: [...(formItems.add || []), newItem]
+                add: [...(formItems.add || []), newItem as PurchaseRequestDetailItemDto]
             };
             form.setValue("purchase_request_detail", updatedItems);
-
-            // Add to UI list with temp ID intact
-            updatedItemsList.push({ ...itemData });
+            updatedItemsList.push({ ...itemData as ItemWithId });
         } else if (itemData.id) {
-            // Update existing item - add to update array
-            console.log('Updating item', itemData);
-
+            // Update existing item
             const updatedItems = {
                 ...formItems,
-                update: [...(formItems.update || []).filter(item => item.id !== itemData.id), itemData]
+                update: [...(formItems.update || []).filter((item: PurchaseRequestDetailItemDto) => (item as ItemWithId).id !== itemData.id), itemData as PurchaseRequestDetailItemDto]
             };
             form.setValue("purchase_request_detail", updatedItems);
-
-            // Update in UI list
             updatedItemsList = updatedItemsList.map(item =>
-                item.id === itemData.id ? { ...item, ...itemData } : item
+                item.id === itemData.id ? { ...item, ...itemData } as ItemWithId : item
             );
         }
 
-        // Update UI list
         setCurrentItems(updatedItemsList);
-
-        // Close dialog and clean up
         setOpenDialogItemPr(false);
     };
 
-    // Function to handle dialog close
-    const handleCloseDialog = (open: boolean) => {
-        setOpenDialogItemPr(open);
-        if (!open) {
-            // Only clear the item data when dialog is closed
-            setTimeout(() => {
-                setCurrentItemData(undefined);
-            }, 100);
-        }
-    };
-
-    // Handle deleting an item
     const handleDeleteItem = (itemId: string) => {
         const formItems = form.getValues("purchase_request_detail");
 
-        // Add to delete array if it's an existing item
         const updatedItems = {
             ...formItems,
-            delete: [...(formItems.delete || []), itemId]
+            delete: [...(formItems.delete || []), { id: itemId }]
         };
 
         form.setValue("purchase_request_detail", updatedItems);
-
-        // Remove from UI list
         setCurrentItems(currentItems.filter(item => item.id !== itemId));
     };
+
+    const handleTestPostPr = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        createPr(postPrData);
+    }
 
     return (
         <div className="relative">
             <div className="flex gap-4 relative">
                 <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
                     <Card className="p-4 mb-4">
+                        <Button variant={'destructive'} size={'sm'} onClick={handleTestPostPr}>
+                            test post pr
+                        </Button>
                         <Form {...form}>
                             <form
                                 className="space-y-4"
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    console.log("Form submit event triggered");
-                                    form.handleSubmit((data) => {
-                                        console.log("Form handle submit callback triggered");
-                                        onSubmit(data);
-                                    })();
-                                }}
+                                onSubmit={form.handleSubmit(onSubmit)}
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
@@ -302,7 +185,6 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
                                         <p className="text-lg font-bold">Purchase Request</p>
-
                                         {mode !== formType.ADD && (
                                             <Badge className="rounded-full">{initValues?.pr_status}</Badge>
                                         )}
@@ -310,51 +192,23 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                     <div className="flex items-center gap-2">
                                         {currentMode === formType.VIEW ? (
                                             <>
-                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                <Button variant="outline" size={'sm'} onClick={() => router.push("/procurement/purchase-request")}>
                                                     <ChevronLeft className="h-4 w-4" /> Back
                                                 </Button>
-                                                <Button variant="default" size={'sm'} onClick={handleEditClick}>
+                                                <Button variant="default" size={'sm'} onClick={() => setCurrentMode(formType.EDIT)}>
                                                     <Pencil className="h-4 w-4" /> Edit
                                                 </Button>
                                             </>
                                         ) : (
                                             <>
-                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                <Button variant="outline" size={'sm'} onClick={() => currentMode === formType.ADD ? router.push("/procurement/purchase-request") : setCurrentMode(formType.VIEW)}>
                                                     <X className="h-4 w-4" /> Cancel
                                                 </Button>
-                                                <Button
-                                                    variant="default"
-                                                    size={'sm'}
-                                                    type="button"
-                                                    onClick={() => {
-                                                        console.log("Save button clicked");
-                                                        // Manually trigger form submission
-                                                        form.handleSubmit((data) => {
-                                                            console.log("Form submission started");
-                                                            onSubmit(data);
-                                                        })();
-                                                    }}
-                                                >
+                                                <Button variant="default" size={'sm'} type="submit" disabled={isPending}>
                                                     <Save className="h-4 w-4" /> Save
                                                 </Button>
                                             </>
                                         )}
-                                        <Button variant={'outline'} size={'sm'}>
-                                            <Printer className="w-4 h-4" />
-                                            Print
-                                        </Button>
-                                        <Button variant={'outline'} size={'sm'}>
-                                            <FileDown className="h-4 w-4" />
-                                            Export
-                                        </Button>
-                                        <Button variant={'outline'} size={'sm'}>
-                                            <ShareIcon className="w-4 h-4" />
-                                            Share
-                                        </Button>
-                                        <Button variant={'outline'} size={'sm'}>
-                                            <BookmarkIcon className="w-4 h-4" />
-                                            Save as Template
-                                        </Button>
                                     </div>
                                 </div>
                                 <HeadPrForm
@@ -365,47 +219,30 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
                                 <Tabs defaultValue="items">
                                     <TabsList className="w-full">
                                         <TabsTrigger className="w-full" value="items">Items</TabsTrigger>
-                                        <TabsTrigger className="w-full" value="budgets">Budgets</TabsTrigger>
                                         <TabsTrigger className="w-full" value="workflow">Workflow</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="items">
                                         <ItemPr
                                             itemsPr={currentItems.filter(item =>
-                                                !form.getValues().purchase_request_detail.delete?.includes(item.id || "")
+                                                !form.getValues().purchase_request_detail.delete?.some(deleteItem => deleteItem.id === item.id)
                                             )}
                                             mode={currentMode}
                                             openDetail={handleDialogItemPr}
                                             onDeleteItem={handleDeleteItem}
                                         />
                                     </TabsContent>
-                                    <TabsContent value="budgets">
-                                        Budgets
-                                    </TabsContent>
                                     <TabsContent value="workflow">
-                                        <WorkflowPr
-                                            workflowData={initValues?.workflow_history}
-                                        />
+                                        <WorkflowPr workflowData={initValues?.workflow_history} />
                                     </TabsContent>
                                 </Tabs>
                             </form>
                         </Form>
                     </Card>
-                    <h1>Mode {mode}</h1>
-                    <h1>Doc Type {docType}</h1>
-                    {initValues && <pre>{JSON.stringify(initValues.purchase_request_detail, null, 2)}</pre>}
                 </ScrollArea>
 
-                {openLog && (
-                    <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
-                        <div className="flex flex-col gap-4">
-                            <h1>Log</h1>
-                            <h1>Activity Log</h1>
-                        </div>
-                    </div>
-                )}
                 <ItemPrDialog
                     open={openDialogItemPr}
-                    onOpenChange={handleCloseDialog}
+                    onOpenChange={setOpenDialogItemPr}
                     isLoading={false}
                     mode={currentMode}
                     formValues={currentItemData}
@@ -414,19 +251,13 @@ export default function MainPrForm({ mode, initValues, docType }: MainPrFormProp
             </div>
             <Button
                 aria-label={openLog ? "Close log panel" : "Open log panel"}
-                onClick={handleOpenLog}
+                onClick={() => setOpenLog(!openLog)}
                 variant="default"
                 size="sm"
-                className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg transition-all duration-300 hover:bg-primary/90 hover:translate-x-0 focus:outline-none focus:ring-2 focus:ring-primary"
-                tabIndex={0}
+                className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg"
             >
-                {openLog ? (
-                    <ChevronRight className="h-6 w-6 animate-pulse" />
-                ) : (
-                    <ChevronLeft className="h-6 w-6 animate-pulse" />
-                )}
+                {openLog ? <ChevronRight className="h-6 w-6" /> : <ChevronLeft className="h-6 w-6" />}
             </Button>
-
         </div>
     )
 }

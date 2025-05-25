@@ -1,7 +1,7 @@
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
-import { PurchaseRequestFormDto } from "@/dtos/pr.dto";
+import { PrSchemaV2Dto } from "@/dtos/pr.dto";
 
 const API_URL = `${backendApi}/api/purchase-request`;
 
@@ -35,7 +35,6 @@ export const getAllPr = async (
 
         console.log('response ss', response);
 
-
         return response.data;
     } catch (error) {
         return error
@@ -60,7 +59,7 @@ export const getPrById = async (
 export const createPrService = async (
     token: string,
     tenantId: string,
-    data: PurchaseRequestFormDto
+    data: PrSchemaV2Dto
 ) => {
     console.log('data createPrService', data);
     try {
@@ -78,7 +77,7 @@ export const updatePrService = async (
     token: string,
     tenantId: string,
     id: string,
-    data: PurchaseRequestFormDto
+    data: PrSchemaV2Dto
 ) => {
     console.log('data updatePrService', data);
 

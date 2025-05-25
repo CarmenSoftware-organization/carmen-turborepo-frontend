@@ -2,20 +2,19 @@ import { FormControl, FormField, FormItem, FormLabel } from "@/components/ui/for
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestFormDto } from "@/dtos/pr.dto";
+import { PrSchemaV2Dto } from "@/dtos/pr.dto";
 import { Control } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 import DepartmentLookup from "@/components/lookup/DepartmentLookup";
-import { Textarea } from "@/components/ui/textarea";
 import UserListLookup from "@/components/lookup/UserListLookup";
 
 interface HeadPrFormProps {
-    readonly control: Control<PurchaseRequestFormDto>;
+    readonly control: Control<PrSchemaV2Dto>;
     readonly mode: formType;
     readonly prNo?: string;
 }
@@ -58,7 +57,7 @@ export default function HeadPrForm({
                                             )}
                                         >
                                             {field.value ? (
-                                                format(parseISO(field.value), "PPP")
+                                                format(new Date(field.value), "PPP")
                                             ) : (
                                                 <span className="text-muted-foreground">Select date</span>
                                             )}
@@ -69,8 +68,8 @@ export default function HeadPrForm({
                                 <PopoverContent className="w-auto p-0" align="start">
                                     <Calendar
                                         mode="single"
-                                        selected={field.value ? parseISO(field.value) : undefined}
-                                        onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
+                                        selected={field.value ? new Date(field.value) : undefined}
+                                        onSelect={(date) => field.onChange(date ? date.toISOString() : new Date().toISOString())}
                                         initialFocus
                                     />
                                 </PopoverContent>
@@ -115,18 +114,7 @@ export default function HeadPrForm({
                     render={({ field }) => (
                         <FormItem className="col-span-1">
                             <FormLabel>Note</FormLabel>
-                            <Input {...field} />
-                        </FormItem>
-                    )}
-                />
-
-                <FormField
-                    control={control}
-                    name="description"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Description</FormLabel>
-                            <Textarea {...field} />
+                            <Input {...field} value={field.value || ""} />
                         </FormItem>
                     )}
                 />

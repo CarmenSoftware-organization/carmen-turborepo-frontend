@@ -2,21 +2,22 @@
 
 import { toastError } from "@/components/ui-custom/Toast";
 import { useAuth } from "@/context/AuthContext";
-import { PurchaseRequestDto } from "@/dtos/pr.dto";
-import { getAllPr } from "@/services/pr.service";
+import { GetAllPrDto, PrSchemaV2Dto } from "@/dtos/pr.dto";
+import { createPrService, getAllPr } from "@/services/pr.service";
 import { useCallback, useEffect, useState } from "react";
 import { PaginationDto } from "@/dtos/pagination.dto";
 import { useURL } from "./useURL";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 // Type for the PR data with pagination
 export interface PurchaseRequestResponse {
-    data: PurchaseRequestDto[];
+    data: GetAllPrDto[];
     paginate: PaginationDto;
 }
 
 export const usePr = () => {
     const { token, tenantId } = useAuth();
-    const [purchaseRequests, setPurchaseRequests] = useState<PurchaseRequestDto[]>([]);
+    const [purchaseRequests, setPurchaseRequests] = useState<GetAllPrDto[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isUnauthorized, setIsUnauthorized] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -33,9 +34,6 @@ export const usePr = () => {
             setSort('');
         }
     }, [search, setPage, setSort]);
-
-    console.log('purchaseRequests', purchaseRequests);
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -97,3 +95,14 @@ export const usePr = () => {
         handlePageChange
     };
 }
+
+export const usePrMutation = (token: string, tenantId: string) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (prData: PrSchemaV2Dto) => createPrService(token, tenantId, prData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["prs"] });
+        },
+    });
+}; 

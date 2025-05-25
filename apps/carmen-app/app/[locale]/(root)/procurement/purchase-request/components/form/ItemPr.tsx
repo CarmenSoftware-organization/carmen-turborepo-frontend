@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formType } from "@/dtos/form.dto";
-import { ItemPrDetailDto } from "@/dtos/pr.dto";
+import { PurchaseRequestDetailItemDto } from "@/dtos/pr.dto";
 import { Edit, Plus, Trash2 } from "lucide-react";
 import {
     Table,
@@ -11,68 +11,70 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import useProduct from "@/hooks/useProduct";
+import { useUnit } from "@/hooks/useUnit";
+import { v4 as uuidv4 } from 'uuid';
+
 interface ItemPrProps {
-    readonly itemsPr: ItemPrDetailDto[];
+    readonly itemsPr: (PurchaseRequestDetailItemDto & { id?: string })[];
     readonly mode: formType;
-    readonly openDetail: (e: React.MouseEvent, data: ItemPrDetailDto) => void;
+    readonly openDetail: (e: React.MouseEvent, data: PurchaseRequestDetailItemDto & { id?: string }) => void;
     readonly onDeleteItem?: (itemId: string) => void;
 }
 
 export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: ItemPrProps) {
     const isDisabled = mode === formType.VIEW;
-
+    const { getProductName } = useProduct();
+    const { getUnitName } = useUnit();
     // Create empty item template for new items
     const handleAddNewItem = (e: React.MouseEvent) => {
-        // Generate a temporary unique ID for this item
         const tempId = `temp-${Date.now()}`;
 
-        // Create empty item with required fields
-        const emptyItem: ItemPrDetailDto = {
+        // Create empty item with required UUID fields
+        const emptyItem: PurchaseRequestDetailItemDto & { id?: string } = {
             id: tempId,
-            location_id: '',
-            location_name: '',
-            product_id: '',
-            product_name: '',
-            vendor_id: '',
-            vendor_name: '',
-            price_list_id: '',
+            location_id: uuidv4(),
+            product_id: uuidv4(),
+            vendor_id: uuidv4(),
+            price_list_id: uuidv4(),
             description: '',
-
             requested_qty: 0,
-            requested_unit_id: '',
-            requested_unit_name: '',
-
+            requested_unit_id: uuidv4(),
             approved_qty: 0,
-            approved_unit_id: '',
-            approved_unit_name: '',
-
+            approved_unit_id: uuidv4(),
             approved_base_qty: 0,
-            approved_base_unit_id: '',
+            approved_base_unit_id: uuidv4(),
             approved_conversion_rate: 0,
-            approved_base_unit_name: '',
-
             requested_conversion_rate: 0,
-            requested_inventory_qty: 0,
-            requested_inventory_unit_id: '',
-            requested_inventory_unit_name: '',
-
-            currency_id: '',
-            currency_name: null,
+            requested_base_qty: 0,
+            requested_base_unit_id: uuidv4(),
+            currency_id: uuidv4(),
             exchange_rate: 0,
-            dimension: {
-                project: '',
-                cost_center: ''
-            },
+            exchange_rate_date: new Date().toISOString(),
             price: 0,
             total_price: 0,
             foc: 0,
-            foc_unit_id: '',
-            foc_unit_name: '',
-            tax_type_inventory_id: '',
-            tax_type: ''
+            foc_unit_id: uuidv4(),
+            tax_type_inventory_id: uuidv4(),
+            tax_type: '',
+            tax_rate: 0,
+            tax_amount: 0,
+            is_tax_adjustment: false,
+            is_discount: false,
+            discount_rate: 0,
+            discount_amount: 0,
+            is_discount_adjustment: false,
+            is_active: true,
+            note: '',
+            info: {
+                specifications: ''
+            },
+            dimension: {
+                project: '',
+                cost_center: ''
+            }
         };
 
-        console.log("Creating new item with ID:", tempId);
         openDetail(e, emptyItem);
     };
 
@@ -80,16 +82,6 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
         if (onDeleteItem) {
             onDeleteItem(itemId);
         }
-    };
-
-    // Calculate total amount
-    // const totalAmount = itemsPr.reduce((sum, item) => sum + (item.total_price || 0), 0);
-
-    // Ensure each row has a valid unique key
-    const getItemKey = (item: ItemPrDetailDto, index: number): string => {
-        if (item.id) return item.id;
-        if (item.product_id) return `product-${item.product_id}`;
-        return `row-${index}`;
     };
 
     return (
@@ -112,21 +104,14 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                 <Table>
                     <TableHeader className="bg-muted/80">
                         <TableRow>
-                            <TableHead>Locations</TableHead>
-                            <TableHead>Product</TableHead>
-                            <TableHead>Order Unit</TableHead>
-                            <TableHead>
-                                <p className="text-xs">Requested</p>
-                                <p className="text-xs">Qty / Unit</p>
-                            </TableHead>
-                            <TableHead>
-                                <p className="text-xs">Approved</p>
-                                <p className="text-xs">Qty / Unit</p>
-                            </TableHead>
-                            <TableHead>Currency Base</TableHead>
+                            <TableHead>Product ID</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Requested Qty</TableHead>
+                            <TableHead>Approved Qty</TableHead>
+                            <TableHead>Requested Inventory Unit</TableHead>
+                            <TableHead>Approved Inventory Unit</TableHead>
                             <TableHead>Price</TableHead>
                             <TableHead>Total</TableHead>
-                            <TableHead>Status</TableHead>
                             {!isDisabled && (
                                 <TableHead>Actions</TableHead>
                             )}
@@ -135,52 +120,24 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                     <TableBody>
                         {itemsPr.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="h-24 text-center">
+                                <TableCell colSpan={7} className="h-24 text-center">
                                     No items added yet.
                                 </TableCell>
                             </TableRow>
                         ) : (
                             itemsPr.map((item, index) => (
-                                <TableRow key={getItemKey(item, index)}>
-                                    <TableCell>
-                                        {item.location_name}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="truncate">
-                                            <p className="font-medium">{item.product_name}</p>
-                                            <p className="text-xs text-muted-foreground mt-1">
-                                                {item.description ?? 'No description'}
-                                            </p>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{item.approved_base_unit_name ?? '-'}</TableCell>
-                                    <TableCell className="text-center">
-                                        <div className="flex flex-row items-center gap-2">
-                                            <p className="text-xs">{item.requested_qty}</p>
-                                            <p className="text-xs font-semibold">{item.requested_unit_name}</p>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="text-center">
-                                        <div className="flex flex-row items-center gap-2">
-                                            <p className="text-xs">{item.approved_qty}</p>
-                                            <p className="text-xs font-semibold">{item.approved_unit_name}</p>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>
-                                        {item.currency_name}
-                                    </TableCell>
-                                    <TableCell>
-                                        {item.price}
-                                    </TableCell>
-                                    <TableCell>
-                                        {item.total_price}
-                                    </TableCell>
-                                    <TableCell>
-                                        รอ api
-                                    </TableCell>
+                                <TableRow key={item.id ?? `item-${index}`}>
+                                    <TableCell>{getProductName(item.product_id)}</TableCell>
+                                    <TableCell>{item.description}</TableCell>
+                                    <TableCell>{item.requested_qty} {getUnitName(item.requested_unit_id)}</TableCell>
+                                    <TableCell>{item.approved_qty} {getUnitName(item.approved_unit_id)}</TableCell>
+                                    <TableCell>{item.requested_qty} {getUnitName(item.requested_base_unit_id)}</TableCell>
+                                    <TableCell>{item.approved_qty} {getUnitName(item.approved_base_unit_id)}</TableCell>
+                                    <TableCell>{item.price}</TableCell>
+                                    <TableCell>{item.total_price}</TableCell>
                                     {!isDisabled && (
                                         <TableCell>
-                                            <div className="flex justify-center">
+                                            <div className="flex justify-center gap-1">
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
@@ -199,11 +156,9 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                                                 >
                                                     <Trash2 className="h-4 w-4" />
                                                 </Button>
-
                                             </div>
                                         </TableCell>
                                     )}
-
                                 </TableRow>
                             ))
                         )}

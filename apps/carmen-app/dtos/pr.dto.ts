@@ -179,3 +179,86 @@ export type ItemPrDetailUpdateDto = ItemPrDetailDto & { id: string };
 export type InitPurchaseRequestFormValues = Partial<PurchaseRequestExtendedDto> & {
     purchase_request_detail?: ItemPrDetailExtendedDto[];
 };
+
+const wfHistorySchema = z.object({
+    status: z.string(),
+    timestamp: z.string(), // Consider z.coerce.date() if you want to parse as Date
+    user: z.string(),
+});
+
+export const purchaseRequestDetailItemSchema = z.object({
+    location_id: z.string().uuid(),
+    product_id: z.string().uuid(),
+    vendor_id: z.string().uuid(),
+    price_list_id: z.string(),
+    description: z.string(),
+    requested_qty: z.number(),
+    requested_unit_id: z.string().uuid(),
+    approved_qty: z.number(),
+    approved_unit_id: z.string().uuid(),
+    approved_base_qty: z.number(),
+    approved_base_unit_id: z.string().uuid(),
+    approved_conversion_rate: z.number(),
+    requested_conversion_rate: z.number(),
+    requested_base_qty: z.number(),
+    requested_base_unit_id: z.string().uuid(),
+    currency_id: z.string().uuid(),
+    exchange_rate: z.number(),
+    exchange_rate_date: z.string(), // or z.coerce.date()
+    price: z.number(),
+    total_price: z.number(),
+    foc: z.number(),
+    foc_unit_id: z.string().uuid(),
+    tax_type_inventory_id: z.string(),
+    tax_type: z.string(),
+    tax_rate: z.number(),
+    tax_amount: z.number(),
+    is_tax_adjustment: z.boolean(),
+    is_discount: z.boolean(),
+    discount_rate: z.number(),
+    discount_amount: z.number(),
+    is_discount_adjustment: z.boolean(),
+    is_active: z.boolean(),
+    note: z.string(),
+    info: z.object({
+        specifications: z.string(),
+    }),
+    dimension: z.object({
+        cost_center: z.string(),
+        project: z.string(),
+    }),
+});
+
+export type PurchaseRequestDetailItemDto = z.infer<typeof purchaseRequestDetailItemSchema>;
+
+export const prSchemaV2 = z.object({
+    pr_date: z.string().datetime().pipe(z.coerce.date()),
+    workflow_id: z.string().uuid(),
+    current_workflow_status: z.string(),
+    workflow_history: z.array(wfHistorySchema),
+    pr_status: z.string().optional(),
+    requestor_id: z.string().uuid(),
+    department_id: z.string().uuid(),
+    is_active: z.boolean(),
+    doc_version: z.number(),
+    note: z.string(),
+    info: z.object({
+        priority: z.string(),
+        budget_code: z.string(),
+    }).optional(),
+    dimension: z.object({
+        cost_center: z.string(),
+        project: z.string(),
+    }).optional(),
+    purchase_request_detail: z.object({
+        add: z.array(purchaseRequestDetailItemSchema).optional(),
+        update: z.array(purchaseRequestDetailItemSchema).optional(),
+        delete: z.array(
+            z.object({
+                id: z.string().uuid(),
+            })
+        ).optional(),
+    }),
+});
+
+export type PrSchemaV2Dto = z.infer<typeof prSchemaV2>;

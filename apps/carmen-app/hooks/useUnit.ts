@@ -160,6 +160,7 @@ export const useUnit = () => {
     };
 
     const getUnitName = useCallback((unitId: string) => {
+        console.log('unitId', unitId);
         const unit = units.find(unit => unit.id === unitId);
         return unit?.name ?? '';
     }, [units]);

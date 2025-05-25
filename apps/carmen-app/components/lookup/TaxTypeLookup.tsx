@@ -14,11 +14,9 @@ type TaxType = {
 }
 
 const mockTaxType: TaxType[] = [
-    { value: '589881fb-d16c-4c89-824c-f27e5c7ade46', label: 'ภาษีมูลค่าเพิ่ม 7%' },
-    { value: '005491b8-acbf-4d52-b78f-2dfa62391e27', label: 'ยกเว้นภาษี' },
-    { value: '4291dfbf-cad8-495f-9455-26a963e3a4c3  ', label: 'ภาษีศูนย์เปอร์เซ็นต์ (0%)' },
-    { value: '462cc29d-8a9b-4d34-bc18-a6d179012fdf', label: 'ภาษีขายเฉพาะกิจ' },
-    { value: 'ce4e0971-78d9-4385-9ecc-a25a77619902', label: 'ภาษีไม่ต้องหัก ณ ที่จ่าย' },
+    { value: '462cc29d-8a9b-4d34-bc18-a6d179012fdf', label: 'add' },
+    { value: '462cc29d-8a9b-4d34-bc18-a6d179012fdf', label: 'none' },
+    { value: '462cc29d-8a9b-4d34-bc18-a6d179012fdf  ', label: 'include' },
 ];
 
 export default function TaxTypeLookup({

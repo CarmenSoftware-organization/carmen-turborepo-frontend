@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ItemPrDetailDto } from "@/dtos/pr.dto";
+import { PurchaseRequestDetailItemDto } from "@/dtos/pr.dto";
 import { formType } from "@/dtos/form.dto";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
@@ -32,61 +32,68 @@ import VendorLookup from "@/components/lookup/VendorLookup";
 import { Box } from "lucide-react";
 import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
 import PriceListLookup from "@/components/lookup/PriceListLookup";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+
+type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
 interface ItemPrDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
     readonly isLoading?: boolean;
     readonly mode: formType;
-    readonly formValues?: ItemPrDetailDto;
-    readonly onSave?: (data: ItemPrDetailDto) => void;
+    readonly formValues?: ItemWithId;
+    readonly onSave?: (data: ItemWithId) => void;
 }
 
 // Create empty default item
-const createEmptyItem = (): ItemPrDetailDto => ({
+const createEmptyItem = (): ItemWithId => ({
     id: '',
     location_id: '',
-    location_name: '',
     product_id: '',
-    product_name: '',
     vendor_id: '',
-    vendor_name: '',
     price_list_id: '',
     description: '',
-
     requested_qty: 0,
     requested_unit_id: '',
-    requested_unit_name: '',
-
     approved_qty: 0,
     approved_unit_id: '',
-    approved_unit_name: '',
-
     approved_base_qty: 0,
     approved_base_unit_id: '',
     approved_conversion_rate: 0,
-    approved_base_unit_name: '',
-
     requested_conversion_rate: 0,
-    requested_inventory_qty: 0,
-    requested_inventory_unit_id: '',
-    requested_inventory_unit_name: '',
-
+    requested_base_qty: 0,
+    requested_base_unit_id: '',
     currency_id: '',
-    currency_name: null,
     exchange_rate: 0,
-    dimension: {
-        project: '',
-        cost_center: ''
-    },
+    exchange_rate_date: new Date().toISOString(),
     price: 0,
     total_price: 0,
     foc: 0,
     foc_unit_id: '',
-    foc_unit_name: '',
     tax_type_inventory_id: '',
-    tax_type: '',
-
+    tax_type: 'include',
+    tax_rate: 0,
+    tax_amount: 0,
+    is_tax_adjustment: false,
+    is_discount: false,
+    discount_rate: 0,
+    discount_amount: 0,
+    is_discount_adjustment: false,
+    is_active: true,
+    note: '',
+    info: {
+        specifications: ''
+    },
+    dimension: {
+        project: '',
+        cost_center: ''
+    }
 });
 
 export default function ItemPrDialog({
@@ -98,12 +105,11 @@ export default function ItemPrDialog({
     onSave
 }: ItemPrDialogProps) {
     // Keep a local copy of form values to prevent issues with undefined
-    const [localFormValues, setLocalFormValues] = useState<ItemPrDetailDto>(createEmptyItem());
+    const [localFormValues, setLocalFormValues] = useState<ItemWithId>(createEmptyItem());
 
     // Update local form values when parent values change
     useEffect(() => {
         if (formValues) {
-            console.log("Updating local form values with:", formValues);
             setLocalFormValues({
                 ...createEmptyItem(),
                 ...formValues
@@ -112,17 +118,10 @@ export default function ItemPrDialog({
     }, [formValues]);
 
     // We use a local form for all modes
-    const localForm = useForm<ItemPrDetailDto>({
+    const localForm = useForm<ItemWithId>({
         defaultValues: localFormValues
     });
 
-    // Reset form when values change
-    useEffect(() => {
-        if (open) {
-            console.log("Resetting form with values:", localFormValues);
-            localForm.reset(localFormValues);
-        }
-    }, [localFormValues, open, localForm]);
 
     const isViewMode = mode === formType.VIEW;
     const isAddMode = !localFormValues?.id || localFormValues.id.startsWith('temp-');
@@ -188,7 +187,7 @@ export default function ItemPrDialog({
                                             <FormLabel>Location</FormLabel>
                                             <FormControl>
                                                 <LocationLookup
-                                                    value={field.value}
+                                                    value={field.value ?? ''}
                                                     disabled={isViewMode}
                                                     onValueChange={(value) => field.onChange(value)}
                                                 />
@@ -206,7 +205,7 @@ export default function ItemPrDialog({
                                             <FormLabel>Vendor</FormLabel>
                                             <FormControl>
                                                 <VendorLookup
-                                                    value={field.value}
+                                                    value={field.value ?? ''}
                                                     disabled={isViewMode}
                                                     onValueChange={(value) => field.onChange(value)}
                                                 />
@@ -223,7 +222,7 @@ export default function ItemPrDialog({
                                             <FormLabel>Product</FormLabel>
                                             <FormControl>
                                                 <ProductLookup
-                                                    value={field.value}
+                                                    value={field.value ?? ''}
                                                     onValueChange={(value) => field.onChange(value)}
                                                     disabled={isViewMode}
                                                 />
@@ -257,6 +256,23 @@ export default function ItemPrDialog({
                             <Separator className="mb-2" />
                             <div className="grid grid-cols-4 gap-2">
 
+                                <FormField
+                                    control={localForm.control}
+                                    name="requested_base_unit_id"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Requested Base Unit</FormLabel>
+                                            <FormControl>
+                                                <UnitLookup
+                                                    value={field.value ?? ''}
+                                                    onValueChange={(value) => field.onChange(value)}
+                                                    disabled={isViewMode}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField
                                     control={localForm.control}
                                     name="requested_qty"
@@ -340,7 +356,7 @@ export default function ItemPrDialog({
                                             <FormLabel>Approved Base Unit</FormLabel>
                                             <FormControl>
                                                 <UnitLookup
-                                                    value={field.value}
+                                                    value={field.value ?? ''}
                                                     onValueChange={(value) => field.onChange(value)}
                                                     disabled={isViewMode}
                                                 />
@@ -349,25 +365,6 @@ export default function ItemPrDialog({
                                         </FormItem>
                                     )}
                                 />
-
-                                <FormField
-                                    control={localForm.control}
-                                    name="requested_inventory_unit_id"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Requested Inventory Unit</FormLabel>
-                                            <FormControl>
-                                                <UnitLookup
-                                                    value={field.value}
-                                                    onValueChange={(value) => field.onChange(value)}
-                                                    disabled={isViewMode}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
 
                                 <FormField
                                     control={localForm.control}
@@ -417,7 +414,7 @@ export default function ItemPrDialog({
                                                 <Input
                                                     type="number"
                                                     {...field}
-                                                    value={field.value || 0}
+                                                    value={field.value ?? 0}
                                                     onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                                     disabled={isViewMode}
                                                 />
@@ -431,7 +428,7 @@ export default function ItemPrDialog({
                         </div>
                         <Separator className="mb-4" />
 
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-3">
                             <div>
                                 <div className="flex items-center justify-between mb-2">
                                     <h3 className="text-sm font-medium">Pricing</h3>
@@ -440,7 +437,7 @@ export default function ItemPrDialog({
                                         Vendor Comparison
                                     </Button>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-3 gap-2">
                                     <FormField
                                         control={localForm.control}
                                         name="currency_id"
@@ -468,7 +465,7 @@ export default function ItemPrDialog({
                                                     <Input
                                                         type="number"
                                                         {...field}
-                                                        value={field.value || 1}
+                                                        value={field.value ?? 1}
                                                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 1)}
                                                         disabled={isViewMode}
                                                     />
@@ -533,13 +530,38 @@ export default function ItemPrDialog({
                                         name="tax_type_inventory_id"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Tax Type</FormLabel>
+                                                <FormLabel>Tax Type Inventory</FormLabel>
                                                 <FormControl>
                                                     <TaxTypeLookup
-                                                        value={field.value ?? ''}
+                                                        value={field.value}
                                                         onValueChange={(value) => field.onChange(value)}
                                                         disabled={isViewMode}
                                                     />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={localForm.control}
+                                        name="tax_type"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Tax Calculation</FormLabel>
+                                                <FormControl>
+                                                    <Select
+                                                        value={field.value ?? 'include'}
+                                                        onValueChange={field.onChange}
+                                                        disabled={isViewMode}
+                                                    >
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select tax calculation method" />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="include">Tax Inclusive</SelectItem>
+                                                            <SelectItem value="exclude">Tax Exclusive</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
