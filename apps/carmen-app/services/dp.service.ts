@@ -1,9 +1,8 @@
 import { backendApi } from "@/lib/backend-api";
 import { DeliveryPointDto } from "@/dtos/config.dto";
 import axios from "axios";
-import { requestHeaders } from "@/lib/config.api";
+import { getAllApiRequest, requestHeaders } from "@/lib/config.api";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { getAllApiRequest } from "@/utils/api-request";
 
 const API_URL = `${backendApi}/api/config/delivery-point`;
 

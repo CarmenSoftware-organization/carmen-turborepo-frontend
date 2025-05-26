@@ -1,9 +1,8 @@
 import { UnitDto } from "@/dtos/unit.dto";
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
-import { requestHeaders } from "@/lib/config.api";
+import { getAllApiRequest, postApiRequest, requestHeaders } from "@/lib/config.api";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { getAllApiRequest, postApiRequest } from "@/utils/api-request";
 
 const API_URL = `${backendApi}/api/config/units`;
 

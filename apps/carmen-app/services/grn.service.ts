@@ -2,19 +2,14 @@ import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
 import { CreateGRNDto } from "@/dtos/grn.dto";
+import { ParamsGetDto } from "@/dtos/param.dto";
 
 const API_URL = `${backendApi}/api/good-received-note`;
 
 export const getAllGrn = async (
     token: string,
     tenantId: string,
-    params: {
-        search?: string;
-        page?: string;
-        perPage?: string;
-        sort?: string;
-        filter?: string;
-    } = {}
+    params: ParamsGetDto
 ) => {
 
     const query = new URLSearchParams();

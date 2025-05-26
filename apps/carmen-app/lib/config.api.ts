@@ -1,5 +1,83 @@
+import { ParamsGetDto } from "@/dtos/param.dto";
+import axios from "axios";
+
 export const requestHeaders = (token: string, tenantId: string) => ({
     'Authorization': `Bearer ${token}`,
     'x-tenant-id': tenantId,
     'Content-Type': 'application/json',
 });
+
+export const getAllApiRequest = async (
+    API_URL: string,
+    token: string,
+    tenantId: string,
+    params: ParamsGetDto,
+    errorContext: string
+) => {
+    try {
+        const query = new URLSearchParams();
+
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== undefined && value !== null && value !== '') {
+                query.append(key, String(value));
+            }
+        });
+
+        const queryString = query.toString();
+        const URL = queryString ? `${API_URL}?${queryString}` : API_URL;
+
+        const response = await axios.get(URL, {
+            headers: requestHeaders(token, tenantId)
+        });
+
+        return response.data
+    } catch (error) {
+        console.error(`${errorContext}:`, error);
+        return error;
+    }
+};
+
+export const getByIdApiRequest = async (
+    API_URL: string,
+    token: string,
+    tenantId: string,
+    id: string,
+    errorContext: string
+) => {
+    try {
+
+        console.log('API_URL', API_URL);
+        console.log('id', id);
+
+        const response = await axios.get(`${API_URL}/${id}`, {
+            headers: requestHeaders(token, tenantId)
+        });
+
+        console.log('response', response);
+
+        return response.data;
+    } catch (error) {
+        console.error(`${errorContext}:`, error);
+        return error;
+    }
+}
+
+export const postApiRequest = async <T = unknown, R = unknown>(
+    API_URL: string,
+    token: string,
+    tenantId: string,
+    data: T,
+    errorContext: string
+) => {
+    try {
+        const response = await axios.post<R>(API_URL, data, {
+            headers: requestHeaders(token, tenantId)
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error(`${errorContext}:`, error);
+        return error;
+    }
+};
+

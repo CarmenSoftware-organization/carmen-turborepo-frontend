@@ -1,18 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { getAllLocations } from '@/services/location.service';
-import { ParamsDto } from '@/dtos/param.dto';
-
-
-
+import { ParamsGetDto } from '@/dtos/param.dto';
 export const useLocationsQuery = ({
     token,
     tenantId,
-    params = {},
+    params,
     enabled = true
-}: ParamsDto) => {
+}: {
+    token: string;
+    tenantId: string;
+    params?: ParamsGetDto;
+    enabled?: boolean;
+}) => {
     return useQuery({
         queryKey: ['locations', tenantId, params],
-        queryFn: () => getAllLocations(token, tenantId, params),
+        queryFn: () => getAllLocations(token, tenantId, params || {}),
         enabled: enabled && !!token && !!tenantId,
         staleTime: 5 * 60 * 1000, // 5 minutes
         gcTime: 10 * 60 * 1000, // 10 minutes
