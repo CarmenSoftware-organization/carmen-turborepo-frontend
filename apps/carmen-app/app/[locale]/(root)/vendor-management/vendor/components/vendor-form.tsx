@@ -104,7 +104,6 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     })
 
     const onSubmit = async (data: VendorFormValues) => {
-        console.log('data', data)
         setIsSubmitting(true)
 
         try {

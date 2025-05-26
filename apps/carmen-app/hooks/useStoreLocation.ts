@@ -130,7 +130,12 @@ export const useStoreLocation = () => {
         }
     }, [search, setPage, setFilter]);
 
-    const handleSubmitAdd = useCallback(async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
+    const handleSubmitAdd = useCallback(async (
+        token: string,
+        tenantId: string,
+        data: CreateStoreLocationDto
+    ) => {
+        console.log('data', data);
         const newStoreLocation = await handleAddStoreLocation(token, tenantId, data);
         setStoreLocations(prev => [...prev, newStoreLocation]);
         toastSuccess({ message: 'Store location created successfully' });

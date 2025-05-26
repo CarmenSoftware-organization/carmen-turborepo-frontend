@@ -41,19 +41,13 @@ export const getByIdApiRequest = async (
     API_URL: string,
     token: string,
     tenantId: string,
-    id: string,
     errorContext: string
 ) => {
     try {
 
-        console.log('API_URL', API_URL);
-        console.log('id', id);
-
-        const response = await axios.get(`${API_URL}/${id}`, {
+        const response = await axios.get(`${API_URL}`, {
             headers: requestHeaders(token, tenantId)
         });
-
-        console.log('response', response);
 
         return response.data;
     } catch (error) {

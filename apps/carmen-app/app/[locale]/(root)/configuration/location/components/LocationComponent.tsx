@@ -12,6 +12,8 @@ import SortComponent from '@/components/ui-custom/SortComponent';
 import { boolFilterOptions } from '@/constants/options';
 import { useState } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
+import ListLocations from './ListLocations';
+import { Link } from '@/lib/navigation';
 
 export default function LocationComponent() {
     const tCommon = useTranslations('Common');
@@ -43,9 +45,11 @@ export default function LocationComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="store-location-list-action-buttons">
-            <Button size="sm">
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
+            <Button size="sm" asChild>
+                <Link href="/configuration/location/new">
+                    <Plus className="h-4 w-4" />
+                    {tCommon('add')}
+                </Link>
             </Button>
             <Button
                 variant="outline"
@@ -66,10 +70,6 @@ export default function LocationComponent() {
             </Button>
         </div>
     );
-
-    if (isLoading) {
-        return <div>Loading locations...</div>;
-    }
 
     if (error) {
         return <div>Error loading locations: {error.message}</div>;
@@ -102,11 +102,11 @@ export default function LocationComponent() {
         </div>
     );
 
-    const content = (
-        <div>
-            <pre>{JSON.stringify(locations, null, 2)}</pre>
-        </div>
-    );
+    const content =
+        <ListLocations
+            locations={locations?.data ?? []}
+            isLoading={isLoading}
+        />
 
     return (
         <DataDisplayTemplate

@@ -49,6 +49,22 @@ export const storeLocationSchema = z.object({
 
 export const createStoreLocationSchema = storeLocationSchema.extend({
     delivery_point_id: z.string().min(1, "Delivery point is required"),
+    users: z.object({
+        add: z.array(z.object({
+            id: z.string().uuid(),
+        })),
+        remove: z.array(z.object({
+            id: z.string().uuid(),
+        }))
+    }).optional(),
+    info: z.object({
+        floor: z.number(),
+        building: z.string(),
+        capacity: z.number(),
+        responsibleDepartment: z.string(),
+        itemCount: z.number(),
+        lastCount: z.string(),
+    }).optional(),
 });
 
 export type CreateStoreLocationDto = z.infer<typeof createStoreLocationSchema>;

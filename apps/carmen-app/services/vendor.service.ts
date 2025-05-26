@@ -33,6 +33,9 @@ export const getVendorIdService = async (
     );
 }
 export const createVendorService = async (token: string, tenantId: string, vendor: VendorFormValues) => {
+
+    console.log('vendor', vendor);
+
     try {
         const url = `${backendApi}/api/config/vendors`;
         const options = {
