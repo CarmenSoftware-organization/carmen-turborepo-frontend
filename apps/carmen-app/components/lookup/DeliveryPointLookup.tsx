@@ -40,7 +40,7 @@ export default function DeliveryPointLookup({
                 <Button
                     variant="outline"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className="w-full justify-between h-8"
                     disabled={disabled}
                 >
                     {value && selectedDeliveryPointName ? selectedDeliveryPointName : placeholder}

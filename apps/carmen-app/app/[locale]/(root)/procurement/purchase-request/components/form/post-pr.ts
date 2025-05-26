@@ -1,7 +1,7 @@
 import { PrSchemaV2Dto } from "@/dtos/pr.dto";
 
 export const postPrData: PrSchemaV2Dto = {
-    pr_date: "2024-06-13T15:30:00Z",
+    pr_date: "2023-06-13T15:30:00Z",
     workflow_id: "f224d743-7cfa-46f6-8f72-85b14c6a355e",
     current_workflow_status: "pending",
     workflow_history: [
@@ -16,7 +16,7 @@ export const postPrData: PrSchemaV2Dto = {
     department_id: "19adcf5f-c199-4b3a-86b1-2215f362d0af",
     is_active: true,
     doc_version: 2.0,
-    note: "Urgent request V2",
+    note: "Urgent request V10",
     info: {
         priority: "high",
         budget_code: "BUD-2023-001",
@@ -50,7 +50,8 @@ export const postPrData: PrSchemaV2Dto = {
                 total_price: 5000.0,
                 foc: 12,
                 foc_unit_id: "c6ea3459-c6dd-49d9-bef3-10122b0c72f3",
-                tax_type_inventory_id: "c825b2da-185e-422f-8586-48313677f02d",
+                // tax_type_inventory_id: "c825b2da-185e-422f-8586-48313677f02d",
+                tax_type_inventory_id: "c825b2da-185e-433f-8586-48313677f02d",
                 tax_type: "included",
                 tax_rate: 7.0,
                 tax_amount: 350.0,

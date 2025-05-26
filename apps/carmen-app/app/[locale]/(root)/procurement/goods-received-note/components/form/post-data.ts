@@ -1,7 +1,6 @@
 export const postGrnData = {
-    name: "test post grn",
-    grn_no: "1234567890",
-    invoice_no: "INV-001",
+    name: "daew test 2",
+    invoice_no: "INV-008-5",
     invoice_date: "2024-01-01T00:00:00.000Z",
     description: "test post grn description",
     doc_status: "draft",

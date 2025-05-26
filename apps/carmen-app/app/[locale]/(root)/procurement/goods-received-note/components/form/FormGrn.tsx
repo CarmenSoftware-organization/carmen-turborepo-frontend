@@ -228,10 +228,14 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     return (
         <div className="relative">
             <div className="flex gap-4 relative">
-                <Button variant="outline" size="sm" onClick={handleTestPost}>
+                <Button variant="outline" size="sm" onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleTestPost();
+                }}>
                     Test Post
                 </Button>
-                <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
+                {/* <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
                     <Card className="p-4 mb-4">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -321,7 +325,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                         </Form>
                     </Card>
                     <TransactionSummary />
-                </ScrollArea>
+                </ScrollArea> */}
 
 
 

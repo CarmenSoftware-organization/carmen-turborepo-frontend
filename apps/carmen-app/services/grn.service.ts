@@ -52,8 +52,16 @@ export const postGrnService = async (token: string, tenantId: string, data: Crea
         const response = await axios.post(url, data, {
             headers: requestHeaders(token, tenantId)
         });
+
+        console.log(response);
+
+        if (response.status !== 201) {
+            throw new Error(response.data.message);
+        }
+
         return response.data;
     } catch (error) {
+        console.log('error post grn service', error);
         return error;
     }
 }
