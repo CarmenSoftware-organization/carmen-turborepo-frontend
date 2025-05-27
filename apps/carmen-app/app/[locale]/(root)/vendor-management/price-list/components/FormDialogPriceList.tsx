@@ -38,6 +38,7 @@ import UnitLookup from "@/components/lookup/UnitLookup";
 import { useCreatePriceList } from "@/hooks/usePriceList";
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface FormDialogPriceListProps {
     readonly open: boolean;
@@ -47,6 +48,7 @@ interface FormDialogPriceListProps {
 export default function FormDialogPriceList({ open, onOpenChange }: FormDialogPriceListProps) {
     const tCommon = useTranslations('Common');
     const { token, tenantId } = useAuth();
+    const queryClient = useQueryClient();
     const form = useForm<CreatePriceListDto>({
         resolver: zodResolver(priceListSchema),
         defaultValues: {
@@ -76,9 +78,11 @@ export default function FormDialogPriceList({ open, onOpenChange }: FormDialogPr
                 onOpenChange(false);
                 form.reset();
                 toastSuccess({ message: 'Price list created successfully' });
+                // Invalidate and refetch price list data
+                queryClient.invalidateQueries({ queryKey: ["price-list", tenantId] });
             },
             onError: (error: unknown) => {
-                toastError({ message: 'Failed to create price list' });
+                toastError({ message: 'Failed to create price list' + error });
             }
         });
     };
