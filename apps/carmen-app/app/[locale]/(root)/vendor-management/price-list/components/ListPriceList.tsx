@@ -35,7 +35,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [deleteId, setDeleteId] = useState<string>('');
 
-    const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, tenantId);
+    const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, tenantId, deleteId);
 
     const handleSelectItem = (id: string) => {
         setSelectedItems(prev =>
@@ -57,7 +57,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
 
     const handleDelete = (id: string) => {
         setDeleteId(id);
-        deletePriceList(id, {
+        deletePriceList(undefined, {
             onSuccess: () => {
                 toastSuccess({ message: 'Price list deleted successfully' });
                 setDeleteId('');
@@ -137,7 +137,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle>Delete Price List</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    Are you sure you want to delete this price list for "{priceList.product_name}"?
+                                                    Are you sure you want to delete this price list for &quot;{priceList.product_name}&quot;?
                                                     This action cannot be undone.
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
