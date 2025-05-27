@@ -11,7 +11,8 @@ import { boolFilterOptions } from "@/constants/options";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
-import { mockPriceLists } from "@/mock-data/price-list";
+import { useAuth } from "@/context/AuthContext";
+import { usePriceList } from "@/hooks/usePriceList";
 
 const sortFields = [
     { key: 'name', label: 'Name' },
@@ -24,6 +25,15 @@ export default function PriceListComponent() {
     const [filter, setFilter] = useURL('filter');
     const [sort, setSort] = useURL('sort');
     const [statusOpen, setStatusOpen] = useState(false);
+    const { token, tenantId } = useAuth();
+
+    const { data: response, isLoading, error, isUnauthorized } = usePriceList(token, tenantId, {
+        search,
+        filter,
+        sort
+    });
+
+    const priceLists = response?.data ?? [];
 
     const actionButtons = (
         <div className="action-btn-container" data-id="price-list-list-action-buttons">
@@ -77,7 +87,7 @@ export default function PriceListComponent() {
         </div>
     )
 
-    const content = <ListPriceList priceLists={mockPriceLists} />
+    const content = <ListPriceList priceLists={priceLists} isLoading={isLoading} />
 
     return (
         <DataDisplayTemplate

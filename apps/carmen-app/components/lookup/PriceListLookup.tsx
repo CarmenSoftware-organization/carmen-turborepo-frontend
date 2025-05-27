@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { usePriceList } from "@/hooks/usePriceList";
+import { PriceListDto } from "@/dtos/price-list.dto";
 
 type PriceList = {
     value: string;
@@ -34,8 +37,11 @@ export default function PriceListLookup({
     placeholder = "Select price range",
     disabled = false,
 }: Readonly<PropsLookup>) {
+    const { token, tenantId } = useAuth();
+
+    const { data: priceLists, isLoading } = usePriceList(token, tenantId);
+
     const [open, setOpen] = useState(false);
-    const [isLoading] = useState(false);
 
     const selectedPriceList = useMemo(() => {
         if (!value || !mockPriceList || !Array.isArray(mockPriceList)) return null;
@@ -72,21 +78,21 @@ export default function PriceListLookup({
                             <>
                                 <CommandEmpty>No price ranges found.</CommandEmpty>
                                 <CommandGroup>
-                                    {mockPriceList && mockPriceList.length > 0 ? (
-                                        mockPriceList.map((priceItem) => (
+                                    {priceLists && priceLists.length > 0 ? (
+                                        priceLists.map((priceItem: PriceListDto) => (
                                             <CommandItem
-                                                key={priceItem.value}
-                                                value={priceItem.label}
+                                                key={priceItem.id}
+                                                value={priceItem.id}
                                                 onSelect={() => {
-                                                    onValueChange(priceItem.value);
+                                                    onValueChange(priceItem.id);
                                                     setOpen(false);
                                                 }}
                                             >
-                                                {priceItem.label}
+                                                {priceItem.product_name}
                                                 <Check
                                                     className={cn(
                                                         "ml-auto h-4 w-4",
-                                                        value === priceItem.value ? "opacity-100" : "opacity-0"
+                                                        value === priceItem.id ? "opacity-100" : "opacity-0"
                                                     )}
                                                 />
                                             </CommandItem>

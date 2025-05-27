@@ -11,13 +11,13 @@ export const getAllApiRequest = async (
     API_URL: string,
     token: string,
     tenantId: string,
-    params: ParamsGetDto,
-    errorContext: string
+    errorContext: string,
+    params?: ParamsGetDto
 ) => {
     try {
         const query = new URLSearchParams();
 
-        Object.entries(params).forEach(([key, value]) => {
+        Object.entries(params ?? {}).forEach(([key, value]) => {
             if (value !== undefined && value !== null && value !== '') {
                 query.append(key, String(value));
             }
@@ -45,7 +45,7 @@ export const getByIdApiRequest = async (
 ) => {
     try {
 
-        const response = await axios.get(`${API_URL}`, {
+        const response = await axios.get(API_URL, {
             headers: requestHeaders(token, tenantId)
         });
 
