@@ -48,7 +48,7 @@ export const useGrn = () => {
     }, [response]);
 
     // Extract the actual GRN data if response is not an error
-    const grns = response?.isAuthError ? [] : response ?? [];
+    const grns = response?.isAuthError ? [] : response?.data ?? [];
 
     return {
         grns,

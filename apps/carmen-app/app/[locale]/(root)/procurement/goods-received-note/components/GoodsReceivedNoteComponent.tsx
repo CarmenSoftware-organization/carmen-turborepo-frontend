@@ -35,6 +35,7 @@ export default function GoodsReceivedNoteComponent() {
         handlePageChange
     } = useGrn();
 
+
     const sortFields = [
         { key: 'code', label: 'Code' },
         { key: 'name', label: 'Name' },
