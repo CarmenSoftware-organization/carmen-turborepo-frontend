@@ -1,4 +1,4 @@
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,7 @@ import { Switch } from "@/components/ui/switch";
 import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 import { Card } from "@/components/ui/card";
 import UserLocation from "./UserLocation";
+import { useUserList } from "@/hooks/useUserList";
 
 interface MainLocationProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,6 +37,7 @@ export default function MainLocation({
     isLoading
 }: MainLocationProps) {
     const tStoreLocation = useTranslations('StoreLocation');
+    const { userList } = useUserList();
 
     // Transform initial data to match form structure
     const transformedInitialData = initialData ? {
@@ -46,11 +48,12 @@ export default function MainLocation({
         is_active: initialData.is_active || false,
         delivery_point_id: initialData.delivery_point?.id || "",
         users: {
-            add: initialData.users && Array.isArray(initialData.users) && initialData.users.length > 0
+            data: initialData.users && Array.isArray(initialData.users) && initialData.users.length > 0
                 ? initialData.users.map((user: string | { id: string }) => ({
-                    id: typeof user === 'string' ? user : user.id
+                    user_id: typeof user === 'string' ? user : user.id
                 }))
-                : [{ id: "" }],
+                : [],
+            add: [],
             remove: []
         },
         info: {
@@ -64,7 +67,7 @@ export default function MainLocation({
     } : {
         delivery_point_id: "",
         users: {
-            add: [{ id: "" }],
+            add: [],
             remove: []
         },
         info: {
@@ -84,9 +87,11 @@ export default function MainLocation({
 
     const { fields: addUserFields, append: appendAddUser, remove: removeAddUser } = useFieldArray({
         control: form.control,
-        name: "users.add"
+        name: "users.add",
+        keyName: "key" // Use 'key' instead of 'id' for React Hook Form's internal key
     });
 
+    // Remove user fields - not currently used but available for future implementation
     const { fields: removeUserFields, append: appendRemoveUser, remove: removeRemoveUser } = useFieldArray({
         control: form.control,
         name: "users.remove"
@@ -95,27 +100,44 @@ export default function MainLocation({
     const isReadOnly = mode === formType.VIEW;
     const isCreate = mode === formType.ADD;
 
-    const onFormSubmit = (data: CreateStoreLocationDto) => {
-        console.log("Form submitted:", data);
+    // Watch all form values for debugging
+    const watchedValues = useWatch({
+        control: form.control,
+    });
 
-        // Transform data back to server format if needed
-        const transformedData = {
-            ...data,
-            // Filter out empty user IDs and transform to server format if needed
-            users: {
-                add: data.users?.add?.filter(user => user.id.trim() !== "") || [],
-                remove: data.users?.remove?.filter(user => user.id.trim() !== "") || []
-            }
-        };
+    // Watch specific user fields
+    const watchedUsers = useWatch({
+        control: form.control,
+        name: "users"
+    });
+
+    // No need for state since we already have userList from useUserList hook
+
+    const handleAddUser = (userId: string) => {
+        appendAddUser({ user_id: userId });
+    };
+
+    const handleRemoveUser = (userId: string) => {
+        const index = addUserFields.findIndex(field => field.user_id === userId);
+        if (index !== -1) {
+            removeAddUser(index);
+        }
+        appendRemoveUser({ user_id: userId });
+    };
+
+    const onFormSubmit = (data: CreateStoreLocationDto) => {
+        console.log("Form submitted (raw data):", data);
+        console.log("Watched values:", watchedValues);
+        console.log("Are they equal?", JSON.stringify(data) === JSON.stringify(watchedValues));
 
         // Handle form submission based on mode
         if (isCreate) {
             // Create new store location
-            console.log("Creating new store location:", transformedData);
+            console.log("Creating new store location:", data);
             // TODO: Add API call for creating
         } else if (mode === "edit") {
             // Update existing store location
-            console.log("Updating store location:", transformedData);
+            console.log("Updating store location:", data);
             // TODO: Add API call for updating
         }
     };
@@ -359,15 +381,48 @@ export default function MainLocation({
                     </Card>
 
                     <UserLocation
-                        control={form.control}
                         isReadOnly={isReadOnly}
+                        userList={userList}
                         addUserFields={addUserFields}
-                        appendAddUser={appendAddUser}
-                        removeAddUser={removeAddUser}
-                        removeUserFields={removeUserFields}
-                        appendRemoveUser={appendRemoveUser}
-                        removeRemoveUser={removeRemoveUser}
+                        onAddUser={handleAddUser}
+                        onRemoveUser={handleRemoveUser}
                     />
+
+                    {/* Form Debug Section */}
+                    {!isReadOnly && (
+                        <Card className="p-4">
+                            <p className="text-sm font-medium mb-3">🔍 Form Debug & Watch Values</p>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <h4 className="text-xs font-medium mb-2">🔍 Watched Users Field</h4>
+                                    <pre className="text-xs bg-gray-100 p-2 rounded border max-h-32 overflow-y-auto">
+                                        {JSON.stringify(watchedUsers, null, 2)}
+                                    </pre>
+                                </div>
+                                <div>
+                                    <h4 className="text-xs font-medium mb-2">📋 Add User Fields (Field Array)</h4>
+                                    <pre className="text-xs bg-blue-50 p-2 rounded border max-h-32 overflow-y-auto">
+                                        {JSON.stringify(addUserFields, null, 2)}
+                                    </pre>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-medium mb-2">👥 Available Users from API</h4>
+                                    <pre className="text-xs bg-purple-50 p-2 rounded border max-h-32 overflow-y-auto">
+                                        {JSON.stringify(userList, null, 2)}
+                                    </pre>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-medium mb-2">🌐 All Form Values</h4>
+                                    <pre className="text-xs bg-green-50 p-2 rounded border max-h-40 overflow-y-auto">
+                                        {JSON.stringify(watchedValues, null, 2)}
+                                    </pre>
+                                </div>
+                            </div>
+                        </Card>
+                    )}
 
                     {/* View Mode - Display Users */}
                     {isReadOnly && (transformedInitialData?.users?.add?.length || transformedInitialData?.users?.remove?.length) && (
@@ -378,9 +433,9 @@ export default function MainLocation({
                                     <div>
                                         <Label className="text-xs font-medium">Assigned Users</Label>
                                         <div className="mt-1 grid grid-cols-1 md:grid-cols-3 gap-1">
-                                            {transformedInitialData.users.add.map((user: { id: string }, index: number) => (
+                                            {transformedInitialData.users.add.map((user: { user_id: string }, index: number) => (
                                                 <div key={index} className="p-1 border rounded text-xs">
-                                                    {user.id}
+                                                    {user.user_id}
                                                 </div>
                                             ))}
                                         </div>
@@ -391,9 +446,9 @@ export default function MainLocation({
                                     <div>
                                         <Label className="text-xs font-medium">Users to Remove</Label>
                                         <div className="mt-1 grid grid-cols-1 md:grid-cols-3 gap-1">
-                                            {transformedInitialData.users.remove.map((user: { id: string }, index: number) => (
+                                            {transformedInitialData.users.remove.map((user: { user_id: string }, index: number) => (
                                                 <div key={index} className="p-1 border rounded text-xs">
-                                                    {user.id}
+                                                    {user.user_id}
                                                 </div>
                                             ))}
                                         </div>

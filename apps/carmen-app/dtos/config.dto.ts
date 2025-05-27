@@ -51,10 +51,10 @@ export const createStoreLocationSchema = storeLocationSchema.extend({
     delivery_point_id: z.string().min(1, "Delivery point is required"),
     users: z.object({
         add: z.array(z.object({
-            id: z.string().uuid(),
+            user_id: z.string().uuid(),
         })),
         remove: z.array(z.object({
-            id: z.string().uuid(),
+            user_id: z.string().uuid(),
         }))
     }).optional(),
     info: z.object({

@@ -1,8 +1,5 @@
-import { Control, FieldArrayWithId, UseFieldArrayAppend, UseFieldArrayRemove } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     Table,
@@ -12,130 +9,117 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormMessage
-} from "@/components/ui/form";
-import { Plus, Minus, ArrowRight, ArrowLeft } from "lucide-react";
-import { CreateStoreLocationDto } from "@/dtos/config.dto";
-import { useUserList } from "@/hooks/useUserList";
 import { useState } from "react";
 
+interface User {
+    id: string;
+    name: string;
+}
+
+interface UserField {
+    user_id: string;
+    key: string; // React Hook Form's internal key
+    [key: string]: unknown;
+}
+
 interface UserLocationProps {
-    readonly control: Control<CreateStoreLocationDto>;
     readonly isReadOnly: boolean;
-    readonly addUserFields: FieldArrayWithId<CreateStoreLocationDto, "users.add", "id">[];
-    readonly appendAddUser: UseFieldArrayAppend<CreateStoreLocationDto, "users.add">;
-    readonly removeAddUser: UseFieldArrayRemove;
-    readonly removeUserFields: FieldArrayWithId<CreateStoreLocationDto, "users.remove", "id">[];
-    readonly appendRemoveUser: UseFieldArrayAppend<CreateStoreLocationDto, "users.remove">;
-    readonly removeRemoveUser: UseFieldArrayRemove;
+    readonly userList?: User[];
+    readonly addUserFields?: UserField[];
+    readonly onAddUser?: (userId: string) => void;
+    readonly onRemoveUser?: (userId: string) => void;
 }
 
 export default function UserLocation({
-    control,
     isReadOnly,
-    addUserFields,
-    appendAddUser,
-    removeAddUser,
-    removeUserFields,
-    appendRemoveUser,
-    removeRemoveUser
+    userList,
+    addUserFields = [],
+    onAddUser,
+    onRemoveUser
 }: UserLocationProps) {
 
-    const { userList } = useUserList();
-
-    console.log(userList);
-
-    const [selectedAvailableUsers, setSelectedAvailableUsers] = useState<string[]>([]);
-    const [selectedAssignedUsers, setSelectedAssignedUsers] = useState<string[]>([]);
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
     if (isReadOnly) {
         return null;
     }
 
-    // Get currently assigned user IDs
-    const assignedUserIds = addUserFields.map(field => field.id).filter(id => id.trim() !== "");
-
-    // Filter available users (exclude already assigned ones)
-    const availableUsers = userList?.filter(user => !assignedUserIds.includes(user.id)) || [];
-
-    // Select all logic for available users
-    const isAllAvailableSelected = availableUsers.length > 0 && selectedAvailableUsers.length === availableUsers.length;
-
-    // Select all logic for assigned users
-    const isAllAssignedSelected = assignedUserIds.length > 0 && selectedAssignedUsers.length === assignedUserIds.length;
-
-    const handleMoveToAssigned = () => {
-        selectedAvailableUsers.forEach(userId => {
-            appendAddUser({ id: userId });
-        });
-        setSelectedAvailableUsers([]);
+    const handleUserToggle = (userId: string, checked: boolean) => {
+        if (checked) {
+            setSelectedUsers(prev => [...prev, userId]);
+        } else {
+            setSelectedUsers(prev => prev.filter(id => id !== userId));
+        }
     };
 
-    const handleMoveToAvailable = () => {
-        selectedAssignedUsers.forEach(userId => {
-            const index = addUserFields.findIndex(field => field.id === userId);
-            if (index !== -1) {
-                removeAddUser(index);
+    const handleConfirmAdd = () => {
+        console.log('🔍 handleConfirmAdd - selectedUsers:', selectedUsers);
+        console.log('🔍 handleConfirmAdd - addUserFields before:', addUserFields);
+
+        selectedUsers.forEach(userId => {
+            // Check if user is not already added
+            const isAlreadyAdded = addUserFields.some(field => field.user_id === userId);
+            console.log(`🔍 User ${userId} already added:`, isAlreadyAdded);
+            if (!isAlreadyAdded && onAddUser) {
+                console.log(`🔍 Adding user:`, userId);
+                onAddUser(userId);
             }
         });
-        setSelectedAssignedUsers([]);
+        setSelectedUsers([]);
     };
 
-    const toggleAvailableUser = (userId: string, checked: boolean) => {
-        setSelectedAvailableUsers(prev =>
-            checked
-                ? [...prev, userId]
-                : prev.filter(id => id !== userId)
-        );
-    };
-
-    const toggleAssignedUser = (userId: string, checked: boolean) => {
-        setSelectedAssignedUsers(prev =>
-            checked
-                ? [...prev, userId]
-                : prev.filter(id => id !== userId)
-        );
-    };
-
-    const handleSelectAllAvailable = (checked: boolean) => {
-        if (checked) {
-            setSelectedAvailableUsers(availableUsers.map(user => user.id));
-        } else {
-            setSelectedAvailableUsers([]);
+    const handleRemoveUser = (userId: string) => {
+        console.log('🔍 handleRemoveUser - userId:', userId);
+        if (onRemoveUser) {
+            onRemoveUser(userId);
         }
     };
 
-    const handleSelectAllAssigned = (checked: boolean) => {
-        if (checked) {
-            setSelectedAssignedUsers([...assignedUserIds]);
-        } else {
-            setSelectedAssignedUsers([]);
-        }
-    };
+    // Get assigned user IDs for display - using 'user_id' field
+    const assignedUserIds = addUserFields.map(field => field.user_id).filter(id => id && typeof id === 'string' && id.trim() !== "");
+
+    console.log('🔍 UserLocation - addUserFields:', addUserFields);
+    console.log('🔍 UserLocation - assignedUserIds:', assignedUserIds);
+    console.log('🔍 UserLocation - userList:', userList);
+
+    // Debug: Check each field in addUserFields
+    addUserFields.forEach((field, index) => {
+        console.log(`🔍 addUserFields[${index}]:`, field);
+        console.log(`🔍 addUserFields[${index}].user_id:`, field.user_id);
+        console.log(`🔍 addUserFields[${index}].key (internal):`, field.key);
+        console.log(`🔍 addUserFields[${index}] keys:`, Object.keys(field));
+    });
+
+    // Get available (unassigned) users
+    const availableUsers = userList?.filter(user => !assignedUserIds.includes(user.id)) || [];
+
+    console.log('🔍 UserLocation - availableUsers:', availableUsers);
 
     return (
         <Card className="p-4">
-            <p className="text-sm font-medium mb-3">Users Management</p>
+            <p className="text-sm font-medium mb-3">User Management</p>
 
             <div className="grid grid-cols-12 gap-4">
-                {/* Available Users Table */}
+                {/* Available Users */}
                 <div className="col-span-5">
                     <div className="flex items-center justify-between mb-2">
-                        <Label className="text-xs font-medium">Available Users</Label>
+                        <h4 className="text-xs font-medium">Available Users</h4>
                         <span className="text-xs">({availableUsers.length})</span>
                     </div>
-                    <div className="h-32 overflow-y-auto">
+                    <div className="h-48 overflow-y-auto border rounded">
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="text-xs font-medium py-1 px-2 w-8">
                                         <Checkbox
-                                            checked={isAllAvailableSelected}
-                                            onCheckedChange={handleSelectAllAvailable}
+                                            checked={selectedUsers.length === availableUsers.length && availableUsers.length > 0}
+                                            onCheckedChange={(checked) => {
+                                                if (checked) {
+                                                    setSelectedUsers(availableUsers.map(u => u.id));
+                                                } else {
+                                                    setSelectedUsers([]);
+                                                }
+                                            }}
                                             className="scale-75"
                                         />
                                     </TableHead>
@@ -144,92 +128,87 @@ export default function UserLocation({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {availableUsers.map(user => (
-                                    <TableRow key={user.id} className="text-xs">
-                                        <TableCell className="py-1 px-2">
-                                            <Checkbox
-                                                checked={selectedAvailableUsers.includes(user.id)}
-                                                onCheckedChange={(checked) => toggleAvailableUser(user.id, checked as boolean)}
-                                                className="scale-75"
-                                            />
-                                        </TableCell>
-                                        <TableCell className="py-1 px-2">{user.name || '-'}</TableCell>
-                                        <TableCell className="py-1 px-2">{user.id}</TableCell>
-                                    </TableRow>
-                                ))}
+                                {availableUsers.map(user => {
+                                    const isSelected = selectedUsers.includes(user.id);
+
+                                    return (
+                                        <TableRow key={user.id} className="text-xs">
+                                            <TableCell className="py-1 px-2">
+                                                <Checkbox
+                                                    checked={isSelected}
+                                                    onCheckedChange={(checked) => handleUserToggle(user.id, checked as boolean)}
+                                                    className="scale-75"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="py-1 px-2">{user.name || '-'}</TableCell>
+                                            <TableCell className="py-1 px-2">{user.id}</TableCell>
+                                        </TableRow>
+                                    );
+                                })}
                                 {availableUsers.length === 0 && (
                                     <TableRow>
                                         <TableCell className="text-center py-2 text-xs" colSpan={3}>
-                                            No available users
+                                            {userList && userList.length > 0 ? "All users assigned" : "No users found"}
                                         </TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
                         </Table>
                     </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 mt-2">
+                        <Button
+                            type="button"
+                            size="sm"
+                            onClick={handleConfirmAdd}
+                            disabled={selectedUsers.length === 0}
+                            className="h-7 px-3 text-xs"
+                        >
+                            Add Selected ({selectedUsers.length})
+                        </Button>
+                    </div>
                 </div>
 
-                {/* Arrow Controls */}
-                <div className="col-span-2 flex flex-col justify-center items-center space-y-2">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleMoveToAssigned}
-                        disabled={selectedAvailableUsers.length === 0}
-                        className="h-8 w-8 p-0"
-                        title="Add selected users"
-                    >
-                        <ArrowRight className="w-3 h-3" />
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleMoveToAvailable}
-                        disabled={selectedAssignedUsers.length === 0}
-                        className="h-8 w-8 p-0"
-                        title="Remove selected users"
-                    >
-                        <ArrowLeft className="w-3 h-3" />
-                    </Button>
+                {/* Arrow */}
+                <div className="col-span-2 flex items-center justify-center">
+                    <div className="text-2xl text-gray-400">→</div>
                 </div>
 
-                {/* Assigned Users Table */}
+                {/* Assigned Users */}
                 <div className="col-span-5">
                     <div className="flex items-center justify-between mb-2">
-                        <Label className="text-xs font-medium">Assigned Users</Label>
+                        <h4 className="text-xs font-medium">Assigned Users</h4>
                         <span className="text-xs">({assignedUserIds.length})</span>
                     </div>
-                    <div className="h-32 overflow-y-auto">
+                    <div className="h-48 overflow-y-auto border rounded">
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead className="text-xs font-medium py-1 px-2 w-8">
-                                        <Checkbox
-                                            checked={isAllAssignedSelected}
-                                            onCheckedChange={handleSelectAllAssigned}
-                                            className="scale-75"
-                                        />
-                                    </TableHead>
                                     <TableHead className="text-xs font-medium py-1 px-2">Name</TableHead>
                                     <TableHead className="text-xs font-medium py-1 px-2">ID</TableHead>
+                                    <TableHead className="text-xs font-medium py-1 px-2 w-16">Action</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {assignedUserIds.map(userId => {
                                     const user = userList?.find(u => u.id === userId);
+                                    console.log(`🔍 Assigned user ${userId} found in userList:`, user);
                                     return (
                                         <TableRow key={userId} className="text-xs">
-                                            <TableCell className="py-1 px-2">
-                                                <Checkbox
-                                                    checked={selectedAssignedUsers.includes(userId)}
-                                                    onCheckedChange={(checked) => toggleAssignedUser(userId, checked as boolean)}
-                                                    className="scale-75"
-                                                />
-                                            </TableCell>
                                             <TableCell className="py-1 px-2">{user?.name || '-'}</TableCell>
                                             <TableCell className="py-1 px-2">{userId}</TableCell>
+                                            <TableCell className="py-1 px-2">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleRemoveUser(userId)}
+                                                    className="h-6 w-6 p-0 text-xs"
+                                                >
+                                                    ×
+                                                </Button>
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -246,106 +225,22 @@ export default function UserLocation({
                 </div>
             </div>
 
-            {/* Manual User ID Input (Fallback) */}
-            <div className="mt-4 pt-3">
-                <div className="flex items-center justify-between mb-2">
-                    <Label className="text-xs font-medium">Manual User ID Entry</Label>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => appendAddUser({ id: "" })}
-                        className="h-6 px-2 text-xs"
-                    >
-                        <Plus className="w-3 h-3 mr-1" />
-                        Add
-                    </Button>
+            {/* Debug Section */}
+            <div className="mt-4 p-2 bg-yellow-50 border rounded text-xs">
+                <h4 className="font-medium mb-2">🔍 Debug Information</h4>
+                <div className="space-y-1">
+                    <div><strong>addUserFields length:</strong> {addUserFields.length}</div>
+                    <div><strong>assignedUserIds:</strong> [{assignedUserIds.join(', ')}]</div>
+                    <div><strong>selectedUsers:</strong> [{selectedUsers.join(', ')}]</div>
+                    <div><strong>availableUsers count:</strong> {availableUsers.length}</div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {addUserFields.filter(field => field.id.trim() === "").map((field) => {
-                        const actualIndex = addUserFields.findIndex(f => f.id === field.id && f === field);
-                        return (
-                            <div key={field.id} className="flex gap-1">
-                                <FormField
-                                    control={control}
-                                    name={`users.add.${actualIndex}.id`}
-                                    render={({ field: inputField }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="Enter User ID"
-                                                    {...inputField}
-                                                    className="h-7 text-xs"
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => removeAddUser(actualIndex)}
-                                    className="h-7 w-7 p-0"
-                                >
-                                    <Minus className="w-3 h-3" />
-                                </Button>
-                            </div>
-                        );
-                    })}
+                <div className="mt-2">
+                    <strong>addUserFields structure:</strong>
+                    <pre className="text-xs bg-white p-1 rounded border mt-1">
+                        {JSON.stringify(addUserFields, null, 2)}
+                    </pre>
                 </div>
             </div>
-
-            {/* Remove Users Section (if needed) */}
-            {removeUserFields.length > 0 && (
-                <div className="mt-4 pt-3">
-                    <div className="flex items-center justify-between mb-2">
-                        <Label className="text-xs font-medium">Users to Remove</Label>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => appendRemoveUser({ id: "" })}
-                            className="h-6 px-2 text-xs"
-                        >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Add
-                        </Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {removeUserFields.map((field, index) => (
-                            <div key={field.id} className="flex gap-1">
-                                <FormField
-                                    control={control}
-                                    name={`users.remove.${index}.id`}
-                                    render={({ field: inputField }) => (
-                                        <FormItem className="flex-1">
-                                            <FormControl>
-                                                <Input
-                                                    placeholder="User ID to remove"
-                                                    {...inputField}
-                                                    className="h-7 text-xs"
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    )}
-                                />
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => removeRemoveUser(index)}
-                                    className="h-7 w-7 p-0"
-                                >
-                                    <Minus className="w-3 h-3" />
-                                </Button>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </Card>
     );
 }

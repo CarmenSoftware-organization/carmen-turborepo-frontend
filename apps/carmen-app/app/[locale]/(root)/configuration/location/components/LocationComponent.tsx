@@ -10,10 +10,11 @@ import { Button } from "@/components/ui/button";
 import StatusSearchDropdown from '@/components/ui-custom/StatusSearchDropdown';
 import SortComponent from '@/components/ui-custom/SortComponent';
 import { boolFilterOptions } from '@/constants/options';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DataDisplayTemplate from '@/components/templates/DataDisplayTemplate';
 import ListLocations from './ListLocations';
 import { Link } from '@/lib/navigation';
+import SignInDialog from '@/components/SignInDialog';
 
 export default function LocationComponent() {
     const tCommon = useTranslations('Common');
@@ -25,6 +26,7 @@ export default function LocationComponent() {
     const [sort, setSort] = useURL('sort');
     const [page] = useURL('page');
     const [statusOpen, setStatusOpen] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
     const { data: locations, isLoading, error } = useLocationsQuery({
         token,
@@ -37,6 +39,12 @@ export default function LocationComponent() {
             perPage: "10"
         }
     });
+
+    useEffect(() => {
+        if ((error as { response?: { status?: number } })?.response?.status === 401) {
+            setLoginDialogOpen(true);
+        }
+    }, [error, setLoginDialogOpen]);
 
     const sortFields = [
         { key: 'name', label: tHeader('name') },
@@ -71,9 +79,6 @@ export default function LocationComponent() {
         </div>
     );
 
-    if (error) {
-        return <div>Error loading locations: {error.message}</div>;
-    }
 
     const filters = (
         <div className="filter-container" data-id="location-list-filters">
@@ -109,13 +114,19 @@ export default function LocationComponent() {
         />
 
     return (
-        <DataDisplayTemplate
-            title={tStoreLocation('title')}
-            actionButtons={actionButtons}
-            filters={filters}
-            content={content}
-            data-id="location-list-template"
-        />
+        <>
+            <DataDisplayTemplate
+                title={tStoreLocation('title')}
+                actionButtons={actionButtons}
+                filters={filters}
+                content={content}
+                data-id="location-list-template"
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+            />
+        </>
     );
 };
 

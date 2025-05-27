@@ -33,7 +33,7 @@ export const getAllApiRequest = async (
         return response.data
     } catch (error) {
         console.error(`${errorContext}:`, error);
-        return error;
+        throw error;
     }
 };
 
@@ -52,7 +52,7 @@ export const getByIdApiRequest = async (
         return response.data;
     } catch (error) {
         console.error(`${errorContext}:`, error);
-        return error;
+        throw error;
     }
 }
 
@@ -71,7 +71,7 @@ export const postApiRequest = async <T = unknown, R = unknown>(
         return response.data;
     } catch (error) {
         console.error(`${errorContext}:`, error);
-        return error;
+        throw error;
     }
 };
 

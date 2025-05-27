@@ -35,21 +35,6 @@ export default function ListLocations({
     if (isLoading) return <TableBodySkeleton rows={8} />;
 
     return (
-        // <div>
-        //     {locations?.map((location) => (
-        //         <div key={location.id}>
-        //             <div className="flex items-center gap-2">
-        //                 <h1>{location.name}</h1>
-        //                 <Button
-        //                     asChild
-        //                 >
-        //                     <Link href={`/configuration/location/${location.id}`}>Edit</Link>
-        //                 </Button>
-        //             </div>
-        //         </div>
-        //     ))}
-        // </div>
-
         <div className="space-y-4">
             <Table className="border-collapse">
                 <TableHeader>
