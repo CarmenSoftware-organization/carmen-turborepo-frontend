@@ -15,3 +15,9 @@ export enum PrDocType {
     TEMPLATE = 1,
 }
 
+
+export enum TaxType {
+    NONE = 'none',
+    INCLUDED = 'included',
+    ADD = 'add',
+}

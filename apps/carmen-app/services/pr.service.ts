@@ -51,19 +51,17 @@ export const createPrService = async (
     }
 }
 
+
 export const updatePrService = async (
     token: string,
     tenantId: string,
     id: string,
     data: PrSchemaV2Dto
 ) => {
-    console.log('data updatePrService', data);
-
     try {
         const response = await axios.put(`${API_URL}/${id}`, data, {
             headers: requestHeaders(token, tenantId)
         });
-        console.log('response updatePrService', response);
 
         return response.data;
     } catch (error) {

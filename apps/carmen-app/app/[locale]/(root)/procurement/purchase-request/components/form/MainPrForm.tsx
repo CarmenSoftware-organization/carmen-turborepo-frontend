@@ -23,8 +23,7 @@ import ItemPr from "./ItemPr";
 import WorkflowPr from "./WorkflowPr";
 import ItemPrDialog from "./ItemPrDialog";
 import { useAuth } from "@/context/AuthContext";
-import { postPrData } from "./post-pr";
-import { usePrMutation } from "@/hooks/usePr";
+import { usePrMutation, useUpdatePrMutation } from "@/hooks/usePr";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
@@ -42,7 +41,8 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     const [openDialogItemPr, setOpenDialogItemPr] = useState<boolean>(false);
     const [currentItemData, setCurrentItemData] = useState<ItemWithId | undefined>(undefined);
     const [currentItems, setCurrentItems] = useState<ItemWithId[]>([]);
-    const { mutate: createPr, isSuccess, isPending } = usePrMutation(token, tenantId);
+    const { mutate: createPr, isSuccess: isCreateSuccess, isPending: isCreatePending, isError: isCreateError } = usePrMutation(token, tenantId);
+    const { mutate: updatePr, isSuccess: isUpdateSuccess, isPending: isUpdatePending, isError: isUpdateError } = useUpdatePrMutation(token, tenantId);
 
     // Reset current items when initValues changes
     useEffect(() => {
@@ -51,13 +51,13 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
         }
     }, [initValues?.purchase_request_detail]);
 
-    const defaultValues: Partial<PrSchemaV2Dto> = {
-        pr_date: new Date(initValues?.pr_date || new Date()) as Date,
+    const defaultValues = {
+        pr_date: initValues?.pr_date ?? new Date().toISOString(),
         pr_status: initValues?.pr_status ?? "draft",
         requestor_id: initValues?.requestor_id ?? "",
         department_id: initValues?.department_id ?? "",
         is_active: initValues?.is_active ?? true,
-        doc_version: initValues?.doc_version ? Number(initValues.doc_version) : 1,
+        doc_version: initValues?.doc_version ? parseFloat(initValues.doc_version.toString()) : 1.0,
         note: initValues?.note ?? "",
         info: {
             priority: initValues?.info?.priority ?? "",
@@ -68,7 +68,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             project: initValues?.dimension?.project ?? "",
         },
         workflow_id: "f224d743-7cfa-46f6-8f72-85b14c6a355e",
-        current_workflow_status: "",
+        current_workflow_status: "pending",
         workflow_history: initValues?.workflow_history || [],
         purchase_request_detail: {
             add: [],
@@ -94,16 +94,40 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             errorFields: Object.keys(errors)
         });
     }, [form.formState.isDirty, form.formState.errors, form.formState.isValid]);
-    console.log("data log", currentItemData);
+
+    useEffect(() => {
+        if (isCreateSuccess) {
+            setCurrentMode(formType.VIEW);
+            toastSuccess({ message: "Purchase Request created successfully" });
+            router.push("/procurement/purchase-request");
+        }
+    }, [isCreateSuccess]);
+
+    useEffect(() => {
+        if (isUpdateSuccess) {
+            setCurrentMode(formType.VIEW);
+            toastSuccess({ message: "Purchase Request updated successfully" });
+        }
+    }, [isUpdateSuccess]);
+
+    useEffect(() => {
+        if (isCreateError) {
+            toastError({ message: "Error creating Purchase Request" });
+        }
+    }, [isCreateError]);
+
+    useEffect(() => {
+        if (isUpdateError) {
+            toastError({ message: "Error updating Purchase Request" });
+        }
+    }, [isUpdateError]);
 
     const onSubmit = async (data: PrSchemaV2Dto) => {
         try {
-            createPr(data);
-            if (isSuccess) {
-                setCurrentMode(formType.VIEW);
-                toastSuccess({ message: "Purchase Request created successfully" });
-            } else {
-                toastError({ message: "Error creating Purchase Request" });
+            if (currentMode === formType.ADD) {
+                createPr(data);
+            } else if (currentMode === formType.EDIT && initValues?.id) {
+                updatePr({ id: initValues.id, data });
             }
         } catch (error) {
             console.error("Error in form submission:", error);
@@ -160,20 +184,11 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
         setCurrentItems(currentItems.filter(item => item.id !== itemId));
     };
 
-    const handleTestPostPr = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        createPr(postPrData);
-    }
-
     return (
         <div className="relative">
             <div className="flex gap-4 relative">
                 <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
                     <Card className="p-4 mb-4">
-                        <Button variant={'destructive'} size={'sm'} onClick={handleTestPostPr}>
-                            test post pr
-                        </Button>
                         <Form {...form}>
                             <form
                                 className="space-y-4"
@@ -195,7 +210,11 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                                 <Button variant="outline" size={'sm'} onClick={() => router.push("/procurement/purchase-request")}>
                                                     <ChevronLeft className="h-4 w-4" /> Back
                                                 </Button>
-                                                <Button variant="default" size={'sm'} onClick={() => setCurrentMode(formType.EDIT)}>
+                                                <Button variant="default" size={'sm'} onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setCurrentMode(formType.EDIT);
+                                                }}>
                                                     <Pencil className="h-4 w-4" /> Edit
                                                 </Button>
                                             </>
@@ -204,7 +223,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                                 <Button variant="outline" size={'sm'} onClick={() => currentMode === formType.ADD ? router.push("/procurement/purchase-request") : setCurrentMode(formType.VIEW)}>
                                                     <X className="h-4 w-4" /> Cancel
                                                 </Button>
-                                                <Button variant="default" size={'sm'} type="submit" disabled={isPending}>
+                                                <Button variant="default" size={'sm'} type="submit" disabled={isCreatePending || isUpdatePending}>
                                                     <Save className="h-4 w-4" /> Save
                                                 </Button>
                                             </>

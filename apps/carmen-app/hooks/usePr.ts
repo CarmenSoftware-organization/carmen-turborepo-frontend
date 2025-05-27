@@ -3,7 +3,7 @@
 import { toastError } from "@/components/ui-custom/Toast";
 import { useAuth } from "@/context/AuthContext";
 import { GetAllPrDto, PrSchemaV2Dto } from "@/dtos/pr.dto";
-import { createPrService, getAllPrService, getPrByIdService } from "@/services/pr.service";
+import { createPrService, getAllPrService, getPrByIdService, updatePrService } from "@/services/pr.service";
 import { useCallback, useEffect, useState } from "react";
 import { PaginationDto } from "@/dtos/pagination.dto";
 import { useURL } from "./useURL";
@@ -105,6 +105,18 @@ export const usePrMutation = (token: string, tenantId: string) => {
 
     return useMutation({
         mutationFn: (prData: PrSchemaV2Dto) => createPrService(token, tenantId, prData),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["prs"] });
+        },
+    });
+};
+
+export const useUpdatePrMutation = (token: string, tenantId: string) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }: { id: string; data: PrSchemaV2Dto }) =>
+            updatePrService(token, tenantId, id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["prs"] });
         },

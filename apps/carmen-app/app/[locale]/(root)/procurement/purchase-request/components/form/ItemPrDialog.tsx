@@ -39,6 +39,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { TaxType } from "@/constants/enum";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
@@ -70,20 +71,20 @@ const createEmptyItem = (): ItemWithId => ({
     requested_base_qty: 0,
     requested_base_unit_id: '',
     currency_id: '',
-    exchange_rate: 0,
+    exchange_rate: 1.0,
     exchange_rate_date: new Date().toISOString(),
-    price: 0,
-    total_price: 0,
+    price: 0.0,
+    total_price: 0.0,
     foc: 0,
     foc_unit_id: '',
     tax_type_inventory_id: '',
     tax_type: 'include',
-    tax_rate: 0,
-    tax_amount: 0,
+    tax_rate: 0.0,
+    tax_amount: 0.0,
     is_tax_adjustment: false,
     is_discount: false,
-    discount_rate: 0,
-    discount_amount: 0,
+    discount_rate: 0.0,
+    discount_amount: 0.0,
     is_discount_adjustment: false,
     is_active: true,
     note: '',
@@ -147,14 +148,18 @@ export default function ItemPrDialog({
                 formData.id = localFormValues.id;
             }
 
-            // Ensure numeric values are properly converted
+            // Ensure numeric values are properly converted to float
             formData.requested_qty = parseFloat(formData.requested_qty?.toString() ?? "0") || 0;
-            formData.price = parseFloat(formData.price?.toString() ?? "0") || 0;
-            formData.exchange_rate = parseFloat(formData.exchange_rate?.toString() ?? "1") || 1;
+            formData.price = parseFloat(formData.price?.toString() ?? "0") || 0.0;
+            formData.exchange_rate = parseFloat(formData.exchange_rate?.toString() ?? "1") || 1.0;
             formData.foc = parseFloat(formData.foc?.toString() ?? "0") || 0;
+            formData.tax_rate = parseFloat(formData.tax_rate?.toString() ?? "0") || 0.0;
+            formData.tax_amount = parseFloat(formData.tax_amount?.toString() ?? "0") || 0.0;
+            formData.discount_rate = parseFloat(formData.discount_rate?.toString() ?? "0") || 0.0;
+            formData.discount_amount = parseFloat(formData.discount_amount?.toString() ?? "0") || 0.0;
 
             // Calculate total price
-            formData.total_price = formData.price * formData.requested_qty;
+            formData.total_price = parseFloat((formData.price * formData.requested_qty).toString());
 
             // Ensure dimension object exists
             if (!formData.dimension) {
@@ -286,6 +291,7 @@ export default function ItemPrDialog({
                                                     value={field.value ?? 0}
                                                     onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                                     disabled={isViewMode}
+                                                    min={0}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -324,6 +330,7 @@ export default function ItemPrDialog({
                                                     value={field.value ?? 0}
                                                     onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                                     disabled={isViewMode}
+                                                    min={0}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -379,6 +386,7 @@ export default function ItemPrDialog({
                                                     value={field.value ?? 0}
                                                     onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                                     disabled={isViewMode}
+                                                    min={0}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -413,10 +421,12 @@ export default function ItemPrDialog({
                                             <FormControl>
                                                 <Input
                                                     type="number"
+                                                    step="0.01"
                                                     {...field}
                                                     value={field.value ?? 0}
                                                     onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                                                     disabled={isViewMode}
+                                                    min={0.01}
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -464,10 +474,12 @@ export default function ItemPrDialog({
                                                 <FormControl>
                                                     <Input
                                                         type="number"
+                                                        step="0.01"
                                                         {...field}
                                                         value={field.value ?? 1}
                                                         onChange={(e) => field.onChange(parseFloat(e.target.value) || 1)}
                                                         disabled={isViewMode}
+                                                        min={0.00}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -485,6 +497,7 @@ export default function ItemPrDialog({
                                                         type="number"
                                                         {...field}
                                                         disabled={true}
+                                                        min={0.00}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -502,6 +515,7 @@ export default function ItemPrDialog({
                                                         type="number"
                                                         {...field}
                                                         disabled={true}
+                                                        min={0.00}
                                                     />
                                                 </FormControl>
                                                 <FormMessage />
@@ -550,7 +564,7 @@ export default function ItemPrDialog({
                                                 <FormLabel>Tax Calculation</FormLabel>
                                                 <FormControl>
                                                     <Select
-                                                        value={field.value ?? 'include'}
+                                                        value={field.value ?? TaxType.INCLUDED}
                                                         onValueChange={field.onChange}
                                                         disabled={isViewMode}
                                                     >
@@ -558,8 +572,9 @@ export default function ItemPrDialog({
                                                             <SelectValue placeholder="Select tax calculation method" />
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            <SelectItem value="include">Tax Inclusive</SelectItem>
-                                                            <SelectItem value="exclude">Tax Exclusive</SelectItem>
+                                                            <SelectItem value={TaxType.NONE}>None</SelectItem>
+                                                            <SelectItem value={TaxType.INCLUDED}>Inclusive</SelectItem>
+                                                            <SelectItem value={TaxType.ADD}>Add</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                 </FormControl>
