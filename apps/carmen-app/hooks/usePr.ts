@@ -3,7 +3,7 @@
 import { toastError } from "@/components/ui-custom/Toast";
 import { useAuth } from "@/context/AuthContext";
 import { GetAllPrDto, PrSchemaV2Dto } from "@/dtos/pr.dto";
-import { createPrService, getAllPr } from "@/services/pr.service";
+import { createPrService, getAllPrService, getPrByIdService } from "@/services/pr.service";
 import { useCallback, useEffect, useState } from "react";
 import { PaginationDto } from "@/dtos/pagination.dto";
 import { useURL } from "./useURL";
@@ -40,7 +40,11 @@ export const usePr = () => {
             if (!token) return;
             try {
                 setIsLoading(true);
-                const result = await getAllPr(token, tenantId);
+                const result = await getAllPrService(token, tenantId, {
+                    page,
+                    sort,
+                    search
+                });
 
                 // Handle unauthorized response
                 if (result.status === 401) {

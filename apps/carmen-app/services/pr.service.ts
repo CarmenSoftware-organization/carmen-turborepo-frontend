@@ -1,59 +1,37 @@
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
-import { requestHeaders } from "@/lib/config.api";
+import { getAllApiRequest, getByIdApiRequest, requestHeaders } from "@/lib/config.api";
 import { PrSchemaV2Dto } from "@/dtos/pr.dto";
+import { ParamsGetDto } from "@/dtos/param.dto";
 
 const API_URL = `${backendApi}/api/purchase-request`;
 
-export const getAllPr = async (
+export const getAllPrService = async (
     token: string,
     tenantId: string,
-    params: {
-        search?: string;
-        page?: string;
-        perPage?: string;
-        sort?: string;
-        filter?: string;
-    } = {}
+    params?: ParamsGetDto
 ) => {
-
-    const query = new URLSearchParams();
-
-    Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined && value !== '') {
-            query.append(key, String(value));
-        }
-    });
-
-    const queryString = query.toString();
-    const url = queryString ? `${API_URL}?${queryString}` : API_URL;
-
-    try {
-        const response = await axios.get(url, {
-            headers: requestHeaders(token, tenantId)
-        });
-
-        console.log('response ss', response);
-
-        return response.data;
-    } catch (error) {
-        return error
-    }
+    return getAllApiRequest(
+        API_URL,
+        token,
+        tenantId,
+        'Failed to fetch purchase requests',
+        params
+    );
 };
 
-export const getPrById = async (
+export const getPrByIdService = async (
     token: string,
     tenantId: string,
     id: string
 ) => {
-    try {
-        const response = await axios.get(`${API_URL}/${id}`, {
-            headers: requestHeaders(token, tenantId)
-        });
-        return response.data;
-    } catch (error) {
-        return error
-    }
+    const API_URL_BY_ID = `${API_URL}/${id}`;
+    return getByIdApiRequest(
+        API_URL_BY_ID,
+        token,
+        tenantId,
+        'Failed to fetch purchase request'
+    );
 }
 
 export const createPrService = async (

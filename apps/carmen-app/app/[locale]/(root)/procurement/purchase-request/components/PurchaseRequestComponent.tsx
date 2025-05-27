@@ -13,10 +13,9 @@ import PurchaseRequestGrid from "./PurchaseRequestGrid";
 import DialogNewPr from "./DialogNewPr";
 import { VIEW } from "@/constants/enum";
 import SignInDialog from "@/components/SignInDialog";
-import { PurchaseRequestDto } from "@/dtos/pr.dto";
 import { useAuth } from "@/context/AuthContext";
-import { getAllPr } from "@/services/pr.service";
 import ToggleView from "@/components/ui-custom/ToggleView";
+import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
 
 
 const sortFields = [
@@ -34,45 +33,21 @@ export default function PurchaseRequestComponent() {
     const [view, setView] = useState<VIEW>(VIEW.LIST);
     const [search, setSearch] = useURL('search');
     const [sort, setSort] = useURL('sort');
-    const [prs, setPrs] = useState<PurchaseRequestDto[]>([]);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [page, setPage] = useURL('page');
-    const [totalPages, setTotalPages] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
+
+    const { data: prs, isLoading } = usePurchaseRequest(token, tenantId, {
+        page,
+        sort,
+        search
+    });
+
 
     useEffect(() => {
         if (search) {
             setPage('');
         }
     }, [search, setPage]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-
-            try {
-                const result = await getAllPr(token, tenantId, {
-                    page,
-                    sort,
-                    search
-                });
-                if (result.status === 401) {
-                    setLoginDialogOpen(true);
-                    return;
-                }
-
-                setPrs(result.data);
-                setTotalPages(result.paginate.pages);
-                setPage(result.paginate.page);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        fetchData();
-    }, [token, tenantId, page, setPage, sort, search]);
-
 
     const title = "Purchase Request";
 
@@ -136,19 +111,20 @@ export default function PurchaseRequestComponent() {
 
     const currentPageNumber = parseInt(page || '1');
 
+
     const content = view === VIEW.LIST ? (
         <PurchaseRequestList
-            purchaseRequests={prs}
+            purchaseRequests={prs?.data}
             currentPage={currentPageNumber}
-            totalPages={totalPages}
+            totalPages={prs?.paginate.pages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
         />
     ) : (
         <PurchaseRequestGrid
-            purchaseRequests={prs}
+            purchaseRequests={prs?.data}
             currentPage={currentPageNumber}
-            totalPages={totalPages}
+            totalPages={prs?.paginate.pages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
         />

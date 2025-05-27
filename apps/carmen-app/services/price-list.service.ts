@@ -24,8 +24,9 @@ export const getPriceListByIdService = async (
     tenantId: string,
     id: string
 ) => {
+    const API_URL_BY_ID = `${API_URL}/${id}`;
     return getByIdApiRequest(
-        `${API_URL}/${id}`,
+        API_URL_BY_ID,
         token,
         tenantId,
         'Failed to fetch price list'

@@ -7,17 +7,8 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
-
-type TaxType = {
-    value: string;
-    label: string;
-}
-
-const mockTaxType: TaxType[] = [
-    { value: '462cc29d-8a9b-4d34-bc18-a6d179012fdf', label: 'add' },
-    { value: '462cc29d-8a9b-4d34-bc18-a6d179012fdf', label: 'none' },
-    { value: '462cc29d-8a9b-4d34-bc18-a6d179012fdf  ', label: 'include' },
-];
+import { useAuth } from "@/context/AuthContext";
+import { useTaxTypeInventoryQuery } from "@/hooks/useTaxTypeInventory";
 
 export default function TaxTypeLookup({
     value,
@@ -25,7 +16,12 @@ export default function TaxTypeLookup({
     placeholder = "Select tax type",
     disabled = false,
 }: Readonly<PropsLookup>) {
-    const isLoading = false;
+    const { token, tenantId } = useAuth();
+
+    const { data: taxTypeData, isLoading } = useTaxTypeInventoryQuery(
+        token,
+        tenantId
+    );
 
     if (isLoading) {
         return (
@@ -48,10 +44,10 @@ export default function TaxTypeLookup({
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-                {mockTaxType && mockTaxType.length > 0 ? (
-                    mockTaxType.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                            {item.label}
+                {taxTypeData && taxTypeData.length > 0 ? (
+                    taxTypeData.map((item) => (
+                        <SelectItem key={item.id} value={item.id}>
+                            {item.name}
                         </SelectItem>
                     ))
                 ) : (

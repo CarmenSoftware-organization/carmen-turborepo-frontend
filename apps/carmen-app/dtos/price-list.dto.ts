@@ -11,11 +11,11 @@ export interface PriceListDto {
     product_name: string;
     unit_id: string;
     unit_name: string;
-    price: string;
-    price_without_vat: string;
-    price_with_vat: string;
+    price: number;
+    price_without_vat: number;
+    price_with_vat: number;
     tax_type: "add" | "include" | "none";
-    tax_rate: string;
+    tax_rate: number;
     is_active: boolean;
     note: string;
     info: Record<string, string>;

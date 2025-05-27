@@ -27,9 +27,6 @@ type PriceList = {
     max: number;
 }
 
-const mockPriceList: PriceList[] = [
-    { value: '14562d9e-b043-4bde-a410-1c1e1246f345', label: 'ต่ำกว่า 500 บาท', min: 0, max: 499 }
-];
 
 export default function PriceListLookup({
     value,
@@ -39,15 +36,17 @@ export default function PriceListLookup({
 }: Readonly<PropsLookup>) {
     const { token, tenantId } = useAuth();
 
-    const { data: priceLists, isLoading } = usePriceList(token, tenantId);
-
+    const { data, isLoading } = usePriceList(token, tenantId);
+    const priceLists = data?.data;
     const [open, setOpen] = useState(false);
 
     const selectedPriceList = useMemo(() => {
-        if (!value || !mockPriceList || !Array.isArray(mockPriceList)) return null;
-        const found = mockPriceList.find(price => price.value === value);
-        return found?.label ?? null;
-    }, [value]);
+        if (!value || !priceLists || !Array.isArray(priceLists)) return null;
+        const found = priceLists.find(price => price.id === value);
+        return found?.product_name ?? null;
+    }, [value, priceLists]);
+
+    console.log('priceLists lookup', priceLists);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
