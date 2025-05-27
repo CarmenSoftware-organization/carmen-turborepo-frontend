@@ -1,6 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { getAllPriceListService, getPriceListByIdService } from "@/services/price-list.service";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+    createPriceListService,
+    deletePriceListService,
+    getAllPriceListService,
+    getPriceListByIdService,
+    updatePriceListService
+} from "@/services/price-list.service";
 import { ParamsGetDto } from "@/dtos/param.dto";
+import { CreatePriceListDto, UpdatePriceListDto } from "@/dtos/price-list.dto";
 
 export const usePriceList = (
     token: string,
@@ -45,4 +52,42 @@ export const usePriceListById = (
     const isUnauthorized = error instanceof Error && error.message.includes('Unauthorized');
 
     return { data, isLoading, error, isUnauthorized };
+}
+
+export const useCreatePriceList = (
+    token: string,
+    tenantId: string
+) => {
+    return useMutation({
+        mutationFn: async (dataPriceList: CreatePriceListDto) => {
+            return await createPriceListService(token, tenantId, dataPriceList);
+        },
+    });
+}
+
+export const useUpdatePriceList = (
+    token: string,
+    tenantId: string,
+    id: string,
+    dataPriceList: UpdatePriceListDto
+) => {
+    const { data, error, isPending } = useMutation({
+        mutationFn: async () => {
+            return await updatePriceListService(token, tenantId, id, dataPriceList);
+        },
+    });
+
+    return { data, error, isPending };
+};
+
+
+export const useDeletePriceList = (
+    token: string,
+    tenantId: string
+) => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            return await deletePriceListService(token, tenantId, id);
+        },
+    });
 }

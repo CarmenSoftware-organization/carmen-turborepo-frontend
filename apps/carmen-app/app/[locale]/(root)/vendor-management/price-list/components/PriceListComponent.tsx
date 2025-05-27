@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Printer } from "lucide-react";
 import { useURL } from "@/hooks/useURL";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
@@ -14,6 +14,7 @@ import ListPriceList from "./ListPriceList";
 import { useAuth } from "@/context/AuthContext";
 import { usePriceList } from "@/hooks/usePriceList";
 import SignInDialog from "@/components/SignInDialog";
+import FormDialogPriceList from "./FormDialogPriceList";
 
 const sortFields = [
     { key: 'name', label: 'Name' },
@@ -28,6 +29,7 @@ export default function PriceListComponent() {
     const [statusOpen, setStatusOpen] = useState(false);
     const { token, tenantId } = useAuth();
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [addDialogOpen, setAddDialogOpen] = useState(false);
 
     const { data: response, isLoading, isUnauthorized } = usePriceList(token, tenantId, {
         search,
@@ -43,15 +45,12 @@ export default function PriceListComponent() {
         }
     }, [isUnauthorized]);
 
-    console.log('response', response);
-
-
     const actionButtons = (
         <div className="action-btn-container" data-id="price-list-list-action-buttons">
-            <Button size={'sm'}>
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
-            </Button>
+            <FormDialogPriceList
+                open={addDialogOpen}
+                onOpenChange={setAddDialogOpen}
+            />
             <Button
                 variant="outline"
                 size={'sm'}

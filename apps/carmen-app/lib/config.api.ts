@@ -75,3 +75,40 @@ export const postApiRequest = async <T = unknown, R = unknown>(
     }
 };
 
+export const updateApiRequest = async <T = unknown, R = unknown>(
+    API_URL: string,
+    token: string,
+    tenantId: string,
+    data: T,
+    errorContext: string,
+    method: 'PUT' | 'PATCH',
+) => {
+    try {
+        const response = method === 'PUT'
+            ? await axios.put<R>(API_URL, data, { headers: requestHeaders(token, tenantId) })
+            : await axios.patch<R>(API_URL, data, { headers: requestHeaders(token, tenantId) });
+
+        return response.data;
+    } catch (error) {
+        console.error(`${errorContext}:`, error);
+        throw error;
+    }
+};
+
+export const deleteApiRequest = async (
+    API_URL: string,
+    token: string,
+    tenantId: string,
+    errorContext: string,
+) => {
+    try {
+        const response = await axios.delete(API_URL, {
+            headers: requestHeaders(token, tenantId)
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error(`${errorContext}:`, error);
+        throw error;
+    }
+};

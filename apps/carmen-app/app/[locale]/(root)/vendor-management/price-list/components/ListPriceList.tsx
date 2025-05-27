@@ -1,3 +1,4 @@
+import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -7,6 +8,21 @@ import { Link } from "@/lib/navigation";
 import { format } from "date-fns";
 import { FileText, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useDeletePriceList } from "@/hooks/usePriceList";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ListPriceListProps {
     readonly priceLists?: PriceListDto[];
@@ -14,7 +30,13 @@ interface ListPriceListProps {
 }
 
 export default function ListPriceList({ priceLists = [], isLoading = false }: ListPriceListProps) {
+    const { token, tenantId } = useAuth();
+    const queryClient = useQueryClient();
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
+    const [deleteId, setDeleteId] = useState<string>('');
+
+    const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, tenantId);
+
     const handleSelectItem = (id: string) => {
         setSelectedItems(prev =>
             prev.includes(id)
@@ -33,10 +55,26 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         }
     };
 
+    const handleDelete = (id: string) => {
+        setDeleteId(id);
+        deletePriceList(id, {
+            onSuccess: () => {
+                toastSuccess({ message: 'Price list deleted successfully' });
+                setDeleteId('');
+                // Invalidate and refetch price list data
+                queryClient.invalidateQueries({ queryKey: ["price-list", tenantId] });
+            },
+            onError: () => {
+                toastError({ message: 'Failed to delete price list' });
+                setDeleteId('');
+            }
+        });
+    };
+
     const isAllSelected = priceLists?.length > 0 && selectedItems.length === priceLists.length;
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <TableBodySkeleton rows={6} />
     }
 
     return (
@@ -84,9 +122,36 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
                                             <FileText className="h-3 w-3" />
                                         </Link>
                                     </Button>
-                                    <Button variant="ghost" size="sm" className="w-7 h-7">
-                                        <Trash2 className="h-3 w-3" />
-                                    </Button>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="w-7 h-7"
+                                                disabled={isDeleting && deleteId === priceList.id}
+                                            >
+                                                <Trash2 className="h-3 w-3" />
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Delete Price List</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Are you sure you want to delete this price list for "{priceList.product_name}"?
+                                                    This action cannot be undone.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                    onClick={() => handleDelete(priceList.id)}
+                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                                >
+                                                    Delete
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </TableCell>
                             </TableRow>
                         ))
