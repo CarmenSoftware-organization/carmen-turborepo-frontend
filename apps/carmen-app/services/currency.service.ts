@@ -2,24 +2,19 @@ import { CurrencyDto } from "@/dtos/config.dto";
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
+import { ParamsGetDto } from "@/dtos/param.dto";
 
 const API_URL = `${backendApi}/api/config/currencies`;
 
 export const getCurrenciesService = async (
     token: string,
     tenantId: string,
-    params: {
-        search?: string;
-        page?: string;
-        perPage?: string;
-        sort?: string;
-        filter?: string;
-    } = {}
+    params?: ParamsGetDto
 ) => {
     try {
 
         const query = new URLSearchParams();
-        Object.entries(params).forEach(([key, value]) => {
+        Object.entries(params ?? {}).forEach(([key, value]) => {
             if (value !== undefined && value !== '') {
                 query.append(key, String(value));
             }

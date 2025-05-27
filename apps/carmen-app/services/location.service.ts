@@ -13,8 +13,8 @@ export const getAllLocations = async (
         API_URL,
         token,
         tenantId,
-        params,
-        'Failed to fetch locations'
+        'Failed to fetch locations',
+        params
     );
 };
 

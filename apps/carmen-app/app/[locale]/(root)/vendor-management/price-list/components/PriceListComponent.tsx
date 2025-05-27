@@ -8,11 +8,12 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { boolFilterOptions } from "@/constants/options";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
 import { useAuth } from "@/context/AuthContext";
 import { usePriceList } from "@/hooks/usePriceList";
+import SignInDialog from "@/components/SignInDialog";
 
 const sortFields = [
     { key: 'name', label: 'Name' },
@@ -26,14 +27,24 @@ export default function PriceListComponent() {
     const [sort, setSort] = useURL('sort');
     const [statusOpen, setStatusOpen] = useState(false);
     const { token, tenantId } = useAuth();
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
-    const { data: response, isLoading, error, isUnauthorized } = usePriceList(token, tenantId, {
+    const { data: response, isLoading, isUnauthorized } = usePriceList(token, tenantId, {
         search,
         filter,
         sort
     });
 
     const priceLists = response?.data ?? [];
+
+    useEffect(() => {
+        if (isUnauthorized) {
+            setLoginDialogOpen(true);
+        }
+    }, [isUnauthorized]);
+
+    console.log('response', response);
+
 
     const actionButtons = (
         <div className="action-btn-container" data-id="price-list-list-action-buttons">
@@ -90,11 +101,17 @@ export default function PriceListComponent() {
     const content = <ListPriceList priceLists={priceLists} isLoading={isLoading} />
 
     return (
-        <DataDisplayTemplate
-            content={content}
-            title="Price List"
-            actionButtons={actionButtons}
-            filters={filters}
-        />
+        <>
+            <DataDisplayTemplate
+                content={content}
+                title="Price List"
+                actionButtons={actionButtons}
+                filters={filters}
+            />
+            <SignInDialog
+                open={loginDialogOpen}
+                onOpenChange={setLoginDialogOpen}
+            />
+        </>
     )
 }

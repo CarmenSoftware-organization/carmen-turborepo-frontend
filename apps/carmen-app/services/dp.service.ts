@@ -15,8 +15,8 @@ export const getAllDeliveryPoints = async (
         API_URL,
         token,
         tenantId,
-        params,
-        'Failed to fetch delivery points'
+        'Failed to fetch delivery points',
+        params
     );
 };
 

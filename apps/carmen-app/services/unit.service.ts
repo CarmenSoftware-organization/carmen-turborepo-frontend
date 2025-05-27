@@ -15,8 +15,8 @@ export const getAllUnits = async (
         API_URL,
         token,
         tenantId,
-        params,
-        'Failed to fetch units'
+        'Failed to fetch units',
+        params
     );
 };
 
