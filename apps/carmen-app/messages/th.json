@@ -165,7 +165,9 @@
     "finance": "การกิจการ",
     "Finance": {
       "accountCodeMapping": "การจัดการรหัสบัญชี",
-      "budgetPlanningAndControl": "การวางแผนงบประมาณและควบคุม"
+      "budgetPlanningAndControl": "การวางแผนงบประมาณและควบคุม",
+      "creditTerms": "เงื่อนไขการชำระเงิน",
+      "exchangeRates": "อัตราแลกเปลี่ยนเงิน"
     },
     "systemAdministration": "การจัดการระบบ",
     "Configuration": {

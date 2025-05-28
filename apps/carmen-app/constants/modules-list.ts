@@ -272,6 +272,10 @@ export const moduleItems: ModuleItem[] = [
                 labelKey: "Modules.Finance.budgetPlanningAndControl",
                 href: "/finance/budget-planning-and-control",
             },
+            {
+                labelKey: "Modules.Finance.creditTerms",
+                href: "/finance/credit-term",
+            },
         ]
     },
     {

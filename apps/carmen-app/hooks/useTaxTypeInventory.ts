@@ -3,8 +3,8 @@ import { getAllTaxTypeInventory, TaxTypeInventoryDto } from "@/services/tax-type
 import { ParamsGetDto } from "@/dtos/param.dto";
 
 export const useTaxTypeInventoryQuery = (
-    token: string | null | undefined,
-    tenantId: string | null | undefined,
+    token: string,
+    tenantId: string,
     params?: ParamsGetDto
 ) => {
     const { data, isLoading, error } = useQuery({

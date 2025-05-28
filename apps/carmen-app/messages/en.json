@@ -170,7 +170,9 @@
     "finance": "Finance",
     "Finance": {
       "accountCodeMapping": "Account Code Mapping",
-      "budgetPlanningAndControl": "Budget Planning and Control"
+      "budgetPlanningAndControl": "Budget Planning and Control",
+      "exchangeRates": "Exchange Rates",
+      "creditTerms": "Credit Terms"
     },
     "systemAdministration": "System Administration",
     "Configuration": {
