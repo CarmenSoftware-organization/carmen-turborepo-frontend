@@ -339,17 +339,20 @@ export default function DialogItemGrnForm({
 
     const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        e.stopPropagation();
         setIsDialogOpen(false);
         form.reset();
     }
 
     const openOnHand = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        e.stopPropagation();
         setOnHandDialogOpen(true);
     }
 
     const openOnOrder = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+        e.stopPropagation();
         setOnOrderDialogOpen(true);
     }
 
@@ -373,10 +376,16 @@ export default function DialogItemGrnForm({
                             <div className="flex justify-between items-center">
                                 <p className="text-base font-bold">{dialogTitle}</p>
                                 <div className="flex items-center gap-2">
-                                    <Button variant="outline" size="sm" onClick={handleCancel}>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleCancel}
+                                    >
                                         Cancel
                                     </Button>
                                     <Button
+                                        type="submit"
                                         variant="default"
                                         size="sm"
                                     // disabled={!form.formState.isValid}
@@ -475,10 +484,20 @@ export default function DialogItemGrnForm({
                                 <div className="flex justify-between">
                                     <p className="text-base font-bold">Quantity and Delivery</p>
                                     <div className="flex items-center gap-2">
-                                        <Button variant="outline" size="sm" onClick={openOnHand}>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={openOnHand}
+                                        >
                                             On Hand
                                         </Button>
-                                        <Button variant="outline" size="sm" onClick={openOnOrder}>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={openOnOrder}
+                                        >
                                             On Order
                                         </Button>
                                     </div>

@@ -119,13 +119,26 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
         console.log("Add new item");
     };
 
+    const handleDeleteClick = (e: React.MouseEvent, item: GoodReceivedNoteDetailItemDto) => {
+        e.preventDefault();
+        e.stopPropagation();
+        // Add delete logic here
+        console.log("Delete item:", item);
+    };
+
     const isAllSelected = allItems.length > 0 && selectedItems.length === allItems.length;
 
     return (
         <div className="space-y-2">
             <div className="flex justify-between items-center p-2">
                 <p className="text-base font-medium">Items Details</p>
-                <Button variant="default" size="sm" disabled={mode === formType.VIEW} onClick={handleAddNewClick}>
+                <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    disabled={mode === formType.VIEW}
+                    onClick={handleAddNewClick}
+                >
                     <Plus />
                     Add Item
                 </Button>
@@ -212,8 +225,9 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                 <TableCell className="text-right">{item.total_amount}</TableCell>
                                 {mode !== formType.VIEW && (
                                     <TableCell className="text-right">
-                                        <div className="flex justify-end">
+                                        <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
                                             <Button
+                                                type="button"
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={(e) => handleEditClick(e, item)}
@@ -222,8 +236,10 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                                 <Edit className="h-4 w-4" />
                                             </Button>
                                             <Button
+                                                type="button"
                                                 variant="ghost"
                                                 size="sm"
+                                                onClick={(e) => handleDeleteClick(e, item)}
                                                 className="w-7 h-7"
                                             >
                                                 <Trash2 className="h-4 w-4" />

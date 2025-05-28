@@ -147,6 +147,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         setOpenLog(!openLog);
     };
 
+    const handleOpenLogClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleOpenLog();
+    };
+
     const onSubmit = (data: CreateGRNDto) => {
         console.log("Submitted form data:", data);
         createGrn(data);
@@ -192,22 +198,37 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                     <div className="flex items-center gap-2">
                                         {currentMode === formType.VIEW ? (
                                             <>
-                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size={'sm'}
+                                                    onClick={handleCancelClick}
+                                                >
                                                     <ChevronLeft className="h-4 w-4" /> Back
                                                 </Button>
-                                                <Button variant="default" size={'sm'} onClick={handleEditClick}>
+                                                <Button
+                                                    type="button"
+                                                    variant="default"
+                                                    size={'sm'}
+                                                    onClick={handleEditClick}
+                                                >
                                                     <Pencil className="h-4 w-4" /> Edit
                                                 </Button>
                                             </>
                                         ) : (
                                             <>
-                                                <Button variant="outline" size={'sm'} onClick={handleCancelClick}>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size={'sm'}
+                                                    onClick={handleCancelClick}
+                                                >
                                                     <X className="h-4 w-4" /> Cancel
                                                 </Button>
                                                 <Button
+                                                    type="submit"
                                                     variant="default"
                                                     size={'sm'}
-                                                    type="submit"
                                                 >
                                                     <Save className="h-4 w-4" /> Save
                                                 </Button>
@@ -284,11 +305,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
             </div>
             <Button
                 aria-label={openLog ? "Close log panel" : "Open log panel"}
-                onClick={handleOpenLog}
+                onClick={handleOpenLogClick}
                 variant="default"
                 size="sm"
                 className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg transition-all duration-300 hover:bg-primary/90 hover:translate-x-0 focus:outline-none focus:ring-2 focus:ring-primary"
                 tabIndex={0}
+                type="button"
             >
                 {openLog ? (
                     <ChevronRight className="h-6 w-6 animate-pulse" />
