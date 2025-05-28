@@ -1,4 +1,4 @@
-import { DOC_TYPE } from "@/constants/enum";
+import { ALLOCATE_EXTRA_COST_TYPE, DOC_TYPE, TaxType } from "@/constants/enum";
 import { z } from "zod";
 
 const infoSchema = z.object({
@@ -48,11 +48,11 @@ const goodReceivedNoteDetailItemSchema = z.object({
 export type GoodReceivedNoteDetailItemDto = z.infer<typeof goodReceivedNoteDetailItemSchema>;
 
 const extraCostDetailItemSchema = z.object({
-    extra_cost_type_id: z.string().uuid(),
+    extra_cost_type_id: z.string().uuid().optional(),
     amount: z.number(),
     is_tax: z.boolean(),
     tax_type_inventory_id: z.string().uuid(),
-    tax_type: z.string(),
+    tax_type: z.nativeEnum(TaxType),
     tax_rate: z.number(),
     tax_amount: z.number(),
     is_tax_adjustment: z.boolean(),
@@ -63,7 +63,7 @@ const extraCostDetailItemSchema = z.object({
 
 const extraCostSchema = z.object({
     name: z.string(),
-    allocate_extracost_type: z.string(),
+    allocate_extracost_type: z.nativeEnum(ALLOCATE_EXTRA_COST_TYPE),
     note: z.string(),
     info: infoSchema,
     extra_cost_detail: z.object({

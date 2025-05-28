@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
-import { GrnItemFormValues, GrnItemSchema, mockCalulateAmount, mockOnHand, mockOnOrder } from "../../type.dto";
 import { GoodReceivedNoteDetailItemDto } from "@/dtos/grn.dto";
 import {
     Form,
@@ -26,70 +25,149 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import LocationLookup from "@/components/lookup/LocationLookup";
+import ProductLookup from "@/components/lookup/ProductLookup";
+import { Textarea } from "@/components/ui/textarea";
+import UnitLookup from "@/components/lookup/UnitLookup";
+import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
+import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TaxType } from "@/constants/enum";
 
-// Adapter functions to convert between DTO and form values
+// Create form schema that is more flexible for user input
+const GrnItemFormSchema = z.object({
+    id: z.string().uuid().optional(),
+    sequence_no: z.number().default(1),
+    location_id: z.string().min(1, "Location is required"),
+    product_id: z.string().min(1, "Product is required"),
+    order_qty: z.number().nonnegative("Order quantity must be non-negative"),
+    order_unit_id: z.string().min(1, "Order unit is required"),
+    received_qty: z.number().nonnegative("Received quantity must be non-negative"),
+    received_unit_id: z.string().optional(),
+    is_foc: z.boolean().default(false),
+    foc_qty: z.number().nonnegative("FOC quantity must be non-negative").default(0),
+    foc_unit_id: z.string().optional(),
+    price: z.number().nonnegative("Price must be non-negative"),
+    tax_type_inventory_id: z.string().optional(),
+    tax_type: z.string().default(""),
+    tax_rate: z.number().nonnegative("Tax rate must be non-negative").default(0),
+    tax_amount: z.number().nonnegative("Tax amount must be non-negative").default(0),
+    is_tax_adjustment: z.boolean().default(false),
+    total_amount: z.number().nonnegative("Total amount must be non-negative").default(0),
+    delivery_point_id: z.string().optional(),
+    base_price: z.number().nonnegative("Base price must be non-negative").default(0),
+    base_qty: z.number().nonnegative("Base quantity must be non-negative").default(0),
+    extra_cost: z.number().nonnegative("Extra cost must be non-negative").default(0),
+    total_cost: z.number().nonnegative("Total cost must be non-negative").default(0),
+    is_discount: z.boolean().default(false),
+    discount_rate: z.number().nonnegative("Discount rate must be non-negative").default(0),
+    discount_amount: z.number().nonnegative("Discount amount must be non-negative").default(0),
+    is_discount_adjustment: z.boolean().default(false),
+    note: z.string().default(""),
+    exchange_rate: z.number().nonnegative("Exchange rate must be non-negative").default(1),
+    info: z.object({
+        test1: z.string().default(""),
+        test2: z.string().default(""),
+    }).default({ test1: "", test2: "" }),
+    dimension: z.object({
+        test1: z.string().default(""),
+        test2: z.string().default(""),
+    }).default({ test1: "", test2: "" }),
+});
+
+type GrnItemFormValues = z.infer<typeof GrnItemFormSchema>;
+
+// Mock data - you can move these to a separate file if needed
+const mockCalulateAmount = [
+    { id: "1", description: "Net Amount", total: "1000.00", base: "1000.00" },
+    { id: "2", description: "Tax Amount", total: "70.00", base: "70.00" },
+    { id: "3", description: "Total Amount", total: "1070.00", base: "1070.00" },
+];
+
+const mockOnHand = [
+    { id: "1", location: "Warehouse A", quantity: 500, units: "pcs", par: 600, reorderPoint: 400, minStock: 300, maxStock: 800 },
+    { id: "2", location: "Warehouse B", quantity: 750, units: "pcs", par: 800, reorderPoint: 600, minStock: 500, maxStock: 1000 },
+    { id: "3", location: "Store Front", quantity: 400, units: "pcs", par: 500, reorderPoint: 300, minStock: 200, maxStock: 600 },
+];
+
+const mockOnOrder = [
+    { id: "1", poNumber: "PO-2023-001", vendor: "Organic Farms Ltd", deliveryDate: "2023-08-15", remainingQty: 200, units: "pcs", locations: "Warehouse A, B" },
+    { id: "2", poNumber: "PO-2023-002", vendor: "Green Valley Co", deliveryDate: "2023-08-20", remainingQty: 150, units: "pcs", locations: "Store Front" },
+];
+
+// Simple conversion functions
 const convertDtoToFormValues = (dto: GoodReceivedNoteDetailItemDto): GrnItemFormValues => {
     return {
         id: dto.id,
-        locations: { id: dto.location_id, name: `Location ${dto.location_id}` },
-        products: { id: dto.product_id, name: `Product ${dto.product_id}`, description: "" },
-        qty_order: dto.order_qty,
-        qty_received: dto.received_qty,
-        unit: { id: dto.received_unit_id, name: `Unit ${dto.received_unit_id}` },
+        sequence_no: dto.sequence_no,
+        location_id: dto.location_id,
+        product_id: dto.product_id,
+        order_qty: dto.order_qty,
+        order_unit_id: dto.order_unit_id,
+        received_qty: dto.received_qty,
+        received_unit_id: dto.received_unit_id,
+        is_foc: dto.is_foc,
+        foc_qty: dto.foc_qty,
+        foc_unit_id: dto.foc_unit_id,
         price: dto.price,
-        net_amount: dto.total_amount - dto.tax_amount,
+        tax_type_inventory_id: dto.tax_type_inventory_id,
+        tax_type: dto.tax_type,
+        tax_rate: dto.tax_rate,
         tax_amount: dto.tax_amount,
+        is_tax_adjustment: dto.is_tax_adjustment,
         total_amount: dto.total_amount,
-        foc: { unit_id: dto.foc_unit_id, unit_name: `Unit ${dto.foc_unit_id}`, qty: dto.foc_qty },
-        delivery_point: dto.delivery_point_id,
-        currency: "",
-        exchange_rate: dto.exchange_rate,
-        tax_inclusive: false,
-        adj_disc_rate: dto.discount_rate,
-        adj_tax_rate: dto.tax_rate,
-        override_disc_amount: dto.discount_amount,
-        override_tax_amount: 0,
+        delivery_point_id: dto.delivery_point_id,
+        base_price: dto.base_price,
+        base_qty: dto.base_qty,
+        extra_cost: dto.extra_cost,
+        total_cost: dto.total_cost,
+        is_discount: dto.is_discount,
+        discount_rate: dto.discount_rate,
+        discount_amount: dto.discount_amount,
+        is_discount_adjustment: dto.is_discount_adjustment,
         note: dto.note,
+        exchange_rate: dto.exchange_rate,
+        info: dto.info,
+        dimension: dto.dimension,
     };
 };
 
 const convertFormValuesToDto = (formValues: GrnItemFormValues): GoodReceivedNoteDetailItemDto => {
     return {
         id: formValues.id,
-        sequence_no: 1, // Default value
-        location_id: formValues.locations.id,
-        product_id: formValues.products.id,
-        order_qty: formValues.qty_order,
-        order_unit_id: formValues.unit.id,
-        received_qty: formValues.qty_received,
-        received_unit_id: formValues.unit.id,
-        is_foc: formValues.foc.qty > 0,
-        foc_qty: formValues.foc.qty,
-        foc_unit_id: formValues.foc.unit_id || formValues.unit.id,
+        sequence_no: formValues.sequence_no,
+        location_id: formValues.location_id,
+        product_id: formValues.product_id,
+        order_qty: formValues.order_qty,
+        order_unit_id: formValues.order_unit_id,
+        received_qty: formValues.received_qty,
+        received_unit_id: formValues.received_unit_id || formValues.order_unit_id,
+        is_foc: formValues.is_foc,
+        foc_qty: formValues.foc_qty,
+        foc_unit_id: formValues.foc_unit_id || formValues.order_unit_id,
         price: formValues.price,
-        tax_type_inventory_id: "", // Default value
-        tax_type: "", // Default value
-        tax_rate: formValues.adj_tax_rate,
+        tax_type_inventory_id: formValues.tax_type_inventory_id || formValues.order_unit_id,
+        tax_type: formValues.tax_type,
+        tax_rate: formValues.tax_rate,
         tax_amount: formValues.tax_amount,
-        is_tax_adjustment: false,
+        is_tax_adjustment: formValues.is_tax_adjustment,
         total_amount: formValues.total_amount,
-        delivery_point_id: formValues.delivery_point || "",
-        base_price: formValues.price,
-        base_qty: formValues.qty_order,
-        extra_cost: 0,
-        total_cost: formValues.total_amount,
-        is_discount: formValues.adj_disc_rate > 0,
-        discount_rate: formValues.adj_disc_rate,
-        discount_amount: formValues.override_disc_amount,
-        is_discount_adjustment: false,
+        delivery_point_id: formValues.delivery_point_id || formValues.location_id,
+        base_price: formValues.base_price,
+        base_qty: formValues.base_qty,
+        extra_cost: formValues.extra_cost,
+        total_cost: formValues.total_cost,
+        is_discount: formValues.is_discount,
+        discount_rate: formValues.discount_rate,
+        discount_amount: formValues.discount_amount,
+        is_discount_adjustment: formValues.is_discount_adjustment,
+        note: formValues.note,
         exchange_rate: formValues.exchange_rate,
-        note: formValues.note || "",
-        info: { test1: "", test2: "" },
-        dimension: { test1: "", test2: "" },
+        info: formValues.info,
+        dimension: formValues.dimension,
     };
 };
 
@@ -120,29 +198,40 @@ export default function DialogItemGrnForm({
     const isDialogOpen = isOpen ?? dialogOpen;
     const setIsDialogOpen = onOpenChange || setDialogOpen;
 
-    // Create a form using useForm with the GrnItemSchema validation
-    const form = useForm<z.infer<typeof GrnItemSchema>>({
-        resolver: zodResolver(GrnItemSchema),
+    // Create a form using useForm with the GrnItemFormSchema validation
+    const form = useForm<z.infer<typeof GrnItemFormSchema>>({
+        resolver: zodResolver(GrnItemFormSchema),
         defaultValues: {
-            locations: { id: "", name: "" },
-            products: { id: "", name: "", description: "" },
-            qty_order: 0,
-            qty_received: 0,
-            unit: { id: "", name: "" },
+            sequence_no: 1,
+            location_id: "",
+            product_id: "",
+            order_qty: 0,
+            order_unit_id: "",
+            received_qty: 0,
+            received_unit_id: "",
+            is_foc: false,
+            foc_qty: 0,
+            foc_unit_id: "",
             price: 0,
-            net_amount: 0,
+            tax_type_inventory_id: "",
+            tax_type: "",
+            tax_rate: 0,
             tax_amount: 0,
+            is_tax_adjustment: false,
             total_amount: 0,
-            foc: { unit_id: "", unit_name: "", qty: 0 },
-            delivery_point: "",
-            currency: "",
-            exchange_rate: 0,
-            tax_inclusive: false,
-            adj_disc_rate: 0,
-            adj_tax_rate: 0,
-            override_disc_amount: 0,
-            override_tax_amount: 0,
+            delivery_point_id: "",
+            base_price: 0,
+            base_qty: 0,
+            extra_cost: 0,
+            total_cost: 0,
+            is_discount: false,
+            discount_rate: 0,
+            discount_amount: 0,
+            is_discount_adjustment: false,
             note: "",
+            exchange_rate: 1,
+            info: { test1: "", test2: "" },
+            dimension: { test1: "", test2: "" },
         },
     });
 
@@ -150,18 +239,18 @@ export default function DialogItemGrnForm({
         if (initialData) {
             const formValues = convertDtoToFormValues(initialData);
             form.reset(formValues);
-            setIsDiscRateEnabled(formValues.adj_disc_rate > 0);
-            setIsTaxRateEnabled(formValues.adj_tax_rate > 0);
+            setIsDiscRateEnabled(formValues.discount_rate > 0);
+            setIsTaxRateEnabled(formValues.tax_rate > 0);
         }
     }, [initialData, form]);
 
-    // Reset adj_disc_rate when checkbox is unchecked
+    // Reset discount_rate when checkbox is unchecked
     useEffect(() => {
         if (!isDiscRateEnabled) {
-            form.setValue('adj_disc_rate', 0);
+            form.setValue('discount_rate', 0);
         }
         if (!isTaxRateEnabled) {
-            form.setValue('adj_tax_rate', 0);
+            form.setValue('tax_rate', 0);
         }
     }, [isDiscRateEnabled, isTaxRateEnabled, form]);
 
@@ -184,7 +273,7 @@ export default function DialogItemGrnForm({
         }
     }, [form.formState.isDirty, form.formState.isValid, form.formState.errors]);
 
-    const onSubmit = (data: z.infer<typeof GrnItemSchema>) => {
+    const onSubmit = (data: z.infer<typeof GrnItemFormSchema>) => {
         // Debug logging
         console.log('=== Form Submit Debug ===');
         console.log('initialData:', initialData);
@@ -194,15 +283,25 @@ export default function DialogItemGrnForm({
         console.log('Has initialData.id:', !!(initialData?.id));
 
         // Calculate derived values
-        const netAmount = data.qty_order * data.price;
-        const taxAmount = netAmount * 0.07; // Assuming 7% tax
+        const netAmount = data.order_qty * data.price;
+        const taxAmount = netAmount * (data.tax_rate / 100); // Convert percentage to decimal
         const totalAmount = netAmount + taxAmount;
 
         // Set calculated values
-        data.net_amount = netAmount;
+        data.base_price = data.price;
+        data.base_qty = data.order_qty;
         data.tax_amount = taxAmount;
         data.total_amount = totalAmount;
-        data.qty_received = data.qty_received || data.qty_order; // Set received qty equal to ordered qty by default if not set
+        data.total_cost = totalAmount;
+        data.received_qty = data.received_qty || data.order_qty; // Set received qty equal to ordered qty by default if not set
+
+        // Set unit IDs if they're still default values
+        if (data.received_unit_id === "") {
+            data.received_unit_id = data.order_unit_id;
+        }
+        if (data.foc_unit_id === "") {
+            data.foc_unit_id = data.order_unit_id;
+        }
 
         // Convert form values to DTO
         const dtoItem = convertFormValuesToDto(data);
@@ -292,12 +391,17 @@ export default function DialogItemGrnForm({
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                                     <FormField
                                         control={form.control}
-                                        name="locations.name"
+                                        name="sequence_no"
                                         render={({ field }) => (
-                                            <FormItem >
-                                                <FormLabel>Location</FormLabel>
+                                            <FormItem>
+                                                <FormLabel>Sequence No.</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input
+                                                        type="number"
+                                                        {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -306,12 +410,32 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="products.name"
+                                        name="location_id"
+                                        render={({ field }) => (
+                                            <FormItem >
+                                                <FormLabel>Location</FormLabel>
+                                                <FormControl>
+                                                    <LocationLookup
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="product_id"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Product Name</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <ProductLookup
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -319,12 +443,12 @@ export default function DialogItemGrnForm({
                                     />
                                     <FormField
                                         control={form.control}
-                                        name="products.description"
+                                        name="note"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Description</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Textarea {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -348,13 +472,6 @@ export default function DialogItemGrnForm({
                             </Card>
 
                             <Card className="p-4 space-y-4 mt-4">
-                                <p className="text-sm font-bold">Additional Information</p>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-                                    {/* Additional information fields can be added here if needed */}
-                                </div>
-                            </Card>
-
-                            <Card className="p-4 space-y-4 mt-4">
                                 <div className="flex justify-between">
                                     <p className="text-base font-bold">Quantity and Delivery</p>
                                     <div className="flex items-center gap-2">
@@ -369,7 +486,7 @@ export default function DialogItemGrnForm({
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
                                     <FormField
                                         control={form.control}
-                                        name="qty_order"
+                                        name="order_qty"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Ordered Qty</FormLabel>
@@ -388,12 +505,15 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="unit.name"
+                                        name="order_unit_id"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Ordered Unit</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <UnitLookup
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -402,7 +522,7 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="qty_received"
+                                        name="received_qty"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Receiving Qty</FormLabel>
@@ -419,15 +539,17 @@ export default function DialogItemGrnForm({
                                         )}
                                     />
 
-
                                     <FormField
                                         control={form.control}
-                                        name="foc.unit_name"
+                                        name="received_unit_id"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>FOC Unit</FormLabel>
+                                                <FormLabel>Received Unit</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <UnitLookup
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -436,7 +558,26 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="foc.qty"
+                                        name="is_foc"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <div className="flex flex-col gap-2 mt-2">
+                                                    <FormLabel>Is FOC</FormLabel>
+                                                    <FormControl>
+                                                        <Checkbox
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                </div>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="foc_qty"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>FOC Qty</FormLabel>
@@ -450,28 +591,18 @@ export default function DialogItemGrnForm({
                                             </FormItem>
                                         )}
                                     />
-                                    <FormField
-                                        control={form.control}
-                                        name="unit.name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Unit</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
 
                                     <FormField
                                         control={form.control}
-                                        name="foc.unit_id"
+                                        name="foc_unit_id"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>FOC Unit</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <UnitLookup
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -480,12 +611,15 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="delivery_point"
+                                        name="delivery_point_id"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Delivery Point</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <DeliveryPointLookup
+                                                        onValueChange={field.onChange}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -501,29 +635,6 @@ export default function DialogItemGrnForm({
                                         <div>
                                             <p className="text-sm font-bold">Pricing</p>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <FormField
-                                                    control={form.control}
-                                                    name="currency"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Currency</FormLabel>
-                                                            <FormControl>
-                                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select a currency" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        <SelectItem value="USD">USD</SelectItem>
-                                                                        <SelectItem value="EUR">EUR</SelectItem>
-                                                                        <SelectItem value="GBP">GBP</SelectItem>
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
                                                 <FormField
                                                     control={form.control}
                                                     name="exchange_rate"
@@ -566,11 +677,136 @@ export default function DialogItemGrnForm({
                                                 />
                                                 <FormField
                                                     control={form.control}
-                                                    name="tax_inclusive"
+                                                    name="base_price"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Base Price</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="base_qty"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Base Qty</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="extra_cost"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Extra Cost</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="total_cost"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Total Cost</FormLabel>
+                                                            <FormControl>
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.01"
+                                                                    {...field}
+                                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold">Tax Information</p>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="tax_type_inventory_id"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Tax Type Inventory ID</FormLabel>
+                                                            <FormControl>
+                                                                <TaxTypeLookup
+                                                                    onValueChange={field.onChange}
+                                                                    value={field.value}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="tax_type"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Tax Type</FormLabel>
+                                                            <FormControl>
+                                                                <Select
+                                                                    value={field.value ?? TaxType.INCLUDED}
+                                                                    onValueChange={field.onChange}
+                                                                >
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Select tax calculation method" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        <SelectItem value={TaxType.NONE}>None</SelectItem>
+                                                                        <SelectItem value={TaxType.INCLUDED}>Inclusive</SelectItem>
+                                                                        <SelectItem value={TaxType.ADD}>Add</SelectItem>
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="is_tax_adjustment"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <div className="flex flex-col gap-2 mt-2">
-                                                                <FormLabel>Tax Incl.</FormLabel>
+                                                                <FormLabel>Is Tax Adjustment</FormLabel>
                                                                 <FormControl>
                                                                     <Checkbox
                                                                         checked={field.value}
@@ -589,7 +825,43 @@ export default function DialogItemGrnForm({
                                             <div className="grid grid-cols-2 gap-2">
                                                 <FormField
                                                     control={form.control}
-                                                    name="adj_disc_rate"
+                                                    name="is_discount"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <div className="flex flex-col gap-2 mt-2">
+                                                                <FormLabel>Is Discount</FormLabel>
+                                                                <FormControl>
+                                                                    <Checkbox
+                                                                        checked={field.value}
+                                                                        onCheckedChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                            </div>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="is_discount_adjustment"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <div className="flex flex-col gap-2 mt-2">
+                                                                <FormLabel>Is Discount Adjustment</FormLabel>
+                                                                <FormControl>
+                                                                    <Checkbox
+                                                                        checked={field.value}
+                                                                        onCheckedChange={field.onChange}
+                                                                    />
+                                                                </FormControl>
+                                                            </div>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                                <FormField
+                                                    control={form.control}
+                                                    name="discount_rate"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel className="flex items-center gap-2 mt-2">
@@ -619,7 +891,7 @@ export default function DialogItemGrnForm({
                                                 />
                                                 <FormField
                                                     control={form.control}
-                                                    name="override_disc_amount"
+                                                    name="discount_amount"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel>Override Discount Amount</FormLabel>
@@ -639,7 +911,7 @@ export default function DialogItemGrnForm({
                                                 />
                                                 <FormField
                                                     control={form.control}
-                                                    name="adj_tax_rate"
+                                                    name="tax_rate"
                                                     render={({ field }) => (
                                                         <FormItem>
 
@@ -670,7 +942,7 @@ export default function DialogItemGrnForm({
 
                                                 <FormField
                                                     control={form.control}
-                                                    name="override_tax_amount"
+                                                    name="tax_amount"
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel>Override Tax Amount</FormLabel>
@@ -695,6 +967,29 @@ export default function DialogItemGrnForm({
 
                                     <div>
                                         <p className="text-sm font-bold">Calculated Amounts</p>
+                                        <div className="grid grid-cols-2 gap-2 mb-4">
+                                            <FormField
+                                                control={form.control}
+                                                name="total_amount"
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormLabel>Total Amount</FormLabel>
+                                                        <FormControl>
+                                                            <Input
+                                                                type="number"
+                                                                min="0"
+                                                                step="0.01"
+                                                                {...field}
+                                                                onChange={(e) => field.onChange(Number(e.target.value))}
+                                                                value={field.value}
+                                                                readOnly
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>

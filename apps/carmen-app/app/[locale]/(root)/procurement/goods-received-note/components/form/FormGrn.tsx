@@ -29,7 +29,7 @@ import TransactionSummary from "./TransactionSummary";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGrnMutation } from "@/hooks/useGrn";
 import { useAuth } from "@/context/AuthContext";
-import { DOC_TYPE } from "@/constants/enum";
+import { ALLOCATE_EXTRA_COST_TYPE, DOC_TYPE } from "@/constants/enum";
 
 interface FormGrnProps {
     readonly mode: formType;
@@ -55,21 +55,21 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
             doc_type: initialValues?.doc_type ?? DOC_TYPE.MANUAL,
             vendor_id: initialValues?.vendor_id ?? "",
             currency_id: initialValues?.currency_id ?? "",
-            workflow_id: initialValues?.workflow_id ?? "",
+            workflow_id: initialValues?.workflow_id ?? "f224d743-7cfa-46f6-8f72-85b14c6a355e",
             workflow_obj: initialValues?.workflow_obj ?? { test1: "", test2: "" },
             workflow_history: initialValues?.workflow_history ?? { test1: "", test2: "" },
             current_workflow_status: initialValues?.current_workflow_status ?? "",
             is_consignment: initialValues?.is_consignment ?? false,
             is_cash: initialValues?.is_cash ?? false,
             signature_image_url: initialValues?.signature_image_url ?? "",
-            credit_term_id: initialValues?.credit_term_id ?? "",
+            credit_term_id: initialValues?.credit_term_id ?? "2dcac4f8-4dd2-4a51-b93e-2bc815eb786d",
             is_active: initialValues?.is_active ?? true,
             note: initialValues?.note ?? "",
             info: initialValues?.info ?? { test1: "", test2: "" },
             dimension: initialValues?.dimension ?? { test1: "", test2: "" },
             extra_cost: initialValues?.extra_cost ?? {
                 name: "",
-                allocate_extracost_type: "",
+                allocate_extracost_type: ALLOCATE_EXTRA_COST_TYPE.MANUAL,
                 note: "",
                 info: { test1: "", test2: "" },
                 extra_cost_detail: { add: [] }
