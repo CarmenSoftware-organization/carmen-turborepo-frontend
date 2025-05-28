@@ -167,7 +167,6 @@ export const GrnItemSchema = z.object({
     id: z.string().optional(),
     locations: LocationSchema,
     products: ProductSchema,
-    lot_no: z.string().min(1, "Lot number is required"),
     qty_order: z.number().nonnegative("Order quantity must be non-negative"),
     qty_received: z.number().nonnegative("Received quantity must be non-negative"),
     unit: UnitSchema,
@@ -175,8 +174,6 @@ export const GrnItemSchema = z.object({
     net_amount: z.number().nonnegative("Net amount must be non-negative"),
     tax_amount: z.number().nonnegative("Tax amount must be non-negative"),
     total_amount: z.number().nonnegative("Total amount must be non-negative"),
-    po_ref_no: z.string().optional(),
-    job_code: z.string().optional(),
     foc: z.object({
         unit_id: z.string().optional(),
         unit_name: z.string().min(1, "Foc name is required"),
@@ -191,8 +188,6 @@ export const GrnItemSchema = z.object({
     override_disc_amount: z.number().nonnegative("Override discount amount must be non-negative"),
     override_tax_amount: z.number().nonnegative("Override tax amount must be non-negative"),
     note: z.string().optional(),
-    project_code: z.string().optional(),
-    market_segment: z.string().optional(),
 });
 
 export const ExtraCostSchema = z.object({

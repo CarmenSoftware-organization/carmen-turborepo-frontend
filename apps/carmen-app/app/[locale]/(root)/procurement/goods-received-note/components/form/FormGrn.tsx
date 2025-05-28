@@ -8,11 +8,7 @@ import { useState, useEffect } from "react";
 import ActivityLog from "../ActivityLog";
 import CommentGrn from "../CommentGrn";
 import { Card } from "@/components/ui/card";
-import {
-    GrnFormSchema,
-    GrnFormValues,
-} from "../../type.dto";
-import { GrnByIdDto } from "@/dtos/grn.dto";
+import { CreateGRNDto, GetGrnByIdDto, grnPostSchema } from "@/dtos/grn.dto";
 import GrnFormHeader from "./GrnFormHeader";
 import {
     Tabs,
@@ -31,13 +27,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import TransactionSummary from "./TransactionSummary";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { postGrnData } from "./post-data";
 import { useGrnMutation } from "@/hooks/useGrn";
 import { useAuth } from "@/context/AuthContext";
+import { DOC_TYPE } from "@/constants/enum";
 
 interface FormGrnProps {
     readonly mode: formType;
-    readonly initialValues?: GrnByIdDto;
+    readonly initialValues?: GetGrnByIdDto;
 }
 
 export default function FormGrn({ mode, initialValues }: FormGrnProps) {
@@ -46,83 +42,76 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const [openLog, setOpenLog] = useState<boolean>(false);
     const [activeTab, setActiveTab] = useState<string>("items");
-    const { mutate: createGrn, isPending } = useGrnMutation(token, tenantId);
+    const { mutate: createGrn } = useGrnMutation(token, tenantId);
+
     // Full form state that includes all sections
-    const form = useForm<GrnFormValues>({
-        resolver: zodResolver(GrnFormSchema),
+    const form = useForm<CreateGRNDto>({
+        resolver: zodResolver(grnPostSchema),
         defaultValues: {
-            id: initialValues?.id,
-            status: initialValues?.doc_status ?? "draft",
-            info: {
-                grn_no: initialValues?.grn_no ?? "",
-                date: initialValues?.created_at?.split('T')[0] ?? "",
-                vendor: initialValues?.vendor_name ?? "",
-                invoice_no: initialValues?.invoice_no ?? "",
-                invoice_date: initialValues?.invoice_date ?? "",
-                description: initialValues?.description ?? "",
-                currency: initialValues?.currency_name ?? "",
-                exchange_rate: parseFloat(initialValues?.currency_rate ?? "0"),
-                consignment: initialValues?.is_consignment ?? false,
-                cash: initialValues?.is_cash ?? false,
-                credit_term: initialValues?.credit_term_days ?? 0,
-                due_date: initialValues?.payment_due_date ?? "",
+            name: initialValues?.name ?? "",
+            grn_no: initialValues?.grn_no ?? "",
+            description: initialValues?.description ?? "",
+            doc_status: initialValues?.doc_status ?? "draft",
+            doc_type: initialValues?.doc_type ?? DOC_TYPE.MANUAL,
+            vendor_id: initialValues?.vendor_id ?? "",
+            currency_id: initialValues?.currency_id ?? "",
+            workflow_id: initialValues?.workflow_id ?? "",
+            workflow_obj: initialValues?.workflow_obj ?? { test1: "", test2: "" },
+            workflow_history: initialValues?.workflow_history ?? { test1: "", test2: "" },
+            current_workflow_status: initialValues?.current_workflow_status ?? "",
+            is_consignment: initialValues?.is_consignment ?? false,
+            is_cash: initialValues?.is_cash ?? false,
+            signature_image_url: initialValues?.signature_image_url ?? "",
+            credit_term_id: initialValues?.credit_term_id ?? "",
+            is_active: initialValues?.is_active ?? true,
+            note: initialValues?.note ?? "",
+            info: initialValues?.info ?? { test1: "", test2: "" },
+            dimension: initialValues?.dimension ?? { test1: "", test2: "" },
+            extra_cost: initialValues?.extra_cost ?? {
+                name: "",
+                allocate_extracost_type: "",
+                note: "",
+                info: { test1: "", test2: "" },
+                extra_cost_detail: { add: [] }
             },
-            items: initialValues?.good_received_note_detail?.map((detail) => ({
-                id: detail.id,
-                locations: {
-                    id: detail.location_id,
-                    name: detail.location_name,
-                },
-                products: {
-                    id: detail.product_id,
-                    name: detail.product_name,
-                    description: detail.product_local_name,
-                },
-                lot_no: detail.lot_number || "",
-                qty_order: parseFloat(detail.order_qty),
-                qty_received: parseFloat(detail.received_qty),
-                unit: {
-                    id: detail.received_unit_id,
-                    name: detail.received_unit_name,
-                },
-                price: parseFloat(detail.price),
-                net_amount: parseFloat(detail.total_amount) - parseFloat(detail.tax_amount),
-                tax_amount: parseFloat(detail.tax_amount),
-                total_amount: parseFloat(detail.total_amount),
-            })) ?? [],
-            extra_cost: initialValues?.extra_cost_detail?.map((cost) => ({
-                id: cost.id,
-                type: cost.extra_cost_type_name,
-                amount: parseFloat(cost.amount),
-            })) ?? [],
-            stock_movement: [],
-            journal_entries: {
-                id: "",
-                type: "",
-                code: "",
-                transaction_date: "",
-                status: "",
-                ref_no: "",
-                soruce: "",
-                description: "",
-                lists: [],
-            },
-            tax_entries: {
-                id: "",
-                tax_invoice_no: "",
-                date: "",
-                status: "",
-                period: "",
-                base_amount: 0,
-                base: "",
-                tax_rates: 0,
-                tax_amount: 0,
-                tax_cal: [],
-                filling_period: "",
-                filling_date: "",
-                vat_return: "",
-                filing_status: "",
-            },
+            good_received_note_detail: {
+                initData: (initialValues?.good_received_note_detail ?? []).map((detail) => ({
+                    id: detail.id,
+                    sequence_no: detail.sequence_no,
+                    location_id: detail.location_id,
+                    product_id: detail.product_id,
+                    order_qty: detail.order_qty,
+                    order_unit_id: detail.order_unit_id,
+                    received_qty: detail.received_qty,
+                    received_unit_id: detail.received_unit_id,
+                    is_foc: detail.is_foc,
+                    foc_qty: detail.foc_qty,
+                    foc_unit_id: detail.foc_unit_id,
+                    price: detail.price,
+                    tax_type_inventory_id: detail.tax_type_inventory_id,
+                    tax_type: detail.tax_type,
+                    tax_rate: detail.tax_rate,
+                    tax_amount: detail.tax_amount,
+                    is_tax_adjustment: detail.is_tax_adjustment,
+                    total_amount: detail.total_amount,
+                    delivery_point_id: detail.delivery_point_id,
+                    base_price: detail.base_price,
+                    base_qty: detail.base_qty,
+                    extra_cost: detail.extra_cost,
+                    total_cost: detail.total_cost,
+                    is_discount: detail.is_discount,
+                    discount_rate: detail.discount_rate,
+                    discount_amount: detail.discount_amount,
+                    is_discount_adjustment: detail.is_discount_adjustment,
+                    note: detail.note,
+                    info: detail.info,
+                    dimension: detail.dimension,
+                })),
+                add: [],
+                update: [],
+                delete: []
+            }
+
         },
     });
 
@@ -137,13 +126,10 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         console.log("Current form values:", watchedValues);
 
         // Log specific field changes
-        if (watchedValues.info) {
-            console.log("Header info:", watchedValues.info);
+        if (watchedValues.good_received_note_detail) {
+            console.log("Items:", watchedValues.good_received_note_detail);
         }
-        if (watchedValues.items && watchedValues.items.length > 0) {
-            console.log("Items:", watchedValues.items);
-        }
-        if (watchedValues.extra_cost && watchedValues.extra_cost.length > 0) {
+        if (watchedValues.extra_cost) {
             console.log("Extra costs:", watchedValues.extra_cost);
         }
     }, [watchedValues]);
@@ -161,39 +147,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         setOpenLog(!openLog);
     };
 
-    const onSubmit = (data: GrnFormValues) => {
-        console.log("=== Form Submission ===");
+    const onSubmit = (data: CreateGRNDto) => {
         console.log("Submitted form data:", data);
-
-        // Compare with initial values to show what changed
-        if (initialValues) {
-            console.log("=== Changes Detection ===");
-            console.log("Original data:", initialValues);
-            console.log("Modified data:", data);
-
-            // Deep comparison for specific sections
-            const infoChanged = JSON.stringify({
-                grn_no: initialValues.grn_no,
-                vendor_name: initialValues.vendor_name,
-                invoice_no: initialValues.invoice_no,
-                currency_name: initialValues.currency_name,
-                // ... other info fields
-            }) !== JSON.stringify(data.info);
-
-            const itemsChanged = JSON.stringify(initialValues.good_received_note_detail) !== JSON.stringify(data.items);
-            const extraCostChanged = JSON.stringify(initialValues.extra_cost_detail) !== JSON.stringify(data.extra_cost);
-
-            console.log("Section changes:", {
-                info: infoChanged,
-                items: itemsChanged,
-                extraCost: extraCostChanged
-            });
-        }
-
-        // Here you would typically send the data to the server
-        alert('Form saved successfully');
+        createGrn(data);
         setCurrentMode(formType.VIEW);
     };
+
     const handleEditClick = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
@@ -215,27 +174,10 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         setActiveTab(value);
     };
 
-    const handleTestPost = () => {
-        try {
-            createGrn(postGrnData);
-            alert('Successfully created GRN');
-        } catch (error) {
-            console.log(error);
-            alert('Failed to create GRN');
-        }
-    }
-
     return (
         <div className="relative">
             <div className="flex gap-4 relative">
-                <Button variant="outline" size="sm" onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleTestPost();
-                }}>
-                    Test Post
-                </Button>
-                {/* <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
+                <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
                     <Card className="p-4 mb-4">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -324,8 +266,9 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                             </form>
                         </Form>
                     </Card>
+                    <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
                     <TransactionSummary />
-                </ScrollArea> */}
+                </ScrollArea>
 
 
 

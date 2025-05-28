@@ -21,3 +21,21 @@ export enum TaxType {
     INCLUDED = 'included',
     ADD = 'add',
 }
+
+
+export enum DOC_TYPE {
+    MANUAL = 'manual',
+    PURCHASE_ORDER = 'purchase_order',
+}
+
+export enum ALLOCATE_EXTRA_COST_TYPE {
+    MANUAL = 'manual',
+    BY_VALUE = 'by_value',
+    BY_QTY = 'by_qty',
+}
+
+export enum DOC_STATUS {
+    DRAFT = 'draft',
+    COMPLETE = 'complete',
+    VOID = 'void',
+}

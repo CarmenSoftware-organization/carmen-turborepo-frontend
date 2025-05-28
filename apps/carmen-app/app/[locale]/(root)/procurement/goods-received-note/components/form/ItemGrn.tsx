@@ -1,7 +1,7 @@
 "use client";
 
-import { GrnFormValues, GrnItemFormValues } from "../../type.dto";
-import { Control, useFieldArray } from "react-hook-form";
+import { CreateGRNDto, GoodReceivedNoteDetailItemDto } from "@/dtos/grn.dto";
+import { Control, useFieldArray, useWatch } from "react-hook-form";
 import {
     Table,
     TableBody,
@@ -12,25 +12,51 @@ import {
 } from "@/components/ui/table";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Edit, Eye, Trash, Plus } from "lucide-react";
+import { Edit, Trash2, Plus } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import DialogItemGrnForm from "./DialogItemGrnForm";
+import { useUnit } from "@/hooks/useUnit";
+import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useProduct } from "@/hooks/useProduct";
 
 interface ItemGrnProps {
-    readonly control: Control<GrnFormValues>;
+    readonly control: Control<CreateGRNDto>;
     readonly mode: formType;
 }
 
 export default function ItemGrn({ control, mode }: ItemGrnProps) {
+
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [editItem, setEditItem] = useState<GrnItemFormValues | null>(null);
+    const [editItem, setEditItem] = useState<GoodReceivedNoteDetailItemDto | null>(null);
 
-    const { fields, append, update } = useFieldArray({
+    const { getUnitName } = useUnit();
+    const { getLocationName } = useStoreLocation();
+    const { getProductName } = useProduct();
+
+    // Watch initData to pass to dialog
+    const initData = useWatch({
         control,
-        name: "items",
+        name: "good_received_note_detail.initData"
     });
+
+    // Field arrays for add and update
+    const addFields = useFieldArray({
+        control,
+        name: "good_received_note_detail.add",
+    });
+
+    const updateFields = useFieldArray({
+        control,
+        name: "good_received_note_detail.update",
+    });
+
+    // Combine all items for display (initData + add items)
+    const allItems = [
+        ...(initData || []),
+        ...addFields.fields
+    ];
 
     const handleSelectItem = (id: string) => {
         setSelectedItems(prev =>
@@ -41,46 +67,59 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
     };
 
     const handleSelectAll = () => {
-        if (selectedItems.length === fields.length) {
+        if (selectedItems.length === allItems.length) {
             setSelectedItems([]);
         } else {
-            const allIds = fields.map(field => field.id ?? '').filter(Boolean);
+            const allIds = allItems.map(item => item.id ?? '').filter(Boolean);
             setSelectedItems(allIds);
         }
     };
 
-    const handleAddItem = (newItem: GrnItemFormValues) => {
-        if (editItem?.id) {
-            // Find the index of the item being edited
-            const itemIndex = fields.findIndex(field => field.id === editItem.id);
-            if (itemIndex !== -1) {
-                update(itemIndex, newItem);
-            }
-        } else {
-            append(newItem);
+    const handleAddItem = (newItem: GoodReceivedNoteDetailItemDto, action: 'add' | 'update') => {
+        console.log('=== ItemGrn handleAddItem ===');
+        console.log('Action:', action);
+        console.log('Item:', newItem);
+
+        if (action === 'add') {
+            // Add to add array
+            addFields.append(newItem);
+            console.log('✅ Added to add array');
+        } else if (action === 'update') {
+            // Add to update array
+            updateFields.append(newItem);
+            console.log('✅ Added to update array');
         }
+
         setEditItem(null);
+        setDialogOpen(false);
     };
 
-    const handleRowClick = (item: GrnItemFormValues) => {
+
+    const handleRowClick = (item: GoodReceivedNoteDetailItemDto) => {
         if (mode !== formType.VIEW) {
             setEditItem(item);
             setDialogOpen(true);
+            console.log("Edit item:", item);
         }
     };
 
-    const handleEditClick = (e: React.MouseEvent, item: GrnItemFormValues) => {
+    const handleEditClick = (e: React.MouseEvent, item: GoodReceivedNoteDetailItemDto) => {
+        e.preventDefault();
         e.stopPropagation();
         setEditItem(item);
         setDialogOpen(true);
+        console.log("Edit item:", item);
     };
 
-    const handleAddNewClick = () => {
+    const handleAddNewClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         setEditItem(null);
         setDialogOpen(true);
+        console.log("Add new item");
     };
 
-    const isAllSelected = fields.length > 0 && selectedItems.length === fields.length;
+    const isAllSelected = allItems.length > 0 && selectedItems.length === allItems.length;
 
     return (
         <div className="space-y-2">
@@ -90,14 +129,17 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                     <Plus />
                     Add Item
                 </Button>
-                <DialogItemGrnForm
-                    mode={mode}
-                    onAddItem={handleAddItem}
-                    initialData={editItem}
-                    isOpen={dialogOpen}
-                    onOpenChange={setDialogOpen}
-                />
             </div>
+
+            <DialogItemGrnForm
+                mode={mode}
+                onAddItem={handleAddItem}
+                initialData={editItem}
+                initData={initData}
+                isOpen={dialogOpen}
+                onOpenChange={setDialogOpen}
+            />
+
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -107,21 +149,19 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                                     id="select-all"
                                     checked={isAllSelected}
                                     onCheckedChange={handleSelectAll}
-                                    aria-label="Select all purchase requests"
+                                    aria-label="Select all items"
                                 />
                             </TableHead>
                         )}
                         <TableHead className="w-[200px]">Location</TableHead>
                         <TableHead>Product</TableHead>
-                        <TableHead className="text-right">Order Qty</TableHead>
-                        <TableHead className="text-right">Order Unit</TableHead>
-                        <TableHead className="text-right">Received Qty</TableHead>
-                        <TableHead className="text-right">Received Unit</TableHead>
-                        <TableHead className="text-right">FOC Qty</TableHead>
-                        <TableHead className="text-right">FOC Unit</TableHead>
+                        <TableHead className="text-right">Sequence</TableHead>
+                        <TableHead className="text-right">Order</TableHead>
+                        <TableHead className="text-right">Received</TableHead>
+                        <TableHead className="text-right">FOC</TableHead>
                         <TableHead className="text-right">Price</TableHead>
-                        <TableHead className="text-right">Discount</TableHead>
-                        <TableHead className="text-right">Net Amount</TableHead>
+                        <TableHead className="text-right">Discount Rate</TableHead>
+                        <TableHead className="text-right">Tax Rate</TableHead>
                         <TableHead className="text-right">Tax Amount</TableHead>
                         <TableHead className="text-right">Total Amount</TableHead>
                         {mode !== formType.VIEW && (
@@ -130,57 +170,63 @@ export default function ItemGrn({ control, mode }: ItemGrnProps) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {fields.length === 0 ? (
+                    {allItems.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={mode !== formType.VIEW ? 12 : 10} className="text-center">
+                            <TableCell colSpan={mode !== formType.VIEW ? 16 : 15} className="text-center">
                                 No items available
                             </TableCell>
                         </TableRow>
                     ) : (
-                        fields.map((field) => (
+                        allItems.map((item, index) => (
                             <TableRow
-                                key={field.id}
-                                onClick={() => handleRowClick(field)}
+                                key={item.id || `item-${index}`}
+                                onClick={() => handleRowClick(item)}
                                 className={mode !== formType.VIEW ? "cursor-pointer hover:bg-muted/50" : ""}
                             >
                                 {mode !== formType.VIEW && (
                                     <TableCell className="text-center w-10" onClick={(e) => e.stopPropagation()}>
                                         <Checkbox
-                                            id={`checkbox-${field.id}`}
-                                            checked={selectedItems.includes(field.id ?? '')}
-                                            onCheckedChange={() => handleSelectItem(field.id ?? '')}
-                                            aria-label={`Select ${field.id}`}
+                                            id={`checkbox-${item.id || index}`}
+                                            checked={selectedItems.includes(item.id ?? '')}
+                                            onCheckedChange={() => handleSelectItem(item.id ?? '')}
+                                            aria-label={`Select ${item.id}`}
                                         />
                                     </TableCell>
                                 )}
-                                <TableCell>{field.locations.name}</TableCell>
-                                <TableCell>{field.products.name}</TableCell>
-                                <TableCell className="text-right">{field.qty_order}</TableCell>
-                                <TableCell className="text-right">mock order unit 30</TableCell>
-                                <TableCell className="text-right">{field.qty_received}</TableCell>
-                                <TableCell className="text-right">{field.unit.name}</TableCell>
-                                <TableCell className="text-right">mock foc qty 10</TableCell>
-                                <TableCell className="text-right">mock foc unit 30</TableCell>
-                                <TableCell className="text-right">{field.price}</TableCell>
-                                <TableCell className="text-right">mock discount 10</TableCell>
-                                <TableCell className="text-right">{field.net_amount}</TableCell>
-                                <TableCell className="text-right">{field.tax_amount}</TableCell>
-                                <TableCell className="text-right">{field.total_amount}</TableCell>
+                                <TableCell>{getLocationName(item.location_id)}</TableCell>
+                                <TableCell>{getProductName(item.product_id)}</TableCell>
+                                <TableCell className="text-right">{item.sequence_no}</TableCell>
+                                <TableCell className="text-right">
+                                    {item.order_qty} {getUnitName(item.order_unit_id)}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    {item.received_qty} {getUnitName(item.received_unit_id)}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    {item.foc_qty} {getUnitName(item.foc_unit_id)}
+                                </TableCell>
+                                <TableCell className="text-right">{item.price}</TableCell>
+                                <TableCell className="text-right">{item.discount_rate}</TableCell>
+                                <TableCell className="text-right">{item.tax_rate}</TableCell>
+                                <TableCell className="text-right">{item.tax_amount}</TableCell>
+                                <TableCell className="text-right">{item.total_amount}</TableCell>
                                 {mode !== formType.VIEW && (
-                                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                                    <TableCell className="text-right">
                                         <div className="flex justify-end">
-                                            <Button variant="ghost" size="sm">
-                                                <Eye className="h-4 w-4" />
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={(e) => handleEditClick(e, item)}
+                                                className="w-7 h-7"
+                                            >
+                                                <Edit className="h-4 w-4" />
                                             </Button>
                                             <Button
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={(e) => handleEditClick(e, field)}
+                                                className="w-7 h-7"
                                             >
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                            <Button variant="ghost" size="sm">
-                                                <Trash className="h-4 w-4 text-red-500" />
+                                                <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     </TableCell>

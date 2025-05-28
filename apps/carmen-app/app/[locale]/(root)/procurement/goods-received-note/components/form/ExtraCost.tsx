@@ -1,6 +1,6 @@
 "use client";
 
-import { GrnFormValues } from "../../type.dto";
+import { CreateGRNDto } from "@/dtos/grn.dto";
 import { Control, useFieldArray } from "react-hook-form";
 import {
     FormControl,
@@ -22,24 +22,31 @@ import { Plus, Trash } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formType } from "@/dtos/form.dto";
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 interface ExtraCostProps {
-    readonly control: Control<GrnFormValues>;
+    readonly control: Control<CreateGRNDto>;
     readonly mode: formType
 }
 
 export default function ExtraCost({ control, mode }: ExtraCostProps) {
     const { fields, append, remove } = useFieldArray({
         control,
-        name: "extra_cost",
+        name: "extra_cost.extra_cost_detail.add",
     });
 
     const handleAddExtraCost = () => {
         append({
-            id: crypto.randomUUID(),
-            type: "",
-            amount: 0
+            extra_cost_type_id: "",
+            amount: 0,
+            is_tax: false,
+            tax_type_inventory_id: "",
+            tax_type: "",
+            tax_rate: 0,
+            tax_amount: 0,
+            is_tax_adjustment: false,
+            note: "",
+            info: { test1: "", test2: "" },
+            dimension: { test1: "", test2: "" },
         });
     };
 
@@ -62,8 +69,12 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="text-left">Type</TableHead>
+                        <TableHead className="text-left">Extra Cost Type ID</TableHead>
                         <TableHead className="text-left">Amount</TableHead>
+                        <TableHead className="text-left">Tax Type</TableHead>
+                        <TableHead className="text-right">Tax Rate</TableHead>
+                        <TableHead className="text-right">Tax Amount</TableHead>
+                        <TableHead className="text-left">Note</TableHead>
                         {mode !== formType.VIEW && (
                             <TableHead className="text-right">Action</TableHead>
                         )}
@@ -72,7 +83,7 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
                 <TableBody>
                     {fields.length === 0 ? (
                         <TableRow>
-                            <TableCell colSpan={3} className="text-center">
+                            <TableCell colSpan={7} className="text-center">
                                 No extra costs added
                             </TableCell>
                         </TableRow>
@@ -82,28 +93,17 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
                                 <TableCell className="text-left">
                                     <FormField
                                         control={control}
-                                        name={`extra_cost.${index}.type`}
+                                        name={`extra_cost.extra_cost_detail.add.${index}.extra_cost_type_id`}
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
                                                     {mode === formType.VIEW ? (
                                                         <p className="text-xs">{field.value}</p>
                                                     ) : (
-                                                        <Select
-                                                            onValueChange={field.onChange}
-                                                            value={field.value}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Select cost type" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="shipping">Shipping</SelectItem>
-                                                                <SelectItem value="handling">Handling</SelectItem>
-                                                                <SelectItem value="insurance">Insurance</SelectItem>
-                                                                <SelectItem value="duty">Import Duty</SelectItem>
-                                                                <SelectItem value="other">Other</SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
+                                                        <Input
+                                                            placeholder="Extra Cost Type ID"
+                                                            {...field}
+                                                        />
                                                     )}
                                                 </FormControl>
                                                 <FormMessage />
@@ -114,7 +114,7 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
                                 <TableCell className="text-left">
                                     <FormField
                                         control={control}
-                                        name={`extra_cost.${index}.amount`}
+                                        name={`extra_cost.extra_cost_detail.add.${index}.amount`}
                                         render={({ field }) => (
                                             <FormItem>
                                                 {mode === formType.VIEW ? (
@@ -131,6 +131,99 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
                                                         />
                                                     </FormControl>
                                                 )}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-left">
+                                    <FormField
+                                        control={control}
+                                        name={`extra_cost.extra_cost_detail.add.${index}.tax_type`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    {mode === formType.VIEW ? (
+                                                        <p className="text-xs">{field.value}</p>
+                                                    ) : (
+                                                        <Input
+                                                            placeholder="Tax Type"
+                                                            {...field}
+                                                        />
+                                                    )}
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`extra_cost.extra_cost_detail.add.${index}.tax_rate`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}%</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            max="100"
+                                                            step="0.01"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <FormField
+                                        control={control}
+                                        name={`extra_cost.extra_cost_detail.add.${index}.tax_amount`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                {mode === formType.VIEW ? (
+                                                    <p className="text-xs">{field.value}</p>
+                                                ) : (
+                                                    <FormControl>
+                                                        <Input
+                                                            type="number"
+                                                            min="0"
+                                                            step="0.01"
+                                                            {...field}
+                                                            onChange={(e) => field.onChange(Number(e.target.value))}
+                                                            value={field.value}
+                                                        />
+                                                    </FormControl>
+                                                )}
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </TableCell>
+                                <TableCell className="text-left">
+                                    <FormField
+                                        control={control}
+                                        name={`extra_cost.extra_cost_detail.add.${index}.note`}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    {mode === formType.VIEW ? (
+                                                        <p className="text-xs">{field.value}</p>
+                                                    ) : (
+                                                        <Input
+                                                            placeholder="Note"
+                                                            {...field}
+                                                        />
+                                                    )}
+                                                </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -154,27 +247,72 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
                     )}
                 </TableBody>
             </Table>
-            <div className="flex items-start gap-6 p-2">
 
-                <div className="space-y-2">
-                    <p className="text-xs font-medium">Cost Distribution Method</p>
-                    <RadioGroup defaultValue="netAmount" disabled={mode === formType.VIEW}>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="netAmount" id="r1" />
-                            <Label htmlFor="r1">Net Amount</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="quantity" id="r2" />
-                            <Label htmlFor="r2">Quantity</Label>
-                        </div>
-                    </RadioGroup>
-                </div>
+            <div className="grid grid-cols-2 gap-4 p-2">
+                <FormField
+                    control={control}
+                    name="extra_cost.name"
+                    render={({ field }) => (
+                        <FormItem>
+                            <Label>Extra Cost Name</Label>
+                            <FormControl>
+                                {mode === formType.VIEW ? (
+                                    <p className="text-xs">{field.value}</p>
+                                ) : (
+                                    <Input placeholder="Extra Cost Name" {...field} />
+                                )}
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
 
-                <div className="space-y-2">
-                    <p className="text-xs font-medium">Total Extra Cost</p>
-                    <p className="text-xs">75.00</p>
-                </div>
+                <FormField
+                    control={control}
+                    name="extra_cost.allocate_extracost_type"
+                    render={({ field }) => (
+                        <FormItem>
+                            <Label>Allocation Type</Label>
+                            <FormControl>
+                                {mode === formType.VIEW ? (
+                                    <p className="text-xs">{field.value}</p>
+                                ) : (
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select allocation type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="manual">Manual</SelectItem>
+                                            <SelectItem value="auto">Automatic</SelectItem>
+                                            <SelectItem value="proportional">Proportional</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </div>
 
+            <div className="p-2">
+                <FormField
+                    control={control}
+                    name="extra_cost.note"
+                    render={({ field }) => (
+                        <FormItem>
+                            <Label>Extra Cost Note</Label>
+                            <FormControl>
+                                {mode === formType.VIEW ? (
+                                    <p className="text-xs">{field.value}</p>
+                                ) : (
+                                    <Input placeholder="Extra Cost Note" {...field} />
+                                )}
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
             </div>
         </div>
     );

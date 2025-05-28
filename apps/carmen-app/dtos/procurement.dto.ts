@@ -123,17 +123,6 @@ export interface ActivityPrDto {
     details: string;
 }
 
-
-export interface GoodsReceivedNoteListDto {
-    id: string;
-    name: string;
-    grn_no: string;
-    description?: string;
-    vendor_name: string;
-    total_amount: number;
-    is_active: boolean;
-    created_at: string;
-}
 export interface CreditNoteDto {
     id: string;
     cdn_number: string;

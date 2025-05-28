@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { getAllLocations, getLocationByIdService } from '@/services/location.service';
 import { ParamsGetDto } from '@/dtos/param.dto';
+
 export const useLocationsQuery = ({
     token,
     tenantId,

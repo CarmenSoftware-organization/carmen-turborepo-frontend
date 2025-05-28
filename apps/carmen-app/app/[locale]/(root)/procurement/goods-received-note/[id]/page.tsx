@@ -20,6 +20,8 @@ export default function GoodsReceivedNoteIdPage() {
         },
     });
 
+    const grnData = data?.data;
+
     if (isLoading) {
         return <DetailLoading />;
     }
@@ -34,7 +36,7 @@ export default function GoodsReceivedNoteIdPage() {
 
     return (
         <div>
-            <FormGrn mode={formType.VIEW} initialValues={data} />
+            <FormGrn mode={formType.VIEW} initialValues={grnData} />
         </div>
     )
 }

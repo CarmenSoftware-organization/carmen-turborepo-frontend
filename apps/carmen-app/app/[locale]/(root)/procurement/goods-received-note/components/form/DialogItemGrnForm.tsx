@@ -13,6 +13,7 @@ import {
 import { Plus } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
 import { GrnItemFormValues, GrnItemSchema, mockCalulateAmount, mockOnHand, mockOnOrder } from "../../type.dto";
+import { GoodReceivedNoteDetailItemDto } from "@/dtos/grn.dto";
 import {
     Form,
     FormControl,
@@ -30,10 +31,73 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
+// Adapter functions to convert between DTO and form values
+const convertDtoToFormValues = (dto: GoodReceivedNoteDetailItemDto): GrnItemFormValues => {
+    return {
+        id: dto.id,
+        locations: { id: dto.location_id, name: `Location ${dto.location_id}` },
+        products: { id: dto.product_id, name: `Product ${dto.product_id}`, description: "" },
+        qty_order: dto.order_qty,
+        qty_received: dto.received_qty,
+        unit: { id: dto.received_unit_id, name: `Unit ${dto.received_unit_id}` },
+        price: dto.price,
+        net_amount: dto.total_amount - dto.tax_amount,
+        tax_amount: dto.tax_amount,
+        total_amount: dto.total_amount,
+        foc: { unit_id: dto.foc_unit_id, unit_name: `Unit ${dto.foc_unit_id}`, qty: dto.foc_qty },
+        delivery_point: dto.delivery_point_id,
+        currency: "",
+        exchange_rate: dto.exchange_rate,
+        tax_inclusive: false,
+        adj_disc_rate: dto.discount_rate,
+        adj_tax_rate: dto.tax_rate,
+        override_disc_amount: dto.discount_amount,
+        override_tax_amount: 0,
+        note: dto.note,
+    };
+};
+
+const convertFormValuesToDto = (formValues: GrnItemFormValues): GoodReceivedNoteDetailItemDto => {
+    return {
+        id: formValues.id,
+        sequence_no: 1, // Default value
+        location_id: formValues.locations.id,
+        product_id: formValues.products.id,
+        order_qty: formValues.qty_order,
+        order_unit_id: formValues.unit.id,
+        received_qty: formValues.qty_received,
+        received_unit_id: formValues.unit.id,
+        is_foc: formValues.foc.qty > 0,
+        foc_qty: formValues.foc.qty,
+        foc_unit_id: formValues.foc.unit_id || formValues.unit.id,
+        price: formValues.price,
+        tax_type_inventory_id: "", // Default value
+        tax_type: "", // Default value
+        tax_rate: formValues.adj_tax_rate,
+        tax_amount: formValues.tax_amount,
+        is_tax_adjustment: false,
+        total_amount: formValues.total_amount,
+        delivery_point_id: formValues.delivery_point || "",
+        base_price: formValues.price,
+        base_qty: formValues.qty_order,
+        extra_cost: 0,
+        total_cost: formValues.total_amount,
+        is_discount: formValues.adj_disc_rate > 0,
+        discount_rate: formValues.adj_disc_rate,
+        discount_amount: formValues.override_disc_amount,
+        is_discount_adjustment: false,
+        exchange_rate: formValues.exchange_rate,
+        note: formValues.note || "",
+        info: { test1: "", test2: "" },
+        dimension: { test1: "", test2: "" },
+    };
+};
+
 interface DialogGrnFormProps {
     readonly mode: formType;
-    readonly onAddItem: (item: GrnItemFormValues) => void;
-    readonly initialData?: GrnItemFormValues | null;
+    readonly onAddItem: (item: GoodReceivedNoteDetailItemDto, action: 'add' | 'update') => void;
+    readonly initialData?: GoodReceivedNoteDetailItemDto | null;
+    readonly initData?: GoodReceivedNoteDetailItemDto[]; // Original data from API
     readonly isOpen?: boolean;
     readonly onOpenChange?: (open: boolean) => void;
 }
@@ -42,6 +106,7 @@ export default function DialogItemGrnForm({
     mode,
     onAddItem,
     initialData = null,
+    initData,
     isOpen,
     onOpenChange
 }: DialogGrnFormProps) {
@@ -61,7 +126,6 @@ export default function DialogItemGrnForm({
         defaultValues: {
             locations: { id: "", name: "" },
             products: { id: "", name: "", description: "" },
-            lot_no: "",
             qty_order: 0,
             qty_received: 0,
             unit: { id: "", name: "" },
@@ -69,8 +133,6 @@ export default function DialogItemGrnForm({
             net_amount: 0,
             tax_amount: 0,
             total_amount: 0,
-            po_ref_no: "",
-            job_code: "",
             foc: { unit_id: "", unit_name: "", qty: 0 },
             delivery_point: "",
             currency: "",
@@ -86,9 +148,10 @@ export default function DialogItemGrnForm({
 
     useEffect(() => {
         if (initialData) {
-            form.reset(initialData);
-            setIsDiscRateEnabled(initialData.adj_disc_rate > 0);
-            setIsTaxRateEnabled(initialData.adj_tax_rate > 0);
+            const formValues = convertDtoToFormValues(initialData);
+            form.reset(formValues);
+            setIsDiscRateEnabled(formValues.adj_disc_rate > 0);
+            setIsTaxRateEnabled(formValues.adj_tax_rate > 0);
         }
     }, [initialData, form]);
 
@@ -102,7 +165,34 @@ export default function DialogItemGrnForm({
         }
     }, [isDiscRateEnabled, isTaxRateEnabled, form]);
 
+    // Monitor form dirty state and errors
+    useEffect(() => {
+        const { isDirty, isValid, errors } = form.formState;
+
+        console.log('Form State:', {
+            isDirty,
+            isValid,
+            hasErrors: Object.keys(errors).length > 0,
+            errors: errors
+        });
+
+        // You can add additional logic here based on form state
+        if (isDirty && Object.keys(errors).length > 0) {
+            console.log('Form is dirty and has errors:', errors);
+        } else if (isDirty && Object.keys(errors).length === 0) {
+            console.log('Form is dirty but valid');
+        }
+    }, [form.formState.isDirty, form.formState.isValid, form.formState.errors]);
+
     const onSubmit = (data: z.infer<typeof GrnItemSchema>) => {
+        // Debug logging
+        console.log('=== Form Submit Debug ===');
+        console.log('initialData:', initialData);
+        console.log('initialData?.id:', initialData?.id);
+        console.log('initData:', initData);
+        console.log('Has initialData:', !!initialData);
+        console.log('Has initialData.id:', !!(initialData?.id));
+
         // Calculate derived values
         const netAmount = data.qty_order * data.price;
         const taxAmount = netAmount * 0.07; // Assuming 7% tax
@@ -114,13 +204,34 @@ export default function DialogItemGrnForm({
         data.total_amount = totalAmount;
         data.qty_received = data.qty_received || data.qty_order; // Set received qty equal to ordered qty by default if not set
 
-        // Preserve the id if editing
-        if (initialData?.id) {
-            data.id = initialData.id;
+        // Convert form values to DTO
+        const dtoItem = convertFormValuesToDto(data);
+
+        // Determine if this is a new item or update by checking against initData
+        let isExistingItem = false;
+
+        if (initialData?.id && initData) {
+            // Check if this item exists in the original data (initData)
+            isExistingItem = initData.some(item => item.id === initialData.id);
+            console.log('Item exists in initData:', isExistingItem);
         }
 
-        // Pass the complete item to parent
-        onAddItem(data);
+        if (isExistingItem && initialData?.id) {
+            // This is an update - item exists in original data
+            data.id = initialData.id;
+            dtoItem.id = initialData.id;
+
+            // Pass to parent with action indicator as separate parameter
+            onAddItem(dtoItem, 'update');
+
+            console.log('✅ Updating existing item (found in initData):', dtoItem);
+        } else {
+            // This is a new item - either no initialData.id or not found in initData
+            // Pass to parent with action indicator as separate parameter
+            onAddItem(dtoItem, 'add');
+
+            console.log('✅ Adding new item (not in initData):', dtoItem);
+        }
 
         // Close dialog and reset form
         setIsDialogOpen(false);
@@ -169,7 +280,7 @@ export default function DialogItemGrnForm({
                                     <Button
                                         variant="default"
                                         size="sm"
-                                        disabled={!form.formState.isValid}
+                                    // disabled={!form.formState.isValid}
                                     >
                                         Save
                                     </Button>
@@ -222,19 +333,6 @@ export default function DialogItemGrnForm({
 
                                     <FormField
                                         control={form.control}
-                                        name="po_ref_no"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>PO Reference.</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
                                         name="note"
                                         render={({ field }) => (
                                             <FormItem>
@@ -252,81 +350,7 @@ export default function DialogItemGrnForm({
                             <Card className="p-4 space-y-4 mt-4">
                                 <p className="text-sm font-bold">Additional Information</p>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
-
-                                    <FormField
-                                        control={form.control}
-                                        name="project_code"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Project Code</FormLabel>
-                                                <FormControl>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select a project code" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="1">Project 1</SelectItem>
-                                                            <SelectItem value="2">Project 2</SelectItem>
-                                                            <SelectItem value="3">Project 3</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="job_code"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Job Code</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="market_segment"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Market Segment</FormLabel>
-                                                <FormControl>
-                                                    <Select onValueChange={field.onChange} value={field.value}>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select a market segment" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="1">Market Segment 1</SelectItem>
-                                                            <SelectItem value="2">Market Segment 2</SelectItem>
-                                                            <SelectItem value="3">Market Segment 3</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <FormField
-                                        control={form.control}
-                                        name="lot_no"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Lot No.</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
+                                    {/* Additional information fields can be added here if needed */}
                                 </div>
                             </Card>
 
@@ -395,6 +419,21 @@ export default function DialogItemGrnForm({
                                         )}
                                     />
 
+
+                                    <FormField
+                                        control={form.control}
+                                        name="foc.unit_name"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>FOC Unit</FormLabel>
+                                                <FormControl>
+                                                    <Input {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
                                     <FormField
                                         control={form.control}
                                         name="foc.qty"
@@ -402,7 +441,10 @@ export default function DialogItemGrnForm({
                                             <FormItem>
                                                 <FormLabel>FOC Qty</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input {...field}
+                                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                                        value={field.value}
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

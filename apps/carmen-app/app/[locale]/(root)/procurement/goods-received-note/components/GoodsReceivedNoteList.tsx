@@ -1,4 +1,4 @@
-import { GoodsReceivedNoteListDto } from "@/dtos/procurement.dto";
+import { GoodsReceivedNoteListDto } from "@/dtos/grn.dto";
 import { useTranslations } from "next-intl";
 import {
     Table,
