@@ -39,14 +39,12 @@ export const useUnit = () => {
             try {
                 setIsLoading(true);
 
-                const safeParams = {
-                    search: search || undefined,
-                    page: page || undefined,
-                    sort: sort || undefined,
-                    filter: filter || undefined
-                };
-
-                const data = await getAllUnits(token, tenantId, safeParams);
+                const data = await getAllUnits(token, tenantId, {
+                    search,
+                    page,
+                    sort,
+                    filter
+                });
 
                 if (data.status === 401) {
                     setIsUnauthorized(true);
@@ -107,7 +105,7 @@ export const useUnit = () => {
                 if (result) {
                     const newUnit: UnitDto = {
                         ...data,
-                        id: result.id,
+                        id: (result as { id: string }).id,
                     };
                     setUnits([...units, newUnit]);
                     toastSuccess({ message: 'Unit created successfully' });

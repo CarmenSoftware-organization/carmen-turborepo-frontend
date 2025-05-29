@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { CategoryDto, SubCategoryDto, ItemGroupDto, CategoryNode } from "@/dtos/category.dto";
+import { CategoryDto, SubCategoryDto, ItemGroupDto, CategoryNode, NODE_TYPE } from "@/dtos/category.dto";
 import { generateNanoid } from "@/utils/nano-id";
 
 
@@ -47,7 +47,7 @@ export const useCategoryTree = ({
                     name: item.name,
                     code: item.code,
                     description: item.description,
-                    type: "itemGroup" as const,
+                    type: NODE_TYPE.ITEM_GROUP,
                     children: [],
                     product_subcategory_id: item.product_subcategory_id,
                     is_active: item.is_active,
@@ -68,7 +68,7 @@ export const useCategoryTree = ({
                     name: sub.name,
                     code: sub.code,
                     description: sub.description,
-                    type: "subcategory" as const,
+                    type: NODE_TYPE.SUBCATEGORY,
                     children: mapItemGroups(sub.id || ''),
                     product_category_id: sub.product_category_id,
                     is_active: sub.is_active,
@@ -85,7 +85,7 @@ export const useCategoryTree = ({
             name: cat.name,
             code: cat.code,
             description: cat.description,
-            type: "category" as const,
+            type: NODE_TYPE.CATEGORY,
             children: mapSubCategories(cat.id || ''),
             is_active: cat.is_active,
             price_deviation_limit: cat.price_deviation_limit,

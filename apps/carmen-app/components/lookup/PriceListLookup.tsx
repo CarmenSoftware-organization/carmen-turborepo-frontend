@@ -20,14 +20,6 @@ import { useAuth } from "@/context/AuthContext";
 import { usePriceList } from "@/hooks/usePriceList";
 import { PriceListDto } from "@/dtos/price-list.dto";
 
-type PriceList = {
-    value: string;
-    label: string;
-    min: number;
-    max: number;
-}
-
-
 export default function PriceListLookup({
     value,
     onValueChange,

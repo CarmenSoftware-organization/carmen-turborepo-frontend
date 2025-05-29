@@ -18,7 +18,6 @@ import { useRouter } from "@/lib/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TAB_PR } from "@/constants/tabs";
 import ItemPr from "./ItemPr";
-import BudgetPr from "./BudgetPr";
 import WorkflowPr from "./WorkflowPr";
 import TransactionSummary from "./TransactionSummary";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -221,9 +220,6 @@ export default function PrForm({ mode, initValues }: PrFormProps) {
                     </TabsList>
                     <TabsContent value={TAB_PR.ITEM}>
                         <ItemPr />
-                    </TabsContent>
-                    <TabsContent value={TAB_PR.BUDGET}>
-                        <BudgetPr />
                     </TabsContent>
                     <TabsContent value={TAB_PR.WORKFLOW}>
                         <WorkflowPr />

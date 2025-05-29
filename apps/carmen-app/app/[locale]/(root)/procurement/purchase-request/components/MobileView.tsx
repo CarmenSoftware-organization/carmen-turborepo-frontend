@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PurchaseRequestDto } from "@/dtos/pr.dto";
 import { useTranslations } from "next-intl";
 import { ActionButtons, prStatusColor, formatCurrency, SelectionProps } from "./SharePrComponent";
 import { format } from "date-fns";
-
+import { GetAllPrDto } from "@/dtos/pr.dto";
 interface MobileViewProps extends SelectionProps {
-    readonly purchaseRequests: PurchaseRequestDto[];
+    readonly purchaseRequests: GetAllPrDto[];
     readonly isLoading?: boolean;
 }
 
@@ -99,8 +98,8 @@ export const MobileView = ({
                         <div className="space-y-1">
                             <p className="text-xs text-muted-foreground">{t('amount')}</p>
                             <p className="text-xs font-medium">{formatCurrency(
-                                pr.tb_purchase_request_detail?.reduce((sum: number, item) =>
-                                    sum + parseFloat(item.total_price || '0'), 0) ?? 0
+                                pr.purchase_request_detail?.reduce((sum: number, item) =>
+                                    sum + parseFloat(String(item.total_price || '0')), 0) ?? 0
                             )}</p>
                         </div>
                     </div>

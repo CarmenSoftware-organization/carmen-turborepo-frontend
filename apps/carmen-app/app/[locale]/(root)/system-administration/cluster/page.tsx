@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { ClusterPostDto } from "@/dtos/cluster.dto";
+import { ClusterGetDto, ClusterPostDto } from "@/dtos/cluster.dto";
 import { useClusterMutation, useClusterQuery } from "@/hooks/useCluster";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -151,7 +151,7 @@ export default function ClusterPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {clusters.data.map((cluster: any) => (
+                                {clusters.data.map((cluster: ClusterGetDto) => (
                                     <TableRow key={cluster.id}>
                                         <TableCell className="font-medium">{cluster.code}</TableCell>
                                         <TableCell>{cluster.name}</TableCell>

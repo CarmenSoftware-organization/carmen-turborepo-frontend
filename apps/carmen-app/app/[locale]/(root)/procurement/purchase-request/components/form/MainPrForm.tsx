@@ -8,7 +8,7 @@ import { formType } from "@/dtos/form.dto";
 import { PrSchemaV2Dto, prSchemaV2, PurchaseRequestByIdDto, PurchaseRequestDetailItemDto } from "@/dtos/pr.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronLeft, ChevronRight, Pencil, Save, X } from "lucide-react";
+import { CheckCircleIcon, ArrowLeftRightIcon, ChevronLeft, ChevronRight, Pencil, Save, X, XCircleIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import HeadPrForm from "./HeadPrForm";
@@ -31,6 +31,7 @@ type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 interface MainPrFormProps {
     readonly mode: formType;
     readonly initValues?: PurchaseRequestByIdDto;
+    readonly docType?: string;
 }
 
 export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
@@ -93,7 +94,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             hasErrors: Object.keys(errors).length > 0,
             errorFields: Object.keys(errors)
         });
-    }, [form.formState.isDirty, form.formState.errors, form.formState.isValid]);
+    }, [form.formState]);
 
     useEffect(() => {
         if (isCreateSuccess) {
@@ -101,7 +102,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             toastSuccess({ message: "Purchase Request created successfully" });
             router.push("/procurement/purchase-request");
         }
-    }, [isCreateSuccess]);
+    }, [isCreateSuccess, router]);
 
     useEffect(() => {
         if (isUpdateSuccess) {
@@ -257,6 +258,28 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                             </form>
                         </Form>
                     </Card>
+                    <div className="fixed bottom-6 right-6 flex gap-2 z-50">
+                        <Button
+                            size={'sm'}
+                        >
+                            <CheckCircleIcon className="w-5 h-5" />
+                            Approve
+                        </Button>
+                        <Button
+                            variant={'destructive'}
+                            size={'sm'}
+                        >
+                            <XCircleIcon className="w-5 h-5" />
+                            Reject
+                        </Button>
+                        <Button
+                            variant={'outline'}
+                            size={'sm'}
+                        >
+                            <ArrowLeftRightIcon className="w-5 h-5" />
+                            Send Back
+                        </Button>
+                    </div>
                 </ScrollArea>
 
                 <ItemPrDialog

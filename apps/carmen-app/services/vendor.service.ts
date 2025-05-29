@@ -13,8 +13,8 @@ export const getAllVendorService = async (
         API_URL,
         token,
         tenantId,
-        params,
-        'Failed to fetch vendors'
+        'Failed to fetch vendors',
+        params
     );
 }
 
@@ -28,13 +28,10 @@ export const getVendorIdService = async (
         `${API_URL}/${id}`,
         token,
         tenantId,
-        id,
         'Failed to fetch vendor'
     );
 }
 export const createVendorService = async (token: string, tenantId: string, vendor: VendorFormValues) => {
-
-    console.log('vendor', vendor);
 
     try {
         const url = `${backendApi}/api/config/vendors`;

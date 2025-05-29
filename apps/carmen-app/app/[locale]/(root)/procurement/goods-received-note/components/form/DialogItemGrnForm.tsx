@@ -271,7 +271,7 @@ export default function DialogItemGrnForm({
         } else if (isDirty && Object.keys(errors).length === 0) {
             console.log('Form is dirty but valid');
         }
-    }, [form.formState.isDirty, form.formState.isValid, form.formState.errors]);
+    }, [form.formState]);
 
     const onSubmit = (data: z.infer<typeof GrnItemFormSchema>) => {
         // Debug logging

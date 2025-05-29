@@ -28,14 +28,14 @@ export default function ClusterLookup({
 }: Readonly<PropsLookup>) {
     const { token } = useAuth();
     const { data, isLoading } = useClusterQuery(token);
-    const clusters = data?.data ?? [];
+    const clsuters = useMemo(() => data?.data ?? [], [data?.data]);
     const [open, setOpen] = useState(false);
 
     const selectedClusterName = useMemo(() => {
-        if (!value || !clusters || !Array.isArray(clusters)) return null;
-        const found = clusters.find(cluster => cluster.id === value);
+        if (!value || !clsuters || !Array.isArray(clsuters)) return null;
+        const found = clsuters.find(cluster => cluster.id === value);
         return found?.name ?? null;
-    }, [value, clusters]);
+    }, [value, clsuters]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -66,8 +66,8 @@ export default function ClusterLookup({
                             <>
                                 <CommandEmpty>No clusters found.</CommandEmpty>
                                 <CommandGroup>
-                                    {clusters.length > 0 ? (
-                                        clusters.map((cluster: ClusterGetDto) => (
+                                    {clsuters.length > 0 ? (
+                                        clsuters.map((cluster: ClusterGetDto) => (
                                             <CommandItem
                                                 key={cluster.id}
                                                 value={cluster.name}

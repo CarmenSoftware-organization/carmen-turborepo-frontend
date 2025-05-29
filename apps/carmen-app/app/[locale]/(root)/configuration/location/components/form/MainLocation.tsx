@@ -92,7 +92,7 @@ export default function MainLocation({
     });
 
     // Remove user fields - not currently used but available for future implementation
-    const { fields: removeUserFields, append: appendRemoveUser, remove: removeRemoveUser } = useFieldArray({
+    const { append: appendRemoveUser } = useFieldArray({
         control: form.control,
         name: "users.remove"
     });
