@@ -244,7 +244,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                         </Button>
                                     </div>
                                 </div>
-                                <GrnFormHeader control={form.control} mode={currentMode} />
+                                <GrnFormHeader control={form.control} mode={currentMode} token={token} tenantId={tenantId} />
                                 <Tabs defaultValue="items" onValueChange={handleTabChange} value={activeTab}>
                                     <TabsList className="w-full">
                                         <TabsTrigger className="w-full" value="items">Items</TabsTrigger>

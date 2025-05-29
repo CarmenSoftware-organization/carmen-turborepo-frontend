@@ -20,15 +20,20 @@ import { useVendor } from "@/hooks/useVendor";
 import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { DOC_TYPE } from "@/constants/enum";
+import { useCreditTermQuery } from "@/hooks/useCreditTerm";
+import CreditTermLookup from "@/components/lookup/CreditTermLookup";
 
 interface GrnFormHeaderProps {
     readonly control: Control<CreateGRNDto>;
     readonly mode: formType;
+    readonly token: string;
+    readonly tenantId: string;
 }
 
-export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
+export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFormHeaderProps) {
     const { getVendorName } = useVendor();
     const { getCurrencyCode } = useCurrency();
+    const { getCreditTermName } = useCreditTermQuery(token, tenantId);
     return (
         <div className="space-y-4 mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
@@ -175,10 +180,13 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                         <FormItem>
                             <FormLabel>Credit Term</FormLabel>
                             {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground">{field.value}</p>
+                                <p className="text-xs text-muted-foreground">{getCreditTermName(field.value)}</p>
                             ) : (
                                 <FormControl>
-                                    <Input {...field} placeholder="Credit Term ID" />
+                                    <CreditTermLookup
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                    />
                                 </FormControl>
                             )}
                             <FormMessage />
