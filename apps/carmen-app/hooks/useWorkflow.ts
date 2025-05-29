@@ -145,13 +145,22 @@ export const useWorkflow = () => {
         }
         const { operator, value } = condition;
         if (operator === "eq") {
+          if (Array.isArray(value)) {
+            return value.includes(itemValue);
+          }
           return itemValue === value;
         }
         if (operator === "gt") {
-          return itemValue > value;
+          if (Array.isArray(value)) {
+            // If value is an array, compare itemValue to each element and return true if any comparison is true
+            return value.some((v) => itemValue > v);
+          }
         }
         if (operator === "lt") {
-          return itemValue < value;
+          if (Array.isArray(value)) {
+            // If value is an array, compare itemValue to each element and return true if any comparison is true
+            return value.some((v) => itemValue < v);
+          }
         }
       }
       // If there is no matching rule, return the other stage
