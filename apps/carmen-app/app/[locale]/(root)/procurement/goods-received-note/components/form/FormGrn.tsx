@@ -287,7 +287,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                             </form>
                         </Form>
                     </Card>
-                    <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
+                    {/* <pre>{JSON.stringify(form.getValues(), null, 2)}</pre> */}
                     <TransactionSummary />
                 </ScrollArea>
 

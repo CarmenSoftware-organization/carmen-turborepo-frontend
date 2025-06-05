@@ -133,7 +133,7 @@ export default function HeadPrForm({
                     render={({ field }) => (
                         <FormItem className="col-span-1">
                             <FormLabel>Description</FormLabel>
-                            <Textarea {...field} value={field.value || ""} />
+                            <Textarea {...field} value={field.value ?? ""} />
                         </FormItem>
                     )}
                 />
