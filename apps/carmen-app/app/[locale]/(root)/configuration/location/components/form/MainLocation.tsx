@@ -146,6 +146,15 @@ export default function MainLocation({
         return <div className="flex items-center justify-center p-4 text-sm">Loading...</div>;
     }
 
+
+    // const conditionType = (type: INVENTORY_TYPE) => {
+    //     if (type === INVENTORY_TYPE.INVENTORY) {
+    //         return (
+    //             <Checkbox />
+    //         )
+    //     }
+    // }
+
     return (
         <div className="max-w-full mx-auto p-3 space-y-3">
             {/* Header */}

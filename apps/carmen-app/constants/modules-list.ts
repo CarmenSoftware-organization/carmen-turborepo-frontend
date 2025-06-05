@@ -297,7 +297,7 @@ export const moduleItems: ModuleItem[] = [
             },
             {
                 labelKey: "Modules.Configuration.storeLocation",
-                href: "/configuration/store-location",
+                href: "/configuration/location",
             },
             {
                 labelKey: "Modules.Configuration.department",
