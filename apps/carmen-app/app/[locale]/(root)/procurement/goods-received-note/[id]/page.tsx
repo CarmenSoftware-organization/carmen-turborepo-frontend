@@ -30,14 +30,6 @@ export default function GoodsReceivedNoteIdPage() {
         return <div>Error loading data</div>;
     }
 
-    // Log initial data
-    console.log("=== GRN Data from API ===");
-    console.log("API Data:", data);
-
-    return (
-        <div>
-            <FormGrn mode={formType.VIEW} initialValues={grnData} />
-        </div>
-    )
+    return <FormGrn mode={formType.VIEW} initialValues={grnData} />
 }
 

@@ -26,6 +26,8 @@ import { useAuth } from "@/context/AuthContext";
 import { usePrMutation, useUpdatePrMutation } from "@/hooks/usePr";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import BudgetPr from "./BudgetPr";
+import ActivityLog from "../../../goods-received-note/components/ActivityLog";
+import CommentGrn from "../../../goods-received-note/components/CommentGrn";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
@@ -289,6 +291,16 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                         </Button>
                     </div>
                 </ScrollArea>
+
+                {openLog && (
+                    <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
+                        <div className="flex flex-col gap-4">
+                            <CommentGrn />
+                            <ActivityLog />
+                        </div>
+                    </div>
+                )}
+
 
                 <ItemPrDialog
                     open={openDialogItemPr}
