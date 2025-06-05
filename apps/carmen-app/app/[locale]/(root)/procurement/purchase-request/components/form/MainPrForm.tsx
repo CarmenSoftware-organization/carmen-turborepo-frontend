@@ -268,7 +268,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                             </form>
                         </Form>
                     </Card>
-                    <div className="fixed bottom-6 right-6 flex gap-2 z-50">
+                    <div className={`fixed bottom-6 ${openLog ? 'right-1/4' : 'right-6'} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}>
                         <Button
                             size={'sm'}
                         >
