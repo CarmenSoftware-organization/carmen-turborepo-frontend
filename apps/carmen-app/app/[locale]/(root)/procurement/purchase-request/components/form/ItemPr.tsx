@@ -14,6 +14,7 @@ import {
 import useProduct from "@/hooks/useProduct";
 import { useUnit } from "@/hooks/useUnit";
 import { v4 as uuidv4 } from 'uuid';
+import { useStoreLocation } from "@/hooks/useStoreLocation";
 
 interface ItemPrProps {
     readonly itemsPr: (PurchaseRequestDetailItemDto & { id?: string })[];
@@ -26,6 +27,7 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
     const isDisabled = mode === formType.VIEW;
     const { getProductName } = useProduct();
     const { getUnitName } = useUnit();
+    const { getLocationName } = useStoreLocation();
     // Create empty item template for new items
     const handleAddNewItem = (e: React.MouseEvent) => {
         const tempId = `temp-${Date.now()}`;
@@ -104,16 +106,14 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                 <Table>
                     <TableHeader className="bg-muted/80">
                         <TableRow>
-                            <TableHead>Product ID</TableHead>
-                            <TableHead>Description</TableHead>
-                            <TableHead>Requested Qty</TableHead>
-                            <TableHead>Approved Qty</TableHead>
-                            <TableHead>Requested Inventory Unit</TableHead>
-                            <TableHead>Approved Inventory Unit</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead>Total</TableHead>
+                            <TableHead>Location</TableHead>
+                            <TableHead>Product</TableHead>
+                            <TableHead className="text-right">Requested</TableHead>
+                            <TableHead className="text-right">Approved</TableHead>
+                            <TableHead className="text-right">Price</TableHead>
+                            <TableHead className="text-right">Total</TableHead>
                             {!isDisabled && (
-                                <TableHead>Actions</TableHead>
+                                <TableHead className="text-right">Actions</TableHead>
                             )}
                         </TableRow>
                     </TableHeader>
@@ -127,17 +127,33 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                         ) : (
                             itemsPr.map((item, index) => (
                                 <TableRow key={item.id ?? `item-${index}`}>
-                                    <TableCell>{getProductName(item.product_id)}</TableCell>
-                                    <TableCell>{item.description}</TableCell>
-                                    <TableCell>{item.requested_qty} {getUnitName(item.requested_unit_id)}</TableCell>
-                                    <TableCell>{item.approved_qty} {getUnitName(item.approved_unit_id)}</TableCell>
-                                    <TableCell>{item.requested_qty} {getUnitName(item.requested_base_unit_id)}</TableCell>
-                                    <TableCell>{item.approved_qty} {getUnitName(item.approved_base_unit_id)}</TableCell>
-                                    <TableCell>{item.price}</TableCell>
-                                    <TableCell>{item.total_price}</TableCell>
+                                    <TableCell>{getLocationName(item.location_id)}</TableCell>
+                                    <TableCell>
+                                        <p>{getProductName(item.product_id)}</p>
+                                        <p className="text-xs text-muted-foreground">{item.description}</p>
+
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div>
+                                            <p>{item.requested_qty} {getUnitName(item.requested_unit_id)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{item.requested_base_qty} {getUnitName(item.requested_base_unit_id)}</p>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div>
+                                            <p>{item.approved_qty} {getUnitName(item.approved_unit_id)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-muted-foreground">{item.approved_base_qty} {getUnitName(item.approved_base_unit_id)}</p>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">{item.price} {item.currency_name}</TableCell>
+                                    <TableCell className="text-right">{item.total_price} {item.currency_name}</TableCell>
                                     {!isDisabled && (
-                                        <TableCell>
-                                            <div className="flex justify-center gap-1">
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-1">
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"

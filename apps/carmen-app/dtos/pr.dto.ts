@@ -67,9 +67,11 @@ export const getAllPrSchema = z.object({
 
 // Schema for workflow history
 export const workflowHistorySchema = z.object({
+    stage: z.string(),
+    user_id: z.string().uuid(),
+    user_name: z.string(),
     status: z.string(),
     timestamp: z.string(),
-    user: z.string()
 });
 
 // Schema สำหรับ item detail เมื่อดึงข้อมูลจาก API
@@ -114,6 +116,8 @@ export const purchaseRequestByIdSchema = z.object({
     doc_version: z.string(),
     note: z.string().optional(),
     description: z.string().optional(),
+    workflow_id: z.string().uuid().optional(),
+    workflow_name: z.string().optional(),
     info: z.object({
         priority: z.string(),
         budget_code: z.string()
@@ -140,6 +144,8 @@ export const purchaseRequestFormSchema = z.object({
     doc_version: z.string().optional(),
     note: z.string().optional(),
     description: z.string().optional(),
+    workflow_id: z.string().uuid().optional(),
+    workflow_name: z.string().optional(),
     info: z.object({
         priority: z.string(),
         budget_code: z.string()
@@ -154,6 +160,7 @@ export const purchaseRequestFormSchema = z.object({
 // Schema ขยายเพิ่มเติมสำหรับ purchase request ที่มีฟิลด์เพิ่มเติม
 export const purchaseRequestExtendedSchema = purchaseRequestByIdSchema.extend({
     workflow_id: z.string().optional(),
+    workflow_name: z.string().optional(),
     current_workflow_status: z.string().optional()
 });
 
@@ -203,6 +210,7 @@ export const purchaseRequestDetailItemSchema = z.object({
     requested_base_qty: z.number(),
     requested_base_unit_id: z.string().uuid(),
     currency_id: z.string().uuid(),
+    currency_name: z.string().optional(),
     exchange_rate: z.number().transform(val => parseFloat(val.toString())),
     exchange_rate_date: z.string().datetime(),
     price: z.number().transform(val => parseFloat(val.toString())),
@@ -233,14 +241,16 @@ export type PurchaseRequestDetailItemDto = z.infer<typeof purchaseRequestDetailI
 
 export const prSchemaV2 = z.object({
     pr_date: z.string().datetime(),
-    workflow_id: z.string().uuid(),
     current_workflow_status: z.string(),
     workflow_history: z.array(wfHistorySchema),
     pr_status: z.string().optional(),
     requestor_id: z.string().uuid(),
     department_id: z.string().uuid(),
     is_active: z.boolean(),
+    workflow_id: z.string().uuid(),
+    workflow_name: z.string().optional(),
     doc_version: z.number().transform(val => parseFloat(val.toString())),
+    description: z.string().optional(),
     note: z.string(),
     info: z.object({
         priority: z.string(),

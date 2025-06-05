@@ -12,13 +12,15 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import DepartmentLookup from "@/components/lookup/DepartmentLookup";
 import UserListLookup from "@/components/lookup/UserListLookup";
+import WorkflowLookup from "@/components/lookup/WorkflowLookup";
+import { enum_workflow_type } from "@/dtos/workflows.dto";
+import { Textarea } from "@/components/ui/textarea";
 
 interface HeadPrFormProps {
     readonly control: Control<PrSchemaV2Dto>;
     readonly mode: formType;
     readonly prNo?: string;
 }
-
 
 export default function HeadPrForm({
     control,
@@ -55,6 +57,7 @@ export default function HeadPrForm({
                                                 "w-full pl-3 text-left font-normal",
                                                 !field.value && "text-muted-foreground"
                                             )}
+                                            disabled={mode === formType.VIEW}
                                         >
                                             {field.value ? (
                                                 format(new Date(field.value), "PPP")
@@ -74,6 +77,22 @@ export default function HeadPrForm({
                                     />
                                 </PopoverContent>
                             </Popover>
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={control}
+                    name="workflow_id"
+                    render={({ field }) => (
+                        <FormItem className="col-span-1">
+                            <FormLabel>Pr Type</FormLabel>
+                            <WorkflowLookup
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                disabled={mode === formType.VIEW}
+                                type={enum_workflow_type.purchase_request}
+                            />
                         </FormItem>
                     )}
                 />
@@ -110,14 +129,15 @@ export default function HeadPrForm({
 
                 <FormField
                     control={control}
-                    name="note"
+                    name="description"
                     render={({ field }) => (
                         <FormItem className="col-span-1">
-                            <FormLabel>Note</FormLabel>
-                            <Input {...field} value={field.value || ""} />
+                            <FormLabel>Description</FormLabel>
+                            <Textarea {...field} value={field.value || ""} />
                         </FormItem>
                     )}
                 />
+
             </div>
         </div>
     )

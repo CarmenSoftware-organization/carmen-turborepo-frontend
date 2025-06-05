@@ -11,19 +11,21 @@ export default function WorkflowPr({ workflowData }: WorkflowPrProps) {
         <div>
             <Table>
                 <TableRow>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Stage</TableHead>
                     <TableHead>User</TableHead>
+                    <TableHead>Status</TableHead>
                     <TableHead>Timestamp</TableHead>
                 </TableRow>
                 <TableBody>
                     {workflowData?.map((item) => (
                         <TableRow key={item.status}>
+                            <TableCell>{item.stage}</TableCell>
+                            <TableCell>{item.user_name}</TableCell>
                             <TableCell>
                                 <Badge>
                                     {item.status}
                                 </Badge>
                             </TableCell>
-                            <TableCell>{item.user}</TableCell>
                             <TableCell>{item.timestamp}</TableCell>
                         </TableRow>
                     ))}

@@ -22,14 +22,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { signInSchema } from "@/constants/form.schema";
 import { SignInFormValues } from "@/dtos/sign-in.dto";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { useTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PasswordInput } from "./ui-custom/PasswordInput";
-import { signInService } from "@/services/auth.service";
-
+import { useSignInMutation } from "@/hooks/useAuth";
 
 interface Props {
     readonly open: boolean;
@@ -40,13 +37,12 @@ export default function SignInDialog({
     open,
     onOpenChange,
 }: Props) {
-    const { setSession } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [currentPath, setCurrentPath] = useState<string>('');
     const t = useTranslations('SignInPage');
-    const [isPending, startTransition] = useTransition();
+    const signInMutation = useSignInMutation();
 
     // เก็บ path ปัจจุบันเมื่อ dialog เปิด
     useEffect(() => {
@@ -67,33 +63,19 @@ export default function SignInDialog({
     });
 
     const handleSubmit = (values: SignInFormValues) => {
-        startTransition(async () => {
-            try {
-                const result = await signInService(values.email, values.password)
-
-                if (result) {
-                    if (result.access_token && result.refresh_token) {
-                        setSession(result.access_token, result.refresh_token)
-                    }
-
-                    // กลับไปที่ path เดิมแทนที่จะไป dashboard
-                    router.push(currentPath || '/dashboard')
-                    form.reset()
-                    onOpenChange(false)
-                } else {
-                    form.setError("root", {
-                        message: result.message ?? t('signInError')
-                    })
-                }
-            } catch (error) {
-                console.error("Sign in error:", error)
+        signInMutation.mutate(values, {
+            onSuccess: () => {
+                router.push(currentPath || '/dashboard');
+                form.reset();
+                onOpenChange(false);
+            },
+            onError: (error) => {
                 form.setError("root", {
-                    message: t('signInError')
-                })
-                toast.error(t('signInError'))
+                    message: error.message ?? t('signInError')
+                });
             }
-        })
-    }
+        });
+    };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,7 +99,7 @@ export default function SignInDialog({
                                             placeholder="email@example.com"
                                             type="email"
                                             autoComplete="email"
-                                            disabled={isPending}
+                                            disabled={signInMutation.isPending}
                                             {...field}
                                         />
                                     </FormControl>
@@ -136,7 +118,7 @@ export default function SignInDialog({
                                             placeholder="••••••••"
                                             type="password"
                                             autoComplete="current-password"
-                                            disabled={isPending}
+                                            disabled={signInMutation.isPending}
                                             {...field}
                                         />
                                     </FormControl>
@@ -155,9 +137,9 @@ export default function SignInDialog({
                             <Button
                                 type="submit"
                                 className="w-40 h-10 bg-primary hover:bg-primary/90 text-white rounded-full"
-                                disabled={isPending}
+                                disabled={signInMutation.isPending}
                             >
-                                {isPending ? t('signingIn') : t('signIn')}
+                                {signInMutation.isPending ? t('signingIn') : t('signIn')}
                             </Button>
                         </DialogFooter>
                     </form>

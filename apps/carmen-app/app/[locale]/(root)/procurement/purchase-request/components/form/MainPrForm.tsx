@@ -25,6 +25,7 @@ import ItemPrDialog from "./ItemPrDialog";
 import { useAuth } from "@/context/AuthContext";
 import { usePrMutation, useUpdatePrMutation } from "@/hooks/usePr";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import BudgetPr from "./BudgetPr";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
@@ -60,6 +61,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
         is_active: initValues?.is_active ?? true,
         doc_version: initValues?.doc_version ? parseFloat(initValues.doc_version.toString()) : 1.0,
         note: initValues?.note ?? "",
+        description: initValues?.description ?? "",
         info: {
             priority: initValues?.info?.priority ?? "",
             budget_code: initValues?.info?.budget_code ?? "",
@@ -68,7 +70,8 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             cost_center: initValues?.dimension?.cost_center ?? "",
             project: initValues?.dimension?.project ?? "",
         },
-        workflow_id: "f224d743-7cfa-46f6-8f72-85b14c6a355e",
+        workflow_id: initValues?.workflow_id ?? "",
+        workflow_name: initValues?.workflow_name ?? "",
         current_workflow_status: "pending",
         workflow_history: initValues?.workflow_history || [],
         purchase_request_detail: {
@@ -77,6 +80,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             delete: []
         },
     };
+
 
     const form = useForm<PrSchemaV2Dto>({
         resolver: zodResolver(prSchemaV2),
@@ -239,6 +243,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                 <Tabs defaultValue="items">
                                     <TabsList className="w-full">
                                         <TabsTrigger className="w-full" value="items">Items</TabsTrigger>
+                                        <TabsTrigger className="w-full" value="budget">Budget</TabsTrigger>
                                         <TabsTrigger className="w-full" value="workflow">Workflow</TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="items">
@@ -250,6 +255,9 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                             openDetail={handleDialogItemPr}
                                             onDeleteItem={handleDeleteItem}
                                         />
+                                    </TabsContent>
+                                    <TabsContent value="budget">
+                                        <BudgetPr />
                                     </TabsContent>
                                     <TabsContent value="workflow">
                                         <WorkflowPr workflowData={initValues?.workflow_history} />
