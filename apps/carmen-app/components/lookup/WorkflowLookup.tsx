@@ -10,6 +10,11 @@ import { useAuth } from "@/context/AuthContext";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { useWorkflowQuery } from "@/hooks/useWorkflowQuery";
 
+interface WorkflowDto {
+    id: string;
+    name: string;
+}
+
 interface PropsWorkflowLookup {
     readonly value?: string;
     readonly onValueChange: (value: string) => void;
@@ -27,7 +32,7 @@ export default function WorkflowLookup({
 }: Readonly<PropsWorkflowLookup>) {
     const { token, tenantId } = useAuth();
     const { workflows, isLoading } = useWorkflowQuery(token, tenantId, type);
-    const selectedWorkflow = workflows?.find(w => w.id === value);
+    const selectedWorkflow = workflows?.find((w: WorkflowDto) => w.id === value);
 
     return (
         <Select
@@ -43,7 +48,7 @@ export default function WorkflowLookup({
                 </SelectValue>
             </SelectTrigger>
             <SelectContent>
-                {workflows?.map((workflow) => (
+                {workflows?.map((workflow: WorkflowDto) => (
                     <SelectItem
                         key={workflow.id}
                         value={workflow.id}

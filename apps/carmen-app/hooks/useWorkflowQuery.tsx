@@ -2,12 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import axios from "axios";
-
-interface WorkflowResponse {
-    id: string;
-    name: string;
-}
-
 export const useWorkflowQuery = (
     token: string,
     tenantId: string,
@@ -15,14 +9,14 @@ export const useWorkflowQuery = (
 ) => {
     const API_URL = `${backendApi}/api/workflow/type/${type}`;
 
-    const { data, isLoading, error } = useQuery<WorkflowResponse[]>({
+    const { data, isLoading, error } = useQuery({
         queryKey: ["workflow", tenantId, type],
         queryFn: async () => {
             if (!token || !tenantId) {
                 throw new Error('Unauthorized: Missing token or tenantId');
             }
 
-            const { data } = await axios.get<WorkflowResponse[]>(API_URL, {
+            const { data } = await axios.get(API_URL, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'X-Tenant-Id': tenantId,
@@ -35,7 +29,7 @@ export const useWorkflowQuery = (
     });
 
     return {
-        workflows: data,
+        workflows: data?.data,
         isLoading,
         error,
     };
