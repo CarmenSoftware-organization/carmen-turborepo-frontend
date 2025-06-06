@@ -95,7 +95,13 @@ export default function GoodsReceivedNoteList({
                                             aria-label={`Select ${grn.grn_no}`}
                                         />
                                     </TableCell>
-                                    <TableCell>{grn.grn_no ?? '-'}</TableCell>
+                                    <TableCell>
+                                        <Link href={`/procurement/goods-received-note/${grn.id}`}
+                                            className="hover:underline text-primary hover:text-primary/80"
+                                        >
+                                            {grn.grn_no ?? '-'}
+                                        </Link>
+                                    </TableCell>
                                     <TableCell>
                                         {grn.name ?? '-'}
                                         {grn.description && <p className="text-xs text-muted-foreground">{grn.description}</p>}

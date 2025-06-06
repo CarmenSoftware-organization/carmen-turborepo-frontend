@@ -18,6 +18,8 @@ const badgeVariants = cva(
         active: "bg-emerald-200 text-emerald-800 hover:bg-emerald-300 transition-colors duration-200 rounded-full",
         inactive: "bg-rose-200 text-rose-800 hover:bg-rose-300 transition-colors duration-200 rounded-full",
         warning: "bg-amber-200 text-amber-800 hover:bg-amber-300 transition-colors duration-200 rounded-full",
+        draft: "bg-gray-200 text-gray-800 hover:bg-gray-300 transition-colors duration-200 rounded-full",
+        work_in_process: "bg-blue-200 text-blue-800 hover:bg-blue-300 transition-colors duration-200 rounded-full",
       },
     },
     defaultVariants: {
@@ -28,11 +30,17 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-  VariantProps<typeof badgeVariants> { }
+  Omit<VariantProps<typeof badgeVariants>, 'variant'> {
+  variant?: VariantProps<typeof badgeVariants>['variant'] | string;
+}
 
 function Badge({ className, variant, ...props }: BadgeProps) {
+  const validVariants = ['default', 'secondary', 'destructive', 'outline', 'active', 'inactive', 'warning', 'draft', 'work_in_process'] as const;
+  type ValidVariant = typeof validVariants[number];
+  const safeVariant = validVariants.includes(variant as ValidVariant) ? variant as ValidVariant : 'default';
+
   return (
-    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+    <div className={cn(badgeVariants({ variant: safeVariant }), className)} {...props} />
   )
 }
 

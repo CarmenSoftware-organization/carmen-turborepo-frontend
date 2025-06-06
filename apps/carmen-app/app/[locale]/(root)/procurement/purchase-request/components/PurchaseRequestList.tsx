@@ -58,6 +58,20 @@ export default function PurchaseRequestList({
 
     const isAllSelected = purchaseRequests?.length > 0 && selectedItems.length === purchaseRequests.length;
 
+    const convertPrStatus = (status: string) => {
+        if (status === 'draft') {
+            return 'Draft';
+        } else if (status === 'work_in_process') {
+            return 'Work in Process';
+        } else if (status === 'approved') {
+            return 'Approved';
+        } else if (status === 'rejected') {
+            return 'Rejected';
+        } else if (status === 'cancelled') {
+            return 'Cancelled';
+        }
+    }
+
     const renderTableContent = () => {
         if (isLoading) return <TableBodySkeleton rows={8} />;
 
@@ -97,16 +111,16 @@ export default function PurchaseRequestList({
                         </TableCell>
                         <TableCell className="text-center">{format(new Date(pr.pr_date), 'dd/MM/yyyy')}</TableCell>
                         <TableCell className="text-center">
-                            <Badge>
-                                {pr.current_workflow_status}
-                            </Badge>
+                            {pr.current_workflow_status && (
+                                pr.current_workflow_status.charAt(0).toUpperCase() + pr.current_workflow_status.slice(1)
+                            )}
                         </TableCell>
                         <TableCell>{pr.requestor_name}</TableCell>
                         <TableCell>{pr.department_name}</TableCell>
                         <TableCell>{pr.total_amount}</TableCell>
                         <TableCell className="text-center">
-                            <Badge>
-                                {pr.pr_status}
+                            <Badge variant={pr.pr_status}>
+                                {convertPrStatus(pr.pr_status)}
                             </Badge>
                         </TableCell>
                         <TableCell className="w-[100px] text-right">
