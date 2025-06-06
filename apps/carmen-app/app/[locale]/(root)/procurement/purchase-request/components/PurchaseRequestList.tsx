@@ -1,6 +1,6 @@
 import { GetAllPrDto } from "@/dtos/pr.dto";
 import { useState } from "react";
-import { FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
+import { FileText, MoreVertical, Trash2 } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -87,7 +87,14 @@ export default function PurchaseRequestList({
                                 aria-label={`Select ${pr.pr_no}`}
                             />
                         </TableCell>
-                        <TableCell>{pr.pr_no}</TableCell>
+                        <TableCell>
+                            <Link
+                                href={`/procurement/purchase-request/${pr.id}`}
+                                className="hover:underline text-primary hover:text-primary/80"
+                            >
+                                {pr.pr_no}
+                            </Link>
+                        </TableCell>
                         <TableCell className="text-center">{format(new Date(pr.pr_date), 'dd/MM/yyyy')}</TableCell>
                         <TableCell className="text-center">
                             <Badge>
@@ -108,9 +115,6 @@ export default function PurchaseRequestList({
                                     <Link href={`/procurement/purchase-request/${pr.id}`}>
                                         <FileText className="h-4 w-4" />
                                     </Link>
-                                </Button>
-                                <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                    <SquarePen className="h-4 w-4" />
                                 </Button>
                                 <Button variant="ghost" size={'sm'} className="h-7 w-7">
                                     <Trash2 className="h-4 w-4" />
