@@ -22,6 +22,9 @@ import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { DOC_TYPE } from "@/constants/enum";
 import { useCreditTermQuery } from "@/hooks/useCreditTerm";
 import CreditTermLookup from "@/components/lookup/CreditTermLookup";
+import WorkflowLookup from "@/components/lookup/WorkflowLookup";
+import { enum_workflow_type } from "@/dtos/workflows.dto";
+import { useWorkflow } from "@/hooks/useWorkflow";
 
 interface GrnFormHeaderProps {
     readonly control: Control<CreateGRNDto>;
@@ -34,6 +37,7 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
     const { getVendorName } = useVendor();
     const { getCurrencyCode } = useCurrency();
     const { getCreditTermName } = useCreditTermQuery(token, tenantId);
+    const { getWorkflowName } = useWorkflow();
     return (
         <div className="space-y-4 mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
@@ -161,10 +165,14 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                         <FormItem>
                             <FormLabel>Workflow</FormLabel>
                             {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground">{field.value}</p>
+                                <p className="text-xs text-muted-foreground">{getWorkflowName(field.value)}</p>
                             ) : (
                                 <FormControl>
-                                    <Input {...field} placeholder="Workflow ID" />
+                                    <WorkflowLookup
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        type={enum_workflow_type.goods_received_note}
+                                    />
                                 </FormControl>
                             )}
                             <FormMessage />

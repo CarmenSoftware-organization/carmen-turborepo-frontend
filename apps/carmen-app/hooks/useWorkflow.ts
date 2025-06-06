@@ -175,6 +175,11 @@ export const useWorkflow = () => {
     return matchingRule.action.parameters.target_stage;
   };
 
+  const getWorkflowName = (workflowId: string) => {
+    const workflow = workflows.find((w) => w.id === workflowId);
+    return workflow?.name ?? '';
+  };
+
   return {
     workflows,
     isLoading,
@@ -207,5 +212,6 @@ export const useWorkflow = () => {
     getNextStage,
     isButtonActive,
     setButtonActive,
+    getWorkflowName,
   };
 };

@@ -4,6 +4,7 @@ export enum enum_workflow_type {
   purchase_request = "purchase_request",
   purchase_order = "purchase_order",
   store_requisition = "store_requisition",
+  goods_received_note = "goods_received_note",
 }
 
 export const workflowTypeField = [
