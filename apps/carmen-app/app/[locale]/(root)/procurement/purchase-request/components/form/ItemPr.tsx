@@ -13,11 +13,10 @@ import {
 } from "@/components/ui/table";
 import useProduct from "@/hooks/useProduct";
 import { useUnit } from "@/hooks/useUnit";
-import { v4 as uuidv4 } from 'uuid';
 import { useStoreLocation } from "@/hooks/useStoreLocation";
 
 interface ItemPrProps {
-    readonly itemsPr: (PurchaseRequestDetailItemDto & { id?: string })[];
+    readonly itemsPr: (PurchaseRequestDetailItemDto & { id: string })[];
     readonly mode: formType;
     readonly openDetail: (e: React.MouseEvent, data: PurchaseRequestDetailItemDto & { id?: string }) => void;
     readonly onDeleteItem?: (itemId: string) => void;
@@ -30,35 +29,32 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
     const { getLocationName } = useStoreLocation();
     // Create empty item template for new items
     const handleAddNewItem = (e: React.MouseEvent) => {
-        const tempId = `temp-${Date.now()}`;
-
-        // Create empty item with required UUID fields
-        const emptyItem: PurchaseRequestDetailItemDto & { id?: string } = {
-            id: tempId,
-            location_id: uuidv4(),
-            product_id: uuidv4(),
-            vendor_id: uuidv4(),
-            price_list_id: uuidv4(),
+        // Create empty item without ID - the reducer will generate UUID
+        const emptyItem: Omit<PurchaseRequestDetailItemDto, 'id'> = {
+            location_id: '',
+            product_id: '',
+            vendor_id: '',
+            price_list_id: '',
             description: '',
             requested_qty: 0,
-            requested_unit_id: uuidv4(),
+            requested_unit_id: '',
             approved_qty: 0,
-            approved_unit_id: uuidv4(),
+            approved_unit_id: '',
             approved_base_qty: 0,
-            approved_base_unit_id: uuidv4(),
+            approved_base_unit_id: '',
             approved_conversion_rate: 0,
             requested_conversion_rate: 0,
             requested_base_qty: 0,
-            requested_base_unit_id: uuidv4(),
-            currency_id: uuidv4(),
+            requested_base_unit_id: '',
+            currency_id: '',
             exchange_rate: 1.0,
             exchange_rate_date: new Date().toISOString(),
             price: 0.0,
             total_price: 0.0,
             foc: 0,
-            foc_unit_id: uuidv4(),
-            tax_type_inventory_id: uuidv4(),
-            tax_type: '',
+            foc_unit_id: '',
+            tax_type_inventory_id: '',
+            tax_type: 'include',
             tax_rate: 0.0,
             tax_amount: 0.0,
             is_tax_adjustment: false,
@@ -77,7 +73,8 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
             }
         };
 
-        openDetail(e, emptyItem);
+        console.log('Creating new item without ID');
+        openDetail(e, emptyItem as PurchaseRequestDetailItemDto & { id?: string });
     };
 
     const handleDeleteItem = (itemId: string) => {
@@ -125,8 +122,8 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            itemsPr.map((item, index) => (
-                                <TableRow key={item.id ?? `item-${index}`}>
+                            itemsPr.map((item) => (
+                                <TableRow key={item.id}>
                                     <TableCell>{getLocationName(item.location_id)}</TableCell>
                                     <TableCell>
                                         <p>{getProductName(item.product_id)}</p>

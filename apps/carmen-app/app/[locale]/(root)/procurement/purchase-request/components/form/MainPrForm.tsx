@@ -9,8 +9,9 @@ import { PrSchemaV2Dto, prSchemaV2, PurchaseRequestByIdDto, PurchaseRequestDetai
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircleIcon, ArrowLeftRightIcon, ChevronLeft, ChevronRight, Pencil, Save, X, XCircleIcon } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 import { useForm } from "react-hook-form";
+import { v4 as uuidv4 } from 'uuid';
 import HeadPrForm from "./HeadPrForm";
 import { Card } from "@/components/ui/card";
 import {
@@ -29,7 +30,37 @@ import BudgetPr from "./BudgetPr";
 import ActivityLog from "../../../goods-received-note/components/ActivityLog";
 import CommentGrn from "../../../goods-received-note/components/CommentGrn";
 
-type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
+type ItemWithId = PurchaseRequestDetailItemDto & { id: string };
+
+// Actions for the items reducer
+type ItemAction =
+    | { type: 'INITIALIZE_ITEMS'; payload: ItemWithId[] }
+    | { type: 'ADD_ITEM'; payload: Omit<PurchaseRequestDetailItemDto, 'id'> }
+    | { type: 'UPDATE_ITEM'; payload: { id: string; data: Partial<PurchaseRequestDetailItemDto> } }
+    | { type: 'DELETE_ITEM'; payload: string }
+    | { type: 'CLEAR_ITEMS' };
+
+// Reducer for managing items
+const itemsReducer = (state: ItemWithId[], action: ItemAction): ItemWithId[] => {
+    switch (action.type) {
+        case 'INITIALIZE_ITEMS':
+            return action.payload;
+        case 'ADD_ITEM':
+            return [...state, { ...action.payload, id: uuidv4() } as ItemWithId];
+        case 'UPDATE_ITEM':
+            return state.map(item =>
+                item.id === action.payload.id
+                    ? { ...item, ...action.payload.data } as ItemWithId
+                    : item
+            );
+        case 'DELETE_ITEM':
+            return state.filter(item => item.id !== action.payload);
+        case 'CLEAR_ITEMS':
+            return [];
+        default:
+            return state;
+    }
+};
 
 interface MainPrFormProps {
     readonly mode: formType;
@@ -44,16 +75,29 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const [openDialogItemPr, setOpenDialogItemPr] = useState<boolean>(false);
     const [currentItemData, setCurrentItemData] = useState<ItemWithId | undefined>(undefined);
-    const [currentItems, setCurrentItems] = useState<ItemWithId[]>([]);
-    const { mutate: createPr, isSuccess: isCreateSuccess, isPending: isCreatePending, isError: isCreateError } = usePrMutation(token, tenantId);
+    const [currentItems, dispatchItems] = useReducer(itemsReducer, []);
+    const { mutate: createPr, isSuccess: isCreateSuccess, isPending: isCreatePending, isError: isCreateError, data: createPrData } = usePrMutation(token, tenantId);
     const { mutate: updatePr, isSuccess: isUpdateSuccess, isPending: isUpdatePending, isError: isUpdateError } = useUpdatePrMutation(token, tenantId);
 
-    // Reset current items when initValues changes
+    // Initialize current items when initValues changes
     useEffect(() => {
         if (initValues?.purchase_request_detail) {
-            setCurrentItems(initValues.purchase_request_detail as ItemWithId[]);
+            const itemsWithIds = initValues.purchase_request_detail.map(item => ({
+                ...item,
+                id: item.id || uuidv4()
+            })) as ItemWithId[];
+            dispatchItems({ type: 'INITIALIZE_ITEMS', payload: itemsWithIds });
+        } else {
+            dispatchItems({ type: 'CLEAR_ITEMS' });
         }
     }, [initValues?.purchase_request_detail]);
+
+    // Clear currentItemData when dialog closes
+    useEffect(() => {
+        if (!openDialogItemPr) {
+            setCurrentItemData(undefined);
+        }
+    }, [openDialogItemPr]);
 
     const defaultValues = {
         pr_date: initValues?.pr_date ?? new Date().toISOString(),
@@ -103,12 +147,21 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     }, [form.formState]);
 
     useEffect(() => {
-        if (isCreateSuccess) {
+        if (isCreateSuccess && createPrData) {
+            console.log('Create PR Response:', createPrData);
             setCurrentMode(formType.VIEW);
             toastSuccess({ message: "Purchase Request created successfully" });
-            router.push("/procurement/purchase-request");
+            // Replace '/new' with the actual PR ID from the response
+            if (createPrData.id) {
+                const newUrl = window.location.pathname.replace('/new', `/${createPrData.id}`);
+                router.replace(newUrl);
+            } else {
+                // Fallback if no ID is provided
+                console.warn('No ID found in create PR response, redirecting to list');
+                router.push("/procurement/purchase-request");
+            }
         }
-    }, [isCreateSuccess, router]);
+    }, [isCreateSuccess, createPrData, router]);
 
     useEffect(() => {
         if (isUpdateSuccess) {
@@ -136,6 +189,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             } else if (currentMode === formType.EDIT && initValues?.id) {
                 updatePr({ id: initValues.id, data });
             }
+            setCurrentMode(formType.VIEW);
         } catch (error) {
             console.error("Error in form submission:", error);
         }
@@ -144,38 +198,47 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     const handleDialogItemPr = (e: React.MouseEvent, data: Record<string, unknown> & { id?: string }) => {
         e.preventDefault();
         e.stopPropagation();
+        console.log('Opening dialog with item data:', data);
         setCurrentItemData(data as ItemWithId);
         setOpenDialogItemPr(true);
     }
 
     const handleSaveItemDialog = (itemData: Record<string, unknown> & { id?: string }) => {
+        console.log('handleSaveItemDialog called with:', itemData);
         const formItems = form.getValues("purchase_request_detail");
-        let updatedItemsList = [...currentItems];
 
-        if (itemData.id?.startsWith('temp-')) {
-            // New item
-            const newItem = { ...itemData };
-            delete newItem.id;
+        if (!itemData.id) {
+            // New item without ID - create new item with UUID
+            console.log('Handling new item without ID');
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { id: _id, ...newItemData } = itemData;
+            const typedNewItemData = newItemData as Omit<PurchaseRequestDetailItemDto, 'id'>;
+
+            dispatchItems({ type: 'ADD_ITEM', payload: typedNewItemData });
 
             const updatedItems = {
                 ...formItems,
-                add: [...(formItems.add || []), newItem as PurchaseRequestDetailItemDto]
+                add: [...(formItems.add || []), typedNewItemData as PurchaseRequestDetailItemDto]
             };
             form.setValue("purchase_request_detail", updatedItems);
-            updatedItemsList.push({ ...itemData as ItemWithId });
-        } else if (itemData.id) {
+        } else {
             // Update existing item
+            console.log('Handling existing item update with ID:', itemData.id);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { id: _updateId, ...updateData } = itemData;
+            const typedUpdateData = updateData as Partial<PurchaseRequestDetailItemDto>;
+
+            dispatchItems({ type: 'UPDATE_ITEM', payload: { id: itemData.id, data: typedUpdateData } });
+
             const updatedItems = {
                 ...formItems,
                 update: [...(formItems.update || []).filter((item: PurchaseRequestDetailItemDto) => (item as ItemWithId).id !== itemData.id), itemData as PurchaseRequestDetailItemDto]
             };
             form.setValue("purchase_request_detail", updatedItems);
-            updatedItemsList = updatedItemsList.map(item =>
-                item.id === itemData.id ? { ...item, ...itemData } as ItemWithId : item
-            );
         }
 
-        setCurrentItems(updatedItemsList);
+        console.log('Updated items with reducer');
+        setCurrentItemData(undefined);
         setOpenDialogItemPr(false);
     };
 
@@ -188,8 +251,22 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
         };
 
         form.setValue("purchase_request_detail", updatedItems);
-        setCurrentItems(currentItems.filter(item => item.id !== itemId));
+        dispatchItems({ type: 'DELETE_ITEM', payload: itemId });
     };
+
+    const convertPrStatus = (status: string) => {
+        if (status === "draft") {
+            return "Draft";
+        } else if (status === "work_in_process") {
+            return "Work in Progress";
+        } else if (status === "approved") {
+            return "Approved";
+        } else if (status === "rejected") {
+            return "Rejected";
+        } else if (status === "cancelled") {
+            return "Cancelled";
+        }
+    }
 
     return (
         <div className="relative">
@@ -207,8 +284,8 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
                                         <p className="text-lg font-bold">Purchase Request</p>
-                                        {mode !== formType.ADD && (
-                                            <Badge className="rounded-full">{initValues?.pr_status}</Badge>
+                                        {initValues?.pr_status && (
+                                            <Badge variant={initValues?.pr_status} className="rounded-full">{convertPrStatus(initValues?.pr_status)}</Badge>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -250,9 +327,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                     </TabsList>
                                     <TabsContent value="items">
                                         <ItemPr
-                                            itemsPr={currentItems.filter(item =>
-                                                !form.getValues().purchase_request_detail.delete?.some(deleteItem => deleteItem.id === item.id)
-                                            )}
+                                            itemsPr={currentItems}
                                             mode={currentMode}
                                             openDetail={handleDialogItemPr}
                                             onDeleteItem={handleDeleteItem}

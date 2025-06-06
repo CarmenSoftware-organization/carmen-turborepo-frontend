@@ -3,7 +3,7 @@
 import { toastError } from "@/components/ui-custom/Toast";
 import { useAuth } from "@/context/AuthContext";
 import { GetAllPrDto, PrSchemaV2Dto } from "@/dtos/pr.dto";
-import { createPrService, getAllPrService, getPrByIdService, updatePrService } from "@/services/pr.service";
+import { createPrService, getAllPrService, updatePrService } from "@/services/pr.service";
 import { useCallback, useEffect, useState } from "react";
 import { PaginationDto } from "@/dtos/pagination.dto";
 import { useURL } from "./useURL";
@@ -53,9 +53,6 @@ export const usePr = () => {
                     return;
                 }
 
-                console.log('result', result);
-
-
                 if (result?.data) {
                     setPurchaseRequests(result.data);
                     setTotalPages(result.paginate.pages);
@@ -69,7 +66,7 @@ export const usePr = () => {
         }
 
         fetchData();
-    }, [token, tenantId]);
+    }, [token, tenantId, page, sort, search]);
 
     const handlePageChange = useCallback((newPage: number) => {
         setPage(newPage.toString());
