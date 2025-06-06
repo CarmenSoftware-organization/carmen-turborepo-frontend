@@ -15,6 +15,9 @@ import UserListLookup from "@/components/lookup/UserListLookup";
 import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { Textarea } from "@/components/ui/textarea";
+import { useWorkflow } from "@/hooks/useWorkflow";
+import { useDepartment } from "@/hooks/useDepartment";
+import { useUserList } from "@/hooks/useUserList";
 
 interface HeadPrFormProps {
     readonly control: Control<PrSchemaV2Dto>;
@@ -27,6 +30,10 @@ export default function HeadPrForm({
     mode,
     prNo,
 }: HeadPrFormProps) {
+
+    const { getWorkflowName } = useWorkflow();
+    const { getDepartmentName } = useDepartment();
+    const { getUserName } = useUserList();
     return (
         <div className="space-y-4 mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
@@ -34,13 +41,18 @@ export default function HeadPrForm({
                 {mode !== formType.ADD && (
                     <div className="col-span-1">
                         <Label>PR Number</Label>
-                        <Input
-                            value={prNo}
-                            disabled
-                            className="mt-2"
-                        />
+                        {mode === formType.VIEW ? (
+                            <p className="text-xs text-muted-foreground mt-2">{prNo}</p>
+                        ) : (
+                            <Input
+                                value={prNo}
+                                disabled
+                                className="mt-2"
+                            />
+                        )}
                     </div>
                 )}
+
 
                 <FormField
                     control={control}
@@ -48,35 +60,39 @@ export default function HeadPrForm({
                     render={({ field }) => (
                         <FormItem className="col-span-1">
                             <FormLabel>PR Date</FormLabel>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <FormControl>
-                                        <Button
-                                            variant="outline"
-                                            className={cn(
-                                                "w-full pl-3 text-left font-normal",
-                                                !field.value && "text-muted-foreground"
-                                            )}
-                                            disabled={mode === formType.VIEW}
-                                        >
-                                            {field.value ? (
-                                                format(new Date(field.value), "PPP")
-                                            ) : (
-                                                <span className="text-muted-foreground">Select date</span>
-                                            )}
-                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                        </Button>
-                                    </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        selected={field.value ? new Date(field.value) : undefined}
-                                        onSelect={(date) => field.onChange(date ? date.toISOString() : new Date().toISOString())}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
+                            {mode === formType.VIEW ? (
+                                <p className="text-xs text-muted-foreground mt-4">{field.value ? format(new Date(field.value), "PPP") : <span className="text-muted-foreground">Select date</span>}</p>
+                            ) : (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <FormControl>
+                                            <Button
+                                                variant="outline"
+                                                className={cn(
+                                                    "w-full pl-3 text-left font-normal",
+                                                    !field.value && "text-muted-foreground"
+                                                )}
+                                            >
+                                                {field.value ? (
+                                                    format(new Date(field.value), "PPP")
+                                                ) : (
+                                                    <span className="text-muted-foreground">Select date</span>
+                                                )}
+                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                            </Button>
+                                        </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value ? new Date(field.value) : undefined}
+                                            onSelect={(date) => field.onChange(date ? date.toISOString() : new Date().toISOString())}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            )}
+
                         </FormItem>
                     )}
                 />
@@ -87,12 +103,17 @@ export default function HeadPrForm({
                     render={({ field }) => (
                         <FormItem className="col-span-1">
                             <FormLabel>Pr Type</FormLabel>
-                            <WorkflowLookup
-                                value={field.value}
-                                onValueChange={field.onChange}
-                                disabled={mode === formType.VIEW}
-                                type={enum_workflow_type.purchase_request}
-                            />
+                            {mode === formType.VIEW ? (
+                                <p className="text-xs text-muted-foreground mt-4">{getWorkflowName(field.value)}</p>
+                            ) : (
+                                <FormControl>
+                                    <WorkflowLookup
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                        type={enum_workflow_type.purchase_request}
+                                    />
+                                </FormControl>
+                            )}
                         </FormItem>
                     )}
                 />
@@ -103,11 +124,16 @@ export default function HeadPrForm({
                     render={({ field }) => (
                         <FormItem className="col-span-1">
                             <FormLabel>Requestor</FormLabel>
-                            <UserListLookup
-                                value={field.value}
-                                onValueChange={field.onChange}
-                                disabled={mode === formType.VIEW}
-                            />
+                            {mode === formType.VIEW ? (
+                                <p className="text-xs text-muted-foreground mt-4">{getUserName(field.value)}</p>
+                            ) : (
+                                <FormControl>
+                                    <UserListLookup
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    />
+                                </FormControl>
+                            )}
                         </FormItem>
                     )}
                 />
@@ -118,11 +144,16 @@ export default function HeadPrForm({
                     render={({ field }) => (
                         <FormItem className="col-span-1">
                             <FormLabel>Department</FormLabel>
-                            <DepartmentLookup
-                                value={field.value}
-                                onValueChange={field.onChange}
-                                disabled={mode === formType.VIEW}
-                            />
+                            {mode === formType.VIEW ? (
+                                <p className="text-xs text-muted-foreground mt-4">{getDepartmentName(field.value)}</p>
+                            ) : (
+                                <FormControl>
+                                    <DepartmentLookup
+                                        value={field.value}
+                                        onValueChange={field.onChange}
+                                    />
+                                </FormControl>
+                            )}
                         </FormItem>
                     )}
                 />
@@ -133,7 +164,13 @@ export default function HeadPrForm({
                     render={({ field }) => (
                         <FormItem className="col-span-1">
                             <FormLabel>Description</FormLabel>
-                            <Textarea {...field} value={field.value ?? ""} />
+                            {mode === formType.VIEW ? (
+                                <p className="text-xs text-muted-foreground mt-4">{field.value ? field.value : '-'}</p>
+                            ) : (
+                                <FormControl>
+                                    <Textarea {...field} value={field.value ?? ""} />
+                                </FormControl>
+                            )}
                         </FormItem>
                     )}
                 />

@@ -38,6 +38,7 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
     const { getCurrencyCode } = useCurrency();
     const { getCreditTermName } = useCreditTermQuery(token, tenantId);
     const { getWorkflowName } = useWorkflow();
+
     return (
         <div className="space-y-4 mt-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">

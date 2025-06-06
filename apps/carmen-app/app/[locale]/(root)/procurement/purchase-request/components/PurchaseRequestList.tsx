@@ -112,7 +112,9 @@ export default function PurchaseRequestList({
                         <TableCell className="text-center">{format(new Date(pr.pr_date), 'dd/MM/yyyy')}</TableCell>
                         <TableCell className="text-center">
                             {pr.current_workflow_status && (
-                                pr.current_workflow_status.charAt(0).toUpperCase() + pr.current_workflow_status.slice(1)
+                                <Badge variant={'outline'}>
+                                    {pr.current_workflow_status.charAt(0).toUpperCase() + pr.current_workflow_status.slice(1)}
+                                </Badge>
                             )}
                         </TableCell>
                         <TableCell>{pr.requestor_name}</TableCell>

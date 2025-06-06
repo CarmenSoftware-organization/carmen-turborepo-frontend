@@ -155,6 +155,11 @@ export const useDepartment = () => {
         }
     }, [selectedDepartment, token, tenantId]);
 
+    const getDepartmentName = useCallback((departmentId: string) => {
+        const department = departments.find(dp => dp.id === departmentId);
+        return department?.name ?? '';
+    }, [departments]);
+
     return {
         // State
         search,
@@ -185,6 +190,7 @@ export const useDepartment = () => {
         handleStatusChange,
         handleConfirmStatusChange,
         handleSubmit,
-        fetchDepartments
+        fetchDepartments,
+        getDepartmentName
     };
 }; 
