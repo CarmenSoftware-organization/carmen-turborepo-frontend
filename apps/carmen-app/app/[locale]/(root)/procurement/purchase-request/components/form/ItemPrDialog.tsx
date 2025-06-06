@@ -225,7 +225,7 @@ export default function ItemPrDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[900px] h-[80vh] flex flex-col overflow-hidden">
+            <DialogContent className="sm:max-w-[1000px] h-[80vh] flex flex-col overflow-hidden">
                 <DialogHeader className="border-b pb-2 flex-shrink-0">
                     <DialogTitle className="text-lg font-medium flex items-center gap-2">
                         <Box className="h-4 w-4 text-primary" />
@@ -639,13 +639,8 @@ export default function ItemPrDialog({
                                                 )}
                                             />
 
-                                            <Separator />
-
                                             {/* Tax Configuration */}
                                             <div className="space-y-1">
-                                                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                    Tax Configuration
-                                                </h4>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
                                                     <FormField
                                                         control={localForm.control}
