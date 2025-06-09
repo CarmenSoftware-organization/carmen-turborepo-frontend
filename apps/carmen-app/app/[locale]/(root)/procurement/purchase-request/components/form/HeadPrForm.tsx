@@ -7,7 +7,7 @@ import { Control } from "react-hook-form";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Hash, Settings, User, Building, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import DepartmentLookup from "@/components/lookup/DepartmentLookup";
@@ -35,33 +35,43 @@ export default function HeadPrForm({
     const { getDepartmentName } = useDepartment();
     const { getUserName } = useUserList();
     return (
-        <div className="space-y-4 mt-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
+        <div className="space-y-2 mt-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2 p-1">
 
                 {mode !== formType.ADD && (
                     <div className="col-span-1">
-                        <Label>PR Number</Label>
+                        <Label className="text-xs font-medium">
+                            <div className="flex items-center gap-1">
+                                <Hash className="h-3 w-3" />
+                                PR Number
+                            </div>
+                        </Label>
                         {mode === formType.VIEW ? (
-                            <p className="text-xs text-muted-foreground mt-2">{prNo}</p>
+                            <p className="text-xs text-muted-foreground mt-2 px-2 py-1 rounded">{prNo}</p>
                         ) : (
                             <Input
                                 value={prNo}
                                 disabled
-                                className="mt-2"
+                                className="mt-2 text-xs"
                             />
                         )}
                     </div>
                 )}
-
-
                 <FormField
                     control={control}
                     name="pr_date"
                     render={({ field }) => (
                         <FormItem className="col-span-1">
-                            <FormLabel>PR Date</FormLabel>
+                            <FormLabel className="text-xs font-medium">
+                                <div className="flex items-center gap-1">
+                                    <CalendarIcon className="h-3 w-3" />
+                                    PR Date
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground mt-4">{field.value ? format(new Date(field.value), "PPP") : <span className="text-muted-foreground">Select date</span>}</p>
+                                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">
+                                    {field.value ? format(new Date(field.value), "PPP") : <span className="text-muted-foreground">Select date</span>}
+                                </p>
                             ) : (
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -69,7 +79,7 @@ export default function HeadPrForm({
                                             <Button
                                                 variant="outline"
                                                 className={cn(
-                                                    "w-full pl-3 text-left font-normal",
+                                                    "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
                                                     !field.value && "text-muted-foreground"
                                                 )}
                                             >
@@ -78,7 +88,7 @@ export default function HeadPrForm({
                                                 ) : (
                                                     <span className="text-muted-foreground">Select date</span>
                                                 )}
-                                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
                                             </Button>
                                         </FormControl>
                                     </PopoverTrigger>
@@ -102,16 +112,23 @@ export default function HeadPrForm({
                     name="workflow_id"
                     render={({ field }) => (
                         <FormItem className="col-span-1">
-                            <FormLabel>Pr Type</FormLabel>
+                            <FormLabel className="text-xs font-medium">
+                                <div className="flex items-center gap-1">
+                                    <Settings className="h-3 w-3" />
+                                    PR Type
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground mt-4">{getWorkflowName(field.value)}</p>
+                                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">{getWorkflowName(field.value)}</p>
                             ) : (
                                 <FormControl>
-                                    <WorkflowLookup
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                        type={enum_workflow_type.purchase_request}
-                                    />
+                                    <div className="mt-1">
+                                        <WorkflowLookup
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                            type={enum_workflow_type.purchase_request}
+                                        />
+                                    </div>
                                 </FormControl>
                             )}
                         </FormItem>
@@ -123,15 +140,22 @@ export default function HeadPrForm({
                     name="requestor_id"
                     render={({ field }) => (
                         <FormItem className="col-span-1">
-                            <FormLabel>Requestor</FormLabel>
+                            <FormLabel className="text-xs font-medium">
+                                <div className="flex items-center gap-1">
+                                    <User className="h-3 w-3" />
+                                    Requestor
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground mt-4">{getUserName(field.value)}</p>
+                                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">{getUserName(field.value)}</p>
                             ) : (
                                 <FormControl>
-                                    <UserListLookup
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    />
+                                    <div className="mt-1">
+                                        <UserListLookup
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        />
+                                    </div>
                                 </FormControl>
                             )}
                         </FormItem>
@@ -143,15 +167,22 @@ export default function HeadPrForm({
                     name="department_id"
                     render={({ field }) => (
                         <FormItem className="col-span-1">
-                            <FormLabel>Department</FormLabel>
+                            <FormLabel className="text-xs font-medium">
+                                <div className="flex items-center gap-1">
+                                    <Building className="h-3 w-3" />
+                                    Department
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground mt-4">{getDepartmentName(field.value)}</p>
+                                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">{getDepartmentName(field.value)}</p>
                             ) : (
                                 <FormControl>
-                                    <DepartmentLookup
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    />
+                                    <div className="mt-1">
+                                        <DepartmentLookup
+                                            value={field.value}
+                                            onValueChange={field.onChange}
+                                        />
+                                    </div>
                                 </FormControl>
                             )}
                         </FormItem>
@@ -163,12 +194,22 @@ export default function HeadPrForm({
                     name="description"
                     render={({ field }) => (
                         <FormItem className="col-span-1">
-                            <FormLabel>Description</FormLabel>
+                            <FormLabel className="text-xs font-medium">
+                                <div className="flex items-center gap-1">
+                                    <FileText className="h-3 w-3" />
+                                    Description
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground mt-4">{field.value ? field.value : '-'}</p>
+                                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded min-h-[28px] flex items-center">{field.value ? field.value : '-'}</p>
                             ) : (
                                 <FormControl>
-                                    <Textarea {...field} value={field.value ?? ""} />
+                                    <Textarea
+                                        {...field}
+                                        value={field.value ?? ""}
+                                        className="mt-1 min-h-[56px] resize-none text-xs bg-background"
+                                        placeholder="Enter description..."
+                                    />
                                 </FormControl>
                             )}
                         </FormItem>

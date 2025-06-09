@@ -6,7 +6,6 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Providers } from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
-import StagewiseToolbar from "@/components/StagewiseToolbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -49,7 +48,6 @@ export default async function RootLayout({
           </Providers>
           <Toaster />
         </NextIntlClientProvider>
-        <StagewiseToolbar />
       </body>
     </html>
   );

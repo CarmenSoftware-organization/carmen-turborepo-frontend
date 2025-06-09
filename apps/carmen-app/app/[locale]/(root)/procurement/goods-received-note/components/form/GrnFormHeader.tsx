@@ -1,6 +1,7 @@
 "use client";
 
 import { Control } from "react-hook-form";
+import { FileText, Package, Store, Coins, FileType, GitBranch, Clock, CheckCircle, Image, CreditCard, AlignLeft, MessageSquare } from "lucide-react";
 
 import {
     FormControl,
@@ -50,7 +51,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                         name="grn_no"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>GRN Number</FormLabel>
+                                <FormLabel>
+                                    <div className="flex items-center gap-1">
+                                        <FileText className="h-3 w-3" />
+                                        GRN Number
+                                    </div>
+                                </FormLabel>
                                 {mode === formType.VIEW ? (
                                     <p className="text-xs text-muted-foreground">{field.value}</p>
                                 ) : (
@@ -71,7 +77,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="name"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <Package className="h-3 w-3" />
+                                    Name
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{field.value}</p>
                             ) : (
@@ -90,7 +101,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="vendor_id"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Vendor</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <Store className="h-3 w-3" />
+                                    Vendor
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{getVendorName(field.value)}</p>
                             ) : (
@@ -112,7 +128,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="currency_id"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Currency</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <Coins className="h-3 w-3" />
+                                    Currency
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{getCurrencyCode(field.value)}</p>
                             ) : (
@@ -134,7 +155,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="doc_type"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Document Type</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <FileType className="h-3 w-3" />
+                                    Document Type
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{field.value}</p>
                             ) : (
@@ -164,7 +190,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="workflow_id"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Workflow</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <GitBranch className="h-3 w-3" />
+                                    Workflow
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{getWorkflowName(field.value)}</p>
                             ) : (
@@ -187,7 +218,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="credit_term_id"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Credit Term</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    Credit Term
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{getCreditTermName(field.value)}</p>
                             ) : (
@@ -208,7 +244,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="current_workflow_status"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Workflow Status</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <CheckCircle className="h-3 w-3" />
+                                    Workflow Status
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{field.value}</p>
                             ) : (
@@ -239,7 +280,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                     name="signature_image_url"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Signature Image URL</FormLabel>
+                            <FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <Image className="h-3 w-3" />
+                                    Signature Image URL
+                                </div>
+                            </FormLabel>
                             {mode === formType.VIEW ? (
                                 <p className="text-xs text-muted-foreground">{field.value}</p>
                             ) : (
@@ -254,7 +300,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
             </div>
 
             <div className="mt-2 flex flex-col gap-2">
-                <FormLabel>Payment Methods</FormLabel>
+                <FormLabel>
+                    <div className="flex items-center gap-1">
+                        <CreditCard className="h-3 w-3" />
+                        Payment Methods
+                    </div>
+                </FormLabel>
                 <div className="flex flex-row gap-6">
                     <FormField
                         control={control}
@@ -327,7 +378,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                 name="description"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>
+                            <div className="flex items-center gap-1">
+                                <AlignLeft className="h-3 w-3" />
+                                Description
+                            </div>
+                        </FormLabel>
                         {mode === formType.VIEW ? (
                             <p className="text-xs text-muted-foreground">{field.value}</p>
                         ) : (
@@ -346,7 +402,12 @@ export default function GrnFormHeader({ control, mode, token, tenantId }: GrnFor
                 name="note"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Note</FormLabel>
+                        <FormLabel>
+                            <div className="flex items-center gap-1">
+                                <MessageSquare className="h-3 w-3" />
+                                Note
+                            </div>
+                        </FormLabel>
                         {mode === formType.VIEW ? (
                             <p className="text-xs text-muted-foreground">{field.value}</p>
                         ) : (

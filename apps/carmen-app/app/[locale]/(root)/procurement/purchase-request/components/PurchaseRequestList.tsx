@@ -1,6 +1,6 @@
 import { GetAllPrDto } from "@/dtos/pr.dto";
 import { useState } from "react";
-import { FileText, MoreVertical, Trash2 } from "lucide-react";
+import { FileText, MoreVertical, Trash2, Calendar, GitBranch, User, Building, DollarSign } from "lucide-react";
 import {
     Table,
     TableBody,
@@ -104,7 +104,7 @@ export default function PurchaseRequestList({
                         <TableCell>
                             <Link
                                 href={`/procurement/purchase-request/${pr.id}`}
-                                className="hover:underline text-primary hover:text-primary/80"
+                                className="hover:underline text-primary hover:text-primary/80 font-medium"
                             >
                                 {pr.pr_no}
                             </Link>
@@ -129,11 +129,11 @@ export default function PurchaseRequestList({
                             <div className="flex items-center justify-end">
                                 <Button variant="ghost" size={'sm'} className="h-7 w-7" asChild>
                                     <Link href={`/procurement/purchase-request/${pr.id}`}>
-                                        <FileText className="h-4 w-4" />
+                                        <FileText className="h-3 w-3" />
                                     </Link>
                                 </Button>
                                 <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                    <Trash2 className="h-4 w-4" />
+                                    <Trash2 className="h-3 w-3" />
                                 </Button>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
@@ -144,7 +144,7 @@ export default function PurchaseRequestList({
                                             onClick={(e) => e.stopPropagation()}
                                         >
                                             <span className="sr-only">More options</span>
-                                            <MoreVertical className="h-4 w-4" />
+                                            <MoreVertical className="h-3 w-3" />
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
@@ -197,13 +197,45 @@ export default function PurchaseRequestList({
                                     aria-label="Select all purchase requests"
                                 />
                             </TableHead>
-                            <TableHead>PR Number</TableHead>
-                            <TableHead className="text-center">Date</TableHead>
-                            <TableHead className="text-center">Current Workflow</TableHead>
-                            <TableHead>Requestor</TableHead>
-                            <TableHead>Department</TableHead>
-                            <TableHead>Total Amount</TableHead>
-                            <TableHead className="text-center">Status</TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <FileText className="h-3 w-3" />
+                                    PR Number
+                                </div>
+                            </TableHead>
+                            <TableHead className="text-center">
+                                <div className="flex items-center justify-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    Date
+                                </div>
+                            </TableHead>
+                            <TableHead className="text-center">
+                                <div className="flex items-center justify-center gap-1">
+                                    <GitBranch className="h-3 w-3" />
+                                    Current Workflow
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <User className="h-3 w-3" />
+                                    Requestor
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <Building className="h-3 w-3" />
+                                    Department
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <DollarSign className="h-3 w-3" />
+                                    Total Amount
+                                </div>
+                            </TableHead>
+                            <TableHead className="text-center">
+                                Status
+                            </TableHead>
                             <TableHead className="w-[100px] text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>

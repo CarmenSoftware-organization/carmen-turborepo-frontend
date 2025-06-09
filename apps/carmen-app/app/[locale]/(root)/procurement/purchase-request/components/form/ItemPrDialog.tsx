@@ -40,6 +40,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { TaxType } from "@/constants/enum";
+import useProduct from "@/hooks/useProduct";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
@@ -113,22 +114,24 @@ export default function ItemPrDialog({
         defaultValues: createEmptyItem()
     });
 
-    // Update local form values and reset form when dialog opens or formValues change
+    // Get products data for auto-filling base unit
+    const { products } = useProduct();
+
+    // Initialize form when dialog opens
     useEffect(() => {
-        if (open && formValues) {
-            console.log('Dialog opened with existing values:', formValues);
-            const mergedValues = {
-                ...createEmptyItem(),
-                ...formValues
-            };
-            setLocalFormValues(mergedValues);
-            localForm.reset(mergedValues);
-        } else if (open && !formValues) {
-            console.log('Dialog opened for new item');
-            // For new items
-            const emptyValues = createEmptyItem();
-            setLocalFormValues(emptyValues);
-            localForm.reset(emptyValues);
+        if (open) {
+            if (formValues) {
+                const mergedValues = {
+                    ...createEmptyItem(),
+                    ...formValues
+                };
+                setLocalFormValues(mergedValues);
+                localForm.reset(mergedValues);
+            } else {
+                const emptyValues = createEmptyItem();
+                setLocalFormValues(emptyValues);
+                localForm.reset(emptyValues);
+            }
         }
     }, [open, formValues, localForm]);
 
@@ -141,6 +144,22 @@ export default function ItemPrDialog({
         }
     }, [open, localForm]);
 
+    // Watch for product_id changes to auto-fill base unit
+    const watchedProductId = useWatch({
+        control: localForm.control,
+        name: 'product_id'
+    });
+
+    // Auto-fill requested_base_unit_id when product changes
+    useEffect(() => {
+        if (watchedProductId && products && Array.isArray(products)) {
+            const selectedProduct = products.find(product => product.id === watchedProductId);
+            if (selectedProduct?.inventory_unit_id) {
+                localForm.setValue('requested_base_unit_id', selectedProduct.inventory_unit_id);
+                localForm.setValue('approved_base_unit_id', selectedProduct.inventory_unit_id);
+            }
+        }
+    }, [watchedProductId, products, localForm]);
 
     const isViewMode = mode === formType.VIEW;
     const isAddMode = !localFormValues?.id;
@@ -341,7 +360,27 @@ export default function ItemPrDialog({
                                                     <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                                                         Requested
                                                     </h4>
-                                                    <div className="grid grid-cols-3 gap-1">
+                                                    <div className="grid grid-cols-2 gap-1">
+
+                                                        <FormField
+                                                            control={localForm.control}
+                                                            name="requested_unit_id"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel className="text-xs font-medium">
+                                                                        Unit <span className="text-destructive">*</span>
+                                                                    </FormLabel>
+                                                                    <FormControl>
+                                                                        <UnitLookup
+                                                                            value={field.value}
+                                                                            onValueChange={(value) => field.onChange(value)}
+                                                                            disabled={isViewMode}
+                                                                        />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        />
                                                         <FormField
                                                             control={localForm.control}
                                                             name="requested_qty"
@@ -365,14 +404,41 @@ export default function ItemPrDialog({
                                                                 </FormItem>
                                                             )}
                                                         />
-                                                        <FormField
+
+                                                        {/* <FormField
                                                             control={localForm.control}
-                                                            name="requested_unit_id"
+                                                            name="requested_base_unit_id"
+
                                                             render={({ field }) => (
                                                                 <FormItem>
-                                                                    <FormLabel className="text-xs font-medium">
-                                                                        Unit <span className="text-destructive">*</span>
-                                                                    </FormLabel>
+                                                                    <FormLabel className="text-xs font-medium">Base Unit</FormLabel>
+                                                                    <FormControl>
+                                                                        <UnitLookup
+                                                                            value={field.value ?? ''}
+                                                                            onValueChange={(value) => field.onChange(value)}
+                                                                            disabled={true}
+                                                                        />
+                                                                    </FormControl>
+                                                                    <FormMessage />
+                                                                </FormItem>
+                                                            )}
+                                                        /> */}
+                                                    </div>
+                                                </div>
+
+                                                {/* Approved Quantity */}
+                                                <div className="space-y-1">
+                                                    <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                                        Approved
+                                                    </h4>
+                                                    <div className="grid grid-cols-2 gap-1">
+
+                                                        <FormField
+                                                            control={localForm.control}
+                                                            name="approved_unit_id"
+                                                            render={({ field }) => (
+                                                                <FormItem>
+                                                                    <FormLabel className="text-xs font-medium">Unit</FormLabel>
                                                                     <FormControl>
                                                                         <UnitLookup
                                                                             value={field.value}
@@ -384,32 +450,7 @@ export default function ItemPrDialog({
                                                                 </FormItem>
                                                             )}
                                                         />
-                                                        <FormField
-                                                            control={localForm.control}
-                                                            name="requested_base_unit_id"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel className="text-xs font-medium">Base Unit</FormLabel>
-                                                                    <FormControl>
-                                                                        <UnitLookup
-                                                                            value={field.value ?? ''}
-                                                                            onValueChange={(value) => field.onChange(value)}
-                                                                            disabled={isViewMode}
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    </div>
-                                                </div>
 
-                                                {/* Approved Quantity */}
-                                                <div className="space-y-1">
-                                                    <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                        Approved
-                                                    </h4>
-                                                    <div className="grid grid-cols-3 gap-1">
                                                         <FormField
                                                             control={localForm.control}
                                                             name="approved_qty"
@@ -431,24 +472,8 @@ export default function ItemPrDialog({
                                                                 </FormItem>
                                                             )}
                                                         />
-                                                        <FormField
-                                                            control={localForm.control}
-                                                            name="approved_unit_id"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel className="text-xs font-medium">Unit</FormLabel>
-                                                                    <FormControl>
-                                                                        <UnitLookup
-                                                                            value={field.value}
-                                                                            onValueChange={(value) => field.onChange(value)}
-                                                                            disabled={isViewMode}
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                        <FormField
+
+                                                        {/* <FormField
                                                             control={localForm.control}
                                                             name="approved_base_unit_id"
                                                             render={({ field }) => (
@@ -458,13 +483,13 @@ export default function ItemPrDialog({
                                                                         <UnitLookup
                                                                             value={field.value ?? ''}
                                                                             onValueChange={(value) => field.onChange(value)}
-                                                                            disabled={isViewMode}
+                                                                            disabled={true}
                                                                         />
                                                                     </FormControl>
                                                                     <FormMessage />
                                                                 </FormItem>
                                                             )}
-                                                        />
+                                                        /> */}
                                                     </div>
                                                 </div>
                                             </div>

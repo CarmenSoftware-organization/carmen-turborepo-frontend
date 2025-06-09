@@ -8,7 +8,7 @@ import { formType } from "@/dtos/form.dto";
 import { PrSchemaV2Dto, prSchemaV2, PurchaseRequestByIdDto, PurchaseRequestDetailItemDto } from "@/dtos/pr.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircleIcon, ArrowLeftRightIcon, ChevronLeft, ChevronRight, Pencil, Save, X, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, ArrowLeftRightIcon, ChevronLeft, ChevronRight, Pencil, Save, X, XCircleIcon, Printer, FileDown, Share } from "lucide-react";
 import { useState, useEffect, useReducer } from "react";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from 'uuid';
@@ -204,7 +204,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     }
 
     const handleSaveItemDialog = (itemData: Record<string, unknown> & { id?: string }) => {
-        console.log('handleSaveItemDialog called with:', itemData);
+
         const formItems = form.getValues("purchase_request_detail");
 
         if (!itemData.id) {
@@ -222,8 +222,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
             };
             form.setValue("purchase_request_detail", updatedItems);
         } else {
-            // Update existing item
-            console.log('Handling existing item update with ID:', itemData.id);
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { id: _updateId, ...updateData } = itemData;
             const typedUpdateData = updateData as Partial<PurchaseRequestDetailItemDto>;
@@ -272,10 +270,10 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
         <div className="relative">
             <div className="flex gap-4 relative">
                 <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
-                    <Card className="p-4 mb-4">
+                    <Card className="p-2 mb-2">
                         <Form {...form}>
                             <form
-                                className="space-y-4"
+                                className="space-y-2"
                                 onSubmit={form.handleSubmit(onSubmit)}
                             >
                                 <div className="flex items-center justify-between">
@@ -283,35 +281,66 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                         <Link href="/procurement/purchase-request">
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
-                                        <p className="text-lg font-bold">Purchase Request</p>
+                                        {mode === formType.ADD ? (
+                                            <p className="text-base font-bold">Purchase Request</p>
+                                        ) : (
+                                            <p className="text-base font-bold">{initValues?.pr_no}</p>
+                                        )}
                                         {initValues?.pr_status && (
-                                            <Badge variant={initValues?.pr_status} className="rounded-full">{convertPrStatus(initValues?.pr_status)}</Badge>
+                                            <Badge variant={initValues?.pr_status} className="rounded-full text-xs">{convertPrStatus(initValues?.pr_status)}</Badge>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {currentMode === formType.VIEW ? (
                                             <>
-                                                <Button variant="outline" size={'sm'} onClick={() => router.push("/procurement/purchase-request")}>
-                                                    <ChevronLeft className="h-4 w-4" /> Back
+                                                <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs" onClick={() => router.push("/procurement/purchase-request")}>
+                                                    <ChevronLeft className="h-3 w-3" /> Back
                                                 </Button>
-                                                <Button variant="default" size={'sm'} onClick={(e) => {
+                                                <Button variant="default" size={'sm'} className="h-7 px-2 text-xs" onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     setCurrentMode(formType.EDIT);
                                                 }}>
-                                                    <Pencil className="h-4 w-4" /> Edit
+                                                    <Pencil className="h-3 w-3" /> Edit
                                                 </Button>
                                             </>
                                         ) : (
                                             <>
-                                                <Button variant="outline" size={'sm'} onClick={() => currentMode === formType.ADD ? router.push("/procurement/purchase-request") : setCurrentMode(formType.VIEW)}>
-                                                    <X className="h-4 w-4" /> Cancel
+                                                <Button
+                                                    variant="outline"
+                                                    size={'sm'}
+                                                    className="h-7 px-2 text-xs"
+                                                    onClick={() =>
+                                                        currentMode === formType.ADD ? router.push("/procurement/purchase-request") : setCurrentMode(formType.VIEW)
+                                                    }
+                                                >
+                                                    <X className="h-3 w-3" /> Cancel
                                                 </Button>
-                                                <Button variant="default" size={'sm'} type="submit" disabled={isCreatePending || isUpdatePending}>
-                                                    <Save className="h-4 w-4" /> Save
+                                                <Button
+                                                    variant="default"
+                                                    size={'sm'}
+                                                    className="h-7 px-2 text-xs"
+                                                    type="submit"
+                                                    disabled={isCreatePending || isUpdatePending}
+                                                >
+                                                    <Save className="h-3 w-3" />
+                                                    {isCreatePending || isUpdatePending ? 'Saving...' : 'Save'}
                                                 </Button>
                                             </>
                                         )}
+                                        <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs">
+                                            <Printer className="h-3 w-3" />
+                                            Print
+                                        </Button>
+
+                                        <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs">
+                                            <FileDown className="h-3 w-3" />
+                                            Export
+                                        </Button>
+                                        <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs">
+                                            <Share className="h-3 w-3" />
+                                            Share
+                                        </Button>
                                     </div>
                                 </div>
                                 <HeadPrForm
@@ -320,12 +349,12 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                     prNo={initValues?.pr_no}
                                 />
                                 <Tabs defaultValue="items">
-                                    <TabsList className="w-full">
-                                        <TabsTrigger className="w-full" value="items">Items</TabsTrigger>
-                                        <TabsTrigger className="w-full" value="budget">Budget</TabsTrigger>
-                                        <TabsTrigger className="w-full" value="workflow">Workflow</TabsTrigger>
+                                    <TabsList className="w-full h-8">
+                                        <TabsTrigger className="w-full text-xs" value="items">Items</TabsTrigger>
+                                        <TabsTrigger className="w-full text-xs" value="budget">Budget</TabsTrigger>
+                                        <TabsTrigger className="w-full text-xs" value="workflow">Workflow</TabsTrigger>
                                     </TabsList>
-                                    <TabsContent value="items">
+                                    <TabsContent value="items" className="mt-2">
                                         <ItemPr
                                             itemsPr={currentItems}
                                             mode={currentMode}
@@ -333,10 +362,10 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                             onDeleteItem={handleDeleteItem}
                                         />
                                     </TabsContent>
-                                    <TabsContent value="budget">
+                                    <TabsContent value="budget" className="mt-2">
                                         <BudgetPr />
                                     </TabsContent>
-                                    <TabsContent value="workflow">
+                                    <TabsContent value="workflow" className="mt-2">
                                         <WorkflowPr workflowData={initValues?.workflow_history} />
                                     </TabsContent>
                                 </Tabs>
@@ -346,22 +375,25 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                     <div className={`fixed bottom-6 ${openLog ? 'right-1/4' : 'right-6'} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}>
                         <Button
                             size={'sm'}
+                            className="h-7 px-2 text-xs"
                         >
-                            <CheckCircleIcon className="w-5 h-5" />
+                            <CheckCircleIcon className="w-4 h-4" />
                             Approve
                         </Button>
                         <Button
                             variant={'destructive'}
                             size={'sm'}
+                            className="h-7 px-2 text-xs"
                         >
-                            <XCircleIcon className="w-5 h-5" />
+                            <XCircleIcon className="w-4 h-4" />
                             Reject
                         </Button>
                         <Button
                             variant={'outline'}
                             size={'sm'}
+                            className="h-7 px-2 text-xs"
                         >
-                            <ArrowLeftRightIcon className="w-5 h-5" />
+                            <ArrowLeftRightIcon className="w-4 h-4" />
                             Send Back
                         </Button>
                     </div>

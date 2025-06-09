@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, MoreHorizontal, Trash2 } from "lucide-react";
+import { FileText, MoreHorizontal, Trash2, Calendar, Package, Store, DollarSign, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -72,12 +72,43 @@ export default function GoodsReceivedNoteList({
                                     aria-label="Select all purchase requests"
                                 />
                             </TableHead>
-                            <TableHead>{t('grn_number')}</TableHead>
-                            <TableHead>{t('name')}</TableHead>
-                            <TableHead>{t('vendor')}</TableHead>
-                            <TableHead>{t('date')}</TableHead>
-                            <TableHead>{t('status')}</TableHead>
-                            <TableHead>{t('amount')}</TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <FileText className="h-3 w-3" />
+                                    {t('grn_number')}
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <Package className="h-3 w-3" />
+                                    {t('name')}
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <Store className="h-3 w-3" />
+                                    {t('vendor')}
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {t('date')}
+                                </div>
+                            </TableHead>
+
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <DollarSign className="h-3 w-3" />
+                                    {t('amount')}
+                                </div>
+                            </TableHead>
+                            <TableHead>
+                                <div className="flex items-center gap-1">
+                                    <CheckCircle className="h-3 w-3" />
+                                    {t('status')}
+                                </div>
+                            </TableHead>
                             <TableHead className="text-right">{t('action')}</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -97,7 +128,7 @@ export default function GoodsReceivedNoteList({
                                     </TableCell>
                                     <TableCell>
                                         <Link href={`/procurement/goods-received-note/${grn.id}`}
-                                            className="hover:underline text-primary hover:text-primary/80"
+                                            className="hover:underline text-primary hover:text-primary/80 font-medium"
                                         >
                                             {grn.grn_no ?? '-'}
                                         </Link>
@@ -108,12 +139,12 @@ export default function GoodsReceivedNoteList({
                                     </TableCell>
                                     <TableCell>{grn.vendor_name ?? '-'}</TableCell>
                                     <TableCell>{grn.created_at ? format(new Date(grn.created_at), 'dd/MM/yyyy') : '-'}</TableCell>
+                                    <TableCell>{grn.total_amount}</TableCell>
                                     <TableCell>
                                         <Badge variant={grn.is_active ? 'active' : 'inactive'}>
                                             {grn.is_active ? 'Active' : 'Inactive'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell>{grn.total_amount}</TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex items-center justify-end">
                                             <Button variant="ghost" size={'sm'} asChild className="h-7 w-7">

@@ -32,8 +32,12 @@ export default function ProductLookup({
     const selectedProductName = useMemo(() => {
         if (!value || !products || !Array.isArray(products)) return null;
         const found = products.find(product => product.id === value);
-        return found?.code ?? null;
+        const productName = found?.code + ' - ' + found?.name;
+        return productName ?? null;
     }, [value, products]);
+
+
+    console.log('selectedProductName', selectedProductName);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -51,7 +55,9 @@ export default function ProductLookup({
             <PopoverContent className="w-full p-0">
                 <Command filter={(value, search) => {
                     if (!search) return 1;
-                    if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+                    const searchLower = search.toLowerCase();
+                    // Search in both the display value and individual code/name
+                    if (value.toLowerCase().includes(searchLower)) return 1;
                     return 0;
                 }}>
                     <CommandInput placeholder="Search products..." className="w-full pr-10" />
@@ -76,7 +82,7 @@ export default function ProductLookup({
                                                     setOpen(false);
                                                 }}
                                             >
-                                                {product.name}
+                                                {product.code} - {product.name}
                                                 <Check
                                                     className={cn(
                                                         "ml-auto h-4 w-4",
