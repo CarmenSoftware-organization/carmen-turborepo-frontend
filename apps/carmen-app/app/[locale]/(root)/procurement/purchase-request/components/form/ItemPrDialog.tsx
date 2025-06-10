@@ -22,14 +22,13 @@ import { Button } from "@/components/ui/button";
 import { PurchaseRequestDetailItemDto } from "@/dtos/pr.dto";
 import { formType } from "@/dtos/form.dto";
 import { Textarea } from "@/components/ui/textarea";
-import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import VendorLookup from "@/components/lookup/VendorLookup";
-import { Box } from "lucide-react";
+import { Box, CalendarIcon } from "lucide-react";
 import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
 import PriceListLookup from "@/components/lookup/PriceListLookup";
 import {
@@ -41,6 +40,11 @@ import {
 } from "@/components/ui/select";
 import { TaxType } from "@/constants/enum";
 import useProduct from "@/hooks/useProduct";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
@@ -95,7 +99,10 @@ const createEmptyItem = (): ItemWithId => ({
     dimension: {
         project: '',
         cost_center: ''
-    }
+    },
+    delivery_date: new Date().toISOString(),
+    delivery_point_id: '',
+    delivery_point_name: ''
 });
 
 export default function ItemPrDialog({
@@ -149,6 +156,20 @@ export default function ItemPrDialog({
         control: localForm.control,
         name: 'product_id'
     });
+
+    // Watch for requested_unit_id changes to update approved_unit_id and foc_unit_id
+    const watchedRequestedUnitId = useWatch({
+        control: localForm.control,
+        name: 'requested_unit_id'
+    });
+
+    // Update approved_unit_id and foc_unit_id when requested_unit_id changes
+    useEffect(() => {
+        if (watchedRequestedUnitId) {
+            localForm.setValue('approved_unit_id', watchedRequestedUnitId);
+            localForm.setValue('foc_unit_id', watchedRequestedUnitId);
+        }
+    }, [watchedRequestedUnitId, localForm]);
 
     // Auto-fill requested_base_unit_id when product changes
     useEffect(() => {
@@ -244,7 +265,7 @@ export default function ItemPrDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[1000px] h-[80vh] flex flex-col overflow-hidden">
+            <DialogContent className="sm:max-w-[1200px] h-[80vh] flex flex-col overflow-hidden">
                 <DialogHeader className="border-b pb-2 flex-shrink-0">
                     <DialogTitle className="text-lg font-medium flex items-center gap-2">
                         <Box className="h-4 w-4 text-primary" />
@@ -264,7 +285,7 @@ export default function ItemPrDialog({
                                             <h3 className="text-sm font-medium text-foreground">Basic Information</h3>
                                         </div>
                                         <div className="bg-card border rounded p-2 space-y-2">
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                                 <FormField
                                                     control={localForm.control}
                                                     name="location_id"
@@ -275,26 +296,6 @@ export default function ItemPrDialog({
                                                             </FormLabel>
                                                             <FormControl>
                                                                 <LocationLookup
-                                                                    value={field.value ?? ''}
-                                                                    disabled={isViewMode}
-                                                                    onValueChange={(value) => field.onChange(value)}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-
-                                                <FormField
-                                                    control={localForm.control}
-                                                    name="vendor_id"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel className="text-xs font-medium">
-                                                                Vendor <span className="text-destructive">*</span>
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <VendorLookup
                                                                     value={field.value ?? ''}
                                                                     disabled={isViewMode}
                                                                     onValueChange={(value) => field.onChange(value)}
@@ -351,15 +352,12 @@ export default function ItemPrDialog({
                                     <div className="space-y-2">
                                         <div className="flex items-center gap-2">
                                             <div className="h-0.5 w-4 bg-primary rounded-full"></div>
-                                            <h3 className="text-sm font-medium text-foreground">Quantity & Units</h3>
+                                            <h3 className="text-sm font-medium text-foreground">Quantity and Delivery</h3>
                                         </div>
                                         <div className="bg-card border rounded p-2">
                                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                                                 {/* Requested Quantity */}
                                                 <div className="space-y-1">
-                                                    <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                        Requested
-                                                    </h4>
                                                     <div className="grid grid-cols-2 gap-1">
 
                                                         <FormField
@@ -387,7 +385,7 @@ export default function ItemPrDialog({
                                                             render={({ field }) => (
                                                                 <FormItem>
                                                                     <FormLabel className="text-xs font-medium">
-                                                                        Qty <span className="text-destructive">*</span>
+                                                                        Qty Requested <span className="text-destructive">*</span>
                                                                     </FormLabel>
                                                                     <FormControl>
                                                                         <Input
@@ -428,9 +426,6 @@ export default function ItemPrDialog({
 
                                                 {/* Approved Quantity */}
                                                 <div className="space-y-1">
-                                                    <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                        Approved
-                                                    </h4>
                                                     <div className="grid grid-cols-2 gap-1">
 
                                                         <FormField
@@ -443,7 +438,7 @@ export default function ItemPrDialog({
                                                                         <UnitLookup
                                                                             value={field.value}
                                                                             onValueChange={(value) => field.onChange(value)}
-                                                                            disabled={isViewMode}
+                                                                            disabled={true}
                                                                         />
                                                                     </FormControl>
                                                                     <FormMessage />
@@ -456,7 +451,7 @@ export default function ItemPrDialog({
                                                             name="approved_qty"
                                                             render={({ field }) => (
                                                                 <FormItem>
-                                                                    <FormLabel className="text-xs font-medium">Qty</FormLabel>
+                                                                    <FormLabel className="text-xs font-medium">Qty Approved</FormLabel>
                                                                     <FormControl>
                                                                         <Input
                                                                             type="number"
@@ -493,21 +488,14 @@ export default function ItemPrDialog({
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <Separator className="my-2" />
-
-                                            {/* FOC Section */}
-                                            <div className="space-y-1">
-                                                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                                    FOC
-                                                </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                                                 <div className="grid grid-cols-2 gap-1">
                                                     <FormField
                                                         control={localForm.control}
                                                         name="foc"
                                                         render={({ field }) => (
                                                             <FormItem>
-                                                                <FormLabel className="text-xs font-medium">Quantity</FormLabel>
+                                                                <FormLabel className="text-xs font-medium">Qty FOC</FormLabel>
                                                                 <FormControl>
                                                                     <Input
                                                                         type="number"
@@ -533,7 +521,7 @@ export default function ItemPrDialog({
                                                                     <UnitLookup
                                                                         value={field.value}
                                                                         onValueChange={(value) => field.onChange(value)}
-                                                                        disabled={isViewMode}
+                                                                        disabled={true}
                                                                     />
                                                                 </FormControl>
                                                                 <FormMessage />
@@ -541,7 +529,126 @@ export default function ItemPrDialog({
                                                         )}
                                                     />
                                                 </div>
+
+                                                <FormField
+                                                    control={localForm.control}
+                                                    name="delivery_date"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs font-medium">
+                                                                <div className="flex items-center gap-1 mt-2">
+                                                                    <CalendarIcon className="h-3 w-3" />
+                                                                    Delivery Date
+                                                                </div>
+                                                            </FormLabel>
+                                                            {mode === formType.VIEW ? (
+                                                                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">
+                                                                    {field.value ? format(new Date(field.value), "PPP") : <span className="text-muted-foreground">Select date</span>}
+                                                                </p>
+                                                            ) : (
+                                                                <Popover>
+                                                                    <PopoverTrigger asChild>
+                                                                        <FormControl>
+                                                                            <Button
+                                                                                variant="outline"
+                                                                                className={cn(
+                                                                                    "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
+                                                                                    !field.value && "text-muted-foreground"
+                                                                                )}
+                                                                            >
+                                                                                {field.value ? (
+                                                                                    format(new Date(field.value), "PPP")
+                                                                                ) : (
+                                                                                    <span className="text-muted-foreground">Select date</span>
+                                                                                )}
+                                                                                <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                                                                            </Button>
+                                                                        </FormControl>
+                                                                    </PopoverTrigger>
+                                                                    <PopoverContent className="w-auto p-0" align="start">
+                                                                        <Calendar
+                                                                            mode="single"
+                                                                            selected={field.value ? new Date(field.value) : undefined}
+                                                                            onSelect={(date) => field.onChange(date ? date.toISOString() : new Date().toISOString())}
+                                                                            initialFocus
+                                                                        />
+                                                                    </PopoverContent>
+                                                                </Popover>
+                                                            )}
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={localForm.control}
+                                                    name="delivery_point_id"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs font-medium">Delivery Point</FormLabel>
+                                                            <FormControl>
+                                                                <DeliveryPointLookup
+                                                                    value={field.value}
+                                                                    onValueChange={(value) => field.onChange(value)}
+                                                                    disabled={isViewMode}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
                                             </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                                            <h3 className="text-sm font-medium text-foreground">Vendor and Additional Information</h3>
+                                        </div>
+                                        <div className="bg-card border rounded p-2 space-y-2">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+                                                <FormField
+                                                    control={localForm.control}
+                                                    name="vendor_id"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs font-medium">
+                                                                Vendor <span className="text-destructive">*</span>
+                                                            </FormLabel>
+                                                            <FormControl>
+                                                                <VendorLookup
+                                                                    value={field.value ?? ''}
+                                                                    disabled={isViewMode}
+                                                                    onValueChange={(value) => field.onChange(value)}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+                                                <FormField
+                                                    control={localForm.control}
+                                                    name="price_list_id"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel className="text-xs font-medium">Price List</FormLabel>
+                                                            <FormControl>
+                                                                <PriceListLookup
+                                                                    value={field.value ?? ''}
+                                                                    onValueChange={(value) => field.onChange(value)}
+                                                                    disabled={isViewMode}
+                                                                />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+
+
+                                            </div>
+
                                         </div>
                                     </div>
 
@@ -646,23 +753,6 @@ export default function ItemPrDialog({
                                                 />
                                             </div>
 
-                                            <FormField
-                                                control={localForm.control}
-                                                name="price_list_id"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel className="text-xs font-medium">Price List</FormLabel>
-                                                        <FormControl>
-                                                            <PriceListLookup
-                                                                value={field.value ?? ''}
-                                                                onValueChange={(value) => field.onChange(value)}
-                                                                disabled={isViewMode}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
 
                                             {/* Tax Configuration */}
                                             <div className="space-y-1">
@@ -701,7 +791,7 @@ export default function ItemPrDialog({
                                                                         </SelectTrigger>
                                                                         <SelectContent>
                                                                             <SelectItem value={TaxType.NONE}>None</SelectItem>
-                                                                            <SelectItem value={TaxType.INCLUDED}>Inclusive</SelectItem>
+                                                                            <SelectItem value={TaxType.INCLUDED}>Included</SelectItem>
                                                                             <SelectItem value={TaxType.ADD}>Add</SelectItem>
                                                                         </SelectContent>
                                                                     </Select>

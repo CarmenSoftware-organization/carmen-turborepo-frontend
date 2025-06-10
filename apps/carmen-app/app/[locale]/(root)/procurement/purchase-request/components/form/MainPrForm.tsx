@@ -148,7 +148,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
 
     useEffect(() => {
         if (isCreateSuccess && createPrData) {
-            console.log('Create PR Response:', createPrData);
             setCurrentMode(formType.VIEW);
             toastSuccess({ message: "Purchase Request created successfully" });
             // Replace '/new' with the actual PR ID from the response
@@ -198,7 +197,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     const handleDialogItemPr = (e: React.MouseEvent, data: Record<string, unknown> & { id?: string }) => {
         e.preventDefault();
         e.stopPropagation();
-        console.log('Opening dialog with item data:', data);
         setCurrentItemData(data as ItemWithId);
         setOpenDialogItemPr(true);
     }
@@ -208,8 +206,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
         const formItems = form.getValues("purchase_request_detail");
 
         if (!itemData.id) {
-            // New item without ID - create new item with UUID
-            console.log('Handling new item without ID');
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { id: _id, ...newItemData } = itemData;
             const typedNewItemData = newItemData as Omit<PurchaseRequestDetailItemDto, 'id'>;
@@ -270,13 +266,13 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
         <div className="relative">
             <div className="flex gap-4 relative">
                 <ScrollArea className={`${openLog ? 'w-3/4' : 'w-full'} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}>
-                    <Card className="p-2 mb-2">
+                    <Card className="p-4 mb-2">
                         <Form {...form}>
                             <form
                                 className="space-y-2"
                                 onSubmit={form.handleSubmit(onSubmit)}
                             >
-                                <div className="flex items-center justify-between">
+                                <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-2">
                                         <Link href="/procurement/purchase-request">
                                             <ChevronLeft className="h-4 w-4" />
@@ -293,15 +289,15 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                     <div className="flex items-center gap-2">
                                         {currentMode === formType.VIEW ? (
                                             <>
-                                                <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs" onClick={() => router.push("/procurement/purchase-request")}>
-                                                    <ChevronLeft className="h-3 w-3" /> Back
+                                                <Button variant="outline" size={'sm'} className="px-2 text-xs" onClick={() => router.push("/procurement/purchase-request")}>
+                                                    <ChevronLeft  /> Back
                                                 </Button>
-                                                <Button variant="default" size={'sm'} className="h-7 px-2 text-xs" onClick={(e) => {
+                                                <Button variant="default" size={'sm'} className="px-2 text-xs" onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     setCurrentMode(formType.EDIT);
                                                 }}>
-                                                    <Pencil className="h-3 w-3" /> Edit
+                                                    <Pencil  /> Edit
                                                 </Button>
                                             </>
                                         ) : (
@@ -309,36 +305,36 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                                                 <Button
                                                     variant="outline"
                                                     size={'sm'}
-                                                    className="h-7 px-2 text-xs"
+                                                    className="px-2 text-xs"
                                                     onClick={() =>
                                                         currentMode === formType.ADD ? router.push("/procurement/purchase-request") : setCurrentMode(formType.VIEW)
                                                     }
                                                 >
-                                                    <X className="h-3 w-3" /> Cancel
+                                                    <X  /> Cancel
                                                 </Button>
                                                 <Button
                                                     variant="default"
                                                     size={'sm'}
-                                                    className="h-7 px-2 text-xs"
+                                                    className="px-2 text-xs"
                                                     type="submit"
                                                     disabled={isCreatePending || isUpdatePending}
                                                 >
-                                                    <Save className="h-3 w-3" />
+                                                    <Save  />
                                                     {isCreatePending || isUpdatePending ? 'Saving...' : 'Save'}
                                                 </Button>
                                             </>
                                         )}
-                                        <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs">
-                                            <Printer className="h-3 w-3" />
+                                        <Button variant="outline" size={'sm'} className="px-2 text-xs">
+                                            <Printer  />
                                             Print
                                         </Button>
 
-                                        <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs">
-                                            <FileDown className="h-3 w-3" />
+                                        <Button variant="outline" size={'sm'} className="px-2 text-xs">
+                                            <FileDown  />
                                             Export
                                         </Button>
-                                        <Button variant="outline" size={'sm'} className="h-7 px-2 text-xs">
-                                            <Share className="h-3 w-3" />
+                                        <Button variant="outline" size={'sm'} className="px-2 text-xs">
+                                            <Share  />
                                             Share
                                         </Button>
                                     </div>

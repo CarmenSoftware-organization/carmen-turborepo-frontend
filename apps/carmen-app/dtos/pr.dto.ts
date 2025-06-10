@@ -227,6 +227,9 @@ export const purchaseRequestDetailItemSchema = z.object({
     discount_amount: z.number().transform(val => parseFloat(val.toString())),
     is_discount_adjustment: z.boolean(),
     is_active: z.boolean(),
+    delivery_date: z.string().datetime(),
+    delivery_point_id: z.string().uuid(),
+    delivery_point_name: z.string(),
     note: z.string(),
     info: z.object({
         specifications: z.string(),

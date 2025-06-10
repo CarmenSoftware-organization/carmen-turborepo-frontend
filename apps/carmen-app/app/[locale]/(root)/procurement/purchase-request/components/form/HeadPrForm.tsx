@@ -17,7 +17,7 @@ import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { Textarea } from "@/components/ui/textarea";
 import { useWorkflow } from "@/hooks/useWorkflow";
 import { useDepartment } from "@/hooks/useDepartment";
-import { useUserList } from "@/hooks/useUserList";
+import { useAuth } from "@/context/AuthContext";
 
 interface HeadPrFormProps {
     readonly control: Control<PrSchemaV2Dto>;
@@ -30,10 +30,12 @@ export default function HeadPrForm({
     mode,
     prNo,
 }: HeadPrFormProps) {
+    const { user } = useAuth();
+    const userId = user?.id;
 
     const { getWorkflowName } = useWorkflow();
     const { getDepartmentName } = useDepartment();
-    const { getUserName } = useUserList();
+    
     return (
         <div className="space-y-2 mt-2">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-2 p-1">
@@ -146,18 +148,15 @@ export default function HeadPrForm({
                                     Requestor
                                 </div>
                             </FormLabel>
-                            {mode === formType.VIEW ? (
-                                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">{getUserName(field.value)}</p>
-                            ) : (
-                                <FormControl>
-                                    <div className="mt-1">
-                                        <UserListLookup
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        />
-                                    </div>
-                                </FormControl>
-                            )}
+                            <FormControl>
+                                <div className="mt-1">
+                                    <UserListLookup
+                                        value={mode === formType.ADD ? userId : field.value}
+                                        onValueChange={field.onChange}
+                                        disabled={true}
+                                    />
+                                </div>
+                            </FormControl>
                         </FormItem>
                     )}
                 />
