@@ -59,13 +59,7 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
                 PR Number
               </div>
             </Label>
-            {mode === formType.VIEW ? (
-              <p className="text-xs text-muted-foreground mt-2 px-2 py-1 rounded">
-                {prNo}
-              </p>
-            ) : (
-              <Input value={prNo} disabled className="mt-2 text-xs" />
-            )}
+            <Input value={prNo} disabled className="mt-2 text-xs bg-muted" />
           </div>
         )}
         <FormField
@@ -80,13 +74,20 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">
+                <Button variant="outline" 
+                className={cn(
+                  "w-full pl-2 text-left font-normal text-xs bg-muted mt-1",
+                  !field.value && "text-muted-foreground"
+                )}
+                disabled
+                >
                   {field.value ? (
                     format(new Date(field.value), "PPP")
                   ) : (
                     <span className="text-muted-foreground">Select date</span>
                   )}
-                </p>
+                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                </Button>
               ) : (
                 <Popover>
                   <PopoverTrigger asChild>
@@ -138,10 +139,8 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
                   PR Type
                 </div>
               </FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded">
-                  {getWorkflowName(field.value)}
-                </p>
+                {mode === formType.VIEW ? (
+                <Input value={getWorkflowName(field.value)} disabled className="mt-1 text-xs bg-muted" />
               ) : (
                 <FormControl>
                   <div className="mt-1">
@@ -230,7 +229,7 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
                   <Textarea
                     {...field}
                     value={field.value ?? ""}
-                    className="mt-1 min-h-[56px] resize-none text-xs bg-background"
+                    className="mt-1 min-h-[56px] resize-none text-xs bg-muted"
                     placeholder="Enter description..."
                   />
                 </FormControl>

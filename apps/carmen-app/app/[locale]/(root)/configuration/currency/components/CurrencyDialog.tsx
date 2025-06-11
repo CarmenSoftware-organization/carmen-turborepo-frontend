@@ -214,7 +214,7 @@ export default function CurrencyDialog({
                 type="submit"
                 disabled={isLoading || form.formState.isSubmitting}
               >
-                {mode === formType.ADD ? tCommon("add") : tCommon("edit")}
+                {tCommon("save")}
                 {(isLoading || form.formState.isSubmitting) && (
                   <Loader2 className="w-4 h-4 ml-2 animate-spin" />
                 )}

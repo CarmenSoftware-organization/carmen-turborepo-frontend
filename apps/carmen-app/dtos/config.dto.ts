@@ -1,6 +1,11 @@
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { z } from "zod";
 
+export enum PHYSICAL_COUNT_TYPE {
+    YES = "yes",
+    NO = "no"
+}
+
 export const currencySchema = z.object({
     id: z.string().min(1).optional(),
     code: z.string().min(1),
@@ -49,6 +54,7 @@ export const storeLocationSchema = z.object({
 
 export const createStoreLocationSchema = storeLocationSchema.extend({
     delivery_point_id: z.string().min(1, "Delivery point is required"),
+    physical_count_type: z.nativeEnum(PHYSICAL_COUNT_TYPE),
     users: z.object({
         add: z.array(z.object({
             user_id: z.string().uuid(),

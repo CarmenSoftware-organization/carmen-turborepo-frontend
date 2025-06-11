@@ -196,7 +196,6 @@ export default function ItemPrDialog({
   }, [watchedProductId, products, localForm]);
 
   const isViewMode = mode === formType.VIEW;
-  const isAddMode = !localFormValues?.id;
 
   // Watch form values to check if required fields are filled
   const watchedValues = useWatch({
@@ -226,8 +225,7 @@ export default function ItemPrDialog({
     return Boolean(value);
   });
 
-  const editModeTitle = isAddMode ? "Add New Item" : "Edit Item";
-  const dialogTitle = isViewMode ? "Item Details" : editModeTitle;
+  const dialogTitle = "Item Details";
 
   const handleSave = async () => {
     if (isViewMode || !onSave) return;
@@ -302,7 +300,7 @@ export default function ItemPrDialog({
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="h-0.5 w-4 bg-primary rounded-full"></div>
-                      <h3 className="text-sm font-medium text-foreground">
+                      <h3 className="text-sm font-bold text-foreground">
                         Basic Information
                       </h3>
                     </div>
@@ -374,9 +372,9 @@ export default function ItemPrDialog({
 
                   {/* Quantity & Units Section */}
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mt-6">
                       <div className="h-0.5 w-4 bg-primary rounded-full"></div>
-                      <h3 className="text-sm font-medium text-foreground">
+                      <h3 className="text-sm font-bold text-foreground">
                         Quantity and Delivery
                       </h3>
                     </div>
@@ -390,7 +388,7 @@ export default function ItemPrDialog({
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-xs font-medium">
-                                  Unit{" "}
+                                  Order Unit{" "}
                                   <span className="text-destructive">*</span>
                                 </FormLabel>
                                 <FormControl>
@@ -412,7 +410,7 @@ export default function ItemPrDialog({
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-xs font-medium">
-                                  Qty Requested{" "}
+                                  Requested Quantity{" "}
                                   <span className="text-destructive">*</span>
                                 </FormLabel>
                                 <FormControl>
@@ -459,13 +457,13 @@ export default function ItemPrDialog({
                       {/* Approved Quantity */}
                       <div className="space-y-1">
                         <div className="grid grid-cols-2 gap-1">
-                          <FormField
+                          {/* <FormField
                             control={localForm.control}
                             name="approved_unit_id"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-xs font-medium">
-                                  Unit
+                                  Order Unit
                                 </FormLabel>
                                 <FormControl>
                                   <UnitLookup
@@ -479,7 +477,7 @@ export default function ItemPrDialog({
                                 <FormMessage />
                               </FormItem>
                             )}
-                          />
+                          /> */}
 
                           <FormField
                             control={localForm.control}
@@ -487,7 +485,35 @@ export default function ItemPrDialog({
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-xs font-medium">
-                                  Qty Approved
+                                  Approved Quantity
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    value={field.value ?? 0}
+                                    onChange={(e) =>
+                                      field.onChange(
+                                        parseFloat(e.target.value) || 0
+                                      )
+                                    }
+                                    disabled={isViewMode}
+                                    min={0}
+                                    className="bg-background text-xs"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={localForm.control}
+                            name="foc"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-xs font-medium">
+                                  FOC Quantity
                                 </FormLabel>
                                 <FormControl>
                                   <Input
@@ -529,58 +555,7 @@ export default function ItemPrDialog({
                         </div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                      <div className="grid grid-cols-2 gap-1">
-                        <FormField
-                          control={localForm.control}
-                          name="foc"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs font-medium">
-                                Qty FOC
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  {...field}
-                                  value={field.value ?? 0}
-                                  onChange={(e) =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                  disabled={isViewMode}
-                                  min={0}
-                                  className="bg-background text-xs"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={localForm.control}
-                          name="foc_unit_id"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs font-medium">
-                                Unit
-                              </FormLabel>
-                              <FormControl>
-                                <UnitLookup
-                                  value={field.value}
-                                  onValueChange={(value) =>
-                                    field.onChange(value)
-                                  }
-                                  disabled={true}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                       <FormField
                         control={localForm.control}
                         name="delivery_date"
@@ -670,22 +645,45 @@ export default function ItemPrDialog({
                           </FormItem>
                         )}
                       />
+                      <div className="grid grid-cols-2 gap-1">
+                        {/* <FormField
+                          control={localForm.control}
+                          name="foc_unit_id"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs font-medium">
+                                Unit
+                              </FormLabel>
+                              <FormControl>
+                                <UnitLookup
+                                  value={field.value}
+                                  onValueChange={(value) =>
+                                    field.onChange(value)
+                                  }
+                                  disabled={true}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        /> */}
+                      </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 mt-6">
                       <div className="h-0.5 w-4 bg-primary rounded-full"></div>
-                      <h3 className="text-sm font-medium text-foreground">
+                      <h3 className="text-sm font-bold text-foreground">
                         Vendor and Additional Information
                       </h3>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                       <FormField
                         control={localForm.control}
                         name="vendor_id"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="col-span-2">
                             <FormLabel className="text-xs font-medium">
                               Vendor <span className="text-destructive">*</span>
                             </FormLabel>
@@ -705,7 +703,7 @@ export default function ItemPrDialog({
                         control={localForm.control}
                         name="price_list_id"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="col-span-1">
                             <FormLabel className="text-xs font-medium">
                               Price List
                             </FormLabel>
@@ -725,10 +723,10 @@ export default function ItemPrDialog({
 
                   {/* Pricing & Tax Section */}
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mt-6">
                       <div className="flex items-center gap-2">
                         <div className="h-0.5 w-4 bg-primary rounded-full"></div>
-                        <h3 className="text-sm font-medium text-foreground">
+                        <h3 className="text-sm font-bold text-foreground">
                           Pricing & Tax
                         </h3>
                       </div>
@@ -742,7 +740,7 @@ export default function ItemPrDialog({
                       </Button>
                     </div>
                     {/* Currency & Exchange */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-1">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                       <FormField
                         control={localForm.control}
                         name="currency_id"
@@ -819,22 +817,36 @@ export default function ItemPrDialog({
                           </FormItem>
                         )}
                       />
+
                       <FormField
                         control={localForm.control}
-                        name="total_price"
+                        name="tax_type"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem className="col-span-1">
                             <FormLabel className="text-xs font-medium">
-                              Total
+                              Tax Type
                             </FormLabel>
                             <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                                disabled={true}
-                                min={0.0}
-                                className="bg-muted text-xs font-semibold text-primary"
-                              />
+                              <Select
+                                value={field.value ?? TaxType.INCLUDED}
+                                onValueChange={field.onChange}
+                                disabled={isViewMode}
+                              >
+                                <SelectTrigger className="bg-background text-xs">
+                                  <SelectValue placeholder="Select method" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value={TaxType.NONE}>
+                                    None
+                                  </SelectItem>
+                                  <SelectItem value={TaxType.INCLUDED}>
+                                    Included
+                                  </SelectItem>
+                                  <SelectItem value={TaxType.ADD}>
+                                    Add
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -844,14 +856,14 @@ export default function ItemPrDialog({
 
                     {/* Tax Configuration */}
                     <div className="space-y-1">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                        <FormField
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-1">
+                        {/* <FormField
                           control={localForm.control}
                           name="tax_type_inventory_id"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-xs font-medium">
-                                Tax Type
+                              Tax Type Inventory
                               </FormLabel>
                               <FormControl>
                                 <TaxTypeLookup
@@ -865,48 +877,34 @@ export default function ItemPrDialog({
                               <FormMessage />
                             </FormItem>
                           )}
-                        />
+                        /> */}
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-1">
                         <FormField
                           control={localForm.control}
-                          name="tax_type"
+                          name="is_tax_adjustment"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs font-medium">
-                                Calculation
-                              </FormLabel>
+                            <FormItem className="flex items-center gap-2">
                               <FormControl>
-                                <Select
-                                  value={field.value ?? TaxType.INCLUDED}
-                                  onValueChange={field.onChange}
+                                <input
+                                  type="checkbox"
+                                  checked={field.value}
+                                  onChange={field.onChange}
                                   disabled={isViewMode}
-                                >
-                                  <SelectTrigger className="bg-background text-xs">
-                                    <SelectValue placeholder="Select method" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value={TaxType.NONE}>
-                                      None
-                                    </SelectItem>
-                                    <SelectItem value={TaxType.INCLUDED}>
-                                      Included
-                                    </SelectItem>
-                                    <SelectItem value={TaxType.ADD}>
-                                      Add
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
+                                  className="h-4 w-4 rounded border-gray-300"
+                                />
                               </FormControl>
-                              <FormMessage />
+                              <FormLabel className="text-xs font-medium">
+                                Tax Adjustment
+                              </FormLabel>
                             </FormItem>
                           )}
                         />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
                         <FormField
                           control={localForm.control}
                           name="tax_rate"
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="col-span-1">
                               <FormLabel className="text-xs font-medium">
                                 Tax Rate (%)
                               </FormLabel>
@@ -937,7 +935,7 @@ export default function ItemPrDialog({
                           control={localForm.control}
                           name="tax_amount"
                           render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="col-span-1">
                               <FormLabel className="text-xs font-medium">
                                 Tax Amount
                               </FormLabel>
@@ -965,97 +963,11 @@ export default function ItemPrDialog({
                           )}
                         />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <FormField
-                          control={localForm.control}
-                          name="is_tax_adjustment"
-                          render={({ field }) => (
-                            <FormItem className="flex items-center gap-2">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  disabled={isViewMode}
-                                  className="h-4 w-4 rounded border-gray-300"
-                                />
-                              </FormControl>
-                              <FormLabel className="text-xs font-medium">
-                                Tax Adjustment
-                              </FormLabel>
-                            </FormItem>
-                          )}
-                        />
-                      </div>
                     </div>
 
                     {/* Discount Configuration */}
                     <div className="space-y-1">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-                        <FormField
-                          control={localForm.control}
-                          name="discount_rate"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs font-medium">
-                                Discount Rate (%)
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  {...field}
-                                  value={field.value ?? 0}
-                                  onChange={(e) =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                  disabled={
-                                    isViewMode ||
-                                    !localForm.watch("is_discount")
-                                  }
-                                  min={0}
-                                  className="bg-background text-xs"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={localForm.control}
-                          name="discount_amount"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs font-medium">
-                                Discount Amount
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  step="0.01"
-                                  {...field}
-                                  value={field.value ?? 0}
-                                  onChange={(e) =>
-                                    field.onChange(
-                                      parseFloat(e.target.value) || 0
-                                    )
-                                  }
-                                  disabled={
-                                    isViewMode ||
-                                    !localForm.watch("is_discount")
-                                  }
-                                  min={0}
-                                  className="bg-background text-xs"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                      <div className="flex items-center gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-1">
                         <FormField
                           control={localForm.control}
                           name="is_discount"
@@ -1096,12 +1008,74 @@ export default function ItemPrDialog({
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={localForm.control}
+                          name="discount_rate"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs font-medium">
+                                Discount Rate (%)
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  {...field}
+                                  value={field.value ?? 0}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      parseFloat(e.target.value) || 0
+                                    )
+                                  }
+                                  disabled={
+                                    isViewMode ||
+                                    !localForm.watch("is_discount_adjustment")
+                                  }
+                                  min={0}
+                                  className="bg-background text-xs"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={localForm.control}
+                          name="discount_amount"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs font-medium">
+                                Discount Amount
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  {...field}
+                                  value={field.value ?? 0}
+                                  onChange={(e) =>
+                                    field.onChange(
+                                      parseFloat(e.target.value) || 0
+                                    )
+                                  }
+                                  disabled={
+                                    isViewMode ||
+                                    !localForm.watch("is_discount_adjustment")
+                                  }
+                                  min={0}
+                                  className="bg-background text-xs"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </div>
                   </div>
 
                   {/* Dimension & Info Section */}
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                       <h3 className="text-sm font-medium text-foreground">
@@ -1275,6 +1249,37 @@ export default function ItemPrDialog({
                               </PopoverContent>
                             </Popover>
                           )}
+                        </FormItem>
+                      )}
+                    />
+                  </div> */}
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 mt-6">
+                      <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                      <h3 className="text-sm font-bold text-foreground">
+                        Calculate Amount
+                      </h3>
+                    </div>
+
+                    <FormField
+                      control={localForm.control}
+                      name="total_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-medium">
+                            Total
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              {...field}
+                              disabled={true}
+                              min={0.0}
+                              className="bg-muted text-xs font-semibold text-primary"
+                            />
+                          </FormControl>
+                          <FormMessage />
                         </FormItem>
                       )}
                     />

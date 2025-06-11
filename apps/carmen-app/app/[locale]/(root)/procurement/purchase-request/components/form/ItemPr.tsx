@@ -70,7 +70,10 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
             dimension: {
                 project: '',
                 cost_center: ''
-            }
+            },
+            delivery_date: new Date().toISOString(),
+            delivery_point_id: '',
+            delivery_point_name: ''
         };
 
         console.log('Creating new item without ID');
