@@ -9,6 +9,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useCreditTermQuery } from "@/hooks/useCreditTerm";
+import { CreditTermGetAllDto } from "@/dtos/credit-term.dto";
 
 export default function CreditTermLookup({
     value,
@@ -22,6 +23,7 @@ export default function CreditTermLookup({
         token,
         tenantId
     );
+    const creditTermsData = creditTerms?.data;
 
     if (isLoading) {
         return (
@@ -44,8 +46,8 @@ export default function CreditTermLookup({
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-                {creditTerms && creditTerms.length > 0 ? (
-                    creditTerms.map((item) => (
+                {creditTermsData && creditTermsData.length > 0 ? (
+                    creditTermsData?.map((item: CreditTermGetAllDto) => (
                         <SelectItem key={item.id} value={item.id}>
                             {item.name}
                         </SelectItem>

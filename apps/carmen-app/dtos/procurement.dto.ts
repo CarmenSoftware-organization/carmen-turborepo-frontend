@@ -123,20 +123,6 @@ export interface ActivityPrDto {
     details: string;
 }
 
-export interface CreditNoteDto {
-    id: string;
-    cdn_number: string;
-    status: string;
-    title: string;
-    date_created: string;
-    vendor: string;
-    doc_no: string;
-    doc_date: string;
-    net_amount: number;
-    tax_amount: number;
-    amount: number;
-}
-
 export interface PurchaseRequestTemplateDto {
     id: string;
     title: string;

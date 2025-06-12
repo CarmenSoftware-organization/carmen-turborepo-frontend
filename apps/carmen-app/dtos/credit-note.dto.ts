@@ -50,4 +50,4 @@ export const CreditNoteSchema = z.object({
   tb_credit_note_detail: z.array(CreditNoteDetailSchema),
 });
 
-export type CreditNoteResponseSchema = z.infer<typeof CreditNoteSchema>;
+export type CreditNoteGetAllDto = z.infer<typeof CreditNoteSchema>;
