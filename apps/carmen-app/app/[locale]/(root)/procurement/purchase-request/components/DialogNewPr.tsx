@@ -51,7 +51,7 @@ export default function DialogNewPr({ open, onOpenChange }: Props) {
                             <CardTitle>
                                 <div className="flex items-center gap-2">
                                     <FileText className="h-4 w-4" />
-                                    From PR
+                                    From PR Template
                                 </div>
                             </CardTitle>
                         </CardHeader>

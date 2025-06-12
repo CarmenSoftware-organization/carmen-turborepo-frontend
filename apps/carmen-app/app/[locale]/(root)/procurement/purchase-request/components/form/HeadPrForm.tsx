@@ -74,12 +74,13 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button variant="outline" 
-                className={cn(
-                  "w-full pl-2 text-left font-normal text-xs bg-muted mt-1",
-                  !field.value && "text-muted-foreground"
-                )}
-                disabled
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full pl-2 text-left font-normal text-xs bg-muted mt-1",
+                    !field.value && "text-muted-foreground"
+                  )}
+                  disabled
                 >
                   {field.value ? (
                     format(new Date(field.value), "PPP")
@@ -139,8 +140,12 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
                   PR Type
                 </div>
               </FormLabel>
-                {mode === formType.VIEW ? (
-                <Input value={getWorkflowName(field.value)} disabled className="mt-1 text-xs bg-muted" />
+              {mode === formType.VIEW ? (
+                <Input
+                  value={getWorkflowName(field.value)}
+                  disabled
+                  className="mt-1 text-xs bg-muted"
+                />
               ) : (
                 <FormControl>
                   <div className="mt-1">
