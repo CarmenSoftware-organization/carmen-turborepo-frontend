@@ -1,0 +1,53 @@
+import { z } from "zod";
+
+const CreditNoteDetailSchema = z.object({
+  id: z.string().uuid(),
+  credit_note_id: z.string().uuid(),
+  inventory_transaction_id: z.string().uuid().nullable(),
+  sequence_no: z.number(),
+  description: z.string().nullable(),
+  note: z.string().nullable(),
+  product_id: z.string().uuid(),
+  product_name: z.string().nullable(),
+  product_local_name: z.string().nullable(),
+  qty: z.string(),
+  amount: z.string(),
+  info: z.unknown().nullable(),
+  dimension: z.unknown().nullable(),
+  doc_version: z.string(),
+  created_at: z.string(),
+  created_by_id: z.string().uuid(),
+  updated_at: z.string(),
+  updated_by_id: z.string().uuid().nullable(),
+});
+
+export const CreditNoteSchema = z.object({
+  id: z.string().uuid(),
+  cn_no: z.string(),
+  cn_date: z.string(),
+  doc_status: z.string(),
+  note: z.string().nullable(),
+  description: z.string().nullable(),
+  workflow_id: z.string().uuid().nullable(),
+  workflow_name: z.string().nullable(),
+  workflow_obj: z.unknown().nullable(),
+  workflow_history: z.unknown().nullable(),
+  current_workflow_status: z.string().nullable(),
+  workflow_previous_step: z.string().nullable(),
+  workflow_next_step: z.string().nullable(),
+  current_user_action: z.string().nullable(),
+  last_action_name: z.string().nullable(),
+  last_action_date: z.string().nullable(),
+  last_action_by_id: z.string().uuid().nullable(),
+  last_action_by_name: z.string().nullable(),
+  info: z.unknown().nullable(),
+  dimension: z.unknown().nullable(),
+  doc_version: z.string(),
+  created_at: z.string(),
+  created_by_id: z.string().uuid(),
+  updated_at: z.string(),
+  updated_by_id: z.string().uuid().nullable(),
+  tb_credit_note_detail: z.array(CreditNoteDetailSchema),
+});
+
+export type CreditNoteResponseSchema = z.infer<typeof CreditNoteSchema>;

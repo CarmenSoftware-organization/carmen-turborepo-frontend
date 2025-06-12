@@ -193,7 +193,9 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
                                         <p className="text-lg font-bold">Goods Received Note</p>
-                                        <Badge className="rounded-full">{initialValues?.doc_status}</Badge>
+                                        {currentMode !== formType.ADD && (
+                                            <Badge className="rounded-full">{initialValues?.doc_status}</Badge>
+                                        )}
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {currentMode === formType.VIEW ? (
