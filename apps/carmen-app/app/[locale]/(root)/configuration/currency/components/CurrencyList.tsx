@@ -21,6 +21,7 @@ import {
   getSortableColumnProps,
   renderSortIcon,
 } from "@/utils/table-sort";
+import EmptyData from '@/components/EmptyData';
 
 interface CurrencyListProps {
   readonly isLoading: boolean;
@@ -160,20 +161,6 @@ const CurrencyTableRow = ({
   </TableRow>
 );
 
-const EmptyState = ({ tCurrency }: { tCurrency: (key: string) => string }) => (
-  <TableBody>
-    <TableRow>
-      <TableCell colSpan={7} className="h-24 text-center">
-        <div className="flex flex-col items-center justify-center gap-2">
-          <p className="text-sm text-muted-foreground">
-            {tCurrency("notFoundCurrency")}
-          </p>
-        </div>
-      </TableCell>
-    </TableRow>
-  </TableBody>
-);
-
 export default function CurrencyList({
   isLoading,
   currencies = [],
@@ -192,7 +179,7 @@ export default function CurrencyList({
   const renderTableContent = () => {
     if (isLoading) return <TableBodySkeleton rows={7} />;
     if (!currencies || currencies.length === 0)
-      return <EmptyState tCurrency={tCurrency} />;
+      return <EmptyData message={tCurrency("notFoundCurrency")} />;
 
     return (
       <TableBody>

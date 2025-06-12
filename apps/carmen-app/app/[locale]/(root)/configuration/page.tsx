@@ -33,7 +33,7 @@ export default function Configuration() {
         },
         {
             name: t('Configuration.storeLocation'),
-            href: '/configuration/store-location',
+            href: '/configuration/location',
             icon: Store
         }
     ];
