@@ -9,13 +9,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { FileText, SquarePen, Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import { format, isValid } from "date-fns";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import EmptyData from "@/components/EmptyData";
+import { Link } from "@/lib/navigation";
 
 interface CreditNoteListProps {
   readonly creditNotes: CreditNoteGetAllDto[];
@@ -76,8 +77,11 @@ export default function CreditNoteList({
                 aria-label={`Select ${cn?.cn_no || "item"}`}
               />
             </TableCell>
-            <TableCell className="font-medium">{cn?.cn_no || "-"}</TableCell>
-            <TableCell>{cn?.description || "-"}</TableCell>
+            <TableCell className="font-medium text-primary hover:underline cursor-pointer">
+              <Link href={`/procurement/credit-note/${cn.id}`}>
+                {cn?.cn_no}
+              </Link>
+            </TableCell>
             <TableCell>{formatDate(cn?.cn_date)}</TableCell>
             <TableCell>{cn?.note || "-"}</TableCell>
             <TableCell>{cn?.current_workflow_status || "-"}</TableCell>
@@ -85,19 +89,14 @@ export default function CreditNoteList({
             <TableCell>{cn?.last_action_by_name || "-"}</TableCell>
             <TableCell>{cn?.last_action_date || "-"}</TableCell>
             <TableCell>
-              <Badge
-                variant={cn?.doc_status}
-              >
-                {cn?.doc_status || "-"}
-              </Badge>
+              <Badge variant={cn?.doc_status}>{cn?.doc_status || "-"}</Badge>
             </TableCell>
             <TableCell>
               <div className="flex items-center justify-end">
-                <Button variant="ghost" size={"sm"} className="h-7 w-7">
-                  <FileText className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" size={"sm"} className="h-7 w-7">
-                  <SquarePen className="h-4 w-4" />
+                <Button variant="ghost" size={"sm"} className="h-7 w-7" asChild>
+                  <Link href={`/procurement/credit-note/${cn.id}`}>
+                    <FileText className="h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button variant="ghost" size={"sm"} className="h-7 w-7">
                   <Trash2 className="h-4 w-4" />
@@ -126,7 +125,6 @@ export default function CreditNoteList({
                 />
               </TableHead>
               <TableHead>Reference #</TableHead>
-              <TableHead>Description</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Note</TableHead>
               <TableHead>Workflow Status</TableHead>
@@ -168,21 +166,25 @@ export default function CreditNoteList({
                     aria-label={`Select ${cn?.cn_no || "item"}`}
                     className="mt-1"
                   />
-                  <CardTitle className="text-base">
-                    {cn?.cn_no || "-"}
+                  <CardTitle className="text-base text-primary hover:underline cursor-pointer">
+                    <Link href={`/procurement/credit-note/${cn.id}`}>
+                      {cn.cn_no}
+                    </Link>
                   </CardTitle>
-                  <Badge
-                    variant={cn?.doc_status}
-                  >
+                  <Badge variant={cn?.doc_status}>
                     {cn?.doc_status || "-"}
                   </Badge>
                 </div>
                 <div className="flex items-center">
-                  <Button variant="ghost" size={"sm"} className="h-7 w-7">
-                    <FileText className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size={"sm"} className="h-7 w-7">
-                    <SquarePen className="h-4 w-4" />
+                  <Button
+                    variant="ghost"
+                    size={"sm"}
+                    className="h-7 w-7"
+                    asChild
+                  >
+                    <Link href={`/procurement/credit-note/${cn.id}`}>
+                      <FileText className="h-4 w-4" />
+                    </Link>
                   </Button>
                   <Button
                     variant="ghost"
@@ -196,12 +198,6 @@ export default function CreditNoteList({
             </CardHeader>
             <CardContent className="p-4 pt-0">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Description</p>
-                  <p className="text-sm font-medium">
-                    {cn?.description || "-"}
-                  </p>
-                </div>
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Date</p>
                   <p className="text-sm font-medium">

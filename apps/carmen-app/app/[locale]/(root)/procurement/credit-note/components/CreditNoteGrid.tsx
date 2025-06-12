@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { FileText, SquarePen, Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import { format } from "date-fns";
+import { Link } from "@/lib/navigation";
 
 interface CreditNoteGridProps {
   readonly creditNotes: CreditNoteGetAllDto[];
@@ -71,29 +72,22 @@ export default function CreditNoteGrid({
                       className="mt-1"
                     />
                     <div>
-                      <p className="text-sm font-semibold text-primary">
+                      <Link
+                        href={`/procurement/credit-note/${cn.id}`}
+                        className="text-sm font-semibold text-primary hover:underline cursor-pointer"
+                      >
                         {cn.cn_no}
-                      </p>
+                      </Link>
                       <p className="text-xs text-muted-foreground">
                         {format(new Date(cn.cn_date), "MM/dd/yyyy")}
                       </p>
                     </div>
                   </div>
-                  <Badge
-                    variant={cn?.doc_status}
-                  >
-                    {cn.doc_status}
-                  </Badge>
+                  <Badge variant={cn?.doc_status}>{cn.doc_status}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="p-4 pt-2">
                 <div className="space-y-4">
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">Description</p>
-                    <p className="text-xs font-medium line-clamp-2">
-                      {cn.description}
-                    </p>
-                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <p className="text-xs text-muted-foreground">Note</p>
@@ -147,17 +141,11 @@ export default function CreditNoteGrid({
                   className="h-7 w-7"
                   aria-label="View credit note"
                   data-id={`view-cn-${cn.id}`}
+                  asChild
                 >
-                  <FileText className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7"
-                  aria-label="Edit credit note"
-                  data-id={`edit-cn-${cn.id}`}
-                >
-                  <SquarePen className="h-4 w-4" />
+                  <Link href={`/procurement/credit-note/${cn.id}`}>
+                    <FileText className="h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button
                   variant="ghost"

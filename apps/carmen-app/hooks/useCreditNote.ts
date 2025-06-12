@@ -1,7 +1,7 @@
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
-import { getAllApiRequest } from "@/lib/config.api";
+import { getAllApiRequest, getByIdApiRequest } from "@/lib/config.api";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 
@@ -50,4 +50,22 @@ export const useCreditNoteQuery = (
       error,
       isUnauthorized,
     };
-}
+};
+
+export const useCreditNoteByIdQuery = (token: string, tenantId: string, id: string) => {
+    const API_ID = `${API_URL}/${id}`;
+    return useQuery({
+        queryKey: ["credit-note-id", id],
+        queryFn: async () => {
+            if (!token || !tenantId) {
+                throw new Error("Unauthorized: Missing token or tenantId");
+            }
+            return await getByIdApiRequest(
+                API_ID,
+                token,
+                tenantId,
+                "Error fetching credit note"
+            );
+        },
+    });
+};

@@ -27,7 +27,6 @@ export const CreditNoteSchema = z.object({
   cn_date: z.string(),
   doc_status: z.string(),
   note: z.string().nullable(),
-  description: z.string().nullable(),
   workflow_id: z.string().uuid().nullable(),
   workflow_name: z.string().nullable(),
   workflow_obj: z.unknown().nullable(),
