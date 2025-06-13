@@ -6,8 +6,8 @@ export const metadata: Metadata = {
 };
 
 import { formType } from "@/dtos/form.dto";
-import MainLocation from "../components/form/MainLocation";
+import LocationForm from "../components/form/LocationForm";
 
 export default function NewStoreLocationPage() {
-    return <MainLocation mode={formType.ADD} />
+    return <LocationForm mode={formType.ADD} />
 }
