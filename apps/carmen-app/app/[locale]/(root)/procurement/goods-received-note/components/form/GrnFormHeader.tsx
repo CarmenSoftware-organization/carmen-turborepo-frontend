@@ -1,6 +1,6 @@
 "use client";
 
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 import {
   FileText,
   Store,
@@ -12,6 +12,7 @@ import {
   AlignLeft,
   MessageSquare,
   CalendarIcon,
+  DollarSign,
 } from "lucide-react";
 
 import {
@@ -49,6 +50,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
 
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;
@@ -67,36 +69,44 @@ export default function GrnFormHeader({
   const { getCurrencyCode } = useCurrency();
   const { getCreditTermName } = useCreditTermQuery(token, tenantId);
 
+  const isTypeBlank =
+    new URLSearchParams(window.location.search).get("type") === "blank";
+
+  const { getCurrencyExchangeRate } = useCurrency();
+  const currencyId = useWatch({
+    control,
+    name: "currency_id",
+  });
+
   return (
     <div className="space-y-6 mt-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* GRN Number */}
 
-        {mode !== formType.ADD && (
-          <FormField
-            control={control}
-            name="grn_no"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm font-medium">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    GRN Number
-                  </div>
-                </FormLabel>
-                {mode === formType.VIEW ? (
-                  <p className="text-xs text-muted-foreground">{field.value}</p>
-                ) : (
-                  <FormControl>
-                    <Input {...field} value={field.value} disabled />
-                  </FormControl>
-                )}
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-
+        <FormField
+          control={control}
+          name="grn_no"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  GRN Number
+                </div>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  value={field.value}
+                  disabled={mode === formType.ADD}
+                  className={`${mode === formType.ADD ? "bg-muted" : ""}`}
+                  placeholder="GRN Number"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={control}
           name="received_at"
@@ -193,6 +203,43 @@ export default function GrnFormHeader({
           )}
         />
 
+        <FormField
+          control={control}
+          name="doc_type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <FileType className="h-4 w-4" />
+                  Document Type
+                </div>
+              </FormLabel>
+              {mode === formType.VIEW ? (
+                <p className="text-xs text-muted-foreground">{field.value}</p>
+              ) : (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={isTypeBlank}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select document type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={DOC_TYPE.MANUAL}>Manual</SelectItem>
+                    <SelectItem value={DOC_TYPE.PURCHASE_ORDER}>
+                      Purchase Order
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         {/* Currency ID */}
         <FormField
           control={control}
@@ -222,41 +269,15 @@ export default function GrnFormHeader({
           )}
         />
 
-        <FormField
-          control={control}
-          name="doc_type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-medium">
-                <div className="flex items-center gap-2">
-                  <FileType className="h-4 w-4" />
-                  Document Type
-                </div>
-              </FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
-              ) : (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select document type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value={DOC_TYPE.MANUAL}>Manual</SelectItem>
-                    <SelectItem value={DOC_TYPE.PURCHASE_ORDER}>
-                      Purchase Order
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-2">
+          <Label className="text-sm font-medium">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-4 w-4" />
+              Exchange Rate
+            </div>
+          </Label>
+          <Input value={getCurrencyExchangeRate(currencyId)} disabled />
+        </div>
 
         <FormField
           control={control}
@@ -377,6 +398,58 @@ export default function GrnFormHeader({
         />
       </div>
 
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <FormField
+        control={control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium">
+              <div className="flex items-center gap-2">
+                <AlignLeft className="h-4 w-4" />
+                Description
+              </div>
+            </FormLabel>
+            {mode === formType.VIEW ? (
+              <p className="text-xs text-muted-foreground">{field.value}</p>
+            ) : (
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+            )}
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {/* Note */}
+      <FormField
+        control={control}
+        name="note"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel className="text-sm font-medium">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4" />
+                Note
+              </div>
+            </FormLabel>
+            {mode === formType.VIEW ? (
+              <p className="text-xs text-muted-foreground">{field.value}</p>
+            ) : (
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+            )}
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      </div>
+
+      
+
       <div className="mt-6 flex flex-col gap-4">
         <FormLabel className="text-sm font-medium">
           <div className="flex items-center gap-2">
@@ -449,54 +522,6 @@ export default function GrnFormHeader({
           />
         </div>
       </div>
-
-      {/* Description */}
-      <FormField
-        control={control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <AlignLeft className="h-4 w-4" />
-                Description
-              </div>
-            </FormLabel>
-            {mode === formType.VIEW ? (
-              <p className="text-xs text-muted-foreground">{field.value}</p>
-            ) : (
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Note */}
-      <FormField
-        control={control}
-        name="note"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Note
-              </div>
-            </FormLabel>
-            {mode === formType.VIEW ? (
-              <p className="text-xs text-muted-foreground">{field.value}</p>
-            ) : (
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
     </div>
   );
 }

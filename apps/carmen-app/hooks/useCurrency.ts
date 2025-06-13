@@ -185,6 +185,12 @@ export const useCurrency = () => {
         return currency?.code ?? "-";
     };
 
+    const getCurrencyExchangeRate = (currencyId: string): number => {
+        if (!currencyId || !currencies || !Array.isArray(currencies)) return 0;
+        const currency = currencies.find(c => c.id === currencyId);
+        return currency?.exchange_rate ?? 0;
+    };
+
     return {
         // State
         search,
@@ -223,6 +229,7 @@ export const useCurrency = () => {
         handleConfirmToggle,
         handleSubmit,
         fetchCurrencies,
-        getCurrencyCode
+        getCurrencyCode,
+        getCurrencyExchangeRate
     };
 }; 
