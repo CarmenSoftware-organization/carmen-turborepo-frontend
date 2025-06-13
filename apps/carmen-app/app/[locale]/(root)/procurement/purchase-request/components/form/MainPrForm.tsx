@@ -326,7 +326,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
           <Card className="p-4 mb-2">
             <Form {...form}>
               <form
-                className="space-y-2"
+                className="space-y-4"
                 onSubmit={form.handleSubmit(onSubmit)}
               >
                 <div className="flex items-center justify-between mb-4">

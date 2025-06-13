@@ -30,7 +30,6 @@ import DepartmentLookup from "@/components/lookup/DepartmentLookup";
 import UserListLookup from "@/components/lookup/UserListLookup";
 import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
-import { Textarea } from "@/components/ui/textarea";
 import { useWorkflow } from "@/hooks/useWorkflow";
 import { useDepartment } from "@/hooks/useDepartment";
 import { useAuth } from "@/context/AuthContext";
@@ -231,10 +230,9 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
                 </p>
               ) : (
                 <FormControl>
-                  <Textarea
+                  <Input
                     {...field}
                     value={field.value ?? ""}
-                    className="mt-1 min-h-[56px] resize-none text-xs bg-muted"
                     placeholder="Enter description..."
                   />
                 </FormControl>

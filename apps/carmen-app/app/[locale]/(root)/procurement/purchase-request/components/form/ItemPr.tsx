@@ -153,7 +153,7 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                                     <TableCell className="text-right">{item.total_price} {item.currency_name}</TableCell>
                                     {!isDisabled && (
                                         <TableCell className="text-right">
-                                            <div className="flex justify-end gap-1">
+                                            <div className="flex justify-end">
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
@@ -167,7 +167,7 @@ export default function ItemPr({ itemsPr, mode, openDetail, onDeleteItem }: Item
                                                     size="sm"
                                                     variant="ghost"
                                                     onClick={() => item.id && handleDeleteItem(item.id)}
-                                                    className="h-8 w-8 text-destructive"
+                                                    className="h-8 w-8"
                                                     disabled={!item.id}
                                                 >
                                                     <Trash2 className="h-4 w-4" />
