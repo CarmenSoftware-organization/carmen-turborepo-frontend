@@ -29,7 +29,6 @@ import UnitLookup from "@/components/lookup/UnitLookup";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import { Box, CalendarIcon } from "lucide-react";
-import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
 import PriceListLookup from "@/components/lookup/PriceListLookup";
 import {
   Select,
