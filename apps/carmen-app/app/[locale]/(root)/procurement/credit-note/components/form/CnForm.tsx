@@ -22,7 +22,7 @@ import {
   Share,
 } from "lucide-react";
 import CnItemDialog from "./CnItemDialog";
-import { Link } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CnItem from "./CnItem";
@@ -31,6 +31,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { nanoid } from "nanoid";
+import { useAuth } from "@/context/AuthContext";
+import {
+  useCreateCreditNote,
+  useUpdateCreditNote,
+} from "@/hooks/useCreditNote";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface CnFormProps {
   readonly creditNote?: CreditNoteGetAllDto;
@@ -38,6 +44,15 @@ interface CnFormProps {
 }
 
 export default function CnForm({ creditNote, mode }: CnFormProps) {
+  const { token, tenantId } = useAuth();
+  const router = useRouter();
+  const createMutation = useCreateCreditNote(token, tenantId);
+  const updateMutation = useUpdateCreditNote(
+    token,
+    tenantId,
+    creditNote?.id ?? ""
+  );
+
   const [openLog, setOpenLog] = useState(false);
   const [openDialogItemCn, setOpenDialogItemCn] = useState(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
@@ -151,6 +166,28 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
     }
   };
 
+  const handleSubmit = async (data: CreditNoteFormDto) => {
+
+    try {
+      if (mode === formType.ADD) {
+        await createMutation.mutateAsync(data);
+        toastSuccess({ message: "Credit note created successfully" });
+      } else {
+        await updateMutation.mutateAsync(data);
+        toastSuccess({ message: "Credit note updated successfully" });
+      }
+      router.push("/procurement/credit-note");
+    } catch (error) {
+      console.error("Error saving credit note:", error);
+      toastError({
+        message:
+          mode === formType.ADD
+            ? "Failed to create credit note"
+            : "Failed to update credit note",
+      });
+    }
+  };
+
   return (
     <div className="relative">
       <div className="flex gap-4 relative">
@@ -158,7 +195,7 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
           className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
         >
           <Form {...form}>
-            <form onSubmit={form.handleSubmit((data) => console.log(data))}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
               <Card className="p-4 mb-2">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
