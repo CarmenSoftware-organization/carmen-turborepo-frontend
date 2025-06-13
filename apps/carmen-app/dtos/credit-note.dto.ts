@@ -52,10 +52,10 @@ export const CreditNoteSchema = z.object({
 export type CreditNoteGetAllDto = z.infer<typeof CreditNoteSchema>;
 
 export const creditNoteDetailSchema = z.object({
-  id: z.string().uuid().optional(),
+  id: z.string().optional(),
   product_id: z.string().uuid(),
-  qty: z.string(),
-  amount: z.string(),
+  qty: z.number(),
+  amount: z.number(),
   note: z.string().nullable(),
 });
 

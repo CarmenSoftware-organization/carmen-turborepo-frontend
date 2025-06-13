@@ -17,6 +17,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,25 +45,59 @@ export default function CnItemDialog({
   formValues,
   onSave,
 }: CnItemDialogProps) {
+  console.log(
+    "CnItemDialog rendered with mode:",
+    mode,
+    "formValues:",
+    formValues
+  );
+
   const form = useForm<CreditNoteDetailFormDto>({
     resolver: zodResolver(creditNoteDetailSchema),
     defaultValues: {
       id: formValues?.id,
       product_id: formValues?.product_id ?? "",
-      qty: formValues?.qty ?? "0",
-      amount: formValues?.amount ?? "0",
+      qty: formValues?.qty ?? 0,
+      amount: formValues?.amount ?? 0,
       note: formValues?.note ?? null,
     },
+    mode: "onChange",
   });
 
+  const watchedValues = form.watch();
+  const isDirty = form.formState.isDirty;
+  const errors = form.formState.errors;
+
   useEffect(() => {
+    console.log("Form Values Changed in Dialog:", watchedValues);
+    console.log("Form Errors in Dialog:", errors);
+    console.log("Is Form Dirty in Dialog:", isDirty);
+  }, [watchedValues, errors, isDirty]);
+
+  useEffect(() => {
+    console.log("formValues changed in Dialog:", formValues);
     if (formValues) {
       form.reset(formValues);
     }
+    console.log("Form values after reset in Dialog:", form.getValues());
   }, [formValues, form]);
 
   const onSubmit = (data: CreditNoteDetailFormDto) => {
-    onSave?.(data);
+    console.log("Dialog onSubmit called with data:", data);
+    if (Object.keys(errors).length > 0) {
+      console.error("Form has errors:", errors);
+      return;
+    }
+
+    const submitData = {
+      ...data,
+      id: formValues?.id,
+    };
+
+    console.log("Submitting form data from Dialog:", submitData);
+    onSave?.(submitData);
+    console.log("After onSave called in Dialog");
+    form.reset();
     onOpenChange(false);
   };
 
@@ -97,6 +132,7 @@ export default function CnItemDialog({
                           disabled={mode === formType.VIEW}
                         />
                       </FormControl>
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -111,8 +147,16 @@ export default function CnItemDialog({
                           Quantity
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" className="text-xs" />
+                          <Input
+                            {...field}
+                            type="number"
+                            className="text-xs"
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
                         </FormControl>
+                        <FormMessage className="text-xs" />
                       </FormItem>
                     )}
                   />
@@ -126,8 +170,16 @@ export default function CnItemDialog({
                           Amount
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} type="number" className="text-xs" />
+                          <Input
+                            {...field}
+                            type="number"
+                            className="text-xs"
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
                         </FormControl>
+                        <FormMessage className="text-xs" />
                       </FormItem>
                     )}
                   />
@@ -149,6 +201,7 @@ export default function CnItemDialog({
                           placeholder="Enter note..."
                         />
                       </FormControl>
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -156,11 +209,16 @@ export default function CnItemDialog({
                 <DialogFooter>
                   <Button
                     type="submit"
-                    disabled={isLoading || mode === formType.VIEW}
+                    disabled={
+                      isLoading ||
+                      mode === formType.VIEW ||
+                      !isDirty ||
+                      Object.keys(errors).length > 0
+                    }
                     className="text-xs"
                   >
-                    <Save className="h-4 w-4 mr-2" />
-                    Save Item
+                    <Save className="h-4 w-4" />
+                    Save
                   </Button>
                 </DialogFooter>
               </form>

@@ -1,10 +1,8 @@
 import { formType } from "@/dtos/form.dto";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, SquarePen, Trash2 } from "lucide-react";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -15,7 +13,8 @@ import {
 } from "@/components/ui/table";
 import { CreditNoteDetailFormDto } from "@/dtos/credit-note.dto";
 import { useFieldArray, useForm } from "react-hook-form";
-import { nanoid } from "nanoid";
+import { useEffect } from "react";
+import useProduct from "@/hooks/useProduct";
 
 interface CnItemProps {
   readonly itemsCn: CreditNoteDetailFormDto[];
@@ -33,32 +32,38 @@ export default function CnItem({
   openDetail,
   onDeleteItem,
 }: CnItemProps) {
+  const { getProductName } = useProduct();
   const isDisabled = mode === formType.VIEW;
 
   const form = useForm<{ items: CreditNoteDetailFormDto[] }>({
     defaultValues: {
-      items: itemsCn.map((item) => ({
-        ...item,
-        id: item.id ?? nanoid(),
-      })),
+      items: itemsCn || [],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     control: form.control,
     name: "items",
   });
 
+  // Watch for changes in itemsCn and update form
+  useEffect(() => {
+    console.log("ItemsCn changed in CnItem:", itemsCn);
+    console.log("Current form values before reset:", form.getValues());
+    form.reset({ items: itemsCn || [] });
+    console.log("Form values after reset:", form.getValues());
+  }, [itemsCn, form]);
+
   const handleAddNewItem = (e: React.MouseEvent) => {
+    console.log("handleAddNewItem called");
     const emptyItem: CreditNoteDetailFormDto = {
-      id: nanoid(),
       product_id: "",
-      qty: "0",
-      amount: "0",
+      qty: 0,
+      amount: 0,
       note: null,
     };
 
-    append(emptyItem);
+    console.log("Created emptyItem:", emptyItem);
     openDetail(e, emptyItem);
   };
 
@@ -78,7 +83,7 @@ export default function CnItem({
           </Button>
         )}
       </CardHeader>
-      <CardContent className="p-2">
+      <CardContent className="p-1">
         <Form {...form}>
           <form>
             <Table>
@@ -88,110 +93,111 @@ export default function CnItem({
                   <TableHead>Quantity</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Note</TableHead>
-                  {!isDisabled && <TableHead></TableHead>}
+                  {!isDisabled && (
+                    <TableHead className="text-right">Action</TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {fields.map((field, index) => (
-                  <TableRow
-                    key={field.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={(e) => {
-                      if (!isDisabled) {
-                        openDetail(e, form.getValues().items[index]);
-                      }
-                    }}
-                  >
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.product_id`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                className="text-xs"
-                                disabled={isDisabled}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
+                {fields.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={isDisabled ? 4 : 5}
+                      className="h-24 text-center"
+                    >
+                      <p className="text-sm text-muted-foreground">
+                        Not have credit note data
+                      </p>
                     </TableCell>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.qty`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                className="text-xs"
-                                disabled={isDisabled}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.amount`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="number"
-                                className="text-xs"
-                                disabled={isDisabled}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`items.${index}.note`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Textarea
-                                {...field}
-                                value={field.value ?? ""}
-                                className="min-h-[56px] text-xs"
-                                disabled={isDisabled}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    {!isDisabled && (
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (field.id) {
-                              onDeleteItem?.(field.id);
-                            }
-                            remove(index);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </TableCell>
-                    )}
                   </TableRow>
-                ))}
+                ) : (
+                  fields.map((field, index) => (
+                    <TableRow key={field.id} className="hover:bg-muted/50">
+                      <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`items.${index}.product_id`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <p className="text-xs">
+                                  {getProductName(field.value)}
+                                </p>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`items.${index}.qty`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <p className="text-xs">{field.value}</p>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`items.${index}.amount`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <p className="text-xs">{field.value}</p>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <FormField
+                          control={form.control}
+                          name={`items.${index}.note`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <p className="text-xs">{field.value ?? "-"}</p>
+                              </FormControl>
+                            </FormItem>
+                          )}
+                        />
+                      </TableCell>
+                      {!isDisabled && (
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size={"sm"}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const item = form.getValues().items[index];
+                              if (item.id) {
+                                onDeleteItem?.(item.id);
+                              }
+                            }}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size={"sm"}
+                            onClick={(e) => {
+                              if (!isDisabled) {
+                                openDetail(e, form.getValues().items[index]);
+                              }
+                            }}
+                          >
+                            <SquarePen className="h-3 w-3" />
+                          </Button>
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </form>

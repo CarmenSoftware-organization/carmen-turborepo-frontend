@@ -8,7 +8,7 @@ import {
   CreditNoteDetailFormDto,
 } from "@/dtos/credit-note.dto";
 import { formType } from "@/dtos/form.dto";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +30,7 @@ import HeadCnForm from "./HeadCnForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
+import { nanoid } from "nanoid";
 
 interface CnFormProps {
   readonly creditNote?: CreditNoteGetAllDto;
@@ -60,6 +61,12 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
     mode: "onChange",
   });
 
+  const creditNoteDetail = form.watch("credit_note_detail");
+
+  useEffect(() => {
+    console.log("creditNoteDetail changed:", creditNoteDetail);
+  }, [creditNoteDetail]);
+
   const convertStatus = (status?: string) => {
     if (!status) return "Draft";
     const statusMap: Record<string, string> = {
@@ -73,29 +80,75 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
   };
 
   const handleSaveItem = (data: CreditNoteDetailFormDto) => {
-    const { credit_note_detail } = form.getValues();
+    console.log("handleSaveItem called with data:", data);
 
-    if (data.id) {
-      // Update existing item
-      const updatedItems = credit_note_detail.update.map((item) =>
-        item.id === data.id ? data : item
+    const currentValues = form.getValues();
+    console.log("Current form values:", currentValues);
+
+    // Check if item exists in any array
+    const existingInAdd = currentValues.credit_note_detail.add.find(
+      (item) => item.id === data.id
+    );
+    const existingInUpdate = currentValues.credit_note_detail.update.find(
+      (item) => item.id === data.id
+    );
+
+    if (existingInAdd) {
+      // Update in add array
+      const newAddItems = currentValues.credit_note_detail.add.map((item) =>
+        item.id === data.id ? { ...data } : item
       );
-      form.setValue("credit_note_detail.update", updatedItems);
-    } else {
-      // Add new item
-      form.setValue("credit_note_detail.add", [
-        ...credit_note_detail.add,
+      form.setValue("credit_note_detail.add", newAddItems);
+    } else if (existingInUpdate) {
+      // Update in update array
+      const newUpdateItems = currentValues.credit_note_detail.update.map(
+        (item) => (item.id === data.id ? { ...data } : item)
+      );
+      form.setValue("credit_note_detail.update", newUpdateItems);
+    } else if (data.id) {
+      // Existing item not in any array - add to update
+      form.setValue("credit_note_detail.update", [
+        ...currentValues.credit_note_detail.update,
         data,
       ]);
+    } else {
+      // New item - add to add array with new temporary id
+      const tempId = `temp_${nanoid()}`;
+      form.setValue("credit_note_detail.add", [
+        ...currentValues.credit_note_detail.add,
+        { ...data, id: tempId },
+      ]);
     }
+
+    setOpenDialogItemCn(false);
+    setCurrentItemData(undefined);
   };
 
   const handleDeleteItem = (itemId: string) => {
-    const { credit_note_detail } = form.getValues();
-    form.setValue("credit_note_detail.delete", [
-      ...credit_note_detail.delete,
-      itemId,
-    ]);
+    const currentValues = form.getValues();
+
+    // Remove from add array if present
+    const newAddItems = currentValues.credit_note_detail.add.filter(
+      (item) => item.id !== itemId
+    );
+    form.setValue("credit_note_detail.add", newAddItems);
+
+    // Remove from update array if present
+    const newUpdateItems = currentValues.credit_note_detail.update.filter(
+      (item) => item.id !== itemId
+    );
+    form.setValue("credit_note_detail.update", newUpdateItems);
+
+    // Add to delete array if it was an existing item
+    const wasExistingItem = currentValues.credit_note_detail.update.some(
+      (item) => item.id === itemId
+    );
+    if (wasExistingItem) {
+      form.setValue("credit_note_detail.delete", [
+        ...currentValues.credit_note_detail.delete,
+        itemId,
+      ]);
+    }
   };
 
   return (
@@ -222,22 +275,24 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
                   <TabsContent value="items" className="mt-2">
                     <CnItem
                       itemsCn={[
-                        ...form.getValues().credit_note_detail.add,
-                        ...form.getValues().credit_note_detail.update,
+                        ...creditNoteDetail.add,
+                        ...creditNoteDetail.update,
                       ].filter(
                         (item) =>
-                          !form
-                            .getValues()
-                            .credit_note_detail.delete.includes(item.id ?? "")
+                          !creditNoteDetail.delete.includes(item.id ?? "")
                       )}
                       mode={currentMode}
                       openDetail={(e, data) => {
+                        console.log("openDetail called with data:", data);
                         e.preventDefault();
                         e.stopPropagation();
                         setCurrentItemData(data);
                         setOpenDialogItemCn(true);
                       }}
-                      onDeleteItem={handleDeleteItem}
+                      onDeleteItem={(itemId) => {
+                        console.log("onDeleteItem called with id:", itemId);
+                        handleDeleteItem(itemId);
+                      }}
                     />
                   </TabsContent>
                   <TabsContent value="stock_movement" className="mt-2">
