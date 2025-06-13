@@ -50,3 +50,24 @@ export const CreditNoteSchema = z.object({
 });
 
 export type CreditNoteGetAllDto = z.infer<typeof CreditNoteSchema>;
+
+export const creditNoteDetailSchema = z.object({
+  id: z.string().uuid().optional(),
+  product_id: z.string().uuid(),
+  qty: z.string(),
+  amount: z.string(),
+  note: z.string().nullable(),
+});
+
+export const creditNoteFormSchema = z.object({
+  cn_date: z.string(),
+  note: z.string().nullable(),
+  credit_note_detail: z.object({
+    add: z.array(creditNoteDetailSchema),
+    update: z.array(creditNoteDetailSchema),
+    delete: z.array(z.string().uuid()),
+  }),
+});
+
+export type CreditNoteFormDto = z.infer<typeof creditNoteFormSchema>;
+export type CreditNoteDetailFormDto = z.infer<typeof creditNoteDetailSchema>;

@@ -1,4 +1,5 @@
 import { backendApi } from "@/lib/backend-api";
+
 export const getProductService = async (accessToken: string, tenantId: string, params: {
     search?: string;
     page?: string;
