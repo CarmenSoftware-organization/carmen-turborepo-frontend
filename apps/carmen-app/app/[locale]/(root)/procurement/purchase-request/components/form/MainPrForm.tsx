@@ -41,6 +41,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import BudgetPr from "./BudgetPr";
 import ActivityLog from "../../../goods-received-note/components/ActivityLog";
 import CommentGrn from "../../../goods-received-note/components/CommentGrn";
+import { format } from "date-fns";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id: string };
 
@@ -341,19 +342,32 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                     <Link href="/procurement/purchase-request">
                       <ChevronLeft className="h-4 w-4" />
                     </Link>
-                    {mode === formType.ADD ? (
-                      <p className="text-base font-bold">Purchase Request</p>
-                    ) : (
-                      <p className="text-base font-bold">{initValues?.pr_no}</p>
-                    )}
-                    {initValues?.pr_status && (
-                      <Badge
-                        variant={initValues?.pr_status}
-                        className="rounded-full text-xs"
-                      >
-                        {convertPrStatus(initValues?.pr_status)}
-                      </Badge>
-                    )}
+
+                    <div className="flex items-start gap-2">
+                      {mode === formType.ADD ? (
+                        <p className="text-2xl  font-bold">Purchase Request</p>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          <p className="text-2xl font-bold">
+                            {initValues?.pr_no}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Created on{" "}
+                            {format(
+                              new Date(initValues?.pr_date ?? ""),
+                              "dd MMM yyyy"
+                            )}
+                          </p>
+                        </div>
+                      )}
+                      {initValues?.pr_status && (
+                        <Badge
+                          variant={initValues?.pr_status}
+                        >
+                          {convertPrStatus(initValues?.pr_status)}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {currentMode === formType.VIEW ? (

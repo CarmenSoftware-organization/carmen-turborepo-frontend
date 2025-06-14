@@ -263,19 +263,15 @@ export default function HeadPrForm({
                     Description
                   </div>
                 </FormLabel>
-                {mode === formType.VIEW ? (
-                  <p className="text-xs text-muted-foreground mt-1 px-2 py-1 rounded min-h-[28px] flex items-center">
-                    {field.value ? field.value : "-"}
-                  </p>
-                ) : (
-                  <FormControl>
+                <FormControl>
                     <Textarea
                       {...field}
                       value={field.value ?? ""}
                       placeholder="Enter description..."
+                      disabled={mode === formType.VIEW}
+                      className={mode === formType.VIEW ? "bg-muted" : ""}
                     />
                   </FormControl>
-                )}
               </FormItem>
             )}
           />

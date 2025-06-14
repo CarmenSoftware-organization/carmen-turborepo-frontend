@@ -56,32 +56,4 @@ export const mockBgData: BudgetItem[] = [
     available_budget: -4000,
     status: "Over Budget",
   },
-  {
-    id: "bg-4",
-    location: "Location 4",
-    category: "Category 4",
-    total_budget: 120000,
-    soft_commitment: {
-      dept_head: 5000,
-      form_po: 4000,
-    },
-    hard_commitment: 10000,
-    current_pr_amount: 30000,
-    available_budget: 71000,
-    status: "Within Budget",
-  },
-  {
-    id: "bg-5",
-    location: "Location 5",
-    category: "Category 5",
-    total_budget: 50000,
-    soft_commitment: {
-      dept_head: 3000,
-      form_po: 2000,
-    },
-    hard_commitment: 5000,
-    current_pr_amount: 46000,
-    available_budget: -4000,
-    status: "Over Budget",
-  },
 ];
