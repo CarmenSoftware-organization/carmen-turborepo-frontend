@@ -463,7 +463,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                     />
                   </TabsContent>
                   <TabsContent value="budget" className="mt-2">
-                    <BudgetPr />
+                    <BudgetPr mode={currentMode} />
                   </TabsContent>
                   <TabsContent value="workflow" className="mt-2">
                     <WorkflowPr workflowData={initValues?.workflow_history} />
