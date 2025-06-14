@@ -2,14 +2,13 @@ import { z } from "zod";
 
 export enum enum_workflow_type {
   purchase_request = "purchase_request_workflow",
-  purchase_order = "purchase_order_workflow",
+  //purchase_order = "purchase_order_workflow",
   store_requisition = "store_requisition_workflow",
-  goods_received_note = "goods_received_note_workflow",
+  //goods_received_note = "goods_received_note_workflow",
 }
 
 export const workflowTypeField = [
   { label: "Purchase Request", value: enum_workflow_type.purchase_request },
-  { label: "Purchase Order", value: enum_workflow_type.purchase_order },
   { label: "Store Requisition", value: enum_workflow_type.store_requisition },
 ];
 
@@ -139,11 +138,7 @@ export interface Workflow {
 export const wfFormSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1).max(50),
-  workflow_type: z.enum([
-    enum_workflow_type.purchase_request,
-    enum_workflow_type.purchase_order,
-    enum_workflow_type.store_requisition,
-  ]),
+  workflow_type: z.enum([enum_workflow_type.purchase_request, enum_workflow_type.store_requisition]),
   data: z
     .object({
       document_reference_pattern: z.string(),
@@ -237,4 +232,3 @@ export const wfFormSchema = z.object({
 });
 
 export type WorkflowCreateModel = z.infer<typeof wfFormSchema>;
-

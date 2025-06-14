@@ -357,22 +357,39 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                           <div>
                             <Label>Available Actions</Label>
                             <div className="flex flex-wrap gap-2 mt-2">
-                              {(Object.keys(enum_available_actions) as Array<keyof typeof enum_available_actions>).map(
-                                (action) => (
-                                  <Button
-                                    key={action}
-                                    variant={
-                                      selectedStage.available_actions[enum_available_actions[action]]?.is_active
-                                        ? "default"
-                                        : "outline"
-                                    }
-                                    size="sm"
-                                    onClick={() => handleActionToggle(enum_available_actions[action])}
-                                    disabled={!isEditing}
-                                  >
-                                    {action}
-                                  </Button>
-                                )
+                              {selectedStage.name === "Request Creation" ? (
+                                <Button
+                                  variant={
+                                    selectedStage.available_actions[enum_available_actions["submit"]]?.is_active
+                                      ? "default"
+                                      : "outline"
+                                  }
+                                  size="sm"
+                                  onClick={() => handleActionToggle(enum_available_actions["submit"])}
+                                  disabled={!isEditing}
+                                >
+                                  Submit
+                                </Button>
+                              ) : (
+                                <>
+                                  {(
+                                    Object.keys(enum_available_actions) as Array<keyof typeof enum_available_actions>
+                                  ).map((action) => (
+                                    <Button
+                                      key={action}
+                                      variant={
+                                        selectedStage.available_actions[enum_available_actions[action]]?.is_active
+                                          ? "default"
+                                          : "outline"
+                                      }
+                                      size="sm"
+                                      onClick={() => handleActionToggle(enum_available_actions[action])}
+                                      disabled={!isEditing}
+                                    >
+                                      {action}
+                                    </Button>
+                                  ))}
+                                </>
                               )}
                             </div>
                           </div>
@@ -483,10 +500,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                           {filteredUsers.map((user) => {
                             const isAssigned = selectedStage.assigned_users.some((u) => u.id === user.id);
                             return (
-                              <Card
-                                key={user.id}
-                                className={`p-4 hover:bg-gray-50 ${isAssigned ? "border-primary" : ""}`}
-                              >
+                              <Card key={user.id} className={`p-4 ${isAssigned ? "border-primary" : ""}`}>
                                 <div className="flex items-center space-x-4">
                                   <Avatar>
                                     <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`} />
@@ -506,7 +520,10 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                                   <Button
                                     variant={isAssigned ? "default" : "outline"}
                                     size="sm"
-                                    onClick={() => handleAssignUser(user)}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      handleAssignUser(user);
+                                    }}
                                     disabled={!isEditing}
                                   >
                                     {isAssigned ? "Assigned" : "Assign"}
