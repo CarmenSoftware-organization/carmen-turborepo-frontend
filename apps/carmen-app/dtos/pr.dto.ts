@@ -127,7 +127,8 @@ export const purchaseRequestByIdSchema = z.object({
         project: z.string()
     }),
     workflow_history: z.array(workflowHistorySchema).optional(),
-    purchase_request_detail: z.array(itemPrDetailSchema)
+    purchase_request_detail: z.array(itemPrDetailSchema),
+    created_at: z.string().datetime().optional(),
 });
 
 // Schema สำหรับ purchase request ที่จะใช้ใน form (POST/PUT)
@@ -272,6 +273,7 @@ export const prSchemaV2 = z.object({
             })
         ).optional(),
     }),
+    created_at: z.string().datetime(),
 });
 
 export type PrSchemaV2Dto = z.infer<typeof prSchemaV2>;

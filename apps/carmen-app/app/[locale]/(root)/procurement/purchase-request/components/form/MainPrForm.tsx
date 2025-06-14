@@ -318,6 +318,12 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     }
   };
 
+  const statusInfo = {
+    create_date: initValues?.created_at,
+    status: initValues?.pr_status,
+    workflow_status: initValues?.workflow_name,
+  };
+
   return (
     <div className="relative">
       <div className="flex gap-4 relative">
@@ -434,11 +440,12 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                   control={form.control}
                   mode={currentMode}
                   prNo={initValues?.pr_no}
+                  statusInfo={statusInfo}
                 />
                 <Tabs defaultValue="items">
                   <TabsList className="w-full h-8">
                     <TabsTrigger className="w-full text-xs" value="items">
-                      Items 
+                      Items
                     </TabsTrigger>
                     <TabsTrigger className="w-full text-xs" value="budget">
                       Budget
