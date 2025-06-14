@@ -48,6 +48,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
+import { useCurrency } from "@/hooks/useCurrency";
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
 
@@ -85,7 +86,6 @@ const createEmptyItem = (): ItemWithId => ({
   total_price: 0.0,
   foc: 0,
   foc_unit_id: "",
-  tax_type_inventory_id: "",
   tax_type: "include",
   tax_rate: 0.0,
   tax_amount: 0.0,
@@ -116,6 +116,8 @@ export default function ItemPrDialog({
   formValues,
   onSave,
 }: ItemPrDialogProps) {
+
+  const { getCurrencyExchangeRate } = useCurrency();
   // Keep a local copy of form values to prevent issues with undefined
   const [localFormValues, setLocalFormValues] =
     useState<ItemWithId>(createEmptyItem());
@@ -279,6 +281,12 @@ export default function ItemPrDialog({
     console.log("Saving form data:", formData);
     onSave(formData);
   };
+  
+  const currencyId = useWatch({
+    control: localForm.control,
+    name: "currency_id",
+  });
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -766,20 +774,20 @@ export default function ItemPrDialog({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-xs font-medium">
-                              Rate
+                              Exchange Rate
                             </FormLabel>
                             <FormControl>
                               <Input
                                 type="number"
                                 step="0.01"
                                 {...field}
-                                value={field.value ?? 1}
+                                value={getCurrencyExchangeRate(currencyId)}
                                 onChange={(e) =>
                                   field.onChange(
                                     parseFloat(e.target.value) || 1
                                   )
                                 }
-                                disabled={isViewMode}
+                                disabled
                                 min={0.0}
                                 className="bg-background text-xs"
                               />

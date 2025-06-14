@@ -30,6 +30,7 @@ export default function PriceListLookup({
 
     const { data, isLoading } = usePriceList(token, tenantId);
     const priceLists = data?.data;
+    
     const [open, setOpen] = useState(false);
 
     const selectedPriceList = useMemo(() => {

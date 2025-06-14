@@ -197,7 +197,7 @@ export const purchaseRequestDetailItemSchema = z.object({
     location_id: z.string().uuid(),
     product_id: z.string().uuid(),
     vendor_id: z.string().uuid(),
-    price_list_id: z.string().uuid(),
+    price_list_id: z.string(),
     description: z.string(),
     requested_qty: z.number(),
     requested_unit_id: z.string().uuid(),
@@ -217,7 +217,6 @@ export const purchaseRequestDetailItemSchema = z.object({
     total_price: z.number().transform(val => parseFloat(val.toString())),
     foc: z.number(),
     foc_unit_id: z.string().uuid(),
-    tax_type_inventory_id: z.string().uuid(),
     tax_type: z.string(),
     tax_rate: z.number().transform(val => parseFloat(val.toString())),
     tax_amount: z.number().transform(val => parseFloat(val.toString())),
@@ -243,6 +242,7 @@ export const purchaseRequestDetailItemSchema = z.object({
 export type PurchaseRequestDetailItemDto = z.infer<typeof purchaseRequestDetailItemSchema>;
 
 export const prSchemaV2 = z.object({
+    pr_no: z.string().optional(),
     pr_date: z.string().datetime(),
     current_workflow_status: z.string(),
     workflow_history: z.array(wfHistorySchema),

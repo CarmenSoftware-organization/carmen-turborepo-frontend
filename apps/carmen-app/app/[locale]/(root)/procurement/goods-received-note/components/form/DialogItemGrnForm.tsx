@@ -357,92 +357,99 @@ export default function DialogItemGrnForm({
 
   // Monitor form dirty state and errors
   useEffect(() => {
-    const { isDirty, isValid, errors } = form.formState;
+    const {
+      isDirty,
+      isValid,
+      errors,
+      dirtyFields,
+      isSubmitting,
+      isSubmitSuccessful,
+    } = form.formState;
 
-    console.log("Form State:", {
+    console.log("Form State Updated:", {
       isDirty,
       isValid,
       hasErrors: Object.keys(errors).length > 0,
-      errors: errors,
+      errors,
+      dirtyFields,
+      isSubmitting,
+      isSubmitSuccessful,
+      currentValues: form.getValues(),
     });
-
-    // You can add additional logic here based on form state
-    if (isDirty && Object.keys(errors).length > 0) {
-      console.log("Form is dirty and has errors:", errors);
-    } else if (isDirty && Object.keys(errors).length === 0) {
-      console.log("Form is dirty but valid");
-    }
   }, [form.formState]);
 
-  const onSubmit = (data: z.infer<typeof GrnItemFormSchema>) => {
-    // Debug logging
-    console.log("=== Form Submit Debug ===");
-    console.log("initialData:", initialData);
-    console.log("initialData?.id:", initialData?.id);
-    console.log("initData:", initData);
-    console.log("Has initialData:", !!initialData);
-    console.log("Has initialData.id:", !!initialData?.id);
+  const onSubmit = async (
+    data: z.infer<typeof GrnItemFormSchema>,
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
+    try {
+      console.log("=== Starting Form Submission ===");
+      console.log("Submitted Data:", data);
 
-    // Calculate derived values
-    const netAmount = data.order_qty * data.price;
-    const taxAmount = netAmount * (data.tax_rate / 100); // Convert percentage to decimal
-    const totalAmount = netAmount + taxAmount;
+      // ตรวจสอบ validation ก่อน
+      const isValid = await form.trigger();
+      if (!isValid) {
+        console.log("❌ Form validation failed:", form.formState.errors);
+        return;
+      }
 
-    // Set calculated values
-    data.base_price = data.price;
-    data.base_qty = data.order_qty;
-    data.tax_amount = taxAmount;
-    data.total_amount = totalAmount;
-    data.total_cost = totalAmount;
-    data.received_qty = data.received_qty || data.order_qty; // Set received qty equal to ordered qty by default if not set
+      // คำนวณค่าต่างๆ
+      const netAmount = data.order_qty * data.price;
+      const taxAmount = netAmount * (data.tax_rate / 100);
+      const totalAmount = netAmount + taxAmount;
 
-    // Set unit IDs if they're still default values
-    if (data.received_unit_id === "") {
-      data.received_unit_id = data.order_unit_id;
+      // อัพเดทค่าที่คำนวณได้
+      data.base_price = data.price;
+      data.base_qty = data.order_qty;
+      data.tax_amount = taxAmount;
+      data.total_amount = totalAmount;
+      data.total_cost = totalAmount;
+      data.received_qty = data.received_qty || data.order_qty;
+
+      // Set default unit IDs if not provided
+      if (!data.received_unit_id) {
+        data.received_unit_id = data.order_unit_id;
+      }
+      if (!data.foc_unit_id) {
+        data.foc_unit_id = data.order_unit_id;
+      }
+
+      // แปลงข้อมูลเป็น DTO
+      const dtoItem = convertFormValuesToDto(data);
+
+      console.log("Converting to DTO:", dtoItem);
+
+      // ตรวจสอบว่าเป็นการ update หรือ add
+      const isExistingItem =
+        initialData?.id && initData?.some((item) => item.id === initialData.id);
+
+      if (isExistingItem && initialData?.id) {
+        console.log("📝 Updating existing item");
+        dtoItem.id = initialData.id;
+        await onAddItem(dtoItem, "update");
+      } else {
+        console.log("➕ Adding new item");
+        await onAddItem(dtoItem, "add");
+      }
+
+      console.log("✅ Form submitted successfully");
+
+      // ปิด dialog และ reset form หลังจาก submit สำเร็จ
+      setIsDialogOpen(false);
+      form.reset();
+    } catch (error) {
+      console.error("❌ Error submitting form:", error);
+      // อาจจะเพิ่ม error handling เพิ่มเติม เช่น แสดง toast หรือ alert
     }
-    if (data.foc_unit_id === "") {
-      data.foc_unit_id = data.order_unit_id;
-    }
-
-    // Convert form values to DTO
-    const dtoItem = convertFormValuesToDto(data);
-
-    // Determine if this is a new item or update by checking against initData
-    let isExistingItem = false;
-
-    if (initialData?.id && initData) {
-      // Check if this item exists in the original data (initData)
-      isExistingItem = initData.some((item) => item.id === initialData.id);
-      console.log("Item exists in initData:", isExistingItem);
-    }
-
-    if (isExistingItem && initialData?.id) {
-      // This is an update - item exists in original data
-      data.id = initialData.id;
-      dtoItem.id = initialData.id;
-
-      // Pass to parent with action indicator as separate parameter
-      onAddItem(dtoItem, "update");
-
-      console.log("✅ Updating existing item (found in initData):", dtoItem);
-    } else {
-      // This is a new item - either no initialData.id or not found in initData
-      // Pass to parent with action indicator as separate parameter
-      onAddItem(dtoItem, "add");
-
-      console.log("✅ Adding new item (not in initData):", dtoItem);
-    }
-
-    // Close dialog and reset form
-    setIsDialogOpen(false);
-    form.reset();
   };
 
   const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    e.stopPropagation();
+    console.log("Cancelling form...");
     setIsDialogOpen(false);
     form.reset();
+    console.log("Form cancelled and reset");
   };
 
   const openOnHand = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -475,21 +482,18 @@ export default function DialogItemGrnForm({
           </DialogTrigger>
         )}
         <DialogContent className="sm:max-w-[1200px] overflow-y-auto h-[80vh]">
-          <DialogHeader className="border-b pb-2 flex-shrink-0">
-            <DialogTitle className="text-lg font-medium flex items-center gap-2">
-              <Box className="h-4 w-4 text-primary" />
-              {dialogTitle}
-            </DialogTitle>
-          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <DialogHeader className="border-b pb-2 flex-shrink-0">
+                <DialogTitle className="text-lg font-medium flex items-center gap-2">
+                  <Box className="h-4 w-4 text-primary" />
+                  {dialogTitle}
+                </DialogTitle>
+              </DialogHeader>
 
-          <div className="flex-1 overflow-hidden">
-            <ScrollArea className="h-full">
-              <div className="p-2">
-                <Form {...form}>
-                  <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-6"
-                  >
+              <div className="flex-1 overflow-hidden">
+                <ScrollArea className="h-full">
+                  <div className="p-2">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <div className="h-0.5 w-4 bg-primary rounded-full"></div>
@@ -804,7 +808,7 @@ export default function DialogItemGrnForm({
                                       None
                                     </SelectItem>
                                     <SelectItem value={TaxType.INCLUDED}>
-                                      Inclusive
+                                      Included
                                     </SelectItem>
                                     <SelectItem value={TaxType.ADD}>
                                       Add
@@ -1205,31 +1209,27 @@ export default function DialogItemGrnForm({
                         </div>
                       </div>
                     </div>
-                  </form>
-                </Form>
+                  </div>
+                </ScrollArea>
               </div>
-            </ScrollArea>
-          </div>
-          <DialogFooter>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleCancel}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="default"
-                size="sm"
-                // disabled={!form.formState.isValid}
-              >
-                Save
-              </Button>
-            </div>
-          </DialogFooter>
+
+              <DialogFooter>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="default" size="sm">
+                    Save
+                  </Button>
+                </div>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
 

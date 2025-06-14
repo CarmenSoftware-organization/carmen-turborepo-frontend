@@ -131,6 +131,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
   }, [openDialogItemPr]);
 
   const defaultValues = {
+    pr_no: initValues?.pr_no ?? "",
     pr_date: initValues?.pr_date ?? new Date().toISOString(),
     pr_status: initValues?.pr_status ?? "draft",
     requestor_id: initValues?.requestor_id ?? "",

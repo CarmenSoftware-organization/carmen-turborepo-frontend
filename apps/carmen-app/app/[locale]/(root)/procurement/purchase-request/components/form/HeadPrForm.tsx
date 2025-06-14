@@ -5,7 +5,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { formType } from "@/dtos/form.dto";
 import { PrSchemaV2Dto } from "@/dtos/pr.dto";
 import { Control } from "react-hook-form";
@@ -51,15 +50,32 @@ export default function HeadPrForm({ control, mode, prNo }: HeadPrFormProps) {
     <div className="space-y-2 mt-2">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-2 p-1">
         {mode !== formType.ADD && (
-          <div className="col-span-1">
-            <Label className="text-xs font-medium">
-              <div className="flex items-center gap-1">
-                <Hash className="h-3 w-3" />
-                PR Number
-              </div>
-            </Label>
-            <Input value={prNo} disabled className="mt-2 text-xs bg-muted" />
-          </div>
+          // <div className="col-span-1">
+          //   <Label className="text-xs font-medium">
+          //     <div className="flex items-center gap-1">
+          //       <Hash className="h-3 w-3" />
+          //       PR Number
+          //     </div>
+          //   </Label>
+          //   <Input value={prNo} disabled className="mt-2 text-xs bg-muted" />
+          // </div>
+          <FormField
+            control={control}
+            name="pr_no"
+            render={({ field }) => (
+              <FormItem className="col-span-1">
+                <FormLabel className="text-xs font-medium">
+                  <div className="flex items-center gap-1">
+                    <Hash className="h-3 w-3" />
+                    PR Number
+                  </div>
+                </FormLabel>
+                <FormControl>
+                  <Input value={prNo ? prNo : field.value} disabled className="mt-2 text-xs bg-muted" />
+                </FormControl>
+              </FormItem>
+            )}
+          />
         )}
         <FormField
           control={control}
