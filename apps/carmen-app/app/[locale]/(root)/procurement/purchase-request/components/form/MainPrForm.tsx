@@ -110,6 +110,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     isPending: isUpdatePending,
     isError: isUpdateError,
   } = useUpdatePrMutation(token, tenantId);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   // Initialize current items when initValues changes
   useEffect(() => {
@@ -130,6 +131,15 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
       setCurrentItemData(undefined);
     }
   }, [openDialogItemPr]);
+
+  // Add useEffect to calculate total amount when items change
+  useEffect(() => {
+    const total = currentItems.reduce(
+      (sum, item) => sum + (item.total_price || 0),
+      0
+    );
+    setTotalAmount(total);
+  }, [currentItems]);
 
   const defaultValues = {
     pr_no: initValues?.pr_no ?? "",
@@ -361,9 +371,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                         </div>
                       )}
                       {initValues?.pr_status && (
-                        <Badge
-                          variant={initValues?.pr_status}
-                        >
+                        <Badge variant={initValues?.pr_status}>
                           {convertPrStatus(initValues?.pr_status)}
                         </Badge>
                       )}
@@ -455,6 +463,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                   mode={currentMode}
                   prNo={initValues?.pr_no}
                   statusInfo={statusInfo}
+                  totalAmount={totalAmount}
                 />
                 <Tabs defaultValue="items">
                   <TabsList className="w-full h-8">

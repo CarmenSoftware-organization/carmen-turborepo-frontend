@@ -46,6 +46,7 @@ interface HeadPrFormProps {
     status?: string;
     workflow_status?: string;
   };
+  readonly totalAmount: number;
 }
 
 export default function HeadPrForm({
@@ -53,6 +54,7 @@ export default function HeadPrForm({
   mode,
   prNo,
   statusInfo,
+  totalAmount,
 }: HeadPrFormProps) {
   const { user } = useAuth();
   const userId = user?.id;
@@ -264,14 +266,14 @@ export default function HeadPrForm({
                   </div>
                 </FormLabel>
                 <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder="Enter description..."
-                      disabled={mode === formType.VIEW}
-                      className={mode === formType.VIEW ? "bg-muted" : ""}
-                    />
-                  </FormControl>
+                  <Textarea
+                    {...field}
+                    value={field.value ?? ""}
+                    placeholder="Enter description..."
+                    disabled={mode === formType.VIEW}
+                    className={mode === formType.VIEW ? "bg-muted" : ""}
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
@@ -286,13 +288,8 @@ export default function HeadPrForm({
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Current Stage</span>
-                  <Badge variant="outline" className="text-xs">Requestor</Badge>
-                </div>
-
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">Workflow Status</span>
-                  <Badge className="text-xs">
-                    {statusInfo?.workflow_status ?? "-"}
+                  <Badge variant="outline" className="text-xs">
+                    Requestor
                   </Badge>
                 </div>
 
@@ -316,7 +313,9 @@ export default function HeadPrForm({
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Estimated Cost</span>
-                  <span className="font-medium">100,000.00</span>
+                  <span className="font-medium">
+                    {totalAmount}
+                  </span>
                 </div>
               </div>
             </div>

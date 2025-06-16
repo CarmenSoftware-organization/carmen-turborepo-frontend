@@ -86,7 +86,6 @@ export default function CreditTermList({ creditTerms, isLoading }: CreditTermLis
                             <TableCell>{creditTerm.value}</TableCell>
                             <TableCell>{creditTerm.description}</TableCell>
                             <TableCell>{creditTerm.note}</TableCell>
-                            <TableCell>{creditTerm.info}</TableCell>
                             <TableCell>
                                 <Badge variant={creditTerm.is_active ? 'active' : 'inactive'}>
                                     {creditTerm.is_active ? 'Active' : 'Inactive'}

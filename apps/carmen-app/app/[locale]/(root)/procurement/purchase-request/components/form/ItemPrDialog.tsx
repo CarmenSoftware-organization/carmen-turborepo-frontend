@@ -195,6 +195,35 @@ export default function ItemPrDialog({
     }
   }, [watchedProductId, products, localForm]);
 
+  // Watch for price and quantity changes
+  const watchedPrice = useWatch({
+    control: localForm.control,
+    name: "price",
+  });
+
+  const watchedQty = useWatch({
+    control: localForm.control,
+    name: "requested_qty",
+  });
+
+  const watchedExchangeRate = useWatch({
+    control: localForm.control,
+    name: "exchange_rate",
+  });
+
+  // Calculate total price when price or quantity changes
+  useEffect(() => {
+    const price = parseFloat(watchedPrice?.toString() ?? "0") || 0;
+    const qty = parseFloat(watchedQty?.toString() ?? "0") || 0;
+    const exchangeRate = parseFloat(watchedExchangeRate?.toString() ?? "1") || 1;
+    const total = parseFloat(((price * qty) * exchangeRate).toFixed(2));
+    localForm.setValue("total_price", total);
+  }, [watchedPrice, watchedQty, watchedExchangeRate, localForm]);
+
+
+  const localPrice = localForm.watch("total_price");
+  console.log("localPrice", localPrice);
+
   const isViewMode = mode === formType.VIEW;
 
   // Watch form values to check if required fields are filled
@@ -728,356 +757,340 @@ export default function ItemPrDialog({
 
                   {/* Pricing & Tax Section */}
                   <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-0.5 w-4 bg-primary rounded-full"></div>
-                        <h3 className="text-sm font-bold text-foreground">
-                          Pricing & Tax
-                        </h3>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-xs h-6 px-2 hover:bg-primary hover:text-white transition-colors"
-                      >
-                        <Box className="mr-1 h-3 w-3" />
-                        Compare Prices
-                      </Button>
+                    <div className="flex items-center gap-2">
+                      <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                      <h3 className="text-sm font-bold text-foreground">
+                        Pricing & Tax
+                      </h3>
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-6 px-2 hover:bg-primary hover:text-white transition-colors"
+                    >
+                      <Box className="mr-1 h-3 w-3" />
+                      Compare Prices
+                    </Button>
+                  </div>
 
-                    {/* Currency & Price */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-                      <FormField
-                        control={localForm.control}
-                        name="currency_id"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium flex items-center gap-1">
-                              Currency{" "}
-                              <span className="text-destructive">*</span>
-                            </FormLabel>
-                            <FormControl>
-                              <CurrencyLookup
-                                value={field.value}
-                                onValueChange={(value) => field.onChange(value)}
-                                disabled={isViewMode}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="exchange_rate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <p className="text-xs font-medium">Exchange Rate</p>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                value={getCurrencyExchangeRate(currencyId)}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 1
-                                  )
-                                }
-                                disabled
-                                min={0.0}
-                                className="bg-muted/50 text-xs font-medium"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="price"
-                        render={({ field }) => (
-                          <FormItem className="col-span-2">
-                            <FormLabel className="text-xs font-medium flex items-center gap-1">
-                              Unit Price{" "}
-                              <span className="text-destructive">*</span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                {...field}
-                                value={field.value ?? 0}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                disabled={isViewMode}
-                                min={0.01}
-                                className="bg-background text-xs font-medium"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                  {/* Currency & Price */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+                    <FormField
+                      control={localForm.control}
+                      name="currency_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-medium flex items-center gap-1">
+                            Currency <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <CurrencyLookup
+                              value={field.value}
+                              onValueChange={(value) => field.onChange(value)}
+                              disabled={isViewMode}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="exchange_rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <p className="text-xs font-medium">Exchange Rate</p>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              value={getCurrencyExchangeRate(currencyId)}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 1)
+                              }
+                              disabled
+                              min={0.0}
+                              className="bg-muted/50 text-xs font-medium"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem className="col-span-2">
+                          <FormLabel className="text-xs font-medium flex items-center gap-1">
+                            Unit Price{" "}
+                            <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              value={field.value ?? 0}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 0)
+                              }
+                              disabled={isViewMode}
+                              min={0.01}
+                              className="bg-background text-xs font-medium"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                      <FormField
-                        control={localForm.control}
-                        name="tax_type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium">
-                              Tax Type
-                            </FormLabel>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <FormField
+                      control={localForm.control}
+                      name="tax_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-medium">
+                            Tax Type
+                          </FormLabel>
+                          <FormControl>
+                            <Select
+                              value={field.value ?? TaxType.INCLUDED}
+                              onValueChange={field.onChange}
+                              disabled={isViewMode}
+                            >
+                              <SelectTrigger className="bg-background text-xs">
+                                <SelectValue placeholder="Select method" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value={TaxType.NONE}>
+                                  None
+                                </SelectItem>
+                                <SelectItem value={TaxType.INCLUDED}>
+                                  Included
+                                </SelectItem>
+                                <SelectItem value={TaxType.ADD}>Add</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="is_tax_adjustment"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col justify-end h-full">
+                          <div className="flex items-center gap-2 bg-muted/30 p-2 rounded">
                             <FormControl>
-                              <Select
-                                value={field.value ?? TaxType.INCLUDED}
-                                onValueChange={field.onChange}
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
                                 disabled={isViewMode}
-                              >
-                                <SelectTrigger className="bg-background text-xs">
-                                  <SelectValue placeholder="Select method" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value={TaxType.NONE}>
-                                    None
-                                  </SelectItem>
-                                  <SelectItem value={TaxType.INCLUDED}>
-                                    Included
-                                  </SelectItem>
-                                  <SelectItem value={TaxType.ADD}>
-                                    Add
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="is_tax_adjustment"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col justify-end h-full">
-                            <div className="flex items-center gap-2 bg-muted/30 p-2 rounded">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  disabled={isViewMode}
-                                  className="h-4 w-4 rounded border-gray-300"
-                                />
-                              </FormControl>
-                              <FormLabel className="text-xs font-medium !m-0">
-                                Enable Tax Adjustment
-                              </FormLabel>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="tax_rate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium">
-                              Tax Rate (%)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                {...field}
-                                value={field.value ?? 0}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                disabled={
-                                  isViewMode ||
-                                  !localForm.watch("is_tax_adjustment")
-                                }
-                                min={0}
-                                className={cn(
-                                  "text-xs",
-                                  localForm.watch("is_tax_adjustment")
-                                    ? "bg-background"
-                                    : "bg-muted/50"
-                                )}
+                                className="h-4 w-4 rounded border-gray-300"
                               />
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="tax_amount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium">
-                              Tax Amount
+                            <FormLabel className="text-xs font-medium !m-0">
+                              Enable Tax Adjustment
                             </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                {...field}
-                                value={field.value ?? 0}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                disabled={
-                                  isViewMode ||
-                                  !localForm.watch("is_tax_adjustment")
-                                }
-                                min={0}
-                                className={cn(
-                                  "text-xs",
-                                  localForm.watch("is_tax_adjustment")
-                                    ? "bg-background"
-                                    : "bg-muted/50"
-                                )}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="tax_rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-medium">
+                            Tax Rate (%)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              value={field.value ?? 0}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 0)
+                              }
+                              disabled={
+                                isViewMode ||
+                                !localForm.watch("is_tax_adjustment")
+                              }
+                              min={0}
+                              className={cn(
+                                "text-xs",
+                                localForm.watch("is_tax_adjustment")
+                                  ? "bg-background"
+                                  : "bg-muted/50"
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="tax_amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-medium">
+                            Tax Amount
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              value={field.value ?? 0}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 0)
+                              }
+                              disabled={
+                                isViewMode ||
+                                !localForm.watch("is_tax_adjustment")
+                              }
+                              min={0}
+                              className={cn(
+                                "text-xs",
+                                localForm.watch("is_tax_adjustment")
+                                  ? "bg-background"
+                                  : "bg-muted/50"
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                    {/* Discount Configuration */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                      <FormField
-                        control={localForm.control}
-                        name="is_discount"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col justify-end h-full">
-                            <div className="flex items-center gap-2 bg-muted/30 p-2 rounded">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  disabled={isViewMode}
-                                  className="h-4 w-4 rounded border-gray-300"
-                                />
-                              </FormControl>
-                              <FormLabel className="text-xs font-medium !m-0">
-                                Apply Discount
-                              </FormLabel>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="is_discount_adjustment"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col justify-end h-full">
-                            <div className="flex items-center gap-2 bg-muted/30 p-2 rounded">
-                              <FormControl>
-                                <input
-                                  type="checkbox"
-                                  checked={field.value}
-                                  onChange={field.onChange}
-                                  disabled={
-                                    isViewMode ||
-                                    !localForm.watch("is_discount")
-                                  }
-                                  className="h-4 w-4 rounded border-gray-300"
-                                />
-                              </FormControl>
-                              <FormLabel className="text-xs font-medium !m-0">
-                                Enable Adjustment
-                              </FormLabel>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="discount_rate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium">
-                              Discount Rate (%)
-                            </FormLabel>
+                  {/* Discount Configuration */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <FormField
+                      control={localForm.control}
+                      name="is_discount"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col justify-end h-full">
+                          <div className="flex items-center gap-2 bg-muted/30 p-2 rounded">
                             <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                {...field}
-                                value={field.value ?? 0}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
-                                disabled={
-                                  isViewMode ||
-                                  !localForm.watch("is_discount") ||
-                                  !localForm.watch("is_discount_adjustment")
-                                }
-                                min={0}
-                                className={cn(
-                                  "text-xs",
-                                  localForm.watch("is_discount") &&
-                                    localForm.watch("is_discount_adjustment")
-                                    ? "bg-background"
-                                    : "bg-muted/50"
-                                )}
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
+                                disabled={isViewMode}
+                                className="h-4 w-4 rounded border-gray-300"
                               />
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={localForm.control}
-                        name="discount_amount"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-medium">
-                              Discount Amount
+                            <FormLabel className="text-xs font-medium !m-0">
+                              Apply Discount
                             </FormLabel>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="is_discount_adjustment"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col justify-end h-full">
+                          <div className="flex items-center gap-2 bg-muted/30 p-2 rounded">
                             <FormControl>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                {...field}
-                                value={field.value ?? 0}
-                                onChange={(e) =>
-                                  field.onChange(
-                                    parseFloat(e.target.value) || 0
-                                  )
-                                }
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
                                 disabled={
-                                  isViewMode ||
-                                  !localForm.watch("is_discount") ||
-                                  !localForm.watch("is_discount_adjustment")
+                                  isViewMode || !localForm.watch("is_discount")
                                 }
-                                min={0}
-                                className={cn(
-                                  "text-xs",
-                                  localForm.watch("is_discount") &&
-                                    localForm.watch("is_discount_adjustment")
-                                    ? "bg-background"
-                                    : "bg-muted/50"
-                                )}
+                                className="h-4 w-4 rounded border-gray-300"
                               />
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                            <FormLabel className="text-xs font-medium !m-0">
+                              Enable Adjustment
+                            </FormLabel>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="discount_rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-medium">
+                            Discount Rate (%)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              value={field.value ?? 0}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 0)
+                              }
+                              disabled={
+                                isViewMode ||
+                                !localForm.watch("is_discount") ||
+                                !localForm.watch("is_discount_adjustment")
+                              }
+                              min={0}
+                              className={cn(
+                                "text-xs",
+                                localForm.watch("is_discount") &&
+                                  localForm.watch("is_discount_adjustment")
+                                  ? "bg-background"
+                                  : "bg-muted/50"
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={localForm.control}
+                      name="discount_amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-medium">
+                            Discount Amount
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              {...field}
+                              value={field.value ?? 0}
+                              onChange={(e) =>
+                                field.onChange(parseFloat(e.target.value) || 0)
+                              }
+                              disabled={
+                                isViewMode ||
+                                !localForm.watch("is_discount") ||
+                                !localForm.watch("is_discount_adjustment")
+                              }
+                              min={0}
+                              className={cn(
+                                "text-xs",
+                                localForm.watch("is_discount") &&
+                                  localForm.watch("is_discount_adjustment")
+                                  ? "bg-background"
+                                  : "bg-muted/50"
+                              )}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   {/* Dimension & Info Section */}
                   {/* <div className="space-y-2">

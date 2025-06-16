@@ -378,11 +378,7 @@ export default function DialogItemGrnForm({
     });
   }, [form.formState]);
 
-  const onSubmit = async (
-    data: z.infer<typeof GrnItemFormSchema>,
-    e: React.FormEvent
-  ) => {
-    e.preventDefault();
+  const onSubmit = async (data: z.infer<typeof GrnItemFormSchema>) => {
     try {
       console.log("=== Starting Form Submission ===");
       console.log("Submitted Data:", data);
