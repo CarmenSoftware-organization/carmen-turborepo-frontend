@@ -88,10 +88,11 @@ export interface LocationByIdDto {
     physical_count_type: PHYSICAL_COUNT_TYPE;
     description: string;
     is_active: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    info: any;
     users: {
         id: string;
+        name: string;
     }[];
     delivery_point: DeliveryPointDto;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    info?: any;
 }

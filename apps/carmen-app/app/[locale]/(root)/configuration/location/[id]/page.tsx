@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import { useLocationByIdQuery } from "@/hooks/useLocation";
 import { useParams } from "next/navigation";
-import LocationForm from "../components/form/LocationForm";
+import LocationView from "../components/form/LocationView";
 
 export default function StoreLocationByIdPage() {
     const { id } = useParams();
@@ -20,5 +20,5 @@ export default function StoreLocationByIdPage() {
         return <div>Loading...</div>;
     }
 
-    return <LocationForm initialData={data} mode={formType.EDIT} />
+    return <LocationView initialData={data} mode={formType.EDIT} />
 }

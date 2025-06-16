@@ -1,24 +1,38 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { formType } from "@/dtos/form.dto";
-import { UserDto } from "@/dtos/um.dto";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Control, useController } from "react-hook-form";
+import { FormLocationValues } from "./LocationForm";
+
+interface UserBasicInfo {
+  id: string;
+  name: string;
+}
 
 interface LocationUserProps {
-  readonly initCurrentUsers: UserDto[];
-  readonly initAvailableUsers: UserDto[];
+  readonly initCurrentUsers: UserBasicInfo[];
+  readonly initAvailableUsers: UserBasicInfo[];
   readonly formType: formType;
+  readonly formControl: Control<FormLocationValues>;
 }
 
 export default function LocationUser({
   initCurrentUsers,
   initAvailableUsers,
   formType,
+  formControl,
 }: LocationUserProps) {
+  const { field } = useController({
+    name: "users",
+    control: formControl,
+  });
 
-
-  const [currentUsers, setCurrentUsers] = useState<UserDto[]>(initCurrentUsers || []);
-  const [availableUsers, setAvailableUsers] =
-    useState<UserDto[]>(initAvailableUsers || []);
+  const [currentUsers, setCurrentUsers] = useState<UserBasicInfo[]>(
+    initCurrentUsers || []
+  );
+  const [availableUsers, setAvailableUsers] = useState<UserBasicInfo[]>(
+    initAvailableUsers || []
+  );
 
   const [selectedLocationUsers, setSelectedLocationUsers] = useState<string[]>(
     []
@@ -26,6 +40,28 @@ export default function LocationUser({
   const [selectedAvailableUsers, setSelectedAvailableUsers] = useState<
     string[]
   >([]);
+
+  useEffect(() => {
+    const removedUsers = initCurrentUsers
+      .filter((initUser) =>
+        availableUsers.some((user) => user.id === initUser.id)
+      )
+      .map((user) => ({ id: user.id }));
+
+    const addedUsers = currentUsers
+      .filter((user) =>
+        initAvailableUsers.some((initUser) => initUser.id === user.id)
+      )
+      .map((user) => ({ id: user.id }));
+
+    field.onChange({
+      add: addedUsers,
+      remove: removedUsers,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUsers, availableUsers]);
+
+  const isReadOnly = formType === "view";
 
   const handleSelectAllLocationUsers = (checked: boolean) => {
     if (checked) {
@@ -96,6 +132,7 @@ export default function LocationUser({
               handleSelectAllLocationUsers(checked as boolean)
             }
             checked={selectedLocationUsers.length === currentUsers.length}
+            disabled={isReadOnly}
           />
           <label
             htmlFor="select-location-users-all"
@@ -113,6 +150,7 @@ export default function LocationUser({
                   handleSelectLocationUser(user.id, checked as boolean)
                 }
                 checked={selectedLocationUsers.includes(user.id)}
+                disabled={isReadOnly}
               />
               <label htmlFor={`location-user-${user.id}`}>
                 {user.name || "-"}
@@ -125,14 +163,14 @@ export default function LocationUser({
         <button
           className="bg-red-100 p-2 disabled:opacity-50"
           onClick={handleMoveToAvailable}
-          disabled={selectedLocationUsers.length === 0}
+          disabled={selectedLocationUsers.length === 0 || isReadOnly}
         >
           Remove
         </button>
         <button
           className="bg-green-100 p-2 disabled:opacity-50"
           onClick={handleMoveToLocation}
-          disabled={selectedAvailableUsers.length === 0}
+          disabled={selectedAvailableUsers.length === 0 || isReadOnly}
         >
           Add
         </button>
@@ -146,6 +184,7 @@ export default function LocationUser({
             onCheckedChange={(checked) =>
               handleSelectAllAvailableUsers(checked as boolean)
             }
+            disabled={isReadOnly}
           />
           <label htmlFor="select-available-all" className="text-xl font-medium">
             Select All
@@ -160,6 +199,7 @@ export default function LocationUser({
                   handleSelectAvailableUser(user.id, checked as boolean)
                 }
                 checked={selectedAvailableUsers.includes(user.id)}
+                disabled={isReadOnly}
               />
               <label htmlFor={`available-user-${user.id}`}>
                 {user.name || "-"}
