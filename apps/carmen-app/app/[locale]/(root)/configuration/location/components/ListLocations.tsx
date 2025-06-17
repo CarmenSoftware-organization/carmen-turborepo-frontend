@@ -17,7 +17,7 @@ import {
   renderSortIcon,
 } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import { SquarePen, Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import EmptyData from "@/components/EmptyData";
 import { INVENTORY_TYPE } from "@/constants/enum";
 
@@ -48,37 +48,12 @@ export default function ListLocations({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  if (isLoading) return <TableBodySkeleton rows={8} />;
+  const renderTable = () => {
+    if (isLoading) return <TableBodySkeleton rows={8} />;
+    if (locations.length === 0) return <EmptyData message={"Location data not found"} />;
 
-  return (
-    <div className="space-y-4">
-      <Table className="border-collapse">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-10">#</TableHead>
-            <TableHead {...getSortableColumnProps("name", sort, onSort)}>
-              <div className="flex items-center">
-                {t("name")}
-                {renderSortIcon("name", sort)}
-              </div>
-            </TableHead>
-            <TableHead className="hidden md:table-cell">{t("type")}</TableHead>
-            <TableHead className="hidden md:table-cell">
-              {t("delivery_point")}
-            </TableHead>
-            <TableHead {...getSortableColumnProps("is_active", sort, onSort)}>
-              <div className="flex items-center">
-                {t("status")}
-                {renderSortIcon("is_active", sort)}
-              </div>
-            </TableHead>
-            <TableHead className="text-right">{t("action")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        {!locations || locations.length === 0 ? (
-          <EmptyData message={"Location data not found"} />
-        ) : (
-          <TableBody>
+    return (
+      <TableBody>
             {locations?.map((location, i) => (
               <TableRow key={location.id}>
                 <TableCell className="w-10">{i + 1}</TableCell>
@@ -117,7 +92,7 @@ export default function ListLocations({
                       asChild
                     >
                       <Link href={`/configuration/location/${location.id}`}>
-                        <SquarePen className="h-4 w-4" />
+                        <FileText className="h-4 w-4" />
                       </Link>
                     </Button>
                     <Button
@@ -134,7 +109,35 @@ export default function ListLocations({
               </TableRow>
             ))}
           </TableBody>
-        )}
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <Table className="border-collapse">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-10">#</TableHead>
+            <TableHead {...getSortableColumnProps("name", sort, onSort)}>
+              <div className="flex items-center">
+                {t("name")}
+                {renderSortIcon("name", sort)}
+              </div>
+            </TableHead>
+            <TableHead className="hidden md:table-cell">{t("type")}</TableHead>
+            <TableHead className="hidden md:table-cell">
+              {t("delivery_point")}
+            </TableHead>
+            <TableHead {...getSortableColumnProps("is_active", sort, onSort)}>
+              <div className="flex items-center">
+                {t("status")}
+                {renderSortIcon("is_active", sort)}
+              </div>
+            </TableHead>
+            <TableHead className="text-right">{t("action")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        {renderTable()}
       </Table>
     </div>
   );

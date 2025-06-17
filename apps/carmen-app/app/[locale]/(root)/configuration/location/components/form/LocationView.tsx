@@ -8,6 +8,8 @@ import LocationForm from "./LocationForm";
 import { Edit, MapPin, Package, Settings, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
+import { useAuth } from "@/context/AuthContext";
 
 interface LocationViewProps {
   readonly initialData?: LocationByIdDto;
@@ -16,6 +18,7 @@ interface LocationViewProps {
 
 export default function LocationView({ initialData, mode }: LocationViewProps) {
   const [currentMode, setCurrentMode] = useState<formType>(mode);
+  const { token, tenantId } = useAuth();
 
   const handleViewMode = () => {
     setCurrentMode(formType.VIEW);
@@ -24,6 +27,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
   const handleEditMode = () => {
     setCurrentMode(formType.EDIT);
   };
+  const { getDeliveryPointName } = useDeliveryPointQuery({ token, tenantId });
 
   return (
     <>
@@ -32,9 +36,11 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
           initialData={initialData}
           mode={currentMode}
           onViewMode={handleViewMode}
+          token={token}
+          tenantId={tenantId}
         />
       ) : (
-        <div className="max-w-4xl mx-auto p-4 space-y-4">
+        <div className="max-w-4xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <h1 className="text-3xl font-bold">{initialData?.name}</h1>
@@ -76,7 +82,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
                 <div>
                   <h3 className="font-semibold mb-1">Delivery Point ID</h3>
                   <p className="text-sm font-mono">
-                    {initialData?.delivery_point.id}
+                    {getDeliveryPointName(initialData?.delivery_point.id ?? "")}
                   </p>
                 </div>
               </div>

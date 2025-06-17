@@ -96,3 +96,28 @@ export interface LocationByIdDto {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     info?: any;
 }
+
+
+export const formLocationSchema = z.object({
+    id: z.string().optional(),
+    name: z.string().min(1, "Please enter name"),
+    location_type: z.nativeEnum(INVENTORY_TYPE),
+    description: z.string().optional(),
+    physical_count_type: z.nativeEnum(PHYSICAL_COUNT_TYPE),
+    is_active: z.boolean(),
+    delivery_point_id: z.string().min(1, "Please select delivery point"),
+    users: z.object({
+      add: z.array(
+        z.object({
+          id: z.string(),
+        })
+      ),
+      remove: z.array(
+        z.object({
+          id: z.string(),
+        })
+      ),
+    }),
+  });
+  
+  export type FormLocationValues = z.infer<typeof formLocationSchema>;

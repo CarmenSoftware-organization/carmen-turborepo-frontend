@@ -5,6 +5,7 @@ import { formType } from "@/dtos/form.dto";
 import { useLocationByIdQuery } from "@/hooks/useLocation";
 import { useParams } from "next/navigation";
 import LocationView from "../components/form/LocationView";
+import LocationSkeleton from "@/components/loading/LocationSkeleton";
 
 export default function StoreLocationByIdPage() {
     const { id } = useParams();
@@ -17,8 +18,9 @@ export default function StoreLocationByIdPage() {
     });
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <LocationSkeleton />;
     }
 
-    return <LocationView initialData={data} mode={formType.EDIT} />
+    return <LocationView initialData={data} mode={formType.VIEW} />
 }
+

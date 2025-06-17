@@ -1,8 +1,20 @@
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormLocationValues } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState, useEffect } from "react";
 import { Control, useController } from "react-hook-form";
-import { FormLocationValues } from "./LocationForm";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface UserBasicInfo {
   id: string;
@@ -12,14 +24,14 @@ interface UserBasicInfo {
 interface LocationUserProps {
   readonly initCurrentUsers: UserBasicInfo[];
   readonly initAvailableUsers: UserBasicInfo[];
-  readonly formType: formType;
+  readonly mode: formType;
   readonly formControl: Control<FormLocationValues>;
 }
 
 export default function LocationUser({
   initCurrentUsers,
   initAvailableUsers,
-  formType,
+  mode,
   formControl,
 }: LocationUserProps) {
   const { field } = useController({
@@ -27,12 +39,22 @@ export default function LocationUser({
     control: formControl,
   });
 
-  const [currentUsers, setCurrentUsers] = useState<UserBasicInfo[]>(
-    initCurrentUsers || []
-  );
-  const [availableUsers, setAvailableUsers] = useState<UserBasicInfo[]>(
-    initAvailableUsers || []
-  );
+  const [currentUsers, setCurrentUsers] =
+    useState<UserBasicInfo[]>(initCurrentUsers);
+
+  const [availableUsers, setAvailableUsers] =
+    useState<UserBasicInfo[]>(initAvailableUsers);
+
+  useEffect(() => {
+    // กรองผู้ใช้ที่ไม่ซ้ำกับ currentUsers
+    const filteredAvailableUsers = initAvailableUsers.filter(
+      (availableUser) =>
+        !currentUsers.some((currentUser) => currentUser.id === availableUser.id)
+    );
+    setAvailableUsers(filteredAvailableUsers);
+  }, [initAvailableUsers, currentUsers]);
+
+  console.log("availableUsers", availableUsers);
 
   const [selectedLocationUsers, setSelectedLocationUsers] = useState<string[]>(
     []
@@ -58,10 +80,10 @@ export default function LocationUser({
       add: addedUsers,
       remove: removedUsers,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUsers, availableUsers]);
 
-  const isReadOnly = formType === "view";
+  const isReadOnly = mode === formType.VIEW;
 
   const handleSelectAllLocationUsers = (checked: boolean) => {
     if (checked) {
@@ -122,92 +144,130 @@ export default function LocationUser({
   };
 
   return (
-    <div className="flex flex-row gap-4">
-      <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">Location Users</h1>
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="select-location-users-all"
-            onCheckedChange={(checked) =>
-              handleSelectAllLocationUsers(checked as boolean)
-            }
-            checked={selectedLocationUsers.length === currentUsers.length}
-            disabled={isReadOnly}
-          />
-          <label
-            htmlFor="select-location-users-all"
-            className="text-xl font-medium"
-          >
-            Select All
-          </label>
+    <Card className="w-full max-w-6xl p-6">
+      <div className="flex flex-row justify-between gap-8">
+        <div className="flex-1 flex flex-col min-w-[400px]">
+          <CardHeader className="px-0 pt-0">
+            <h1 className="text-xl font-semibold">Location Users</h1>
+            <p className="text-sm text-muted-foreground">
+              Current users in this location
+            </p>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ScrollArea>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]">
+                      <Checkbox
+                        id="select-location-users-all"
+                        onCheckedChange={(checked) =>
+                          handleSelectAllLocationUsers(checked as boolean)
+                        }
+                        checked={
+                          selectedLocationUsers.length === currentUsers.length
+                        }
+                        disabled={isReadOnly}
+                      />
+                    </TableHead>
+                    <TableHead>Name</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="w-[50px]">
+                        <Checkbox
+                          id={`location-user-${user.id}`}
+                          onCheckedChange={(checked) =>
+                            handleSelectLocationUser(
+                              user.id,
+                              checked as boolean
+                            )
+                          }
+                          checked={selectedLocationUsers.includes(user.id)}
+                          disabled={isReadOnly}
+                        />
+                      </TableCell>
+                      <TableCell>{user.name || "-"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          </CardContent>
         </div>
-        <div className="flex flex-col gap-4">
-          {currentUsers.map((user) => (
-            <div key={user.id} className="flex items-center gap-2">
-              <Checkbox
-                id={`location-user-${user.id}`}
-                onCheckedChange={(checked) =>
-                  handleSelectLocationUser(user.id, checked as boolean)
-                }
-                checked={selectedLocationUsers.includes(user.id)}
-                disabled={isReadOnly}
-              />
-              <label htmlFor={`location-user-${user.id}`}>
-                {user.name || "-"}
-              </label>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="flex flex-col gap-4">
-        <button
-          className="bg-red-100 p-2 disabled:opacity-50"
-          onClick={handleMoveToAvailable}
-          disabled={selectedLocationUsers.length === 0 || isReadOnly}
-        >
-          Remove
-        </button>
-        <button
-          className="bg-green-100 p-2 disabled:opacity-50"
-          onClick={handleMoveToLocation}
-          disabled={selectedAvailableUsers.length === 0 || isReadOnly}
-        >
-          Add
-        </button>
-      </div>
 
-      <div className="flex flex-col gap-4">
-        <h1 className="text-2xl font-bold">Available Users</h1>
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="select-available-all"
-            onCheckedChange={(checked) =>
-              handleSelectAllAvailableUsers(checked as boolean)
-            }
-            disabled={isReadOnly}
-          />
-          <label htmlFor="select-available-all" className="text-xl font-medium">
-            Select All
-          </label>
+        <div className="flex flex-col items-center justify-center gap-4 py-10">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-28 gap-2"
+            onClick={handleMoveToAvailable}
+            disabled={selectedLocationUsers.length === 0 || isReadOnly}
+          >
+            <ArrowRightIcon />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-28 gap-2"
+            onClick={handleMoveToLocation}
+            disabled={selectedAvailableUsers.length === 0 || isReadOnly}
+          >
+            <ArrowLeftIcon />
+          </Button>
         </div>
-        <div className="flex flex-col gap-4">
-          {availableUsers.map((user) => (
-            <div key={user.id} className="flex items-center gap-2">
-              <Checkbox
-                id={`available-user-${user.id}`}
-                onCheckedChange={(checked) =>
-                  handleSelectAvailableUser(user.id, checked as boolean)
-                }
-                checked={selectedAvailableUsers.includes(user.id)}
-                disabled={isReadOnly}
-              />
-              <label htmlFor={`available-user-${user.id}`}>
-                {user.name || "-"}
-              </label>
-            </div>
-          ))}
+
+        <div className="flex-1 flex flex-col min-w-[400px]">
+          <CardHeader className="px-0 pt-0">
+            <h1 className="text-xl font-semibold">Available Users</h1>
+            <p className="text-sm text-muted-foreground">
+              Users that can be added to this location
+            </p>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ScrollArea className="h-[200px]">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[50px]">
+                      <Checkbox
+                        id="select-available-all"
+                        onCheckedChange={(checked) =>
+                          handleSelectAllAvailableUsers(checked as boolean)
+                        }
+                        disabled={isReadOnly}
+                      />
+                    </TableHead>
+                    <TableHead>Name</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {availableUsers.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="w-[50px]">
+                        <Checkbox
+                          id={`available-user-${user.id}`}
+                          onCheckedChange={(checked) =>
+                            handleSelectAvailableUser(
+                              user.id,
+                              checked as boolean
+                            )
+                          }
+                          checked={selectedAvailableUsers.includes(user.id)}
+                          disabled={isReadOnly}
+                        />
+                      </TableCell>
+                      <TableCell>{user.name || "-"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+          </CardContent>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
