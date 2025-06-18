@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
+import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
 
 interface LocationViewProps {
   readonly initialData?: LocationByIdDto;
@@ -48,24 +49,12 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
             </div>
             <Button
               onClick={handleEditMode}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 h-7"
             >
               <Edit className="w-4 h-4" />
-              Edit Location
+              Edit
             </Button>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge
-              variant={initialData?.is_active ? "active" : "inactive"}
-              className="text-sm"
-            >
-              {initialData?.is_active ? "Active" : "Inactive"}
-            </Badge>
-            <Badge variant="outline" className="text-sm">
-              {initialData?.location_type}
-            </Badge>
-          </div>
-
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -76,11 +65,11 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-semibold mb-1">Location Name</h3>
+                  <h3 className="font-semibold mb-1">Name</h3>
                   <p className="text-sm">{initialData?.name}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Delivery Point ID</h3>
+                  <h3 className="font-semibold mb-1">Delivery Point</h3>
                   <p className="text-sm font-mono">
                     {getDeliveryPointName(initialData?.delivery_point.id ?? "")}
                   </p>
@@ -95,8 +84,16 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
               )}
 
               <div>
-                <h3 className="font-semibold mb-1">Location Type</h3>
-                <p className="text-sm">{initialData?.location_type}</p>
+                <h3 className="font-semibold mb-1">Type</h3>
+                {initialData?.location_type && (
+                  <Badge
+                    className={STORE_LOCATION_TYPE_COLOR(
+                      initialData.location_type
+                    )}
+                  >
+                    {initialData.location_type.toUpperCase()}
+                  </Badge>
+                )}
               </div>
             </CardContent>
           </Card>

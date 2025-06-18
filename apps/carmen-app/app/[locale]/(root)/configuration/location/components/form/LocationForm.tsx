@@ -180,7 +180,7 @@ export default function LocationForm({
                   name="delivery_point_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Delivery Point ID</FormLabel>
+                      <FormLabel>Delivery Point</FormLabel>
                       <FormControl>
                         <DeliveryPointLookup
                           value={field.value}
@@ -196,7 +196,7 @@ export default function LocationForm({
                   name="location_type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Location Type</FormLabel>
+                      <FormLabel>Type</FormLabel>
                       <FormControl>
                         <Select
                           onValueChange={field.onChange}

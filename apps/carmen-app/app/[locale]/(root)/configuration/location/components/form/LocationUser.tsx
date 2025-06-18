@@ -54,8 +54,6 @@ export default function LocationUser({
     setAvailableUsers(filteredAvailableUsers);
   }, [initAvailableUsers, currentUsers]);
 
-  console.log("availableUsers", availableUsers);
-
   const [selectedLocationUsers, setSelectedLocationUsers] = useState<string[]>(
     []
   );
