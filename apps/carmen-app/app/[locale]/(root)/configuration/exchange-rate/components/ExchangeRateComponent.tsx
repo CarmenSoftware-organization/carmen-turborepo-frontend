@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import currencies from "@/constants/currency";
+import currenciesIso from "@/constants/currency";
 import { format } from "date-fns";
 import {
     Table,
@@ -55,7 +55,7 @@ export default function ExchangeRateComponent() {
     const [sortField, setSortField] = useState<SortField>("code");
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
-    const filteredCurrencies = currencies.filter((currency) => {
+    const filteredCurrencies = currenciesIso.filter((currency) => {
         if (!searchQuery.trim()) return true;
 
         const query = searchQuery.toLowerCase();
@@ -211,7 +211,7 @@ export default function ExchangeRateComponent() {
             return <p className="text-sm mt-2 text-muted-foreground">No results found for &quot;{searchQuery}&quot;</p>;
         }
 
-        if (filteredCurrencies.length !== currencies.length) {
+        if (filteredCurrencies.length !== currenciesIso.length) {
             const resultText = filteredCurrencies.length === 1 ? 'result' : 'results';
             return (
                 <p className="text-sm mt-2 text-muted-foreground">

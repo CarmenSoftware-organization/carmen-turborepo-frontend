@@ -5,7 +5,7 @@ type CurrencyConfigDto = {
     symbol: string;
 };
 
-const currencies: CurrencyConfigDto[] = [
+const currenciesIso: CurrencyConfigDto[] = [
     { code: "AED", name: "UAE Dirham", country: "United Arab Emirates", symbol: "د.إ" },
     { code: "AFN", name: "Afghan Afghani", country: "Afghanistan", symbol: "؋" },
     { code: "ALL", name: "Albanian Lek", country: "Albania", symbol: "L" },
@@ -156,4 +156,4 @@ const currencies: CurrencyConfigDto[] = [
     { code: "UZS", name: "Uzbekistani Som", country: "Uzbekistan", symbol: "лв" },
 ];
 
-export default currencies;
+export default currenciesIso;
