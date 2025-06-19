@@ -3,7 +3,7 @@ import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
 import { UserListDto } from "@/dtos/user.dto";
 
-const API_URL = `${backendApi}/api/auth/tenant`;
+const API_URL = `${backendApi}/api/user`;
 
 export const getUserList = async (token: string, tenantId: string) => {
     const url = `${API_URL}`;

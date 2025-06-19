@@ -28,8 +28,8 @@ export const useUserList = () => {
     isError && error instanceof Error && error.message.includes("Unauthorized");
 
   const getUserName = (userId: string) => {
-    const user = userList.find((user) => user.id === userId);
-    return user?.name ?? "";
+    const user = userList.find((user) => user.user_id === userId);
+    return user?.firstname ?? "";
   };
 
   return {

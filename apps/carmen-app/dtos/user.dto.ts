@@ -1,4 +1,7 @@
 export type UserListDto = {
-    id: string;
-    name: string;
+    user_id: string;
+    email: string;
+    firstname: string;
+    middlename: string;
+    lastname: string;
 }
