@@ -38,13 +38,15 @@ export const useCreditTermQuery = (
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const creditTerms = data;
+  const creditTerms = data?.data;
+
   const isUnauthorized =
     error instanceof Error && error.message.includes("Unauthorized");
 
   const getCreditTermName = useCallback(
     (creditTermId: string) => {
-      const creditTerm = creditTerms?.find(
+      if (!creditTerms || !Array.isArray(creditTerms)) return "";
+      const creditTerm = creditTerms.find(
         (ct: CreditTermGetAllDto) => ct.id === creditTermId
       );
       return creditTerm?.name ?? "";
@@ -120,6 +122,6 @@ export const useDeleteCreditTerm = (
         tenantId,
         "Failed to delete credit term"
       );
-    }
+    },
   });
 };

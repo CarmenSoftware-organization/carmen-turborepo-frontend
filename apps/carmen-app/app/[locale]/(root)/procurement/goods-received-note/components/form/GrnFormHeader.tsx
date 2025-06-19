@@ -50,6 +50,8 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
+import { useCreditTermQuery } from "@/hooks/useCreditTerm";
+import { useAuth } from "@/context/AuthContext";
 
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;
@@ -57,8 +59,10 @@ interface GrnFormHeaderProps {
 }
 
 export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
+  const { token, tenantId } = useAuth();
   const { getVendorName } = useVendor();
   const { getCurrencyCode } = useCurrency();
+  const { getCreditTermName } = useCreditTermQuery(token, tenantId);
 
   const isTypeBlank =
     new URLSearchParams(window.location.search).get("type") === "blank";
@@ -89,8 +93,8 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 <Input
                   {...field}
                   value={field.value}
-                  disabled={mode === formType.ADD}
-                  className={`${mode === formType.ADD ? "bg-muted" : ""}`}
+                  disabled
+                  className="bg-muted"
                   placeholder="GRN Number"
                 />
               </FormControl>
@@ -178,9 +182,11 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">
-                  {getVendorName(field.value ?? "")}
-                </p>
+                <Input
+                  value={getVendorName(field.value ?? "")}
+                  disabled
+                  className="bg-muted"
+                />
               ) : (
                 <FormControl>
                   <VendorLookup
@@ -206,7 +212,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
+                <Input value={field.value} disabled className="bg-muted" />
               ) : (
                 <Select
                   onValueChange={field.onChange}
@@ -244,9 +250,11 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">
-                  {getCurrencyCode(field.value ?? "")}
-                </p>
+                <Input
+                  value={getCurrencyCode(field.value ?? "")}
+                  disabled
+                  className="bg-muted"
+                />
               ) : (
                 <FormControl>
                   <CurrencyLookup
@@ -267,7 +275,11 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
               Exchange Rate
             </div>
           </Label>
-          <Input value={getCurrencyExchangeRate(currencyId ?? "")} disabled />
+          <Input
+            value={getCurrencyExchangeRate(currencyId ?? "")}
+            disabled
+            className="bg-muted"
+          />
         </div>
 
         <FormField
@@ -282,7 +294,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
+                <Input value={field.value} disabled className="bg-muted" />
               ) : (
                 <FormControl>
                   <Input {...field} />
@@ -372,7 +384,11 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
+                <Input
+                  value={getCreditTermName(field.value ?? "")}
+                  disabled
+                  className="bg-muted"
+                />
               ) : (
                 <FormControl>
                   <CreditTermLookup
@@ -399,13 +415,13 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                   Description
                 </div>
               </FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
-              ) : (
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-              )}
+              <FormControl>
+                <Textarea
+                  value={field.value}
+                  disabled={mode === formType.VIEW}
+                  className={`${mode === formType.VIEW ? "bg-muted" : ""}`}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -423,13 +439,11 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                   Note
                 </div>
               </FormLabel>
-              {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">{field.value}</p>
-              ) : (
-                <FormControl>
-                  <Textarea {...field} />
-                </FormControl>
-              )}
+              <Textarea
+                value={field.value}
+                disabled={mode === formType.VIEW}
+                className={`${mode === formType.VIEW ? "bg-muted" : ""}`}
+              />
               <FormMessage />
             </FormItem>
           )}

@@ -27,7 +27,7 @@ import {
   FileText,
   Split,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import DialogItemGrnForm from "./DialogItemGrnForm";
 import { useUnit } from "@/hooks/useUnit";
@@ -62,11 +62,12 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
   const { getLocationName } = useStoreLocation();
   const { getProductName } = useProduct();
 
-  const initData =
-    useWatch({
-      control,
-      name: "good_received_note_detail.initData",
-    }) ?? [];
+  const watchedInitData = useWatch({
+    control,
+    name: "good_received_note_detail.initData",
+  });
+
+  const initData = useMemo(() => watchedInitData ?? [], [watchedInitData]);
 
   const {
     fields: addFields,
