@@ -39,7 +39,6 @@ import { useVendor } from "@/hooks/useVendor";
 import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { DOC_TYPE } from "@/constants/enum";
-import { useCreditTermQuery } from "@/hooks/useCreditTerm";
 import CreditTermLookup from "@/components/lookup/CreditTermLookup";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -55,19 +54,11 @@ import { Label } from "@/components/ui/label";
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;
   readonly mode: formType;
-  readonly token: string;
-  readonly tenantId: string;
 }
 
-export default function GrnFormHeader({
-  control,
-  mode,
-  token,
-  tenantId,
-}: GrnFormHeaderProps) {
+export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   const { getVendorName } = useVendor();
   const { getCurrencyCode } = useCurrency();
-  const { getCreditTermName } = useCreditTermQuery(token, tenantId);
 
   const isTypeBlank =
     new URLSearchParams(window.location.search).get("type") === "blank";
@@ -188,7 +179,7 @@ export default function GrnFormHeader({
               </FormLabel>
               {mode === formType.VIEW ? (
                 <p className="text-xs text-muted-foreground">
-                  {getVendorName(field.value)}
+                  {getVendorName(field.value ?? "")}
                 </p>
               ) : (
                 <FormControl>
@@ -254,7 +245,7 @@ export default function GrnFormHeader({
               </FormLabel>
               {mode === formType.VIEW ? (
                 <p className="text-xs text-muted-foreground">
-                  {getCurrencyCode(field.value)}
+                  {getCurrencyCode(field.value ?? "")}
                 </p>
               ) : (
                 <FormControl>
@@ -276,7 +267,7 @@ export default function GrnFormHeader({
               Exchange Rate
             </div>
           </Label>
-          <Input value={getCurrencyExchangeRate(currencyId)} disabled />
+          <Input value={getCurrencyExchangeRate(currencyId ?? "")} disabled />
         </div>
 
         <FormField
@@ -381,9 +372,7 @@ export default function GrnFormHeader({
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <p className="text-xs text-muted-foreground">
-                  {getCreditTermName(field.value)}
-                </p>
+                <p className="text-xs text-muted-foreground">{field.value}</p>
               ) : (
                 <FormControl>
                   <CreditTermLookup
@@ -398,57 +387,54 @@ export default function GrnFormHeader({
         />
       </div>
 
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <FormField
-        control={control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <AlignLeft className="h-4 w-4" />
-                Description
-              </div>
-            </FormLabel>
-            {mode === formType.VIEW ? (
-              <p className="text-xs text-muted-foreground">{field.value}</p>
-            ) : (
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        <FormField
+          control={control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <AlignLeft className="h-4 w-4" />
+                  Description
+                </div>
+              </FormLabel>
+              {mode === formType.VIEW ? (
+                <p className="text-xs text-muted-foreground">{field.value}</p>
+              ) : (
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-      {/* Note */}
-      <FormField
-        control={control}
-        name="note"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel className="text-sm font-medium">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Note
-              </div>
-            </FormLabel>
-            {mode === formType.VIEW ? (
-              <p className="text-xs text-muted-foreground">{field.value}</p>
-            ) : (
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-            )}
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+        {/* Note */}
+        <FormField
+          control={control}
+          name="note"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  Note
+                </div>
+              </FormLabel>
+              {mode === formType.VIEW ? (
+                <p className="text-xs text-muted-foreground">{field.value}</p>
+              ) : (
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </div>
-
-      
 
       <div className="mt-6 flex flex-col gap-4">
         <FormLabel className="text-sm font-medium">

@@ -342,7 +342,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
           className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
         >
           <Card className="p-4 mb-2">
-            <Form {...form}>
+          <Form {...form}>
               <form
                 className="space-y-4"
                 onSubmit={form.handleSubmit(onSubmit)}
