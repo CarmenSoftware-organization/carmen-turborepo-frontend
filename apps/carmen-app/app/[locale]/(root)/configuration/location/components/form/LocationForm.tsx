@@ -300,7 +300,14 @@ export default function LocationForm({
           </Card>
           <LocationUser
             initCurrentUsers={initialData?.users || []}
-            initAvailableUsers={userList}
+            initAvailableUsers={
+              userList
+                ? userList.map((user) => ({
+                    id: user.user_id,
+                    name: user.firstname + " " + user.lastname,
+                  }))
+                : []
+            }
             mode={mode}
             formControl={form.control}
           />

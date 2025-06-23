@@ -30,6 +30,7 @@ import ActivityLog from "../ActivityLog";
 import CommentGrn from "../CommentGrn";
 import { DOC_TYPE } from "@/constants/enum";
 import ItemGrn from "./ItemGrn";
+import ExtraCost from "./ExtraCost";
 
 // TODO: Implement these components
 const BudgetGrn = ({ mode }: { mode: formType }) => (
@@ -40,11 +41,6 @@ const BudgetGrn = ({ mode }: { mode: formType }) => (
 const WorkflowGrn = ({ workflowData }: { workflowData: unknown }) => (
   <div className="p-4 border rounded-md">
     WorkflowGrn Placeholder Data: {JSON.stringify(workflowData)}
-  </div>
-);
-const ExtraCostGrn = ({ mode }: { mode: formType }) => (
-  <div className="p-4 border rounded-md">
-    ExtraCostGrn Placeholder (Mode: {mode})
   </div>
 );
 
@@ -291,7 +287,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                     />
                   </TabsContent>
                   <TabsContent value="extra_cost" className="mt-2">
-                    <ExtraCostGrn mode={currentMode} />
+                    <ExtraCost control={form.control} mode={currentMode} />
                   </TabsContent>
                   <TabsContent value="budget" className="mt-2">
                     <BudgetGrn mode={currentMode} />

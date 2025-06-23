@@ -32,6 +32,9 @@ export const getUserProfileService = async (accessToken: string) => {
 
 export const updateUserBusinessUnitService = async (accessToken: string, buId: string) => {
     const url = `${backendApi}/api/business-unit/default`
+    console.log('accessToken', accessToken);
+    console.log('buId', buId);
+
     try {
         const response = await axios.post(url, {
             headers: requestHeaders(accessToken, buId)

@@ -10,7 +10,11 @@ import {
 import { useAuth } from "@/context/AuthContext";
 
 export default function TenantList() {
-    const { user, tenantId, handleChangeTenant, isLoading } = useAuth();
+    const { user,
+        tenantId,
+        handleChangeTenant,
+        isLoading,
+    } = useAuth();
 
 
     // Don't render while loading or if we don't have the necessary data

@@ -2,71 +2,70 @@ import { ALLOCATE_EXTRA_COST_TYPE, DOC_TYPE, TaxType } from "@/constants/enum";
 import { z } from "zod";
 
 const goodReceivedNoteDetailItemSchema = z.object({
-  id: z.string().uuid().optional(),
-  purchase_order_detail_id: z.string().uuid().optional(),
-  sequence_no: z.number().optional(),
+  sequence_no: z.number(),
   location_id: z.string().uuid(),
   product_id: z.string().uuid(),
-  order_qty: z.number().optional(),
-  order_unit_id: z.string().uuid().optional(),
-  received_qty: z.number().optional(),
-  received_unit_id: z.string().uuid().optional(),
-  is_foc: z.boolean().optional(),
-  foc_qty: z.number().optional(),
-  foc_unit_id: z.string().uuid().optional(),
-  price: z.number().optional(),
-  tax_type_inventory_id: z.string().uuid().optional(),
-  tax_type: z.string().optional(),
-  tax_rate: z.number().optional(),
-  tax_amount: z.number().optional(),
-  is_tax_adjustment: z.boolean().optional(),
-  total_amount: z.number().optional(),
-  delivery_point_id: z.string().uuid().optional(),
-  base_price: z.number().optional(),
-  base_qty: z.number().optional(),
-  extra_cost: z.number().optional(),
-  total_cost: z.number().optional(),
-  is_discount: z.boolean().optional(),
-  discount_rate: z.number().optional(),
-  discount_amount: z.number().optional(),
-  is_discount_adjustment: z.boolean().optional(),
-  expired_date: z.string().optional(),
-  note: z.string().optional(),
-  exchange_rate: z.number().optional(),
-  info: z.string().optional(),
-  dimension: z.string().optional(),
+  order_qty: z.number(),
+  order_unit_id: z.string().uuid(),
+  received_qty: z.number(),
+  received_unit_id: z.string().uuid(),
+  foc_qty: z.number(),
+  foc_unit_id: z.string().uuid(),
+  price: z.number(),
+  tax_type_inventory_id: z.string().uuid(),
+  tax_type: z.enum(["none", "included", "excluded"]),
+  tax_rate: z.number(),
+  tax_amount: z.number(),
+  is_tax_adjustment: z.boolean(),
+  total_amount: z.number(),
+  delivery_point_id: z.string().uuid(),
+  base_price: z.number(),
+  base_qty: z.number(),
+  extra_cost: z.number(),
+  total_cost: z.number(),
+  discount_rate: z.number(),
+  discount_amount: z.number(),
+  is_discount_adjustment: z.boolean(),
+  expired_date: z.string().datetime(),
+  note: z.string(),
+  info: z.string(),
+  dimension: z.string(),
 });
 
 export type GoodReceivedNoteDetailItemDto = z.infer<
   typeof goodReceivedNoteDetailItemSchema
 >;
 
-const extraCostDetailItemSchema = z.object({
+export const extraCostDetailItemSchema = z.object({
   id: z.string().uuid().optional(),
   extra_cost_type_id: z.string().uuid().optional(),
   amount: z.number().optional(),
-  is_tax: z.boolean().optional(),
   tax_type_inventory_id: z.string().uuid().optional(),
   tax_type: z.nativeEnum(TaxType).optional(),
   tax_rate: z.number().optional(),
   tax_amount: z.number().optional(),
   is_tax_adjustment: z.boolean().optional(),
   note: z.string().optional(),
-  info: z.string().optional(),
-  dimension: z.string().optional(),
 });
 
-const extraCostSchema = z.object({
+export type ExtraCostDetailFormValues = z.infer<
+  typeof extraCostDetailItemSchema
+>;
+
+export const extraCostSchema = z.object({
   name: z.string().optional(),
   allocate_extra_cost_type: z.nativeEnum(ALLOCATE_EXTRA_COST_TYPE).optional(),
   note: z.string().optional(),
-  info: z.string().optional(),
   extra_cost_detail: z.object({
     add: z.array(extraCostDetailItemSchema),
     update: z.array(extraCostDetailItemSchema),
     delete: z.array(z.string().uuid()),
   }),
 });
+
+export type ExtraCostDetailItemDto = z.infer<
+  typeof extraCostSchema
+>;
 
 export const baseGrnSchema = z.object({
   name: z.string().optional(),

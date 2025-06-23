@@ -1,8 +1,7 @@
-import { formType } from "@/dtos/form.dto";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { Plus, SquarePen, Trash2 } from "lucide-react";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -11,198 +10,104 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CreditNoteDetailFormDto } from "@/dtos/credit-note.dto";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useEffect } from "react";
-import useProduct from "@/hooks/useProduct";
+import { CreditNoteDetailDto, CreditNoteFormDto } from "@/dtos/credit-note.dto";
+import { formType } from "@/dtos/form.dto";
+import {  SquarePenIcon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { Control } from "react-hook-form";
+import CnItemDialog from "./CnItemDialog";
 
 interface CnItemProps {
-  readonly itemsCn: CreditNoteDetailFormDto[];
+  readonly control: Control<CreditNoteFormDto>;
   readonly mode: formType;
-  readonly openDetail: (
-    e: React.MouseEvent,
-    data: CreditNoteDetailFormDto
-  ) => void;
-  readonly onDeleteItem?: (itemId: string) => void;
+  readonly itemsDetail?: CreditNoteDetailDto[];
 }
 
-export default function CnItem({
-  itemsCn,
-  mode,
-  openDetail,
-  onDeleteItem,
-}: CnItemProps) {
-  const { getProductName } = useProduct();
-  const isDisabled = mode === formType.VIEW;
+export default function CnItem({ control, mode, itemsDetail }: CnItemProps) {
+  console.log(mode);
+  const [open, setOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<
+    CreditNoteDetailDto | undefined
+  >();
 
-  const form = useForm<{ items: CreditNoteDetailFormDto[] }>({
-    defaultValues: {
-      items: itemsCn || [],
-    },
-  });
+  const openChange = (open: boolean) => {
+    if (!open) {
+      setSelectedItem(undefined);
+    }
+    setOpen(open);
+  };
 
-  const { fields } = useFieldArray({
-    control: form.control,
-    name: "items",
-  });
+  const handleEdit = (item: CreditNoteDetailDto) => {
+    setSelectedItem(item);
+    setOpen(true);
+  };
 
-  // Watch for changes in itemsCn and update form
-  useEffect(() => {
-    console.log("ItemsCn changed in CnItem:", itemsCn);
-    console.log("Current form values before reset:", form.getValues());
-    form.reset({ items: itemsCn || [] });
-    console.log("Form values after reset:", form.getValues());
-  }, [itemsCn, form]);
-
-  const handleAddNewItem = (e: React.MouseEvent) => {
-    console.log("handleAddNewItem called");
-    const emptyItem: CreditNoteDetailFormDto = {
-      product_id: "",
-      qty: 0,
-      amount: 0,
-      note: null,
-    };
-
-    console.log("Created emptyItem:", emptyItem);
-    openDetail(e, emptyItem);
+  const handleSave = (data: CreditNoteDetailDto) => {
+    console.log("Save item:", data);
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between p-4">
-        <p className="text-sm font-medium px-2">Items Details</p>
-        {!isDisabled && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleAddNewItem}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Add Item
-          </Button>
-        )}
-      </CardHeader>
-      <CardContent className="p-1">
-        <Form {...form}>
-          <form>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Note</TableHead>
-                  {!isDisabled && (
-                    <TableHead className="text-right">Action</TableHead>
-                  )}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {fields.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={isDisabled ? 4 : 5}
-                      className="h-24 text-center"
-                    >
-                      <p className="text-sm text-muted-foreground">
-                        Not have credit note data
-                      </p>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  fields.map((field, index) => (
-                    <TableRow key={field.id} className="hover:bg-muted/50">
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`items.${index}.product_id`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <p className="text-xs">
-                                  {getProductName(field.value)}
-                                </p>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`items.${index}.qty`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <p className="text-xs">{field.value}</p>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`items.${index}.amount`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <p className="text-xs">{field.value}</p>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`items.${index}.note`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <p className="text-xs">{field.value ?? "-"}</p>
-                              </FormControl>
-                            </FormItem>
-                          )}
-                        />
-                      </TableCell>
-                      {!isDisabled && (
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size={"sm"}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const item = form.getValues().items[index];
-                              if (item.id) {
-                                onDeleteItem?.(item.id);
-                              }
-                            }}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size={"sm"}
-                            onClick={(e) => {
-                              if (!isDisabled) {
-                                openDetail(e, form.getValues().items[index]);
-                              }
-                            }}
-                          >
-                            <SquarePen className="h-3 w-3" />
-                          </Button>
-                        </TableCell>
-                      )}
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <CnItemDialog
+          open={open}
+          onOpenChange={openChange}
+          control={control}
+          onSave={handleSave}
+          initItem={selectedItem}
+        />
+      </div>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-10">
+              <Checkbox />
+            </TableHead>
+            <TableHead>Product Name</TableHead>
+            <TableHead>Local Name</TableHead>
+            <TableHead>Note</TableHead>
+            <TableHead className="text-right">Qty</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="text-right">Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {itemsDetail?.map((item: CreditNoteDetailDto) => (
+            <TableRow key={item.id}>
+              <TableCell className="w-10">
+                <Checkbox />
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm font-medium">{item.product_name}</p>
+                  <p className="text-sm text-gray-500">
+                    {item.description ?? "-"}
+                  </p>
+                </div>
+              </TableCell>
+              <TableCell>{item.product_local_name ?? "-"}</TableCell>
+              <TableCell>{item.note ?? "-"}</TableCell>
+              <TableCell className="text-right">{item.qty ?? "-"}</TableCell>
+              <TableCell className="text-right">{item.amount ?? "-"}</TableCell>
+              <TableCell className="text-right">
+                <div className="flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-8 h-8"
+                    onClick={() => handleEdit(item)}
+                  >
+                    <SquarePenIcon className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="w-8 h-8">
+                    <Trash2Icon className="w-4 h-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

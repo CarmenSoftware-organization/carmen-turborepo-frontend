@@ -5,7 +5,6 @@ import {
   CreditNoteGetAllDto,
   creditNoteFormSchema,
   CreditNoteFormDto,
-  CreditNoteDetailFormDto,
 } from "@/dtos/credit-note.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState, useEffect } from "react";
@@ -21,7 +20,6 @@ import {
   FileDown,
   Share,
 } from "lucide-react";
-import CnItemDialog from "./CnItemDialog";
 import { Link, useRouter } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,7 +28,6 @@ import HeadCnForm from "./HeadCnForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import { nanoid } from "nanoid";
 import { useAuth } from "@/context/AuthContext";
 import {
   useCreateCreditNote,
@@ -41,6 +38,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 interface CnFormProps {
   readonly creditNote?: CreditNoteGetAllDto;
   readonly mode: formType;
+  readonly defaultValues?: CreditNoteFormDto;
 }
 
 export default function CnForm({ creditNote, mode }: CnFormProps) {
@@ -54,19 +52,15 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
   );
 
   const [openLog, setOpenLog] = useState(false);
-  const [openDialogItemCn, setOpenDialogItemCn] = useState(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
-  const [currentItemData, setCurrentItemData] = useState<
-    CreditNoteDetailFormDto | undefined
-  >();
 
   const defaultValues: CreditNoteFormDto = {
     cn_date: creditNote?.cn_date ?? new Date().toISOString(),
     note: creditNote?.note ?? null,
-    credit_note_detail: {
+    tb_credit_note_detail: {
       add: [],
       update: [],
-      delete: [],
+      remove: [],
     },
   };
 
@@ -76,7 +70,7 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
     mode: "onChange",
   });
 
-  const creditNoteDetail = form.watch("credit_note_detail");
+  const creditNoteDetail = form.watch("tb_credit_note_detail");
 
   useEffect(() => {
     console.log("creditNoteDetail changed:", creditNoteDetail);
@@ -94,80 +88,7 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
     return statusMap[status] || status;
   };
 
-  const handleSaveItem = (data: CreditNoteDetailFormDto) => {
-    console.log("handleSaveItem called with data:", data);
-
-    const currentValues = form.getValues();
-    console.log("Current form values:", currentValues);
-
-    // Check if item exists in any array
-    const existingInAdd = currentValues.credit_note_detail.add.find(
-      (item) => item.id === data.id
-    );
-    const existingInUpdate = currentValues.credit_note_detail.update.find(
-      (item) => item.id === data.id
-    );
-
-    if (existingInAdd) {
-      // Update in add array
-      const newAddItems = currentValues.credit_note_detail.add.map((item) =>
-        item.id === data.id ? { ...data } : item
-      );
-      form.setValue("credit_note_detail.add", newAddItems);
-    } else if (existingInUpdate) {
-      // Update in update array
-      const newUpdateItems = currentValues.credit_note_detail.update.map(
-        (item) => (item.id === data.id ? { ...data } : item)
-      );
-      form.setValue("credit_note_detail.update", newUpdateItems);
-    } else if (data.id) {
-      // Existing item not in any array - add to update
-      form.setValue("credit_note_detail.update", [
-        ...currentValues.credit_note_detail.update,
-        data,
-      ]);
-    } else {
-      // New item - add to add array with new temporary id
-      const tempId = `temp_${nanoid()}`;
-      form.setValue("credit_note_detail.add", [
-        ...currentValues.credit_note_detail.add,
-        { ...data, id: tempId },
-      ]);
-    }
-
-    setOpenDialogItemCn(false);
-    setCurrentItemData(undefined);
-  };
-
-  const handleDeleteItem = (itemId: string) => {
-    const currentValues = form.getValues();
-
-    // Remove from add array if present
-    const newAddItems = currentValues.credit_note_detail.add.filter(
-      (item) => item.id !== itemId
-    );
-    form.setValue("credit_note_detail.add", newAddItems);
-
-    // Remove from update array if present
-    const newUpdateItems = currentValues.credit_note_detail.update.filter(
-      (item) => item.id !== itemId
-    );
-    form.setValue("credit_note_detail.update", newUpdateItems);
-
-    // Add to delete array if it was an existing item
-    const wasExistingItem = currentValues.credit_note_detail.update.some(
-      (item) => item.id === itemId
-    );
-    if (wasExistingItem) {
-      form.setValue("credit_note_detail.delete", [
-        ...currentValues.credit_note_detail.delete,
-        itemId,
-      ]);
-    }
-  };
-
   const handleSubmit = async (data: CreditNoteFormDto) => {
-
     try {
       if (mode === formType.ADD) {
         await createMutation.mutateAsync(data);
@@ -311,25 +232,54 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
                   </TabsList>
                   <TabsContent value="items" className="mt-2">
                     <CnItem
-                      itemsCn={[
-                        ...creditNoteDetail.add,
-                        ...creditNoteDetail.update,
-                      ].filter(
-                        (item) =>
-                          !creditNoteDetail.delete.includes(item.id ?? "")
-                      )}
+                      control={form.control}
                       mode={currentMode}
-                      openDetail={(e, data) => {
-                        console.log("openDetail called with data:", data);
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setCurrentItemData(data);
-                        setOpenDialogItemCn(true);
-                      }}
-                      onDeleteItem={(itemId) => {
-                        console.log("onDeleteItem called with id:", itemId);
-                        handleDeleteItem(itemId);
-                      }}
+                      itemsDetail={creditNote?.tb_credit_note_detail?.map(
+                        (item) => ({
+                          sequence_no: item.sequence_no,
+                          product_id: item.product_id,
+                          note: item.note ?? null,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          info: (item as any).info ?? null,
+                          dimension:
+                            typeof item.dimension === "string"
+                              ? item.dimension
+                              : null,
+                          description: item.description ?? null,
+                          amount:
+                            typeof item.amount === "number"
+                              ? item.amount
+                              : Number(item.amount ?? 0),
+                          doc_version: item.doc_version,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          credit_note_id: String(
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (item as any).credit_note_id ?? ""
+                          ),
+                          created_by_id: item.created_by_id,
+                          updated_by_id: item.updated_by_id,
+                          created_at: item.created_at,
+                          updated_at: item.updated_at,
+                          id: item.id,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          product_local_name: (item as any).product_local_name,
+                          // Add missing required fields with fallback values
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          inventory_transaction_id:
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            (item as any).inventory_transaction_id ?? null,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          product_name: (item as any).product_name ?? null,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          qty:
+                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                            typeof (item as any).qty === "number"
+                              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                (item as any).qty
+                              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                Number((item as any).qty ?? 0),
+                        })
+                      )}
                     />
                   </TabsContent>
                   <TabsContent value="stock_movement" className="mt-2">
@@ -357,15 +307,6 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
           </div>
         )}
       </div>
-
-      <CnItemDialog
-        open={openDialogItemCn}
-        onOpenChange={setOpenDialogItemCn}
-        isLoading={false}
-        mode={currentMode}
-        formValues={currentItemData}
-        onSave={handleSaveItem}
-      />
 
       <Button
         aria-label={openLog ? "Close log panel" : "Open log panel"}

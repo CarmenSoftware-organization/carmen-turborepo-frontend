@@ -38,6 +38,11 @@ import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { format } from "date-fns";
 
+// Extend GoodReceivedNoteDetailItemDto to include id
+type ExtendedGoodReceivedNoteDetailItemDto = GoodReceivedNoteDetailItemDto & {
+  id?: string;
+};
+
 interface ItemGrnProps {
   readonly control: Control<CreateGRNDto>;
   readonly mode: formType;
@@ -51,7 +56,7 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [itemsToDelete, setItemsToDelete] = useState<string[]>([]);
   const [visibleItems, setVisibleItems] = useState<
-    (GoodReceivedNoteDetailItemDto & { id?: string })[]
+    ExtendedGoodReceivedNoteDetailItemDto[]
   >([]);
   const [bulkAction, setBulkAction] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -65,7 +70,7 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
   const watchedInitData = useWatch({
     control,
     name: "good_received_note_detail.initData",
-  });
+  }) as ExtendedGoodReceivedNoteDetailItemDto[];
 
   const initData = useMemo(() => watchedInitData ?? [], [watchedInitData]);
 
@@ -134,7 +139,7 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
     setDialogOpen(false);
   };
 
-  const handleRowClick = (item: GoodReceivedNoteDetailItemDto) => {
+  const handleRowClick = (item: ExtendedGoodReceivedNoteDetailItemDto) => {
     if (mode !== formType.VIEW) {
       setEditItem(item);
       setDialogOpen(true);
@@ -143,7 +148,7 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
 
   const handleEditClick = (
     e: React.MouseEvent,
-    item: GoodReceivedNoteDetailItemDto
+    item: ExtendedGoodReceivedNoteDetailItemDto
   ) => {
     e.preventDefault();
     e.stopPropagation();
@@ -160,7 +165,7 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
 
   const handleDeleteClick = (
     e: React.MouseEvent,
-    item: GoodReceivedNoteDetailItemDto
+    item: ExtendedGoodReceivedNoteDetailItemDto
   ) => {
     e.preventDefault();
     e.stopPropagation();
