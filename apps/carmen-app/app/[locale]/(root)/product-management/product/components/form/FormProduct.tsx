@@ -3,7 +3,10 @@
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import { createProductService, updateProductService } from "@/services/product.service";
+import {
+  createProductService,
+  updateProductService,
+} from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import BasicInfo from "./BasicInfo";
@@ -11,290 +14,309 @@ import LocationInfo from "./LocationInfo";
 import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
 import ProductAttribute from "./ProductAttribute";
-import { ProductFormValues, ProductInitialValues, productFormSchema } from "../../pd-schema";
+import {
+  ProductFormValues,
+  ProductInitialValues,
+  productFormSchema,
+} from "../../pd-schema";
 import { useState, useEffect } from "react";
 import { useRouter } from "@/lib/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockStockInventoryData } from "@/mock-data/stock-invent";
 import InventoryInfo from "./InventoryInfo";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface Props {
-    readonly mode: formType;
-    readonly initialValues?: ProductInitialValues;
+  readonly mode: formType;
+  readonly initialValues?: ProductInitialValues;
 }
 
 export default function FormProduct({ mode, initialValues }: Props) {
-    const { token, tenantId } = useAuth();
-    const [currentMode, setCurrentMode] = useState<formType>(mode);
-    const router = useRouter();
+  const { token, tenantId } = useAuth();
+  const [currentMode, setCurrentMode] = useState<formType>(mode);
+  const router = useRouter();
 
-    const transformInitialValues = () => {
-        if (!initialValues) return {
-            name: '',
-            code: '',
-            local_name: '',
-            description: '',
-            inventory_unit_id: '',
-            product_status_type: 'active' as const,
-            product_info: {
-                product_item_group_id: '',
-                is_ingredients: false,
-                price: 0,
-                tax_type: 'none' as const,
-                tax_rate: 0,
-                price_deviation_limit: 0,
-                qty_deviation_limit: 0,
-                is_used_in_recipe: false,
-                is_sold_directly: false,
-                barcode: '',
-                info: []
-            },
-            locations: {
-                data: [],
-                add: [],
-                remove: []
-            },
-            order_units: {
-                data: [],
-                add: [],
-                update: [],
-                remove: []
-            },
-            ingredient_units: {
-                data: [],
-                add: [],
-                update: [],
-                remove: []
-            },
-            product_category: {
-                id: '',
-                name: ''
-            },
-            product_sub_category: {
-                id: '',
-                name: ''
-            }
-        };
+  const transformInitialValues = () => {
+    if (!initialValues)
+      return {
+        name: "",
+        code: "",
+        local_name: "",
+        description: "",
+        inventory_unit_id: "",
+        product_status_type: "active" as const,
+        product_info: {
+          product_item_group_id: "",
+          is_ingredients: false,
+          price: 0,
+          tax_type: "none" as const,
+          tax_rate: 0,
+          price_deviation_limit: 0,
+          qty_deviation_limit: 0,
+          is_used_in_recipe: false,
+          is_sold_directly: false,
+          barcode: "",
+          info: [],
+        },
+        locations: {
+          data: [],
+          add: [],
+          remove: [],
+        },
+        order_units: {
+          data: [],
+          add: [],
+          update: [],
+          remove: [],
+        },
+        ingredient_units: {
+          data: [],
+          add: [],
+          update: [],
+          remove: [],
+        },
+        product_category: {
+          id: "",
+          name: "",
+        },
+        product_sub_category: {
+          id: "",
+          name: "",
+        },
+      };
 
-        return {
-            id: initialValues.id ?? '',
-            name: initialValues.name ?? '',
-            code: initialValues.code ?? '',
-            local_name: initialValues.local_name ?? '',
-            description: initialValues.description ?? '',
-            inventory_unit_id: initialValues.inventory_unit?.id ?? '',
-            product_status_type: 'active',
-            product_info: {
-                id: initialValues.product_info?.id ?? '',
-                product_item_group_id: initialValues.product_item_group?.id ?? '',
-                is_ingredients: initialValues.product_info?.is_ingredients ?? false,
-                price: initialValues.product_info?.price ?? 0,
-                tax_type: (initialValues.product_info?.tax_type as 'none' | 'included' | 'excluded') ?? 'none',
-                tax_rate: initialValues.product_info?.tax_rate ?? 0,
-                price_deviation_limit: initialValues.product_info?.price_deviation_limit ?? 0,
-                qty_deviation_limit: initialValues.product_info?.qty_deviation_limit ?? 0,
-                is_used_in_recipe: initialValues.product_info?.is_used_in_recipe ?? false,
-                is_sold_directly: initialValues.product_info?.is_sold_directly ?? false,
-                barcode: initialValues.product_info?.barcode ?? '',
-                info: initialValues.product_info?.info ?? []
-            },
-            locations: {
-                data: Array.isArray(initialValues.locations)
-                    ? initialValues.locations.map((location) => ({
-                        id: location.id ?? '',
-                        location_id: location.location_id ?? ''
-                    }))
-                    : [],
-                add: [],
-                remove: [],
-            },
-            order_units: {
-                data: Array.isArray(initialValues.order_units)
-                    ? initialValues.order_units.map((unit) => ({
-                        id: unit.id ?? '',
-                        from_unit_id: unit.from_unit_id ?? '',
-                        from_unit_qty: unit.from_unit_qty ?? 0,
-                        to_unit_id: unit.to_unit_id ?? '',
-                        to_unit_qty: unit.to_unit_qty ?? 0,
-                    }))
-                    : [],
-                add: [],
-                update: [],
-                remove: []
-            },
-            ingredient_units: {
-                data: Array.isArray(initialValues.ingredient_units)
-                    ? initialValues.ingredient_units.map((unit) => ({
-                        id: unit.id ?? '',
-                        from_unit_id: unit.from_unit_id ?? '',
-                        from_unit_qty: unit.from_unit_qty ?? 0,
-                        to_unit_id: unit.to_unit_id ?? '',
-                        to_unit_qty: unit.to_unit_qty ?? 0,
-                    }))
-                    : [],
-                add: [],
-                update: [],
-                remove: []
-            },
-            product_category: {
-                id: initialValues.product_category?.id ?? '',
-                name: initialValues.product_category?.name ?? '',
-            },
-            product_sub_category: {
-                id: initialValues.product_sub_category?.id ?? '',
-                name: initialValues.product_sub_category?.name ?? '',
-            }
-        };
+    return {
+      id: initialValues.id ?? "",
+      name: initialValues.name ?? "",
+      code: initialValues.code ?? "",
+      local_name: initialValues.local_name ?? "",
+      description: initialValues.description ?? "",
+      inventory_unit_id: initialValues.inventory_unit?.id ?? "",
+      product_status_type: "active",
+      product_info: {
+        id: initialValues.product_info?.id ?? "",
+        product_item_group_id: initialValues.product_item_group?.id ?? "",
+        is_ingredients: initialValues.product_info?.is_ingredients ?? false,
+        price: initialValues.product_info?.price ?? 0,
+        tax_type:
+          (initialValues.product_info?.tax_type as
+            | "none"
+            | "included"
+            | "excluded") ?? "none",
+        tax_rate: initialValues.product_info?.tax_rate ?? 0,
+        price_deviation_limit:
+          initialValues.product_info?.price_deviation_limit ?? 0,
+        qty_deviation_limit:
+          initialValues.product_info?.qty_deviation_limit ?? 0,
+        is_used_in_recipe:
+          initialValues.product_info?.is_used_in_recipe ?? false,
+        is_sold_directly: initialValues.product_info?.is_sold_directly ?? false,
+        barcode: initialValues.product_info?.barcode ?? "",
+        info: initialValues.product_info?.info ?? [],
+      },
+      locations: {
+        data: Array.isArray(initialValues.locations)
+          ? initialValues.locations.map((location) => ({
+              id: location.id ?? "",
+              location_id: location.location_id ?? "",
+            }))
+          : [],
+        add: [],
+        remove: [],
+      },
+      order_units: {
+        data: Array.isArray(initialValues.order_units)
+          ? initialValues.order_units.map((unit) => ({
+              id: unit.id ?? "",
+              from_unit_id: unit.from_unit_id ?? "",
+              from_unit_qty: unit.from_unit_qty ?? 0,
+              to_unit_id: unit.to_unit_id ?? "",
+              to_unit_qty: unit.to_unit_qty ?? 0,
+            }))
+          : [],
+        add: [],
+        update: [],
+        remove: [],
+      },
+      ingredient_units: {
+        data: Array.isArray(initialValues.ingredient_units)
+          ? initialValues.ingredient_units.map((unit) => ({
+              id: unit.id ?? "",
+              from_unit_id: unit.from_unit_id ?? "",
+              from_unit_qty: unit.from_unit_qty ?? 0,
+              to_unit_id: unit.to_unit_id ?? "",
+              to_unit_qty: unit.to_unit_qty ?? 0,
+            }))
+          : [],
+        add: [],
+        update: [],
+        remove: [],
+      },
+      product_category: {
+        id: initialValues.product_category?.id ?? "",
+        name: initialValues.product_category?.name ?? "",
+      },
+      product_sub_category: {
+        id: initialValues.product_sub_category?.id ?? "",
+        name: initialValues.product_sub_category?.name ?? "",
+      },
     };
+  };
 
-    const form = useForm<ProductFormValues>({
-        resolver: zodResolver(productFormSchema),
-        defaultValues: transformInitialValues() as ProductFormValues
-    });
+  const form = useForm<ProductFormValues>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: transformInitialValues() as ProductFormValues,
+  });
 
-    const formValues = useWatch({
-        control: form.control
-    });
+  const formValues = useWatch({
+    control: form.control,
+  });
 
-    useEffect(() => {
-        console.log('Current form values:', formValues);
-        console.log('Form errors:', form.formState.errors);
-        console.log('Is form valid:', form.formState.isValid);
-        console.log('Is form dirty:', form.formState.isDirty);
-        console.log('Is form submitting:', form.formState.isSubmitting);
-    }, [formValues, form.formState]);
+  useEffect(() => {
+    console.log("Current form values:", formValues);
+    console.log("Form errors:", form.formState.errors);
+    console.log("Is form valid:", form.formState.isValid);
+    console.log("Is form dirty:", form.formState.isDirty);
+    console.log("Is form submitting:", form.formState.isSubmitting);
+  }, [formValues, form.formState]);
 
-    const onSubmit = async (data: ProductFormValues) => {
-        console.log('Form submission started');
-        console.log('Form values before submit:', form.getValues());
-        console.log('Form errors before submit:', form.formState.errors);
+  const onSubmit = async (data: ProductFormValues) => {
+    console.log("Form submission started");
+    console.log("Form values before submit:", form.getValues());
+    console.log("Form errors before submit:", form.formState.errors);
 
-        try {
-            // Create a copy of the data and remove .data properties
-            const { locations, order_units, ingredient_units, ...restData } = data;
-            const submitData = {
-                ...restData,
-                locations: {
-                    add: locations.add,
-                    remove: locations.remove?.map(item => ({
-                        product_location_id: item.id
-                    }))
-                },
-                order_units: {
-                    add: order_units.add,
-                    update: order_units.update,
-                    remove: order_units.remove?.map(item => ({
-                        product_order_unit_id: item.product_order_unit_id
-                    }))
-                },
-                ingredient_units: {
-                    add: ingredient_units.add,
-                    update: ingredient_units.update,
-                    remove: ingredient_units.remove?.map(item => ({
-                        product_ingredient_unit_id: item.product_ingredient_unit_id
-                    }))
-                }
-            };
+    try {
+      // Create a copy of the data and remove .data properties
+      const { locations, order_units, ingredient_units, ...restData } = data;
+      const submitData = {
+        ...restData,
+        locations: {
+          add: locations.add,
+          remove: locations.remove?.map((item) => ({
+            product_location_id: item.id,
+          })),
+        },
+        order_units: {
+          add: order_units.add,
+          update: order_units.update,
+          remove: order_units.remove?.map((item) => ({
+            product_order_unit_id: item.product_order_unit_id,
+          })),
+        },
+        ingredient_units: {
+          add: ingredient_units.add,
+          update: ingredient_units.update,
+          remove: ingredient_units.remove?.map((item) => ({
+            product_ingredient_unit_id: item.product_ingredient_unit_id,
+          })),
+        },
+      };
 
-            if (mode === formType.ADD) {
-                const result = await createProductService(token, tenantId, submitData);
-                toastSuccess({ message: "Product created successfully" });
-                setCurrentMode(formType.VIEW);
-                console.log('result', result);
+      if (mode === formType.ADD) {
+        const result = await createProductService(token, tenantId, submitData);
+        toastSuccess({ message: "Product created successfully" });
+        setCurrentMode(formType.VIEW);
+        console.log("result", result);
 
-                if (result?.id) {
-                    router.replace(`/product-management/product/${result.id}`);
-                }
-            } else {
-                if (!submitData.id) {
-                    throw new Error('Product ID is required for update');
-                }
-                const result = await updateProductService(token, tenantId, submitData.id, submitData);
-                if (result?.id) {
-                    toastSuccess({ message: "Product updated successfully" });
-                    setCurrentMode(formType.VIEW);
-                }
-            }
-        } catch (error) {
-            console.error('Error submitting form:', error);
-            toastError({ message: "Error submitting form" });
+        if (result?.id) {
+          router.replace(`/product-management/product/${result.id}`);
         }
-    };
-
-    const handleEditClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('Edit button clicked, current mode:', currentMode);
-        setCurrentMode(formType.EDIT);
-    };
-
-    const handleCancelClick = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentMode === formType.ADD || currentMode === formType.VIEW) {
-            router.push("/product-management/product");
-        } else {
-            setCurrentMode(formType.VIEW);
+      } else {
+        if (!submitData.id) {
+          throw new Error("Product ID is required for update");
         }
-    };
+        const result = await updateProductService(
+          token,
+          tenantId,
+          submitData.id,
+          submitData
+        );
+        if (result?.id) {
+          toastSuccess({ message: "Product updated successfully" });
+          setCurrentMode(formType.VIEW);
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toastError({ message: "Error submitting form" });
+    }
+  };
 
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("Edit button clicked, current mode:", currentMode);
+    setCurrentMode(formType.EDIT);
+  };
 
-    return (
-        <div className="container mx-auto">
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-2"
-                >
-                    <ScrollArea className="h-[calc(100vh-160px)]">
-                        <BasicInfo
-                            control={form.control}
-                            currentMode={currentMode}
-                            handleEditClick={handleEditClick}
-                            handleCancelClick={handleCancelClick}
-                        />
+  const handleCancelClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (currentMode === formType.ADD || currentMode === formType.VIEW) {
+      router.push("/product-management/product");
+    } else {
+      setCurrentMode(formType.VIEW);
+    }
+  };
 
-                        <Tabs defaultValue="general" className="mt-2">
-                            <TabsList>
-                                <TabsTrigger value="general">General</TabsTrigger>
-                                <TabsTrigger value="location">Location</TabsTrigger>
-                                <TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
-                                <TabsTrigger value="ingredientUnit">Ingredient Unit</TabsTrigger>
-                                <TabsTrigger value="inventory">Inventory</TabsTrigger>
-                            </TabsList>
-                            <TabsContent value="general">
-                                {/* <div className="grid grid-cols-2 gap-4">
+  return (
+    <div className="container mx-auto">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+          <ScrollArea className="h-[calc(100vh-160px)]">
+            <BasicInfo
+              control={form.control}
+              currentMode={currentMode}
+              handleEditClick={handleEditClick}
+              handleCancelClick={handleCancelClick}
+            />
+
+            <Tabs defaultValue="general" className="mt-2">
+              <TabsList>
+                <TabsTrigger value="general">General</TabsTrigger>
+                <TabsTrigger value="location">Location</TabsTrigger>
+                <TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
+                <TabsTrigger value="ingredientUnit">
+                  Ingredient Unit
+                </TabsTrigger>
+                <TabsTrigger value="inventory">Inventory</TabsTrigger>
+              </TabsList>
+              <TabsContent value="general">
+                {/* <div className="grid grid-cols-2 gap-4">
                                     <PriceInfo control={form.control} currentMode={currentMode} />
                                     <ProductAttribute control={form.control} currentMode={currentMode} />
                                 </div> */}
-                                <ProductAttribute control={form.control} currentMode={currentMode} />
-
-                            </TabsContent>
-                            <TabsContent value="location">
-                                <LocationInfo control={form.control} currentMode={currentMode} />
-                            </TabsContent>
-                            <TabsContent value="orderUnit">
-                                <OrderUnit control={form.control} currentMode={currentMode} />
-                            </TabsContent>
-                            <TabsContent value="ingredientUnit">
-                                <IngredientUnit control={form.control} currentMode={currentMode} />
-                            </TabsContent>
-                            <TabsContent value="inventory">
-                                {(currentMode === formType.EDIT || currentMode === formType.VIEW) && (
-                                    <InventoryInfo inventoryData={mockStockInventoryData} />
-                                )}
-                            </TabsContent>
-                        </Tabs>
-                    </ScrollArea>
-                </form>
-            </Form>
-        </div>
-    );
-} 
+                <ProductAttribute
+                  control={form.control}
+                  currentMode={currentMode}
+                />
+              </TabsContent>
+              <TabsContent value="location">
+                <LocationInfo
+                  control={form.control}
+                  currentMode={currentMode}
+                />
+              </TabsContent>
+              <TabsContent value="orderUnit">
+                <OrderUnit control={form.control} currentMode={currentMode} />
+              </TabsContent>
+              <TabsContent value="ingredientUnit">
+                <IngredientUnit
+                  control={form.control}
+                  currentMode={currentMode}
+                />
+              </TabsContent>
+              <TabsContent value="inventory">
+                {(currentMode === formType.EDIT ||
+                  currentMode === formType.VIEW) && (
+                  <InventoryInfo inventoryData={mockStockInventoryData} />
+                )}
+              </TabsContent>
+            </Tabs>
+          </ScrollArea>
+        </form>
+      </Form>
+    </div>
+  );
+}
