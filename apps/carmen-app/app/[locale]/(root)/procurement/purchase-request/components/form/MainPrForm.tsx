@@ -363,10 +363,12 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
                           </p>
                           <p className="text-sm text-muted-foreground">
                             Created on{" "}
-                            {format(
-                              new Date(initValues?.pr_date ?? ""),
-                              "dd MMM yyyy"
-                            )}
+                            {initValues?.created_at
+                              ? format(
+                                  new Date(initValues?.created_at ?? ""),
+                                  "dd MMM yyyy"
+                                )
+                              : ""}
                           </p>
                         </div>
                       )}

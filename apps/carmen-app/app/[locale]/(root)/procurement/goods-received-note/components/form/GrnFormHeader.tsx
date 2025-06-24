@@ -5,7 +5,6 @@ import {
   FileText,
   Store,
   Coins,
-  FileType,
   GitBranch,
   Clock,
   CreditCard,
@@ -25,20 +24,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { formType } from "@/dtos/form.dto";
 import { CreateGRNDto } from "@/dtos/grn.dto";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import { useVendor } from "@/hooks/useVendor";
 import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
-import { DOC_TYPE } from "@/constants/enum";
 import CreditTermLookup from "@/components/lookup/CreditTermLookup";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -64,8 +55,8 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   const { getCurrencyCode } = useCurrency();
   const { getCreditTermName } = useCreditTermQuery(token, tenantId);
 
-  const isTypeBlank =
-    new URLSearchParams(window.location.search).get("type") === "blank";
+  // const isTypeBlank =
+  //   new URLSearchParams(window.location.search).get("type") === "blank";
 
   const { getCurrencyExchangeRate } = useCurrency();
   const currencyId = useWatch({
@@ -200,7 +191,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={control}
           name="doc_type"
           render={({ field }) => (
@@ -235,7 +226,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         {/* Currency ID */}
         <FormField

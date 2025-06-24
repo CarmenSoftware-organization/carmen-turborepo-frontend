@@ -102,7 +102,7 @@ export default function HeadPrForm({
             control={control}
             name="pr_date"
             render={({ field }) => (
-              <FormItem className="col-span-1">
+              <FormItem className="col-span-1 mt-2">
                 <FormLabel className="text-xs font-medium">
                   <div className="flex items-center gap-1">
                     <CalendarIcon className="h-3 w-3" />
