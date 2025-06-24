@@ -16,28 +16,26 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
-import { usePriceList } from "@/hooks/usePriceList";
-import { PriceListDto } from "@/dtos/price-list.dto";
+import { useGrn } from "@/hooks/useGrn";
+import { GrnDto } from "@/app/[locale]/(root)/procurement/goods-received-note/type.dto";
 
-export default function PriceListLookup({
+export default function GrnLookup({
   value,
   onValueChange,
-  placeholder = "Select price range",
+  placeholder = "Select GRN",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { token, tenantId } = useAuth();
+  const { grns, isLoading } = useGrn();
 
-  const { data, isLoading } = usePriceList(token, tenantId);
-  const priceLists = data?.data;
+  const grnDatas = grns.data;
 
   const [open, setOpen] = useState(false);
 
-  const selectedPriceList = useMemo(() => {
-    if (!value || !priceLists || !Array.isArray(priceLists)) return null;
-    const found = priceLists.find((price) => price.id === value);
-    return found?.product_name ?? null;
-  }, [value, priceLists]);
+  const selectedGrn = useMemo(() => {
+    if (!value || !grnDatas || !Array.isArray(grnDatas)) return null;
+    const found = grnDatas.find((grn) => grn.id === value);
+    return found?.grn_no ?? null;
+  }, [value, grnDatas]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -48,7 +46,7 @@ export default function PriceListLookup({
           className="w-full justify-between"
           disabled={disabled}
         >
-          {value && selectedPriceList ? selectedPriceList : placeholder}
+          {value && selectedGrn ? selectedGrn : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -73,21 +71,21 @@ export default function PriceListLookup({
               <>
                 <CommandEmpty>No price ranges found.</CommandEmpty>
                 <CommandGroup>
-                  {priceLists && priceLists.length > 0 ? (
-                    priceLists.map((priceItem: PriceListDto) => (
+                  {grnDatas && grnDatas.length > 0 ? (
+                    grnDatas.map((grn: GrnDto) => (
                       <CommandItem
-                        key={priceItem.id}
-                        value={priceItem.id}
+                        key={grn.id}
+                        value={grn.id}
                         onSelect={() => {
-                          onValueChange(priceItem.id);
+                          onValueChange(grn.id);
                           setOpen(false);
                         }}
                       >
-                        {priceItem.product_name}
+                        {grn.grn_no}
                         <Check
                           className={cn(
                             "ml-auto h-4 w-4",
-                            value === priceItem.id ? "opacity-100" : "opacity-0"
+                            value === grn.id ? "opacity-100" : "opacity-0"
                           )}
                         />
                       </CommandItem>

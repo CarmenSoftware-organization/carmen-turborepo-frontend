@@ -99,8 +99,10 @@ export default function CreditNoteComponent() {
   const ViewComponent = view === VIEW.LIST ? CreditNoteList : CreditNoteGrid;
 
   const content = (
-    <ViewComponent creditNotes={creditNotes?.data.data} isLoading={isLoading} />
+    <ViewComponent creditNotes={creditNotes?.data} isLoading={isLoading} />
   );
+
+  console.log(creditNotes?.data);
 
   return (
     <DataDisplayTemplate

@@ -1,11 +1,6 @@
 "use client";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  CreditNoteGetAllDto,
-  creditNoteFormSchema,
-  CreditNoteFormDto,
-} from "@/dtos/credit-note.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
@@ -20,44 +15,100 @@ import {
   FileDown,
   Share,
 } from "lucide-react";
-import { Link, useRouter } from "@/lib/navigation";
+import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import CnItem from "./CnItem";
 import HeadCnForm from "./HeadCnForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { useAuth } from "@/context/AuthContext";
-import {
-  useCreateCreditNote,
-  useUpdateCreditNote,
-} from "@/hooks/useCreditNote";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+// import {
+//   useCreateCreditNote,
+//   useUpdateCreditNote,
+// } from "@/hooks/useCreditNote";
 
+import {
+  CreditNoteByIdDto,
+  CreditNoteFormDto,
+  creditNoteFormSchemaDto,
+} from "../../dto/cdn.dto";
+import ItemsCn from "./ItemsCn";
+import { CREDIT_NOTE_TYPE } from "@/constants/enum";
 interface CnFormProps {
-  readonly creditNote?: CreditNoteGetAllDto;
   readonly mode: formType;
-  readonly defaultValues?: CreditNoteFormDto;
+  readonly initialValues?: CreditNoteByIdDto;
 }
 
-export default function CnForm({ creditNote, mode }: CnFormProps) {
-  const { token, tenantId } = useAuth();
-  const router = useRouter();
-  const createMutation = useCreateCreditNote(token, tenantId);
-  const updateMutation = useUpdateCreditNote(
-    token,
-    tenantId,
-    creditNote?.id ?? ""
-  );
+export default function CnForm({ initialValues, mode }: CnFormProps) {
+  const {} = useAuth();
+  // const router = useRouter();
+  // const createMutation = useCreateCreditNote(token, tenantId);
+  // const updateMutation = useUpdateCreditNote(
+  //   token,
+  //   tenantId,
+  //   initialValues?.id ?? ""
+  // );
 
   const [openLog, setOpenLog] = useState(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
 
   const defaultValues: CreditNoteFormDto = {
-    cn_date: creditNote?.cn_date ?? new Date().toISOString(),
-    note: creditNote?.note ?? null,
-    tb_credit_note_detail: {
+    cn_date: initialValues?.cn_date ?? new Date().toISOString(),
+    credit_note_type:
+      (initialValues?.credit_note_type as CREDIT_NOTE_TYPE) ??
+      CREDIT_NOTE_TYPE.QUANTITY_RETURN,
+    vendor_id: initialValues?.vendor_id ?? "",
+    currency_id: initialValues?.currency_id ?? "",
+    exchange_rate: initialValues?.exchange_rate ?? 1,
+    exchange_rate_date:
+      initialValues?.exchange_rate_date ?? new Date().toISOString(),
+    grn_id: initialValues?.grn_id ?? "",
+    grn_no: initialValues?.grn_no ?? "",
+    cn_reason_id: initialValues?.cn_reason_id ?? "",
+    invoice_no: initialValues?.invoice_no ?? "",
+    invoice_date: initialValues?.invoice_date ?? new Date().toISOString(),
+    tax_invoice_no: initialValues?.tax_invoice_no ?? "",
+    tax_invoice_date:
+      initialValues?.tax_invoice_date ?? new Date().toISOString(),
+    note: initialValues?.note ?? "",
+    description: initialValues?.description ?? null,
+    credit_note_detail: {
+      data:
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (initialValues?.credit_note_detail as any)?.data?.map((item: any) => ({
+          id: item.id,
+          credit_note_id: item.credit_note_id ?? initialValues?.id ?? "",
+          description: item.description ?? null,
+          note: item.note ?? null,
+          location_id: item.location_id,
+          product_id: item.product_id,
+          product_name: item.product_name,
+          return_qty: item.return_qty,
+          return_unit_id: item.return_unit_id,
+          return_conversion_factor: item.return_conversion_factor,
+          return_base_qty: item.return_base_qty,
+          price: item.price,
+          tax_type_inventory_id: item.tax_type_inventory_id,
+          tax_type: item.tax_type ?? "",
+          tax_rate: parseFloat(item.tax_rate) || 0,
+          tax_amount: item.tax_amount,
+          is_tax_adjustment: item.is_tax_adjustment,
+          discount_rate: parseFloat(item.discount_rate) || 0,
+          discount_amount: item.discount_amount ?? 0,
+          is_discount_adjustment: item.is_discount_adjustment,
+          extra_cost_amount: item.extra_cost_amount,
+          base_price: parseFloat(item.base_price) || 0,
+          base_tax_amount: item.base_tax_amount,
+          base_discount_amount: item.base_discount_amount,
+          base_extra_cost_amount: item.base_extra_cost_amount,
+          total_price: item.total_price,
+          info: item.info ?? undefined,
+          dimension: item.dimension ?? undefined,
+          doc_version: item.doc_version ?? "0",
+          created_at: item.created_at ?? new Date().toISOString(),
+          created_by_id: item.created_by_id ?? "",
+        })) ?? [],
       add: [],
       update: [],
       remove: [],
@@ -65,12 +116,12 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
   };
 
   const form = useForm<CreditNoteFormDto>({
-    resolver: zodResolver(creditNoteFormSchema),
+    resolver: zodResolver(creditNoteFormSchemaDto),
     defaultValues,
     mode: "onChange",
   });
 
-  const creditNoteDetail = form.watch("tb_credit_note_detail");
+  const creditNoteDetail = form.watch("credit_note_detail");
 
   useEffect(() => {
     console.log("creditNoteDetail changed:", creditNoteDetail);
@@ -89,25 +140,42 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
   };
 
   const handleSubmit = async (data: CreditNoteFormDto) => {
-    try {
-      if (mode === formType.ADD) {
-        await createMutation.mutateAsync(data);
-        toastSuccess({ message: "Credit note created successfully" });
-      } else {
-        await updateMutation.mutateAsync(data);
-        toastSuccess({ message: "Credit note updated successfully" });
-      }
-      router.push("/procurement/credit-note");
-    } catch (error) {
-      console.error("Error saving credit note:", error);
-      toastError({
-        message:
-          mode === formType.ADD
-            ? "Failed to create credit note"
-            : "Failed to update credit note",
-      });
-    }
+    console.log("✅ Form submitted with data:", data);
+    console.log("Current mode:", mode);
+    console.log("Initial values:", initialValues);
+
+    // try {
+    //   if (mode === formType.ADD) {
+    //     await createMutation.mutateAsync(data);
+    //     toastSuccess({ message: "Credit note created successfully" });
+    //   } else {
+    //     await updateMutation.mutateAsync(data);
+    //     toastSuccess({ message: "Credit note updated successfully" });
+    //   }
+    //   router.push("/procurement/credit-note");
+    // } catch (error) {
+    //   console.error("Error saving credit note:", error);
+    //   toastError({
+    //     message:
+    //       mode === formType.ADD
+    //         ? "Failed to create credit note"
+    //         : "Failed to update credit note",
+    //   });
+    // }
   };
+
+  // Watch form state changes
+  const { isDirty, isValid, errors } = form.formState;
+  const watchCnForm = form.watch();
+
+  // Debug form state changes
+  useEffect(() => {
+    console.log("🔄 Form state changed:");
+    console.log("- isDirty:", isDirty);
+    console.log("- isValid:", isValid);
+    console.log("- errors:", errors);
+    console.log("- watched values:", watchCnForm);
+  }, [isDirty, isValid, errors, watchCnForm]);
 
   return (
     <div className="relative">
@@ -126,14 +194,16 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
                     {mode === formType.ADD ? (
                       <p className="text-base font-bold">Credit Note</p>
                     ) : (
-                      <p className="text-base font-bold">{creditNote?.cn_no}</p>
+                      <p className="text-base font-bold">
+                        {initialValues?.cn_no}
+                      </p>
                     )}
-                    {creditNote?.doc_status && (
+                    {initialValues?.doc_status && (
                       <Badge
-                        variant={creditNote.doc_status}
+                        variant={initialValues?.doc_status}
                         className="rounded-full text-xs"
                       >
-                        {convertStatus(creditNote.doc_status)}
+                        {convertStatus(initialValues?.doc_status)}
                       </Badge>
                     )}
                   </div>
@@ -207,12 +277,12 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
                 <HeadCnForm
                   control={form.control}
                   mode={currentMode}
-                  cnNo={creditNote?.cn_no}
+                  cnNo={initialValues?.cn_no}
                 />
                 <Tabs defaultValue="items">
                   <TabsList className="w-full">
                     <TabsTrigger className="w-full text-xs" value="items">
-                      Items Details
+                      Items
                     </TabsTrigger>
                     <TabsTrigger
                       className="w-full text-xs"
@@ -231,56 +301,7 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="items" className="mt-2">
-                    <CnItem
-                      control={form.control}
-                      mode={currentMode}
-                      itemsDetail={creditNote?.tb_credit_note_detail?.map(
-                        (item) => ({
-                          sequence_no: item.sequence_no,
-                          product_id: item.product_id,
-                          note: item.note ?? null,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          info: (item as any).info ?? null,
-                          dimension:
-                            typeof item.dimension === "string"
-                              ? item.dimension
-                              : null,
-                          description: item.description ?? null,
-                          amount:
-                            typeof item.amount === "number"
-                              ? item.amount
-                              : Number(item.amount ?? 0),
-                          doc_version: item.doc_version,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          credit_note_id: String(
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (item as any).credit_note_id ?? ""
-                          ),
-                          created_by_id: item.created_by_id,
-                          updated_by_id: item.updated_by_id,
-                          created_at: item.created_at,
-                          updated_at: item.updated_at,
-                          id: item.id,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          product_local_name: (item as any).product_local_name,
-                          // Add missing required fields with fallback values
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          inventory_transaction_id:
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            (item as any).inventory_transaction_id ?? null,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          product_name: (item as any).product_name ?? null,
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          qty:
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            typeof (item as any).qty === "number"
-                              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                (item as any).qty
-                              : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                Number((item as any).qty ?? 0),
-                        })
-                      )}
-                    />
+                    <ItemsCn control={form.control} mode={currentMode} />
                   </TabsContent>
                   <TabsContent value="stock_movement" className="mt-2">
                     <h1>Stock Movement</h1>
@@ -295,7 +316,6 @@ export default function CnForm({ creditNote, mode }: CnFormProps) {
               </Card>
             </form>
           </Form>
-          <pre>{JSON.stringify(creditNote, null, 2)}</pre>
         </ScrollArea>
 
         {openLog && (

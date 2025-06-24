@@ -6,6 +6,7 @@ import { useURL } from "./useURL";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAllGrn, postGrnService } from "@/services/grn.service";
 import { CreateGRNDto } from "@/dtos/grn.dto";
+import { GrnDto } from "@/app/[locale]/(root)/procurement/goods-received-note/type.dto";
 
 export const useGrn = () => {
     const { token, tenantId } = useAuth();
@@ -50,8 +51,14 @@ export const useGrn = () => {
     // Extract the actual GRN data if response is not an error
     const grns = response?.isAuthError ? [] : response?.data ?? [];
 
+    const getGrnNo = (id: string) => {
+        const found = grns?.find((grn: GrnDto) => grn.id === id);
+        return found?.grn_no ?? null;
+    };
+
     return {
         grns,
+        getGrnNo,
         isLoading,
         isError,
         error,

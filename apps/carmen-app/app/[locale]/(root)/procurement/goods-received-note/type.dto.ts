@@ -282,6 +282,7 @@ export type GrnFormValues = z.infer<typeof GrnFormSchema>;
 export type GrnDto = {
     id: string;
     status: string;
+    grn_no: string;
     info: GrnHeaderDto;
     items: GrnItemDto[];
     extra_cost: ExtraCostGrnDto[];

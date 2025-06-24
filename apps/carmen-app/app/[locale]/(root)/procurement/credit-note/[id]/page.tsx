@@ -19,5 +19,5 @@ export default function CreditNoteDetailPage() {
 
     if (error) return <div>Error loading data</div>;
 
-  return <CnForm mode={formType.VIEW} creditNote={data?.data} />;
+  return <CnForm mode={formType.VIEW} initialValues={data?.data} />;
 }
