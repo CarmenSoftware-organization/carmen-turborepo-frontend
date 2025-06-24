@@ -58,56 +58,55 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5" />
+                <MapPin className="w-5 h-5 text-primary" />
                 Basic Information
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-semibold mb-1">Name</h3>
+                  <p className="font-semibold mb-1 text-sm">Name</p>
                   <p className="text-sm">{initialData?.name}</p>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Delivery Point</h3>
+                  <p className="font-semibold mb-1 text-sm">Delivery Point</p>
                   <p className="text-sm font-mono">
                     {getDeliveryPointName(initialData?.delivery_point.id ?? "")}
                   </p>
                 </div>
-              </div>
-
-              {initialData?.description && (
-                <div>
-                  <h3 className="font-semibold mb-1">Description</h3>
-                  <p className="text-sm">{initialData?.description}</p>
-                </div>
-              )}
-
-              <div>
-                <h3 className="font-semibold mb-1">Type</h3>
-                {initialData?.location_type && (
-                  <Badge
-                    className={STORE_LOCATION_TYPE_COLOR(
-                      initialData.location_type
-                    )}
-                  >
-                    {initialData.location_type.toUpperCase()}
-                  </Badge>
+                {initialData?.description && (
+                  <div>
+                    <p className="font-semibold mb-1 text-sm">Description</p>
+                    <p className="text-sm">{initialData?.description}</p>
+                  </div>
                 )}
+
+                <div>
+                  <p className="font-semibold mb-1 text-sm">Type</p>
+                  {initialData?.location_type && (
+                    <Badge
+                      className={STORE_LOCATION_TYPE_COLOR(
+                        initialData.location_type
+                      )}
+                    >
+                      {initialData.location_type.toUpperCase()}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5" />
+                <Settings className="w-5 h-5 text-primary" />
                 Configuration
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-semibold mb-1">Status</h3>
+                  <p className="font-semibold mb-1 text-sm">Status</p>
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-3 h-3 rounded-full ${initialData?.is_active ? "bg-green-500" : "bg-gray-400"}`}
@@ -118,9 +117,9 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Physical Count Type</h3>
+                  <p className="font-semibold mb-1 text-sm">Physical Count Type</p>
                   <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-gray-500" />
+                    <Package className="w-4 h-4 text-muted-foreground" />
                     <span className="tcapitalize">
                       {initialData?.physical_count_type}
                     </span>
@@ -132,7 +131,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
+                <Users className="w-5 h-5 text-primary" />
                 Associated Users ({initialData?.users?.length ?? 0})
               </CardTitle>
             </CardHeader>

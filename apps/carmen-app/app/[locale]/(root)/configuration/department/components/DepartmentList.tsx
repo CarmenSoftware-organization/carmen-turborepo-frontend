@@ -87,29 +87,27 @@ export default function DepartmentList({
               </Badge>
             </TableCell>
             <TableCell className="w-20 text-right">
-              <div className="flex items-center justify-end">
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  aria-label="Edit department"
-                  className="h-7 w-7"
-                  asChild
-                >
-                  <Link href={`/configuration/department/${department.id}`}>
-                    <FileText className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  onClick={() => onToggleStatus(department)}
-                  aria-label={`${department.is_active ? "Deactivate" : "Activate"} department`}
-                  disabled={!department.is_active}
-                  className="h-7 w-7"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+              <Button
+                variant="ghost"
+                size={"sm"}
+                aria-label="Edit department"
+                className="h-7 w-7 hover:text-muted-foreground"
+                asChild
+              >
+                <Link href={`/configuration/department/${department.id}`}>
+                  <FileText className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                size={"sm"}
+                onClick={() => onToggleStatus(department)}
+                aria-label={`${department.is_active ? "Deactivate" : "Activate"} department`}
+                disabled={!department.is_active}
+                className="h-7 w-7 hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </TableCell>
           </TableRow>
         ))}

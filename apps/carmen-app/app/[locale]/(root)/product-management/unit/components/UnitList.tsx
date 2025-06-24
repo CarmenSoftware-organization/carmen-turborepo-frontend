@@ -71,7 +71,7 @@ export default function UnitList({
             key={`unit-row-${unit.id}`}
             className={cn("h-12", !unit.is_active && "line-through opacity-70")}
           >
-            <TableCell className="text-center w-10">{index + 1}</TableCell>
+            <TableCell className="w-10">{index + 1}</TableCell>
             <TableCell className="text-left w-[300px]">
               <p className="text-xs font-semibold">{unit.name}</p>
               <p className="text-xs text-muted-foreground">
@@ -83,27 +83,25 @@ export default function UnitList({
                 {unit.is_active ? "Active" : "Inactive"}
               </Badge>
             </TableCell>
-            <TableCell className="text-center w-[100px] ">
-              <div className="flex items-center justify-center space-x-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleEdit(unit)}
-                  disabled={!unit.is_active}
-                  className="h-6 w-6"
-                >
-                  <SquarePen className="h-3.5 w-3.5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6"
-                  onClick={() => handleDelete(unit)}
-                  disabled={!unit.is_active}
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
+            <TableCell className="text-right w-[100px]">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEdit(unit)}
+                disabled={!unit.is_active}
+                className="h-6 w-6 hover:text-muted-foreground"
+              >
+                <SquarePen className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 hover:text-destructive"
+                onClick={() => handleDelete(unit)}
+                disabled={!unit.is_active}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
             </TableCell>
           </TableRow>
         ))}
@@ -118,14 +116,14 @@ export default function UnitList({
           <Table className="border">
             <TableHeader className="sticky top-0 bg-muted">
               <TableRow className="h-10">
-                <TableHead className="w-10 text-center">#</TableHead>
+                <TableHead className="w-10">#</TableHead>
                 <TableHead className="w-[300px] text-left">
                   {t("name")}
                 </TableHead>
                 <TableHead className="w-[100px] text-center">
                   {t("status")}
                 </TableHead>
-                <TableHead className="w-[100px] text-center">
+                <TableHead className="w-[100px] text-right">
                   {t("action")}
                 </TableHead>
               </TableRow>
