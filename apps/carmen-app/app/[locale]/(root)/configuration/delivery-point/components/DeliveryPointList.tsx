@@ -12,10 +12,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { SquarePen, Trash2 } from "lucide-react";
+import { SquarePen, Trash2, MapPin } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
+import { Card } from "@/components/ui/card";
 import {
   SortConfig,
   getSortableColumnProps,
@@ -48,103 +49,124 @@ export default function DeliveryPointList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const tDeliveryPoint = useTranslations("DeliveryPoint");
-  const renderTableContent = () => {
-    if (isLoading) return <TableBodySkeleton rows={4} />;
 
-    if (deliveryPoints.length === 0) {
+  const renderTableContent = () => {
+    if (deliveryPoints.length === 0 && !isLoading) {
       return (
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={4} className="h-24 text-center">
-              <div className="flex flex-col items-center justify-center gap-2">
-                <p className="text-sm text-muted-foreground">
+        <TableRow>
+          <TableCell colSpan={4} className="h-32 text-center">
+            <div className="flex flex-col items-center justify-center gap-3">
+              <div className="p-3 bg-muted/50 rounded-full">
+                <MapPin className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  No delivery points found
+                </p>
+                <p className="text-xs text-muted-foreground">
                   {tDeliveryPoint("notFoundDeliveryPoint")}
                 </p>
               </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
+            </div>
+          </TableCell>
+        </TableRow>
       );
     }
 
-    return (
-      <TableBody>
-        {deliveryPoints.map((deliveryPoint, index) => (
-          <TableRow key={deliveryPoint.id}>
-            <TableCell className="w-10">{index + 1}</TableCell>
-            <TableCell className="md:w-56">{deliveryPoint.name}</TableCell>
-            <TableCell>
-              <Badge variant={deliveryPoint.is_active ? "active" : "inactive"}>
-                {deliveryPoint.is_active
-                  ? tCommon("active")
-                  : tCommon("inactive")}
-              </Badge>
-            </TableCell>
-            <TableCell className="w-40 text-right">
-              <div className="flex items-center justify-end">
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  onClick={() => onEdit(deliveryPoint)}
-                  aria-label="Edit delivery point"
-                  className="h-7 w-7"
-                >
-                  <SquarePen className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  onClick={() => onToggleStatus(deliveryPoint)}
-                  disabled={!deliveryPoint.is_active}
-                  aria-label={
-                    deliveryPoint.is_active
-                      ? "Deactivate delivery point"
-                      : "Activate delivery point"
-                  }
-                  className="h-7 w-7"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    );
+    return deliveryPoints.map((deliveryPoint, index) => (
+      <TableRow
+        key={deliveryPoint.id}
+        className="hover:bg-muted/30 transition-colors duration-150"
+      >
+        <TableCell className="w-12 text-center font-mono text-xs text-muted-foreground">
+          {(currentPage - 1) * 10 + index + 1}
+        </TableCell>
+        <TableCell className="font-medium">{deliveryPoint.name}</TableCell>
+        <TableCell className="text-center w-24">
+          <Badge variant={deliveryPoint.is_active ? "active" : "inactive"}>
+            {deliveryPoint.is_active ? tCommon("active") : tCommon("inactive")}
+          </Badge>
+        </TableCell>
+        <TableCell className="w-24">
+          <div className="flex items-center justify-end gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(deliveryPoint)}
+              aria-label="Edit delivery point"
+              className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
+            >
+              <SquarePen className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onToggleStatus(deliveryPoint)}
+              disabled={!deliveryPoint.is_active}
+              aria-label={
+                deliveryPoint.is_active
+                  ? "Deactivate delivery point"
+                  : "Activate delivery point"
+              }
+              className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-50"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </TableCell>
+      </TableRow>
+    ));
   };
 
   return (
     <div className="space-y-4">
-      <Table className="border">
-        <TableHeader className="bg-muted">
-          <TableRow>
-            <TableHead className="w-10">#</TableHead>
-            <TableHead
-              {...getSortableColumnProps("name", sort, onSort, "md:w-56")}
-            >
-              <div className="flex items-center">
-                {t("name")}
-                {renderSortIcon("name", sort)}
-              </div>
-            </TableHead>
-            <TableHead {...getSortableColumnProps("is_active", sort, onSort)}>
-              <div className="flex items-center">
-                {t("status")}
-                {renderSortIcon("is_active", sort)}
-              </div>
-            </TableHead>
-            <TableHead className="w-40 text-right">{t("action")}</TableHead>
-          </TableRow>
-        </TableHeader>
-      </Table>
-      <ScrollArea className="h-[calc(102vh-300px)] w-full">
-        <Table>{renderTableContent()}</Table>
-      </ScrollArea>
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
+      <Card className="border-border/20 shadow-sm overflow-hidden">
+        <ScrollArea className="h-[calc(100vh-320px)] w-full">
+          <Table>
+            <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur-sm border-b border-border/50">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-12 text-center text-xs font-medium text-muted-foreground">
+                  #
+                </TableHead>
+                <TableHead
+                  {...getSortableColumnProps("name", sort, onSort)}
+                  className="text-xs font-medium"
+                >
+                  <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
+                    {t("name")}
+                    {renderSortIcon("name", sort)}
+                  </div>
+                </TableHead>
+                <TableHead
+                  {...getSortableColumnProps("is_active", sort, onSort)}
+                  className="text-xs font-medium text-center w-24"
+                >
+                  {t("status")}
+                  {renderSortIcon("is_active", sort)}
+                </TableHead>
+                <TableHead className="w-24 text-center text-xs font-medium text-muted-foreground">
+                  {t("action")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            {isLoading ? (
+              <TableBodySkeleton rows={8} />
+            ) : (
+              <TableBody>{renderTableContent()}</TableBody>
+            )}
+          </Table>
+        </ScrollArea>
+      </Card>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center pt-2">
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={onPageChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
