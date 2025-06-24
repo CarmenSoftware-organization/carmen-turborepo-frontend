@@ -23,6 +23,8 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useUnit } from "@/hooks/useUnit";
 
 interface ItemsCnProps {
   readonly control: Control<CreditNoteFormDto>;
@@ -32,6 +34,10 @@ interface ItemsCnProps {
 export default function ItemsCn({ control, mode }: ItemsCnProps) {
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
+
+  const { getLocationName } = useStoreLocation();
+  const { getUnitName } = useUnit();
+
   const itemsDetail = useWatch({ control, name: "credit_note_detail.data" });
 
   const [openDialog, setOpenDialog] = useState(false);
@@ -174,11 +180,11 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
             </TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Product</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead>Unit</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Tax Amount</TableHead>
-            <TableHead>Total Amount</TableHead>
+            <TableHead className="text-right">Quantity</TableHead>
+            <TableHead className="text-right">Unit</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+            <TableHead className="text-right">Tax Amount</TableHead>
+            <TableHead className="text-right">Total Amount</TableHead>
 
             {mode !== formType.VIEW && (
               <TableHead className="text-right">Action</TableHead>
@@ -191,13 +197,15 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
               <TableCell className="w-10">
                 <Checkbox />
               </TableCell>
-              <TableCell>{item.location_name ?? "-"}</TableCell>
+              <TableCell>{getLocationName(item.location_id ?? "")}</TableCell>
               <TableCell>{item.product_name}</TableCell>
-              <TableCell>{item.return_qty}</TableCell>
-              <TableCell>{item.return_unit_name ?? "-"}</TableCell>
-              <TableCell>{item.price}</TableCell>
-              <TableCell>{item.tax_amount}</TableCell>
-              <TableCell>{item.total_price}</TableCell>
+              <TableCell className="text-right">{item.return_qty}</TableCell>
+              <TableCell className="text-right">
+                {getUnitName(item.return_unit_id ?? "")}
+              </TableCell>
+              <TableCell className="text-right">{item.price}</TableCell>
+              <TableCell className="text-right">{item.tax_amount}</TableCell>
+              <TableCell className="text-right">{item.total_price}</TableCell>
               {mode === formType.EDIT && (
                 <TableCell className="text-right">
                   <Button
@@ -212,7 +220,11 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
                     size="sm"
                     className="hover:text-destructive"
                     onClick={() =>
-                      handleDeleteClick(item.id ?? "", index, item.product_name)
+                      handleDeleteClick(
+                        item.id ?? "",
+                        index,
+                        item.product_name ?? ""
+                      )
                     }
                   >
                     <Trash2 />
