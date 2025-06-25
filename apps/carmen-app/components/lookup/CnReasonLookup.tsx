@@ -38,6 +38,7 @@ export default function CnReasonLookup({
             ไม่มีข้อมูล
           </SelectItem>
         ) : (
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           cnReasons.map((cnReason: any) => (
             <SelectItem key={cnReason.id} value={cnReason.id}>
               {cnReason.name}

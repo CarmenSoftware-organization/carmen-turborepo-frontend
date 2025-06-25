@@ -102,8 +102,6 @@ export default function CreditNoteComponent() {
     <ViewComponent creditNotes={creditNotes?.data} isLoading={isLoading} />
   );
 
-  console.log(creditNotes?.data);
-
   return (
     <DataDisplayTemplate
       title={title}

@@ -19,7 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Eye, FileText, Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";

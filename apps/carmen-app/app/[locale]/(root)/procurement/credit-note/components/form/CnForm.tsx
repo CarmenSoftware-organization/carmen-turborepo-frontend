@@ -23,32 +23,32 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { useAuth } from "@/context/AuthContext";
-// import {
-//   useCreateCreditNote,
-//   useUpdateCreditNote,
-// } from "@/hooks/useCreditNote";
-
 import {
   CreditNoteByIdDto,
   CreditNoteFormDto,
-  creditNoteFormSchemaDto,
+  CreditNoteSubmitDto,
+  creditNoteSubmitSchemaDto,
 } from "../../dto/cdn.dto";
 import ItemsCn from "./ItemsCn";
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import {
+  useCreateCreditNote,
+  useUpdateCreditNote,
+} from "@/hooks/useCreditNote";
 interface CnFormProps {
   readonly mode: formType;
   readonly initialValues?: CreditNoteByIdDto;
 }
 
 export default function CnForm({ initialValues, mode }: CnFormProps) {
-  const {} = useAuth();
-  // const router = useRouter();
-  // const createMutation = useCreateCreditNote(token, tenantId);
-  // const updateMutation = useUpdateCreditNote(
-  //   token,
-  //   tenantId,
-  //   initialValues?.id ?? ""
-  // );
+  const { token, tenantId } = useAuth();
+  const createMutation = useCreateCreditNote(token, tenantId);
+  const updateMutation = useUpdateCreditNote(
+    token,
+    tenantId,
+    initialValues?.id ?? ""
+  );
 
   const [openLog, setOpenLog] = useState(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
@@ -106,8 +106,8 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     },
   };
 
-  const form = useForm<CreditNoteFormDto>({
-    resolver: zodResolver(creditNoteFormSchemaDto),
+  const form = useForm<CreditNoteSubmitDto>({
+    resolver: zodResolver(creditNoteSubmitSchemaDto),
     defaultValues,
     mode: "onChange",
   });
@@ -130,29 +130,33 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     return statusMap[status] || status;
   };
 
-  const handleSubmit = async (data: CreditNoteFormDto) => {
+  const handleSubmit = async (data: CreditNoteSubmitDto) => {
     console.log("✅ Form submitted with data:", data);
-    console.log("Current mode:", mode);
-    console.log("Initial values:", initialValues);
-
-    // try {
-    //   if (mode === formType.ADD) {
-    //     await createMutation.mutateAsync(data);
-    //     toastSuccess({ message: "Credit note created successfully" });
-    //   } else {
-    //     await updateMutation.mutateAsync(data);
-    //     toastSuccess({ message: "Credit note updated successfully" });
-    //   }
-    //   router.push("/procurement/credit-note");
-    // } catch (error) {
-    //   console.error("Error saving credit note:", error);
-    //   toastError({
-    //     message:
-    //       mode === formType.ADD
-    //         ? "Failed to create credit note"
-    //         : "Failed to update credit note",
-    //   });
-    // }
+    try {
+      if (mode === formType.ADD) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = (await createMutation.mutateAsync(data as any)) as {
+          id?: string;
+        };
+        toastSuccess({ message: "Credit note created successfully" });
+        console.log("result", result);
+        
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await updateMutation.mutateAsync(data as any);
+        toastSuccess({ message: "Credit note updated successfully" });
+      }
+    } catch (error) {
+      console.error("Error saving credit note:", error);
+      toastError({
+        message:
+          mode === formType.ADD
+            ? "Failed to create credit note"
+            : "Failed to update credit note",
+      });
+    } finally {
+      setCurrentMode(formType.VIEW);
+    }
   };
 
   // Watch form state changes
@@ -272,12 +276,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                 />
                 <Tabs defaultValue="items">
                   <TabsList className="w-full">
-                    <TabsTrigger
-                      className="w-full text-xs"
-                      value="form-value"
-                    >
-                      Form Value
-                    </TabsTrigger>
                     <TabsTrigger className="w-full text-xs" value="items">
                       Items
                     </TabsTrigger>
@@ -297,9 +295,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                       Tax Entries
                     </TabsTrigger>
                   </TabsList>
-                  <TabsContent value="form-value" className="mt-2">
-                    <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
-                  </TabsContent>
                   <TabsContent value="items" className="mt-2">
                     <ItemsCn control={form.control} mode={currentMode} />
                   </TabsContent>

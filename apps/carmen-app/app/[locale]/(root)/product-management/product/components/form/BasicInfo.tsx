@@ -19,7 +19,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Save, X, Edit, Package, Info } from "lucide-react";
+import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";

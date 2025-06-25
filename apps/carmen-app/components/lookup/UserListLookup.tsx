@@ -67,7 +67,8 @@ export default function UserListLookup({
                 <CommandEmpty>No users found.</CommandEmpty>
                 <CommandGroup>
                   {userList && userList.length > 0 ? (
-                    userList.map((user) => (
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    userList.map((user: any) => (
                       <CommandItem
                         key={user.user_id}
                         value={user.firstname}

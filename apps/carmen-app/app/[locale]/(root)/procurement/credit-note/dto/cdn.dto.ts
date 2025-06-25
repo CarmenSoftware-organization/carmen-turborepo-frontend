@@ -99,7 +99,7 @@ export interface CreditNoteByIdDto {
 }
 
 export const creditNoteDetailItemSchemaDto = z.object({
-  id: z.string().uuid().optional(),
+  id: z.string().optional(),
   description: z.string().optional(),
   note: z.string().optional(),
   location_id: z.string().uuid(),
@@ -128,7 +128,15 @@ export type CreditNoteDetailFormItemDto = z.infer<
   typeof creditNoteDetailItemSchemaDto
 >;
 
-export const creditNoteFormSchemaDto = z.object({
+// Schema สำหรับ form ที่รวม data สำหรับ init values
+export const creditNoteDetailSchemaWithData = z.object({
+  data: z.array(creditNoteDetailItemSchemaDto).optional(),
+  add: z.array(creditNoteDetailItemSchemaDto).optional(),
+  update: z.array(creditNoteDetailItemSchemaDto).optional(),
+  remove: z.array(z.object({ id: z.string().uuid() })).optional(),
+});
+
+export const baseCreditNoteSchema = z.object({
   cn_date: z.string().datetime(),
   credit_note_type: z.nativeEnum(CREDIT_NOTE_TYPE),
   vendor_id: z.string().uuid(),
@@ -143,12 +151,24 @@ export const creditNoteFormSchemaDto = z.object({
   tax_invoice_date: z.string().datetime(),
   note: z.string(),
   description: z.string().nullable(),
-  credit_note_detail: z.object({
-    data: z.array(creditNoteDetailItemSchemaDto).optional(),
-    add: z.array(creditNoteDetailItemSchemaDto).optional(),
-    update: z.array(creditNoteDetailItemSchemaDto).optional(),
-    remove: z.array(z.object({ id: z.string().uuid() })).optional(),
-  }),
+  credit_note_detail: creditNoteDetailSchemaWithData,
 });
 
+// ✅ Schema credit_note_detail สำหรับ submit (ไม่มี `data`) — reuse ด้วย .omit()
+export const creditNoteDetailSchemaWithoutData = creditNoteDetailSchemaWithData.omit({
+  data: true,
+});
+
+// ✅ Schema สำหรับใช้ในฟอร์ม
+export const creditNoteFormSchemaDto = baseCreditNoteSchema.extend({
+  credit_note_detail: creditNoteDetailSchemaWithData,
+});
+
+// ✅ Schema สำหรับส่งข้อมูล (submit)
+export const creditNoteSubmitSchemaDto = baseCreditNoteSchema.extend({
+  credit_note_detail: creditNoteDetailSchemaWithoutData,
+});
+
+// ✅ Types
 export type CreditNoteFormDto = z.infer<typeof creditNoteFormSchemaDto>;
+export type CreditNoteSubmitDto = z.infer<typeof creditNoteSubmitSchemaDto>;

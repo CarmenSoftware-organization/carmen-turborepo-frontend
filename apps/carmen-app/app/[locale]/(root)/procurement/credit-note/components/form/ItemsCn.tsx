@@ -25,6 +25,7 @@ import { useTranslations } from "next-intl";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
 import { useUnit } from "@/hooks/useUnit";
+import useProduct from "@/hooks/useProduct";
 
 interface ItemsCnProps {
   readonly control: Control<CreditNoteFormDto>;
@@ -37,6 +38,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
 
   const { getLocationName } = useStoreLocation();
   const { getUnitName } = useUnit();
+  const { getProductName } = useProduct();
 
   const itemsDetail =
     useWatch({ control, name: "credit_note_detail.data" }) || [];
@@ -160,7 +162,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
             <Filter className="h-3 w-3" />
             Filter
           </Button>
-          {mode === formType.EDIT && (
+          {mode !== formType.VIEW && (
             <Button size="sm" onClick={handleAddNewItem}>
               <Plus className="h-3 w-3" />
               Add Item
@@ -195,7 +197,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
                 <Checkbox />
               </TableCell>
               <TableCell>{getLocationName(item.location_id ?? "")}</TableCell>
-              <TableCell>{item.product_id}</TableCell>
+              <TableCell>{getProductName(item.product_id ?? "")}</TableCell>
               <TableCell className="text-right">{item.return_qty}</TableCell>
               <TableCell className="text-right">
                 {getUnitName(item.return_unit_id ?? "")}
@@ -203,7 +205,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
               <TableCell className="text-right">{item.price}</TableCell>
               <TableCell className="text-right">{item.tax_amount}</TableCell>
               <TableCell className="text-right">{item.total_price}</TableCell>
-              {mode === formType.EDIT && (
+              {mode !== formType.VIEW && (
                 <TableCell className="text-right">
                   <Button
                     variant="ghost"
@@ -236,7 +238,6 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
       <CnItemDialog
         open={openDialog}
         onOpenChange={(open) => onDiaLogFormOpen(open)}
-        control={control}
         onSave={handleSaveItem}
         initItem={selectedItem || undefined}
         itemIndex={selectedIndex}

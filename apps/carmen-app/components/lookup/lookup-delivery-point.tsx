@@ -93,7 +93,7 @@ export function LookupDeliveryPoint({
     } else {
       setSearchTerm("");
     }
-  }, [value]);
+  }, [value, deliveryPoints]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

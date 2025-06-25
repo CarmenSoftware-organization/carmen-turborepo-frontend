@@ -15,10 +15,13 @@ export default function TestPost() {
   const handleCreateCreditNote = () => {
     setStatusSent("กำลังส่งข้อมูล...");
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     createCreditNote(postCreditNote as any, {
       onSuccess: (data) => {
         setStatusSent("Success");
+        console.log("data", data);
       },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       onError: (error: any) => {
         const errorMessage =
           error?.message ||

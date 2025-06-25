@@ -30,10 +30,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "@/lib/navigation";
-import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
-import { UserListDto } from "@/dtos/user.dto";
 import { useUserList } from "@/hooks/useUserList";
 import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
 
@@ -69,6 +67,7 @@ export default function LocationForm({
   const { userList } = useUserList();
   const router = useRouter();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const listUser = userList?.map((user: any) => ({
     id: user.user_id,
     name: user.firstname + " " + user.lastname,

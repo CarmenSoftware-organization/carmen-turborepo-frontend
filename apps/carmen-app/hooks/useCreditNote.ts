@@ -127,7 +127,7 @@ export const useUpdateCreditNote = (
         tenantId,
         data,
         "Failed to update credit note",
-        "PUT"
+        "PATCH"
       );
     },
   });

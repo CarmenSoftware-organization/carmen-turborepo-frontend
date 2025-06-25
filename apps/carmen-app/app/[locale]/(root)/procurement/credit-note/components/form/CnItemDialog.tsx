@@ -1,6 +1,5 @@
 import {
   CreditNoteDetailFormItemDto,
-  CreditNoteFormDto,
 } from "../../dto/cdn.dto";
 import {
   Dialog,
@@ -9,8 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-// Removed unused form imports since we're using regular labels now
-import { Control } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,12 +28,10 @@ import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
-// Removed useFormState import since we're not using FormField anymore
 
 interface CnItemDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
-  readonly control: Control<CreditNoteFormDto>;
   readonly onSave: (item: CreditNoteDetailFormItemDto, isEdit: boolean) => void;
   readonly initItem?: CreditNoteDetailFormItemDto;
   readonly itemIndex?: number;
@@ -73,7 +68,6 @@ const createEmptyItem = (): CreditNoteDetailFormItemDto => ({
 export default function CnItemDialog({
   open,
   onOpenChange,
-  control,
   onSave,
   initItem,
   itemIndex,

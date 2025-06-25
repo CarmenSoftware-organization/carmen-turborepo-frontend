@@ -219,8 +219,19 @@ export default function FormProduct({ mode, initialValues }: Props) {
         setCurrentMode(formType.VIEW);
         console.log("result", result);
 
+        // Replace '/new' with the actual product ID from the response
         if (result?.id) {
-          router.replace(`/product-management/product/${result.id}`);
+          const newUrl = window.location.pathname.replace(
+            "/new",
+            `/${result.id}`
+          );
+          router.replace(newUrl);
+        } else {
+          // Fallback if no ID is provided
+          console.warn(
+            "No ID found in create product response, redirecting to list"
+          );
+          router.push("/product-management/product");
         }
       } else {
         if (!submitData.id) {
