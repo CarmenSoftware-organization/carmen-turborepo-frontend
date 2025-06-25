@@ -199,8 +199,8 @@ export default function CurrencyList({
 
   return (
     <div className="space-y-4">
-      <div className="relative rounded-lg border bg-card">
-        <Table>
+      <div className="relative">
+        <Table className="border">
           <CurrencyTableHeader sort={sort} onSort={onSort} t={t} />
         </Table>
         <ScrollArea className="h-[calc(102vh-300px)] w-full">

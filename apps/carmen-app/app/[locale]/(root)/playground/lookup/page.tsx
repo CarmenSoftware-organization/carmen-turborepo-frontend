@@ -1,85 +1,81 @@
 "use client";
 
-import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-} from "@/components/ui/command";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { useUnitQuery } from "@/hooks/useUnitQuery";
-import { UnitDto } from "@/dtos/unit.dto";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { EmployeeLookup } from "./employee-lookup";
 
+
+const formSchema = z.object({
+  selectedEmployee: z.string().min(1, "Please select an employee"),
+});
 
 export default function LookupPage() {
-    const { units } = useUnitQuery();
-    const [open, setOpen] = useState(false);
-    const [value, setValue] = useState("");
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      selectedEmployee: "",
+    },
+  });
 
-    const selectedUnit = units.find((unit: UnitDto) => unit.id === value);
-
-    return (
-        <div className="p-4">
-            <h1 className="text-2xl font-bold mb-4">Lookup</h1>
-            <div className="space-y-4">
-                <div className="flex flex-col space-y-2">
-                    <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant="outline"
-                                aria-expanded={open}
-                                className="w-[200px] justify-between"
-                            >
-                                {selectedUnit?.name ?? "Select unit..."}
-                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                            <Command>
-                                <CommandInput placeholder="Search unit..." />
-                                <CommandEmpty>No unit found.</CommandEmpty>
-                                <CommandGroup>
-                                    {units.map((unit: UnitDto) => (
-                                        <CommandItem
-                                            key={unit.id}
-                                            value={unit.id}
-                                            onSelect={(currentValue) => {
-                                                setValue(currentValue === value ? "" : currentValue);
-                                                setOpen(false);
-                                            }}
-                                        >
-                                            <Check
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    value === unit.id ? "opacity-100" : "opacity-0"
-                                                )}
-                                            />
-                                            {unit.name}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-                </div>
-                <div className="mt-4">
-                    <h2 className="text-lg font-semibold mb-2">Selected Unit Details:</h2>
-                    {selectedUnit && (
-                        <pre className="bg-muted p-4 rounded-md">
-                            {JSON.stringify(selectedUnit, null, 2)}
-                        </pre>
-                    )}
-                </div>
-            </div>
-        </div>
+  const onSubmit = (values: z.infer<typeof formSchema>): void => {
+   
+    console.log("Form submitted:", {
+      selectedEmployee: values.selectedEmployee,
+    });
+    alert(
+      `เลือกพนักงาน: ${values.selectedEmployee}`
     );
+  };
+
+  return (
+    <div className="max-w-lg mx-auto p-6 space-y-6">
+      <h1 className="text-2xl font-bold text-center mb-6">
+        Employee Lookup Form
+      </h1>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="selectedEmployee"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Select employee</FormLabel>
+                <FormControl>
+                  <EmployeeLookup
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    placeholder="ค้นหาพนักงาน..."
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="w-full">
+            Submit
+          </Button>
+        </form>
+      </Form>
+
+      {/* Display current form values for debugging */}
+      <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+        <h3 className="font-semibold mb-2">Current form values:</h3>
+        <pre className="text-xs bg-white p-2 rounded border overflow-auto">
+          {JSON.stringify(form.watch(), null, 2)}
+        </pre>
+      </div>
+    </div>
+  );
 }
