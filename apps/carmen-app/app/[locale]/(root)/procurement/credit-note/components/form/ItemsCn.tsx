@@ -180,7 +180,6 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
             <TableHead>Location</TableHead>
             <TableHead>Product</TableHead>
             <TableHead className="text-right">Quantity</TableHead>
-            <TableHead className="text-right">Unit</TableHead>
             <TableHead className="text-right">Price</TableHead>
             <TableHead className="text-right">Tax Amount</TableHead>
             <TableHead className="text-right">Total Amount</TableHead>
@@ -198,10 +197,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
               </TableCell>
               <TableCell>{getLocationName(item.location_id ?? "")}</TableCell>
               <TableCell>{getProductName(item.product_id ?? "")}</TableCell>
-              <TableCell className="text-right">{item.return_qty}</TableCell>
-              <TableCell className="text-right">
-                {getUnitName(item.return_unit_id ?? "")}
-              </TableCell>
+              <TableCell className="text-right">{item.return_qty}  {getUnitName(item.return_unit_id ?? "")}</TableCell>
               <TableCell className="text-right">{item.price}</TableCell>
               <TableCell className="text-right">{item.tax_amount}</TableCell>
               <TableCell className="text-right">{item.total_price}</TableCell>

@@ -1,7 +1,14 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formType } from "@/dtos/form.dto";
-import { Hash, CalendarIcon, FileText, Store, DollarSign, Quote } from "lucide-react";
+import {
+  Hash,
+  CalendarIcon,
+  FileText,
+  Store,
+  DollarSign,
+  Quote,
+} from "lucide-react";
 import { Control, useWatch } from "react-hook-form";
 import {
   FormControl,
@@ -51,7 +58,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
   });
   return (
     <div className="space-y-4 my-4">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 p-1 space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-2 p-1 space-y-2">
         {mode !== formType.ADD && (
           <div className="col-span-1 mt-2">
             <Label className="text-xs font-medium">
@@ -68,7 +75,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
           control={control}
           name="cn_date"
           render={({ field }) => (
-            <FormItem className="col-span-1">
+            <FormItem className="col-span-1 mt-2">
               <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-1">
                   <CalendarIcon className="h-3 w-3" />
@@ -388,7 +395,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
           )}
         />
 
-<FormField
+        <FormField
           control={control}
           name="currency_id"
           render={({ field }) => (
@@ -444,10 +451,19 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
                 </div>
               </FormLabel>
               <FormControl>
-                <GrnLookup
-                  onValueChange={field.onChange}
-                  value={field.value ?? ""}
-                />
+                {mode === formType.VIEW ? (
+                  <Input
+                    value={field.value ?? ""}
+                    disabled
+                    className="bg-muted"
+                    placeholder="Select GRN"
+                  />
+                ) : (
+                  <GrnLookup
+                    onValueChange={field.onChange}
+                    value={field.value ?? ""}
+                  />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -466,10 +482,19 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
                 </div>
               </FormLabel>
               <FormControl>
-                <CnReasonLookup
-                  onValueChange={field.onChange}
-                  value={field.value ?? ""}
-                />
+                {mode === formType.VIEW ? (
+                  <Input
+                    value={field.value ?? ""}
+                    disabled
+                    className="bg-muted"
+                    placeholder="Select reason"
+                  />
+                ) : (
+                  <CnReasonLookup
+                    onValueChange={field.onChange}
+                    value={field.value ?? ""}
+                  />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -493,7 +518,10 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
                 <Textarea
                   {...field}
                   value={field.value ?? ""}
-                  className="mt-1 min-h-[56px] resize-none text-xs bg-muted"
+                  className={cn(
+                    "mt-1 min-h-[56px] resize-none text-xs",
+                    mode === formType.VIEW && "bg-muted"
+                  )}
                   placeholder="Enter description..."
                   disabled={mode === formType.VIEW}
                 />
@@ -516,7 +544,10 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
                 <Textarea
                   {...field}
                   value={field.value ?? ""}
-                  className="mt-1 min-h-[56px] resize-none text-xs bg-muted"
+                  className={cn(
+                    "mt-1 min-h-[56px] resize-none text-xs",
+                    mode === formType.VIEW && "bg-muted"
+                  )}
                   placeholder="Enter note..."
                   disabled={mode === formType.VIEW}
                 />

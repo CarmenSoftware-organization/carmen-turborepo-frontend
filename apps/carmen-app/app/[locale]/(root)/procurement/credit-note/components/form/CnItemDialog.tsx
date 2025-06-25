@@ -1,6 +1,4 @@
-import {
-  CreditNoteDetailFormItemDto,
-} from "../../dto/cdn.dto";
+import { CreditNoteDetailFormItemDto } from "../../dto/cdn.dto";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +26,7 @@ import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
+import { Separator } from "@/components/ui/separator";
 
 interface CnItemDialogProps {
   readonly open: boolean;
@@ -172,11 +171,11 @@ export default function CnItemDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[1400px] h-[85vh] flex flex-col overflow-hidden">
-        <DialogHeader className="border-b border-border pb-4 flex-shrink-0">
-          <DialogTitle className="text-xl font-semibold flex items-center gap-3">
+      <DialogContent className="sm:max-w-[1000px] h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="border-b border-border pb-2 flex-shrink-0">
+          <DialogTitle className="text-base font-semibold flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
-              <Box className="h-5 w-5 text-primary" />
+              <Box className="h-4 w-4 text-primary" />
             </div>
             {isEditMode ? "Edit Item" : "Add Item"}
           </DialogTitle>
@@ -188,14 +187,14 @@ export default function CnItemDialog({
               <div>
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-semibold">
+                  <h3 className="text-xs font-semibold">
                     Location & Product Information
                   </h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2 mt-2">
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Location</label>
+                      <label className="text-xs font-medium">Location</label>
                       <LocationLookup
                         value={formData.location_id || ""}
                         onValueChange={(value: string) => {
@@ -210,7 +209,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Product</label>
+                      <label className="text-xs font-medium">Product</label>
                       <ProductLookup
                         value={formData.product_id || ""}
                         onValueChange={(value: string) => {
@@ -225,7 +224,7 @@ export default function CnItemDialog({
 
                   <div className="md:col-span-2 lg:col-span-1">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Description</label>
+                      <label className="text-xs font-medium">Description</label>
                       <Textarea
                         value={formData.description || ""}
                         onChange={(e) =>
@@ -239,7 +238,7 @@ export default function CnItemDialog({
 
                   <div className="md:col-span-2 lg:col-span-1">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Note</label>
+                      <label className="text-xs font-medium">Note</label>
                       <Textarea
                         value={formData.note || ""}
                         onChange={(e) =>
@@ -252,18 +251,18 @@ export default function CnItemDialog({
                   </div>
                 </div>
               </div>
-
+              <Separator />
               <div>
                 <div className="flex items-center gap-2">
                   <Calculator className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-semibold">
+                  <h3 className="text-xs font-semibold">
                     Price & Unit Information
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Unit Price</label>
+                      <label className="text-xs font-medium">Unit Price</label>
                       <Input
                         type="number"
                         min="0"
@@ -281,7 +280,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Base Price</label>
+                      <label className="text-xs font-medium">Base Price</label>
                       <Input
                         type="number"
                         value={formData.base_price}
@@ -293,7 +292,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Return Quantity
                       </label>
                       <Input
@@ -313,7 +312,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Unit</label>
+                      <label className="text-xs font-medium">Unit</label>
                       <UnitLookup
                         value={formData.return_unit_id || ""}
                         onValueChange={(value: string) => {
@@ -328,7 +327,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Conversion Factor
                       </label>
                       <Input
@@ -348,7 +347,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Base Quantity
                       </label>
                       <Input
@@ -361,16 +360,16 @@ export default function CnItemDialog({
                   </div>
                 </div>
               </div>
-
+              <Separator />
               <div>
                 <div className="flex items-center gap-2">
                   <Percent className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-semibold">Tax Information</h3>
+                  <h3 className="text-xs font-semibold">Tax Information</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Tax Type</label>
+                      <label className="text-xs font-medium">Tax Type</label>
                       <TaxTypeLookup
                         value={formData.tax_type_inventory_id || ""}
                         onValueChange={(value: string) => {
@@ -385,7 +384,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Tax Rate (%)
                       </label>
                       <Input
@@ -406,7 +405,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Tax Amount</label>
+                      <label className="text-xs font-medium">Tax Amount</label>
                       <Input
                         type="number"
                         min="0"
@@ -426,7 +425,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Base Tax Amount
                       </label>
                       <Input
@@ -440,10 +439,10 @@ export default function CnItemDialog({
 
                   <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
                     <div className="space-y-0.5">
-                      <label className="text-base font-medium">
+                      <label className="text-xs font-medium">
                         Adjust Tax
                       </label>
-                      <div className="text-[0.8rem] text-muted-foreground">
+                      <div className="text-xs text-muted-foreground">
                         Adjust tax manually
                       </div>
                     </div>
@@ -456,18 +455,18 @@ export default function CnItemDialog({
                   </div>
                 </div>
               </div>
-
+              <Separator />
               <div>
                 <div className="flex items-center gap-2">
                   <Receipt className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-semibold">
+                  <h3 className="text-xs font-semibold">
                     Discount & Extra Cost
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-2">
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Discount Rate (%)
                       </label>
                       <Input
@@ -488,7 +487,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Discount Amount
                       </label>
                       <Input
@@ -512,7 +511,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Base Discount Amount
                       </label>
                       <Input
@@ -526,7 +525,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Extra Cost Amount
                       </label>
                       <Input
@@ -546,7 +545,7 @@ export default function CnItemDialog({
 
                   <div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">
+                      <label className="text-xs font-medium">
                         Base Extra Cost Amount
                       </label>
                       <Input
@@ -560,10 +559,10 @@ export default function CnItemDialog({
 
                   <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-2">
                     <div className="space-y-0.5">
-                      <label className="text-base font-medium">
+                      <label className="text-xs font-medium">
                         Adjust Discount
                       </label>
-                      <div className="text-[0.8rem] text-muted-foreground">
+                      <div className="text-xs text-muted-foreground">
                         Adjust discount manually
                       </div>
                     </div>
@@ -582,28 +581,14 @@ export default function CnItemDialog({
           </ScrollArea>
         </div>
 
-        <DialogFooter className="border-t border-border pt-4 bg-background flex-shrink-0">
-          <div className="flex justify-between w-full">
-            <div className="flex items-center gap-2">
-              {hasErrors && (
-                <Badge variant="destructive" className="gap-1">
-                  <AlertCircle className="h-3 w-3" />
-                  มีข้อผิดพลาด 0 รายการ
-                </Badge>
-              )}
-            </div>
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={handleCancel}>
-                ยกเลิก
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={!isFormValid}
-                className="min-w-[100px]"
-              >
-                {isEditMode ? "อัปเดต" : "บันทึก"}
-              </Button>
-            </div>
+        <DialogFooter>
+          <div className="flex justify-end w-full gap-2">
+            <Button variant="outline" onClick={handleCancel} size="sm">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={!isFormValid} size="sm">
+              {isEditMode ? "Update" : "Save"}
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

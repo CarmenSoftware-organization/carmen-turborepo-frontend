@@ -36,6 +36,7 @@ import {
   useCreateCreditNote,
   useUpdateCreditNote,
 } from "@/hooks/useCreditNote";
+import { format } from "date-fns";
 interface CnFormProps {
   readonly mode: formType;
   readonly initialValues?: CreditNoteByIdDto;
@@ -140,7 +141,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
         };
         toastSuccess({ message: "Credit note created successfully" });
         console.log("result", result);
-        
       } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await updateMutation.mutateAsync(data as any);
@@ -189,9 +189,18 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                     {mode === formType.ADD ? (
                       <p className="text-base font-bold">Credit Note</p>
                     ) : (
-                      <p className="text-base font-bold">
-                        {initialValues?.cn_no}
-                      </p>
+                      <div className="flex flex-col gap-1">
+                        <p className="text-base font-bold">
+                          {initialValues?.cn_no}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Created at{" "}
+                          {format(
+                            new Date(initialValues?.cn_date ?? ""),
+                            "PPP"
+                          )}
+                        </p>
+                      </div>
                     )}
                     {initialValues?.doc_status && (
                       <Badge
