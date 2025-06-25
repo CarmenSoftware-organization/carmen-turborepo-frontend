@@ -117,7 +117,9 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
                   </div>
                 </div>
                 <div>
-                  <p className="font-semibold mb-1 text-sm">Physical Count Type</p>
+                  <p className="font-semibold mb-1 text-sm">
+                    Physical Count Type
+                  </p>
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-muted-foreground" />
                     <span className="tcapitalize">

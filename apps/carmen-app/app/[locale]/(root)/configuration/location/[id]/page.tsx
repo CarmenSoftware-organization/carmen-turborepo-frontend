@@ -8,19 +8,18 @@ import LocationView from "../components/form/LocationView";
 import LocationSkeleton from "@/components/loading/LocationSkeleton";
 
 export default function StoreLocationByIdPage() {
-    const { id } = useParams();
-    const { token, tenantId } = useAuth();
+  const { id } = useParams();
+  const { token, tenantId } = useAuth();
 
-    const { data, isLoading } = useLocationByIdQuery({
-        token: token,
-        tenantId: tenantId,
-        id: id as string
-    });
+  const { data, isLoading } = useLocationByIdQuery({
+    token: token,
+    tenantId: tenantId,
+    id: id as string,
+  });
 
-    if (isLoading) {
-        return <LocationSkeleton />;
-    }
+  if (isLoading) {
+    return <LocationSkeleton />;
+  }
 
-    return <LocationView initialData={data} mode={formType.VIEW} />
+  return <LocationView initialData={data} mode={formType.VIEW} />;
 }
-

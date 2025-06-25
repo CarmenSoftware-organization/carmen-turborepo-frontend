@@ -5,7 +5,6 @@ import {
   PHYSICAL_COUNT_TYPE,
 } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
-import { useUserList } from "@/hooks/useUserList";
 import LocationUser from "./LocationUser";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
@@ -34,6 +33,8 @@ import { useRouter } from "@/lib/navigation";
 import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
+import { UserListDto } from "@/dtos/user.dto";
+import { useUserList } from "@/hooks/useUserList";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -64,8 +65,13 @@ export default function LocationForm({
   token,
   tenantId,
 }: LocationFormProps) {
-  const { userList } = useUserList();
+  const { data: userList } = useUserList();
   const router = useRouter();
+
+  const listUser = userList?.map((user: any) => ({
+    id: user.user_id,
+    name: user.firstname + " " + user.lastname,
+  }));
 
   const createMutation = useLocationMutation(token, tenantId);
   const updateMutation = useUpdateLocation(
@@ -300,14 +306,7 @@ export default function LocationForm({
           </Card>
           <LocationUser
             initCurrentUsers={initialData?.users || []}
-            initAvailableUsers={
-              userList
-                ? userList.map((user) => ({
-                    id: user.user_id,
-                    name: user.firstname + " " + user.lastname,
-                  }))
-                : []
-            }
+            initAvailableUsers={listUser}
             mode={mode}
             formControl={form.control}
           />

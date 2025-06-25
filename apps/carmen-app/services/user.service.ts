@@ -10,5 +10,8 @@ export const getUserList = async (token: string, tenantId: string) => {
     const response = await axios.get<UserListDto[]>(url, {
         headers: requestHeaders(token, tenantId)
     });
+
+    console.log('response', response.data);
+    
     return response.data;
 }

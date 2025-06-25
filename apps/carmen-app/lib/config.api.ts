@@ -2,113 +2,118 @@ import { ParamsGetDto } from "@/dtos/param.dto";
 import axios from "axios";
 
 export const requestHeaders = (token: string, tenantId: string) => ({
-    'Authorization': `Bearer ${token}`,
-    'x-tenant-id': tenantId,
-    'Content-Type': 'application/json',
+  Authorization: `Bearer ${token}`,
+  "x-tenant-id": tenantId,
+  "Content-Type": "application/json",
 });
 
 export const getAllApiRequest = async (
-    API_URL: string,
-    token: string,
-    tenantId: string,
-    errorContext: string,
-    params?: ParamsGetDto
+  API_URL: string,
+  token: string,
+  tenantId: string,
+  errorContext: string,
+  params?: ParamsGetDto
 ) => {
-    try {
-        const query = new URLSearchParams();
 
-        Object.entries(params ?? {}).forEach(([key, value]) => {
-            if (value !== undefined && value !== null && value !== '') {
-                query.append(key, String(value));
-            }
-        });
+  try {
+    const query = new URLSearchParams();
 
-        const queryString = query.toString();
-        const URL = queryString ? `${API_URL}?${queryString}` : API_URL;
+    Object.entries(params ?? {}).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        query.append(key, String(value));
+      }
+    });
 
-        const response = await axios.get(URL, {
-            headers: requestHeaders(token, tenantId)
-        });
+    const queryString = query.toString();
+    const URL = queryString ? `${API_URL}?${queryString}` : API_URL;
 
-        return response.data
-    } catch (error) {
-        console.error(`${errorContext}:`, error);
-        throw error;
-    }
+    const response = await axios.get(URL, {
+      headers: requestHeaders(token, tenantId),
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error(`❌ ${errorContext}:`, error);
+    throw error;
+  }
 };
 
 export const getByIdApiRequest = async (
-    API_URL: string,
-    token: string,
-    tenantId: string,
-    errorContext: string
+  API_URL: string,
+  token: string,
+  tenantId: string,
+  errorContext: string
 ) => {
-    try {
+  try {
+    const response = await axios.get(API_URL, {
+      headers: requestHeaders(token, tenantId),
+    });
 
-        const response = await axios.get(API_URL, {
-            headers: requestHeaders(token, tenantId)
-        });
-
-        return response.data;
-    } catch (error) {
-        console.error(`${errorContext}:`, error);
-        throw error;
-    }
-}
+    return response.data;
+  } catch (error) {
+    console.error(`${errorContext}:`, error);
+    throw error;
+  }
+};
 
 export const postApiRequest = async <T = unknown, R = unknown>(
-    API_URL: string,
-    token: string,
-    tenantId: string,
-    data: T,
-    errorContext: string
+  API_URL: string,
+  token: string,
+  tenantId: string,
+  data: T,
+  errorContext: string
 ) => {
-    try {
-        const response = await axios.post<R>(API_URL, data, {
-            headers: requestHeaders(token, tenantId)
-        });
+  try {
+    const response = await axios.post<R>(API_URL, data, {
+      headers: requestHeaders(token, tenantId),
+    });
 
-        return response.data;
-    } catch (error) {
-        console.error(`${errorContext}:`, error);
-        throw error;
-    }
+    return response.data;
+  } catch (error) {
+    console.error(`${errorContext}:`, error);
+    throw error;
+  }
 };
 
 export const updateApiRequest = async <T = unknown, R = unknown>(
-    API_URL: string,
-    token: string,
-    tenantId: string,
-    data: T,
-    errorContext: string,
-    method: 'PUT' | 'PATCH',
+  API_URL: string,
+  token: string,
+  tenantId: string,
+  data: T,
+  errorContext: string,
+  method: "PUT" | "PATCH"
 ) => {
-    try {
-        const response = method === 'PUT'
-            ? await axios.put<R>(API_URL, data, { headers: requestHeaders(token, tenantId) })
-            : await axios.patch<R>(API_URL, data, { headers: requestHeaders(token, tenantId) });
+  try {
+    const response =
+      method === "PUT"
+        ? await axios.put<R>(API_URL, data, {
+            headers: requestHeaders(token, tenantId),
+          })
+        : await axios.patch<R>(API_URL, data, {
+            headers: requestHeaders(token, tenantId),
+          });
 
-        return response.data;
-    } catch (error) {
-        console.error(`${errorContext}:`, error);
-        throw error;
-    }
+    return response.data;
+  } catch (error) {
+    console.error(`${errorContext}:`, error);
+    throw error;
+  }
 };
 
 export const deleteApiRequest = async (
-    API_URL: string,
-    token: string,
-    tenantId: string,
-    errorContext: string,
+  API_URL: string,
+  token: string,
+  tenantId: string,
+  errorContext: string
 ) => {
-    try {
-        const response = await axios.delete(API_URL, {
-            headers: requestHeaders(token, tenantId)
-        });
+  try {
+    const response = await axios.delete(API_URL, {
+      headers: requestHeaders(token, tenantId),
+    });
 
-        return response.data;
-    } catch (error) {
-        console.error(`${errorContext}:`, error);
-        throw error;
-    }
+    return response.data;
+  } catch (error) {
+    console.error(`${errorContext}:`, error);
+    throw error;
+  }
 };
