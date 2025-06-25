@@ -35,6 +35,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
 import { UserListDto } from "@/dtos/user.dto";
 import { useUserList } from "@/hooks/useUserList";
+import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -65,7 +66,7 @@ export default function LocationForm({
   token,
   tenantId,
 }: LocationFormProps) {
-  const { data: userList } = useUserList();
+  const { userList } = useUserList();
   const router = useRouter();
 
   const listUser = userList?.map((user: any) => ({
@@ -188,7 +189,11 @@ export default function LocationForm({
                     <FormItem>
                       <FormLabel>Delivery Point</FormLabel>
                       <FormControl>
-                        <DeliveryPointLookup
+                        {/* <DeliveryPointLookup
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        /> */}
+                        <LookupDeliveryPoint
                           value={field.value}
                           onValueChange={field.onChange}
                         />
@@ -306,7 +311,7 @@ export default function LocationForm({
           </Card>
           <LocationUser
             initCurrentUsers={initialData?.users || []}
-            initAvailableUsers={listUser}
+            initAvailableUsers={listUser || []}
             mode={mode}
             formControl={form.control}
           />

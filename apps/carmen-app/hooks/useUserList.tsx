@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { getUserList } from "@/services/user.service";
 import { useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { getAllApiRequest } from "@/lib/config.api";
@@ -10,13 +9,6 @@ const API_URL = `${backendApi}/api/user`;
 
 export const useUserList = () => {
   const { token, tenantId } = useAuth();
-
-  console.log("🔍 useUserList Debug:", {
-    token: token ? "✅ exists" : "❌ missing",
-    tenantId: tenantId ? "✅ exists" : "❌ missing",
-    API_URL,
-    backendApi,
-  });
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["users", tenantId],
@@ -47,14 +39,6 @@ export const useUserList = () => {
     retryDelay: 1000, // delay 1 วินาที
   });
 
-  console.log("📊 Query State:", {
-    data,
-    isLoading,
-    isError,
-    error: error?.message,
-    enabled: !!token && !!tenantId,
-  });
-
   const isUnauthorized =
     isError && error instanceof Error && error.message.includes("Unauthorized");
 
@@ -64,7 +48,7 @@ export const useUserList = () => {
   };
 
   return {
-    data,
+    userList: data?.data,
     isLoading,
     isUnauthorized,
     getUserName,
