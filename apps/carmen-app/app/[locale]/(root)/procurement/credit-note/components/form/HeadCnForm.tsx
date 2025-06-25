@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formType } from "@/dtos/form.dto";
-import { Hash, CalendarIcon, FileText, Store, DollarSign } from "lucide-react";
+import { Hash, CalendarIcon, FileText, Store, DollarSign, Quote } from "lucide-react";
 import { Control, useWatch } from "react-hook-form";
 import {
   FormControl,
@@ -34,6 +34,7 @@ import { useVendor } from "@/hooks/useVendor";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { useCurrency } from "@/hooks/useCurrency";
 import GrnLookup from "@/components/lookup/GrnLookup";
+import CnReasonLookup from "@/components/lookup/CnReasonLookup";
 
 interface HeadCnFormProps {
   readonly control: Control<CreditNoteFormDto>;
@@ -386,10 +387,8 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
             </FormItem>
           )}
         />
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        <FormField
+<FormField
           control={control}
           name="currency_id"
           render={({ field }) => (
@@ -446,6 +445,28 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
               </FormLabel>
               <FormControl>
                 <GrnLookup
+                  onValueChange={field.onChange}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="cn_reason_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-medium">
+                <div className="flex items-center gap-1">
+                  <Quote className="h-3 w-3" />
+                  Reason
+                </div>
+              </FormLabel>
+              <FormControl>
+                <CnReasonLookup
                   onValueChange={field.onChange}
                   value={field.value ?? ""}
                 />

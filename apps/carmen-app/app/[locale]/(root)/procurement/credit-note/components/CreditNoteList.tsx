@@ -113,8 +113,8 @@ export default function CreditNoteList({
     <div className="space-y-4">
       {/* Desktop Table View */}
       <div className="hidden md:block">
-        <Table>
-          <TableHeader>
+        <Table className="border">
+          <TableHeader className="bg-muted">
             <TableRow>
               <TableHead className="w-10 text-center">
                 <Checkbox

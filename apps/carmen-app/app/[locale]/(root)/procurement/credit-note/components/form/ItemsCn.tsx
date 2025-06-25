@@ -38,7 +38,8 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
   const { getLocationName } = useStoreLocation();
   const { getUnitName } = useUnit();
 
-  const itemsDetail = useWatch({ control, name: "credit_note_detail.data" });
+  const itemsDetail =
+    useWatch({ control, name: "credit_note_detail.data" }) || [];
 
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedItem, setSelectedItem] =
@@ -51,7 +52,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
   const [itemToDelete, setItemToDelete] = useState<{
     id: string;
     index: number;
-    productName: string;
+    productId: string;
   } | null>(null);
 
   // Field arrays for managing different operations
@@ -75,12 +76,8 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
     name: "credit_note_detail.remove",
   });
 
-  const handleDeleteClick = (
-    id: string,
-    index: number,
-    productName: string
-  ) => {
-    setItemToDelete({ id, index, productName });
+  const handleDeleteClick = (id: string, index: number, productId: string) => {
+    setItemToDelete({ id, index, productId });
     setDeleteDialogOpen(true);
   };
 
@@ -198,7 +195,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
                 <Checkbox />
               </TableCell>
               <TableCell>{getLocationName(item.location_id ?? "")}</TableCell>
-              <TableCell>{item.product_name}</TableCell>
+              <TableCell>{item.product_id}</TableCell>
               <TableCell className="text-right">{item.return_qty}</TableCell>
               <TableCell className="text-right">
                 {getUnitName(item.return_unit_id ?? "")}
@@ -223,7 +220,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
                       handleDeleteClick(
                         item.id ?? "",
                         index,
-                        item.product_name ?? ""
+                        item.product_id ?? ""
                       )
                     }
                   >
@@ -250,7 +247,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
         title={tAction("confirmDelete")}
-        description={`${tAction("confirmDelete")} "${itemToDelete?.productName}"`}
+        description={`${tAction("confirmDelete")} "${itemToDelete?.productId}"`}
       />
     </div>
   );

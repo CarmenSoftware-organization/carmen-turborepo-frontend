@@ -100,22 +100,16 @@ export interface CreditNoteByIdDto {
 
 export const creditNoteDetailItemSchemaDto = z.object({
   id: z.string().uuid().optional(),
-  credit_note_id: z.string().uuid(),
-  description: z.string().nullable(),
-  note: z.string().nullable(),
+  description: z.string().optional(),
+  note: z.string().optional(),
   location_id: z.string().uuid(),
-  location_name: z.string().nullable().optional(),
   product_id: z.string().uuid(),
-  product_name: z.string().optional(),
-  product_local_name: z.string().nullable().optional(),
   return_qty: z.number(),
   return_unit_id: z.string().uuid(),
-  return_unit_name: z.string().nullable().optional(),
   return_conversion_factor: z.number(),
   return_base_qty: z.number(),
   price: z.number(),
   tax_type_inventory_id: z.string().uuid(),
-  tax_type: z.string(),
   tax_rate: z.number(),
   tax_amount: z.number(),
   is_tax_adjustment: z.boolean(),
@@ -128,13 +122,6 @@ export const creditNoteDetailItemSchemaDto = z.object({
   base_discount_amount: z.number(),
   base_extra_cost_amount: z.number(),
   total_price: z.number(),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  info: z.any().optional(),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  dimension: z.any().optional(),
-  doc_version: z.string().optional(),
-  created_at: z.string().datetime(),
-  created_by_id: z.string().uuid(),
 });
 
 export type CreditNoteDetailFormItemDto = z.infer<
@@ -149,7 +136,6 @@ export const creditNoteFormSchemaDto = z.object({
   exchange_rate: z.number(),
   exchange_rate_date: z.string().datetime(),
   grn_id: z.string().uuid(),
-  grn_no: z.string().optional().nullable(),
   cn_reason_id: z.string().optional(),
   invoice_no: z.string(),
   invoice_date: z.string().datetime(),
@@ -158,10 +144,10 @@ export const creditNoteFormSchemaDto = z.object({
   note: z.string(),
   description: z.string().nullable(),
   credit_note_detail: z.object({
-    data: z.array(creditNoteDetailItemSchemaDto),
-    add: z.array(creditNoteDetailItemSchemaDto),
-    update: z.array(creditNoteDetailItemSchemaDto),
-    remove: z.array(z.object({ id: z.string().uuid() })),
+    data: z.array(creditNoteDetailItemSchemaDto).optional(),
+    add: z.array(creditNoteDetailItemSchemaDto).optional(),
+    update: z.array(creditNoteDetailItemSchemaDto).optional(),
+    remove: z.array(z.object({ id: z.string().uuid() })).optional(),
   }),
 });
 

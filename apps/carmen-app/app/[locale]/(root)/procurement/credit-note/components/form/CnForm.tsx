@@ -64,7 +64,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     exchange_rate_date:
       initialValues?.exchange_rate_date ?? new Date().toISOString(),
     grn_id: initialValues?.grn_id ?? "",
-    grn_no: initialValues?.grn_no ?? "",
     cn_reason_id: initialValues?.cn_reason_id ?? "",
     invoice_no: initialValues?.invoice_no ?? "",
     invoice_date: initialValues?.invoice_date ?? new Date().toISOString(),
@@ -78,36 +77,28 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (initialValues?.credit_note_detail as any)?.data?.map((item: any) => ({
           id: item.id,
-          credit_note_id: item.credit_note_id ?? initialValues?.id ?? "",
-          description: item.description ?? null,
-          note: item.note ?? null,
+          description: item.description,
+          note: item.note,
           location_id: item.location_id,
           product_id: item.product_id,
-          product_name: item.product_name,
           return_qty: item.return_qty,
           return_unit_id: item.return_unit_id,
           return_conversion_factor: item.return_conversion_factor,
           return_base_qty: item.return_base_qty,
           price: item.price,
           tax_type_inventory_id: item.tax_type_inventory_id,
-          tax_type: item.tax_type ?? "",
-          tax_rate: parseFloat(item.tax_rate) || 0,
+          tax_rate: item.tax_rate || 0,
           tax_amount: item.tax_amount,
           is_tax_adjustment: item.is_tax_adjustment,
-          discount_rate: parseFloat(item.discount_rate) || 0,
+          discount_rate: item.discount_rate || 0,
           discount_amount: item.discount_amount ?? 0,
           is_discount_adjustment: item.is_discount_adjustment,
           extra_cost_amount: item.extra_cost_amount,
-          base_price: parseFloat(item.base_price) || 0,
+          base_price: item.base_price || 0,
           base_tax_amount: item.base_tax_amount,
           base_discount_amount: item.base_discount_amount,
           base_extra_cost_amount: item.base_extra_cost_amount,
           total_price: item.total_price,
-          info: item.info ?? undefined,
-          dimension: item.dimension ?? undefined,
-          doc_version: item.doc_version ?? "0",
-          created_at: item.created_at ?? new Date().toISOString(),
-          created_by_id: item.created_by_id ?? "",
         })) ?? [],
       add: [],
       update: [],
@@ -281,6 +272,12 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                 />
                 <Tabs defaultValue="items">
                   <TabsList className="w-full">
+                    <TabsTrigger
+                      className="w-full text-xs"
+                      value="form-value"
+                    >
+                      Form Value
+                    </TabsTrigger>
                     <TabsTrigger className="w-full text-xs" value="items">
                       Items
                     </TabsTrigger>
@@ -300,6 +297,9 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                       Tax Entries
                     </TabsTrigger>
                   </TabsList>
+                  <TabsContent value="form-value" className="mt-2">
+                    <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
+                  </TabsContent>
                   <TabsContent value="items" className="mt-2">
                     <ItemsCn control={form.control} mode={currentMode} />
                   </TabsContent>

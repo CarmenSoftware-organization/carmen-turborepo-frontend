@@ -9,13 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+// Removed unused form imports since we're using regular labels now
 import { Control } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +29,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
-import { useFormState } from "react-hook-form";
+import UnitLookup from "@/components/lookup/UnitLookup";
+import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
+// Removed useFormState import since we're not using FormField anymore
 
 interface CnItemDialogProps {
   readonly open: boolean;
@@ -48,22 +44,16 @@ interface CnItemDialogProps {
 
 // Default empty item for new item creation
 const createEmptyItem = (): CreditNoteDetailFormItemDto => ({
-  credit_note_id: "",
-  description: null,
-  note: null,
+  description: undefined,
+  note: undefined,
   location_id: "",
-  location_name: null,
   product_id: "",
-  product_name: "",
-  product_local_name: null,
   return_qty: 0,
   return_unit_id: "",
-  return_unit_name: null,
   return_conversion_factor: 1,
   return_base_qty: 0,
   price: 0,
   tax_type_inventory_id: "",
-  tax_type: "",
   tax_rate: 0,
   tax_amount: 0,
   is_tax_adjustment: false,
@@ -76,40 +66,9 @@ const createEmptyItem = (): CreditNoteDetailFormItemDto => ({
   base_discount_amount: 0,
   base_extra_cost_amount: 0,
   total_price: 0,
-  created_at: new Date().toISOString(),
-  created_by_id: "",
 });
 
-// ตัวอย่างการใช้ formState เพื่อตรวจสอบสถานะของแต่ละ field
-const useFieldValidation = (control: Control<CreditNoteFormDto>) => {
-  const formState = useFormState({ control });
-
-  return {
-    // สถานะทั้งหมด
-    isDirty: formState.isDirty,
-    isValid: formState.isValid,
-
-    // สถานะของ field เฉพาะ
-    dirtyFields: formState.dirtyFields,
-    errors: formState.errors,
-    touchedFields: formState.touchedFields,
-
-    // Helper functions
-    isFieldDirty: (fieldName: string) => {
-      return formState.dirtyFields[
-        fieldName as keyof typeof formState.dirtyFields
-      ];
-    },
-
-    isFieldValid: (fieldName: string) => {
-      return !formState.errors[fieldName as keyof typeof formState.errors];
-    },
-
-    getFieldError: (fieldName: string) => {
-      return formState.errors[fieldName as keyof typeof formState.errors];
-    },
-  };
-};
+// Removed useFieldValidation since we're no longer using FormField components
 
 export default function CnItemDialog({
   open,
@@ -122,22 +81,11 @@ export default function CnItemDialog({
   const [formData, setFormData] = useState<CreditNoteDetailFormItemDto | null>(
     null
   );
-  // const [errors, setErrors] = useState({});
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const isEditMode = initItem !== undefined && itemIndex !== undefined;
 
-  // ใช้ field validation helper
-  const fieldValidation = useFieldValidation(control);
-
-  // ตัวอย่างการใช้งาน - สามารถดูสถานะได้
-  console.log("Form State:", {
-    isDirty: fieldValidation.isDirty,
-    isValid: fieldValidation.isValid,
-    dirtyFields: fieldValidation.dirtyFields,
-    errors: fieldValidation.errors,
-    touchedFields: fieldValidation.touchedFields,
-  });
+  // Removed fieldValidation logging since we're no longer using FormField validation
 
   // Calculate derived values
   const calculateDerivedValues = (data: CreditNoteDetailFormItemDto) => {
@@ -147,22 +95,18 @@ export default function CnItemDialog({
     const discountRate = data.discount_rate || 0;
     const conversionFactor = data.return_conversion_factor || 1;
 
-    // Calculate base quantities and amounts
     const baseQty = qty * conversionFactor;
     const basePrice = price;
 
-    // Calculate discount
     const discountAmount = data.is_discount_adjustment
       ? data.discount_amount
       : (price * qty * discountRate) / 100;
 
-    // Calculate tax on discounted amount
     const taxableAmount = price * qty - discountAmount;
     const taxAmount = data.is_tax_adjustment
       ? data.tax_amount
       : (taxableAmount * taxRate) / 100;
 
-    // Calculate total
     const totalPrice =
       taxableAmount + taxAmount + (data.extra_cost_amount || 0);
 
@@ -179,34 +123,6 @@ export default function CnItemDialog({
     };
   };
 
-  // const validateForm = (
-  //   data: CreditNoteDetailFormItemDto
-  // ): ValidationErrors => {
-  //   const newErrors: ValidationErrors = {};
-
-  //   if (!data.product_name?.trim()) {
-  //     newErrors.product_name = "Product name is required";
-  //   }
-
-  //   if (data.return_qty <= 0) {
-  //     newErrors.return_qty = "Quantity must be greater than 0";
-  //   }
-
-  //   if (data.price < 0) {
-  //     newErrors.price = "Price must be greater than 0";
-  //   }
-
-  //   if (data.tax_rate < 0 || data.tax_rate > 100) {
-  //     newErrors.tax_rate = "Tax rate must be between 0-100%";
-  //   }
-
-  //   if (data.discount_rate < 0 || data.discount_rate > 100) {
-  //     newErrors.discount_rate = "Discount rate must be between 0-100%";
-  //   }
-
-  //   return newErrors;
-  // };
-
   useEffect(() => {
     if (open) {
       if (initItem) {
@@ -214,7 +130,6 @@ export default function CnItemDialog({
       } else {
         setFormData(createEmptyItem());
       }
-      // setErrors({});
       setHasUnsavedChanges(false);
     } else {
       setFormData(null);
@@ -228,15 +143,6 @@ export default function CnItemDialog({
     const calculatedData = calculateDerivedValues(newData);
     setFormData(calculatedData);
     setHasUnsavedChanges(true);
-
-    // Clear specific field errors when user updates them
-    // const newErrors = { ...errors };
-    // Object.keys(updates).forEach((key) => {
-    //   if (key in newErrors) {
-    //     delete newErrors[key as keyof ValidationErrors];
-    //   }
-    // });
-    // setErrors(newErrors);
   };
 
   const handleSave = () => {
@@ -248,7 +154,6 @@ export default function CnItemDialog({
       const newItem = {
         ...formData,
         id: nanoid(),
-        sequence_no: Date.now(),
       };
       onSave(newItem, false);
     }
@@ -268,9 +173,8 @@ export default function CnItemDialog({
 
   if (!formData) return null;
 
-  // const hasErrors = Object.keys(errors).length > 0;
   const hasErrors = false;
-  const isFormValid = formData.product_name?.trim() && formData.return_qty > 0;
+  const isFormValid = formData.product_id?.trim() && formData.return_qty > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -295,112 +199,66 @@ export default function CnItemDialog({
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-2">
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Location</FormLabel>
-                        <FormControl>
-                          <LocationLookup
-                            value={formData.location_id || ""}
-                            onValueChange={(value: string) => {
-                              updateFormData({
-                                location_id: value,
-                                location_name: "", // จะได้ชื่อจาก component
-                              });
-                            }}
-                            placeholder="Select Location"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Location</label>
+                      <LocationLookup
+                        value={formData.location_id || ""}
+                        onValueChange={(value: string) => {
+                          updateFormData({
+                            location_id: value,
+                          });
+                        }}
+                        placeholder="Select Location"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Product</FormLabel>
-                        <FormControl>
-                          <ProductLookup
-                            value={formData.product_id || ""}
-                            onValueChange={(value: string) => {
-                              updateFormData({
-                                product_id: value,
-                                product_name: "",
-                              });
-                            }}
-                            placeholder="Select Product"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Product</label>
+                      <ProductLookup
+                        value={formData.product_id || ""}
+                        onValueChange={(value: string) => {
+                          updateFormData({
+                            product_id: value,
+                          });
+                        }}
+                        placeholder="Select Product"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Product Local Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            value={formData.product_local_name || ""}
-                            onChange={(e) =>
-                              updateFormData({
-                                product_local_name: e.target.value,
-                              })
-                            }
-                            placeholder="Enter Product Local Name"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div className="md:col-span-2 lg:col-span-1">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Description</label>
+                      <Textarea
+                        value={formData.description || ""}
+                        onChange={(e) =>
+                          updateFormData({ description: e.target.value })
+                        }
+                        placeholder="Enter Description"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem className="md:col-span-2 lg:col-span-1">
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            value={formData.description || ""}
-                            onChange={(e) =>
-                              updateFormData({ description: e.target.value })
-                            }
-                            placeholder="Enter Description"
-                            rows={3}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem className="md:col-span-2 lg:col-span-1">
-                        <FormLabel>Note</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            value={formData.note || ""}
-                            onChange={(e) =>
-                              updateFormData({ note: e.target.value })
-                            }
-                            placeholder="Enter Note"
-                            rows={3}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div className="md:col-span-2 lg:col-span-1">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Note</label>
+                      <Textarea
+                        value={formData.note || ""}
+                        onChange={(e) =>
+                          updateFormData({ note: e.target.value })
+                        }
+                        placeholder="Enter Note"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <div>
                 <div className="flex items-center gap-2">
                   <Calculator className="h-4 w-4 text-primary" />
@@ -409,257 +267,199 @@ export default function CnItemDialog({
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Unit Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={formData.price}
-                            onChange={(e) =>
-                              updateFormData({
-                                price: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0.00"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Unit Price</label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.price}
+                        onChange={(e) =>
+                          updateFormData({
+                            price: Number(e.target.value),
+                          })
+                        }
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Base Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            value={formData.base_price}
-                            readOnly
-                            className="bg-muted"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Return Quantity</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={formData.return_qty}
-                            onChange={(e) =>
-                              updateFormData({
-                                return_qty: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0.00"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Base Price</label>
+                      <Input
+                        type="number"
+                        value={formData.base_price}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Unit</FormLabel>
-                        <FormControl>
-                          <Input
-                            value={formData.return_unit_name || ""}
-                            onChange={(e) =>
-                              updateFormData({
-                                return_unit_name: e.target.value,
-                              })
-                            }
-                            placeholder="Enter Unit"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Return Quantity
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.return_qty}
+                        onChange={(e) =>
+                          updateFormData({
+                            return_qty: Number(e.target.value),
+                          })
+                        }
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Conversion Factor</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={formData.return_conversion_factor}
-                            onChange={(e) =>
-                              updateFormData({
-                                return_conversion_factor: Number(
-                                  e.target.value
-                                ),
-                              })
-                            }
-                            placeholder="1.00"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Unit</label>
+                      <UnitLookup
+                        value={formData.return_unit_id || ""}
+                        onValueChange={(value: string) => {
+                          updateFormData({
+                            return_unit_id: value,
+                          });
+                        }}
+                        placeholder="Select Unit"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Base Quantity</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            value={formData.return_base_qty}
-                            readOnly
-                            className="bg-muted"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Conversion Factor
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.return_conversion_factor}
+                        onChange={(e) =>
+                          updateFormData({
+                            return_conversion_factor: Number(e.target.value),
+                          })
+                        }
+                        placeholder="1.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Base Quantity
+                      </label>
+                      <Input
+                        type="number"
+                        value={formData.return_base_qty}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <div>
                 <div className="flex items-center gap-2">
                   <Percent className="h-4 w-4 text-primary" />
                   <h3 className="text-sm font-semibold">Tax Information</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Tax Type</FormLabel>
-                        <FormControl>
-                          <Input
-                            value={formData.tax_type || ""}
-                            onChange={(e) =>
-                              updateFormData({ tax_type: e.target.value })
-                            }
-                            placeholder="Enter Tax Type"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Tax Type</label>
+                      <TaxTypeLookup
+                        value={formData.tax_type_inventory_id || ""}
+                        onValueChange={(value: string) => {
+                          updateFormData({
+                            tax_type_inventory_id: value,
+                          });
+                        }}
+                        placeholder="Select Tax Type"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Tax Rate (%)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                            value={formData.tax_rate}
-                            onChange={(e) =>
-                              updateFormData({
-                                tax_rate: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0.00"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Tax Rate (%)
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        value={formData.tax_rate}
+                        onChange={(e) =>
+                          updateFormData({
+                            tax_rate: Number(e.target.value),
+                          })
+                        }
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Tax Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={formData.tax_amount}
-                            onChange={(e) =>
-                              updateFormData({
-                                tax_amount: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0.00"
-                            disabled={!formData.is_tax_adjustment}
-                            className={
-                              formData.is_tax_adjustment ? "" : "bg-muted"
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Tax Amount</label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.tax_amount}
+                        onChange={(e) =>
+                          updateFormData({
+                            tax_amount: Number(e.target.value),
+                          })
+                        }
+                        placeholder="0.00"
+                        disabled={!formData.is_tax_adjustment}
+                        className={formData.is_tax_adjustment ? "" : "bg-muted"}
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Base Tax Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            value={formData.base_tax_amount}
-                            readOnly
-                            className="bg-muted"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
-                            Adjust Tax
-                          </FormLabel>
-                          <div className="text-[0.8rem] text-muted-foreground">
-                            Adjust tax manually
-                          </div>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={formData.is_tax_adjustment}
-                            onCheckedChange={(checked) =>
-                              updateFormData({ is_tax_adjustment: checked })
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Base Tax Amount
+                      </label>
+                      <Input
+                        type="number"
+                        value={formData.base_tax_amount}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                    <div className="space-y-0.5">
+                      <label className="text-base font-medium">
+                        Adjust Tax
+                      </label>
+                      <div className="text-[0.8rem] text-muted-foreground">
+                        Adjust tax manually
+                      </div>
+                    </div>
+                    <Switch
+                      checked={formData.is_tax_adjustment}
+                      onCheckedChange={(checked) =>
+                        updateFormData({ is_tax_adjustment: checked })
+                      }
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -671,228 +471,119 @@ export default function CnItemDialog({
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mt-2">
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Discount Rate (%)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                            value={formData.discount_rate}
-                            onChange={(e) =>
-                              updateFormData({
-                                discount_rate: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0.00"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Discount Rate (%)
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        value={formData.discount_rate}
+                        onChange={(e) =>
+                          updateFormData({
+                            discount_rate: Number(e.target.value),
+                          })
+                        }
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Discount Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={formData.discount_amount}
-                            onChange={(e) =>
-                              updateFormData({
-                                discount_amount: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0.00"
-                            disabled={!formData.is_discount_adjustment}
-                            className={
-                              formData.is_discount_adjustment ? "" : "bg-muted"
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Discount Amount
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.discount_amount}
+                        onChange={(e) =>
+                          updateFormData({
+                            discount_amount: Number(e.target.value),
+                          })
+                        }
+                        placeholder="0.00"
+                        disabled={!formData.is_discount_adjustment}
+                        className={
+                          formData.is_discount_adjustment ? "" : "bg-muted"
+                        }
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Base Discount Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            value={formData.base_discount_amount}
-                            readOnly
-                            className="bg-muted"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Extra Cost Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={formData.extra_cost_amount}
-                            onChange={(e) =>
-                              updateFormData({
-                                extra_cost_amount: Number(e.target.value),
-                              })
-                            }
-                            placeholder="0.00"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Base Discount Amount
+                      </label>
+                      <Input
+                        type="number"
+                        value={formData.base_discount_amount}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </div>
+                  </div>
 
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Base Extra Cost Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            value={formData.base_extra_cost_amount}
-                            readOnly
-                            className="bg-muted"
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={control}
-                    name="credit_note_detail.data"
-                    render={() => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-2">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">
-                            Adjust Discount
-                          </FormLabel>
-                          <div className="text-[0.8rem] text-muted-foreground">
-                            Adjust discount manually
-                          </div>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={formData.is_discount_adjustment}
-                            onCheckedChange={(checked) =>
-                              updateFormData({
-                                is_discount_adjustment: checked,
-                              })
-                            }
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Extra Cost Amount
+                      </label>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.extra_cost_amount}
+                        onChange={(e) =>
+                          updateFormData({
+                            extra_cost_amount: Number(e.target.value),
+                          })
+                        }
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Base Extra Cost Amount
+                      </label>
+                      <Input
+                        type="number"
+                        value={formData.base_extra_cost_amount}
+                        readOnly
+                        className="bg-muted"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-2">
+                    <div className="space-y-0.5">
+                      <label className="text-base font-medium">
+                        Adjust Discount
+                      </label>
+                      <div className="text-[0.8rem] text-muted-foreground">
+                        Adjust discount manually
+                      </div>
+                    </div>
+                    <Switch
+                      checked={formData.is_discount_adjustment}
+                      onCheckedChange={(checked) =>
+                        updateFormData({
+                          is_discount_adjustment: checked,
+                        })
+                      }
+                    />
+                  </div>
                 </div>
               </div>
-
-              {/* <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calculator className="h-4 w-4" />
-                    Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          Quantity × Unit Price
-                        </p>
-                        <p className="text-lg font-semibold">
-                          {(
-                            formData.return_qty * formData.price
-                          ).toLocaleString("th-TH", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          บาท
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          Discount
-                        </p>
-                        <p className="text-lg font-semibold text-green-600">
-                          -
-                          {formData.discount_amount.toLocaleString("th-TH", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          Unit Base
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          Tax
-                        </p>
-                        <p className="text-lg font-semibold">
-                          {formData.tax_amount.toLocaleString("th-TH", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          Unit Base
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-muted-foreground">
-                          Extra Cost
-                        </p>
-                        <p className="text-lg font-semibold">
-                          {formData.extra_cost_amount.toLocaleString("th-TH", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          Unit Base
-                        </p>
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="flex justify-between items-center p-4 bg-primary/5 rounded-lg">
-                      <p className="text-xl font-bold">Total</p>
-                      <p className="text-2xl font-bold text-primary">
-                        {formData.total_price.toLocaleString("th-TH", {
-                          minimumFractionDigits: 2,
-                        })}{" "}
-                        Unit Base
-                      </p>
-                    </div>
-
-                    {hasErrors && (
-                      <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertDescription>
-                          Please check the required information and fix the errors before saving
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                  </div>
-                </CardContent>
-              </Card> */}
             </div>
           </ScrollArea>
         </div>
