@@ -67,15 +67,6 @@ export default function HeadPrForm({
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-2 w-2/3 space-y-2">
           {mode !== formType.ADD && (
-            // <div className="col-span-1">
-            //   <Label className="text-xs font-medium">
-            //     <div className="flex items-center gap-1">
-            //       <Hash className="h-3 w-3" />
-            //       PR Number
-            //     </div>
-            //   </Label>
-            //   <Input value={prNo} disabled className="mt-2 text-xs bg-muted" />
-            // </div>
             <FormField
               control={control}
               name="pr_no"
@@ -216,6 +207,7 @@ export default function HeadPrForm({
                       value={mode === formType.ADD ? userId : field.value}
                       onValueChange={field.onChange}
                       disabled={true}
+                      classNames="bg-muted"
                     />
                   </div>
                 </FormControl>
@@ -313,9 +305,7 @@ export default function HeadPrForm({
 
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Estimated Cost</span>
-                  <span className="font-medium">
-                    {totalAmount}
-                  </span>
+                  <span className="font-medium">{totalAmount}</span>
                 </div>
               </div>
             </div>

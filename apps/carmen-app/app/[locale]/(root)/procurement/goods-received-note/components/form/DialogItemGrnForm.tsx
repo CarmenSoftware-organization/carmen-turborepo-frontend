@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +30,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
-import { CalendarIcon, Plus } from "lucide-react";
+import { Box, CalendarIcon, Plus } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -40,10 +39,11 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 import { TaxType } from "@/constants/enum";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 
 const GrnItemFormSchema = z.object({
   id: z.string().uuid().optional(),
@@ -227,115 +227,127 @@ export default function DialogItemGrnForm({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="max-w-4xl h-[90vh]">
-        <DialogHeader>
-          <DialogTitle>{dialogTitle}</DialogTitle>
+      <DialogContent className="sm:max-w-[1000px] h-[87vh] flex flex-col overflow-hidden">
+        <DialogHeader className="border-b border-border pb-2 flex-shrink-0">
+          <DialogTitle className="text-base font-semibold flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Box className="h-4 w-4 text-primary" />
+            </div>
+            {dialogTitle}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <ScrollArea className="h-[calc(80vh-100px)] p-4">
-              {/* Basic Product Information */}
-              <Card className="p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Product Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="product_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Product *</FormLabel>
-                        <FormControl>
-                          <ProductLookup
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <ScrollArea className="h-[calc(80vh-100px)]">
+              <div className="space-y-4 px-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                    <h3 className="text-xs font-semibold">
+                      Product Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="product_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Product</FormLabel>
+                          <FormControl>
+                            <ProductLookup
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="location_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Location *</FormLabel>
-                        <FormControl>
-                          <LocationLookup
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="location_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Location</FormLabel>
+                          <FormControl>
+                            <LocationLookup
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="delivery_point_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Delivery Point</FormLabel>
-                        <FormControl>
-                          <DeliveryPointLookup
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="delivery_point_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Delivery Point</FormLabel>
+                          <FormControl>
+                            <DeliveryPointLookup
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="sequence_no"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Sequence No.</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="sequence_no"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Sequence No.</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="1"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="purchase_order_detail_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Purchase Order Detail</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="purchase_order_detail_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Purchase Order Detail</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-              </Card>
 
-              {/* Quantity Information */}
-              <Card className="p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">Quantity Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm">Order Quantity</h4>
+                <Separator />
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                    <h3 className="text-xs font-semibold">
+                      Quantity Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <FormField
                       control={form.control}
                       name="order_qty"
@@ -376,10 +388,7 @@ export default function DialogItemGrnForm({
                         </FormItem>
                       )}
                     />
-                  </div>
 
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm">Received Quantity</h4>
                     <FormField
                       control={form.control}
                       name="received_qty"
@@ -421,34 +430,37 @@ export default function DialogItemGrnForm({
                       )}
                     />
                   </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <FormField
-                        control={form.control}
-                        name="is_foc"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <FormLabel className="font-medium text-sm">
-                              FOC (Free of Charge)
-                            </FormLabel>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
                       name="foc_qty"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>FOC Qty</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="base_qty"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Base Qty</FormLabel>
                           <FormControl>
                             <Input
                               type="number"
@@ -483,446 +495,500 @@ export default function DialogItemGrnForm({
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="is_foc"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                              <div className="space-y-0.5">
+                                <label className="text-xs font-medium">
+                                  FOC (Free of Charge)
+                                </label>
+                                <div className="text-xs text-muted-foreground">
+                                  Free of Charge
+                                </div>
+                              </div>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                    <h3 className="text-xs font-semibold">
+                      Pricing & Cost Details
+                    </h3>
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="base_qty"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Base Qty</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Unit Price</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="base_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Base Price</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="extra_cost"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Extra Cost</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="total_cost"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Total Cost</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="total_amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Total Amount</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="exchange_rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Exchange Rate</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.000001"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
-              </Card>
 
-              {/* Pricing Information */}
-              <Card className="p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Pricing & Cost Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Unit Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <Separator />
 
-                  <FormField
-                    control={form.control}
-                    name="base_price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Base Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                    <h3 className="text-xs font-semibold">Tax Information</h3>
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="extra_cost"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Extra Cost</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="tax_type_inventory_id"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tax Type Inventory</FormLabel>
+                          <FormControl>
+                            <TaxTypeLookup
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="total_cost"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Total Cost</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="tax_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tax Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="total_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Total Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="tax_rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tax Rate (%)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="exchange_rate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Exchange Rate</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.000001"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </Card>
+                    <FormField
+                      control={form.control}
+                      name="tax_amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tax Amount</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-              {/* Tax Details */}
-              <Card className="p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">Tax Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="tax_type_inventory_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tax Type Inventory</FormLabel>
-                        <FormControl>
-                          <TaxTypeLookup
-                            value={field.value}
-                            onValueChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tax_type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tax Type</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tax_rate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tax Rate (%)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tax_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tax Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="md:col-span-2 lg:col-span-4">
                     <FormField
                       control={form.control}
                       name="is_tax_adjustment"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormItem>
                           <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
+                            <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                              <div className="space-y-0.5">
+                                <label className="text-xs font-medium">
+                                  Adjust Tax
+                                </label>
+                                <div className="text-xs text-muted-foreground">
+                                  Adjust tax manually
+                                </div>
+                              </div>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </div>
                           </FormControl>
-                          <FormLabel>Tax Adjustment</FormLabel>
                         </FormItem>
                       )}
                     />
                   </div>
                 </div>
-              </Card>
 
-              {/* Discount Details */}
-              <Card className="p-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Discount Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="is_discount"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <FormLabel>Apply Discount</FormLabel>
-                      </FormItem>
-                    )}
-                  />
+                <Separator />
 
-                  <FormField
-                    control={form.control}
-                    name="discount_rate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Discount Rate (%)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                    <h3 className="text-xs font-semibold">
+                      Discount Information
+                    </h3>
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="discount_amount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Discount Amount</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            {...field}
-                            onChange={(e) =>
-                              field.onChange(
-                                e.target.valueAsNumber || undefined
-                              )
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="discount_rate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Discount Rate (%)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              max="100"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="md:col-span-3">
+                    <FormField
+                      control={form.control}
+                      name="discount_amount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Discount Amount</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(
+                                  e.target.valueAsNumber || undefined
+                                )
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="is_discount"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                              <div className="space-y-0.5">
+                                <label className="text-xs font-medium">
+                                  Apply Discount
+                                </label>
+                                <div className="text-xs text-muted-foreground">
+                                  Apply discount manually
+                                </div>
+                              </div>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </div>
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="is_discount_adjustment"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                        <FormItem>
                           <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
+                            <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                              <div className="space-y-0.5">
+                                <label className="text-xs font-medium">
+                                  Apply Discount
+                                </label>
+                                <div className="text-xs text-muted-foreground">
+                                  Apply discount manually
+                                </div>
+                              </div>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={(checked) =>
+                                  field.onChange(checked)
+                                }
+                              />
+                            </div>
                           </FormControl>
-                          <FormLabel>Discount Adjustment</FormLabel>
                         </FormItem>
                       )}
                     />
                   </div>
                 </div>
-              </Card>
+                <Separator />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-0.5 w-4 bg-primary rounded-full"></div>
+                    <h3 className="text-xs font-semibold">
+                      Additional Information
+                    </h3>
+                  </div>
 
-              {/* Additional Information */}
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Additional Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="expired_date"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Expiry Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={cn(
-                                  "w-full pl-3 text-left font-normal",
-                                  !field.value && "text-muted-foreground"
-                                )}
-                              >
-                                {field.value ? (
-                                  format(new Date(field.value), "PPP")
-                                ) : (
-                                  <span>Select expiry date</span>
-                                )}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={
-                                field.value ? new Date(field.value) : undefined
-                              }
-                              onSelect={(date) =>
-                                field.onChange(date ? date.toISOString() : "")
-                              }
-                              disabled={(date) => date < new Date("1900-01-01")}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="expired_date"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Expiry Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant="outline"
+                                  className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(new Date(field.value), "PPP")
+                                  ) : (
+                                    <span>Select expiry date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={
+                                  field.value
+                                    ? new Date(field.value)
+                                    : undefined
+                                }
+                                onSelect={(date) =>
+                                  field.onChange(date ? date.toISOString() : "")
+                                }
+                                disabled={(date) =>
+                                  date < new Date("1900-01-01")
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="dimension"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Dimension</FormLabel>
-                        <FormControl>
-                          <Input {...field} placeholder="e.g., 10x5x3 cm" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="dimension"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Dimension</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="e.g., 10x5x3 cm" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="md:col-span-2">
                     <FormField
                       control={form.control}
                       name="note"
@@ -940,9 +1006,7 @@ export default function DialogItemGrnForm({
                         </FormItem>
                       )}
                     />
-                  </div>
 
-                  <div className="md:col-span-2">
                     <FormField
                       control={form.control}
                       name="info"
@@ -962,14 +1026,19 @@ export default function DialogItemGrnForm({
                     />
                   </div>
                 </div>
-              </Card>
+              </div>
             </ScrollArea>
 
-            <DialogFooter className="px-4 py-3 border-t">
-              <Button type="button" variant="outline" onClick={handleCancel}>
+            <DialogFooter className="flex justify-end gap-1 mb-4">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleCancel}
+              >
                 Cancel
               </Button>
-              <Button type="submit" disabled={mode === formType.VIEW}>
+              <Button type="submit" size="sm" disabled={mode === formType.VIEW}>
                 {initialData ? "Save Changes" : "Add Item"}
               </Button>
             </DialogFooter>

@@ -23,6 +23,7 @@ export default function UserListLookup({
   onValueChange,
   placeholder = "Select user",
   disabled = false,
+  classNames,
 }: Readonly<PropsLookup>) {
   const { userList, isLoading } = useUserList();
   const [open, setOpen] = useState(false);
@@ -39,7 +40,7 @@ export default function UserListLookup({
         <Button
           variant="outline"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn("w-full justify-between", classNames)}
           disabled={disabled}
         >
           <span className="truncate overflow-hidden overflow-ellipsis pr-2">

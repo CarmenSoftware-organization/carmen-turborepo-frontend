@@ -10,17 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { nanoid } from "nanoid";
-import {
-  Box,
-  Calculator,
-  Package,
-  Receipt,
-  Percent,
-  AlertCircle,
-} from "lucide-react";
+import { Box } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
@@ -62,8 +54,6 @@ const createEmptyItem = (): CreditNoteDetailFormItemDto => ({
   total_price: 0,
 });
 
-// Removed useFieldValidation since we're no longer using FormField components
-
 export default function CnItemDialog({
   open,
   onOpenChange,
@@ -78,9 +68,6 @@ export default function CnItemDialog({
 
   const isEditMode = initItem !== undefined && itemIndex !== undefined;
 
-  // Removed fieldValidation logging since we're no longer using FormField validation
-
-  // Calculate derived values
   const calculateDerivedValues = (data: CreditNoteDetailFormItemDto) => {
     const qty = data.return_qty || 0;
     const price = data.price || 0;
@@ -166,7 +153,6 @@ export default function CnItemDialog({
 
   if (!formData) return null;
 
-  const hasErrors = false;
   const isFormValid = formData.product_id?.trim() && formData.return_qty > 0;
 
   return (
@@ -186,7 +172,7 @@ export default function CnItemDialog({
             <div className="space-y-4 px-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <Package className="h-4 w-4 text-primary" />
+                  <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">
                     Location & Product Information
                   </h3>
@@ -254,7 +240,7 @@ export default function CnItemDialog({
               <Separator />
               <div>
                 <div className="flex items-center gap-2">
-                  <Calculator className="h-4 w-4 text-primary" />
+                  <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">
                     Price & Unit Information
                   </h3>
@@ -363,7 +349,7 @@ export default function CnItemDialog({
               <Separator />
               <div>
                 <div className="flex items-center gap-2">
-                  <Percent className="h-4 w-4 text-primary" />
+                  <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">Tax Information</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
@@ -439,9 +425,7 @@ export default function CnItemDialog({
 
                   <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
                     <div className="space-y-0.5">
-                      <label className="text-xs font-medium">
-                        Adjust Tax
-                      </label>
+                      <label className="text-xs font-medium">Adjust Tax</label>
                       <div className="text-xs text-muted-foreground">
                         Adjust tax manually
                       </div>
@@ -458,7 +442,7 @@ export default function CnItemDialog({
               <Separator />
               <div>
                 <div className="flex items-center gap-2">
-                  <Receipt className="h-4 w-4 text-primary" />
+                  <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">
                     Discount & Extra Cost
                   </h3>

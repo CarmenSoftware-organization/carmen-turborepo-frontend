@@ -31,6 +31,7 @@ import CommentGrn from "../CommentGrn";
 import { DOC_TYPE } from "@/constants/enum";
 import ItemGrn from "./ItemGrn";
 import ExtraCost from "./ExtraCost";
+import { Badge } from "@/components/ui/badge";
 
 // TODO: Implement these components
 const BudgetGrn = ({ mode }: { mode: formType }) => (
@@ -150,12 +151,9 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         <ScrollArea
           className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
         >
-          <Card className="p-4 mb-2">
-            <Form {...form}>
-              <form
-                className="space-y-4"
-                onSubmit={form.handleSubmit(onSubmit)}
-              >
+          <Form {...form}>
+            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+              <Card className="p-4 mb-2">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <Link href="/procurement/goods-received-note">
@@ -163,22 +161,30 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                     </Link>
                     <div className="flex items-start gap-2">
                       {mode === formType.ADD ? (
-                        <p className="text-2xl  font-bold">
+                        <p className="text-base  font-bold">
                           Goods Received Note
                         </p>
                       ) : (
                         <div className="flex flex-col gap-1">
-                          <p className="text-2xl font-bold">
+                          <p className="text-base font-bold">
                             {initialValues?.grn_no}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             Created on{" "}
                             {format(
                               new Date(initialValues?.created_at ?? ""),
-                              "dd MMM yyyy"
+                              "PPP"
                             )}
                           </p>
                         </div>
+                      )}
+                      {initialValues?.doc_status && (
+                        <Badge
+                          variant={initialValues?.doc_status}
+                          className="rounded-full text-xs"
+                        >
+                          {initialValues?.doc_status}
+                        </Badge>
                       )}
                     </div>
                   </div>
@@ -298,9 +304,10 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                     />
                   </TabsContent>
                 </Tabs>
-              </form>
-            </Form>
-          </Card>
+              </Card>
+            </form>
+          </Form>
+
           <div
             className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
           >

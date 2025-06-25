@@ -3,4 +3,5 @@ export interface PropsLookup {
     readonly onValueChange: (value: string) => void;
     readonly placeholder?: string;
     readonly disabled?: boolean;
+    readonly classNames?: string;
 }

@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { formType } from "@/dtos/form.dto";
 import { CreateGRNDto } from "@/dtos/grn.dto";
 import VendorLookup from "@/components/lookup/VendorLookup";
@@ -43,6 +42,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { useCreditTermQuery } from "@/hooks/useCreditTerm";
 import { useAuth } from "@/context/AuthContext";
+import { Switch } from "@/components/ui/switch";
 
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;
@@ -66,17 +66,15 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
 
   return (
     <div className="space-y-6 mt-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* GRN Number */}
-
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
         <FormField
           control={control}
           name="grn_no"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
+                  <FileText className="h-3 w-3" />
                   GRN Number
                 </div>
               </FormLabel>
@@ -98,9 +96,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="received_at"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" />
+                  <CalendarIcon className="h-3 w-3" />
                   Date
                 </div>
               </FormLabel>
@@ -166,9 +164,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="vendor_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <Store className="h-4 w-4" />
+                  <Store className="h-3 w-3" />
                   Vendor
                 </div>
               </FormLabel>
@@ -196,7 +194,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="doc_type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
                   <FileType className="h-4 w-4" />
                   Document Type
@@ -234,9 +232,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="currency_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <Coins className="h-4 w-4" />
+                  <Coins className="h-3 w-3" />
                   Currency
                 </div>
               </FormLabel>
@@ -260,9 +258,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
         />
 
         <div className="space-y-2">
-          <Label className="text-sm font-medium">
+          <Label className="text-xs font-medium">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4" />
+              <DollarSign className="h-3 w-3" />
               Exchange Rate
             </div>
           </Label>
@@ -278,9 +276,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="invoice_no"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <GitBranch className="h-4 w-4" />
+                  <GitBranch className="h-3 w-3" />
                   Invoice No.
                 </div>
               </FormLabel>
@@ -301,9 +299,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="invoice_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <CalendarIcon className="h-4 w-4" />
+                  <CalendarIcon className="h-3 w-3" />
                   Invoice Date
                 </div>
               </FormLabel>
@@ -368,9 +366,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="credit_term_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
+                  <Clock className="h-3 w-3" />
                   Credit Term
                 </div>
               </FormLabel>
@@ -400,9 +398,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <AlignLeft className="h-4 w-4" />
+                  <AlignLeft className="h-3 w-3" />
                   Description
                 </div>
               </FormLabel>
@@ -424,9 +422,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="note"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-medium">
+              <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4" />
+                  <MessageSquare className="h-3 w-3" />
                   Note
                 </div>
               </FormLabel>
@@ -441,30 +439,35 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
         />
       </div>
 
-      <div className="mt-6 flex flex-col gap-4">
-        <FormLabel className="text-sm font-medium">
+      <div className="flex flex-col gap-4">
+        <FormLabel className="text-xs font-medium">
           <div className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
             Payment Methods
           </div>
         </FormLabel>
-        <div className="flex flex-row gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
           <FormField
             control={control}
             name="is_consignment"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center space-x-3">
-                <FormLabel className="cursor-pointer text-sm font-medium">
-                  Consignment
-                </FormLabel>
+              <FormItem>
                 <FormControl>
-                  <Checkbox
+                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                    <div className="space-y-0.5">
+                      <label className="text-xs font-medium">Consignment</label>
+                      <p className="text-xs text-muted-foreground">
+                        Goods are delivered to the vendor and not to the
+                      </p>
+                    </div>
+                  <Switch
                     checked={field.value}
                     onCheckedChange={(checked: boolean | "indeterminate") => {
                       field.onChange(!!checked);
                     }}
-                    disabled={mode === formType.VIEW}
-                  />
+                      disabled={mode === formType.VIEW}
+                    />
+                  </div>
                 </FormControl>
               </FormItem>
             )}
@@ -474,18 +477,23 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
             control={control}
             name="is_cash"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center space-x-3">
-                <FormLabel className="cursor-pointer text-sm font-medium">
-                  Cash
-                </FormLabel>
+              <FormItem>
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked: boolean | "indeterminate") => {
-                      field.onChange(!!checked);
-                    }}
-                    disabled={mode === formType.VIEW}
-                  />
+                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                    <div className="space-y-0.5">
+                      <label className="text-xs font-medium">Cash</label>
+                      <p className="text-xs text-muted-foreground">
+                        Goods are delivered to the vendor and not to the
+                      </p>
+                    </div>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={(checked: boolean | "indeterminate") => {
+                        field.onChange(!!checked);
+                      }}
+                      disabled={mode === formType.VIEW}
+                    />
+                  </div>
                 </FormControl>
               </FormItem>
             )}
@@ -495,18 +503,23 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
             control={control}
             name="is_active"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center space-x-3">
-                <FormLabel className="cursor-pointer text-sm font-medium">
-                  Active
-                </FormLabel>
+              <FormItem>
                 <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={(checked: boolean | "indeterminate") => {
-                      field.onChange(!!checked);
-                    }}
-                    disabled={mode === formType.VIEW}
-                  />
+                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
+                    <div className="space-y-0.5">
+                      <label className="text-xs font-medium">Active</label>
+                      <p className="text-xs text-muted-foreground">
+                        Goods are delivered to the vendor and not to the
+                      </p>
+                    </div>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={(checked: boolean | "indeterminate") => {
+                        field.onChange(!!checked);
+                      }}
+                      disabled={mode === formType.VIEW}
+                    />
+                  </div>
                 </FormControl>
               </FormItem>
             )}

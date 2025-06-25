@@ -355,13 +355,13 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
 
                     <div className="flex items-start gap-2">
                       {mode === formType.ADD ? (
-                        <p className="text-2xl  font-bold">Purchase Request</p>
+                        <p className="text-base font-bold">Purchase Request</p>
                       ) : (
                         <div className="flex flex-col gap-1">
-                          <p className="text-2xl font-bold">
+                          <p className="text-base font-bold">
                             {initValues?.pr_no}
                           </p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             Created on{" "}
                             {initValues?.created_at
                               ? format(
