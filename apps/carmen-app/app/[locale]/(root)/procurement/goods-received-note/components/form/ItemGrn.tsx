@@ -36,7 +36,6 @@ import { useProduct } from "@/hooks/useProduct";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 
 // Extend GoodReceivedNoteDetailItemDto to include id

@@ -236,8 +236,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
             </FormItem>
           )}
         />
-
-        {/* 
+        
         <div className="space-y-2">
           <Label className="text-xs font-medium">
             <div className="flex items-center gap-1">
@@ -250,7 +249,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
             disabled
             className="bg-muted"
           />
-        </div> */}
+        </div>
 
         <FormField
           control={control}
