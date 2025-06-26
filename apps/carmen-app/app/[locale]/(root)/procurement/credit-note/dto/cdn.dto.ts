@@ -144,6 +144,7 @@ export const baseCreditNoteSchema = z.object({
   exchange_rate: z.number(),
   exchange_rate_date: z.string().datetime(),
   grn_id: z.string().uuid(),
+  grn_date: z.string().datetime(),
   cn_reason_id: z.string().optional(),
   invoice_no: z.string(),
   invoice_date: z.string().datetime(),

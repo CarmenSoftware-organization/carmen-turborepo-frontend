@@ -26,6 +26,7 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
 import { useUnit } from "@/hooks/useUnit";
 import useProduct from "@/hooks/useProduct";
+import { formatCurrency } from "@/lib/utils";
 
 interface ItemsCnProps {
   readonly control: Control<CreditNoteFormDto>;
@@ -195,12 +196,16 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
               <TableCell className="w-10">
                 <Checkbox />
               </TableCell>
-              <TableCell>{getLocationName(item.location_id ?? "")}</TableCell>
-              <TableCell>{getProductName(item.product_id ?? "")}</TableCell>
+              <TableCell className="font-semibold">
+                {getLocationName(item.location_id ?? "")}
+              </TableCell>
+              <TableCell className="font-semibold text-xs">
+                {getProductName(item.product_id ?? "")}
+              </TableCell>
               <TableCell className="text-right">{item.return_qty}  {getUnitName(item.return_unit_id ?? "")}</TableCell>
-              <TableCell className="text-right">{item.price}</TableCell>
-              <TableCell className="text-right">{item.tax_amount}</TableCell>
-              <TableCell className="text-right">{item.total_price}</TableCell>
+              <TableCell className="text-right">{formatCurrency(item.price, "THB")}</TableCell>
+              <TableCell className="text-right">{formatCurrency(item.tax_amount, "THB")}</TableCell>
+              <TableCell className="text-right">{formatCurrency(item.total_price, "THB")}</TableCell>
               {mode !== formType.VIEW && (
                 <TableCell className="text-right">
                   <Button

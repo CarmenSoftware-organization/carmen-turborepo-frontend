@@ -37,6 +37,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { format } from "date-fns";
+import { formatCurrency } from "@/lib/utils";
 
 // Extend GoodReceivedNoteDetailItemDto to include id
 type ExtendedGoodReceivedNoteDetailItemDto = GoodReceivedNoteDetailItemDto & {
@@ -188,50 +189,53 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
   return (
     <Card>
       <CardHeader className="p-4">
-        <p className="text-sm font-medium px-2">Items Details</p>
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-col gap-2">
+            <p className="text-base font-medium px-2">Items Details</p>
 
-        <div
-          className={`flex flex-row items-center ${bulkAction ? "justify-between" : "justify-end"}`}
-        >
-          {bulkAction && (
-            <div className="flex flex-row items-center justify-between gap-1">
-              <Button size="sm">
-                <CheckCircle className="h-3 w-3" />
-                Approve
-              </Button>
-              <Button variant="outline" size="sm">
-                <XCircle className="h-3 w-3" />
-                Reject
-              </Button>
-              <Button variant="outline" size="sm">
-                <FileText className="h-3 w-3" />
-                Review
-              </Button>
-              <Button variant="outline" size="sm">
-                <Split className="h-3 w-3" />
-                Split
-              </Button>
-            </div>
-          )}
-
-          <div className="flex flex-row items-center gap-1">
-            <SearchInput
-              defaultValue={search}
-              onSearch={setSearch}
-              placeholder={tCommon("search")}
-              data-id="grn-item-search-input"
-              containerClassName="w-full"
-            />
-            <Button size="sm" type="button">
-              <Filter className="h-3 w-3" />
-              Filter
-            </Button>
-            {!isDisabled && (
-              <Button size="sm" type="button" onClick={handleAddNewClick}>
-                <Plus className="h-3 w-3" />
-                Add Item
-              </Button>
+            {bulkAction && (
+              <div className="flex flex-row items-center justify-between gap-1">
+                <Button size="sm">
+                  <CheckCircle className="h-3 w-3" />
+                  Approve
+                </Button>
+                <Button variant="outline" size="sm">
+                  <XCircle className="h-3 w-3" />
+                  Reject
+                </Button>
+                <Button variant="outline" size="sm">
+                  <FileText className="h-3 w-3" />
+                  Review
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Split className="h-3 w-3" />
+                  Split
+                </Button>
+              </div>
             )}
+          </div>
+          <div
+            className={`flex flex-row items-center ${bulkAction ? "justify-between" : "justify-end"}`}
+          >
+            <div className="flex flex-row items-center gap-1">
+              <SearchInput
+                defaultValue={search}
+                onSearch={setSearch}
+                placeholder={tCommon("search")}
+                data-id="grn-item-search-input"
+                containerClassName="w-full"
+              />
+              <Button size="sm" type="button">
+                <Filter className="h-3 w-3" />
+                Filter
+              </Button>
+              {!isDisabled && (
+                <Button size="sm" type="button" onClick={handleAddNewClick}>
+                  <Plus className="h-3 w-3" />
+                  Add Item
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -260,9 +264,12 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
               <TableHead>Product</TableHead>
               <TableHead className="text-right">Ordered</TableHead>
               <TableHead className="text-right">Received</TableHead>
+              <TableHead className="text-right">FOC</TableHead>
               <TableHead className="text-right">Price</TableHead>
-              <TableHead className="text-right">Total Cost</TableHead>
-              <TableHead>Expired Date</TableHead>
+              <TableHead className="text-right">Discount</TableHead>
+              <TableHead className="text-right">Tax Amount</TableHead>
+              <TableHead className="text-right">Total Amount</TableHead>
+              {/* <TableHead>Expired Date</TableHead> */}
               {!isDisabled && (
                 <TableHead className="text-right">Actions</TableHead>
               )}
@@ -317,15 +324,26 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
                       Base: {item.base_qty}
                     </p>
                   </TableCell>
-                  <TableCell className="text-right">{item.price}</TableCell>
                   <TableCell className="text-right">
-                    {item.total_cost}
+                    {item.foc_qty} {getUnitName(item.foc_unit_id ?? "")}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(item.price, "THB")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(item.discount_amount, "THB")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(item.tax_amount, "THB")}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(item.total_cost, "THB")}
+                  </TableCell>
+                  {/* <TableCell>
                     {item.expired_date
                       ? format(new Date(item.expired_date), "dd MMM yyyy")
                       : "-"}
-                  </TableCell>
+                  </TableCell> */}
                   {!isDisabled && (
                     <TableCell className="text-right">
                       <div

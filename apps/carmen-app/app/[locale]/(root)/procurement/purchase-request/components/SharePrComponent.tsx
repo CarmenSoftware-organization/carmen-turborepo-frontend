@@ -30,14 +30,6 @@ export const prStatusColor = (status: string) => {
     );
 };
 
-export const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        minimumFractionDigits: 2
-    }).format(amount);
-};
-
 export const ActionButtons = ({ prId }: { prId: string }) => {
     return (
         <div className="flex items-center justify-end">

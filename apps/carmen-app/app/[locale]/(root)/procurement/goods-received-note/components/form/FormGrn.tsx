@@ -73,15 +73,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     workflow_id: initialValues?.workflow_id ?? "",
     current_workflow_status:
       initialValues?.current_workflow_status ?? "pending",
-    is_consignment: initialValues?.is_consignment ?? false,
-    is_cash: initialValues?.is_cash ?? false,
     signature_image_url: initialValues?.signature_image_url ?? "",
     received_by_id: initialValues?.received_by_id ?? "",
     received_at: initialValues?.received_at ?? new Date().toISOString(),
     credit_term_id: initialValues?.credit_term_id ?? "",
     payment_due_date:
       initialValues?.payment_due_date ?? new Date().toISOString(),
-    is_active: initialValues?.is_active ?? true,
     good_received_note_detail: {
       initData: initialValues?.good_received_note_detail ?? [],
       add: [],
@@ -271,7 +268,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                 </div>
                 <GrnFormHeader control={form.control} mode={currentMode} />
                 <Tabs defaultValue="items">
-                  <TabsList className="w-full h-8">
+                  <TabsList className="w-full mt-4">
                     <TabsTrigger className="w-full text-xs" value="items">
                       Items
                     </TabsTrigger>

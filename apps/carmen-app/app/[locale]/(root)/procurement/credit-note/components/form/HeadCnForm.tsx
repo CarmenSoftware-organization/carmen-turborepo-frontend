@@ -58,13 +58,13 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
   });
   return (
     <div className="space-y-4 my-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-2 p-1 space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2 p-1 space-y-2">
         {mode !== formType.ADD && (
           <div className="col-span-1 mt-2">
             <Label className="text-xs font-medium">
               <div className="flex items-center gap-1">
                 <Hash className="h-3 w-3" />
-                CN Number
+                Credit Note
               </div>
             </Label>
             <Input value={cnNo} disabled className="mt-2 text-xs bg-muted" />
@@ -75,11 +75,11 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
           control={control}
           name="cn_date"
           render={({ field }) => (
-            <FormItem className="col-span-1 mt-2">
+            <FormItem className="col-span-1">
               <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-1">
                   <CalendarIcon className="h-3 w-3" />
-                  CN Date
+                  Date
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
@@ -146,7 +146,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
               <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
-                  Credit Note Type
+                  Type
                 </div>
               </FormLabel>
               <FormControl>
@@ -202,6 +202,180 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
                   />
                 </FormControl>
               )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="currency_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-medium">
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-3 w-3" />
+                  Currency
+                </div>
+              </FormLabel>
+              {mode === formType.VIEW ? (
+                <Input
+                  value={getCurrencyCode(field.value ?? "")}
+                  disabled
+                  className="bg-muted"
+                />
+              ) : (
+                <FormControl>
+                  <CurrencyLookup
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  />
+                </FormControl>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* 
+        <div className="space-y-2">
+          <Label className="text-xs font-medium">
+            <div className="flex items-center gap-1">
+              <DollarSign className="h-3 w-3" />
+              Exchange Rate
+            </div>
+          </Label>
+          <Input
+            value={getCurrencyExchangeRate(currencyId ?? "")}
+            disabled
+            className="bg-muted"
+          />
+        </div> */}
+
+        <FormField
+          control={control}
+          name="grn_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-medium">
+                <div className="flex items-center gap-1">
+                  <FileText className="h-3 w-3" />
+                  GRN No.
+                </div>
+              </FormLabel>
+              <FormControl>
+                {mode === formType.VIEW ? (
+                  <Input
+                    value={field.value ?? ""}
+                    disabled
+                    className="bg-muted"
+                    placeholder="Select GRN"
+                  />
+                ) : (
+                  <GrnLookup
+                    onValueChange={field.onChange}
+                    value={field.value ?? ""}
+                  />
+                )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="grn_date"
+          render={({ field }) => (
+            <FormItem className="col-span-1">
+              <FormLabel className="text-xs font-medium">
+                <div className="flex items-center gap-1">
+                  <CalendarIcon className="h-3 w-3" />
+                  GRN Date
+                </div>
+              </FormLabel>
+              {mode === formType.VIEW ? (
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full pl-2 text-left font-normal text-xs mt-1 bg-muted",
+                    !field.value && "text-muted-foreground"
+                  )}
+                  disabled
+                >
+                  {field.value ? (
+                    format(new Date(field.value), "PPP")
+                  ) : (
+                    <span className="text-muted-foreground">Select date</span>
+                  )}
+                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                </Button>
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(new Date(field.value), "PPP")
+                        ) : (
+                          <span className="text-muted-foreground">
+                            Select date
+                          </span>
+                        )}
+                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value ? new Date(field.value) : undefined}
+                      onSelect={(date) =>
+                        field.onChange(
+                          date ? date.toISOString() : new Date().toISOString()
+                        )
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="cn_reason_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-medium">
+                <div className="flex items-center gap-1">
+                  <Quote className="h-3 w-3" />
+                  Reason
+                </div>
+              </FormLabel>
+              <FormControl>
+                {mode === formType.VIEW ? (
+                  <Input
+                    value={field.value ?? ""}
+                    disabled
+                    className="bg-muted"
+                    placeholder="Select reason"
+                  />
+                ) : (
+                  <CnReasonLookup
+                    onValueChange={field.onChange}
+                    value={field.value ?? ""}
+                  />
+                )}
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -394,112 +568,6 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
             </FormItem>
           )}
         />
-
-        <FormField
-          control={control}
-          name="currency_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-1">
-                  <DollarSign className="h-3 w-3" />
-                  Currency
-                </div>
-              </FormLabel>
-              {mode === formType.VIEW ? (
-                <Input
-                  value={getCurrencyCode(field.value ?? "")}
-                  disabled
-                  className="bg-muted"
-                />
-              ) : (
-                <FormControl>
-                  <CurrencyLookup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
-                </FormControl>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">
-            <div className="flex items-center gap-1">
-              <DollarSign className="h-3 w-3" />
-              Exchange Rate
-            </div>
-          </Label>
-          <Input
-            value={getCurrencyExchangeRate(currencyId ?? "")}
-            disabled
-            className="bg-muted"
-          />
-        </div>
-
-        <FormField
-          control={control}
-          name="grn_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-1">
-                  <FileText className="h-3 w-3" />
-                  GRN No.
-                </div>
-              </FormLabel>
-              <FormControl>
-                {mode === formType.VIEW ? (
-                  <Input
-                    value={field.value ?? ""}
-                    disabled
-                    className="bg-muted"
-                    placeholder="Select GRN"
-                  />
-                ) : (
-                  <GrnLookup
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                  />
-                )}
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="cn_reason_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-1">
-                  <Quote className="h-3 w-3" />
-                  Reason
-                </div>
-              </FormLabel>
-              <FormControl>
-                {mode === formType.VIEW ? (
-                  <Input
-                    value={field.value ?? ""}
-                    disabled
-                    className="bg-muted"
-                    placeholder="Select reason"
-                  />
-                ) : (
-                  <CnReasonLookup
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                  />
-                )}
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -520,7 +588,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
                   value={field.value ?? ""}
                   className={cn(
                     "mt-1 min-h-[56px] resize-none text-xs",
-                    mode === formType.VIEW && "bg-muted"
+                    mode === formType.VIEW && "bg-muted text-muted-foreground"
                   )}
                   placeholder="Enter description..."
                   disabled={mode === formType.VIEW}
@@ -546,7 +614,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
                   value={field.value ?? ""}
                   className={cn(
                     "mt-1 min-h-[56px] resize-none text-xs",
-                    mode === formType.VIEW && "bg-muted"
+                    mode === formType.VIEW && "bg-muted text-muted-foreground"
                   )}
                   placeholder="Enter note..."
                   disabled={mode === formType.VIEW}

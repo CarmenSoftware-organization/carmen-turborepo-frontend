@@ -12,6 +12,7 @@ import {
   MessageSquare,
   CalendarIcon,
   DollarSign,
+  Hash,
 } from "lucide-react";
 
 import {
@@ -73,9 +74,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-3 w-3" />
-                  GRN Number
+                <div className="flex items-center gap-1">
+                  <Hash className="h-3 w-3" />
+                  GRN
                 </div>
               </FormLabel>
               <FormControl>
@@ -163,7 +164,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           control={control}
           name="vendor_id"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-2">
               <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
                   <Store className="h-3 w-3" />
@@ -225,51 +226,6 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
             </FormItem>
           )}
         /> */}
-
-        {/* Currency ID */}
-        <FormField
-          control={control}
-          name="currency_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-2">
-                  <Coins className="h-3 w-3" />
-                  Currency
-                </div>
-              </FormLabel>
-              {mode === formType.VIEW ? (
-                <Input
-                  value={getCurrencyCode(field.value ?? "")}
-                  disabled
-                  className="bg-muted"
-                />
-              ) : (
-                <FormControl>
-                  <CurrencyLookup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
-                </FormControl>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-3 w-3" />
-              Exchange Rate
-            </div>
-          </Label>
-          <Input
-            value={getCurrencyExchangeRate(currencyId ?? "")}
-            disabled
-            className="bg-muted"
-          />
-        </div>
 
         <FormField
           control={control}
@@ -363,6 +319,73 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
 
         <FormField
           control={control}
+          name="description"
+          render={({ field }) => (
+            <FormItem className="col-span-2">
+              <FormLabel className="text-xs font-medium">
+                <div className="flex items-center gap-2">
+                  <AlignLeft className="h-3 w-3" />
+                  Description
+                </div>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  value={field.value}
+                  disabled={mode === formType.VIEW}
+                  className={`${mode === formType.VIEW ? "bg-muted" : ""}`}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={control}
+          name="currency_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-xs font-medium">
+                <div className="flex items-center gap-2">
+                  <Coins className="h-3 w-3" />
+                  Currency
+                </div>
+              </FormLabel>
+              {mode === formType.VIEW ? (
+                <Input
+                  value={getCurrencyCode(field.value ?? "")}
+                  disabled
+                  className="bg-muted"
+                />
+              ) : (
+                <FormControl>
+                  <CurrencyLookup
+                    onValueChange={field.onChange}
+                    value={field.value}
+                  />
+                </FormControl>
+              )}
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="space-y-2">
+          <Label className="text-xs font-medium">
+            <div className="flex items-center gap-2">
+              <DollarSign className="h-3 w-3" />
+              Exchange Rate
+            </div>
+          </Label>
+          <Input
+            value={getCurrencyExchangeRate(currencyId ?? "")}
+            disabled
+            className="bg-muted"
+          />
+        </div>
+
+        <FormField
+          control={control}
           name="credit_term_id"
           render={({ field }) => (
             <FormItem>
@@ -390,38 +413,78 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
             </FormItem>
           )}
         />
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
           control={control}
-          name="description"
+          name="payment_due_date"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
-                  <AlignLeft className="h-3 w-3" />
-                  Description
+                  <CalendarIcon className="h-3 w-3" />
+                  Date
                 </div>
               </FormLabel>
-              <FormControl>
-                <Textarea
-                  value={field.value}
-                  disabled={mode === formType.VIEW}
-                  className={`${mode === formType.VIEW ? "bg-muted" : ""}`}
-                />
-              </FormControl>
-              <FormMessage />
+              {mode === formType.VIEW ? (
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full pl-2 text-left font-normal text-xs bg-muted",
+                    !field.value && "text-muted-foreground"
+                  )}
+                  disabled
+                >
+                  {field.value ? (
+                    format(new Date(field.value), "PPP")
+                  ) : (
+                    <span className="text-muted-foreground">Select date</span>
+                  )}
+                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                </Button>
+              ) : (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full pl-2 text-left font-normal text-xs bg-background",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(new Date(field.value), "PPP")
+                        ) : (
+                          <span className="text-muted-foreground">
+                            Select date
+                          </span>
+                        )}
+                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value ? new Date(field.value) : undefined}
+                      onSelect={(date) =>
+                        field.onChange(
+                          date ? date.toISOString() : new Date().toISOString()
+                        )
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
             </FormItem>
           )}
         />
-
-        {/* Note */}
         <FormField
           control={control}
           name="note"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-2">
               <FormLabel className="text-xs font-medium">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="h-3 w-3" />
@@ -437,94 +500,6 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
             </FormItem>
           )}
         />
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <FormLabel className="text-xs font-medium">
-          <div className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
-            Payment Methods
-          </div>
-        </FormLabel>
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
-          <FormField
-            control={control}
-            name="is_consignment"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
-                    <div className="space-y-0.5">
-                      <label className="text-xs font-medium">Consignment</label>
-                      <p className="text-xs text-muted-foreground">
-                        Goods are delivered to the vendor and not to the
-                      </p>
-                    </div>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={(checked: boolean | "indeterminate") => {
-                      field.onChange(!!checked);
-                    }}
-                      disabled={mode === formType.VIEW}
-                    />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="is_cash"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
-                    <div className="space-y-0.5">
-                      <label className="text-xs font-medium">Cash</label>
-                      <p className="text-xs text-muted-foreground">
-                        Goods are delivered to the vendor and not to the
-                      </p>
-                    </div>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={(checked: boolean | "indeterminate") => {
-                        field.onChange(!!checked);
-                      }}
-                      disabled={mode === formType.VIEW}
-                    />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={control}
-            name="is_active"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
-                    <div className="space-y-0.5">
-                      <label className="text-xs font-medium">Active</label>
-                      <p className="text-xs text-muted-foreground">
-                        Goods are delivered to the vendor and not to the
-                      </p>
-                    </div>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={(checked: boolean | "indeterminate") => {
-                        field.onChange(!!checked);
-                      }}
-                      disabled={mode === formType.VIEW}
-                    />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
       </div>
     </div>
   );

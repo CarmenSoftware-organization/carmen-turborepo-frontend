@@ -65,6 +65,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     exchange_rate_date:
       initialValues?.exchange_rate_date ?? new Date().toISOString(),
     grn_id: initialValues?.grn_id ?? "",
+    grn_date: initialValues?.grn_date ?? new Date().toISOString(),
     cn_reason_id: initialValues?.cn_reason_id ?? "",
     invoice_no: initialValues?.invoice_no ?? "",
     invoice_date: initialValues?.invoice_date ?? new Date().toISOString(),
@@ -162,6 +163,8 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
   // Watch form state changes
   const { isDirty, isValid, errors } = form.formState;
   const watchCnForm = form.watch();
+
+  console.log("watchCnForm", watchCnForm);
 
   // Debug form state changes
   useEffect(() => {
