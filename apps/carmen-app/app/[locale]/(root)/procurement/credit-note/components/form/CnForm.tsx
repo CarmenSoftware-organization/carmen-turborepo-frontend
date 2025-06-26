@@ -37,6 +37,7 @@ import {
   useUpdateCreditNote,
 } from "@/hooks/useCreditNote";
 import { format } from "date-fns";
+import { useCnReasonQuery } from "@/hooks/useCnReason";
 interface CnFormProps {
   readonly mode: formType;
   readonly initialValues?: CreditNoteByIdDto;
@@ -50,6 +51,10 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     tenantId,
     initialValues?.id ?? ""
   );
+  const { getCnReasonName } = useCnReasonQuery({
+    token: token || "",
+    tenantId: tenantId || "",
+  });
 
   const [openLog, setOpenLog] = useState(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
@@ -285,6 +290,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                   control={form.control}
                   mode={currentMode}
                   cnNo={initialValues?.cn_no}
+                  getCnReasonName={getCnReasonName}
                 />
                 <Tabs defaultValue="items">
                   <TabsList className="w-full">

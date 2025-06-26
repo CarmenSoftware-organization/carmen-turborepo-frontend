@@ -150,7 +150,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
   return (
     <div className="space-y-2 my-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-medium px-2">Detail Items </p>
+        <p className="text-base font-medium px-2">Items Details</p>
         <div className="flex flex-row items-center gap-1">
           <SearchInput
             defaultValue={search}
@@ -202,7 +202,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
               <TableCell className="font-semibold text-xs">
                 {getProductName(item.product_id ?? "")}
               </TableCell>
-              <TableCell className="text-right">{item.return_qty}  {getUnitName(item.return_unit_id ?? "")}</TableCell>
+              <TableCell className="text-right">{item.return_qty}  {getUnitName(item.return_unit_id ?? "-")}</TableCell>
               <TableCell className="text-right">{formatCurrency(item.price, "THB")}</TableCell>
               <TableCell className="text-right">{formatCurrency(item.tax_amount, "THB")}</TableCell>
               <TableCell className="text-right">{formatCurrency(item.total_price, "THB")}</TableCell>

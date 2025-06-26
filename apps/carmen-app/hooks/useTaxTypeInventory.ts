@@ -21,8 +21,14 @@ export const useTaxTypeInventoryQuery = (
 
     const isUnauthorized = error instanceof Error && error.message.includes('Unauthorized');
 
+    const getTaxTypeName = (id: string) => {
+        const found = data?.data?.find((taxType: TaxTypeInventoryDto) => taxType.id === id);
+        return found?.name ?? null;
+    };
+
     return {
         data: data?.data as TaxTypeInventoryDto[] | undefined,
+        getTaxTypeName,
         isLoading,
         error,
         isUnauthorized

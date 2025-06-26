@@ -52,8 +52,8 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   const { getVendorName } = useVendor();
   const { getCurrencyCode } = useCurrency();
   const { getCreditTermName } = useCreditTermQuery(token, tenantId);
-
-  // const isTypeBlank =
+ 
+ // const isTypeBlank =
   //   new URLSearchParams(window.location.search).get("type") === "blank";
 
   const { getCurrencyExchangeRate } = useCurrency();

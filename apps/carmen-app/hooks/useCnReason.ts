@@ -31,5 +31,11 @@ export const useCnReasonQuery = ({
 
   const cnReasons = data?.data ?? [];
 
-  return { cnReasons, isLoading, error };
+  const getCnReasonName = (id: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const found = cnReasons?.find((cnReason: any) => cnReason.id === id);
+    return found?.name ?? null;
+  };
+
+  return { cnReasons, getCnReasonName, isLoading, error };
 };

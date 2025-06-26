@@ -19,7 +19,6 @@ import ProductLookup from "@/components/lookup/ProductLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
 import { Separator } from "@/components/ui/separator";
-
 interface CnItemDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
@@ -61,6 +60,7 @@ export default function CnItemDialog({
   initItem,
   itemIndex,
 }: CnItemDialogProps) {
+
   const [formData, setFormData] = useState<CreditNoteDetailFormItemDto | null>(
     null
   );

@@ -42,20 +42,26 @@ import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { useCurrency } from "@/hooks/useCurrency";
 import GrnLookup from "@/components/lookup/GrnLookup";
 import CnReasonLookup from "@/components/lookup/CnReasonLookup";
+import { useGrn } from "@/hooks/useGrn";
 
 interface HeadCnFormProps {
   readonly control: Control<CreditNoteFormDto>;
   readonly mode: formType;
   readonly cnNo?: string;
+  readonly getCnReasonName: (id: string) => string | null;
 }
 
-export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
+export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: HeadCnFormProps) {
   const { getVendorName } = useVendor();
   const { getCurrencyCode, getCurrencyExchangeRate } = useCurrency();
   const currencyId = useWatch({
     control,
     name: "currency_id",
   });
+
+  const { getGrnNo } = useGrn();
+  
+
   return (
     <div className="space-y-4 my-4">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2 p-1 space-y-2">
@@ -265,7 +271,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
               <FormControl>
                 {mode === formType.VIEW ? (
                   <Input
-                    value={field.value ?? ""}
+                    value={getGrnNo(field.value ?? "")}
                     disabled
                     className="bg-muted"
                     placeholder="Select GRN"
@@ -363,7 +369,7 @@ export default function HeadCnForm({ control, mode, cnNo }: HeadCnFormProps) {
               <FormControl>
                 {mode === formType.VIEW ? (
                   <Input
-                    value={field.value ?? ""}
+                    value={getCnReasonName(field.value ?? "") ?? ""}
                     disabled
                     className="bg-muted"
                     placeholder="Select reason"
