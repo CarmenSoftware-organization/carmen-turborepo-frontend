@@ -86,7 +86,7 @@ const createEmptyItem = (): ItemWithId => ({
   total_price: 0.0,
   foc: 0,
   foc_unit_id: "",
-  tax_type: "include",
+  tax_type: TaxType.NONE,
   tax_rate: 0.0,
   tax_amount: 0.0,
   is_tax_adjustment: false,
@@ -96,13 +96,6 @@ const createEmptyItem = (): ItemWithId => ({
   is_discount_adjustment: false,
   is_active: true,
   note: "",
-  info: {
-    specifications: "",
-  },
-  dimension: {
-    project: "",
-    cost_center: "",
-  },
   delivery_date: new Date().toISOString(),
   delivery_point_id: "",
   delivery_point_name: "",
@@ -215,11 +208,11 @@ export default function ItemPrDialog({
   useEffect(() => {
     const price = parseFloat(watchedPrice?.toString() ?? "0") || 0;
     const qty = parseFloat(watchedQty?.toString() ?? "0") || 0;
-    const exchangeRate = parseFloat(watchedExchangeRate?.toString() ?? "1") || 1;
-    const total = parseFloat(((price * qty) * exchangeRate).toFixed(2));
+    const exchangeRate =
+      parseFloat(watchedExchangeRate?.toString() ?? "1") || 1;
+    const total = parseFloat((price * qty * exchangeRate).toFixed(2));
     localForm.setValue("total_price", total);
   }, [watchedPrice, watchedQty, watchedExchangeRate, localForm]);
-
 
   const localPrice = localForm.watch("total_price");
   console.log("localPrice", localPrice);
@@ -295,16 +288,6 @@ export default function ItemPrDialog({
     formData.total_price = parseFloat(
       (formData.price * formData.requested_qty).toFixed(2)
     );
-
-    // Ensure dimension object exists
-    if (!formData.dimension) {
-      formData.dimension = { project: "", cost_center: "" };
-    }
-
-    // Ensure info object exists
-    if (!formData.info) {
-      formData.info = { specifications: "" };
-    }
 
     console.log("Saving form data:", formData);
     onSave(formData);

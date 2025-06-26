@@ -56,7 +56,9 @@ export const getAllPrSchema = z.object({
     pr_date: z.string(),
     pr_no: z.string(),
     pr_status: z.string(),
+    pr_type: z.string().optional(),
     current_workflow_status: z.string(),
+    workflow_name: z.string().optional(),
     purchase_request_detail: z.array(z.object({
         price: z.number(),
         total_price: z.number()
@@ -231,13 +233,6 @@ export const purchaseRequestDetailItemSchema = z.object({
     delivery_point_id: z.string().uuid(),
     delivery_point_name: z.string(),
     note: z.string(),
-    info: z.object({
-        specifications: z.string(),
-    }),
-    dimension: z.object({
-        cost_center: z.string(),
-        project: z.string(),
-    }),
 });
 
 export type PurchaseRequestDetailItemDto = z.infer<typeof purchaseRequestDetailItemSchema>;
@@ -256,14 +251,6 @@ export const prSchemaV2 = z.object({
     doc_version: z.number().transform(val => parseFloat(val.toString())),
     description: z.string().optional(),
     note: z.string(),
-    info: z.object({
-        priority: z.string(),
-        budget_code: z.string(),
-    }),
-    dimension: z.object({
-        cost_center: z.string(),
-        project: z.string(),
-    }),
     purchase_request_detail: z.object({
         add: z.array(purchaseRequestDetailItemSchema).optional(),
         update: z.array(purchaseRequestDetailItemSchema).optional(),
@@ -273,7 +260,6 @@ export const prSchemaV2 = z.object({
             })
         ).optional(),
     }),
-    created_at: z.string().datetime(),
 });
 
 export type PrSchemaV2Dto = z.infer<typeof prSchemaV2>;

@@ -44,5 +44,9 @@ export const formatCurrency = (value: number, currency: string) => {
   return `${number} ${symbol}`.trim();
 };
 
-
-
+export const currencyFormat = (value: number, locale: string = "en-US") => {
+  return Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};

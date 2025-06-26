@@ -88,8 +88,9 @@ interface MainPrFormProps {
 }
 
 export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
+
   const router = useRouter();
-  const { token, tenantId } = useAuth();
+  const { token, tenantId, user } = useAuth();
   const [openLog, setOpenLog] = useState<boolean>(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const [openDialogItemPr, setOpenDialogItemPr] = useState<boolean>(false);
@@ -118,7 +119,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
       const itemsWithIds = initValues.purchase_request_detail.map((item) => ({
         ...item,
         id: item.id || uuidv4(),
-      })) as ItemWithId[];
+      })) as unknown as ItemWithId[];
       dispatchItems({ type: "INITIALIZE_ITEMS", payload: itemsWithIds });
     } else {
       dispatchItems({ type: "CLEAR_ITEMS" });
@@ -145,7 +146,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     pr_no: initValues?.pr_no ?? "",
     pr_date: initValues?.pr_date ?? new Date().toISOString(),
     pr_status: initValues?.pr_status ?? "draft",
-    requestor_id: initValues?.requestor_id ?? "",
+    requestor_id: initValues?.requestor_id ?? user?.id,
     department_id: initValues?.department_id ?? "",
     is_active: initValues?.is_active ?? true,
     doc_version: initValues?.doc_version
@@ -153,15 +154,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
       : 1.0,
     note: initValues?.note ?? "",
     description: initValues?.description ?? "",
-    info: {
-      priority: initValues?.info?.priority ?? "",
-      budget_code: initValues?.info?.budget_code ?? "",
-    },
-    dimension: {
-      cost_center: initValues?.dimension?.cost_center ?? "",
-      project: initValues?.dimension?.project ?? "",
-    },
-    workflow_id: initValues?.workflow_id ?? "",
+    workflow_id: initValues?.workflow_id ?? user?.id,
     workflow_name: initValues?.workflow_name ?? "",
     current_workflow_status: "pending",
     workflow_history: initValues?.workflow_history || [],
@@ -178,6 +171,8 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     mode: "onChange",
   });
 
+  console.log("form", form.getValues());
+
   // Debug form state
   useEffect(() => {
     const { isDirty, errors, isValid } = form.formState;
@@ -190,24 +185,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     });
   }, [form.formState]);
 
-  useEffect(() => {
-    if (isCreateSuccess && createPrData) {
-      setCurrentMode(formType.VIEW);
-      toastSuccess({ message: "Purchase Request created successfully" });
-      // Replace '/new' with the actual PR ID from the response
-      if (createPrData.id) {
-        const newUrl = window.location.pathname.replace(
-          "/new",
-          `/${createPrData.id}`
-        );
-        router.replace(newUrl);
-      } else {
-        // Fallback if no ID is provided
-        console.warn("No ID found in create PR response, redirecting to list");
-        router.push("/procurement/purchase-request");
-      }
-    }
-  }, [isCreateSuccess, createPrData, router]);
 
   useEffect(() => {
     if (isUpdateSuccess) {
@@ -229,15 +206,19 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
   }, [isUpdateError]);
 
   const onSubmit = async (data: PrSchemaV2Dto) => {
+    console.log("data", data);
     try {
       if (currentMode === formType.ADD) {
-        createPr(data);
+        const response = await createPr(data);
+        console.log("response", response);
+       
       } else if (currentMode === formType.EDIT && initValues?.id) {
         updatePr({ id: initValues.id, data });
       }
       setCurrentMode(formType.VIEW);
     } catch (error) {
       console.error("Error in form submission:", error);
+      toastError({ message: "Error in form submission" });
     }
   };
 
