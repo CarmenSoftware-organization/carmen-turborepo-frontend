@@ -100,10 +100,8 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
   const [currentItems, dispatchItems] = useReducer(itemsReducer, []);
   const {
     mutate: createPr,
-    isSuccess: isCreateSuccess,
     isPending: isCreatePending,
     isError: isCreateError,
-    data: createPrData,
   } = usePrMutation(token, tenantId);
   const {
     mutate: updatePr,
@@ -156,7 +154,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     description: initValues?.description ?? "",
     workflow_id: initValues?.workflow_id ?? user?.id,
     workflow_name: initValues?.workflow_name ?? "",
-    current_workflow_status: "pending",
     workflow_history: initValues?.workflow_history || [],
     purchase_request_detail: {
       add: [],

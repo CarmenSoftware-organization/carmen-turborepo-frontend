@@ -33,10 +33,6 @@ const itemPrDetailBase = {
     currency_id: z.string().uuid().optional(),
     currency_name: z.string().nullable().optional(),
     exchange_rate: z.number().optional(),
-    dimension: z.object({
-        project: z.string().optional(),
-        cost_center: z.string().optional()
-    }),
     price: z.number().optional(),
     total_price: z.number().optional(),
     foc: z.number().optional(),
@@ -92,9 +88,6 @@ export const itemPrDetailExtendedSchema = itemPrDetailSchema.extend({
     is_discount_adjustment: z.boolean().optional(),
     is_active: z.boolean().optional(),
     note: z.string().optional(),
-    info: z.object({
-        specifications: z.string().optional()
-    }).optional()
 });
 
 // Schema สำหรับ purchase request detail ที่จะใช้ใน form
@@ -119,18 +112,10 @@ export const purchaseRequestByIdSchema = z.object({
     note: z.string().optional(),
     description: z.string().optional(),
     workflow_id: z.string().uuid().optional(),
-    workflow_name: z.string().optional(),
-    info: z.object({
-        priority: z.string(),
-        budget_code: z.string()
-    }),
-    dimension: z.object({
-        cost_center: z.string(),
-        project: z.string()
-    }),
     workflow_history: z.array(workflowHistorySchema).optional(),
     purchase_request_detail: z.array(itemPrDetailSchema),
     created_at: z.string().datetime().optional(),
+    workflow_name: z.string().optional(),
 });
 
 // Schema สำหรับ purchase request ที่จะใช้ใน form (POST/PUT)
@@ -149,14 +134,6 @@ export const purchaseRequestFormSchema = z.object({
     description: z.string().optional(),
     workflow_id: z.string().uuid().optional(),
     workflow_name: z.string().optional(),
-    info: z.object({
-        priority: z.string(),
-        budget_code: z.string()
-    }),
-    dimension: z.object({
-        cost_center: z.string(),
-        project: z.string()
-    }),
     purchase_request_detail: purchaseRequestDetailFormSchema
 });
 
@@ -240,7 +217,7 @@ export type PurchaseRequestDetailItemDto = z.infer<typeof purchaseRequestDetailI
 export const prSchemaV2 = z.object({
     pr_no: z.string().optional(),
     pr_date: z.string().datetime(),
-    current_workflow_status: z.string(),
+    current_workflow_status: z.string().optional(),
     workflow_history: z.array(wfHistorySchema),
     pr_status: z.string().optional(),
     requestor_id: z.string().uuid(),

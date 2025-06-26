@@ -90,13 +90,6 @@ export default function ItemPr({
       is_discount_adjustment: false,
       is_active: true,
       note: "",
-      info: {
-        specifications: "",
-      },
-      dimension: {
-        project: "",
-        cost_center: "",
-      },
       delivery_date: new Date().toISOString(),
       delivery_point_id: "",
       delivery_point_name: "",

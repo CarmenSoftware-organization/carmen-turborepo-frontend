@@ -3,13 +3,7 @@ import { useState } from "react";
 import {
   FileText,
   MoreVertical,
-  Trash2,
-  Calendar,
-  GitBranch,
-  User,
-  Building,
-  DollarSign,
-  Loader2,
+  Trash2
 } from "lucide-react";
 import {
   Table,
@@ -33,7 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import PaginationComponent from "@/components/PaginationComponent";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Link } from "@/lib/navigation";
-import { currencyFormat, formatCurrency } from "@/lib/utils";
+import { currencyFormat } from "@/lib/utils";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: GetAllPrDto[];
