@@ -8,6 +8,7 @@ interface FormBooleanProps {
   label: string;
   positionLabel?: "left" | "right" | "top" | "bottom";
   type?: "switch" | "checkbox";
+  disabled?: boolean;
 }
 
 export default function FormBoolean({
@@ -16,14 +17,20 @@ export default function FormBoolean({
   label,
   positionLabel = "right",
   type = "switch",
+  disabled = false,
 }: FormBooleanProps) {
   const controlId = `form-boolean-${type}`;
 
   const renderControl = () =>
     type === "switch" ? (
-      <Switch id={controlId} checked={value} onCheckedChange={onChange} />
+      <Switch
+        id={controlId}
+        checked={value}
+        onCheckedChange={onChange}
+        disabled={disabled}
+      />
     ) : (
-      <Checkbox id={controlId} checked={value} onCheckedChange={onChange} />
+      <Checkbox id={controlId} checked={value} onCheckedChange={onChange} disabled={disabled} />
     );
 
   const renderLabel = () => (
@@ -32,7 +39,6 @@ export default function FormBoolean({
     </Label>
   );
 
-  // Render based on label position
   switch (positionLabel) {
     case "top":
       return (
