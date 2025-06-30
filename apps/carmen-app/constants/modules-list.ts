@@ -276,6 +276,10 @@ export const moduleItems: ModuleItem[] = [
                 labelKey: "Modules.Finance.creditTerms",
                 href: "/finance/credit-term",
             },
+            {
+                labelKey: "Modules.Finance.vat",
+                href: "/finance/vat",
+            },
         ]
     },
     {

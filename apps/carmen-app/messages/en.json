@@ -173,7 +173,8 @@
       "accountCodeMapping": "Account Code Mapping",
       "budgetPlanningAndControl": "Budget Planning and Control",
       "exchangeRates": "Exchange Rates",
-      "creditTerms": "Credit Terms"
+      "creditTerms": "Credit Terms",
+      "vat": "VAT"
     },
     "systemAdministration": "System Administration",
     "Configuration": {
