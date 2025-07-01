@@ -20,22 +20,20 @@ import {
   Hash,
   Settings,
   User,
-  Building,
   FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import DepartmentLookup from "@/components/lookup/DepartmentLookup";
 import UserListLookup from "@/components/lookup/UserListLookup";
 import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { useWorkflow } from "@/hooks/useWorkflow";
-import { useDepartment } from "@/hooks/useDepartment";
 import { useAuth } from "@/context/AuthContext";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 
 interface HeadPrFormProps {
   readonly control: Control<PrSchemaV2Dto>;
@@ -56,11 +54,9 @@ export default function HeadPrForm({
   statusInfo,
   totalAmount,
 }: HeadPrFormProps) {
-  const { user } = useAuth();
+  const { user, departments } = useAuth();
   const userId = user?.id;
-
   const { getWorkflowName } = useWorkflow();
-  const { getDepartmentName } = useDepartment();
 
   return (
     <div className="space-y-2 mt-2">
@@ -215,36 +211,17 @@ export default function HeadPrForm({
             )}
           />
 
-          <FormField
-            control={control}
-            name="department_id"
-            render={({ field }) => (
-              <FormItem className="col-span-1">
-                <FormLabel className="text-xs font-medium">
-                  <div className="flex items-center gap-1">
-                    <Building className="h-3 w-3" />
-                    Department
-                  </div>
-                </FormLabel>
-                {mode === formType.VIEW ? (
-                  <Input
-                    value={getDepartmentName(field.value)}
-                    disabled
-                    className="mt-1 text-xs bg-muted"
-                  />
-                ) : (
-                  <FormControl>
-                    <div className="mt-1">
-                      <DepartmentLookup
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      />
-                    </div>
-                  </FormControl>
-                )}
-              </FormItem>
-            )}
-          />
+          <Label>
+            <div className="flex items-center gap-1 mt-2">
+              <Settings className="h-3 w-3" />
+              PR Type
+            </div>
+            <Input
+              value={departments?.name}
+              disabled
+              className="mt-1 text-xs bg-muted"
+            />
+          </Label>
 
           <FormField
             control={control}

@@ -149,7 +149,7 @@ interface MainPrFormProps {
 
 export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
   const router = useRouter();
-  const { token, tenantId, user } = useAuth();
+  const { token, tenantId, user, departments } = useAuth();
   const [openLog, setOpenLog] = useState<boolean>(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const [openDialogItemPr, setOpenDialogItemPr] = useState<boolean>(false);
@@ -216,7 +216,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     pr_date: initValues?.pr_date ?? new Date().toISOString(),
     pr_status: initValues?.pr_status ?? "draft",
     requestor_id: initValues?.requestor_id ?? user?.id,
-    department_id: initValues?.department_id ?? "",
+    department_id: departments?.id ?? "",
     is_active: initValues?.is_active ?? true,
     doc_version: initValues?.doc_version
       ? parseFloat(initValues.doc_version.toString())
