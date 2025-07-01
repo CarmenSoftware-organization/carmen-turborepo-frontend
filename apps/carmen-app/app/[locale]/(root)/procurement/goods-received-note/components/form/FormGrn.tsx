@@ -32,6 +32,11 @@ import { DOC_TYPE } from "@/constants/enum";
 import ItemGrn from "./ItemGrn";
 import ExtraCost from "./ExtraCost";
 import { Badge } from "@/components/ui/badge";
+import JsonViewer from "@/components/JsonViewer";
+import { postGoodReceiveNote } from "@/app/[locale]/(root)/playground/test-post/payload";
+import { checkDiff } from "@/constants/check-diff";
+import { useAuth } from "@/context/AuthContext";
+import { useGrnMutation, useUpdateCreditNote } from "@/hooks/useGrn";
 
 // TODO: Implement these components
 const BudgetGrn = ({ mode }: { mode: formType }) => (
@@ -51,15 +56,22 @@ interface FormGrnProps {
 }
 
 export default function FormGrn({ mode, initialValues }: FormGrnProps) {
+  const { token, tenantId } = useAuth();
   const router = useRouter();
   const [openLog, setOpenLog] = useState<boolean>(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
 
-  const isCreatePending = false;
-  const isUpdatePending = false;
-  const createGrn = (data: CreateGRNDto) => console.log("Creating GRN:", data);
-  const updateGrn = ({ id, data }: { id: string; data: CreateGRNDto }) =>
-    console.log("Updating GRN:", { id, data });
+  // ตรวจสอบว่า token และ tenantId มีค่าก่อนส่งไปยัง hooks
+  const { mutate: createGrn, isPending: isCreatePending } = useGrnMutation(
+    token || "",
+    tenantId || ""
+  );
+
+  const { mutate: updateGrn, isPending: isUpdatePending } = useUpdateCreditNote(
+    token || "",
+    tenantId || "",
+    initialValues?.id ?? ""
+  );
 
   const defaultValues: CreateGRNDto = {
     invoice_no: initialValues?.invoice_no ?? "",
@@ -70,11 +82,13 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     vendor_id: initialValues?.vendor_id ?? "",
     currency_id: initialValues?.currency_id ?? "",
     currency_rate: initialValues?.currency_rate ?? 0,
-    workflow_id: initialValues?.workflow_id ?? "",
+    workflow_id:
+      initialValues?.workflow_id ?? "ac710822-d422-4e29-8439-87327e960a0e",
     current_workflow_status:
       initialValues?.current_workflow_status ?? "pending",
     signature_image_url: initialValues?.signature_image_url ?? "",
-    received_by_id: initialValues?.received_by_id ?? "",
+    received_by_id:
+      initialValues?.received_by_id ?? "1bfdb891-58ee-499c-8115-34a964de8122",
     received_at: initialValues?.received_at ?? new Date().toISOString(),
     credit_term_id: initialValues?.credit_term_id ?? "",
     payment_due_date:
@@ -112,7 +126,8 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     console.log("Form Values Changed in Dialog:", watchedValues);
     console.log("Form Errors in Dialog:", errors);
     console.log("Is Form Dirty in Dialog:", isDirty);
-  }, [watchedValues, errors, isDirty]);
+    console.log("Form isValid:", form.formState.isValid);
+  }, [watchedValues, errors, isDirty, form.formState.isValid]);
 
   useEffect(() => {
     if (initialValues) {
@@ -129,12 +144,38 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     }
   }, [initialValues, form]);
 
-  const onSubmit = async (data: CreateGRNDto) => {
+  const onSubmit = async (data: CreateGRNDto, e?: React.BaseSyntheticEvent) => {
+    console.log("onSubmit called with data:", data);
+    console.log("currentMode:", currentMode);
+    console.log("formType.ADD:", formType.ADD);
+    console.log("token:", token);
+    console.log("tenantId:", tenantId);
+
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    // ตรวจสอบว่าต้องมี token และ tenantId ก่อนส่งข้อมูล
+    if (!token || !tenantId) {
+      console.error("Missing authentication credentials");
+      return;
+    }
+
     try {
       if (currentMode === formType.ADD) {
+        console.log("Calling createGrn with data:", data);
         createGrn(data);
       } else if (currentMode === formType.EDIT && initialValues?.id) {
-        updateGrn({ id: initialValues.id, data });
+        console.log("Calling updateGrn with data:", data);
+        updateGrn(data);
+      } else {
+        console.log(
+          "No action taken - currentMode:",
+          currentMode,
+          "initialValues?.id:",
+          initialValues?.id
+        );
       }
       setCurrentMode(formType.VIEW);
     } catch (error) {
@@ -142,6 +183,9 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     }
   };
 
+  const watchForm = form.watch();
+
+  const diffData = checkDiff(postGoodReceiveNote, watchForm);
   return (
     <div className="relative">
       <div className="flex gap-4 relative">
@@ -149,7 +193,13 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
           className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
         >
           <Form {...form}>
-            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className="space-y-4"
+              onSubmit={(e) => {
+                console.log("Form submit event triggered", e);
+                return form.handleSubmit(onSubmit)(e);
+              }}
+            >
               <Card className="p-4 mb-2">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
@@ -217,11 +267,15 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                           variant="outline"
                           size={"sm"}
                           className="px-2 text-xs"
-                          onClick={() =>
-                            currentMode === formType.ADD
-                              ? router.push("/procurement/goods-received-note")
-                              : setCurrentMode(formType.VIEW)
-                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (currentMode === formType.ADD) {
+                              router.push("/procurement/goods-received-note");
+                            } else {
+                              setCurrentMode(formType.VIEW);
+                            }
+                          }}
                         >
                           <X /> Cancel
                         </Button>
@@ -308,7 +362,14 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
           <div
             className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
           >
-            <Button size={"sm"} className="h-7 px-2 text-xs">
+            <Button
+              size={"sm"}
+              className="h-7 px-2 text-xs"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
               <CheckCircleIcon className="w-4 h-4" />
               Approve
             </Button>
@@ -316,6 +377,10 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
               variant={"destructive"}
               size={"sm"}
               className="h-7 px-2 text-xs"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
             >
               <XCircleIcon className="w-4 h-4" />
               Reject
@@ -324,11 +389,20 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
               variant={"outline"}
               size={"sm"}
               className="h-7 px-2 text-xs"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
             >
               <ArrowLeftRightIcon className="w-4 h-4" />
               Send Back
             </Button>
           </div>
+          <div className="grid grid-cols-2 gap-2">
+            <JsonViewer data={postGoodReceiveNote} />
+            <JsonViewer data={watchForm} />
+          </div>
+          <JsonViewer data={diffData} />
         </ScrollArea>
         {openLog && (
           <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
@@ -341,7 +415,11 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
       </div>
       <Button
         aria-label={openLog ? "Close log panel" : "Open log panel"}
-        onClick={() => setOpenLog(!openLog)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setOpenLog(!openLog);
+        }}
         variant="default"
         size="sm"
         className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg"

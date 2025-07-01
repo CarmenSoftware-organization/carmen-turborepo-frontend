@@ -52,8 +52,8 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   const { getVendorName } = useVendor();
   const { getCurrencyCode } = useCurrency();
   const { getCreditTermName } = useCreditTermQuery(token, tenantId);
- 
- // const isTypeBlank =
+
+  // const isTypeBlank =
   //   new URLSearchParams(window.location.search).get("type") === "blank";
 
   const { getCurrencyExchangeRate } = useCurrency();
@@ -187,43 +187,6 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           )}
         />
 
-        {/* <FormField
-          control={control}
-          name="doc_type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-xs font-medium">
-                <div className="flex items-center gap-2">
-                  <FileType className="h-4 w-4" />
-                  Document Type
-                </div>
-              </FormLabel>
-              {mode === formType.VIEW ? (
-                <Input value={field.value} disabled className="bg-muted" />
-              ) : (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled={isTypeBlank}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select document type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value={DOC_TYPE.MANUAL}>Manual</SelectItem>
-                    <SelectItem value={DOC_TYPE.PURCHASE_ORDER}>
-                      Purchase Order
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
-
         <FormField
           control={control}
           name="invoice_no"
@@ -327,7 +290,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
               </FormLabel>
               <FormControl>
                 <Input
-                  value={field.value}
+                  {...field}
                   disabled={mode === formType.VIEW}
                   className={`${mode === formType.VIEW ? "bg-muted" : ""}`}
                 />

@@ -9,6 +9,7 @@ import { CreateGRNDto } from "@/dtos/grn.dto";
 import { GrnDto } from "@/app/[locale]/(root)/procurement/goods-received-note/type.dto";
 import { postApiRequest, updateApiRequest } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 const API_URL = `${backendApi}/api/good-received-note`;
 
@@ -88,6 +89,10 @@ export const useGrn = () => {
 export const useGrnMutation = (token: string, tenantId: string) => {
   return useMutation({
     mutationFn: async (data: CreateGRNDto) => {
+      if (!token || !tenantId) {
+        throw new Error("Unauthorized: Missing authentication credentials");
+      }
+      console.log("useGrnMutation", data);
       return await postApiRequest(
         API_URL,
         token,
@@ -95,6 +100,16 @@ export const useGrnMutation = (token: string, tenantId: string) => {
         data,
         "Error creating credit note"
       );
+    },
+    onSuccess: () => {
+      toastSuccess({ message: "GRN created successfully" });
+    },
+    onError: (error: Error) => {
+      if (error.message.includes("Unauthorized")) {
+        toastError({ message: "Please login to continue" });
+      } else {
+        toastError({ message: "Error creating GRN" });
+      }
     },
   });
 };
@@ -118,6 +133,16 @@ export const useUpdateCreditNote = (
         "Failed to update credit note",
         "PATCH"
       );
+    },
+    onSuccess: () => {
+      toastSuccess({ message: "GRN updated successfully" });
+    },
+    onError: (error: Error) => {
+      if (error.message.includes("Unauthorized")) {
+        toastError({ message: "Please login to continue" });
+      } else {
+        toastError({ message: "Error updating GRN" });
+      }
     },
   });
 };

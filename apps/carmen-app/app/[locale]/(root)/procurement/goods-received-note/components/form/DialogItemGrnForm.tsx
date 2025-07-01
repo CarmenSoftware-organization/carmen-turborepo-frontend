@@ -18,18 +18,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
 import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import { formType } from "@/dtos/form.dto";
-import { GoodReceivedNoteDetailItemDto } from "@/dtos/grn.dto";
+import {
+  GoodReceivedNoteDetailItemDto,
+  goodReceivedNoteDetailItemSchema,
+} from "@/dtos/grn.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
 import { Box, CalendarIcon, Plus } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -39,58 +40,25 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
 import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 import { TaxType } from "@/constants/enum";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import NumberInput from "@/components/form-custom/NumberInput";
 
-const GrnItemFormSchema = z.object({
-  id: z.string().uuid().optional(),
-  purchase_order_detail_id: z.string().uuid().optional(),
-  sequence_no: z.number().optional().default(0),
-  location_id: z.string().min(1, "Location is required"),
-  product_id: z.string().min(1, "Product is required"),
-  order_qty: z.number().optional().default(0),
-  order_unit_id: z.string().optional(),
-  received_qty: z.number().optional().default(0),
-  received_unit_id: z.string().optional(),
-  is_foc: z.boolean().optional().default(false),
-  foc_qty: z.number().optional().default(0),
-  foc_unit_id: z.string().optional(),
-  price: z.number().optional().default(0),
-  tax_type_inventory_id: z.string().optional(),
-  tax_type: z.string().optional(),
-  tax_rate: z.number().optional().default(0),
-  tax_amount: z.number().optional().default(0),
-  is_tax_adjustment: z.boolean().optional().default(false),
-  total_amount: z.number().optional().default(0),
-  delivery_point_id: z.string().optional(),
-  base_price: z.number().optional().default(0),
-  base_qty: z.number().optional().default(0),
-  extra_cost: z.number().optional().default(0),
-  total_cost: z.number().optional().default(0),
-  is_discount: z.boolean().optional().default(false),
-  discount_rate: z.number().optional().default(0),
-  discount_amount: z.number().optional().default(0),
-  is_discount_adjustment: z.boolean().optional().default(false),
-  expired_date: z.string().optional(),
-  note: z.string().optional().default(""),
-  exchange_rate: z.number().optional().default(1),
-  info: z.any().optional(),
-  dimension: z.any().optional(),
-});
-
-type GrnItemFormValues = z.infer<typeof GrnItemFormSchema>;
-
-const defaultItemValues: GrnItemFormValues = {
+const defaultItemValues: GoodReceivedNoteDetailItemDto = {
   location_id: "",
   product_id: "",
-  note: "",
   sequence_no: 0,
   order_qty: 0,
   received_qty: 0,
-  is_foc: false,
   foc_qty: 0,
   price: 0,
   tax_rate: 0,
@@ -101,61 +69,44 @@ const defaultItemValues: GrnItemFormValues = {
   base_qty: 0,
   extra_cost: 0,
   total_cost: 0,
-  is_discount: false,
   discount_rate: 0,
   discount_amount: 0,
-  is_discount_adjustment: false,
-  exchange_rate: 1,
   id: undefined,
-  purchase_order_detail_id: undefined,
   order_unit_id: "",
   received_unit_id: "",
   foc_unit_id: "",
   tax_type_inventory_id: "",
-  tax_type: "",
+  tax_type: TaxType.NONE,
   delivery_point_id: "",
-  expired_date: undefined,
-  info: undefined,
-  dimension: "",
+  expired_date: "",
 };
 
 const convertDtoToFormValues = (
   dto: GoodReceivedNoteDetailItemDto
-): GrnItemFormValues => {
+): GoodReceivedNoteDetailItemDto => {
   return {
     ...defaultItemValues,
     ...dto,
-    note: dto.note ?? "",
     order_unit_id: dto.order_unit_id ?? "",
     received_unit_id: dto.received_unit_id ?? "",
     foc_unit_id: dto.foc_unit_id ?? "",
     tax_type_inventory_id: dto.tax_type_inventory_id ?? "",
     tax_type: dto.tax_type ?? TaxType.NONE,
     delivery_point_id: dto.delivery_point_id ?? "",
-    dimension: dto.dimension ?? "",
     expired_date: dto.expired_date ?? "", // always a string
   };
 };
 
 const convertFormValuesToDto = (
-  formValues: GrnItemFormValues
+  formValues: GoodReceivedNoteDetailItemDto
 ): GoodReceivedNoteDetailItemDto & { id?: string } => {
   return {
     ...formValues,
     order_unit_id: formValues.order_unit_id ?? "",
     received_unit_id: formValues.received_unit_id ?? "",
     foc_unit_id: formValues.foc_unit_id ?? "",
-    tax_type_inventory_id: formValues.tax_type_inventory_id ?? "",
-    tax_type:
-      formValues.tax_type === "included" ||
-      formValues.tax_type === "excluded" ||
-      formValues.tax_type === "none"
-        ? formValues.tax_type
-        : TaxType.NONE,
+    tax_type_inventory_id: formValues.tax_type_inventory_id ?? TaxType.NONE,
     delivery_point_id: formValues.delivery_point_id ?? "",
-    dimension: formValues.dimension ?? "",
-    note: formValues.note ?? "",
-    info: formValues.info,
     id: formValues.id,
     expired_date: formValues.expired_date ?? "",
   };
@@ -185,8 +136,8 @@ export default function DialogItemGrnForm({
   const isDialogOpen = isOpen ?? dialogOpen;
   const setIsDialogOpen = onOpenChange || setDialogOpen;
 
-  const form = useForm<GrnItemFormValues>({
-    resolver: zodResolver(GrnItemFormSchema),
+  const form = useForm<GoodReceivedNoteDetailItemDto>({
+    resolver: zodResolver(goodReceivedNoteDetailItemSchema),
     defaultValues: {},
   });
 
@@ -200,7 +151,14 @@ export default function DialogItemGrnForm({
     }
   }, [initialData, isOpen, form]);
 
-  const onSubmit = async (data: GrnItemFormValues) => {
+  const onSubmit = async (
+    data: GoodReceivedNoteDetailItemDto,
+    event?: React.BaseSyntheticEvent
+  ) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     const action = initialData ? "update" : "add";
     let dtoData = convertFormValuesToDto(data);
     if (action === "add" && !dtoData.id) {
@@ -210,7 +168,11 @@ export default function DialogItemGrnForm({
     handleCancel();
   };
 
-  const handleCancel = () => {
+  const handleCancel = (event?: React.MouseEvent) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     form.reset();
     setIsDialogOpen(false);
   };
@@ -227,7 +189,10 @@ export default function DialogItemGrnForm({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="sm:max-w-[1000px] h-[87vh] flex flex-col overflow-hidden">
+      <DialogContent
+        className="sm:max-w-[1000px] h-[87vh] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <DialogHeader className="border-b border-border pb-2 flex-shrink-0">
           <DialogTitle className="text-base font-semibold flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
@@ -247,7 +212,7 @@ export default function DialogItemGrnForm({
                       Product Information
                     </h3>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <FormField
                       control={form.control}
                       name="product_id"
@@ -306,30 +271,11 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Sequence No.</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="1"
+                            <NumberInput
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="purchase_order_detail_id"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Purchase Order Detail</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -355,16 +301,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Order Qty</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
+                            <NumberInput
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -396,16 +336,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Received Qty</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -438,16 +372,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>FOC Qty</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -462,16 +390,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Base Qty</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -492,33 +414,6 @@ export default function DialogItemGrnForm({
                             />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="is_foc"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
-                              <div className="space-y-0.5">
-                                <label className="text-xs font-medium">
-                                  FOC (Free of Charge)
-                                </label>
-                                <div className="text-xs text-muted-foreground">
-                                  Free of Charge
-                                </div>
-                              </div>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(checked)
-                                }
-                              />
-                            </div>
-                          </FormControl>
                         </FormItem>
                       )}
                     />
@@ -543,16 +438,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Unit Price</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -567,16 +456,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Base Price</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -591,16 +474,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Extra Cost</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -615,16 +492,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Total Cost</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -639,40 +510,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Total Amount</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="exchange_rate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Exchange Rate</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.000001"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -715,7 +556,23 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Tax Type</FormLabel>
                           <FormControl>
-                            <Input {...field} />
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select Tax Type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value={TaxType.NONE}>
+                                  None
+                                </SelectItem>
+                                <SelectItem value={TaxType.INCLUDED}>
+                                  Included
+                                </SelectItem>
+                                <SelectItem value={TaxType.ADD}>ADD</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -729,17 +586,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Tax Rate (%)</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -754,16 +604,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Tax Amount</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                              <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -818,17 +662,10 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Discount Rate (%)</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              max="100"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
@@ -843,72 +680,13 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Discount Amount</FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              min="0"
-                              step="0.01"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.valueAsNumber || undefined
-                                )
-                              }
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={mode === formType.VIEW}
                             />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="is_discount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
-                              <div className="space-y-0.5">
-                                <label className="text-xs font-medium">
-                                  Apply Discount
-                                </label>
-                                <div className="text-xs text-muted-foreground">
-                                  Apply discount manually
-                                </div>
-                              </div>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(checked)
-                                }
-                              />
-                            </div>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="is_discount_adjustment"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <div className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-1">
-                              <div className="space-y-0.5">
-                                <label className="text-xs font-medium">
-                                  Apply Discount
-                                </label>
-                                <div className="text-xs text-muted-foreground">
-                                  Apply discount manually
-                                </div>
-                              </div>
-                              <Switch
-                                checked={field.value}
-                                onCheckedChange={(checked) =>
-                                  field.onChange(checked)
-                                }
-                              />
-                            </div>
-                          </FormControl>
                         </FormItem>
                       )}
                     />
@@ -974,56 +752,6 @@ export default function DialogItemGrnForm({
                         </FormItem>
                       )}
                     />
-
-                    <FormField
-                      control={form.control}
-                      name="dimension"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Dimension</FormLabel>
-                          <FormControl>
-                            <Input {...field} placeholder="e.g., 10x5x3 cm" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="note"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Note</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              rows={3}
-                              placeholder="Additional notes or comments..."
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="info"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Additional Info</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              {...field}
-                              rows={2}
-                              placeholder="Any additional information..."
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
                 </div>
               </div>
@@ -1034,7 +762,7 @@ export default function DialogItemGrnForm({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={handleCancel}
+                onClick={(e) => handleCancel(e)}
               >
                 Cancel
               </Button>

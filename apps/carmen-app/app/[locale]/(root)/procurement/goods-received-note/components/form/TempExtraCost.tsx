@@ -70,19 +70,8 @@ function ExtraCostDialog({
     resolver: zodResolver(extraCostSchema),
     defaultValues: initialData || {
       extra_cost_detail: {
-        add: [
-          {
-            id: undefined,
-            extra_cost_type_id: undefined,
-            amount: undefined,
-            tax_type_inventory_id: undefined,
-            tax_type: undefined,
-            tax_rate: undefined,
-            tax_amount: undefined,
-            is_tax_adjustment: false,
-            note: undefined,
-          },
-        ],
+        initData: [],
+        add: [],
         update: [],
         delete: [],
       },
@@ -98,7 +87,14 @@ function ExtraCostDialog({
     }
   }, [form, initialData, open]);
 
-  const onSubmit = (data: ExtraCostDetailItemDto) => {
+  const onSubmit = (
+    data: ExtraCostDetailItemDto,
+    event?: React.BaseSyntheticEvent
+  ) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     onSave(data);
     onOpenChange(false);
     form.reset();
@@ -106,7 +102,10 @@ function ExtraCostDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] h-[80vh] flex flex-col overflow-hidden">
+      <DialogContent
+        className="sm:max-w-[800px] h-[80vh] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <DialogHeader className="border-b pb-2 flex-shrink-0">
           <DialogTitle className="text-lg font-medium">
             {initialData ? "Edit Extra Cost" : "Add Extra Cost"}
@@ -358,7 +357,11 @@ function ExtraCostDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => onOpenChange(false)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onOpenChange(false);
+                    }}
                   >
                     Cancel
                   </Button>
@@ -487,7 +490,11 @@ export function ExtraCostDetail({
           type="button"
           size="sm"
           variant="ghost"
-          onClick={() => handleEditClick(index)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleEditClick(index);
+          }}
         >
           Edit
         </Button>
@@ -495,7 +502,11 @@ export function ExtraCostDetail({
           type="button"
           size="sm"
           variant="ghost"
-          onClick={() => handleDeleteClick(index)}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleDeleteClick(index);
+          }}
           className="text-destructive"
         >
           <Trash className="h-4 w-4" />
@@ -561,7 +572,11 @@ export function ExtraCostDetail({
         type="button"
         variant="default"
         size="sm"
-        onClick={handleAddNew}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleAddNew();
+        }}
         disabled={mode === formType.VIEW}
       >
         <Plus />
