@@ -215,8 +215,8 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     pr_no: initValues?.pr_no ?? "",
     pr_date: initValues?.pr_date ?? new Date().toISOString(),
     pr_status: initValues?.pr_status ?? "draft",
-    requestor_id: initValues?.requestor_id ?? user?.id,
-    department_id: departments?.id ?? "",
+    requestor_id: user?.id,
+    department_id: departments?.id,
     is_active: initValues?.is_active ?? true,
     doc_version: initValues?.doc_version
       ? parseFloat(initValues.doc_version.toString())
