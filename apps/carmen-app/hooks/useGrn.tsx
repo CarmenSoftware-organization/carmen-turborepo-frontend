@@ -3,10 +3,14 @@
 import { useAuth } from "@/context/AuthContext";
 import { useCallback, useEffect, useState } from "react";
 import { useURL } from "./useURL";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getAllGrn, postGrnService } from "@/services/grn.service";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { getAllGrn } from "@/services/grn.service";
 import { CreateGRNDto } from "@/dtos/grn.dto";
 import { GrnDto } from "@/app/[locale]/(root)/procurement/goods-received-note/type.dto";
+import { postApiRequest, updateApiRequest } from "@/lib/config.api";
+import { backendApi } from "@/lib/backend-api";
+
+const API_URL = `${backendApi}/api/good-received-note`;
 
 export const useGrn = () => {
   const { token, tenantId } = useAuth();
@@ -82,11 +86,38 @@ export const useGrn = () => {
 };
 
 export const useGrnMutation = (token: string, tenantId: string) => {
-  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateGRNDto) => postGrnService(token, tenantId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["grns"] });
+    mutationFn: async (data: CreateGRNDto) => {
+      return await postApiRequest(
+        API_URL,
+        token,
+        tenantId,
+        data,
+        "Error creating credit note"
+      );
+    },
+  });
+};
+
+export const useUpdateCreditNote = (
+  token: string,
+  tenantId: string,
+  id: string
+) => {
+  const API_ID = `${API_URL}/${id}`;
+  return useMutation({
+    mutationFn: async (data: CreateGRNDto) => {
+      if (!token || !tenantId || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      return updateApiRequest(
+        API_ID,
+        token,
+        tenantId,
+        data,
+        "Failed to update credit note",
+        "PATCH"
+      );
     },
   });
 };

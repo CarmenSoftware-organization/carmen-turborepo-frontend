@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
-import { postCreditNote } from "./posts";
 import JsonViewer from "@/components/JsonViewer";
+import { getStatusColorTestPost, postCreditNote } from "../payload";
 
 export default function CreditNotePage() {
   const { token, tenantId } = useAuth();
@@ -35,15 +35,7 @@ export default function CreditNotePage() {
     });
   };
 
-  const getStatusColor = () => {
-    if (statusSent === "Success")
-      return "bg-green-100 text-green-800 border-green-200";
-    if (statusSent === "กำลังส่งข้อมูล...")
-      return "bg-blue-100 text-blue-800 border-blue-200";
-    if (statusSent.startsWith("Error"))
-      return "bg-red-100 text-red-800 border-red-200";
-    return "bg-gray-100 text-gray-800 border-gray-200";
-  };
+
 
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-6">
@@ -69,7 +61,11 @@ export default function CreditNotePage() {
             </Button>
 
             <div className="flex-1">
-              <div className={`p-3 rounded-lg border ${getStatusColor()}`}>
+              <div
+                className={`p-3 rounded-lg border ${getStatusColorTestPost(
+                  statusSent
+                )}`}
+              >
                 <div className="flex items-center gap-2">
                   <Badge
                     variant={
