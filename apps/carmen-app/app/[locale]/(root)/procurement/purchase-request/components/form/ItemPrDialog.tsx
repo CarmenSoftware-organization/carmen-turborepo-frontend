@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { PurchaseRequestDetailItemDto } from "@/dtos/pr.dto";
+
 import { formType } from "@/dtos/form.dto";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -49,8 +49,46 @@ import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 import { useCurrency } from "@/hooks/useCurrency";
+import NumberInput from "@/components/form-custom/NumberInput";
 
-type ItemWithId = PurchaseRequestDetailItemDto & { id?: string };
+type ItemWithId = {
+  id?: string;
+  location_id: string;
+  product_id: string;
+  vendor_id: string;
+  price_list_id: string;
+  pricelist_detail_id?: string;
+  description: string;
+  requested_qty: number;
+  requested_unit_id: string;
+  requested_conversion_unit_factor?: number;
+  approved_qty: number;
+  approved_unit_id: string;
+  approved_conversion_unit_factor?: number;
+  approved_base_qty: number;
+  requested_base_qty: number;
+  inventory_unit_id?: string;
+  currency_id: string;
+  exchange_rate: number;
+  exchange_rate_date: string;
+  price: number;
+  total_price: number;
+  foc: number;
+  foc_unit_id: string;
+  tax_type: string;
+  tax_type_inventory_id?: string;
+  tax_rate: number;
+  tax_amount: number;
+  is_tax_adjustment: boolean;
+  is_discount: boolean;
+  discount_rate: number;
+  discount_amount: number;
+  is_discount_adjustment: boolean;
+  is_active: boolean;
+  note: string;
+  delivery_date: string;
+  delivery_point_id: string;
+};
 
 interface ItemPrDialogProps {
   readonly open: boolean;
@@ -68,17 +106,17 @@ const createEmptyItem = (): ItemWithId => ({
   product_id: "",
   vendor_id: "",
   price_list_id: "",
+  pricelist_detail_id: "",
   description: "",
   requested_qty: 0,
   requested_unit_id: "",
+  requested_conversion_unit_factor: 1,
   approved_qty: 0,
   approved_unit_id: "",
+  approved_conversion_unit_factor: 1,
   approved_base_qty: 0,
-  approved_base_unit_id: "",
-  approved_conversion_rate: 0,
-  requested_conversion_rate: 0,
   requested_base_qty: 0,
-  requested_base_unit_id: "",
+  inventory_unit_id: "",
   currency_id: "",
   exchange_rate: 1.0,
   exchange_rate_date: new Date().toISOString(),
@@ -87,6 +125,7 @@ const createEmptyItem = (): ItemWithId => ({
   foc: 0,
   foc_unit_id: "",
   tax_type: TaxType.NONE,
+  tax_type_inventory_id: "",
   tax_rate: 0.0,
   tax_amount: 0.0,
   is_tax_adjustment: false,
@@ -98,7 +137,6 @@ const createEmptyItem = (): ItemWithId => ({
   note: "",
   delivery_date: new Date().toISOString(),
   delivery_point_id: "",
-  delivery_point_name: "",
 });
 
 export default function ItemPrDialog({
@@ -177,11 +215,7 @@ export default function ItemPrDialog({
       );
       if (selectedProduct?.inventory_unit_id) {
         localForm.setValue(
-          "requested_base_unit_id",
-          selectedProduct.inventory_unit_id
-        );
-        localForm.setValue(
-          "approved_base_unit_id",
+          "inventory_unit_id",
           selectedProduct.inventory_unit_id
         );
       }
@@ -428,71 +462,22 @@ export default function ItemPrDialog({
                                   <span className="text-destructive">*</span>
                                 </FormLabel>
                                 <FormControl>
-                                  <Input
-                                    type="number"
-                                    {...field}
+                                  <NumberInput
                                     value={field.value ?? 0}
-                                    onChange={(e) =>
-                                      field.onChange(
-                                        parseFloat(e.target.value) || 0
-                                      )
-                                    }
+                                    onChange={(value) => field.onChange(value)}
                                     disabled={isViewMode}
-                                    min={0}
-                                    className="bg-background text-xs"
                                   />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
-
-                          {/* <FormField
-                                                            control={localForm.control}
-                                                            name="requested_base_unit_id"
-
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel className="text-xs font-medium">Base Unit</FormLabel>
-                                                                    <FormControl>
-                                                                        <UnitLookup
-                                                                            value={field.value ?? ''}
-                                                                            onValueChange={(value) => field.onChange(value)}
-                                                                            disabled={true}
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        /> */}
                         </div>
                       </div>
 
                       {/* Approved Quantity */}
                       <div className="space-y-1">
                         <div className="grid grid-cols-2 gap-1">
-                          {/* <FormField
-                            control={localForm.control}
-                            name="approved_unit_id"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-xs font-medium">
-                                  Order Unit
-                                </FormLabel>
-                                <FormControl>
-                                  <UnitLookup
-                                    value={field.value}
-                                    onValueChange={(value) =>
-                                      field.onChange(value)
-                                    }
-                                    disabled={true}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          /> */}
-
                           <FormField
                             control={localForm.control}
                             name="approved_qty"
@@ -502,18 +487,10 @@ export default function ItemPrDialog({
                                   Approved Quantity
                                 </FormLabel>
                                 <FormControl>
-                                  <Input
-                                    type="number"
-                                    {...field}
+                                  <NumberInput
                                     value={field.value ?? 0}
-                                    onChange={(e) =>
-                                      field.onChange(
-                                        parseFloat(e.target.value) || 0
-                                      )
-                                    }
+                                    onChange={(value) => field.onChange(value)}
                                     disabled={isViewMode}
-                                    min={0}
-                                    className="bg-background text-xs"
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -530,42 +507,16 @@ export default function ItemPrDialog({
                                   FOC Quantity
                                 </FormLabel>
                                 <FormControl>
-                                  <Input
-                                    type="number"
-                                    {...field}
+                                  <NumberInput
                                     value={field.value ?? 0}
-                                    onChange={(e) =>
-                                      field.onChange(
-                                        parseFloat(e.target.value) || 0
-                                      )
-                                    }
+                                    onChange={(value) => field.onChange(value)}
                                     disabled={isViewMode}
-                                    min={0}
-                                    className="bg-background text-xs"
                                   />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
-
-                          {/* <FormField
-                                                            control={localForm.control}
-                                                            name="approved_base_unit_id"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel className="text-xs font-medium">Base Unit</FormLabel>
-                                                                    <FormControl>
-                                                                        <UnitLookup
-                                                                            value={field.value ?? ''}
-                                                                            onValueChange={(value) => field.onChange(value)}
-                                                                            disabled={true}
-                                                                        />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        /> */}
                         </div>
                       </div>
                     </div>
@@ -659,29 +610,6 @@ export default function ItemPrDialog({
                           </FormItem>
                         )}
                       />
-                      <div className="grid grid-cols-2 gap-1">
-                        {/* <FormField
-                          control={localForm.control}
-                          name="foc_unit_id"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xs font-medium">
-                                Unit
-                              </FormLabel>
-                              <FormControl>
-                                <UnitLookup
-                                  value={field.value}
-                                  onValueChange={(value) =>
-                                    field.onChange(value)
-                                  }
-                                  disabled={true}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        /> */}
-                      </div>
                     </div>
                   </div>
 
@@ -806,17 +734,10 @@ export default function ItemPrDialog({
                             <span className="text-destructive">*</span>
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              {...field}
+                            <NumberInput
                               value={field.value ?? 0}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
+                              onChange={(value) => field.onChange(value)}
                               disabled={isViewMode}
-                              min={0.01}
-                              className="bg-background text-xs font-medium"
                             />
                           </FormControl>
                           <FormMessage />
@@ -889,25 +810,10 @@ export default function ItemPrDialog({
                             Tax Rate (%)
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              {...field}
+                            <NumberInput
                               value={field.value ?? 0}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
-                              disabled={
-                                isViewMode ||
-                                !localForm.watch("is_tax_adjustment")
-                              }
-                              min={0}
-                              className={cn(
-                                "text-xs",
-                                localForm.watch("is_tax_adjustment")
-                                  ? "bg-background"
-                                  : "bg-muted/50"
-                              )}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={isViewMode}
                             />
                           </FormControl>
                           <FormMessage />
@@ -923,25 +829,10 @@ export default function ItemPrDialog({
                             Tax Amount
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              {...field}
+                            <NumberInput
                               value={field.value ?? 0}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
-                              disabled={
-                                isViewMode ||
-                                !localForm.watch("is_tax_adjustment")
-                              }
-                              min={0}
-                              className={cn(
-                                "text-xs",
-                                localForm.watch("is_tax_adjustment")
-                                  ? "bg-background"
-                                  : "bg-muted/50"
-                              )}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={isViewMode}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1007,27 +898,10 @@ export default function ItemPrDialog({
                             Discount Rate (%)
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              {...field}
+                            <NumberInput
                               value={field.value ?? 0}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
-                              disabled={
-                                isViewMode ||
-                                !localForm.watch("is_discount") ||
-                                !localForm.watch("is_discount_adjustment")
-                              }
-                              min={0}
-                              className={cn(
-                                "text-xs",
-                                localForm.watch("is_discount") &&
-                                  localForm.watch("is_discount_adjustment")
-                                  ? "bg-background"
-                                  : "bg-muted/50"
-                              )}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={isViewMode}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1043,27 +917,10 @@ export default function ItemPrDialog({
                             Discount Amount
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              step="0.01"
-                              {...field}
+                            <NumberInput
                               value={field.value ?? 0}
-                              onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value) || 0)
-                              }
-                              disabled={
-                                isViewMode ||
-                                !localForm.watch("is_discount") ||
-                                !localForm.watch("is_discount_adjustment")
-                              }
-                              min={0}
-                              className={cn(
-                                "text-xs",
-                                localForm.watch("is_discount") &&
-                                  localForm.watch("is_discount_adjustment")
-                                  ? "bg-background"
-                                  : "bg-muted/50"
-                              )}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={isViewMode}
                             />
                           </FormControl>
                           <FormMessage />
@@ -1089,12 +946,10 @@ export default function ItemPrDialog({
                             Total
                           </FormLabel>
                           <FormControl>
-                            <Input
-                              type="number"
-                              {...field}
-                              disabled={true}
-                              min={0.0}
-                              className="bg-muted text-xs font-semibold text-primary"
+                            <NumberInput
+                              value={field.value ?? 0}
+                              onChange={(value) => field.onChange(value)}
+                              disabled={isViewMode}
                             />
                           </FormControl>
                           <FormMessage />

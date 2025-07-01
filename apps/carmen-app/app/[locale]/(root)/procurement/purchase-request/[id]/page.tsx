@@ -19,5 +19,5 @@ export default function PurchaseRequestIdPage() {
 
     if (isLoading) return <DetailLoading />
 
-    return <MainPrForm mode={formType.VIEW} initValues={purchaseRequest} />
+    return <MainPrForm mode={formType.VIEW} initValues={purchaseRequest?.data} />
 }

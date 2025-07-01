@@ -103,14 +103,23 @@ export const usePr = () => {
   };
 };
 
-export const usePrMutation = (token: string, tenantId: string) => {
+export const usePrMutation = (
+  token: string,
+  tenantId: string,
+  options?: {
+    onSuccess?: (data: unknown) => void;
+  }
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (prData: PrSchemaV2Dto) =>
       createPrService(token, tenantId, prData),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["prs"] });
+      if (options?.onSuccess) {
+        options.onSuccess(data);
+      }
     },
   });
 };

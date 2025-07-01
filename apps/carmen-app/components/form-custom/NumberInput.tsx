@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface InputNumberProps {
   value: number;
@@ -11,6 +12,7 @@ interface InputNumberProps {
   showContent?: boolean;
   permission?: "view" | "edit" | "view-edit";
   viewStage?: "enable" | "disable" | "hidden";
+  classNames?: string;
 }
 
 export default function NumberInput({
@@ -24,6 +26,7 @@ export default function NumberInput({
   showContent = true,
   permission = "view-edit",
   viewStage = "enable",
+  classNames,
 }: InputNumberProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const inputValue = e.target.value;
@@ -58,8 +61,7 @@ export default function NumberInput({
       }
       placeholder={isHide ? placeholder : "••••••••"}
       readOnly={!showContent}
-      className="text-right"
-      onFocus={e => e.target.select()}
+      className={cn("text-right", classNames)}
     />
   );
 }

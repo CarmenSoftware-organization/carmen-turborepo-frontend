@@ -14,6 +14,7 @@ const Textarea = React.forwardRef<
       )}
       ref={ref}
       {...props}
+      onFocus={e => e.target.select()}
     />
   )
 })

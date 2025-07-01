@@ -42,6 +42,66 @@ import BudgetPr from "./BudgetPr";
 import ActivityLog from "../../../goods-received-note/components/ActivityLog";
 import CommentGrn from "../../../goods-received-note/components/CommentGrn";
 import { format } from "date-fns";
+import JsonViewer from "@/components/JsonViewer";
+import { checkDiff } from "@/constants/check-diff";
+
+const mockData = {
+  pr_no: "",
+  pr_date: "2025-06-25T17:00:00.000Z",
+  pr_status: "draft",
+  requestor_id: "1bfdb891-58ee-499c-8115-34a964de8122",
+  department_id: "11be5acd-e53f-4f2c-9361-8daf0306ed75",
+  is_active: true,
+  doc_version: 1,
+  note: "",
+  description: "daew",
+  workflow_id: "f224d743-7cfa-46f6-8f72-85b14c6a355e",
+  workflow_name: "",
+  workflow_history: [],
+  purchase_request_detail: {
+    add: [
+      {
+        location_id: "213f41eb-6916-4275-ac53-afe6b7880dd2",
+        product_id: "7fb2a1cd-7fd3-486b-b8e9-d2d461535b7f",
+        vendor_id: "2375bcba-81bf-4236-a35c-2798acbd321f",
+        price_list_id: "",
+        description: "dad",
+        requested_qty: 2,
+        requested_unit_id: "0730ff57-fcf2-4df4-a044-986dbac67934",
+        approved_qty: 3,
+        approved_unit_id: "0730ff57-fcf2-4df4-a044-986dbac67934",
+        approved_base_qty: 0,
+        approved_conversion_unit_factor: 0,
+        requested_conversion_unit_factor: 0,
+        requested_base_qty: 0,
+        currency_id: "0540e6ca-8a08-47ef-b104-522834d5026f",
+        exchange_rate: 1,
+        exchange_rate_date: "2025-06-26T08:44:56.293Z",
+        price: 3,
+        total_price: 6,
+        foc: 2,
+        foc_unit_id: "0730ff57-fcf2-4df4-a044-986dbac67934",
+        tax_type: "none",
+        tax_rate: 0,
+        tax_amount: 0,
+        is_tax_adjustment: true,
+        is_discount: true,
+        discount_rate: 0,
+        discount_amount: 0,
+        is_discount_adjustment: false,
+        is_active: true,
+        note: "",
+        delivery_date: "2025-06-26T08:44:56.293Z",
+        delivery_point_id: "086fc8ef-cb01-4a7f-b421-0ec2bdfb10bf",
+        inventory_unit_id: "0730ff57-fcf2-4df4-a044-986dbac67934",
+        pricelist_detail_id: "69e5eafe-e30a-4633-aed6-124c005ad665",
+        tax_type_inventory_id: "5f1cded9-e1fe-474a-bbbf-f5dfb26308e9",
+      },
+    ],
+    update: [],
+    delete: [],
+  },
+};
 
 type ItemWithId = PurchaseRequestDetailItemDto & { id: string };
 
@@ -88,7 +148,6 @@ interface MainPrFormProps {
 }
 
 export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
-
   const router = useRouter();
   const { token, tenantId, user } = useAuth();
   const [openLog, setOpenLog] = useState<boolean>(false);
@@ -98,11 +157,23 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     ItemWithId | undefined
   >(undefined);
   const [currentItems, dispatchItems] = useReducer(itemsReducer, []);
+
   const {
     mutate: createPr,
     isPending: isCreatePending,
     isError: isCreateError,
-  } = usePrMutation(token, tenantId);
+  } = usePrMutation(token, tenantId, {
+    onSuccess: (response: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const responseData = response as any;
+      if (responseData?.data?.id) {
+        router.push(`/procurement/purchase-request/${responseData.data.id}`);
+      } else {
+        setCurrentMode(formType.VIEW);
+      }
+    },
+  });
+  
   const {
     mutate: updatePr,
     isSuccess: isUpdateSuccess,
@@ -152,7 +223,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
       : 1.0,
     note: initValues?.note ?? "",
     description: initValues?.description ?? "",
-    workflow_id: initValues?.workflow_id ?? user?.id,
+    workflow_id: initValues?.workflow_id ?? "",
     workflow_name: initValues?.workflow_name ?? "",
     workflow_history: initValues?.workflow_history || [],
     purchase_request_detail: {
@@ -168,7 +239,9 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     mode: "onChange",
   });
 
-  console.log("form", form.getValues());
+  const watchForm = form.watch();
+
+  const diffData = checkDiff(mockData, watchForm);
 
   // Debug form state
   useEffect(() => {
@@ -181,7 +254,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
       errorFields: Object.keys(errors),
     });
   }, [form.formState]);
-
 
   useEffect(() => {
     if (isUpdateSuccess) {
@@ -206,13 +278,12 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     console.log("data", data);
     try {
       if (currentMode === formType.ADD) {
-        const response = await createPr(data);
-        console.log("response", response);
-       
+        createPr(data);
+        // Navigation will be handled by onSuccess callback in usePrMutation
       } else if (currentMode === formType.EDIT && initValues?.id) {
         updatePr({ id: initValues.id, data });
+        setCurrentMode(formType.VIEW);
       }
-      setCurrentMode(formType.VIEW);
     } catch (error) {
       console.error("Error in form submission:", error);
       toastError({ message: "Error in form submission" });
@@ -320,7 +391,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
           className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
         >
           <Card className="p-4 mb-2">
-          <Form {...form}>
+            <Form {...form}>
               <form
                 className="space-y-4"
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -475,6 +546,13 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
               </form>
             </Form>
           </Card>
+
+          <div className="grid grid-cols-2 gap-2">
+            <JsonViewer data={mockData} />
+            <JsonViewer data={watchForm} />
+          </div>
+          <JsonViewer data={diffData} />
+
           <div
             className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
           >
@@ -519,6 +597,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
           onSave={handleSaveItemDialog}
         />
       </div>
+
       <Button
         aria-label={openLog ? "Close log panel" : "Open log panel"}
         onClick={() => setOpenLog(!openLog)}

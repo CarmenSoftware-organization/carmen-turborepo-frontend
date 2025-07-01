@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import FormBoolean from "../../../../../components/form-custom/form-boolean";
-import NumberInput from "@/components/form-custom/number-input";
+import NumberInput from "@/components/form-custom/NumberInput";
 import JsonViewer from "@/components/JsonViewer";
 
 const formSchema = z.object({

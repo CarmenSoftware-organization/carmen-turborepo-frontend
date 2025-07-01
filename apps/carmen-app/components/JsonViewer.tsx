@@ -1,8 +1,23 @@
+import { useState } from "react";
+
 export default function JsonViewer({
   data,
 }: {
   data: Record<string, unknown>;
 }) {
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyToClipboard = async () => {
+    try {
+      const jsonString = JSON.stringify(data, null, 2);
+      await navigator.clipboard.writeText(jsonString);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+    }
+  };
+
   const formatJson = (obj: unknown, depth = 0): JSX.Element => {
     const indent = "  ".repeat(depth);
 
@@ -54,7 +69,7 @@ export default function JsonViewer({
           <br />
           {entries.map(([key, value], index) => (
             <div key={key}>
-              {indent} <span className="text-blue-700">&quot;{key}&quot;</span>:{" "}
+              {indent} <span className="text-primary">&quot;{key}&quot;</span>:{" "}
               {formatJson(value, depth + 1)}
               {index < entries.length - 1 && ","}
               <br />
@@ -71,29 +86,41 @@ export default function JsonViewer({
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-wrap gap-4 text-sm">
-        <div className="flex items-center gap-1">
-          <span className="text-blue-500">●</span>
-          <span>Keys</span>
+      <div className="flex justify-between items-center">
+        <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex items-center gap-1">
+            <span className="text-primary">●</span>
+            <span>Keys</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-orange-500">●</span>
+            <span>String</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-green-500">●</span>
+            <span>Number</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-purple-500">●</span>
+            <span>Boolean</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-blue-500">●</span>
+            <span>Null</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="text-green-500">●</span>
-          <span>String</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="text-purple-500">●</span>
-          <span>Number</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="text-orange-500">●</span>
-          <span>Boolean</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <span className="text-red-500">●</span>
-          <span>Null</span>
-        </div>
+        <button
+          onClick={handleCopyToClipboard}
+          className={`px-3 py-1 text-sm rounded-md transition-colors ${
+            isCopied
+              ? "bg-green-100 text-green-700 border border-green-300"
+              : "bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200"
+          }`}
+        >
+          {isCopied ? "Copied!" : "Copy JSON"}
+        </button>
       </div>
-      <pre className="bg-gray-100 p-4 rounded-lg text-sm font-mono overflow-auto">
+      <pre className="bg-muted p-4 rounded-lg text-sm font-mono overflow-auto">
         {formatJson(data)}
       </pre>
     </div>

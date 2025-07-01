@@ -68,11 +68,9 @@ export default function ItemPr({
       approved_qty: 0,
       approved_unit_id: "",
       approved_base_qty: 0,
-      approved_base_unit_id: "",
       approved_conversion_rate: 0,
       requested_conversion_rate: 0,
       requested_base_qty: 0,
-      requested_base_unit_id: "",
       currency_id: "",
       exchange_rate: 1.0,
       exchange_rate_date: new Date().toISOString(),
@@ -92,7 +90,6 @@ export default function ItemPr({
       note: "",
       delivery_date: new Date().toISOString(),
       delivery_point_id: "",
-      delivery_point_name: "",
     };
 
     console.log("Creating new item without ID");
@@ -238,31 +235,11 @@ export default function ItemPr({
                     </p>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div>
-                      <p>
-                        {item.requested_qty}{" "}
+                  {item.requested_qty}{" "}
                         {getUnitName(item.requested_unit_id)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        {item.requested_base_qty}{" "}
-                        {getUnitName(item.requested_base_unit_id)}
-                      </p>
-                    </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div>
-                      <p>
-                        {item.approved_qty} {getUnitName(item.approved_unit_id)}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-muted-foreground">
-                        {item.approved_base_qty}{" "}
-                        {getUnitName(item.approved_base_unit_id)}
-                      </p>
-                    </div>
+                  {item.approved_qty} {getUnitName(item.approved_unit_id)}
                   </TableCell>
                   <TableCell className="text-right">
                     {item.price} {item.currency_name}
