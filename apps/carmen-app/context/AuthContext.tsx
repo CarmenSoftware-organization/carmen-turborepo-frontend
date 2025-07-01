@@ -25,6 +25,11 @@ interface BusinessUnit {
   id: string;
   name: string;
   is_default?: boolean;
+  department?: {
+    id: string;
+    is_hod: boolean;
+    name: string;
+  };
 }
 
 interface User {
@@ -44,6 +49,7 @@ interface AuthContextType {
   getServerSideToken: () => string;
   tenantId: string;
   handleChangeTenant: (tenantId: string) => void;
+  departments: BusinessUnit["department"] | null;
 }
 
 // Create context with a default value
@@ -57,9 +63,10 @@ export const AuthContext = createContext<AuthContextType>({
   getServerSideToken: () => "",
   tenantId: "",
   handleChangeTenant: () => {},
+  departments: null,
 });
 
-// Helper function to get token on the client side
+// ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
 export function getServerSideToken(): string {
   if (typeof window !== "undefined") {
     return sessionStorage.getItem("access_token") ?? "";
@@ -72,11 +79,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [tenantId, setTenantId] = useState<string>(() => {
-    // Initialize from sessionStorage if available to prevent 400 errors on refresh
+    // เริ่มต้นจาก sessionStorage เพื่อป้องกัน 400 errors เมื่อ refresh
     return typeof window !== "undefined"
       ? (sessionStorage.getItem("tenant_id") ?? "")
       : "";
   });
+  const [departments, setDepartments] = useState<
+    BusinessUnit["department"] | null
+  >(null);
   const router = useRouter();
   const pathname = usePathname();
   const token =
@@ -84,7 +94,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       ? (sessionStorage.getItem("access_token") ?? "")
       : "";
 
-  // Initialize tenantId when user changes
+  // กำหนด tenantId เมื่อ user เปลี่ยน
   useEffect(() => {
     if (user?.business_unit?.length) {
       const defaultBu = user.business_unit.find(
@@ -94,18 +104,30 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
       setTenantId(newTenantId);
 
-      // Store tenantId in sessionStorage to preserve across refreshes
+      // เก็บ tenantId ใน sessionStorage เพื่อคงไว้เมื่อ refresh
       if (typeof window !== "undefined" && newTenantId) {
         sessionStorage.setItem("tenant_id", newTenantId);
       }
     }
   }, [user]);
 
-  // Check for existing user data on load
+  // กำหนด departments เมื่อ user เปลี่ยน
+  useEffect(() => {
+    if (user?.business_unit?.length) {
+      const defaultBu = user.business_unit.find(
+        (bu: BusinessUnit) => bu.is_default === true && bu.department
+      );
+      setDepartments(defaultBu?.department || null);
+    } else {
+      setDepartments(null);
+    }
+  }, [user]);
+
+  // ตรวจสอบข้อมูล user ที่มีอยู่เมื่อโหลด
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Extract locale from pathname dynamically
+        // ดึง locale จาก pathname แบบ dynamic
         const locale = pathname?.split("/")[1];
         const signInPage = `/${locale}/sign-in`;
 
@@ -124,7 +146,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
           return;
         }
 
-        // Load user from localStorage if available
+        // โหลดข้อมูล user จาก localStorage หากมี
         if (typeof window !== "undefined") {
           const storedUser = localStorage.getItem("user");
           if (storedUser) {
@@ -151,13 +173,13 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
         const data = await getUserProfileService(accessToken);
 
-        // Store user data in localStorage
+        // เก็บข้อมูล user ใน localStorage
         if (typeof window !== "undefined") {
           localStorage.setItem("user", JSON.stringify(data));
         }
         setUser(data);
 
-        // Set initial tenant ID when user logs in
+        // กำหนด tenant ID เริ่มต้นเมื่อ user เข้าสู่ระบบ
         if (data?.business_unit?.length) {
           const defaultBu = data.business_unit.find(
             (bu: BusinessUnit) => bu.is_default === true
@@ -182,21 +204,21 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const logout = useCallback(() => {
     const locale = pathname?.split("/")[1] || "en";
 
-    // Clear tokens
+    // ลบ tokens
     if (typeof window !== "undefined") {
       sessionStorage.removeItem("access_token");
       sessionStorage.removeItem("refresh_token");
       sessionStorage.removeItem("tenant_id");
-      // Also clear user data from localStorage
+      // ลบข้อมูล user จาก localStorage ด้วย
       localStorage.removeItem("user");
     }
     setUser(null);
     setTenantId("");
-    // Redirect to sign-in with the current locale
+    // เปลี่ยนเส้นทางไปหน้า sign-in ตาม locale ปัจจุบัน
     router.push(`/${locale}/sign-in`);
   }, [router, pathname]);
 
-  // Get token for server actions
+  // ดึง token สำหรับ server actions
   const getServerSideToken = useCallback(() => {
     if (typeof window !== "undefined") {
       return sessionStorage.getItem("access_token") ?? "";
@@ -204,19 +226,18 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     return "";
   }, []);
 
-  // Check if user is authenticated by looking for tokens
+  // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่โดยมอง tokens
   const hasToken =
     typeof window !== "undefined" && !!sessionStorage.getItem("access_token");
 
-  // Function to handle tenant change
+  // ฟังก์ชันจัดการการเปลี่ยน tenant
   const handleChangeTenant = useCallback(
     async (id: string) => {
       if (!id) return;
-      console.log("tenantId >>>", id);
       const data = await updateUserBusinessUnitService(token, id);
       if (data) {
         setTenantId(id);
-        // Store the updated tenant ID in sessionStorage
+        // เก็บ tenant ID ที่อัปเดตใน sessionStorage
         if (typeof window !== "undefined") {
           sessionStorage.setItem("tenant_id", id);
         }
@@ -237,6 +258,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       getServerSideToken,
       tenantId,
       handleChangeTenant,
+      departments,
     }),
     [
       hasToken,
@@ -248,13 +270,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       getServerSideToken,
       tenantId,
       handleChangeTenant,
+      departments,
     ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// Hook to use the auth context
+// Hook สำหรับใช้ auth context
 export function useAuth() {
   return useContext(AuthContext);
 }
