@@ -68,8 +68,8 @@ export default function ItemPr({
       approved_qty: 0,
       approved_unit_id: "",
       approved_base_qty: 0,
-      approved_conversion_rate: 0,
-      requested_conversion_rate: 0,
+      // approved_conversion_rate: 0,
+      // requested_conversion_rate: 0,
       requested_base_qty: 0,
       currency_id: "",
       exchange_rate: 1.0,
@@ -91,8 +91,6 @@ export default function ItemPr({
       delivery_date: new Date().toISOString(),
       delivery_point_id: "",
     };
-
-    console.log("Creating new item without ID");
     openDetail(e, emptyItem as PurchaseRequestDetailItemDto & { id?: string });
   };
 
@@ -171,10 +169,7 @@ export default function ItemPr({
               Filter
             </Button>
             {!isDisabled && (
-              <Button
-                size="sm"
-                onClick={handleAddNewItem}
-              >
+              <Button size="sm" onClick={handleAddNewItem}>
                 <Plus className="h-3 w-3" />
                 Add Item
               </Button>
@@ -235,11 +230,10 @@ export default function ItemPr({
                     </p>
                   </TableCell>
                   <TableCell className="text-right">
-                  {item.requested_qty}{" "}
-                        {getUnitName(item.requested_unit_id)}
+                    {item.requested_qty} {getUnitName(item.requested_unit_id)}
                   </TableCell>
                   <TableCell className="text-right">
-                  {item.approved_qty} {getUnitName(item.approved_unit_id)}
+                    {item.approved_qty} {getUnitName(item.approved_unit_id)}
                   </TableCell>
                   <TableCell className="text-right">
                     {item.price} {item.currency_name}
