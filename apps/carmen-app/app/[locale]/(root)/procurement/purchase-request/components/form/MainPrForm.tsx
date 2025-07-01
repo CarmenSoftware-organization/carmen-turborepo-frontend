@@ -157,6 +157,7 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
     ItemWithId | undefined
   >(undefined);
   const [currentItems, dispatchItems] = useReducer(itemsReducer, []);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
   const {
     mutate: createPr,
@@ -167,20 +168,35 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const responseData = response as any;
       if (responseData?.data?.id) {
+        toastSuccess({ message: "Purchase Request created successfully" });
         router.push(`/procurement/purchase-request/${responseData.data.id}`);
       } else {
         setCurrentMode(formType.VIEW);
       }
     },
+    onError: () => {
+      toastError({ message: "Error creating Purchase Request" });
+    },
   });
-  
+
   const {
     mutate: updatePr,
-    isSuccess: isUpdateSuccess,
     isPending: isUpdatePending,
     isError: isUpdateError,
-  } = useUpdatePrMutation(token, tenantId);
-  const [totalAmount, setTotalAmount] = useState<number>(0);
+  } = useUpdatePrMutation(token, tenantId, {
+    onSuccess: (response: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const responseData = response as any;
+      if (responseData) {
+        toastSuccess({ message: "Purchase Request updated successfully" });
+      } else {
+        setCurrentMode(formType.VIEW);
+      }
+    },
+    onError: () => {
+      toastError({ message: "Error updating Purchase Request" });
+    },
+  });
 
   // Initialize current items when initValues changes
   useEffect(() => {
@@ -256,13 +272,6 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
   }, [form.formState]);
 
   useEffect(() => {
-    if (isUpdateSuccess) {
-      setCurrentMode(formType.VIEW);
-      toastSuccess({ message: "Purchase Request updated successfully" });
-    }
-  }, [isUpdateSuccess]);
-
-  useEffect(() => {
     if (isCreateError) {
       toastError({ message: "Error creating Purchase Request" });
     }
@@ -275,14 +284,15 @@ export default function MainPrForm({ mode, initValues }: MainPrFormProps) {
   }, [isUpdateError]);
 
   const onSubmit = async (data: PrSchemaV2Dto) => {
-    console.log("data", data);
     try {
       if (currentMode === formType.ADD) {
+        console.log('this is create');
+        
         createPr(data);
         // Navigation will be handled by onSuccess callback in usePrMutation
       } else if (currentMode === formType.EDIT && initValues?.id) {
+        console.log("this is update");
         updatePr({ id: initValues.id, data });
-        setCurrentMode(formType.VIEW);
       }
     } catch (error) {
       console.error("Error in form submission:", error);

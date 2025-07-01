@@ -218,6 +218,9 @@ export default function HeadPrForm({
                     placeholder="Enter description..."
                     disabled={mode === formType.VIEW}
                     className={mode === formType.VIEW ? "bg-muted" : ""}
+                    data-gramm="false"
+                    data-gramm_editor="false"
+                    data-enable-grammarly="false"
                   />
                 </FormControl>
               </FormItem>

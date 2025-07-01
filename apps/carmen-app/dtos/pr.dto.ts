@@ -181,6 +181,7 @@ const wfHistorySchema = z.object({
 });
 
 export const purchaseRequestDetailItemSchema = z.object({
+  id: z.string().uuid().optional(),
   location_id: z.string().uuid(),
   product_id: z.string().uuid(),
   vendor_id: z.string().uuid(),
@@ -191,8 +192,8 @@ export const purchaseRequestDetailItemSchema = z.object({
   approved_qty: z.number(),
   approved_unit_id: z.string().uuid(),
   approved_base_qty: z.number(),
-  approved_conversion_rate: z.number(),
-  requested_conversion_rate: z.number(),
+  // approved_conversion_rate: z.number(),
+  // requested_conversion_rate: z.number(),
   requested_base_qty: z.number(),
   currency_id: z.string().uuid(),
   currency_name: z.string().optional(),

@@ -410,6 +410,9 @@ export default function ItemPrDialog({
                               disabled={isViewMode}
                               className="resize-none min-h-[50px] bg-background text-xs"
                               placeholder="Enter product description..."
+                              data-gramm="false"
+                              data-gramm_editor="false"
+                              data-enable-grammarly="false"
                             />
                           </FormControl>
                           <FormMessage />

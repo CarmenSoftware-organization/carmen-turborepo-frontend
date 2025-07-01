@@ -108,6 +108,7 @@ export const usePrMutation = (
   tenantId: string,
   options?: {
     onSuccess?: (data: unknown) => void;
+    onError?: (error: unknown) => void;
   }
 ) => {
   const queryClient = useQueryClient();
@@ -121,17 +122,37 @@ export const usePrMutation = (
         options.onSuccess(data);
       }
     },
+    onError: (error) => {
+      if (options?.onError) {
+        options.onError(error);
+      }
+    },
   });
 };
 
-export const useUpdatePrMutation = (token: string, tenantId: string) => {
+export const useUpdatePrMutation = (
+  token: string,
+  tenantId: string,
+  options?: {
+    onSuccess?: (data: unknown) => void;
+    onError?: (error: unknown) => void;
+  }
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: PrSchemaV2Dto }) =>
       updatePrService(token, tenantId, id, data),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["prs"] });
+      if (options?.onSuccess) {
+        options.onSuccess(data);
+      }
+    },
+    onError: (error) => {
+      if (options?.onError) {
+        options.onError(error);
+      }
     },
   });
 };
