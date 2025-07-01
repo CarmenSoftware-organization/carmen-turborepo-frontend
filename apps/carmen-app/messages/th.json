@@ -259,7 +259,8 @@
     "website": "เว็บไซต์",
     "fax": "โทรสาร",
     "other": "อื่นๆ",
-    "code": "รหัส"
+    "code": "รหัส",
+    "continue": "ต่อไป"
   },
   "TableHeader": {
     "name": "ชื่อ",

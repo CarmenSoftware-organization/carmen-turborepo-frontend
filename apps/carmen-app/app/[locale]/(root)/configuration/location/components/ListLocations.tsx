@@ -60,7 +60,12 @@ export default function ListLocations({
             <TableCell className="w-10">{i + 1}</TableCell>
             <TableCell>
               <div>
-                <p className="text-xs font-bold">{location.name}</p>
+                <Link
+                  href={`/configuration/location/${location.id}`}
+                  className="text-xs font-bold hover:underline text-primary hover:text-primary/80 font-medium"
+                >
+                  {location.name}
+                </Link>
                 <p className="text-xs text-muted-foreground">
                   {location.description}
                 </p>

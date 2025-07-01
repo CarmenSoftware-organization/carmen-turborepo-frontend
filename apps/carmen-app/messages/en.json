@@ -259,7 +259,8 @@
     "website": "Website",
     "fax": "Fax",
     "other": "Other",
-    "code": "Code"
+    "code": "Code",
+    "continue": "Continue"
   },
   "TableHeader": {
     "name": "Name",

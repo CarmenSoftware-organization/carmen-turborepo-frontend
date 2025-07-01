@@ -15,7 +15,6 @@ import {
   MoreHorizontal,
   Trash2,
   Calendar,
-  Package,
   Store,
   DollarSign,
   CheckCircle,
@@ -104,14 +103,6 @@ export default function GoodsReceivedNoteList({
                 {grn.grn_no ?? "-"}
               </Link>
             </TableCell>
-            <TableCell>
-              {grn.name ?? "-"}
-              {grn.description && (
-                <p className="text-xs text-muted-foreground">
-                  {grn.description}
-                </p>
-              )}
-            </TableCell>
             <TableCell>{grn.vendor_name ?? "-"}</TableCell>
             <TableCell>
               {grn.created_at
@@ -172,12 +163,6 @@ export default function GoodsReceivedNoteList({
                 <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
                   {t("grn_number")}
-                </div>
-              </TableHead>
-              <TableHead>
-                <div className="flex items-center gap-1">
-                  <Package className="h-3 w-3" />
-                  {t("name")}
                 </div>
               </TableHead>
               <TableHead>

@@ -115,7 +115,6 @@ export type GetGrnByIdDto = z.infer<typeof grnByIdSchema>;
 
 export interface GoodsReceivedNoteListDto {
   id: string;
-  name: string;
   grn_no: string;
   description?: string;
   vendor_name: string;
