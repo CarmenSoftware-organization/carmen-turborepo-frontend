@@ -28,6 +28,9 @@ import {
 } from "@/components/ui/table";
 import { Plus, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import NumberInput from "@/components/form-custom/NumberInput";
+import ExtraCostTypeLookup from "@/components/lookup/ExtraCostTypeLookup";
+import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
 
 interface ExtraCostProps {
   readonly control: Control<CreateGRNDto>;
@@ -47,9 +50,9 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
 
   const handleAddNewDetail = () => {
     append({
-      extra_cost_type_id: "59628ab6-55d8-41b4-ac8c-0491ac84a538",
+      extra_cost_type_id: "",
       amount: 0,
-      tax_type_inventory_id: "5f1cded9-e1fe-474a-bbbf-f5dfb26308e9",
+      tax_type_inventory_id: "",
       tax_type: TaxType.NONE,
       tax_rate: 0,
       tax_amount: 0,
@@ -65,7 +68,7 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Extra Cost Detail</h3>
+        <h3 className="text-lg font-medium">รายละเอียดค่าใช้จ่ายเพิ่มเติม</h3>
         {mode !== formType.VIEW && (
           <Button
             type="button"
@@ -78,7 +81,7 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
             }}
           >
             <Plus className="h-4 w-4 mr-2" />
-            Add Extra Cost Detail
+            เพิ่มรายละเอียดค่าใช้จ่าย
           </Button>
         )}
       </div>
@@ -88,15 +91,15 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Extra Cost Type ID</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Tax Type Inventory ID</TableHead>
-                <TableHead>Tax Type</TableHead>
-                <TableHead>Tax Rate (%)</TableHead>
-                <TableHead>Tax Amount</TableHead>
-                <TableHead>Is Tax Adjustment</TableHead>
-                <TableHead>Note</TableHead>
-                {mode !== formType.VIEW && <TableHead>Action</TableHead>}
+                <TableHead>ประเภทค่าใช้จ่าย</TableHead>
+                <TableHead>จำนวนเงิน</TableHead>
+                <TableHead>ประเภทภาษี</TableHead>
+                <TableHead>ประเภทภาษีสินค้า</TableHead>
+                <TableHead>อัตราภาษี (%)</TableHead>
+                <TableHead>จำนวนภาษี</TableHead>
+                <TableHead>ปรับปรุงภาษี</TableHead>
+                <TableHead>หมายเหตุ</TableHead>
+                {mode !== formType.VIEW && <TableHead>จัดการ</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -106,11 +109,18 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                     <FormField
                       control={control}
                       name={`extra_cost.extra_cost_detail.add.${index}.extra_cost_type_id`}
-                      render={({ field: inputField }) => (
-                        <Input
-                          {...inputField}
-                          placeholder="Extra Cost Type ID"
-                        />
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <ExtraCostTypeLookup
+                              value={field.value}
+                              onValueChange={field.onChange}
+                              placeholder="Extra Cost Type"
+                              disabled={mode === formType.VIEW}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </TableCell>
@@ -118,27 +128,21 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                     <FormField
                       control={control}
                       name={`extra_cost.extra_cost_detail.add.${index}.amount`}
-                      render={({ field: inputField }) => (
-                        <Input
-                          {...inputField}
-                          type="number"
-                          placeholder="0.00"
-                          onChange={(e) =>
-                            inputField.onChange(Number(e.target.value))
-                          }
-                        />
-                      )}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <FormField
-                      control={control}
-                      name={`extra_cost.extra_cost_detail.add.${index}.tax_type_inventory_id`}
-                      render={({ field: inputField }) => (
-                        <Input
-                          {...inputField}
-                          placeholder="Tax Type Inventory ID"
-                        />
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <NumberInput
+                              {...field}
+                              onChange={(value) =>
+                                field.onChange(Number(value))
+                              }
+                              value={field.value ?? 0}
+                              disabled={mode === formType.VIEW}
+                              placeholder="จำนวนเงิน"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </TableCell>
@@ -146,22 +150,49 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                     <FormField
                       control={control}
                       name={`extra_cost.extra_cost_detail.add.${index}.tax_type`}
-                      render={({ field: inputField }) => (
-                        <Select
-                          onValueChange={inputField.onChange}
-                          value={inputField.value}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="เลือกประเภทภาษี" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={TaxType.NONE}>None</SelectItem>
-                            <SelectItem value={TaxType.INCLUDED}>
-                              Included
-                            </SelectItem>
-                            <SelectItem value={TaxType.ADD}>Add</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                              disabled={mode === formType.VIEW}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="เลือกประเภทภาษี" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value={TaxType.NONE}>
+                                  ไม่มีภาษี
+                                </SelectItem>
+                                <SelectItem value={TaxType.INCLUDED}>
+                                  รวมภาษี
+                                </SelectItem>
+                                <SelectItem value={TaxType.ADD}>
+                                  เพิ่มภาษี
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <FormField
+                      control={control}
+                      name={`extra_cost.extra_cost_detail.add.${index}.tax_type_inventory_id`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                          <TaxTypeLookup
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </TableCell>
@@ -169,15 +200,21 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                     <FormField
                       control={control}
                       name={`extra_cost.extra_cost_detail.add.${index}.tax_rate`}
-                      render={({ field: inputField }) => (
-                        <Input
-                          {...inputField}
-                          type="number"
-                          placeholder="0"
-                          onChange={(e) =>
-                            inputField.onChange(Number(e.target.value))
-                          }
-                        />
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <NumberInput
+                              {...field}
+                              onChange={(value) =>
+                                field.onChange(Number(value))
+                              }
+                              value={field.value ?? 0}
+                              disabled={mode === formType.VIEW}
+                              placeholder="อัตราภาษี"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </TableCell>
@@ -185,15 +222,21 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                     <FormField
                       control={control}
                       name={`extra_cost.extra_cost_detail.add.${index}.tax_amount`}
-                      render={({ field: inputField }) => (
-                        <Input
-                          {...inputField}
-                          type="number"
-                          placeholder="0.00"
-                          onChange={(e) =>
-                            inputField.onChange(Number(e.target.value))
-                          }
-                        />
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <NumberInput
+                              {...field}
+                              onChange={(value) =>
+                                field.onChange(Number(value))
+                              }
+                              value={field.value ?? 0}
+                              disabled={mode === formType.VIEW}
+                              placeholder="จำนวนภาษี"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </TableCell>
@@ -202,10 +245,16 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                       control={control}
                       name={`extra_cost.extra_cost_detail.add.${index}.is_tax_adjustment`}
                       render={({ field: inputField }) => (
-                        <Checkbox
-                          checked={inputField.value}
-                          onCheckedChange={inputField.onChange}
-                        />
+                        <FormItem>
+                          <FormControl>
+                            <Checkbox
+                              checked={inputField.value}
+                              onCheckedChange={inputField.onChange}
+                              disabled={mode === formType.VIEW}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </TableCell>
@@ -214,7 +263,16 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                       control={control}
                       name={`extra_cost.extra_cost_detail.add.${index}.note`}
                       render={({ field: inputField }) => (
-                        <Input {...inputField} placeholder="หมายเหตุ" />
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              {...inputField}
+                              placeholder="หมายเหตุ"
+                              disabled={mode === formType.VIEW}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
                       )}
                     />
                   </TableCell>
@@ -222,7 +280,8 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
                     <TableCell>
                       <Button
                         type="button"
-                        variant="destructive"
+                        variant="ghost"
+                        className="hover:text-destructive"
                         size="sm"
                         onClick={(e) => {
                           e.preventDefault();
@@ -243,7 +302,7 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
 
       {fields.length === 0 && (
         <div className="border rounded-lg p-8 text-center text-muted-foreground">
-          <p>No extra cost detail</p>
+          <p>ไม่มีรายละเอียดค่าใช้จ่ายเพิ่มเติม</p>
           {mode !== formType.VIEW && (
             <Button
               type="button"
@@ -256,7 +315,7 @@ function ExtraCostDetail({ control, mode }: ExtraCostDetailProps) {
               }}
             >
               <Plus className="h-4 w-4 mr-2" />
-              Add First Extra Cost Detail
+              เพิ่มรายละเอียดค่าใช้จ่ายแรก
             </Button>
           )}
         </div>
@@ -274,9 +333,13 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
           name="extra_cost.name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Extra Cost Name</FormLabel>
+              <FormLabel>ชื่อค่าใช้จ่ายเพิ่มเติม</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Enter Extra Cost Name" />
+                <Input
+                  {...field}
+                  placeholder="ระบุชื่อค่าใช้จ่ายเพิ่มเติม"
+                  disabled={mode === formType.VIEW}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -288,21 +351,25 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
           name="extra_cost.allocate_extra_cost_type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Allocate Extra Cost Type</FormLabel>
+              <FormLabel>ประเภทการปันส่วนค่าใช้จ่าย</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                  disabled={mode === formType.VIEW}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select Allocate Extra Cost Type" />
+                    <SelectValue placeholder="เลือกประเภทการปันส่วน" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={ALLOCATE_EXTRA_COST_TYPE.MANUAL}>
-                      Manual
+                      ด้วยตนเอง
                     </SelectItem>
                     <SelectItem value={ALLOCATE_EXTRA_COST_TYPE.BY_VALUE}>
-                      By Value
+                      ตามมูลค่า
                     </SelectItem>
                     <SelectItem value={ALLOCATE_EXTRA_COST_TYPE.BY_QTY}>
-                      By Qty
+                      ตามปริมาณ
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -318,9 +385,13 @@ export default function ExtraCost({ control, mode }: ExtraCostProps) {
         name="extra_cost.note"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Note</FormLabel>
+            <FormLabel>หมายเหตุ</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Enter Note" />
+              <Input
+                {...field}
+                placeholder="ระบุหมายเหตุ"
+                disabled={mode === formType.VIEW}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
