@@ -95,7 +95,7 @@ export default function GoodsReceivedNoteList({
                 aria-label={`Select ${grn.grn_no}`}
               />
             </TableCell>
-            <TableCell>
+            <TableCell className="w-[150px]">
               <Link
                 href={`/procurement/goods-received-note/${grn.id}`}
                 className="hover:underline text-primary hover:text-primary/80 font-medium"
@@ -103,18 +103,19 @@ export default function GoodsReceivedNoteList({
                 {grn.grn_no ?? "-"}
               </Link>
             </TableCell>
-            <TableCell>{grn.vendor_name ?? "-"}</TableCell>
-            <TableCell>
-              {grn.created_at
-                ? format(new Date(grn.created_at), "dd/MM/yyyy")
-                : "-"}
-            </TableCell>
-            <TableCell>{grn.total_amount}</TableCell>
-            <TableCell>
+            <TableCell className="w-[100px]">
               <Badge variant={grn.is_active ? "active" : "inactive"}>
                 {grn.is_active ? "Active" : "Inactive"}
               </Badge>
             </TableCell>
+            <TableCell className="w-[100px]">{grn.vendor_name ?? "-"}</TableCell>
+            <TableCell className="w-[100px]">
+              {grn.created_at
+                ? format(new Date(grn.created_at), "dd/MM/yyyy")
+                : "-"}
+            </TableCell>
+            <TableCell className="text-right w-[100px]">{grn.total_amount}</TableCell>
+            
             <TableCell className="text-right">
               <div className="flex items-center justify-end">
                 <Button variant="ghost" size={"sm"} asChild className="h-7 w-7">
@@ -167,6 +168,12 @@ export default function GoodsReceivedNoteList({
               </TableHead>
               <TableHead>
                 <div className="flex items-center gap-1">
+                  <CheckCircle className="h-3 w-3" />
+                  {t("status")}
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-1">
                   <Store className="h-3 w-3" />
                   {t("vendor")}
                 </div>
@@ -177,18 +184,13 @@ export default function GoodsReceivedNoteList({
                   {t("date")}
                 </div>
               </TableHead>
-              <TableHead>
+              <TableHead className="text-right w-[100px]">
                 <div className="flex items-center gap-1">
                   <DollarSign className="h-3 w-3" />
                   {t("amount")}
                 </div>
               </TableHead>
-              <TableHead>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="h-3 w-3" />
-                  {t("status")}
-                </div>
-              </TableHead>
+            
               <TableHead className="text-right">{t("action")}</TableHead>
             </TableRow>
           </TableHeader>

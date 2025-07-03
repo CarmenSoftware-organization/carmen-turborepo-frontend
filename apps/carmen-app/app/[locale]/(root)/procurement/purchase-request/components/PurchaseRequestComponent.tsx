@@ -97,7 +97,9 @@ export default function PurchaseRequestComponent() {
           <Filter className="h-4 w-4" />
           Filter
         </Button>
-        <ToggleView view={view} setView={setView} />
+        <div className="hidden lg:block">
+          <ToggleView view={view} setView={setView} />
+        </div>
       </div>
     </div>
   );
@@ -108,24 +110,39 @@ export default function PurchaseRequestComponent() {
 
   const currentPageNumber = parseInt(page || "1");
 
-  const content =
-    view === VIEW.LIST ? (
-      <PurchaseRequestList
-        purchaseRequests={prs?.data}
-        currentPage={currentPageNumber}
-        totalPages={prs?.paginate.pages}
-        onPageChange={handlePageChange}
-        isLoading={isLoading}
-      />
-    ) : (
-      <PurchaseRequestGrid
-        purchaseRequests={prs?.data}
-        currentPage={currentPageNumber}
-        totalPages={prs?.paginate.pages}
-        onPageChange={handlePageChange}
-        isLoading={isLoading}
-      />
-    );
+  const content = (
+    <>
+      <div className="block lg:hidden">
+        <PurchaseRequestGrid
+          purchaseRequests={prs?.data}
+          currentPage={currentPageNumber}
+          totalPages={prs?.paginate.pages}
+          onPageChange={handlePageChange}
+          isLoading={isLoading}
+        />
+      </div>
+
+      <div className="hidden lg:block">
+        {view === VIEW.LIST ? (
+          <PurchaseRequestList
+            purchaseRequests={prs?.data}
+            currentPage={currentPageNumber}
+            totalPages={prs?.paginate.pages}
+            onPageChange={handlePageChange}
+            isLoading={isLoading}
+          />
+        ) : (
+          <PurchaseRequestGrid
+            purchaseRequests={prs?.data}
+            currentPage={currentPageNumber}
+            totalPages={prs?.paginate.pages}
+            onPageChange={handlePageChange}
+            isLoading={isLoading}
+          />
+        )}
+      </div>
+    </>
+  );
 
   return (
     <>

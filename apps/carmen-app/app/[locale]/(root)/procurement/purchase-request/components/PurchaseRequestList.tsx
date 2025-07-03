@@ -1,10 +1,6 @@
 import { GetAllPrDto } from "@/dtos/pr.dto";
 import { useState } from "react";
-import {
-  FileText,
-  MoreVertical,
-  Trash2
-} from "lucide-react";
+import { FileText, MoreVertical, Trash2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -122,30 +118,38 @@ export default function PurchaseRequestList({
               </Link>
             </TableCell>
             <TableCell className="text-center">
-              {format(new Date(pr.pr_date), "dd/MM/yyyy")}
+              <Badge variant={pr.pr_status}>
+                {convertPrStatus(pr.pr_status)}
+              </Badge>
             </TableCell>
             <TableCell className="text-center">
               {pr.workflow_name ?? "-"}
             </TableCell>
             <TableCell className="text-center">
-              -
+              {format(new Date(pr.pr_date), "dd/MM/yyyy")}
             </TableCell>
+
+            <TableCell className="text-center">-</TableCell>
             <TableCell>{pr.requestor_name}</TableCell>
             <TableCell>{pr.department_name}</TableCell>
             <TableCell>{currencyFormat(pr.total_amount)}</TableCell>
-            <TableCell className="text-center">
-              <Badge variant={pr.pr_status}>
-                {convertPrStatus(pr.pr_status)}
-              </Badge>
-            </TableCell>
             <TableCell className="w-[100px] text-right">
               <div className="flex items-center justify-end">
-                <Button variant="ghost" size={"sm"} className="h-7 w-7 hover:text-muted-foreground" asChild>
+                <Button
+                  variant="ghost"
+                  size={"sm"}
+                  className="h-7 w-7 hover:text-muted-foreground"
+                  asChild
+                >
                   <Link href={`/procurement/purchase-request/${pr.id}`}>
                     <FileText className="h-3 w-3" />
                   </Link>
                 </Button>
-                <Button variant="ghost" size={"sm"} className="h-7 w-7 hover:text-destructive">
+                <Button
+                  variant="ghost"
+                  size={"sm"}
+                  className="h-7 w-7 hover:text-destructive"
+                >
                   <Trash2 className="h-3 w-3" />
                 </Button>
                 <DropdownMenu>
@@ -210,28 +214,14 @@ export default function PurchaseRequestList({
                   aria-label="Select all purchase requests"
                 />
               </TableHead>
-              <TableHead>
-                PR Number
-              </TableHead>
-              <TableHead className="text-center">
-                Date
-              </TableHead>
-              <TableHead className="text-center">
-                Type
-              </TableHead>
-              <TableHead className="text-center">
-                Stage
-              </TableHead>
-              <TableHead>
-                Requestor
-              </TableHead>
-              <TableHead>
-                Department
-              </TableHead>
-              <TableHead>
-                Total Amount
-              </TableHead>
+              <TableHead className="w-[150px]">PR Number</TableHead>
               <TableHead className="text-center">Status</TableHead>
+              <TableHead className="text-center">Stage</TableHead>
+              <TableHead className="text-center">Date</TableHead>
+              <TableHead className="text-center">Type</TableHead>
+              <TableHead>Requestor</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Total Amount</TableHead>
               <TableHead className="w-[100px] text-right">
                 {t("action")}
               </TableHead>

@@ -82,15 +82,17 @@ export default function CreditNoteList({
                 {cn?.cn_no}
               </Link>
             </TableCell>
+            <TableCell>
+              <Badge variant={cn?.doc_status}>{cn?.doc_status || "-"}</Badge>
+            </TableCell>
+
             <TableCell>{formatDate(cn?.cn_date)}</TableCell>
             <TableCell>{cn?.note || "-"}</TableCell>
             <TableCell>{cn?.current_workflow_status || "-"}</TableCell>
             <TableCell>{cn?.last_action_name || "-"}</TableCell>
             <TableCell>{cn?.last_action_by_name || "-"}</TableCell>
             <TableCell>{cn?.last_action_date || "-"}</TableCell>
-            <TableCell>
-              <Badge variant={cn?.doc_status}>{cn?.doc_status || "-"}</Badge>
-            </TableCell>
+            
             <TableCell>
               <div className="flex items-center justify-end">
                 <Button variant="ghost" size={"sm"} className="h-7 w-7" asChild>
@@ -125,13 +127,13 @@ export default function CreditNoteList({
                 />
               </TableHead>
               <TableHead>Reference #</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Note</TableHead>
               <TableHead>Workflow Status</TableHead>
               <TableHead>Last Action</TableHead>
               <TableHead>Last Action By</TableHead>
               <TableHead>Last Action Date</TableHead>
-              <TableHead>Status</TableHead>
               <TableHead className="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
