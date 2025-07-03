@@ -32,13 +32,12 @@ import { DOC_TYPE } from "@/constants/enum";
 import ItemGrn from "./ItemGrn";
 import ExtraCost from "./ExtraCost";
 import { Badge } from "@/components/ui/badge";
-import JsonViewer from "@/components/JsonViewer";
-import { postGoodReceiveNote } from "@/app/[locale]/(root)/playground/test-post/payload";
-import { checkDiff } from "@/constants/check-diff";
 import { useAuth } from "@/context/AuthContext";
 import { useGrnMutation, useUpdateCreditNote } from "@/hooks/useGrn";
+// import JsonViewer from "@/components/JsonViewer";
+// import { postGoodReceiveNote } from "@/app/[locale]/(root)/playground/test-post/payload";
+// import { checkDiff } from "@/constants/check-diff";
 
-// TODO: Implement these components
 const BudgetGrn = ({ mode }: { mode: formType }) => (
   <div className="p-4 border rounded-md">
     BudgetGrn Placeholder (Mode: {mode})
@@ -118,16 +117,16 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     mode: "onChange",
   });
 
-  const watchedValues = form.watch();
-  const isDirty = form.formState.isDirty;
-  const errors = form.formState.errors;
+  // const watchedValues = form.watch();
+  // const isDirty = form.formState.isDirty;
+  // const errors = form.formState.errors;
 
-  useEffect(() => {
-    console.log("Form Values Changed in Dialog:", watchedValues);
-    console.log("Form Errors in Dialog:", errors);
-    console.log("Is Form Dirty in Dialog:", isDirty);
-    console.log("Form isValid:", form.formState.isValid);
-  }, [watchedValues, errors, isDirty, form.formState.isValid]);
+  // useEffect(() => {
+  //   console.log("Form Values Changed in Dialog:", watchedValues);
+  //   console.log("Form Errors in Dialog:", errors);
+  //   console.log("Is Form Dirty in Dialog:", isDirty);
+  //   console.log("Form isValid:", form.formState.isValid);
+  // }, [watchedValues, errors, isDirty, form.formState.isValid]);
 
   useEffect(() => {
     if (initialValues) {
@@ -145,11 +144,11 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
   }, [initialValues, form]);
 
   const onSubmit = async (data: CreateGRNDto, e?: React.BaseSyntheticEvent) => {
-    console.log("onSubmit called with data:", data);
-    console.log("currentMode:", currentMode);
-    console.log("formType.ADD:", formType.ADD);
-    console.log("token:", token);
-    console.log("tenantId:", tenantId);
+    // console.log("onSubmit called with data:", data);
+    // console.log("currentMode:", currentMode);
+    // console.log("formType.ADD:", formType.ADD);
+    // console.log("token:", token);
+    // console.log("tenantId:", tenantId);
 
     if (e) {
       e.preventDefault();
@@ -183,9 +182,9 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     }
   };
 
-  const watchForm = form.watch();
+  // const watchForm = form.watch();
 
-  const diffData = checkDiff(postGoodReceiveNote, watchForm);
+  // const diffData = checkDiff(postGoodReceiveNote, watchForm);
   return (
     <div className="relative">
       <div className="flex gap-4 relative">
@@ -398,11 +397,11 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
               Send Back
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          {/* <div className="grid grid-cols-2 gap-2">
             <JsonViewer data={postGoodReceiveNote} />
             <JsonViewer data={watchForm} />
           </div>
-          <JsonViewer data={diffData} />
+          <JsonViewer data={diffData} /> */}
         </ScrollArea>
         {openLog && (
           <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">

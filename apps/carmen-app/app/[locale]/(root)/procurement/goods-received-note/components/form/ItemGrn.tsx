@@ -307,7 +307,7 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
                   <TableCell>{getLocationName(item.location_id)}</TableCell>
                   <TableCell>
                     <p>{getProductName(item.product_id)}</p>
-                    <p className="text-xs text-muted-foreground">{item.note}</p>
+                    {/* <p className="text-xs text-muted-foreground">{item.note}</p> */}
                   </TableCell>
                   <TableCell className="text-right">
                     <p>
