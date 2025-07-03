@@ -62,7 +62,6 @@ export default function GoodsReceivedNoteList({
       // If all items are selected, unselect all
       setSelectedItems([]);
     } else {
-      // Otherwise, select all items
       const allIds = goodsReceivedNotes
         .map((grn) => grn.id ?? "")
         .filter(Boolean);

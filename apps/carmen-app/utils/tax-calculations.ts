@@ -228,3 +228,49 @@ export const formatCurrency = (
 export const formatThaiCurrency = (amount: number): string => {
   return formatCurrency(amount, "THB");
 };
+
+export interface TaxCalculationResults {
+  originalPrice: number;
+  vatAmount: number;
+  withholdingAmount: number;
+  finalAmount: number;
+  priceBeforeVat: number;
+}
+
+export const calculateTaxes = (
+  amount: number,
+  vatRate: number,
+  withholdingRate: number,
+  isVatInclusive: boolean
+): TaxCalculationResults => {
+  let priceBeforeVat: number;
+  let vatAmount: number;
+  let originalPrice: number;
+
+  if (isVatInclusive) {
+    // Amount includes VAT, so we need to extract the VAT
+    priceBeforeVat = amount / (1 + vatRate / 100);
+    vatAmount = amount - priceBeforeVat;
+    originalPrice = amount;
+  } else {
+    // Amount is before VAT, so we add VAT
+    priceBeforeVat = amount;
+    vatAmount = amount * (vatRate / 100);
+    originalPrice = amount;
+  }
+
+  // Withholding tax is calculated on the price before VAT
+  const withholdingAmount = priceBeforeVat * (withholdingRate / 100);
+
+  // Final amount = Price before VAT + VAT - Withholding tax
+  const finalAmount = priceBeforeVat + vatAmount - withholdingAmount;
+
+  return {
+    originalPrice,
+    vatAmount,
+    withholdingAmount,
+    finalAmount,
+    priceBeforeVat,
+  };
+};
+

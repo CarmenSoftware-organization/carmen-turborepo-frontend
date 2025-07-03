@@ -19,6 +19,10 @@ const itemsPlayground = [
     href: "/playground/stepper",
   },
   {
+    title: "VAT Calculator",
+    href: "/playground/vat",
+  },
+  {
     title: "Test Post Component",
     href: "/playground/test-post",
   },
