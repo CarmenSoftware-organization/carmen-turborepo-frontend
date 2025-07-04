@@ -27,6 +27,9 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "next-intl";
+import ExchangeRateLookup from "@/components/lookup/ExchangeRateLookup";
+import currenciesIso from "@/constants/currency";
+import { useExchangeRate } from "@/hooks/useExchangeRate";
 
 interface CurrencyDialogProps {
   readonly open: boolean;
@@ -48,6 +51,8 @@ export default function CurrencyDialog({
   const tCurrency = useTranslations("Currency");
   const tCommon = useTranslations("Common");
 
+  const { exchangeRates } = useExchangeRate({ baseCurrency: "THB" });
+
   const defaultCurrencyValues = useMemo(
     () => ({
       name: "",
@@ -68,6 +73,8 @@ export default function CurrencyDialog({
         : defaultCurrencyValues,
   });
 
+  const watchedCode = form.watch("code");
+
   useEffect(() => {
     if (mode === formType.EDIT && currency) {
       form.reset({ ...currency });
@@ -75,6 +82,35 @@ export default function CurrencyDialog({
       form.reset({ ...defaultCurrencyValues });
     }
   }, [mode, currency, form, defaultCurrencyValues]);
+
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      form.reset({ ...defaultCurrencyValues });
+    }
+  }, [open, form, defaultCurrencyValues]);
+
+  // Auto-fill other fields when currency code changes
+  useEffect(() => {
+    if (watchedCode && mode === formType.ADD) {
+      const selectedCurrency = currenciesIso.find(
+        (currency) => currency.code === watchedCode
+      );
+
+      if (selectedCurrency) {
+        const exchangeRate = exchangeRates[selectedCurrency.code] || 0.01;
+
+        // Always update all fields when currency code changes
+        form.setValue("name", selectedCurrency.name);
+        form.setValue("symbol", selectedCurrency.symbol);
+        form.setValue("exchange_rate", exchangeRate);
+        form.setValue(
+          "description",
+          `${selectedCurrency.name} (${selectedCurrency.country})`
+        );
+      }
+    }
+  }, [watchedCode, mode, form, exchangeRates]);
 
   const handleSubmit = async (data: CurrencyDto) => {
     try {
@@ -110,6 +146,26 @@ export default function CurrencyDialog({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tCurrency("currency_code")}</FormLabel>
+                    <FormControl>
+                      <ExchangeRateLookup
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder={tCurrency("currency_code")}
+                        disabled={isLoading || form.formState.isSubmitting}
+                        showExchangeRate={true}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
@@ -124,19 +180,6 @@ export default function CurrencyDialog({
 
               <FormField
                 control={form.control}
-                name="code"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{tCurrency("currency_code")}</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
                 name="symbol"
                 render={({ field }) => (
                   <FormItem>
@@ -148,6 +191,7 @@ export default function CurrencyDialog({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="exchange_rate"
@@ -168,6 +212,7 @@ export default function CurrencyDialog({
                 )}
               />
             </div>
+
             <FormField
               control={form.control}
               name="description"
@@ -181,6 +226,7 @@ export default function CurrencyDialog({
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="is_active"
