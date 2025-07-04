@@ -85,7 +85,7 @@ export function LocationForm() {
               <CardHeader>
                 <CardTitle>ข้อมูลสถานที่</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="name"
