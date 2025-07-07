@@ -43,6 +43,7 @@ export const useUserList = () => {
     isError && error instanceof Error && error.message.includes("Unauthorized");
 
   const getUserName = (userId: string) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const user = data?.find((user: any) => user.user_id === userId);
     return user?.firstname ?? "";
   };

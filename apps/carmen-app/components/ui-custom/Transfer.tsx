@@ -74,11 +74,16 @@ export const Transfer: React.FC<TransferProps> = ({
 
   // รวมข้อมูลทั้งหมดเพื่อใช้ในการแสดงผล
   const allItems = useMemo(() => {
+    const safeDataSource = Array.isArray(dataSource) ? dataSource : [];
+    const safeLeftDataSource = Array.isArray(leftDataSource)
+      ? leftDataSource
+      : [];
+
     if (leftDataSource) {
       // ถ้ามี leftDataSource ให้รวมกับ dataSource
-      return [...leftDataSource, ...dataSource];
+      return [...safeLeftDataSource, ...safeDataSource];
     }
-    return dataSource;
+    return safeDataSource;
   }, [leftDataSource, dataSource]);
 
   const sourceItems = useMemo(

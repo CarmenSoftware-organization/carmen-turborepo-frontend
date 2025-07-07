@@ -104,10 +104,11 @@ export const deleteApiRequest = async (
   API_URL: string,
   token: string,
   tenantId: string,
+  id: string,
   errorContext: string
 ) => {
   try {
-    const response = await axios.delete(API_URL, {
+    const response = await axios.delete(`${API_URL}/${id}`, {
       headers: requestHeaders(token, tenantId),
     });
 

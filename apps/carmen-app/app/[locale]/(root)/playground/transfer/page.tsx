@@ -71,6 +71,7 @@ const baseDepartmentSchema = z.object({
       add: z.array(
         z.object({
           id: z.string().optional(),
+          isHod: z.boolean(),
         })
       ),
       remove: z.array(
@@ -159,7 +160,7 @@ export default function TransferPage() {
           newRemoveArray.splice(existingRemoveIndex, 1);
         } else {
           // ถ้าไม่เคยอยู่ใน remove array ให้เพิ่มใน add array
-          newAddArray.push({ id: keyStr });
+          newAddArray.push({ id: keyStr, isHod: false });
         }
       });
 
