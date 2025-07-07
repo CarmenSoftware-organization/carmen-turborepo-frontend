@@ -93,6 +93,7 @@ export const useDeleteDeliveryPoint = (
                 API_URL_BY_ID,
                 token,
                 tenantId,
+                id,
                 "Error deleting delivery point"
             );
         },

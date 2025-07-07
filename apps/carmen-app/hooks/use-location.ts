@@ -89,6 +89,7 @@ export const useDeleteLocation = (
         API_URL_BY_ID,
         token,
         tenantId,
+        id,
         "Error deleting location"
       );
     },

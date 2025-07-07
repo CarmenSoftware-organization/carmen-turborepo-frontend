@@ -120,6 +120,7 @@ export const useDeleteCreditTerm = (
         API_URL_BY_ID,
         token,
         tenantId,
+        id,
         "Failed to delete credit term"
       );
     },
