@@ -30,6 +30,10 @@ const itemsPlayground = [
     title: "Form Reuse",
     href: "/playground/form-reuse",
   },
+  {
+    title: "Transfer Component",
+    href: "/playground/transfer",
+  },
 ];
 
 export default function Playground() {
