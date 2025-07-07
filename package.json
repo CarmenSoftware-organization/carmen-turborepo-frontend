@@ -28,6 +28,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "vercel": "^44.2.5"
+    "vercel": "^44.2.12"
   }
 }
