@@ -30,6 +30,7 @@ import { useTranslations } from "next-intl";
 import ExchangeRateLookup from "@/components/lookup/ExchangeRateLookup";
 import currenciesIso from "@/constants/currency";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
+import NumberInput from "@/components/form-custom/NumberInput";
 
 interface CurrencyDialogProps {
   readonly open: boolean;
@@ -185,7 +186,12 @@ export default function CurrencyDialog({
                   <FormItem>
                     <FormLabel>{tCurrency("currency_symbol")}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        {...field}
+                        disabled
+                        className="bg-muted"
+                        placeholder="Currency symbol"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -199,12 +205,14 @@ export default function CurrencyDialog({
                   <FormItem>
                     <FormLabel>{tCurrency("currency_exchange_rate")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
+                      <NumberInput
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => field.onChange(e)}
                         min={0.01}
-                        step="any"
+                        step={0.01}
+                        disabled
+                        classNames="bg-muted"
+                        placeholder="Exchange rate"
                       />
                     </FormControl>
                     <FormMessage />
