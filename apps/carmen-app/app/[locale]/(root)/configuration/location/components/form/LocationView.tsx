@@ -134,13 +134,13 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5 text-primary" />
-                Associated Users ({initialData?.users?.length ?? 0})
+                Users ({initialData?.user_location?.length ?? 0})
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {(initialData?.users?.length ?? 0) > 0 ? (
+              {(initialData?.user_location?.length ?? 0) > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {initialData?.users.map((user) => (
+                  {initialData?.user_location.map((user) => (
                     <div
                       key={user.id}
                       className="flex items-center gap-2 rounded-lg px-3 py-2"
@@ -148,15 +148,44 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
                       <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold">
                         {user.name ? user.name : "-"}
                       </div>
-                      <span className="text-sm font-medium">{user.id}</span>
+                      <span className="text-xs font-medium">{user.id}</span>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-8">
                   <Users className="w-12 h-12 mx-auto mb-3" />
-                  <p className="text-sm">
+                  <p className="text-xs">
                     No users associated with this location
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="w-5 h-5 text-primary" />
+                Products ({initialData?.product_location?.length ?? 0})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {(initialData?.product_location?.length ?? 0) > 0 ? (
+                <div className="overflow-y-auto max-h-[200px]">
+                  {initialData?.product_location.map((product) => (
+                    <ul
+                      key={product.id}
+                      className="list-disc list-inside"
+                    >
+                      <li className="text-xs">{product.name}</li>
+                    </ul>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Package className="w-12 h-12 mx-auto mb-3" />
+                  <p className="text-sm">
+                    No products associated with this location
                   </p>
                 </div>
               )}
