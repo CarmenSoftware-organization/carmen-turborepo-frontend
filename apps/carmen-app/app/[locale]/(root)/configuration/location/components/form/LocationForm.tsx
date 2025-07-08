@@ -5,7 +5,6 @@ import {
   PHYSICAL_COUNT_TYPE,
 } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
-import LocationUser from "./LocationUser";
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
@@ -34,6 +33,9 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
 import { useUserList } from "@/hooks/useUserList";
 import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
+import { Transfer } from "@/components/ui-custom/Transfer";
+import { useMemo, useState } from "react";
+import JsonViewer from "@/components/JsonViewer";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -69,8 +71,8 @@ export default function LocationForm({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const listUser = userList?.map((user: any) => ({
-    id: user.user_id,
-    name: user.firstname + " " + user.lastname,
+    key: user.user_id,
+    title: user.firstname + " " + user.lastname,
   }));
 
   const createMutation = useLocationMutation(token, tenantId);
@@ -79,6 +81,38 @@ export default function LocationForm({
     tenantId,
     initialData?.id || ""
   );
+
+  const initUsers = useMemo(() => {
+    return (
+      initialData?.user_location?.map((user) => ({
+        key: user.id,
+        title: user.name,
+      })) || []
+    );
+  }, [initialData?.user_location]);
+
+  const initProducts = useMemo(() => {
+    return (
+      initialData?.product_location?.map((product) => ({
+        key: product.id,
+        title: product.name,
+      })) || []
+    );
+  }, [initialData?.product_location]);
+
+  const initUserKeys = useMemo(() => {
+    return initUsers.map((user) => user.key);
+  }, [initUsers]);
+
+  const initProductKeys = useMemo(() => {
+    return initProducts.map((product) => product.key);
+  }, [initProducts]);
+
+  // State สำหรับเก็บ selected items
+  const [selectedUsers, setSelectedUsers] =
+    useState<(string | number)[]>(initUserKeys);
+  const [selectedProducts, setSelectedProducts] =
+    useState<(string | number)[]>(initProductKeys);
 
   const form = useForm<FormLocationValues>({
     resolver: zodResolver(formLocationSchema),
@@ -95,6 +129,10 @@ export default function LocationForm({
         add: [],
         remove: [],
       },
+      products: {
+        add: [],
+        remove: [],
+      },
     },
   });
 
@@ -104,6 +142,113 @@ export default function LocationForm({
     } else {
       router.back();
     }
+  };
+
+  const handleUsersChange = (
+    targetKeys: (string | number)[],
+    direction: "left" | "right",
+    moveKeys: (string | number)[]
+  ) => {
+    console.log("Users changed:", { targetKeys, direction, moveKeys });
+
+    setSelectedUsers(targetKeys);
+
+    // อัพเดต form users field
+    const currentUsers = form.getValues("users") || {
+      add: [],
+      remove: [],
+    };
+
+    let newAddArray = [...currentUsers.add];
+    let newRemoveArray = [...currentUsers.remove];
+
+    moveKeys.forEach((key) => {
+      const keyStr = String(key);
+
+      // ตรวจสอบว่า item อยู่ใน array ไหนอยู่แล้ว
+      const inAddArray = newAddArray.some((item) => item.id === keyStr);
+      const inRemoveArray = newRemoveArray.some((item) => item.id === keyStr);
+
+      if (direction === "right") {
+        // Available → Init
+        if (inRemoveArray) {
+          // ถ้าอยู่ใน remove[] แล้ว → ลบออกจาก remove[] (ย้อนกลับ)
+          newRemoveArray = newRemoveArray.filter((item) => item.id !== keyStr);
+        } else {
+          // ถ้าไม่อยู่ใน remove[] → เพิ่มเข้า add[]
+          if (!inAddArray) {
+            newAddArray.push({ id: keyStr });
+          }
+        }
+      } else {
+        // Init → Available
+        if (inAddArray) {
+          // ถ้าอยู่ใน add[] แล้ว → ลบออกจาก add[] (ย้อนกลับ)
+          newAddArray = newAddArray.filter((item) => item.id !== keyStr);
+        } else {
+          // ถ้าไม่อยู่ใน add[] → เพิ่มเข้า remove[]
+          if (!inRemoveArray) {
+            newRemoveArray.push({ id: keyStr });
+          }
+        }
+      }
+    });
+
+    form.setValue("users.add", newAddArray);
+    form.setValue("users.remove", newRemoveArray);
+  };
+
+  const handleProductsChange = (
+    targetKeys: (string | number)[],
+    direction: "left" | "right",
+    moveKeys: (string | number)[]
+  ) => {
+    console.log("Products changed:", { targetKeys, direction, moveKeys });
+    setSelectedProducts(targetKeys);
+
+    // อัพเดต form products field
+    const currentProducts = form.getValues("products") || {
+      add: [],
+      remove: [],
+    };
+
+    let newAddArray = [...currentProducts.add];
+    let newRemoveArray = [...currentProducts.remove];
+
+    moveKeys.forEach((key) => {
+      const keyStr = String(key);
+
+      // ตรวจสอบว่า item อยู่ใน array ไหนอยู่แล้ว
+      const inAddArray = newAddArray.some((item) => item.id === keyStr);
+      const inRemoveArray = newRemoveArray.some((item) => item.id === keyStr);
+
+      if (direction === "right") {
+        // Available → Init
+        if (inRemoveArray) {
+          // ถ้าอยู่ใน remove[] แล้ว → ลบออกจาก remove[] (ย้อนกลับ)
+          newRemoveArray = newRemoveArray.filter((item) => item.id !== keyStr);
+        } else {
+          // ถ้าไม่อยู่ใน remove[] → เพิ่มเข้า add[]
+          if (!inAddArray) {
+            newAddArray.push({ id: keyStr });
+          }
+        }
+      } else {
+        // Init → Available
+        if (inAddArray) {
+          // ถ้าอยู่ใน add[] แล้ว → ลบออกจาก add[] (ย้อนกลับ)
+          newAddArray = newAddArray.filter((item) => item.id !== keyStr);
+        } else {
+          // ถ้าไม่อยู่ใน add[] → เพิ่มเข้า remove[]
+          if (!inRemoveArray) {
+            newRemoveArray.push({ id: keyStr });
+          }
+        }
+      }
+    });
+
+    form.setValue("products.add", newAddArray);
+    form.setValue("products.remove", newRemoveArray);
   };
 
   const handleSubmit = async (data: FormLocationValues) => {
@@ -188,10 +333,6 @@ export default function LocationForm({
                     <FormItem>
                       <FormLabel>Delivery Point</FormLabel>
                       <FormControl>
-                        {/* <DeliveryPointLookup
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        /> */}
                         <LookupDeliveryPoint
                           value={field.value}
                           onValueChange={field.onChange}
@@ -247,75 +388,75 @@ export default function LocationForm({
                   )}
                 />
               </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold">Settings</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-col gap-4">
-                <FormField
-                  control={form.control}
-                  name="is_active"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between">
-                      <FormLabel>
-                        <p className="text-sm font-medium">Active Status</p>
-                        <p className="text-sm">
-                          Enable or disable this location
-                        </p>
-                      </FormLabel>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="is_active"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between">
+                    <FormLabel>
+                      <p className="text-sm font-medium">Active Status</p>
+                      <p className="text-sm">Enable or disable this location</p>
+                    </FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="physical_count_type"
-                  render={({ field }) => (
-                    <FormItem className="space-y-3">
-                      <FormLabel>Physical Count Type</FormLabel>
-                      <FormControl>
-                        <RadioGroup
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          className="flex"
-                        >
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value={PHYSICAL_COUNT_TYPE.YES} />
-                            </FormControl>
-                            <FormLabel className="font-normal">Yes</FormLabel>
-                          </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
-                            <FormControl>
-                              <RadioGroupItem value={PHYSICAL_COUNT_TYPE.NO} />
-                            </FormControl>
-                            <FormLabel className="font-normal">No</FormLabel>
-                          </FormItem>
-                        </RadioGroup>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={form.control}
+                name="physical_count_type"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Physical Count Type</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex"
+                      >
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value={PHYSICAL_COUNT_TYPE.YES} />
+                          </FormControl>
+                          <FormLabel className="font-normal">Yes</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value={PHYSICAL_COUNT_TYPE.NO} />
+                          </FormControl>
+                          <FormLabel className="font-normal">No</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
             </CardContent>
           </Card>
-          <LocationUser
-            initCurrentUsers={initialData?.users || []}
-            initAvailableUsers={listUser || []}
-            mode={mode}
-            formControl={form.control}
+          <Transfer
+            dataSource={listUser}
+            leftDataSource={initUsers}
+            targetKeys={selectedUsers}
+            onChange={handleUsersChange}
+            titles={["Init Users", "Available Users"]}
+            operations={["<", ">"]}
+          />
+          <Transfer
+            dataSource={[]}
+            leftDataSource={initProducts}
+            targetKeys={selectedProducts}
+            onChange={handleProductsChange}
+            titles={["Init Products", "Available Products"]}
+            operations={["<", ">"]}
           />
         </form>
       </FormProvider>
+      <JsonViewer data={form.watch()} />
       {/* <pre>{JSON.stringify(formWatch, null, 2)}</pre> */}
     </div>
   );

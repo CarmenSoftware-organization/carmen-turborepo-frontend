@@ -179,7 +179,7 @@ export const Transfer: React.FC<TransferProps> = ({
     const totalPages = Math.ceil(items.length / pageSize);
 
     return (
-      <Card className="w-full h-96 overflow-auto p-4" style={style}>
+      <Card className="w-full h-52 overflow-auto p-4" style={style}>
         {showSearch && (
           <Input
             placeholder="Search..."

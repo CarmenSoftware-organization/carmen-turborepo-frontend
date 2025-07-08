@@ -135,7 +135,12 @@ export interface LocationByIdDto {
   physical_count_type: PHYSICAL_COUNT_TYPE;
   description: string;
   is_active: boolean;
-  users: {
+  user_location: {
+    id: string;
+    name: string;
+  }[];
+
+  product_location: {
     id: string;
     name: string;
   }[];
@@ -153,6 +158,18 @@ export const formLocationSchema = z.object({
   is_active: z.boolean(),
   delivery_point_id: z.string().min(1, "Please select delivery point"),
   users: z.object({
+    add: z.array(
+      z.object({
+        id: z.string(),
+      })
+    ),
+    remove: z.array(
+      z.object({
+        id: z.string(),
+      })
+    ),
+  }),
+  products: z.object({
     add: z.array(
       z.object({
         id: z.string(),
