@@ -26,6 +26,8 @@ export interface TransferProps {
     targetSelectedKeys: (string | number)[]
   ) => void;
   render?: (item: TransferItem) => React.ReactNode;
+  leftRender?: (item: TransferItem) => React.ReactNode;
+  rightRender?: (item: TransferItem) => React.ReactNode;
   titles?: [React.ReactNode, React.ReactNode];
   showSearch?: boolean;
   disabled?: boolean;
@@ -46,6 +48,8 @@ export const Transfer: React.FC<TransferProps> = ({
   onChange,
   onSelectChange,
   render,
+  leftRender,
+  rightRender,
   titles = ["Source", "Target"],
   showSearch = false,
   disabled = false,
@@ -175,7 +179,7 @@ export const Transfer: React.FC<TransferProps> = ({
     const totalPages = Math.ceil(items.length / pageSize);
 
     return (
-      <Card className="w-full h-96 overflow-auto p-2" style={style}>
+      <Card className="w-full h-96 overflow-auto p-4" style={style}>
         {showSearch && (
           <Input
             placeholder="Search..."
@@ -186,7 +190,7 @@ export const Transfer: React.FC<TransferProps> = ({
         )}
 
         {showSelectAll && items.length > 0 && (
-          <div className="mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <Checkbox
               checked={
                 selected.length === items.filter((i) => !i.disabled).length
@@ -195,8 +199,8 @@ export const Transfer: React.FC<TransferProps> = ({
                 handleSelectAll(items, Boolean(checked), direction)
               }
               disabled={disabled}
-            />{" "}
-            Select All
+            />
+            <span className="text-xs text-muted-foreground">Select All</span>
           </div>
         )}
 
@@ -210,16 +214,24 @@ export const Transfer: React.FC<TransferProps> = ({
                 }
                 disabled={disabled || item.disabled}
               />
-              <div>{render ? render(item) : item.title}</div>
+              <div className="text-xs">
+                {direction === "left" && leftRender
+                  ? leftRender(item)
+                  : direction === "right" && rightRender
+                    ? rightRender(item)
+                    : render
+                      ? render(item)
+                      : item.title}
+              </div>
             </div>
           ))}
           {paginated.length === 0 && (
-            <div className="text-gray-500">No items</div>
+            <div className="text-muted-foreground">No items</div>
           )}
         </div>
 
         {pagination && totalPages > 1 && (
-          <div className="flex justify-between mt-2 text-sm text-gray-600">
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
             <Button
               variant="ghost"
               size="sm"

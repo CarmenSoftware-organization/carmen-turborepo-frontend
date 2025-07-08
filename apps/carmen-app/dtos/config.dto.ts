@@ -47,6 +47,12 @@ const baseDepartmentSchema = z.object({
           isHod: z.boolean(),
         })
       ),
+      update: z.array(
+        z.object({
+          id: z.string().optional(),
+          isHod: z.boolean(),
+        })
+      ),
       remove: z.array(
         z.object({
           id: z.string().optional(),
