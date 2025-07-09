@@ -7,6 +7,10 @@ export const metadata: Metadata = {
 
 const itemsPlayground = [
   {
+    title: "Color",
+    href: "/playground/color",
+  },
+  {
     title: "Input Component Examples",
     href: "/playground/input",
   },
