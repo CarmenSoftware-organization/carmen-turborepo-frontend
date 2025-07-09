@@ -22,66 +22,70 @@ import FormBoolean from "@/components/form-custom/form-boolean";
 import NumberInput from "@/components/form-custom/NumberInput";
 import { TaxProfileFormData, taxProfileSchema } from "@/dtos/tax-profile.dto";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 interface FormTaxProfileProps {
-    open: boolean;
-    onOpenChange: (open: boolean) => void;
-    onSubmit: (data: TaxProfileFormData) => void;
-    editingProfile?: TaxProfileFormData | null;
-    onCancel: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (data: TaxProfileFormData) => void;
+  editingProfile?: TaxProfileFormData | null;
+  onCancel: () => void;
 }
 
 export const FormTaxProfile = ({
-    open,
-    onOpenChange,
-    onSubmit,
-    editingProfile,
-    onCancel,
+  open,
+  onOpenChange,
+  onSubmit,
+  editingProfile,
+  onCancel,
 }: FormTaxProfileProps) => {
-    const form = useForm<TaxProfileFormData>({
-        resolver: zodResolver(taxProfileSchema),
-        defaultValues: {
+  const tCommon = useTranslations("Common");
+  const tTaxProfile = useTranslations("TaxProfile");
+
+  const form = useForm<TaxProfileFormData>({
+    resolver: zodResolver(taxProfileSchema),
+    defaultValues: {
+      name: "",
+      tax_rate: 0,
+      is_active: true,
+    },
+  });
+
+  // Reset form when dialog opens/closes or editing profile changes
+  useEffect(() => {
+    if (open) {
+      if (editingProfile) {
+        form.reset({
+          name: editingProfile.name,
+          tax_rate: editingProfile.tax_rate,
+          is_active: editingProfile.is_active,
+        });
+      } else {
+        form.reset({
           name: "",
           tax_rate: 0,
           is_active: true,
-        },
-      });
-    
-      // Reset form when dialog opens/closes or editing profile changes
-      useEffect(() => {
-        if (open) {
-          if (editingProfile) {
-            form.reset({
-              name: editingProfile.name,
-              tax_rate: editingProfile.tax_rate,
-              is_active: editingProfile.is_active,
-            });
-          } else {
-            form.reset({
-              name: "",
-              tax_rate: 0,
-              is_active: true,
-            });
-          }
-        }
-      }, [open, editingProfile, form]);
-    
-      const handleSubmit = (data: TaxProfileFormData) => {
-        onSubmit(data);
-        form.reset();
-      };
-    
-      const handleCancel = () => {
-        form.reset();
-        onCancel();
-      };
+        });
+      }
+    }
+  }, [open, editingProfile, form]);
+
+  const handleSubmit = (data: TaxProfileFormData) => {
+    onSubmit(data);
+    form.reset();
+  };
+
+  const handleCancel = () => {
+    form.reset();
+    onCancel();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {editingProfile ? "Edit Tax Profile" : "Add Tax Profile"}
+            {editingProfile ? tTaxProfile("edit_tax_profile") : tTaxProfile("add_tax_profile")}
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -94,7 +98,7 @@ export const FormTaxProfile = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{tTaxProfile("name")}</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. VAT 7%" {...field} />
                   </FormControl>
@@ -108,7 +112,7 @@ export const FormTaxProfile = ({
               name="tax_rate"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tax Rate (%)</FormLabel>
+                  <FormLabel>{tTaxProfile("rate")} %</FormLabel>
                   <FormControl>
                     <NumberInput
                       {...field}
@@ -129,7 +133,7 @@ export const FormTaxProfile = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <FormBoolean {...field} label="Active" type="switch" />
+                    <FormBoolean {...field} label={tCommon("active")} type="switch" />
                   </FormControl>
                 </FormItem>
               )}
@@ -137,9 +141,9 @@ export const FormTaxProfile = ({
 
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" onClick={handleCancel}>
-                Cancel
+                {tCommon("cancel")}
               </Button>
-              <Button type="submit">{editingProfile ? "Save" : "Add"}</Button>
+              <Button type="submit">{editingProfile ? tCommon("save") : tCommon("add")}</Button>
             </div>
           </form>
         </Form>
@@ -147,6 +151,3 @@ export const FormTaxProfile = ({
     </Dialog>
   );
 };
-
-
-

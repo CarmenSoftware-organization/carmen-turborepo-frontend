@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SquarePen, Trash2, Plus, FileDown, Printer } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { taxProfileMock } from "./mock";
@@ -26,10 +25,19 @@ import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import { TableHead } from "@/components/ui/table";
+import {
+  Table,
+  TableCell,
+  TableRow,
+  TableBody,
+  TableHeader,
+} from "@/components/ui/table";
 
 export function TaxProfileComponent() {
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
+  const tTaxProfile = useTranslations("TaxProfile");
   const [taxProfiles, setTaxProfiles] = useState(taxProfileMock);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<string | null>(null);
@@ -39,7 +47,7 @@ export function TaxProfileComponent() {
   const [filter, setFilter] = useURL("filter");
   const [statusOpen, setStatusOpen] = useState(false);
 
-  const title = "Tax Profile";
+  const title = tTaxProfile("title");
 
   const sortFields = useMemo(
     () => [
@@ -146,49 +154,65 @@ export function TaxProfileComponent() {
       handleSetSort,
     ]
   );
+
   const content = useMemo(() => {
     return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {taxProfiles.map((profile) => (
-          <Card
-            key={profile.id}
-            className="group hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50"
-          >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
-                  {profile.name}
-                </CardTitle>
-                <Badge variant={profile.is_active ? "active" : "inactive"}>
-                  {profile.is_active ? "Active" : "Inactive"}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="text-sm text-muted-foreground">
-                Tax Rate: {profile.tax_rate}%
-              </div>
-              <div className="flex items-center justify-end">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleEdit(profile.id)}
-                >
-                  <SquarePen className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hover:text-destructive"
-                  onClick={() => setDeleteProfileId(profile.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Table className="border">
+        <TableHeader className="bg-muted">
+          <TableRow>
+            <TableHead className="w-10">#</TableHead>
+            <TableHead className="w-40">{tHeader("name")}</TableHead>
+            <TableHead className="w-40">{tHeader("rate")} %</TableHead>
+            <TableHead className="w-40">{tHeader("status")}</TableHead>
+            <TableHead className="text-right">{tHeader("action")}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {taxProfiles.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={4}
+                className="text-center text-muted-foreground py-8"
+              >
+                {tTaxProfile("no_tax_profile")}
+              </TableCell>
+            </TableRow>
+          ) : (
+            taxProfiles.map((profile, index) => (
+              <TableRow key={profile.id} className="hover:bg-muted/50">
+                <TableCell>{index + 1}</TableCell>
+                <TableCell className="font-medium">{profile.name}</TableCell>
+                <TableCell>{profile.tax_rate}</TableCell>
+                <TableCell>
+                  <Badge variant={profile.is_active ? "active" : "inactive"}>
+                    {profile.is_active ? "Active" : "Inactive"}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(profile.id)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <SquarePen className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDeleteProfileId(profile.id)}
+                      className="h-8 w-8 p-0 hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
+        </TableBody>
+      </Table>
     );
   }, [taxProfiles]);
 
@@ -200,7 +224,7 @@ export function TaxProfileComponent() {
     };
     setTaxProfiles((prev) => [...prev, newProfile]);
     setIsDialogOpen(false);
-    toastSuccess({ message: "Tax profile created successfully" });
+    toastSuccess({ message: tTaxProfile("tax_profile_created") });
   };
 
   const handleEdit = (profileId: string) => {
@@ -217,7 +241,7 @@ export function TaxProfileComponent() {
           profile.id === editingProfile ? { ...profile, ...data } : profile
         )
       );
-      toastSuccess({ message: "Tax profile updated successfully" });
+      toastSuccess({ message: tTaxProfile("tax_profile_updated") });
       setIsDialogOpen(false);
       setEditingProfile(null);
     }
@@ -228,7 +252,7 @@ export function TaxProfileComponent() {
     setTaxProfiles((prev) =>
       prev.filter((profile) => profile.id !== profileId)
     );
-    toastSuccess({ message: "Tax profile deleted successfully" });
+    toastSuccess({ message: tTaxProfile("tax_profile_deleted") });
     setDeleteProfileId(null);
   };
 
@@ -271,19 +295,18 @@ export function TaxProfileComponent() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
+            <AlertDialogTitle>{tTaxProfile("confirm_delete")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this Tax Profile? This action
-              cannot be undone.
+              {tTaxProfile("confirm_delete_description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteProfileId && handleDelete(deleteProfileId)}
               className="bg-destructive hover:bg-destructive/90"
             >
-              Delete
+              {tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

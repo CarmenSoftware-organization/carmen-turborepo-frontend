@@ -10,10 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import {
   DollarSign,
   Plus,
-  Settings,
   FileText,
-  CheckCircle,
-  XCircle,
   SquarePen,
   Trash2,
 } from "lucide-react";
@@ -48,86 +45,8 @@ export function ExtraCostComponent() {
 
       <Separator />
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-primary/80 font-medium">
-                  Total Types
-                </p>
-                <p className="text-2xl font-bold text-primary">
-                  {extraCostTypes?.data?.length || 0}
-                </p>
-              </div>
-              <FileText className="h-8 w-8 text-primary/60" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-secondary/50 to-secondary border-secondary">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-secondary-foreground/80 font-medium">
-                  Active
-                </p>
-                <p className="text-2xl font-bold text-secondary-foreground">
-                  {extraCostTypes?.data?.filter(
-                    (item: ExtraCostTypeDto) => item.is_active
-                  )?.length || 0}
-                </p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-secondary-foreground/60" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-destructive/5 to-destructive/10 border-destructive/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-destructive/80 font-medium">
-                  Inactive
-                </p>
-                <p className="text-2xl font-bold text-destructive">
-                  {extraCostTypes?.data?.filter(
-                    (item: ExtraCostTypeDto) => !item.is_active
-                  )?.length || 0}
-                </p>
-              </div>
-              <XCircle className="h-8 w-8 text-destructive/60" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-accent/50 to-accent border-accent">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-accent-foreground/80 font-medium">
-                  Categories
-                </p>
-                <p className="text-2xl font-bold text-accent-foreground">
-                  {new Set(
-                    extraCostTypes?.data?.map(
-                      (item: ExtraCostTypeDto) => item.name.split(" ")[0]
-                    )
-                  )?.size || 0}
-                </p>
-              </div>
-              <Settings className="h-8 w-8 text-accent-foreground/60" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">
-            Extra Cost Types
-          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {extraCostTypes?.data?.map((extraCostType: ExtraCostTypeDto) => (
               <Card
