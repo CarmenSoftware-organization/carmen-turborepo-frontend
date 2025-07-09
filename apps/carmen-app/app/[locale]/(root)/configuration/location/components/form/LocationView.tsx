@@ -5,12 +5,20 @@ import { LocationByIdDto } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState } from "react";
 import LocationForm from "./LocationForm";
-import { Edit, MapPin, Package, Settings, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  MapPin,
+  Package,
+  Settings,
+  SquarePen,
+  Users,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
 import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
+import { Link } from "@/lib/navigation";
 
 interface LocationViewProps {
   readonly initialData?: LocationByIdDto;
@@ -43,15 +51,20 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
       ) : (
         <div className="max-w-4xl mx-auto space-y-4">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size={"icon"} asChild>
+                <Link href={`/configuration/location`}>
+                  <ArrowLeft className="w-4 h-4" />
+                </Link>
+              </Button>
               <h1 className="text-3xl font-bold">{initialData?.name}</h1>
-              <p className="text-sm">Location Details</p>
             </div>
             <Button
               onClick={handleEditMode}
               className="flex items-center gap-2 h-7"
+              variant="outline"
             >
-              <Edit className="w-4 h-4" />
+              <SquarePen className="w-4 h-4" />
               Edit
             </Button>
           </div>
@@ -139,17 +152,13 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
             </CardHeader>
             <CardContent>
               {(initialData?.user_location?.length ?? 0) > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="overflow-y-auto max-h-[200px]">
                   {initialData?.user_location.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center gap-2 rounded-lg px-3 py-2"
-                    >
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold">
-                        {user.name ? user.name : "-"}
-                      </div>
-                      <span className="text-xs font-medium">{user.id}</span>
-                    </div>
+                    <ul key={user.id} className="list-disc list-inside">
+                      <li className="text-xs font-medium">
+                        {user.firstname} {user.lastname}
+                      </li>
+                    </ul>
                   ))}
                 </div>
               ) : (
@@ -173,10 +182,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
               {(initialData?.product_location?.length ?? 0) > 0 ? (
                 <div className="overflow-y-auto max-h-[200px]">
                   {initialData?.product_location.map((product) => (
-                    <ul
-                      key={product.id}
-                      className="list-disc list-inside"
-                    >
+                    <ul key={product.id} className="list-disc list-inside">
                       <li className="text-xs">{product.name}</li>
                     </ul>
                   ))}

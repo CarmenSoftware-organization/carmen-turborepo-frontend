@@ -137,7 +137,8 @@ export interface LocationByIdDto {
   is_active: boolean;
   user_location: {
     id: string;
-    name: string;
+    firstname: string;
+    lastname: string;
   }[];
 
   product_location: {
@@ -184,3 +185,21 @@ export const formLocationSchema = z.object({
 });
 
 export type FormLocationValues = z.infer<typeof formLocationSchema>;
+
+export interface TransferItem {
+  key: string | number;
+  title: string;
+  description?: string;
+  disabled?: boolean;
+}
+
+export interface ProductItemTransfer {
+  id: string;
+  name: string;
+}
+
+export interface UserItemTransfer {
+  user_id: string;
+  firstname: string;
+  lastname: string;
+}

@@ -3,14 +3,8 @@ import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-
-export interface TransferItem {
-  key: string | number;
-  title: string;
-  description?: string;
-  disabled?: boolean;
-}
-
+import { TransferItem } from "@/dtos/config.dto";
+import { getDisplayText } from "@/utils/helper";
 export interface TransferProps {
   dataSource: TransferItem[];
   leftDataSource?: TransferItem[];
@@ -76,6 +70,9 @@ export const Transfer: React.FC<TransferProps> = ({
 
   const pageSize = typeof pagination === "object" ? pagination.pageSize : 10;
 
+  // Helper function to get display text from item
+ 
+
   // รวมข้อมูลทั้งหมดเพื่อใช้ในการแสดงผล
   const allItems = useMemo(() => {
     const safeDataSource = Array.isArray(dataSource) ? dataSource : [];
@@ -101,11 +98,11 @@ export const Transfer: React.FC<TransferProps> = ({
   );
 
   const filteredSourceItems = sourceItems.filter((item) =>
-    item.title.toLowerCase().includes(sourceSearch.toLowerCase())
+    getDisplayText(item).toLowerCase().includes(sourceSearch.toLowerCase())
   );
 
   const filteredTargetItems = targetItems.filter((item) =>
-    item.title.toLowerCase().includes(targetSearch.toLowerCase())
+    getDisplayText(item).toLowerCase().includes(targetSearch.toLowerCase())
   );
 
   const paginatedItems = (items: TransferItem[], page: number) => {

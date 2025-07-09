@@ -3,6 +3,8 @@ import {
   FormLocationValues,
   LocationByIdDto,
   PHYSICAL_COUNT_TYPE,
+  ProductItemTransfer,
+  UserItemTransfer,
 } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
@@ -35,7 +37,7 @@ import { useUserList } from "@/hooks/useUserList";
 import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
 import { Transfer } from "@/components/ui-custom/Transfer";
 import { useMemo, useState } from "react";
-import JsonViewer from "@/components/JsonViewer";
+import useProduct from "@/hooks/useProduct";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -44,6 +46,7 @@ interface LocationFormProps {
   readonly token: string;
   readonly tenantId: string;
 }
+
 
 interface LocationResponse {
   id: string;
@@ -67,12 +70,18 @@ export default function LocationForm({
   tenantId,
 }: LocationFormProps) {
   const { userList } = useUserList();
+  const { products } = useProduct();
   const router = useRouter();
+  console.log("products", products);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const listUser = userList?.map((user: any) => ({
+  const listUser = userList?.map((user: UserItemTransfer) => ({
     key: user.user_id,
     title: user.firstname + " " + user.lastname,
+  }));
+
+  const listProduct = products?.map((product: ProductItemTransfer) => ({
+    key: product.id,
+    title: product.name,
   }));
 
   const createMutation = useLocationMutation(token, tenantId);
@@ -86,7 +95,7 @@ export default function LocationForm({
     return (
       initialData?.user_location?.map((user) => ({
         key: user.id,
-        title: user.name,
+        title: user.firstname + " " + user.lastname,
       })) || []
     );
   }, [initialData?.user_location]);
@@ -447,7 +456,7 @@ export default function LocationForm({
             operations={["<", ">"]}
           />
           <Transfer
-            dataSource={[]}
+            dataSource={listProduct}
             leftDataSource={initProducts}
             targetKeys={selectedProducts}
             onChange={handleProductsChange}
@@ -456,8 +465,6 @@ export default function LocationForm({
           />
         </form>
       </FormProvider>
-      <JsonViewer data={form.watch()} />
-      {/* <pre>{JSON.stringify(formWatch, null, 2)}</pre> */}
     </div>
   );
 }
