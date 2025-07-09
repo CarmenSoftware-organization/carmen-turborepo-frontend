@@ -9,7 +9,7 @@ import {
   updateApiRequest,
   deleteApiRequest,
 } from "@/lib/config.api";
-import { TaxProfileBaseDto, TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
+import { TaxProfileEditDto, TaxProfileFormData, TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
 
 const API_URL = `${backendApi}/api/config/tax-profile`;
 
@@ -83,7 +83,7 @@ export const useTaxProfileByIdQuery = (
 
 export const useTaxProfileMutation = (token: string, tenantId: string) => {
   return useMutation({
-    mutationFn: async (data: TaxProfileBaseDto) => {
+    mutationFn: async (data: TaxProfileFormData) => {
       return await postApiRequest(
         API_URL,
         token,
@@ -102,7 +102,7 @@ export const useUpdateTaxProfile = (
 ) => {
   const API_ID = `${API_URL}/${id}`;
   return useMutation({
-    mutationFn: async (data: TaxProfileBaseDto) => {
+    mutationFn: async (data: TaxProfileEditDto) => {
       return await updateApiRequest(
         API_ID,
         token,

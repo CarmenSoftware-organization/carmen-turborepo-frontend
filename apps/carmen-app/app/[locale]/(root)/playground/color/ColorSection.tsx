@@ -21,14 +21,13 @@ export function ColorSection({ title, colors, sectionRef }: ColorSectionProps) {
 
 export function ColorSwatch({ color }: { color: ColorDto }) {
   return (
-    <div className="border rounded-lg p-4 bg-card">
+    <div className="flex items-center gap-4">
       <div
-        className="w-full h-16 rounded-md border mb-3"
+        className="h-16 w-16 rounded-full border"
         style={{ backgroundColor: `hsl(var(${color.cssVar}))` }}
       />
       <div className="space-y-1">
         <h3 className="font-medium text-sm">{color.name}</h3>
-        <p className="text-xs text-muted-foreground">{color.description}</p>
         <code className="text-xs bg-muted px-2 py-1 rounded block">
           {color.cssVar}
         </code>
