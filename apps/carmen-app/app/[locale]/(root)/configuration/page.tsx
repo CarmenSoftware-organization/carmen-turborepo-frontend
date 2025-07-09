@@ -4,46 +4,56 @@ import { useTranslations } from "next-intl";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Configuration",
+  title: "Configuration",
 };
 
 export default function Configuration() {
-    const t = useTranslations('Modules');
+  const t = useTranslations("Modules");
 
-    const subMenu: MenuCardItem[] = [
-        {
-            name: t('Configuration.currency'),
-            href: '/configuration/currency',
-            icon: CreditCard
-        },
-        {
-            name: t('Configuration.exchangeRates'),
-            href: '/configuration/exchange-rate',
-            icon: CreditCard
-        },
-        {
-            name: t('Configuration.deliveryPoint'),
-            href: '/configuration/delivery-point',
-            icon: MapPin
-        },
-        {
-            name: t('Configuration.department'),
-            href: '/configuration/department',
-            icon: Building2
-        },
-        {
-            name: t('Configuration.storeLocation'),
-            href: '/configuration/location',
-            icon: Store
-        }
-    ];
+  const subMenu: MenuCardItem[] = [
+    {
+      name: t("Configuration.currency"),
+      href: "/configuration/currency",
+      icon: CreditCard,
+    },
+    {
+      name: t("Configuration.exchangeRates"),
+      href: "/configuration/exchange-rate",
+      icon: CreditCard,
+    },
+    {
+      name: t("Configuration.deliveryPoint"),
+      href: "/configuration/delivery-point",
+      icon: MapPin,
+    },
+    {
+      name: t("Configuration.department"),
+      href: "/configuration/department",
+      icon: Building2,
+    },
+    {
+      name: t("Configuration.storeLocation"),
+      href: "/configuration/location",
+      icon: Store,
+    },
+    {
+      name: t("Configuration.tax_profile"),
+      href: "/configuration/tax-profile",
+      icon: CreditCard,
+    },
+    {
+      name: t("Configuration.extra_cost"),
+      href: "/configuration/extra-cost",
+      icon: CreditCard,
+    },
+  ];
 
-    const title = t('configurationTitle');
+  const title = t("configurationTitle");
 
-    return (
-        <div className="container">
-            <h1 className="text-3xl font-bold mb-8">{title}</h1>
-            <MenuCardGrid items={subMenu} />
-        </div>
-    )
+  return (
+    <div className="container">
+      <h1 className="text-3xl font-bold mb-8">{title}</h1>
+      <MenuCardGrid items={subMenu} />
+    </div>
+  );
 }

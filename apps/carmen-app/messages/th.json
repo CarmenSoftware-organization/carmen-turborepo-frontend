@@ -177,7 +177,9 @@
       "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
       "deliveryPoint": "จุดส่งของ",
       "storeLocation": "สถานที่เก็บสินค้า",
-      "department": "แผนก"
+      "department": "แผนก",
+      "tax_profile": "ระบบภาษี",
+      "extra_cost": "ค่าใช้จ่ายเพิ่มเติม"
     },
     "SystemAdministration": {
       "systemAdministration": "การจัดการระบบ",

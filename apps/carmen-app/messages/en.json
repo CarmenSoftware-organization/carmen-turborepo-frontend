@@ -182,7 +182,9 @@
       "exchangeRates": "Exchange Rates",
       "deliveryPoint": "Delivery Point",
       "storeLocation": "Store Location",
-      "department": "Department"
+      "department": "Department",
+      "tax_profile": "Tax Profile",
+      "extra_cost": "Extra Cost"
     },
     "SystemAdministration": {
       "systemAdministration": "System Administration",
