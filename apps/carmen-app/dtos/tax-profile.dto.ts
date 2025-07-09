@@ -1,8 +1,18 @@
 import { z } from "zod";
 
 export const taxProfileSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  tax_rate: z.number().min(0, { message: "Tax rate must be greater than 0" }),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be less than 50 characters"),
+  tax_rate: z
+    .number({
+      required_error: "Tax rate is required",
+      invalid_type_error: "Tax rate must be a number",
+    })
+    .min(0, "Tax rate must be 0 or greater")
+    .max(100, "Tax rate cannot exceed 100%"),
   is_active: z.boolean().default(true),
 });
 

@@ -1,22 +1,11 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SquarePen, Trash2, Plus } from "lucide-react";
-import { useState } from "react";
+import { SquarePen, Trash2, Plus, FileDown, Printer } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { taxProfileMock } from "./mock";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
-import { Switch } from "@/components/ui/switch";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,163 +17,137 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { TaxProfileFormData } from "@/dtos/tax-profile.dto";
+import { toastSuccess } from "@/components/ui-custom/Toast";
+import { FormTaxProfile } from "./FormTaxProfile";
+import { useTranslations } from "next-intl";
+import SearchInput from "@/components/ui-custom/SearchInput";
+import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
+import { boolFilterOptions } from "@/constants/options";
+import SortComponent from "@/components/ui-custom/SortComponent";
+import { useURL } from "@/hooks/useURL";
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 
 export function TaxProfileComponent() {
+  const tCommon = useTranslations("Common");
+  const tHeader = useTranslations("TableHeader");
   const [taxProfiles, setTaxProfiles] = useState(taxProfileMock);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<string | null>(null);
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
+  const [search, setSearch] = useURL("search");
+  const [sort, setSort] = useURL("sort");
+  const [filter, setFilter] = useURL("filter");
+  const [statusOpen, setStatusOpen] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<TaxProfileFormData>({
-    defaultValues: {
-      name: "",
-      tax_rate: 0,
-      is_active: true,
+  const title = "Tax Profile";
+
+  const sortFields = useMemo(
+    () => [
+      { key: "name", label: tHeader("name") },
+      { key: "is_active", label: tHeader("status") },
+    ],
+    [tHeader]
+  );
+
+  useEffect(() => {
+    if (search) {
+      setSort("");
+    }
+  }, [search, setSort]);
+
+  const handleSetFilter = useCallback(
+    (filterValue: string) => {
+      setFilter(filterValue);
     },
-  });
+    [setFilter]
+  );
 
-  const handleCreate = (data: TaxProfileFormData) => {
-    const newProfile = {
-      id: crypto.randomUUID(),
-      ...data,
-    };
-    setTaxProfiles((prev) => [...prev, newProfile]);
-    setIsDialogOpen(false);
-    reset();
-  };
+  const handleSetSort = useCallback(
+    (sortValue: string) => {
+      setSort(sortValue);
+    },
+    [setSort]
+  );
 
-  const handleEdit = (profileId: string) => {
-    const profile = taxProfiles.find((p) => p.id === profileId);
-    if (profile) {
-      setValue("name", profile.name);
-      setValue("tax_rate", profile.tax_rate);
-      setValue("is_active", profile.is_active);
-      setEditingProfile(profileId);
-      setIsDialogOpen(true);
-    }
-  };
-
-  const handleUpdate = (data: TaxProfileFormData) => {
-    if (editingProfile) {
-      setTaxProfiles((prev) =>
-        prev.map((profile) =>
-          profile.id === editingProfile ? { ...profile, ...data } : profile
-        )
-      );
-      setIsDialogOpen(false);
-      setEditingProfile(null);
-      reset();
-    }
-  };
-
-  const handleDelete = (profileId: string) => {
-    setTaxProfiles((prev) =>
-      prev.filter((profile) => profile.id !== profileId)
-    );
-    setDeleteProfileId(null);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
+  const handleAddNew = useCallback(() => {
     setEditingProfile(null);
-    reset();
-  };
+    setIsDialogOpen(true);
+  }, []);
 
-  const onSubmit = (data: TaxProfileFormData) => {
-    if (editingProfile) {
-      handleUpdate(data);
-    } else {
-      handleCreate(data);
-    }
-  };
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Tax Profile</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              Add New
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>
-                {editingProfile
-                  ? "Edit Tax Profile"
-                  : "Add Tax Profile"}
-              </DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  id="name"
-                  {...register("name", { required: "Please enter name" })}
-                  placeholder="e.g. VAT 7%"
-                />
-                {errors.name && (
-                  <p className="text-sm text-red-600">{errors.name.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="tax_rate">Tax Rate (%)</Label>
-                <Input
-                  id="tax_rate"
-                  type="number"
-                  step="0.01"
-                  {...register("tax_rate", {
-                    required: "Please enter tax rate",
-                    min: {
-                      value: 0,
-                      message: "Tax rate must be greater than or equal to 0",
-                    },
-                  })}
-                  placeholder="0"
-                />
-                {errors.tax_rate && (
-                  <p className="text-sm text-red-600">
-                    {errors.tax_rate.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="is_active"
-                  checked={watch("is_active")}
-                  onCheckedChange={(checked) => setValue("is_active", checked)}
-                />
-                <Label htmlFor="is_active">Active</Label>
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleDialogClose}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">
-                  {editingProfile ? "Save" : "Add"}
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+  const actionButtons = useMemo(
+    () => (
+      <div
+        className="action-btn-container"
+        data-id="delivery-point-list-action-buttons"
+      >
+        <Button size="sm" onClick={handleAddNew}>
+          <Plus className="h-4 w-4" />
+          {tCommon("add")}
+        </Button>
+        <Button
+          variant="outline"
+          className="group"
+          size="sm"
+          data-id="delivery-point-export-button"
+        >
+          <FileDown className="h-4 w-4" />
+          {tCommon("export")}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          data-id="delivery-point-print-button"
+        >
+          <Printer className="h-4 w-4" />
+          {tCommon("print")}
+        </Button>
       </div>
+    ),
+    [tCommon, handleAddNew]
+  );
 
+  const filters = useMemo(
+    () => (
+      <div className="filter-container" data-id="delivery-point-list-filters">
+        <SearchInput
+          defaultValue={search}
+          onSearch={setSearch}
+          placeholder={tCommon("search")}
+          data-id="delivery-point-list-search-input"
+        />
+        <div className="flex items-center gap-2">
+          <StatusSearchDropdown
+            options={boolFilterOptions}
+            value={filter}
+            onChange={handleSetFilter}
+            open={statusOpen}
+            onOpenChange={setStatusOpen}
+            data-id="delivery-point-status-search-dropdown"
+          />
+          <SortComponent
+            fieldConfigs={sortFields}
+            sort={sort}
+            setSort={handleSetSort}
+            data-id="delivery-point-sort-dropdown"
+          />
+        </div>
+      </div>
+    ),
+    [
+      search,
+      setSearch,
+      tCommon,
+      filter,
+      handleSetFilter,
+      statusOpen,
+      setStatusOpen,
+      sortFields,
+      sort,
+      handleSetSort,
+    ]
+  );
+  const content = useMemo(() => {
+    return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {taxProfiles.map((profile) => (
           <Card
@@ -226,6 +189,81 @@ export function TaxProfileComponent() {
           </Card>
         ))}
       </div>
+    );
+  }, [taxProfiles]);
+
+  const handleCreate = (data: TaxProfileFormData) => {
+    // TODO: call api to create tax profile
+    const newProfile = {
+      id: crypto.randomUUID(),
+      ...data,
+    };
+    setTaxProfiles((prev) => [...prev, newProfile]);
+    setIsDialogOpen(false);
+    toastSuccess({ message: "Tax profile created successfully" });
+  };
+
+  const handleEdit = (profileId: string) => {
+    // TODO: call api to edit tax profile
+    setEditingProfile(profileId);
+    setIsDialogOpen(true);
+  };
+
+  const handleUpdate = (data: TaxProfileFormData) => {
+    // TODO: call api to update tax profile
+    if (editingProfile) {
+      setTaxProfiles((prev) =>
+        prev.map((profile) =>
+          profile.id === editingProfile ? { ...profile, ...data } : profile
+        )
+      );
+      toastSuccess({ message: "Tax profile updated successfully" });
+      setIsDialogOpen(false);
+      setEditingProfile(null);
+    }
+  };
+
+  const handleDelete = (profileId: string) => {
+    // TODO: call api to delete tax profile
+    setTaxProfiles((prev) =>
+      prev.filter((profile) => profile.id !== profileId)
+    );
+    toastSuccess({ message: "Tax profile deleted successfully" });
+    setDeleteProfileId(null);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setEditingProfile(null);
+  };
+
+  const handleSubmit = (data: TaxProfileFormData) => {
+    if (editingProfile) {
+      handleUpdate(data);
+    } else {
+      handleCreate(data);
+    }
+  };
+
+  return (
+    <>
+      <DataDisplayTemplate
+        title={title}
+        actionButtons={actionButtons}
+        filters={filters}
+        content={content}
+      />
+      <FormTaxProfile
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        onSubmit={handleSubmit}
+        editingProfile={
+          editingProfile
+            ? taxProfiles.find((p) => p.id === editingProfile)
+            : null
+        }
+        onCancel={handleDialogClose}
+      />
 
       <AlertDialog
         open={deleteProfileId !== null}
@@ -250,6 +288,6 @@ export function TaxProfileComponent() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
