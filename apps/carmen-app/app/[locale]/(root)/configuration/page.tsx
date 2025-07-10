@@ -1,4 +1,4 @@
-import { CreditCard, MapPin, Building2, Store } from "lucide-react";
+import { CreditCard, MapPin, Building2, Store, Building } from "lucide-react";
 import { MenuCardGrid, MenuCardItem } from "@/components/ui/menu-card";
 import { useTranslations } from "next-intl";
 import { Metadata } from "next";
@@ -45,6 +45,11 @@ export default function Configuration() {
       name: t("Configuration.extra_cost"),
       href: "/configuration/extra-cost",
       icon: CreditCard,
+    },
+    {
+      name: t("Configuration.business_type"),
+      href: "/configuration/business-type",
+      icon: Building,
     },
   ];
 

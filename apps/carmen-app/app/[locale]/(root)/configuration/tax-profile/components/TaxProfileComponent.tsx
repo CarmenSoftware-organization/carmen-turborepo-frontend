@@ -79,8 +79,6 @@ export function TaxProfileComponent() {
     deleteProfileId ?? ""
   );
 
-  console.log("deleteProfileId >>>", deleteProfileId);
-
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
   const [filter, setFilter] = useURL("filter");

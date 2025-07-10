@@ -184,7 +184,8 @@
       "storeLocation": "Store Location",
       "department": "Department",
       "tax_profile": "Tax Profile",
-      "extra_cost": "Extra Cost"
+      "extra_cost": "Extra Cost",
+      "business_type": "Business Type"
     },
     "SystemAdministration": {
       "systemAdministration": "System Administration",
@@ -302,7 +303,8 @@
     "pr_no": "PR Number",
     "vendor": "Vendor",
     "business_type": "Business Type",
-    "rate": "Rate"
+    "rate": "Rate",
+    "note": "Note"
   },
   "Product": {
     "title": "Product"
@@ -448,5 +450,19 @@
     "extra_cost_created": "Extra cost created successfully",
     "extra_cost_updated": "Extra cost updated successfully",
     "extra_cost_deleted": "Extra cost deleted successfully"
+  },
+  "BusinessType": {
+    "title": "Business Type",
+    "name": "Business Type Name",
+    "description": "Description",
+    "note": "Note",
+    "no_business_type": "No business types found. Create your first business type to get started.",
+    "add_business_type": "Add Business Type",
+    "edit_business_type": "Edit Business Type",
+    "confirm_delete": "Confirm Delete",
+    "confirm_delete_description": "Are you sure you want to delete this Business Type? This action cannot be undone.",
+    "business_type_created": "Business type created successfully",
+    "business_type_updated": "Business type updated successfully",
+    "business_type_deleted": "Business type deleted successfully"
   }
 }

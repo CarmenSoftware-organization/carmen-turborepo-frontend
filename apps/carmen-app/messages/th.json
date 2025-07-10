@@ -179,7 +179,8 @@
       "storeLocation": "สถานที่เก็บสินค้า",
       "department": "แผนก",
       "tax_profile": "ระบบภาษี",
-      "extra_cost": "ค่าใช้จ่ายเพิ่มเติม"
+      "extra_cost": "ค่าใช้จ่ายเพิ่มเติม",
+      "business_type": "ประเภทธุรกิจ"
     },
     "SystemAdministration": {
       "systemAdministration": "การจัดการระบบ",
@@ -301,7 +302,8 @@
     "pr_no": "เลขที่ใบขอซื้อ",
     "vendor": "ผู้จัดจำหน่าย",
     "business_type": "ประเภทธุรกิจ",
-    "rate": "อัตรา"
+    "rate": "อัตรา",
+    "note": "หมายเหตุ"
   },
   "Product": {
     "title": "สินค้า"
@@ -443,5 +445,20 @@
     "extra_cost_created": "สร้างค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
     "extra_cost_updated": "แก้ไขค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
     "extra_cost_deleted": "ลบค่าใช้จ่ายเพิ่มเติมเรียบร้อย"
+  },
+  "BusinessType": {
+    "title": "ประเภทธุรกิจ",
+    "name": "ชื่อประเภทธุรกิจ",
+    "description": "คำอธิบาย",
+    "note": "หมายเหตุ",
+    "status": "สถานะ",
+    "no_business_type": "ไม่มีประเภทธุรกิจ กรุณาสร้างประเภทธุรกิจใหม่",
+    "add_business_type": "เพิ่มประเภทธุรกิจ",
+    "edit_business_type": "แก้ไขประเภทธุรกิจ",
+    "confirm_delete": "ยืนยันการลบ",
+    "confirm_delete_description": "คุณแน่ใจหรือไม่ที่จะลบประเภทธุรกิจนี้? การลบจะไม่สามารถยกเลิกได้",
+    "business_type_created": "สร้างประเภทธุรกิจเรียบร้อย",
+    "business_type_updated": "แก้ไขประเภทธุรกิจเรียบร้อย",
+    "business_type_deleted": "ลบประเภทธุรกิจเรียบร้อย"
   }
 }

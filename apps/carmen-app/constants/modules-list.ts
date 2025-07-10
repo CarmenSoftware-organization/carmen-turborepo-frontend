@@ -328,6 +328,10 @@ export const moduleItems: ModuleItem[] = [
         labelKey: "Modules.Configuration.extra_cost",
         href: "/configuration/extra-cost",
       },
+      {
+        labelKey: "Modules.Configuration.business_type",
+        href: "/configuration/business-type",
+      },
     ],
   },
   {
