@@ -1,22 +1,11 @@
 "use client";
 
 import { UnitDto } from "@/dtos/unit.dto";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useTranslations } from "next-intl";
 import { SquarePen, Trash2 } from "lucide-react";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 import PaginationComponent from "@/components/PaginationComponent";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UnitListProps {
   readonly units: UnitDto[];
@@ -28,6 +17,24 @@ interface UnitListProps {
   readonly onPageChange: (page: number) => void;
 }
 
+const UnitItemSkeleton = () => (
+  <li className="p-2">
+    <div className="flex items-center gap-4">
+      <div className="w-80">
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-6 w-16 rounded-full" />
+        </div>
+        <Skeleton className="h-3 w-48 mt-1" />
+      </div>
+      <div className="flex gap-1">
+        <Skeleton className="h-8 w-8" />
+        <Skeleton className="h-8 w-8" />
+      </div>
+    </div>
+  </li>
+);
+
 export default function UnitList({
   units,
   onEdit,
@@ -37,8 +44,6 @@ export default function UnitList({
   totalPages,
   onPageChange,
 }: UnitListProps) {
-  const t = useTranslations("TableHeader");
-
   const handleEdit = (unit: UnitDto) => {
     onEdit(unit);
   };
@@ -47,91 +52,55 @@ export default function UnitList({
     onDelete(unit);
   };
 
-  const renderTableContent = () => {
-    if (isLoading) return <TableBodySkeleton rows={5} />;
-
-    if (units.length === 0) {
-      return (
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={5} className="h-12 text-center">
-              <div className="flex flex-col items-center justify-center gap-1">
-                <p className="text-sm text-muted-foreground">No units found</p>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      );
-    }
-
-    return (
-      <TableBody>
-        {units.map((unit, index) => (
-          <TableRow
-            key={`unit-row-${unit.id}`}
-            className={cn("h-12", !unit.is_active && "line-through opacity-70")}
-          >
-            <TableCell className="w-10">{index + 1}</TableCell>
-            <TableCell className="text-left w-[300px]">
-              <p className="text-xs font-semibold">{unit.name}</p>
-              <p className="text-xs text-muted-foreground">
-                {unit.description}
-              </p>
-            </TableCell>
-            <TableCell className="text-center w-[100px]">
-              <Badge variant={unit.is_active ? "active" : "inactive"}>
-                {unit.is_active ? "Active" : "Inactive"}
-              </Badge>
-            </TableCell>
-            <TableCell className="text-right w-[100px]">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleEdit(unit)}
-                disabled={!unit.is_active}
-                className="h-6 w-6 hover:text-muted-foreground"
-              >
-                <SquarePen className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 hover:text-destructive"
-                onClick={() => handleDelete(unit)}
-                disabled={!unit.is_active}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    );
-  };
-
   return (
-    <div className="space-y-3">
-      <div className="relative">
-        <ScrollArea className="h-[calc(100vh-280px)] w-full">
-          <Table className="border">
-            <TableHeader className="sticky top-0 bg-muted">
-              <TableRow className="h-10">
-                <TableHead className="w-10">#</TableHead>
-                <TableHead className="w-[300px] text-left">
-                  {t("name")}
-                </TableHead>
-                <TableHead className="w-[100px] text-center">
-                  {t("status")}
-                </TableHead>
-                <TableHead className="w-[100px] text-right">
-                  {t("action")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            {renderTableContent()}
-          </Table>
-        </ScrollArea>
-      </div>
+    <div className="space-y-4">
+      <ul className="list-decimal list-outside pl-6">
+        {isLoading ? (
+          <UnitItemSkeleton />
+        ) : units && units.length > 0 ? (
+          units.map((unit) => (
+            <li key={`unit-item-${unit.id}`} className="p-2">
+              <div className="flex items-center gap-4">
+                <div className="w-80">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-semibold">{unit.name}</p>
+                    <Badge variant={unit.is_active ? "active" : "inactive"}>
+                      {unit.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {unit.description ? unit.description : "No description"}
+                  </p>
+                </div>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleEdit(unit)}
+                    disabled={!unit.is_active}
+                    className="h-8 w-8"
+                  >
+                    <SquarePen className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8"
+                    onClick={() => handleDelete(unit)}
+                    disabled={!unit.is_active}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </li>
+          ))
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <p>No units found</p>
+          </div>
+        )}
+      </ul>
 
       {totalPages > 1 && (
         <PaginationComponent

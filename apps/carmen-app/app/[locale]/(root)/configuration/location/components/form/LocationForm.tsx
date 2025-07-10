@@ -28,7 +28,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -38,6 +37,7 @@ import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
 import { Transfer } from "@/components/ui-custom/Transfer";
 import { useMemo, useState } from "react";
 import useProduct from "@/hooks/useProduct";
+import FormBoolean from "@/components/form-custom/form-boolean";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -46,7 +46,6 @@ interface LocationFormProps {
   readonly token: string;
   readonly tenantId: string;
 }
-
 
 interface LocationResponse {
   id: string;
@@ -402,14 +401,12 @@ export default function LocationForm({
                 name="is_active"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between">
-                    <FormLabel>
-                      <p className="text-sm font-medium">Active Status</p>
-                      <p className="text-sm">Enable or disable this location</p>
-                    </FormLabel>
                     <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+                      <FormBoolean
+                        value={field.value}
+                        onChange={field.onChange}
+                        label="Is Active"
+                        type="checkbox"
                       />
                     </FormControl>
                   </FormItem>
