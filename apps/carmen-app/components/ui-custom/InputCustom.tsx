@@ -174,6 +174,27 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       return () => clearTimeout(timer);
     }, [value, defaultValue, validateInput, onValidation]);
 
+    // Listen for focus changes to handle Tab navigation properly
+    useEffect(() => {
+      const handleFocusChange = () => {
+        if (inputRef.current && document.activeElement === inputRef.current) {
+          setFocused(true);
+        }
+      };
+
+      // Check immediately
+      handleFocusChange();
+
+      // Listen for focus changes
+      document.addEventListener("focusin", handleFocusChange);
+      document.addEventListener("focusout", handleFocusChange);
+
+      return () => {
+        document.removeEventListener("focusin", handleFocusChange);
+        document.removeEventListener("focusout", handleFocusChange);
+      };
+    }, []);
+
     // Memoize derived states to prevent unnecessary re-renders
     const derivedStates = useMemo(() => {
       const isPassword = type === "password";
@@ -299,6 +320,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
 
     const handleFocus = useCallback(
       (e: React.FocusEvent<HTMLInputElement>) => {
+        // Immediately set focused to true for instant label animation
         setFocused(true);
         onFocus?.(e);
       },
@@ -349,6 +371,26 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         }
       },
       [handleTogglePassword]
+    );
+
+    const handleKeyDownOnInput = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        // When Tab is pressed, immediately set focused to true for instant label animation
+        if (e.key === "Tab") {
+          setFocused(true);
+        }
+      },
+      []
+    );
+
+    const handleKeyUpOnInput = useCallback(
+      (e: React.KeyboardEvent<HTMLInputElement>) => {
+        // Additional handling for Tab key on keyup to ensure focus state
+        if (e.key === "Tab") {
+          setFocused(true);
+        }
+      },
+      []
     );
 
     const renderPasswordToggle = useCallback(() => {
@@ -404,6 +446,8 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
             onBlur={handleBlur}
             onChange={handleInputChange}
             onClick={handleClick}
+            onKeyDown={handleKeyDownOnInput}
+            onKeyUp={handleKeyUpOnInput}
             aria-invalid={!!derivedStates.finalError}
             aria-describedby={
               derivedStates.finalError ? `${inputId}-error` : undefined
@@ -436,6 +480,8 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         handleBlur,
         handleInputChange,
         handleClick,
+        handleKeyDownOnInput,
+        handleKeyUpOnInput,
         derivedStates.finalError,
         derivedStates.shouldShowPasswordToggle,
         renderPasswordToggle,

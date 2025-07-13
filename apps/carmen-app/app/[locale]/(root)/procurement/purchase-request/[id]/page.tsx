@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import MainPrForm from "../components/form/MainPrForm";
 import { DetailLoading } from "@/components/loading/DetailLoading";
+import MainForm from "../components/pr-form/MainForm";
 
 export default function PurchaseRequestIdPage() {
     const { id } = useParams();
@@ -19,5 +20,5 @@ export default function PurchaseRequestIdPage() {
 
     if (isLoading) return <DetailLoading />
 
-    return <MainPrForm mode={formType.VIEW} initValues={purchaseRequest?.data} />
+    return <MainForm mode={formType.VIEW} initValues={purchaseRequest?.data} />
 }

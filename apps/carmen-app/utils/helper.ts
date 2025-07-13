@@ -7,3 +7,18 @@ export const getDisplayText = (
   if ("name" in item && typeof item.name === "string") return item.name;
   return "";
 };
+
+
+export const convertPrStatus = (status: string) => {
+  if (status === "draft") {
+    return "Draft";
+  } else if (status === "work_in_process") {
+    return "Work in Progress";
+  } else if (status === "approved") {
+    return "Approved";
+  } else if (status === "rejected") {
+    return "Rejected";
+  } else if (status === "cancelled") {
+    return "Cancelled";
+  }
+};

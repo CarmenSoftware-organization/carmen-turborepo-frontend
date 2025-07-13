@@ -33,6 +33,7 @@ import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface HeadPrFormProps {
   readonly control: Control<PrSchemaV2Dto>;
@@ -62,7 +63,7 @@ export default function HeadPrForm({
   return (
     <div className="space-y-2 mt-2">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-2 w-2/3 space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 w-2/3 space-y-2">
           {mode !== formType.ADD && (
             <>
               <FormField
@@ -142,34 +143,6 @@ export default function HeadPrForm({
             </>
           )}
 
-          {mode !== formType.ADD && (
-            <>
-              <Label className="space-y-2">
-                <div className="flex items-center gap-1 mt-1">
-                  <User className="h-3 w-3" />
-                  Requestor
-                </div>
-                <Input
-                  value={requestorName}
-                  disabled
-                  className="mt-1 text-xs bg-muted"
-                />
-              </Label>
-
-              <Label className="space-y-2">
-                <div className="flex items-center gap-1 mt-1">
-                  <Building className="h-3 w-3" />
-                  Department
-                </div>
-                <Input
-                  value={departmentName}
-                  disabled
-                  className="mt-1 text-xs bg-muted"
-                />
-              </Label>
-            </>
-          )}
-
           <FormField
             control={control}
             name="workflow_id"
@@ -200,11 +173,39 @@ export default function HeadPrForm({
             )}
           />
 
+          {mode !== formType.ADD && (
+            <>
+              <Label className="space-y-2">
+                <div className="flex items-center gap-1 mt-1">
+                  <User className="h-3 w-3" />
+                  Requestor
+                </div>
+                <Input
+                  value={requestorName}
+                  disabled
+                  className="mt-1 text-xs bg-muted"
+                />
+              </Label>
+
+              <Label className="space-y-2">
+                <div className="flex items-center gap-1 mt-1">
+                  <Building className="h-3 w-3" />
+                  Department
+                </div>
+                <Input
+                  value={departmentName}
+                  disabled
+                  className="mt-1 text-xs bg-muted"
+                />
+              </Label>
+            </>
+          )}
+
           <FormField
             control={control}
             name="description"
             render={({ field }) => (
-              <FormItem className="col-span-2">
+              <FormItem className="col-span-3">
                 <FormLabel className="text-xs font-medium">
                   <div className="flex items-center gap-1">
                     <FileText className="h-3 w-3" />
@@ -212,7 +213,7 @@ export default function HeadPrForm({
                   </div>
                 </FormLabel>
                 <FormControl>
-                  <Input
+                  <Textarea
                     {...field}
                     value={field.value ?? ""}
                     placeholder="Enter description..."
