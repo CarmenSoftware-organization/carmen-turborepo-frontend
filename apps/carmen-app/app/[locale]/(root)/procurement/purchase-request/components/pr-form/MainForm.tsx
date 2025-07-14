@@ -30,6 +30,9 @@ import {
 import HeadForm from "./HeadForm";
 import ActionFields from "./ActionFields";
 import TableItems from "./TableItems";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import BudgetPr from "./BudgetPr";
+import WorkflowPr from "./WorkflowPr";
 
 // เพิ่ม type definition
 interface PurchaseRequestDetailItem {
@@ -387,13 +390,34 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
                 {/* Purchase Request Form Fields */}
                 <HeadForm form={form} isReadOnly={isReadOnly} />
 
-                {/* Purchase Request Detail Items */}
-                <TableItems
-                  prItems={prItems}
-                  isReadOnly={isReadOnly}
-                  onItemsChange={setPrItems}
-                  onDeletedIdsChange={setDeletedItemIds}
-                />
+                <Tabs defaultValue="items">
+                  <TabsList className="w-full h-8">
+                    <TabsTrigger className="w-full text-xs" value="items">
+                      Items
+                    </TabsTrigger>
+                    <TabsTrigger className="w-full text-xs" value="budget">
+                      Budget
+                    </TabsTrigger>
+                    <TabsTrigger className="w-full text-xs" value="workflow">
+                      Workflow
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="items" className="mt-2">
+                    <TableItems
+                      prItems={prItems}
+                      isReadOnly={isReadOnly}
+                      onItemsChange={setPrItems}
+                      onDeletedIdsChange={setDeletedItemIds}
+                    />
+                  </TabsContent>
+                  <TabsContent value="budget" className="mt-2">
+                    <BudgetPr mode={currentMode} />
+                  </TabsContent>
+                  <TabsContent value="workflow" className="mt-2">
+                    <WorkflowPr workflowData={initValues?.workflow_history} />
+                  </TabsContent>
+                </Tabs>
+
               </form>
             </Form>
           </Card>
