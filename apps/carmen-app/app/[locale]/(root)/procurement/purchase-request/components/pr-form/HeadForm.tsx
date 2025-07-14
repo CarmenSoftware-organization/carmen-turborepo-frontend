@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon } from "lucide-react";
+import { Building, CalendarIcon, FileText, Hash, Settings, User } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
@@ -30,29 +30,54 @@ import {
 } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { PrSchemaV2Dto } from "@/dtos/pr.dto";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { useWorkflow } from "@/hooks/useWorkflow";
+import { useAuth } from "@/context/AuthContext";
+import { Label } from "@/components/ui/label";
+import WorkflowLookup from "@/components/lookup/WorkflowLookup";
+import { enum_workflow_type } from "@/dtos/workflows.dto";
 
 interface HeadFormProps {
   form: UseFormReturn<PrSchemaV2Dto>;
   isReadOnly: boolean;
+  readonly statusInfo?: {
+    create_date?: string;
+    status?: string;
+    workflow_status?: string;
+  };
 }
 
-export default function HeadForm({ form, isReadOnly }: HeadFormProps) {
+export default function HeadForm({ form, isReadOnly, statusInfo }: HeadFormProps) {
+
+  const { user, departments } = useAuth();
+  const requestorName =
+    user?.user_info.firstname + " " + user?.user_info.lastname;
+  const departmentName = departments?.name;
+  const { getWorkflowName } = useWorkflow();
+
   return (
-    <>
-      {/* Purchase Request Form Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+
+      <div className="col-span-3 grid grid-cols-1 md:grid-cols-4 gap-4">
+
         {/* PR Number */}
         <FormField
           control={form.control}
           name="pr_no"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>หมายเลข PR</FormLabel>
+              <FormLabel className="flex items-center gap-1">
+                <Hash className="h-3 w-3" />
+                PR
+              </FormLabel>
               <FormControl>
                 <Input
                   {...field}
                   placeholder="PR-XXXX"
-                  disabled={isReadOnly}
+                  disabled
+                  className="bg-muted"
                 />
               </FormControl>
               <FormMessage />
@@ -66,7 +91,10 @@ export default function HeadForm({ form, isReadOnly }: HeadFormProps) {
           name="pr_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>วันที่ PR</FormLabel>
+              <FormLabel className="flex items-center gap-1">
+                <CalendarIcon className="h-3 w-3" />
+                Date
+              </FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -109,198 +137,118 @@ export default function HeadForm({ form, isReadOnly }: HeadFormProps) {
           )}
         />
 
-        {/* PR Status */}
-        <FormField
-          control={form.control}
-          name="pr_status"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>สถานะ PR</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                disabled={isReadOnly}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="เลือกสถานะ" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="submitted">Submitted</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Requestor ID */}
-        <FormField
-          control={form.control}
-          name="requestor_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>ผู้ขอ</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="ID ผู้ขอ"
-                  disabled={isReadOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Department ID */}
-        <FormField
-          control={form.control}
-          name="department_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>แผนก</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  placeholder="ID แผนก"
-                  disabled={isReadOnly}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Workflow ID */}
         <FormField
           control={form.control}
           name="workflow_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Workflow</FormLabel>
-              <FormControl>
+              <FormLabel className="flex items-center gap-1">
+                <Settings className="h-3 w-3" />
+                PR Type
+              </FormLabel>
+              {!isReadOnly ? (
                 <Input
-                  {...field}
-                  placeholder="ID Workflow"
-                  disabled={isReadOnly}
+                  value={getWorkflowName(field.value)}
+                  disabled
+                  className="mt-1 text-xs bg-muted"
                 />
-              </FormControl>
+              ) : (
+                <FormControl>
+                  <WorkflowLookup
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    type={enum_workflow_type.purchase_request}
+                  />
+                </FormControl>
+              )}
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Workflow Name */}
+        <Label className="space-y-2">
+          <div className="flex items-center gap-1">
+            <User className="h-3 w-3" />
+            Requestor
+          </div>
+          <Input
+            value={requestorName}
+            disabled
+            className="mt-1 text-xs bg-muted"
+          />
+        </Label>
+
+        <Label className="space-y-2">
+          <div className="flex items-center gap-1">
+            <Building className="h-3 w-3" />
+            Department
+          </div>
+          <Input
+            value={departmentName}
+            disabled
+            className="mt-1 text-xs bg-muted"
+          />
+        </Label>
         <FormField
           control={form.control}
-          name="workflow_name"
+          name="description"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>ชื่อ Workflow</FormLabel>
+            <FormItem className="col-span-3 mt-0">
+              <FormLabel className="flex items-center gap-1">
+                <FileText className="h-3 w-3" />
+                Description
+              </FormLabel>
               <FormControl>
-                <Input
+                <Textarea
                   {...field}
-                  placeholder="ชื่อ Workflow"
+                  placeholder="Description"
                   disabled={isReadOnly}
+                  className={isReadOnly ? "bg-muted" : ""}
                 />
               </FormControl>
               <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Document Version */}
-        <FormField
-          control={form.control}
-          name="doc_version"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>เวอร์ชันเอกสาร</FormLabel>
-              <FormControl>
-                <Input
-                  {...field}
-                  type="number"
-                  step="0.1"
-                  placeholder="1.0"
-                  disabled={isReadOnly}
-                  onChange={(e) =>
-                    field.onChange(parseFloat(e.target.value))
-                  }
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        {/* Is Active */}
-        <FormField
-          control={form.control}
-          name="is_active"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">
-                  เปิดใช้งาน
-                </FormLabel>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isReadOnly}
-                />
-              </FormControl>
             </FormItem>
           )}
         />
       </div>
 
-      {/* Description */}
-      <FormField
-        control={form.control}
-        name="description"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>รายละเอียด</FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                placeholder="รายละเอียดของ Purchase Request"
-                disabled={isReadOnly}
-                rows={3}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <Card className="col-span-2 p-4">
+        <div className="space-y-4">
+          <div className="flex items-center">
+            <h3 className="text-lg font-semibold">Status Information</h3>
+          </div>
 
-      {/* Note */}
-      <FormField
-        control={form.control}
-        name="note"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>หมายเหตุ *</FormLabel>
-            <FormControl>
-              <Textarea
-                {...field}
-                placeholder="หมายเหตุ"
-                disabled={isReadOnly}
-                rows={3}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Current Stage</span>
+              <Badge variant="outline" className="text-xs">
+                Requestor
+              </Badge>
+            </div>
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">
+                Document Status
+              </span>
+              <Badge variant={statusInfo?.status} className="text-xs">
+                {statusInfo?.status ?? "-"}
+              </Badge>
+            </div>
+
+            <Separator className="my-2" />
+
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Created</span>
+              <span className="font-medium">
+                {statusInfo?.create_date
+                  ? format(new Date(statusInfo.create_date), "PPP")
+                  : "-"}
+              </span>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+    </div>
   );
 }

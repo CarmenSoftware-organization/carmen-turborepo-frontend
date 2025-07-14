@@ -1,30 +1,9 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import { Noto_Sans_Thai } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Providers } from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
-const notoSansThai = Noto_Sans_Thai({
-  weight: ["400", "500", "600", "700"],
-  subsets: ["thai", "latin"],
-  variable: "--font-noto-thai",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Carmen",
@@ -41,7 +20,7 @@ export default async function RootLayout({
   const messages = await getMessages({ locale });
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${notoSansThai.variable} antialiased`}>
+      <body className="antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>
             {children}

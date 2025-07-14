@@ -249,3 +249,54 @@ export const prSchemaV2 = z.object({
 });
 
 export type PrSchemaV2Dto = z.infer<typeof prSchemaV2>;
+
+
+export interface PurchaseRequestDetailItem {
+  id?: string;
+  tempId?: string;
+  location_id: string;
+  location_name?: string;
+  product_id: string;
+  product_name?: string;
+  vendor_id: string;
+  vendor_name?: string;
+  price_list_id: string;
+  pricelist_detail_id?: string;
+  description: string;
+  requested_qty: number;
+  requested_unit_id: string;
+  requested_unit_name?: string;
+  requested_unit_conversion_factor?: number;
+  approved_qty: number;
+  approved_unit_id: string;
+  approved_unit_name?: string;
+  approved_unit_conversion_factor?: number;
+  approved_base_qty: number;
+  requested_base_qty: number;
+  inventory_unit_id?: string;
+  currency_id: string;
+  currency_name?: string;
+  exchange_rate: number;
+  exchange_rate_date: string;
+  price: number;
+  total_price: number;
+  foc_qty: number;
+  foc_unit_id: string;
+  foc_unit_name?: string;
+  tax_profile_id?: string;
+  tax_profile_name?: string;
+  tax_rate: number;
+  tax_amount: number;
+  is_tax_adjustment: boolean;
+  discount_rate: number;
+  discount_amount: number;
+  is_discount_adjustment: boolean;
+  delivery_date: string;
+  delivery_point_id: string;
+  delivery_point_name?: string;
+  comment: string;
+  isNew?: boolean;
+  isModified?: boolean;
+  inventory_unit_name?: string;
+  base_price?: number;
+}

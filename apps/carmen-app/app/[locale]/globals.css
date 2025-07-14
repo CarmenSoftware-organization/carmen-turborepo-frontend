@@ -44,35 +44,46 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
   .dark {
-    --background: 0 0% 7%; /* Dark Background */
-    --foreground: 0 0% 95%; /* Light Foreground for Contrast */
+    --background: 0 0% 7%;
+    /* Dark Background */
+    --foreground: 0 0% 95%;
+    /* Light Foreground for Contrast */
 
-    --card: 240 5% 10%; /* Dark Card */
-    --card-foreground: 0 0% 98%; /* Light Text on Cards */
+    --card: 240 5% 10%;
+    /* Dark Card */
+    --card-foreground: 0 0% 98%;
+    /* Light Text on Cards */
 
-    --popover: 240 5% 12%; /* Slightly Lighter than Background */
+    --popover: 240 5% 12%;
+    /* Slightly Lighter than Background */
     --popover-foreground: 0 0% 95%;
 
     --primary: 225 92% 55%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 240 3% 16%; /* Gunmetal Dark Gray */
+    --secondary: 240 3% 16%;
+    /* Gunmetal Dark Gray */
     --secondary-foreground: 0 0% 95%;
 
     --muted: 240 4% 18%;
     --muted-foreground: 0 0% 65%;
 
-    --accent: 220 8% 20%; /* Subtle Dark Accent */
+    --accent: 220 8% 20%;
+    /* Subtle Dark Accent */
     --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 70% 50%; /* Dark Red */
+    --destructive: 0 70% 50%;
+    /* Dark Red */
     --destructive-foreground: 0 0% 98%;
 
-    --border: 220 5% 22%; /* Subtle Borders */
+    --border: 220 5% 22%;
+    /* Subtle Borders */
     --input: 220 5% 24%;
 
-    --ring: 217 91% 59%; /* Highlight Ring */
+    --ring: 217 91% 59%;
+    /* Highlight Ring */
 
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
@@ -98,33 +109,36 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   }
-  body:lang(th) {
-    font-family: var(--font-noto-thai), var(--font-geist-sans);
-  }
-  :lang(th) {
-    font-family: var(--font-noto-thai), var(--font-geist-sans);
-  }
+
   h1 {
     @apply text-2xl font-bold;
   }
+
   h2 {
     @apply text-xl font-bold;
   }
+
   h3 {
     @apply text-lg font-bold;
   }
+
   .action-btn-container {
     @apply flex flex-col md:flex-row gap-2 md:items-start justify-between;
   }
+
   .filter-container {
     @apply flex gap-4 flex-col md:flex-row justify-between bg-background;
   }
+
   .btn-combobox {
     @apply w-full md:w-[140px] justify-between hover:bg-muted;
   }
+
   .pop-content {
     @apply p-0 w-full md:w-[200px];
   }

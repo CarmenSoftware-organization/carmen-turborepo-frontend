@@ -366,6 +366,12 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
 
   const isReadOnly = currentMode === formType.VIEW;
 
+  const statusInfo = {
+    create_date: initValues?.created_at,
+    status: initValues?.pr_status,
+    workflow_status: initValues?.workflow_name,
+  };
+
   return (
     <div className="relative">
       <div className="flex gap-4 relative">
@@ -387,8 +393,7 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
                   onModeChange={setCurrentMode}
                 />
 
-                {/* Purchase Request Form Fields */}
-                <HeadForm form={form} isReadOnly={isReadOnly} />
+                <HeadForm form={form} isReadOnly={isReadOnly} statusInfo={statusInfo} />
 
                 <Tabs defaultValue="items">
                   <TabsList className="w-full h-8">
@@ -422,10 +427,10 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
             </Form>
           </Card>
 
-          <div className="grid grid-cols-2 gap-2">
+          {/* <div className="grid grid-cols-2 gap-2">
             <JsonViewer data={initValues || {}} />
             <JsonViewer data={form.watch()} />
-          </div>
+          </div> */}
           {/* <JsonViewer data={diffData} /> */}
 
           <div
