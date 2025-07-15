@@ -1,4 +1,4 @@
-import { DepartmentDto } from "@/dtos/config.dto";
+import { DepartmentCreateDto, DepartmentGetListDto, DepartmentUpdateDto } from "@/dtos/department.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
@@ -42,7 +42,7 @@ export const useDepartmentsQuery = (
   const getDepartmentName = useCallback(
     (departmentId: string) => {
       const department = departments?.find(
-        (dp: DepartmentDto) => dp.id === departmentId
+        (dp: DepartmentGetListDto) => dp.id === departmentId
       );
       return department?.name ?? "";
     },
@@ -79,12 +79,12 @@ export const useDepartmentByIdQuery = (
     },
     enabled: !!token && !!tenantId && !!id,
   });
-  
+
 };
 
 export const useDepartmentMutation = (token: string, tenantId: string) => {
   return useMutation({
-    mutationFn: async (data: DepartmentDto) => {
+    mutationFn: async (data: DepartmentCreateDto) => {
       return await postApiRequest(
         API_URL,
         token,
@@ -103,8 +103,7 @@ export const useDepartmentUpdateMutation = (
 ) => {
   const API_ID = `${API_URL}/${id}`;
   return useMutation({
-    mutationFn: async (data: DepartmentDto) => {
-      console.log("data in update mutation >>>", data);
+    mutationFn: async (data: DepartmentUpdateDto) => {
       return await updateApiRequest(
         API_ID,
         token,

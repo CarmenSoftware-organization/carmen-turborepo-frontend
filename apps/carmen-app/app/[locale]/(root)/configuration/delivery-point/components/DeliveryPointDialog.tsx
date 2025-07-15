@@ -1,7 +1,6 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { DeliveryPointDto, deliveryPointSchema } from "@/dtos/config.dto";
 import { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,13 +25,20 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import {
+    DeliveryPointCreateDto,
+    DeliveryPointUpdateDto,
+    DeliveryPointGetDto,
+    deliveryPointCreateSchema,
+    deliveryPointUpdateSchema
+} from "@/dtos/delivery-point.dto";
 
 interface DeliveryPointDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
     readonly mode: formType;
-    readonly deliveryPoint?: DeliveryPointDto;
-    readonly onSubmit: (data: DeliveryPointDto) => void;
+    readonly deliveryPoint?: DeliveryPointGetDto;
+    readonly onSubmit: (data: DeliveryPointCreateDto | DeliveryPointUpdateDto) => void;
     readonly isLoading?: boolean;
 }
 
@@ -52,8 +58,11 @@ export default function DeliveryPointDialog({
         is_active: true,
     }), []);
 
-    const form = useForm<DeliveryPointDto>({
-        resolver: zodResolver(deliveryPointSchema),
+    // เลือก schema ตาม mode
+    const schema = mode === formType.EDIT ? deliveryPointUpdateSchema : deliveryPointCreateSchema;
+
+    const form = useForm<DeliveryPointCreateDto | DeliveryPointUpdateDto>({
+        resolver: zodResolver(schema),
         defaultValues: mode === formType.EDIT && deliveryPoint
             ? { ...deliveryPoint }
             : defaultDeliveryPointValues,
@@ -67,10 +76,10 @@ export default function DeliveryPointDialog({
         }
     }, [mode, deliveryPoint, form, defaultDeliveryPointValues]);
 
-    const handleSubmit = async (data: DeliveryPointDto) => {
+    const handleSubmit = async (data: DeliveryPointCreateDto | DeliveryPointUpdateDto) => {
         try {
-            const validatedData = deliveryPointSchema.parse(data);
-            onSubmit(validatedData)
+            const validatedData = schema.parse(data);
+            onSubmit(validatedData);
             form.reset(defaultDeliveryPointValues);
             onOpenChange(false);
         } catch (error) {

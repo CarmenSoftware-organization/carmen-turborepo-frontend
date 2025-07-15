@@ -7,63 +7,63 @@ export enum PHYSICAL_COUNT_TYPE {
   NO = "no",
 }
 
-export const departmentSchema = z.object({
-  id: z.string().min(1).optional(),
-  name: z.string().min(1),
-  description: z.string().min(1),
-  is_active: z.boolean(),
-});
+// export const departmentSchema = z.object({
+//   id: z.string().min(1).optional(),
+//   name: z.string().min(1),
+//   description: z.string().min(1),
+//   is_active: z.boolean(),
+// });
 
-export type DepartmentDto = z.infer<typeof departmentSchema>;
+// export type DepartmentDto = z.infer<typeof departmentSchema>;
 
-const baseDepartmentSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  is_active: z.boolean(),
-  users: z
-    .object({
-      add: z.array(
-        z.object({
-          id: z.string().optional(),
-          isHod: z.boolean(),
-        })
-      ),
-      update: z.array(
-        z.object({
-          id: z.string().optional(),
-          isHod: z.boolean(),
-        })
-      ),
-      remove: z.array(
-        z.object({
-          id: z.string().optional(),
-        })
-      ),
-    })
-    .optional(),
-});
+// const baseDepartmentSchema = z.object({
+//   name: z.string().min(1, "Name is required"),
+//   description: z.string().optional(),
+//   is_active: z.boolean(),
+//   users: z
+//     .object({
+//       add: z.array(
+//         z.object({
+//           id: z.string().optional(),
+//           isHod: z.boolean(),
+//         })
+//       ),
+//       update: z.array(
+//         z.object({
+//           id: z.string().optional(),
+//           isHod: z.boolean(),
+//         })
+//       ),
+//       remove: z.array(
+//         z.object({
+//           id: z.string().optional(),
+//         })
+//       ),
+//     })
+//     .optional(),
+// });
 
-export interface DepartmentDetailDto {
-  id?: string;
-  name: string;
-  description?: string;
-  is_active: boolean;
-  tb_department_user: [
-    {
-      id: string;
-      user_id: string;
-      is_hod: boolean;
-      firstname?: string;
-      lastname?: string;
-    },
-  ];
-}
+// export interface DepartmentDetailDto {
+//   id?: string;
+//   name: string;
+//   description?: string;
+//   is_active: boolean;
+//   tb_department_user: [
+//     {
+//       id: string;
+//       user_id: string;
+//       is_hod: boolean;
+//       firstname?: string;
+//       lastname?: string;
+//     },
+//   ];
+// }
 
-export const addDepartmentSchema = baseDepartmentSchema;
+// export const addDepartmentSchema = baseDepartmentSchema;
 
-export const editDepartmentSchema = baseDepartmentSchema.extend({
-  id: z.string().min(1, "ID is required for edit mode"),
-});
+// export const editDepartmentSchema = baseDepartmentSchema.extend({
+//   id: z.string().min(1, "ID is required for edit mode"),
+// });
 
 export const storeLocationSchema = z.object({
   name: z.string().min(1, "Name is required"),

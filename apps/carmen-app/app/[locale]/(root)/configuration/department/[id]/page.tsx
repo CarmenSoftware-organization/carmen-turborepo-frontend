@@ -13,9 +13,6 @@ export default function DepartmentIdPage() {
 
   const { data: department, isLoading } = useDepartmentByIdQuery(token, tenantId, id);
 
-  if (!department) {
-    return <div>Department not found</div>;
-  }
 
   return (
     <DepartmentDetail

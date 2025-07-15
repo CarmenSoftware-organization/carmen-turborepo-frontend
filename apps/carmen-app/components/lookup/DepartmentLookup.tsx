@@ -1,4 +1,4 @@
-import { useDepartment } from "@/hooks/useDepartment";
+import { useDepartmentsQuery } from "@/hooks/useDepartments";
 import { useMemo, useState } from "react";
 import {
     Command,
@@ -17,6 +17,8 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
+import { useAuth } from "@/context/AuthContext";
+import { DepartmentGetListDto } from "@/dtos/department.dto";
 
 export default function DepartmentLookup({
     value,
@@ -24,7 +26,8 @@ export default function DepartmentLookup({
     placeholder = "Select department",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { departments, isLoading } = useDepartment();
+    const { token, tenantId } = useAuth();
+    const { departments, isLoading } = useDepartmentsQuery(token, tenantId);
     const [open, setOpen] = useState(false);
 
     const selectedDepartmentName = useMemo(() => {
@@ -63,7 +66,7 @@ export default function DepartmentLookup({
                                 <CommandEmpty>No departments found.</CommandEmpty>
                                 <CommandGroup>
                                     {departments && departments.length > 0 ? (
-                                        departments.map((department) => (
+                                        departments.map((department: DepartmentGetListDto) => (
                                             <CommandItem
                                                 key={department.id}
                                                 value={department.name}

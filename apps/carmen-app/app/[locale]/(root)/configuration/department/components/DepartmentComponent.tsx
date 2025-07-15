@@ -1,74 +1,93 @@
 "use client";
-import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
-import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { boolFilterOptions } from "@/constants/options";
-import SortComponent from "@/components/ui-custom/SortComponent";
-import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { formType } from "@/dtos/form.dto";
+
 import SignInDialog from "@/components/SignInDialog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useDepartment } from "@/hooks/useDepartment";
-import { SortConfig, SortDirection } from "@/utils/table-sort";
-import { useMemo } from "react";
-import DepartmentDialog from "@/components/shared/DepartmentDialog";
-import DepartmentList from "./DepartmentList";
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import SearchInput from "@/components/ui-custom/SearchInput";
+import SortComponent from "@/components/ui-custom/SortComponent";
+import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
+import { Button } from "@/components/ui/button";
+import { boolFilterOptions } from "@/constants/options";
+import { useAuth } from "@/context/AuthContext";
+import { useDepartmentsQuery } from "@/hooks/useDepartments";
+import { useURL } from "@/hooks/useURL";
 import { Link } from "@/lib/navigation";
+import { FileDown, Plus, Printer } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useMemo, useState } from "react";
+import DepartmentList from "./DepartmentList";
+import { SortConfig, SortDirection } from "@/utils/table-sort";
 
 export default function DepartmentComponent() {
+  const { token, tenantId } = useAuth();
   const tDepartment = useTranslations("Department");
   const tCommon = useTranslations("Common");
 
-  const {
-    // State
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [search, setSearch] = useURL("search");
+  const [filter, setFilter] = useURL("filter");
+  const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+
+  const { departments, isLoading, isUnauthorized } = useDepartmentsQuery(token, tenantId, {
     search,
-    setSearch,
-    filter,
-    setFilter,
-    statusOpen,
-    setStatusOpen,
-    sort,
-    setSort,
-    departments,
-    isLoading,
-    dialogOpen,
-    setDialogOpen,
-    statusDialogOpen,
-    setStatusDialogOpen,
-    loginDialogOpen,
-    setLoginDialogOpen,
-    selectedDepartment,
     page,
-    totalPages,
+    sort,
+    filter,
+  });
 
-    // Functions
-    handlePageChange,
-    sortFields,
-    handleStatusChange,
-    handleConfirmStatusChange,
-    handleSubmit,
-  } = useDepartment();
+  const currentPage = departments?.paginate.page ?? 1;
+  const totalPages = departments?.paginate.pages ?? 1;
 
-  // Parse the sort string into field and direction
   const parsedSort = useMemo((): SortConfig | undefined => {
     if (!sort) return undefined;
 
     const parts = sort.split(":");
-    if (parts.length !== 2) return undefined;
 
-    return {
-      field: parts[0],
-      direction: parts[1] as SortDirection,
-    };
+    if (parts.length === 1) {
+      return {
+        field: parts[0],
+        direction: 'asc',
+      };
+    }
+    if (parts.length === 2) {
+      return {
+        field: parts[0],
+        direction: parts[1] as SortDirection,
+      };
+    }
+
+    return undefined;
   }, [sort]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
+
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+    }
+  }, [setSort, sort]);
+
+  if (isUnauthorized) {
+    return <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />;
+  }
+
+  const sortFields = [
+    { key: "name", label: tCommon("name") },
+    { key: "description", label: tCommon("description") },
+    { key: "is_active", label: tCommon("status") },
+  ];
 
   const title = tDepartment("title");
 
@@ -123,63 +142,22 @@ export default function DepartmentComponent() {
 
   const content = (
     <DepartmentList
+      departments={departments?.data ?? []}
       isLoading={isLoading}
-      departments={departments}
-      onToggleStatus={handleStatusChange}
-      currentPage={parseInt(page || "1")}
+      currentPage={currentPage}
       totalPages={totalPages}
       onPageChange={handlePageChange}
       sort={parsedSort}
-      onSort={(field) => {
-        const direction =
-          parsedSort?.field === field && parsedSort.direction === "asc"
-            ? "desc"
-            : "asc";
-        setSort(`${field}:${direction}`);
-      }}
+      onSort={handleSort}
     />
-  );
+  )
 
   return (
-    <div>
-      <DataDisplayTemplate
-        content={content}
-        title={title}
-        actionButtons={actionButtons}
-        filters={filters}
-      />
-      <DepartmentDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        mode={selectedDepartment ? formType.EDIT : formType.ADD}
-        department={selectedDepartment}
-        onSubmit={handleSubmit}
-      />
-      <Dialog open={statusDialogOpen} onOpenChange={setStatusDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {selectedDepartment?.is_active ? "Deactivate" : "Activate"}{" "}
-              Department
-            </DialogTitle>
-            <DialogDescription>
-              Are you sure you want to{" "}
-              {selectedDepartment?.is_active ? "deactivate" : "activate"} this
-              department?
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setStatusDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleConfirmStatusChange}>Confirm</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
-    </div>
+    <DataDisplayTemplate
+      content={content}
+      title={title}
+      actionButtons={actionButtons}
+      filters={filters}
+    />
   );
 }
