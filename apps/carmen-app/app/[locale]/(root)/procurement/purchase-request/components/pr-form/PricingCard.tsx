@@ -7,13 +7,15 @@ import { DollarSign, TrendingUp } from "lucide-react";
 import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useVendor } from "@/hooks/useVendor";
+import { formType } from "@/dtos/form.dto";
 
 interface PricingCardProps {
     readonly item: PurchaseRequestDetailItem;
     readonly onItemUpdate: (field: keyof PurchaseRequestDetailItem, value: any) => void;
+    readonly mode: formType
 }
 
-export default function PricingCard({ item, onItemUpdate }: PricingCardProps) {
+export default function PricingCard({ item, onItemUpdate, mode }: PricingCardProps) {
     const { getCurrencyCode } = useCurrency();
     const { getVendorName } = useVendor();
 
@@ -30,131 +32,133 @@ export default function PricingCard({ item, onItemUpdate }: PricingCardProps) {
                     </Button>
                 </CardTitle>
             </CardHeader>
-            <CardContent>
-                <div className="grid grid-cols-5 gap-4">
-                    <div>
-                        <Label>Vendor</Label>
-                        <Input
-                            value={getVendorName(item.vendor_id)}
-                            onChange={(e) =>
-                                onItemUpdate("vendor_id", e.target.value)
-                            }
-                            placeholder="Vendor"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <Label>Pricelist Number</Label>
-                        <Input
-                            value={item.pricelist_detail_id}
-                            onChange={(e) =>
-                                onItemUpdate("pricelist_detail_id", e.target.value)
-                            }
-                            placeholder="Pricelist Number"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <Label>Order Currency</Label>
-                        <Input
-                            value={getCurrencyCode(item.currency_id)}
-                            onChange={(e) =>
-                                onItemUpdate("currency_id", e.target.value)
-                            }
-                            placeholder="Order Currency"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                            Base Currency: USD (mock)
-                        </p>
-                    </div>
-                    <div>
-                        <Label>Exchange Rate</Label>
-                        <Input
-                            value={item.exchange_rate}
-                            onChange={(e) =>
-                                onItemUpdate("exchange_rate", e.target.value)
-                            }
-                            placeholder="Exchange Rate"
-                            className="text-sm text-right h-8 border-blue-300 focus:border-blue-500"
-                        />
-                    </div>
-                    <div>
-                        <Label>Price per Unit</Label>
-                        <Input
-                            value={item.price}
-                            onChange={(e) =>
-                                onItemUpdate("price", e.target.value)
-                            }
-                            placeholder="Price per Unit"
-                            className="text-sm text-right h-8 border-blue-300 focus:border-blue-500"
-                        />
-                    </div>
+            <CardContent className="space-y-4">
+                <div className="grid grid-cols-4 gap-4">
+                    <PricingField
+                        label="Vendor"
+                        value={getVendorName(item.vendor_id)}
+                        onChange={(e) => onItemUpdate("vendor_id", e.target.value)}
+                        placeholder="Vendor"
+                    />
+                    <PricingField
+                        label="Pricelist Number"
+                        value={item.pricelist_detail_id || ""}
+                        onChange={(e) => onItemUpdate("pricelist_detail_id", e.target.value)}
+                        placeholder="Pricelist Number"
+                    />
+                    <PricingField
+                        label="Order Currency"
+                        value={getCurrencyCode(item.currency_id)}
+                        onChange={(e) => onItemUpdate("currency_id", e.target.value)}
+                        placeholder="Order Currency" />
+                    <PricingField
+                        label="Price per Unit"
+                        value={item.price.toString()}
+                        onChange={(e) => onItemUpdate("price", e.target.value)}
+                        placeholder="Price per Unit"
+                    />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                        <Label>Discount</Label>
-                        <div className="bg-green-50 p-2 rounded-md grid grid-cols-3 gap-2 h-20">
-                            <div className="space-y-1">
-                                <Label className="text-green-700 font-semibold">Type</Label>
-                                <Input />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-green-700 font-semibold">Rate</Label>
-                                <Input />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="flex items-center gap-2 my-1 text-green-700 font-semibold">
-                                    <Checkbox />
-                                    Amount
-                                </Label>
-                                <Input />
-                            </div>
-                        </div>
-                    </div>
+                <div className="grid grid-cols-4 gap-4">
+                    <PricingCardSummary
+                        label="Discount"
+                        currencyCode={getCurrencyCode(item.currency_id)}
+                        value={item.discount_rate.toString()}
+                        placeholder="Discount Rate"
+                        color="green"
+                        isAmount
+                        mode={mode}
+                    />
+                    <PricingCardSummary
+                        label="Tax"
+                        currencyCode={getCurrencyCode(item.currency_id)}
+                        value={item.tax_rate.toString()}
+                        placeholder="Tax Rate"
+                        color="yellow"
+                        isAmount
+                        mode={mode}
+                    />
                     <div className="space-y-1">
                         <Label>Net Total</Label>
-                        <div className="bg-blue-50 p-2 rounded-md h-20 flex items-center justify-end">
+                        <div className="bg-blue-50 p-2 rounded-md h-20 flex items-center justify-center">
                             <p className="text-blue-700 font-bold text-xl">(mock) USD 100.00</p>
                         </div>
-                        <p className="text-xs text-muted-foreground text-right">
-                            Base Net Total: USD 8,400.00
-                        </p>
                     </div>
-                    <div className="space-y-1">
-                        <Label>Tax</Label>
-                        <div className="bg-yellow-50 p-2 rounded-md h-20 grid grid-cols-3 gap-2">
-                            <div className="space-y-1">
-                                <Label className="text-yellow-700 font-semibold">Type</Label>
-                                <Input />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="text-yellow-700 font-semibold">Rate</Label>
-                                <Input />
-                            </div>
-                            <div className="space-y-1">
-                                <Label className="flex items-center gap-2 my-1 text-yellow-700 font-semibold">
-                                    <Checkbox />
-                                    Amount
-                                </Label>
-                                <Input />
-                            </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground text-right">
-                            Base Tax: USD 1,600.00
-                        </p>
-                    </div>
+
                     <div className="space-y-1">
                         <Label>Total Amount</Label>
-                        <div className="bg-green-50 p-2 rounded-md h-20 flex items-center justify-end">
+                        <div className="bg-green-50 p-2 rounded-md h-20 flex items-center justify-center">
                             <p className="text-green-700 font-bold text-xl">(mock) USD 100.00</p>
                         </div>
-                        <p className="text-xs text-muted-foreground text-right">
-                            Base Total Amount: USD 10,000.00
-                        </p>
                     </div>
                 </div>
             </CardContent>
         </Card>
     );
+};
+
+interface PricingProps {
+    label: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    placeholder: string;
+}
+
+const PricingField = ({ label, value, onChange, placeholder }: PricingProps) => {
+    return (
+        <div className="space-y-1">
+            <Label>{label}</Label>
+            <Input
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                className="text-sm h-8 border-blue-300 focus:border-blue-500"
+            />
+        </div>
+    );
+};
+
+interface PricingCardSummaryProps {
+    label: string;
+    currencyCode: string;
+    value: string;
+    placeholder: string;
+    color: string;
+    isAmount?: boolean;
+    mode: formType;
+}
+
+const PricingCardSummary = ({ label, currencyCode, value, placeholder, color, isAmount = false, mode }: PricingCardSummaryProps) => {
+
+    return (
+        <div className="space-y-1">
+            {mode !== formType.VIEW ? (
+                <>
+                    <Label>{label}</Label>
+                    <div className={`bg-${color}-50 p-2 rounded-md h-20 grid grid-cols-2 gap-2`}>
+                        <div className="space-y-1">
+                            <Label className={`text-${color}-700 font-semibold`}>{currencyCode}</Label>
+                            <Input value={value} placeholder={placeholder} />
+                        </div>
+                        {isAmount && (
+                            <div className="space-y-1">
+                                <Label className={`flex items-center gap-2 my-1 text-${color}-700 font-semibold`}>
+                                    <Checkbox />
+                                    Amount
+                                </Label>
+                                <Input />
+                            </div>
+                        )}
+                    </div>
+                </>
+            ) : (
+                <>
+                    <Label>{label}</Label>
+                    <div className={`bg-${color}-50 rounded-md h-20 flex items-center justify-center gap-2`}>
+                        <p className={`text-${color}-700 font-semibold`}>{currencyCode}</p>
+                        <p className={`text-${color}-700 font-semibold`}>{value}</p>
+                    </div>
+                </>
+            )}
+        </div>
+    )
 }

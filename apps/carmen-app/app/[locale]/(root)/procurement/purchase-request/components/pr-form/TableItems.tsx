@@ -26,16 +26,10 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import {
-  BoxIcon,
-  Building,
   CheckCircleIcon,
-  GitGraph,
-  GrabIcon,
   MapPin,
-  MessageCircle,
   MoreHorizontal,
   Package,
-  Pencil,
   Plus,
   SendIcon,
   SquarePen,
@@ -47,21 +41,21 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useCurrency } from "@/hooks/useCurrency";
 import { DropdownMenuSeparator, DropdownMenuItem, DropdownMenuLabel, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import OnHandAndOrder from "./OnHandAndOrder";
 import PricingCard from "./PricingCard";
 import VendorFields from "./VendorFields";
 import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
-import { useVendor } from "@/hooks/useVendor";
 import BusinessDimensions from "./BusinessDimensions";
+import { cn } from "@/lib/utils";
+import { formType } from "@/dtos/form.dto";
 
 interface TableItemsProps {
   readonly prItems: PurchaseRequestDetailItem[];
   readonly isReadOnly: boolean;
   readonly onItemsChange: (items: PurchaseRequestDetailItem[]) => void;
   readonly onDeletedIdsChange: (ids: string[]) => void;
+  readonly mode: formType;
 }
 
 export default function TableItems({
@@ -69,9 +63,9 @@ export default function TableItems({
   isReadOnly,
   onItemsChange,
   onDeletedIdsChange,
+  mode,
 }: TableItemsProps) {
   const { getCurrencyCode } = useCurrency();
-  const { getVendorName } = useVendor();
 
   const [deletedItemIds, setDeletedItemIds] = useState<string[]>([]);
   const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
@@ -222,31 +216,16 @@ export default function TableItems({
           <h3 className="text-lg font-semibold">Purchase Request Items</h3>
           <Badge variant={'secondary'}>{prItems.length} Items</Badge>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium">Edit Mode</span>
-            <Checkbox />
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={isReadOnly}
-            onClick={handleAddNewItem}
-          >
-            <Plus className="h-4 w-4" />
-            Add Item
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={isReadOnly}
-          >
-            <GitGraph className="h-4 w-4" />
-            Allocate Vendor
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isReadOnly}
+          onClick={handleAddNewItem}
+        >
+          <Plus className="h-4 w-4" />
+          Add Item
+        </Button>
       </div>
 
       {prItems.length > 0 ? (
@@ -257,16 +236,16 @@ export default function TableItems({
                 <TableHead className="w-[20px]">
                   <Checkbox />
                 </TableHead>
-                <TableHead className="w-[20px]">#</TableHead>
-                <TableHead className="w-[200px]">Location & Status</TableHead>
-                <TableHead className="w-[200px]">Product</TableHead>
+                <TableHead className="w-[20px] font-semibold">#</TableHead>
+                <TableHead className="w-[200px] font-semibold">Location & Status</TableHead>
+                <TableHead className="w-[200px] font-semibold">Product</TableHead>
                 {/* <TableHead className="w-[150px]">Vendor</TableHead> */}
-                <TableHead className="w-[100px] text-right">Requested</TableHead>
-                <TableHead className="w-[100px] text-right">Approved</TableHead>
-                <TableHead className="w-[100px] text-right">Price</TableHead>
+                <TableHead className="w-[100px] text-right font-semibold">Requested</TableHead>
+                <TableHead className="w-[100px] text-right font-semibold">Approved</TableHead>
+                <TableHead className="w-[100px] text-right font-semibold">Price</TableHead>
                 {/* <TableHead className="w-[100px]">Total</TableHead>
                 <TableHead className="w-[200px]">Description</TableHead> */}
-                <TableHead className="w-[120px] text-right">More</TableHead>
+                <TableHead className="w-[120px] text-right font-semibold">More</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -274,9 +253,10 @@ export default function TableItems({
                 <>
                   <TableRow
                     key={item.id || item.tempId || index}
-                    className={
-                      editingRowIndex === index ? "bg-blue-50" : ""
-                    }
+                    className={cn(
+                      "bg-muted",
+                      editingRowIndex === index && "bg-blue-50",
+                    )}
                   >
                     <TableCell>
                       <Checkbox />
@@ -285,7 +265,6 @@ export default function TableItems({
                     {editingRowIndex === index ? (
                       // Edit Mode
                       <>
-
                         <TableCell>
                           <Input
                             value={tempEditData?.location_name || ""}
@@ -523,15 +502,14 @@ export default function TableItems({
                                 </div>
                               </DropdownMenuLabel>
                               <DropdownMenuSeparator />
-                              <DropdownMenuLabel>
-                                <div className="flex items-center gap-2"
-                                  onClick={() => handleStartEdit(index)}
-
-                                >
+                              <DropdownMenuItem
+                                onClick={() => handleStartEdit(index)}
+                              >
+                                <div className="flex items-center gap-2">
                                   <SquarePen className="h-4 w-4" />
                                   <p className="text-sm font-semibold">Edit</p>
                                 </div>
-                              </DropdownMenuLabel>
+                              </DropdownMenuItem>
                               <DropdownMenuItem
                               >
                                 <div className="flex items-center text-destructive">
@@ -600,6 +578,7 @@ export default function TableItems({
                             <PricingCard
                               item={item}
                               onItemUpdate={handleUpdateTempData}
+                              mode={mode}
                             />
                           </AccordionContent>
                         </AccordionItem>
