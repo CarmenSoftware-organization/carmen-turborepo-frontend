@@ -39,6 +39,7 @@ export default function DepartmentComponent() {
 
   const handleSelectAll = (isChecked: boolean) => {
     if (isChecked) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setSelectedDepartments(departments?.data.map((dept: any) => dept.id) ?? []);
     } else {
       setSelectedDepartments([]);

@@ -56,6 +56,7 @@ export default function DepartmentDetail({
     setCurrentMode(mode);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSuccess = (data: any) => {
     // อัปเดต view data จากข้อมูลที่ส่งกลับมาจาก FormEdit
     setViewData({

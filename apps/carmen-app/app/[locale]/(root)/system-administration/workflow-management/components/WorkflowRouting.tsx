@@ -11,8 +11,9 @@ import { Control, useFieldArray, UseFormReturn } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2 } from "lucide-react";
 import { WorkflowCreateModel } from "@/dtos/workflows.dto";
-import { useDepartment } from "@/hooks/useDepartment";
 import { useCategory } from "@/hooks/useCategory";
+import { useDepartmentsQuery } from "@/hooks/useDepartments";
+import { useAuth } from "@/context/AuthContext";
 
 interface WorkflowRoutingProps {
   form: UseFormReturn<WorkflowCreateModel>;
@@ -26,9 +27,10 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
     name: "data.routing_rules",
     control: control,
   });
-  const { departments } = useDepartment();
+  const { token, tenantId } = useAuth();
+  const { departments } = useDepartmentsQuery(token, tenantId);
   const { categories } = useCategory();
-  const departmentList = departments.map((el) => {
+  const departmentList = departments?.data.map((el: any) => {
     return Object.assign(
       {},
       {
@@ -94,9 +96,8 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
             {rules.map((rule) => (
               <li
                 key={rule.name}
-                className={`p-2 rounded-md cursor-pointer ${
-                  selectedRuleName === rule.name ? "bg-secondary" : "hover:bg-secondary/50"
-                }`}
+                className={`p-2 rounded-md cursor-pointer ${selectedRuleName === rule.name ? "bg-secondary" : "hover:bg-secondary/50"
+                  }`}
                 onClick={() => handleRuleSelect(rule.name)}
               >
                 {rule.name || "Unnamed Rule"}

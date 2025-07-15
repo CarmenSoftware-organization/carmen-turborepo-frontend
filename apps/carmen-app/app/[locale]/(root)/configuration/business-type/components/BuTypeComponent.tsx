@@ -13,8 +13,7 @@ import {
   BuTypeGetAllDto,
 } from "@/dtos/bu-type.dto";
 import { useURL } from "@/hooks/useURL";
-import { Plus, Printer, SquarePen, Trash2 } from "lucide-react";
-import { FileDown } from "lucide-react";
+import { Plus, Printer, SquarePen, Trash2, FileDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
