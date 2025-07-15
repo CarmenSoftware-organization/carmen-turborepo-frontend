@@ -34,6 +34,8 @@ import TableItems from "./TableItems";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BudgetPr from "./BudgetPr";
 import WorkflowPr from "./WorkflowPr";
+
+
 interface MainPrFormProps {
   readonly mode: formType;
   readonly initValues?: PurchaseRequestByIdDto;
@@ -412,7 +414,7 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
         </ScrollArea>
         {openLog && (
           <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
-            <div className="flex flex-col gap-4">hello</div>
+            <p className="flex flex-col gap-4">hello</p>
           </div>
         )}
       </div>

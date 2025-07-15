@@ -1,30 +1,11 @@
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { z } from "zod";
+import { DeliveryPointGetDto, deliveryPointGetSchema } from "./delivery-point.dto";
 
 export enum PHYSICAL_COUNT_TYPE {
   YES = "yes",
   NO = "no",
 }
-
-export const currencySchema = z.object({
-  id: z.string().min(1).optional(),
-  code: z.string().min(1),
-  name: z.string().min(1),
-  description: z.string().optional(),
-  is_active: z.boolean(),
-  symbol: z.string().min(1),
-  exchange_rate: z.number().min(0.01),
-});
-
-export type CurrencyDto = z.infer<typeof currencySchema>;
-
-export const deliveryPointSchema = z.object({
-  id: z.string().min(1).optional(),
-  name: z.string().min(1),
-  is_active: z.boolean(),
-});
-
-export type DeliveryPointDto = z.infer<typeof deliveryPointSchema>;
 
 export const departmentSchema = z.object({
   id: z.string().min(1).optional(),
@@ -124,7 +105,7 @@ export type CreateStoreLocationDto = z.infer<typeof createStoreLocationSchema>;
 
 export const getStoreLocationSchema = storeLocationSchema.extend({
   id: z.string().min(1).optional(),
-  delivery_point: deliveryPointSchema,
+  delivery_point: deliveryPointGetSchema,
 });
 
 export type StoreLocationDto = z.infer<typeof getStoreLocationSchema>;
@@ -145,7 +126,7 @@ export interface LocationByIdDto {
     id: string;
     name: string;
   }[];
-  delivery_point: DeliveryPointDto;
+  delivery_point: DeliveryPointGetDto;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   info?: any;
 }

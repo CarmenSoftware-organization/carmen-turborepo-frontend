@@ -47,8 +47,13 @@ import PricingCard from "./PricingCard";
 import VendorFields from "./VendorFields";
 import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
 import BusinessDimensions from "./BusinessDimensions";
-import { cn } from "@/lib/utils";
 import { formType } from "@/dtos/form.dto";
+import ProductLookup from "@/components/lookup/ProductLookup";
+import LocationLookup from "@/components/lookup/LocationLookup";
+import UnitLookup from "@/components/lookup/UnitLookup";
+import NumberInput from "@/components/form-custom/NumberInput";
+import { Label } from "@/components/ui/label";
+import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 
 interface TableItemsProps {
   readonly prItems: PurchaseRequestDetailItem[];
@@ -237,11 +242,11 @@ export default function TableItems({
                   <Checkbox />
                 </TableHead>
                 <TableHead className="w-[20px] font-semibold">#</TableHead>
-                <TableHead className="w-[200px] font-semibold">Location & Status</TableHead>
-                <TableHead className="w-[200px] font-semibold">Product</TableHead>
+                <TableHead className="w-[150px] font-semibold">Location & Status</TableHead>
+                <TableHead className="w-[150px] font-semibold">Product</TableHead>
                 {/* <TableHead className="w-[150px]">Vendor</TableHead> */}
                 <TableHead className="w-[100px] text-right font-semibold">Requested</TableHead>
-                <TableHead className="w-[100px] text-right font-semibold">Approved</TableHead>
+                <TableHead className="w-[40px] text-right font-semibold">Approved</TableHead>
                 <TableHead className="w-[100px] text-right font-semibold">Price</TableHead>
                 {/* <TableHead className="w-[100px]">Total</TableHead>
                 <TableHead className="w-[200px]">Description</TableHead> */}
@@ -253,10 +258,6 @@ export default function TableItems({
                 <>
                   <TableRow
                     key={item.id || item.tempId || index}
-                    className={cn(
-                      "bg-muted",
-                      editingRowIndex === index && "bg-blue-50",
-                    )}
                   >
                     <TableCell>
                       <Checkbox />
@@ -265,153 +266,139 @@ export default function TableItems({
                     {editingRowIndex === index ? (
                       // Edit Mode
                       <>
-                        <TableCell>
-                          <Input
-                            value={tempEditData?.location_name || ""}
-                            onChange={(e) =>
+                        <TableCell className="w-[150px]">
+                          <LocationLookup
+                            value={tempEditData?.location_id || ""}
+                            disabled={isReadOnly}
+                            onValueChange={(value) =>
                               handleUpdateTempData(
-                                "location_name",
-                                e.target.value
+                                "location_id",
+                                value
                               )
                             }
-                            placeholder="สถานที่"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
                           />
                         </TableCell>
 
                         {/* Product */}
                         <TableCell>
-                          <Input
-                            value={tempEditData?.product_name || ""}
-                            onChange={(e) =>
-                              handleUpdateTempData(
-                                "product_name",
-                                e.target.value
-                              )
-                            }
-                            placeholder="Product"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                          />
-                          <Input
-                            value={tempEditData?.description || ""}
-                            onChange={(e) =>
-                              handleUpdateTempData(
-                                "description",
-                                e.target.value
-                              )
-                            }
-                            placeholder="Description"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                          />
+
+                          <div className="flex flex-col gap-1">
+                            <ProductLookup
+                              value={tempEditData?.product_id || ""}
+                              onValueChange={(value) =>
+                                handleUpdateTempData(
+                                  "product_id",
+                                  value
+                                )
+                              }
+                              disabled={isReadOnly}
+                            />
+                            <Input
+                              value={tempEditData?.description || ""}
+                              onChange={(e) =>
+                                handleUpdateTempData(
+                                  "description",
+                                  e.target.value
+                                )
+                              }
+                              placeholder="Description"
+                              className="text-xs h-8"
+                            />
+                          </div>
+
                         </TableCell>
-
-                        {/* <TableCell>
-                        <Input
-                          value={tempEditData?.vendor_name || ""}
-                          onChange={(e) =>
-                            handleUpdateTempData(
-                              "vendor_name",
-                              e.target.value
-                            )
-                          }
-                          placeholder="ผู้ขาย"
-                          className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                        />
-                      </TableCell> */}
-
-                        {/* Requested */}
                         <TableCell>
-                          <Input
-                            type="number"
-                            value={
-                              tempEditData?.requested_qty.toString() ||
-                              "0"
-                            }
-                            onChange={(e) =>
-                              handleUpdateTempData(
-                                "requested_qty",
-                                parseFloat(e.target.value) || 0
-                              )
-                            }
-                            placeholder="จำนวน"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                          />
+                          <div className="flex items-center gap-1">
+                            <NumberInput
+                              value={tempEditData?.requested_qty || 0}
+                              onChange={(value) =>
+                                handleUpdateTempData(
+                                  "requested_qty",
+                                  value
+                                )
+                              }
+                            />
 
-                          <Input
-                            value={
-                              tempEditData?.requested_unit_name || ""
-                            }
-                            onChange={(e) =>
-                              handleUpdateTempData(
-                                "requested_unit_name",
-                                e.target.value
-                              )
-                            }
-                            placeholder="หน่วย"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                          />
+                            <UnitLookup
+                              value={tempEditData?.requested_unit_id || ""}
+                              onValueChange={(value) =>
+                                handleUpdateTempData(
+                                  "requested_unit_id",
+                                  value
+                                )
+                              }
+                              disabled={isReadOnly}
+                            />
+                          </div>
                         </TableCell>
 
                         {/* Approved */}
-                        <TableCell>
-                          <Input
-                            type="number"
-                            value={tempEditData?.approved_qty.toString() || "0"}
-                            onChange={(e) =>
-                              handleUpdateTempData(
-                                "approved_qty",
-                                parseFloat(e.target.value) || 0
-                              )
-                            }
-                            placeholder="จำนวน"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                          />
-                          <Input
-                            value={
-                              tempEditData?.approved_unit_name || ""
-                            }
-                            onChange={(e) =>
-                              handleUpdateTempData(
-                                "approved_unit_name",
-                                e.target.value
-                              )
-                            }
-                            placeholder="หน่วย"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                          />
+                        <TableCell className="space-y-1">
+                          <div className="flex items-center gap-1">
+                            <NumberInput
+                              value={tempEditData?.requested_qty || 0}
+                              onChange={(value) =>
+                                handleUpdateTempData(
+                                  "approved_qty",
+                                  value
+                                )
+                              }
+                            />
+
+                            <UnitLookup
+                              value={tempEditData?.approved_unit_id || ""}
+                              onValueChange={(value) =>
+                                handleUpdateTempData(
+                                  "approved_unit_id",
+                                  value
+                                )
+                              }
+                              disabled={isReadOnly}
+                            />
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Label>FOC</Label>
+                            <NumberInput
+                              value={tempEditData?.foc_qty || 0}
+                              onChange={(value) =>
+                                handleUpdateTempData(
+                                  "foc_qty",
+                                  value
+                                )
+                              }
+                            />
+                            <UnitLookup
+                              value={tempEditData?.foc_unit_id || ""}
+                              onValueChange={(value) =>
+                                handleUpdateTempData(
+                                  "foc_unit_id",
+                                  value
+                                )
+                              }
+                              disabled={isReadOnly}
+                            />
+                          </div>
                         </TableCell>
 
                         {/* Price */}
                         <TableCell>
-                          <Input
-                            type="number"
-                            value={
-                              tempEditData?.price.toString() || "0"
-                            }
-                            onChange={(e) =>
-                              handleUpdateTempData(
-                                "price",
-                                parseFloat(e.target.value) || 0
-                              )
-                            }
-                            placeholder="ราคา"
-                            className="text-sm h-8 border-blue-300 focus:border-blue-500"
-                          />
+                          <div className="flex items-center gap-1">
+                            <CurrencyLookup
+                              value={tempEditData?.currency_id || ""}
+                              onValueChange={(value) =>
+                                handleUpdateTempData("currency_id", value)
+                              }
+                              disabled={isReadOnly}
+                            />
+                            <NumberInput
+                              value={tempEditData?.price || 0}
+                              onChange={(value) =>
+                                handleUpdateTempData("price", value)
+                              }
+                            />
+                          </div>
+
                         </TableCell>
-
-                        {/* <TableCell>
-                          <Input
-                            type="number"
-                            value={
-                              tempEditData?.total_price.toString() ||
-                              "0"
-                            }
-                            readOnly
-                            placeholder="Total Price"
-                            className="text-sm h-8 bg-gray-100 border-gray-300"
-                        />
-                      </TableCell> */}
-
                         {/* Actions - Edit Mode */}
                         <TableCell className="text-right">
                           <div className="flex gap-1 justify-end">
@@ -442,44 +429,45 @@ export default function TableItems({
                       // View Mode
                       <>
                         <TableCell>
-                          <div className="text-sm font-medium flex items-center gap-2">
+                          <div className="flex items-center gap-2">
                             <MapPin className="h-4 w-4 text-blue-500" />
-                            <p>{item.location_name || "-"}</p>
+                            <p className="text-sm font-medium">{item.location_name || "-"}</p>
                           </div>
-                          <Badge variant={'secondary'} className="w-fit">
+                          <p className="text-xs text-muted-foreground">
                             Wait API
-                          </Badge>
+                          </p>
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm font-medium flex items-center gap-2">
+                          <div className="flex items-center gap-2">
                             <Package className="h-4 w-4 text-blue-500" />
-                            <p>{item.product_name || "-"}</p>
+                            <p className="text-sm font-medium">{item.product_name || "-"}</p>
                           </div>
                           <p className="text-xs text-muted-foreground">{item.description}</p>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="text-sm text-right">
+                          <p className="text-sm text-right font-semibold">
                             {item.requested_qty}  {item.requested_unit_name || "-"}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
+                          </p>
+                          <p className="text-xs text-muted-foreground">
                             (= {item.requested_base_qty} {item.inventory_unit_name || "-"} )
-                          </div>
+                          </p>
                         </TableCell>
-                        <TableCell className="text-right">
-                          <div className="text-sm text-right">
+                        <TableCell className="w-[40px] text-right">
+                          <p className="text-sm text-right font-semibold">
                             {item.approved_qty}  {item.approved_unit_name || "-"}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
+                          </p>
+                          <Separator />
+                          <p className="text-xs font-semibold text-blue-500">
                             FOC: {item.foc_qty} {item.foc_unit_name || "-"}
-                          </div>
+                          </p>
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="text-sm text-right font-bold">
+                          <p className="text-sm text-right font-semibold">
                             {getCurrencyCode(item.currency_id)}  {item.price.toFixed(2)}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
+                          </p>
+                          <p className="text-xs font-semibold text-blue-500">
                             THB {item.base_price || 0}
-                          </div>
+                          </p>
                         </TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>

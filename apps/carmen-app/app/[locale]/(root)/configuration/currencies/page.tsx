@@ -3,10 +3,10 @@
 import { useAuth } from "@/context/AuthContext";
 import { useCurrencyQuery } from "@/hooks/currency";
 import CurrenciesList from "./components/CurrencieList";
-import { CurrencyDto } from "@/dtos/config.dto";
 import ExchangeRate from "./components/ExchangeRate";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { CurrencyGetDto } from "@/dtos/currency.dto";
 
 export default function CurrenciesPage() {
   const { token, tenantId } = useAuth();
@@ -16,7 +16,7 @@ export default function CurrenciesPage() {
   const currenciesData = currencies?.data ?? [];
 
   const usedCurrencies = currenciesData.map(
-    (currency: CurrencyDto) => currency.code
+    (currency: CurrencyGetDto) => currency.code
   );
 
   return (

@@ -1,6 +1,5 @@
 "use client";
 
-import { CurrencyDto } from "@/dtos/config.dto";
 import {
   Table,
   TableBody,
@@ -22,12 +21,13 @@ import {
   renderSortIcon,
 } from "@/utils/table-sort";
 import EmptyData from '@/components/EmptyData';
+import { CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 
 interface CurrencyListProps {
   readonly isLoading: boolean;
-  readonly currencies: CurrencyDto[];
-  readonly onEdit: (currency: CurrencyDto) => void;
-  readonly onToggleStatus: (currency: CurrencyDto) => void;
+  readonly currencies: CurrencyGetDto[];
+  readonly onEdit: (currency: CurrencyUpdateDto) => void;
+  readonly onToggleStatus: (currency: CurrencyUpdateDto) => void;
   readonly currentPage: number;
   readonly totalPages: number;
   readonly onPageChange: (page: number) => void;
@@ -100,10 +100,10 @@ const CurrencyTableRow = ({
   onToggleStatus,
   tCommon,
 }: {
-  currency: CurrencyDto;
+  currency: CurrencyGetDto;
   index: number;
-  onEdit: (currency: CurrencyDto) => void;
-  onToggleStatus: (currency: CurrencyDto) => void;
+  onEdit: (currency: CurrencyUpdateDto) => void;
+  onToggleStatus: (currency: CurrencyUpdateDto) => void;
   tCommon: (key: string) => string;
 }) => (
   <TableRow className="hover:bg-accent/50 transition-colors">

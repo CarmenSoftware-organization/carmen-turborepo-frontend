@@ -27,11 +27,11 @@ export default function VendorFields({ item }: VendorFieldsProps) {
                 <p>{item.vendor_name}</p>
             </div>
             <FieldsVendor label="Currency" value={getCurrencyCode(item.currency_id)} />
-            <FieldsVendor label="Price/Unit" value={item.price.toString()} />
-            <FieldsVendor label="Sub Total" value="price * qty" />
+            <FieldsVendor label="Price/Unit" value={`${item.price.toString()} / pricelist_unit`} />
+            <FieldsVendor label="Sub Total" value="pricelist_price * approved_qty" />
             <FieldsVendor label="Discount" value={item.discount_amount.toString()} />
             <FieldsVendor label="Net Amount" value="sub total - discount" color="blue" />
-            <FieldsVendor label="Tax" value="sub total * tax rate" />
+            <FieldsVendor label="Tax" value="tax rate" />
             <FieldsVendor label="Total" value="net amount + tax" color="green" />
             <div className="space-y-1">
                 <Label className="text-xs font-semibold">Compare</Label>

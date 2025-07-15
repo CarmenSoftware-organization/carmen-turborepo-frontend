@@ -2,8 +2,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { deleteApiRequest, getAllApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
-import { DeliveryPointDto } from "@/dtos/config.dto";
 import { useCallback } from "react";
+import { DeliveryPointCreateDto, DeliveryPointGetDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 
 const API_URL = `${backendApi}/api/config/delivery-point`;
 
@@ -21,10 +21,10 @@ export const useDeliveryPointQuery = ({
         queryFn: async () => {
             if (!token || !tenantId) throw new Error("Unauthorized");
             return await getAllApiRequest(
-                API_URL, 
-                token, 
-                tenantId, 
-                "Error fetching delivery point", 
+                API_URL,
+                token,
+                tenantId,
+                "Error fetching delivery point",
                 params
             );
         },
@@ -32,7 +32,7 @@ export const useDeliveryPointQuery = ({
     });
 
     const getDeliveryPointName = useCallback((deliveryPointId: string) => {
-        const deliveryPoint = data?.data.find((dp: DeliveryPointDto) => dp.id === deliveryPointId);
+        const deliveryPoint = data?.data.find((dp: DeliveryPointGetDto) => dp.id === deliveryPointId);
         return deliveryPoint?.name ?? "";
     }, [data]);
 
@@ -42,17 +42,17 @@ export const useDeliveryPointQuery = ({
 };
 
 export const useDeliveryPointMutation = (
-    token: string, 
+    token: string,
     tenantId: string,
 ) => {
     return useMutation({
-        mutationFn: async (data: DeliveryPointDto) => {
+        mutationFn: async (data: DeliveryPointCreateDto) => {
             if (!token || !tenantId) throw new Error("Unauthorized");
             return await postApiRequest(
-                API_URL, 
-                token, 
+                API_URL,
+                token,
                 tenantId,
-                data, 
+                data,
                 "Error creating delivery point"
             );
         },
@@ -60,13 +60,13 @@ export const useDeliveryPointMutation = (
 };
 
 export const useUpdateDeliveryPoint = (
-    token: string, 
+    token: string,
     tenantId: string,
     id: string,
 ) => {
     const API_URL_BY_ID = `${API_URL}/${id}`;
     return useMutation({
-        mutationFn: async (data: DeliveryPointDto) => {
+        mutationFn: async (data: DeliveryPointUpdateDto) => {
             if (!token || !tenantId || !id) throw new Error("Unauthorized");
             return await updateApiRequest(
                 API_URL_BY_ID,
@@ -81,14 +81,14 @@ export const useUpdateDeliveryPoint = (
 };
 
 export const useDeleteDeliveryPoint = (
-    token: string, 
+    token: string,
     tenantId: string,
     id: string,
 ) => {
     const API_URL_BY_ID = `${API_URL}/${id}`;
     return useMutation({
         mutationFn: async () => {
-            if (!token || !tenantId || !id) throw new Error("Unauthorized");    
+            if (!token || !tenantId || !id) throw new Error("Unauthorized");
             return await deleteApiRequest(
                 API_URL_BY_ID,
                 token,

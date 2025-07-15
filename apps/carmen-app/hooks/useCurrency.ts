@@ -1,10 +1,10 @@
 import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";
 import { useCallback, useState } from "react";
-import { CurrencyDto } from "@/dtos/config.dto";
 import { createCurrency, getCurrenciesService, updateCurrency, toggleCurrencyStatus } from "@/services/currency.service";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CurrencyCreateDto, CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 
 export const useCurrency = () => {
     const { token, tenantId } = useAuth();
@@ -14,7 +14,7 @@ export const useCurrency = () => {
     const [sort, setSort] = useURL('sort');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-    const [selectedCurrency, setSelectedCurrency] = useState<CurrencyDto | undefined>();
+    const [selectedCurrency, setSelectedCurrency] = useState<CurrencyGetDto | undefined>();
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [page, setPage] = useURL("page");
 
@@ -83,14 +83,14 @@ export const useCurrency = () => {
         setDialogOpen(true);
     }, []);
 
-    const handleEdit = useCallback((currency: CurrencyDto) => {
+    const handleEdit = useCallback((currency: CurrencyGetDto) => {
         setSelectedCurrency(currency);
         setDialogOpen(true);
     }, []);
 
     // Toggle currency status mutation
     const toggleStatusMutation = useMutation({
-        mutationFn: async (currency: CurrencyDto) => {
+        mutationFn: async (currency: CurrencyUpdateDto) => {
             if (!currency.id) throw new Error('Invalid currency ID');
             return toggleCurrencyStatus(token, tenantId, currency.id, currency.is_active);
         },
@@ -108,7 +108,7 @@ export const useCurrency = () => {
         }
     });
 
-    const handleToggleStatus = useCallback(async (currency: CurrencyDto) => {
+    const handleToggleStatus = useCallback(async (currency: CurrencyUpdateDto) => {
         if (!currency.id) {
             toastError({ message: 'Invalid currency ID' });
             return;
@@ -130,7 +130,7 @@ export const useCurrency = () => {
 
     // Create currency mutation
     const createCurrencyMutation = useMutation({
-        mutationFn: async (data: CurrencyDto) => {
+        mutationFn: async (data: CurrencyCreateDto) => {
             return createCurrency(token, tenantId, data);
         },
         onSuccess: () => {
@@ -147,7 +147,7 @@ export const useCurrency = () => {
 
     // Update currency mutation
     const updateCurrencyMutation = useMutation({
-        mutationFn: async (data: CurrencyDto) => {
+        mutationFn: async (data: CurrencyUpdateDto) => {
             if (!data.id) throw new Error('Invalid currency ID');
             return updateCurrency(token, tenantId, data);
         },
@@ -163,7 +163,7 @@ export const useCurrency = () => {
         }
     });
 
-    const handleSubmit = useCallback(async (data: CurrencyDto) => {
+    const handleSubmit = useCallback(async (data: CurrencyCreateDto) => {
         if (selectedCurrency) {
             updateCurrencyMutation.mutate({ ...data, id: selectedCurrency.id });
         } else {

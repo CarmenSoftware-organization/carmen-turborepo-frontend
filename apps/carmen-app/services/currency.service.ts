@@ -1,8 +1,8 @@
-import { CurrencyDto } from "@/dtos/config.dto";
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
 import { requestHeaders } from "@/lib/config.api";
 import { ParamsGetDto } from "@/dtos/param.dto";
+import { CurrencyCreateDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 
 const API_URL = `${backendApi}/api/config/currencies`;
 
@@ -35,7 +35,7 @@ export const getCurrenciesService = async (
     }
 };
 
-export const createCurrency = async (token: string, tenantId: string, currency: CurrencyDto) => {
+export const createCurrency = async (token: string, tenantId: string, currency: CurrencyCreateDto) => {
     try {
         const response = await axios.post(API_URL, currency, {
             headers: requestHeaders(token, tenantId)
@@ -47,7 +47,7 @@ export const createCurrency = async (token: string, tenantId: string, currency: 
     }
 }
 
-export const updateCurrency = async (token: string, tenantId: string, currency: CurrencyDto) => {
+export const updateCurrency = async (token: string, tenantId: string, currency: CurrencyUpdateDto) => {
     try {
         const response = await axios.patch(`${API_URL}/${currency.id}`, currency, {
             headers: requestHeaders(token, tenantId)
@@ -60,8 +60,8 @@ export const updateCurrency = async (token: string, tenantId: string, currency: 
 }
 
 
-export const deleteCurrency = async (token: string, tenantId: string, currency: CurrencyDto) => {
-    const url = `${backendApi}/api/config/currencies/${currency.id}`;
+export const deleteCurrency = async (token: string, tenantId: string, id: string) => {
+    const url = `${backendApi}/api/config/currencies/${id}`;
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
@@ -74,8 +74,8 @@ export const deleteCurrency = async (token: string, tenantId: string, currency: 
     return data;
 }
 
-export const toggleCurrencyStatus = async (token: string, tenantId: string, currencyId: string, isActive: boolean) => {
-    const url = `${backendApi}/api/config/currencies/${currencyId}`;
+export const toggleCurrencyStatus = async (token: string, tenantId: string, id: string, isActive: boolean) => {
+    const url = `${backendApi}/api/config/currencies/${id}`;
     const response = await fetch(url, {
         method: 'PATCH',
         headers: {

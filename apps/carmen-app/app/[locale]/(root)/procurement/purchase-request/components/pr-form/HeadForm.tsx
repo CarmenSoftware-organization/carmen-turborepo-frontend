@@ -109,7 +109,7 @@ export default function HeadForm({ form, isReadOnly, statusInfo }: HeadFormProps
                       {field.value ? (
                         format(new Date(field.value), "dd/MM/yyyy")
                       ) : (
-                        <span>เลือกวันที่</span>
+                        <span className="text-muted-foreground">Select Date</span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>

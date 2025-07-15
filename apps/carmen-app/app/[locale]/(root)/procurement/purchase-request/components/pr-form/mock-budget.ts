@@ -63,6 +63,7 @@ interface PricelistItem {
   vendor_name: string;
   preferred: boolean;
   rating: number;
+  products: string;
   description?: string;
   start_date: string;
   end_date: string;
@@ -82,6 +83,7 @@ export const mockPricelistItems: PricelistItem[] = [
     vendor_name: 'Acme Supplies',
     preferred: true,
     rating: 4.5,
+    products: 'Pigment',
     description: 'High-quality office supplies.',
     start_date: '2025-07-01',
     end_date: '2025-12-31',
@@ -98,6 +100,7 @@ export const mockPricelistItems: PricelistItem[] = [
     vendor_name: 'Global Industrial',
     preferred: false,
     rating: 3.8,
+    products: 'Beef',
     description: 'Bulk industrial parts.',
     start_date: '2025-06-15',
     end_date: '2025-11-30',
@@ -114,6 +117,7 @@ export const mockPricelistItems: PricelistItem[] = [
     vendor_name: 'TechGear Inc.',
     preferred: true,
     rating: 4.9,
+    products: 'เบอร์กระดาษ',
     start_date: '2025-08-01',
     end_date: '2026-01-31',
     pl_no: 'PL-TECH-2025',
@@ -129,6 +133,7 @@ export const mockPricelistItems: PricelistItem[] = [
     vendor_name: 'Eco Packaging',
     preferred: false,
     rating: 4.0,
+    products: 'ดินสอ',
     description: 'Sustainable packaging solutions.',
     start_date: '2025-05-01',
     end_date: '2025-10-31',
@@ -145,6 +150,7 @@ export const mockPricelistItems: PricelistItem[] = [
     vendor_name: 'Eco',
     preferred: false,
     rating: 4.0,
+    products: 'ทิชชู่',
     description: 'packaging',
     start_date: '2025-05-01',
     end_date: '2025-10-31',

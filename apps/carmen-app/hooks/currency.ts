@@ -3,7 +3,7 @@ import { backendApi, exchangeRateApiKey } from "@/lib/backend-api";
 import { useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { useCallback } from "react";
-import { CurrencyDto } from "@/dtos/config.dto";
+import { CurrencyGetDto } from "@/dtos/currency.dto";
 import { PaginatedResponseDto } from "@/dtos/paginated-response.dto";
 
 const API_URL = `${backendApi}/api/config/currencies`;
@@ -14,7 +14,7 @@ export const useCurrencyQuery = (
   params?: ParamsGetDto
 ) => {
   const { data, isLoading, error } = useQuery<
-    PaginatedResponseDto<CurrencyDto>
+    PaginatedResponseDto<CurrencyGetDto>
   >({
     queryKey: ["currency", tenantId, params],
     queryFn: async () => {
@@ -40,7 +40,7 @@ export const useCurrencyQuery = (
   const getCurrencyName = useCallback(
     (currencyId: string) => {
       const currency = currencies?.data?.find(
-        (c: CurrencyDto) => c.id === currencyId
+        (c: CurrencyGetDto) => c.id === currencyId
       );
       return currency?.name ?? "";
     },
@@ -79,7 +79,7 @@ export const useExchangeRateQuery = (baseCurrency: string) => {
   if (error) {
     console.error("Error fetching exchange rates:", error);
   }
-  
+
   return {
     exchangeRates: data,
     isLoading,

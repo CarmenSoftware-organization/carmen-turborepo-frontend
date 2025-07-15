@@ -4,7 +4,6 @@ import { Link, useRouter } from "@/lib/navigation";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto } from "@/dtos/pr.dto";
 import { convertPrStatus } from "@/utils/helper";
-import { format } from "date-fns";
 import {
   ChevronLeft,
   Pencil,
@@ -14,6 +13,7 @@ import {
   FileDown,
   Share,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ActionFieldsProps {
   readonly mode: formType;
@@ -33,6 +33,23 @@ export default function ActionFields({
   onModeChange,
 }: ActionFieldsProps) {
   const router = useRouter();
+  const tCommon = useTranslations("Common");
+
+  const onEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onModeChange(formType.EDIT);
+  };
+
+  const onCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (currentMode === formType.ADD) {
+      router.push("/procurement/purchase-request");
+    } else {
+      onModeChange(formType.VIEW);
+    }
+  };
 
   return (
     <div className="flex items-center justify-between mb-4">
@@ -43,22 +60,11 @@ export default function ActionFields({
 
         <div className="flex items-start gap-2">
           {mode === formType.ADD ? (
-            <p className="text-base font-bold">Purchase Request</p>
+            <p className="text-xl font-bold">Purchase Request</p>
           ) : (
-            <div className="flex flex-col gap-1">
-              <p className="text-base font-bold">
-                {initValues?.pr_no}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Created on{" "}
-                {initValues?.created_at
-                  ? format(
-                      new Date(initValues?.created_at ?? ""),
-                      "dd MMM yyyy"
-                    )
-                  : ""}
-              </p>
-            </div>
+            <p className="text-xl font-bold">
+              {initValues?.pr_no}
+            </p>
           )}
           {initValues?.pr_status && (
             <Badge variant={initValues?.pr_status}>
@@ -69,43 +75,23 @@ export default function ActionFields({
       </div>
       <div className="flex items-center gap-2">
         {currentMode === formType.VIEW ? (
-          <>
-            <Button
-              variant="outline"
-              size={"sm"}
-              className="px-2 text-xs"
-              onClick={() =>
-                router.push("/procurement/purchase-request")
-              }
-            >
-              <ChevronLeft /> Back
-            </Button>
-            <Button
-              variant="default"
-              size={"sm"}
-              className="px-2 text-xs"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onModeChange(formType.EDIT);
-              }}
-            >
-              <Pencil /> Edit
-            </Button>
-          </>
+          <Button
+            variant="default"
+            size={"sm"}
+            className="px-2 text-xs"
+            onClick={onEdit}
+          >
+            <Pencil /> {tCommon("edit")}
+          </Button>
         ) : (
           <>
             <Button
               variant="outline"
               size={"sm"}
               className="px-2 text-xs"
-              onClick={() =>
-                currentMode === formType.ADD
-                  ? router.push("/procurement/purchase-request")
-                  : onModeChange(formType.VIEW)
-              }
+              onClick={onCancel}
             >
-              <X /> Cancel
+              <X /> {tCommon("cancel")}
             </Button>
             <Button
               variant="default"
@@ -116,8 +102,8 @@ export default function ActionFields({
             >
               <Save />
               {isCreatePending || isUpdatePending
-                ? "Saving..."
-                : "Save"}
+                ? tCommon("saving")
+                : tCommon("save")}
             </Button>
           </>
         )}
@@ -127,7 +113,7 @@ export default function ActionFields({
           className="px-2 text-xs"
         >
           <Printer />
-          Print
+          {tCommon("print")}
         </Button>
 
         <Button
@@ -136,7 +122,7 @@ export default function ActionFields({
           className="px-2 text-xs"
         >
           <FileDown />
-          Export
+          {tCommon("export")}
         </Button>
         <Button
           variant="outline"
@@ -144,7 +130,7 @@ export default function ActionFields({
           className="px-2 text-xs"
         >
           <Share />
-          Share
+          {tCommon("share")}
         </Button>
       </div>
     </div>

@@ -16,8 +16,8 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCurrency } from "@/hooks/useCurrency";
-import { CurrencyDto } from "@/dtos/config.dto";
 import { PropsLookup } from "@/dtos/lookup.dto";
+import { CurrencyGetDto } from "@/dtos/currency.dto";
 
 export default function CurrencyLookup({
   value,
@@ -69,7 +69,7 @@ export default function CurrencyLookup({
                 <CommandEmpty>No currencies found.</CommandEmpty>
                 <CommandGroup>
                   {currencies && currencies.length > 0 ? (
-                    currencies.map((currency: CurrencyDto) => (
+                    currencies.map((currency: CurrencyGetDto) => (
                       <CommandItem
                         key={currency.id}
                         value={currency.id}

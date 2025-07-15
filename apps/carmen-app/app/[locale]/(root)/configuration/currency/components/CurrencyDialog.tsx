@@ -1,7 +1,6 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { CurrencyDto, currencySchema } from "@/dtos/config.dto";
 import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,13 +30,20 @@ import ExchangeRateLookup from "@/components/lookup/ExchangeRateLookup";
 import currenciesIso from "@/constants/currency";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import NumberInput from "@/components/form-custom/NumberInput";
+import {
+  CurrencyGetDto,
+  CurrencyCreateDto,
+  CurrencyUpdateDto,
+  currencyCreateSchema,
+  currencyUpdateSchema
+} from "@/dtos/currency.dto";
 
 interface CurrencyDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly mode: formType;
-  readonly currency?: CurrencyDto;
-  readonly onSubmit: (data: CurrencyDto) => void;
+  readonly currency?: CurrencyGetDto;
+  readonly onSubmit: (data: CurrencyCreateDto | CurrencyUpdateDto) => void;
   readonly isLoading?: boolean;
 }
 
@@ -66,8 +72,10 @@ export default function CurrencyDialog({
     []
   );
 
-  const form = useForm<CurrencyDto>({
-    resolver: zodResolver(currencySchema),
+  const schema = mode === formType.ADD ? currencyCreateSchema : currencyUpdateSchema;
+
+  const form = useForm<CurrencyCreateDto | CurrencyUpdateDto>({
+    resolver: zodResolver(schema),
     defaultValues:
       mode === formType.EDIT && currency
         ? { ...currency }
@@ -84,14 +92,12 @@ export default function CurrencyDialog({
     }
   }, [mode, currency, form, defaultCurrencyValues]);
 
-  // Reset form when dialog closes
   useEffect(() => {
     if (!open) {
       form.reset({ ...defaultCurrencyValues });
     }
   }, [open, form, defaultCurrencyValues]);
 
-  // Auto-fill other fields when currency code changes
   useEffect(() => {
     if (watchedCode && mode === formType.ADD) {
       const selectedCurrency = currenciesIso.find(
@@ -100,8 +106,6 @@ export default function CurrencyDialog({
 
       if (selectedCurrency) {
         const exchangeRate = exchangeRates[selectedCurrency.code] || 0.01;
-
-        // Always update all fields when currency code changes
         form.setValue("name", selectedCurrency.name);
         form.setValue("symbol", selectedCurrency.symbol);
         form.setValue("exchange_rate", exchangeRate);
@@ -113,9 +117,9 @@ export default function CurrencyDialog({
     }
   }, [watchedCode, mode, form, exchangeRates]);
 
-  const handleSubmit = async (data: CurrencyDto) => {
+  const handleSubmit = async (data: CurrencyCreateDto | CurrencyUpdateDto) => {
     try {
-      const validatedData = currencySchema.parse(data);
+      const validatedData = schema.parse(data);
       onSubmit(validatedData);
       form.reset(defaultCurrencyValues);
       onOpenChange(false);
@@ -156,7 +160,6 @@ export default function CurrencyDialog({
                         value={field.value}
                         onValueChange={field.onChange}
                         placeholder={tCurrency("currency_code")}
-                        disabled={isLoading || form.formState.isSubmitting}
                         showExchangeRate={true}
                       />
                     </FormControl>
