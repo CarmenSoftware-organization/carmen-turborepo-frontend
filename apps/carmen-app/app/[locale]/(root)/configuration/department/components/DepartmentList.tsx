@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface DepartmentListProps {
   readonly departments: DepartmentGetListDto[];
@@ -24,6 +25,9 @@ interface DepartmentListProps {
   readonly onPageChange: (page: number) => void;
   readonly sort?: SortConfig;
   readonly onSort?: (field: string) => void;
+  readonly selectedDepartments: string[];
+  readonly onSelectAll: (isChecked: boolean) => void;
+  readonly onSelect: (id: string) => void;
 }
 
 export default function DepartmentList({
@@ -33,10 +37,21 @@ export default function DepartmentList({
   totalPages,
   onPageChange,
   sort,
-  onSort
+  onSort,
+  selectedDepartments,
+  onSelectAll,
+  onSelect
 }: DepartmentListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+
+  const handleSelectAll = (checked: boolean) => {
+    onSelectAll(checked);
+  };
+
+  const handleSelect = (id: string) => {
+    onSelect(id);
+  }
 
   const renderTableContent = () => {
 
@@ -54,6 +69,12 @@ export default function DepartmentList({
 
     return departments.map((department, index) => (
       <TableRow key={department.id}>
+        <TableCell className="w-10">
+          <Checkbox
+            checked={selectedDepartments.includes(department.id)}
+            onCheckedChange={() => handleSelect(department.id)}
+          />
+        </TableCell>
         <TableCell className="text-left w-10">
           {(currentPage - 1) * 10 + index + 1}
         </TableCell>
@@ -103,6 +124,12 @@ export default function DepartmentList({
       <Table className="border">
         <TableHeader className="sticky top-0 bg-muted">
           <TableRow>
+            <TableHead className="w-10">
+              <Checkbox
+                checked={selectedDepartments.length === departments.length && departments.length > 0}
+                onCheckedChange={handleSelectAll}
+              />
+            </TableHead>
             <TableHead className="text-left w-10">#</TableHead>
             <TableHead {...getSortableColumnProps("name", sort, onSort)}>
               <div className="flex items-center text-left">

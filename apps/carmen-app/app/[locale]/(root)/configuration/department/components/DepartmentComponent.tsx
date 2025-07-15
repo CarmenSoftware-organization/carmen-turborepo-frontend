@@ -35,6 +35,27 @@ export default function DepartmentComponent() {
     sort,
     filter,
   });
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedDepartments(departments?.data.map((dept: any) => dept.id) ?? []);
+    } else {
+      setSelectedDepartments([]);
+    }
+  };
+
+  const handleSelect = (id: string) => {
+    setSelectedDepartments((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter(deptId => deptId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  console.log('selectedDepartments', selectedDepartments);
 
   const currentPage = departments?.paginate.page ?? 1;
   const totalPages = departments?.paginate.pages ?? 1;
@@ -149,6 +170,9 @@ export default function DepartmentComponent() {
       onPageChange={handlePageChange}
       sort={parsedSort}
       onSort={handleSort}
+      selectedDepartments={selectedDepartments}
+      onSelectAll={handleSelectAll}
+      onSelect={handleSelect}
     />
   )
 
