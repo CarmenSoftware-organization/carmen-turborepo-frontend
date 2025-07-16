@@ -71,7 +71,6 @@ export default function LocationForm({
   const { userList } = useUserList();
   const { products } = useProduct();
   const router = useRouter();
-  console.log("products", products);
 
   const listUser = userList?.map((user: UserItemTransfer) => ({
     key: user.user_id,

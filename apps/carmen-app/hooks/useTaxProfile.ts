@@ -121,8 +121,6 @@ export const useDeleteTaxProfile = (
   id: string
 ) => {
   const API_ID = `${API_URL}/${id}`;
-
-  console.log("API_ID >>>", API_ID);
   return useMutation({
     mutationFn: async () => {
       return await deleteApiRequest(

@@ -52,54 +52,62 @@ export default function UnitList({
     onDelete(unit);
   };
 
+  const renderUnitList = () => {
+    if (isLoading) {
+      return <UnitItemSkeleton />;
+    }
+
+    if (units && units.length > 0) {
+      return units.map((unit) => (
+        <li key={`unit-item-${unit.id}`} className="p-2">
+          <div className="flex items-center gap-4">
+            <div className="w-80">
+              <div className="flex items-center gap-2">
+                <p className="text-sm font-semibold">{unit.name}</p>
+                <Badge variant={unit.is_active ? "active" : "inactive"}>
+                  {unit.is_active ? "Active" : "Inactive"}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {unit.description ? unit.description : "No description"}
+              </p>
+            </div>
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEdit(unit)}
+                disabled={!unit.is_active}
+                className="h-8 w-8"
+              >
+                <SquarePen className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8"
+                onClick={() => handleDelete(unit)}
+                disabled={!unit.is_active}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </li>
+      ));
+    }
+
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <p>No units found</p>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <ul className="list-decimal list-outside pl-6">
-        {isLoading ? (
-          <UnitItemSkeleton />
-        ) : units && units.length > 0 ? (
-          units.map((unit) => (
-            <li key={`unit-item-${unit.id}`} className="p-2">
-              <div className="flex items-center gap-4">
-                <div className="w-80">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold">{unit.name}</p>
-                    <Badge variant={unit.is_active ? "active" : "inactive"}>
-                      {unit.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {unit.description ? unit.description : "No description"}
-                  </p>
-                </div>
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleEdit(unit)}
-                    disabled={!unit.is_active}
-                    className="h-8 w-8"
-                  >
-                    <SquarePen className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8"
-                    onClick={() => handleDelete(unit)}
-                    disabled={!unit.is_active}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </li>
-          ))
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>No units found</p>
-          </div>
-        )}
+        {renderUnitList()}
       </ul>
 
       {totalPages > 1 && (

@@ -6,9 +6,6 @@ import { requestHeaders } from "@/lib/config.api";
 
 export const signInService = async (email: string, password: string) => {
   const url = `${backendApi}/api/auth/login`;
-
-  console.log("url api sign in", url);
-
   try {
     const response = await axios.post(url, { email, password });
     return response.data;
@@ -37,9 +34,6 @@ export const updateUserBusinessUnitService = async (
   buId: string
 ) => {
   const url = `${backendApi}/api/business-unit/default`;
-  console.log("accessToken", accessToken);
-  console.log("buId", buId);
-
   try {
     const response = await axios.post(url, {
       headers: requestHeaders(accessToken, buId),

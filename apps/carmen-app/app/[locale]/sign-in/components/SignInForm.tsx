@@ -1,8 +1,7 @@
 "use client";
 
-import { signInSchema } from "@/constants/form.schema";
 import { useAuth } from "@/context/AuthContext";
-import { SignInFormValues } from "@/dtos/sign-in.dto";
+import { SignInFormValues, signInSchema } from "@/dtos/sign-in.dto";
 import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";

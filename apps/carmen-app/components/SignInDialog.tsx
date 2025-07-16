@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signInSchema } from "@/constants/form.schema";
-import { SignInFormValues } from "@/dtos/sign-in.dto";
+import { SignInFormValues, signInSchema } from "@/dtos/sign-in.dto";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";

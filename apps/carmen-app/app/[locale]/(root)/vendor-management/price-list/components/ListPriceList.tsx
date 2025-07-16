@@ -1,5 +1,4 @@
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -91,7 +90,6 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
                         <TableHead>Name</TableHead>
                         <TableHead>Start Date</TableHead>
                         <TableHead>End Date</TableHead>
-                        <TableHead>Status</TableHead>
                         <TableHead className="text-right">Action</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -106,16 +104,10 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <p>{priceList.product_name}</p>
-                                    <p className="text-muted-foreground">{priceList.note}</p>
+                                    <p>{priceList.vendor.name}</p>
                                 </TableCell>
                                 <TableCell>{format(priceList.from_date, 'dd/MM/yyyy')}</TableCell>
                                 <TableCell>{format(priceList.to_date, 'dd/MM/yyyy')}</TableCell>
-                                <TableCell>
-                                    <Badge variant={priceList.is_active ? 'active' : 'inactive'}>
-                                        {priceList.is_active ? 'Active' : 'Inactive'}
-                                    </Badge>
-                                </TableCell>
                                 <TableCell className="text-right">
                                     <Button variant="ghost" size="sm" className="w-7 h-7" asChild>
                                         <Link href={`/vendor-management/price-list/${priceList.id}`}>
@@ -137,14 +129,14 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle>Delete Price List</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    Are you sure you want to delete this price list for &quot;{priceList.product_name}&quot;?
+                                                    Are you sure you want to delete this price list for &quot;{priceList.vendor.name}&quot;?
                                                     This action cannot be undone.
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>
                                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                 <AlertDialogAction
-                                                    onClick={() => handleDelete(priceList.id)}
+                                                    onClick={() => handleDelete(priceList.id ?? '')}
                                                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                                 >
                                                     Delete

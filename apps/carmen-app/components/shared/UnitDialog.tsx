@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UnitDto, unitSchema } from "@/dtos/unit.dto";
+import { createUnitSchema, UnitDto } from "@/dtos/unit.dto";
 import {
     Dialog,
     DialogContent,
@@ -45,14 +45,13 @@ export default function UnitDialog({
     const tCommon = useTranslations('Common');
     const tUnit = useTranslations('Unit');
     const defaultUnitValues = useMemo(() => ({
-        id: '',
         name: '',
         description: '',
         is_active: true,
     }), []);
 
     const form = useForm<UnitDto>({
-        resolver: zodResolver(unitSchema),
+        resolver: zodResolver(createUnitSchema),
         defaultValues: mode === formType.EDIT && unit
             ? { ...unit }
             : defaultUnitValues,

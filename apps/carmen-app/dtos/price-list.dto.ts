@@ -31,10 +31,8 @@ export const updatePriceListSchema = priceListSchema.partial().extend({
 
 export type CreatePriceListDto = z.infer<typeof priceListSchema>;
 export type UpdatePriceListDto = z.infer<typeof updatePriceListSchema>;
-
-
 export interface PriceListDto {
-    id: string;
+    id?: string;
     vendor_id: string;
     vendor: {
         id: string;
@@ -42,18 +40,23 @@ export interface PriceListDto {
     };
     from_date: string;
     to_date: string;
-    product_id: string;
-    product_name: string;
-    unit_id: string;
-    unit_name: string;
-    price: number;
-    price_without_vat: number;
-    price_with_vat: number;
-    tax_type: "add" | "include" | "none";
-    tax_rate: number;
-    is_active: boolean;
-    note: string;
-    info: Record<string, string>;
-    dimension: Record<string, string>;
+    pricelist_detail: {
+        id: string;
+        sequence_no: number;
+        price: number;
+        price_without_vat: number;
+        price_with_vat: number;
+        tax_profile_id: string;
+        tax_profile_name: string;
+        tax_rate: number;
+        is_active: boolean;
+        note: string;
+        info: Record<string, string>;
+        dimension: Record<string, string>;
+        tb_product: {
+            id: string;
+            name: string;
+        };
+    }[];
 };
 
