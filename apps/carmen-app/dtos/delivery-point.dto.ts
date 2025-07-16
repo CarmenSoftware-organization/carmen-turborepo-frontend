@@ -10,7 +10,7 @@ const deliveryPointBaseSchema = z.object({
 export const deliveryPointCreateSchema = deliveryPointBaseSchema;
 
 export const deliveryPointGetSchema = deliveryPointBaseSchema.extend({
-    id: z.string().min(1),
+    id: z.string().uuid(),
 });
 
 export const deliveryPointUpdateSchema = deliveryPointGetSchema;

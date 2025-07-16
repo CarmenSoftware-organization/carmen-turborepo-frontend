@@ -44,7 +44,7 @@ export const departmentCreateSchema = departmentBaseSchema.extend({
  * 🔹 Schema สำหรับการแสดงรายการ Department (GET list)
  */
 export const departmentGetSchema = departmentBaseSchema.extend({
-    id: z.string().min(1),
+    id: z.string().uuid(),
 });
 
 /**
@@ -52,7 +52,7 @@ export const departmentGetSchema = departmentBaseSchema.extend({
  * รวมถึง users ที่อยู่ในแผนก (ใช้สำหรับ UI เท่านั้น)
  */
 const departmentUserDisplaySchema = z.object({
-    user_id: z.string().min(1),
+    user_id: z.string().uuid(),
     is_hod: z.boolean(),
     firstname: z.string().optional(),
     lastname: z.string().optional(),
@@ -67,7 +67,7 @@ export const departmentGetByIdSchema = departmentGetSchema.extend({
  * โครงสร้างเดียวกับ create แต่ต้องมี id
  */
 export const departmentUpdateSchema = departmentCreateSchema.extend({
-    id: z.string().min(1),
+    id: z.string().uuid(),
 });
 
 export type DepartmentCreateDto = z.infer<typeof departmentCreateSchema>;     // สำหรับ POST

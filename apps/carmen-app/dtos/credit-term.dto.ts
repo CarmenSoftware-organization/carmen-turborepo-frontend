@@ -1,23 +1,6 @@
-export interface CreditTermGetAllDto {
-    id: string;
-    name: string;
-    value: string;
-    description?: string;
-    is_active: boolean;
-    note?: string;
-}
-
-export interface CreateCreditTermDto {
-    name: string;
-    value: number;
-    description?: string;
-    is_active: boolean;
-    note?: string;
-}
-
 import { z } from "zod";
 
-export const createCreditTermSchema = z.object({
+const creditTermBaseSchema = z.object({
     name: z.string().min(1, "Name is required"),
     value: z.number().min(0, "Value must be a positive number"),
     description: z.string().optional(),
@@ -25,4 +8,14 @@ export const createCreditTermSchema = z.object({
     note: z.string().optional(),
 });
 
+export const createCreditTermSchema = creditTermBaseSchema;
+
+export const getAllCreditTermSchema = creditTermBaseSchema.extend({
+    id: z.string().uuid("Invalid ID format"),
+});
+
+export const updateCreditTermSchema = createCreditTermSchema;
+
+export type GetAllCreditTermDto = z.infer<typeof getAllCreditTermSchema>;
 export type CreateCreditTermFormValues = z.infer<typeof createCreditTermSchema>;
+export type UpdateCreditTermDto = z.infer<typeof updateCreditTermSchema>;
