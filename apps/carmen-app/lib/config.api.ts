@@ -14,6 +14,7 @@ export const getAllApiRequest = async (
   errorContext: string,
   params?: ParamsGetDto
 ) => {
+  console.log('🔍 getAllApiRequest called with:', { API_URL, token: !!token, tenantId, params });
 
   try {
     const query = new URLSearchParams();
@@ -27,9 +28,15 @@ export const getAllApiRequest = async (
     const queryString = query.toString();
     const URL = queryString ? `${API_URL}?${queryString}` : API_URL;
 
+    console.log('🔍 Final URL:', URL);
+    console.log('🔍 Headers:', requestHeaders(token, tenantId));
+
     const response = await axios.get(URL, {
       headers: requestHeaders(token, tenantId),
     });
+
+    console.log('✅ Response status:', response.status);
+    console.log('✅ Response data:', response.data);
 
     return response.data;
   } catch (error) {
@@ -87,11 +94,11 @@ export const updateApiRequest = async <T = unknown, R = unknown>(
     const response =
       method === "PUT"
         ? await axios.put<R>(API_URL, data, {
-            headers: requestHeaders(token, tenantId),
-          })
+          headers: requestHeaders(token, tenantId),
+        })
         : await axios.patch<R>(API_URL, data, {
-            headers: requestHeaders(token, tenantId),
-          });
+          headers: requestHeaders(token, tenantId),
+        });
 
     return response.data;
   } catch (error) {

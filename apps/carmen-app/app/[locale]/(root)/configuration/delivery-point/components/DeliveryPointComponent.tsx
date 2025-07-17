@@ -1,218 +1,226 @@
 "use client";
 
-import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
+import { boolFilterOptions } from "@/constants/options";
+import { useAuth } from "@/context/AuthContext";
+import { useDeleteDeliveryPoint, useDeliveryPointMutation, useDeliveryPointQuery, useUpdateDeliveryPoint } from "@/hooks/use-delivery-point";
+import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo } from "react";
-import DeliveryPointList from "./DeliveryPointList";
-import DeliveryPointDialog from "./DeliveryPointDialog";
-import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
+import { useCallback, useState } from "react";
+import ListDeliveryPoint from "./ListDeliveryPoint";
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import { DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 import { formType } from "@/dtos/form.dto";
-import SignInDialog from "@/components/SignInDialog";
-import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
-import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
-import { SortConfig, SortDirection } from "@/utils/table-sort";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { boolFilterOptions } from "@/constants/options";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useQueryClient } from "@tanstack/react-query";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 
-export function DeliveryPointComponent() {
+export default function DeliveryPointComponent() {
+  const { token, tenantId } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tDeliveryPoint = useTranslations("DeliveryPoint");
+  const queryClient = useQueryClient();
 
-  // Use the combined hook that includes all functionality
-  const {
-    deliveryPoints,
-    isPending,
-    isUnauthorized,
-    isSubmitting,
-    dialogOpen,
-    setDialogOpen,
-    confirmDialogOpen,
-    setConfirmDialogOpen,
-    selectedDeliveryPoint,
-    statusOpen,
-    setStatusOpen,
-    loginDialogOpen,
-    setLoginDialogOpen,
-    totalPages,
-    currentPage,
-    search,
-    setSearch,
-    sort,
-    setSort,
-    filter,
-    handleSetFilter,
-    handleSetSort,
-    fetchDeliveryPoints,
-    handleToggleStatus,
-    handleConfirmToggle,
-    handleSubmit,
-    handlePageChange,
-    handleAdd,
-    handleEdit,
-  } = useDeliveryPoint();
+  // Debug logs
+  console.log('🔍 DeliveryPointComponent - Auth state:', {
+    hasToken: !!token,
+    tokenLength: token?.length,
+    tokenPreview: token ? `${token.substring(0, 20)}...` : 'empty',
+    tenantId,
+    hasTenantId: !!tenantId
+  });
 
-  const sortFields = useMemo(
-    () => [
-      { key: "name", label: tHeader("name") },
-      { key: "is_active", label: tHeader("status") },
-    ],
-    [tHeader]
-  );
+  const [search, setSearch] = useURL("search");
+  const [filter, setFilter] = useURL("filter");
+  const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [statusOpen, setStatusOpen] = useState(false);
 
-  const title = useMemo(() => tDeliveryPoint("title"), [tDeliveryPoint]);
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
+  const [selectedDeliveryPoint, setSelectedDeliveryPoint] = useState<DeliveryPointUpdateDto | undefined>(undefined);
 
-  const actionButtons = useMemo(
-    () => (
-      <div
-        className="action-btn-container"
-        data-id="delivery-point-list-action-buttons"
-      >
-        <Button size="sm" onClick={handleAdd}>
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Button>
-        <Button
-          variant="outline"
-          className="group"
-          size="sm"
-          data-id="delivery-point-export-button"
-        >
-          <FileDown className="h-4 w-4" />
-          {tCommon("export")}
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          data-id="delivery-point-print-button"
-        >
-          <Printer className="h-4 w-4" />
-          {tCommon("print")}
-        </Button>
-      </div>
-    ),
-    [tCommon, handleAdd]
-  );
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deliveryPointToDelete, setDeliveryPointToDelete] = useState<DeliveryPointUpdateDto | undefined>(undefined);
 
-  const filters = useMemo(
-    () => (
-      <div className="filter-container" data-id="delivery-point-list-filters">
-        <SearchInput
-          defaultValue={search}
-          onSearch={setSearch}
-          placeholder={tCommon("search")}
-          data-id="delivery-point-list-search-input"
-        />
-        <div className="flex items-center gap-2">
-          <StatusSearchDropdown
-            options={boolFilterOptions}
-            value={filter}
-            onChange={handleSetFilter}
-            open={statusOpen}
-            onOpenChange={setStatusOpen}
-            data-id="delivery-point-status-search-dropdown"
-          />
-          <SortComponent
-            fieldConfigs={sortFields}
-            sort={sort}
-            setSort={handleSetSort}
-            data-id="delivery-point-sort-dropdown"
-          />
-        </div>
-      </div>
-    ),
-    [
+  const { deliveryPoints, isLoading } = useDeliveryPointQuery({
+    token,
+    tenantId,
+    params: {
       search,
-      setSearch,
-      tCommon,
       filter,
-      handleSetFilter,
-      statusOpen,
-      setStatusOpen,
-      sortFields,
       sort,
-      handleSetSort,
-    ]
+      page,
+    },
+  });
+
+  // Debug logs for query result
+  console.log('🔍 DeliveryPointComponent - Query result:', {
+    hasDeliveryPoints: !!deliveryPoints,
+    deliveryPointsType: typeof deliveryPoints,
+    deliveryPointsData: deliveryPoints?.data,
+    isLoading,
+    dataLength: deliveryPoints?.data?.length
+  });
+
+  const { mutate: createDeliveryPoint } = useDeliveryPointMutation(token, tenantId);
+  const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
+  const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
+
+  const currentPage = deliveryPoints?.paginate.page ?? 1;
+  const totalPages = deliveryPoints?.paginate.pages ?? 1;
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
+
+  const handleAdd = () => {
+    setDialogMode(formType.ADD);
+    setSelectedDeliveryPoint(undefined);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (data: DeliveryPointUpdateDto) => {
+    setDialogMode(formType.EDIT);
+    setSelectedDeliveryPoint(data);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = (data: DeliveryPointUpdateDto) => {
+    setDeliveryPointToDelete(data);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deliveryPointToDelete) {
+      deleteDeliveryPoint(undefined, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Delete delivery point successfully' });
+          queryClient.invalidateQueries({ queryKey: ["deliveryPoints", tenantId] });
+          setDeleteDialogOpen(false);
+          setDeliveryPointToDelete(undefined);
+        },
+        onError: (error: any) => {
+          toastError({ message: 'Failed to delete delivery point' });
+          console.error("Failed to delete delivery point:", error);
+        }
+      });
+    }
+  };
+
+  const handleDialogSubmit = (data: any) => {
+    if (dialogMode === formType.ADD) {
+      createDeliveryPoint(data, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Create delivery point successfully' });
+          queryClient.invalidateQueries({ queryKey: ["deliveryPoints", tenantId] });
+        },
+        onError: (error: any) => {
+          console.error("Failed to create delivery point:", error);
+        }
+      });
+    } else if (dialogMode === formType.EDIT && selectedDeliveryPoint) {
+      const updateData = { ...data, id: selectedDeliveryPoint.id };
+      updateDeliveryPoint(updateData, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Update delivery point successfully' });
+          queryClient.invalidateQueries({ queryKey: ["deliveryPoints", tenantId] });
+        },
+        onError: (error: any) => {
+          toastError({ message: 'Failed to update delivery point' });
+          console.error("Failed to update delivery point:", error);
+        }
+      });
+    }
+  };
+
+  const sortFields = [
+    {
+      key: "name",
+      label: tHeader("name"),
+    },
+    {
+      key: "is_active",
+      label: tHeader("status"),
+    },
+  ];
+
+  const title = tDeliveryPoint("title");
+
+  const actionButtons = (
+    <div
+      className="action-btn-container"
+      data-id="delivery-point-list-action-buttons"
+    >
+      <Button size="sm" onClick={handleAdd}>
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
+      <Button
+        variant="outline"
+        className="group"
+        size="sm"
+        data-id="delivery-point-export-button"
+      >
+        <FileDown className="h-4 w-4" />
+        {tCommon("export")}
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        data-id="delivery-point-print-button"
+      >
+        <Printer className="h-4 w-4" />
+        {tCommon("print")}
+      </Button>
+    </div>
   );
 
-  // Parse the sort string into field and direction
-  const parsedSort = useMemo((): SortConfig | undefined => {
-    if (!sort) return undefined;
+  const filters = (
+    <div className="filter-container" data-id="delivery-point-list-filters">
+      <SearchInput
+        defaultValue={search}
+        onSearch={setSearch}
+        placeholder={tCommon("search")}
+        data-id="delivery-point-list-search-input"
+      />
+      <div className="flex items-center gap-2">
+        <StatusSearchDropdown
+          options={boolFilterOptions}
+          value={filter}
+          onChange={setFilter}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
+          data-id="delivery-point-status-search-dropdown"
+        />
+        <SortComponent
+          fieldConfigs={sortFields}
+          sort={sort}
+          setSort={setSort}
+          data-id="delivery-point-sort-dropdown"
+        />
+      </div>
+    </div>
+  );
 
-    const parts = sort.split(":");
-    if (parts.length !== 2) return undefined;
-
-    return {
-      field: parts[0],
-      direction: parts[1] as SortDirection,
-    };
-  }, [sort]);
-
-  const content = useMemo(() => {
-    return (
-      <>
-        {isUnauthorized ? (
-          <UnauthorizedMessage
-            onRetry={fetchDeliveryPoints}
-            onLogin={() => setLoginDialogOpen(true)}
-          />
-        ) : (
-          <DeliveryPointList
-            deliveryPoints={deliveryPoints}
-            onEdit={handleEdit}
-            onToggleStatus={handleToggleStatus}
-            isLoading={isPending}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            sort={parsedSort}
-            onSort={(field) => {
-              const direction =
-                parsedSort?.field === field && parsedSort.direction === "asc"
-                  ? "desc"
-                  : "asc";
-              setSort(`${field}:${direction}`);
-            }}
-          />
-        )}
-      </>
-    );
-  }, [
-    deliveryPoints,
-    isUnauthorized,
-    fetchDeliveryPoints,
-    setLoginDialogOpen,
-    handleEdit,
-    handleToggleStatus,
-    isPending,
-    currentPage,
-    totalPages,
-    handlePageChange,
-    parsedSort,
-    setSort,
-  ]);
-
-  const handleDialogSubmit = (data: DeliveryPointCreateDto | DeliveryPointUpdateDto) => {
-    handleSubmit(
-      data,
-      selectedDeliveryPoint ? formType.EDIT : formType.ADD,
-      selectedDeliveryPoint
-    );
-  };
+  const content = (
+    <ListDeliveryPoint
+      deliveryPoints={deliveryPoints?.data ?? []}
+      isLoading={isLoading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+      onEdit={handleEdit}
+      onToggleStatus={handleDelete}
+    />
+  );
 
   return (
     <>
@@ -222,35 +230,11 @@ export function DeliveryPointComponent() {
         filters={filters}
         content={content}
       />
-      <DeliveryPointDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        mode={selectedDeliveryPoint ? formType.EDIT : formType.ADD}
-        deliveryPoint={selectedDeliveryPoint}
-        onSubmit={handleDialogSubmit}
-        isLoading={isSubmitting}
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
       />
-      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
-      <AlertDialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tCommon("confirmAction")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {selectedDeliveryPoint?.is_active
-                ? tDeliveryPoint("confirmDeactivate")
-                : tDeliveryPoint("confirmActivate")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setConfirmDialogOpen(false)}>
-              {tCommon("cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmToggle}>
-              {tCommon("confirm")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
