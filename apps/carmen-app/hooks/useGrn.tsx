@@ -92,7 +92,6 @@ export const useGrnMutation = (token: string, tenantId: string) => {
       if (!token || !tenantId) {
         throw new Error("Unauthorized: Missing authentication credentials");
       }
-      console.log("useGrnMutation", data);
       return await postApiRequest(
         API_URL,
         token,

@@ -3,12 +3,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 interface FormBooleanProps {
-  value: boolean;
-  onChange: (value: boolean) => void;
-  label: string;
-  positionLabel?: "left" | "right" | "top" | "bottom";
-  type?: "switch" | "checkbox";
-  disabled?: boolean;
+  readonly value: boolean;
+  readonly onChange: (value: boolean) => void;
+  readonly label: string;
+  readonly positionLabel?: "left" | "right" | "top" | "bottom";
+  readonly type?: "switch" | "checkbox";
+  readonly disabled?: boolean;
 }
 
 export default function FormBoolean({

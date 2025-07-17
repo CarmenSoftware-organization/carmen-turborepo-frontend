@@ -56,8 +56,6 @@ export default function DepartmentComponent() {
     });
   };
 
-  console.log('selectedDepartments', selectedDepartments);
-
   const currentPage = departments?.paginate.page ?? 1;
   const totalPages = departments?.paginate.pages ?? 1;
 

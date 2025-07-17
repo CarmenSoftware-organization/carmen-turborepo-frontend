@@ -19,7 +19,8 @@ import UnitDialog from "@/components/shared/UnitDialog";
 import { UnitDto } from "@/dtos/unit.dto";
 import { formType } from "@/dtos/form.dto";
 import { PropsLookup } from "@/dtos/lookup.dto";
-import { useUnitQuery } from "@/hooks/useUnitQuery";
+import { useUnitQuery } from "@/hooks/use-unit";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UnitLookup({
     value,
@@ -27,7 +28,12 @@ export default function UnitLookup({
     placeholder = "Select unit",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { units, isLoading, handleSubmit } = useUnitQuery();
+    const { token, tenantId } = useAuth();
+    const { units, isLoading } = useUnitQuery({
+        token,
+        tenantId,
+    });
+
     const [open, setOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -37,8 +43,8 @@ export default function UnitLookup({
         return found?.name ?? null;
     }, [value, units]);
 
-    const handleAddUnit = (data: UnitDto) => {
-        handleSubmit(data);
+    const handleAddUnit = (data: any) => {
+        onValueChange(data.id);
         setDialogOpen(false);
     };
 

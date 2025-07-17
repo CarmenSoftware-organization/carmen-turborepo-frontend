@@ -21,13 +21,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useProduct from "@/hooks/useProduct";
-import { useUnit } from "@/hooks/useUnit";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
+import { useUnitQuery } from "@/hooks/use-unit";
+import { useAuth } from "@/context/AuthContext";
 
 interface ItemPrProps {
   readonly itemsPr: (PurchaseRequestDetailItemDto & { id: string })[];
@@ -45,11 +46,15 @@ export default function ItemPr({
   openDetail,
   onDeleteItem,
 }: ItemPrProps) {
+  const { token, tenantId } = useAuth();
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useURL("search");
   const isDisabled = mode === formType.VIEW;
   const { getProductName } = useProduct();
-  const { getUnitName } = useUnit();
+  const { getUnitName } = useUnitQuery({
+    token,
+    tenantId,
+  });
   const { getLocationName } = useStoreLocation();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState(false);

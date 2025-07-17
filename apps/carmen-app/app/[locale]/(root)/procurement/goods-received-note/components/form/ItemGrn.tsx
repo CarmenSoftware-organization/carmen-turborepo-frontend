@@ -30,15 +30,15 @@ import {
 import { useEffect, useState, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import DialogItemGrnForm from "./DialogItemGrnForm";
-import { useUnit } from "@/hooks/useUnit";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
 import { useProduct } from "@/hooks/useProduct";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { formatCurrency } from "@/lib/utils";
+import { useUnitQuery } from "@/hooks/use-unit";
+import { useAuth } from "@/context/AuthContext";
 
-// Extend GoodReceivedNoteDetailItemDto to include id
 type ExtendedGoodReceivedNoteDetailItemDto = GoodReceivedNoteDetailItemDto & {
   id?: string;
 };
@@ -50,6 +50,7 @@ interface ItemGrnProps {
 }
 
 export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
+  const { token, tenantId } = useAuth();
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useState("");
   const isDisabled = mode === formType.VIEW;
@@ -63,7 +64,11 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
   const [editItem, setEditItem] =
     useState<GoodReceivedNoteDetailItemDto | null>(null);
 
-  const { getUnitName } = useUnit();
+  const { getUnitName } = useUnitQuery({
+    token,
+    tenantId,
+  });
+
   const { getLocationName } = useStoreLocation();
   const { getProductName } = useProduct();
 
@@ -347,7 +352,6 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
                     <TableCell className="text-right">
                       <div
                         className="flex justify-end"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <Button
                           size="sm"

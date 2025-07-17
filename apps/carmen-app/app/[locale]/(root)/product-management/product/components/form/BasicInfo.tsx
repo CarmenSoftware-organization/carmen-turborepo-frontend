@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useUnit } from "@/hooks/useUnit";
 import { useItemGroup } from "@/hooks/useItemGroup";
 import { useAuth } from "@/context/AuthContext";
 import { getCategoryListByItemGroup } from "@/services/product.service";
@@ -24,6 +23,8 @@ import { useRouter } from "@/lib/navigation";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import { Separator } from "@/components/ui/separator";
+import { useUnitQuery } from "@/hooks/use-unit";
+import { UnitDto } from "@/dtos/unit.dto";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -44,7 +45,10 @@ export default function BasicInfo({
   handleCancelClick,
 }: BasicInfoProps) {
   const { token, tenantId } = useAuth();
-  const { units } = useUnit();
+  const { units } = useUnitQuery({
+    token,
+    tenantId,
+  });
   const { itemGroups } = useItemGroup();
   const { watch, setValue } = useFormContext<ProductFormValues>();
   const router = useRouter();
@@ -184,13 +188,13 @@ export default function BasicInfo({
 
     return Boolean(
       name &&
-        code &&
-        localName &&
-        inventoryUnitId &&
-        price >= 0.01 &&
-        priceDeviation >= 1 &&
-        qtyDeviation >= 1 &&
-        itemGroupId
+      code &&
+      localName &&
+      inventoryUnitId &&
+      price >= 0.01 &&
+      priceDeviation >= 1 &&
+      qtyDeviation >= 1 &&
+      itemGroupId
     );
   };
 
@@ -519,7 +523,7 @@ export default function BasicInfo({
                     </FormLabel>
                     {currentMode === formType.VIEW ? (
                       <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center text-xs">
-                        {units.find((unit) => unit.id === field.value)?.name ||
+                        {units?.find((unit: UnitDto) => unit.id === field.value)?.name ||
                           "N/A"}
                       </div>
                     ) : (

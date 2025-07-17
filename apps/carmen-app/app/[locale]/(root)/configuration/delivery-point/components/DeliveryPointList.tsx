@@ -1,6 +1,6 @@
 "use client";
 
-import { DeliveryPointDto } from "@/dtos/config.dto";
+import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
 import {
   Table,
   TableBody,
@@ -24,9 +24,9 @@ import {
 } from "@/utils/table-sort";
 
 interface DeliveryPointListProps {
-  readonly deliveryPoints: DeliveryPointDto[];
-  readonly onEdit: (deliveryPoint: DeliveryPointDto) => void;
-  readonly onToggleStatus: (deliveryPoint: DeliveryPointDto) => void;
+  readonly deliveryPoints: DeliveryPointGetDto[];
+  readonly onEdit: (deliveryPoint: DeliveryPointGetDto) => void;
+  readonly onToggleStatus: (deliveryPoint: DeliveryPointGetDto) => void;
   readonly isLoading: boolean;
   readonly currentPage: number;
   readonly totalPages: number;

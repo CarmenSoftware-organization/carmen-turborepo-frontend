@@ -9,7 +9,7 @@ const API_URL = `${backendApi}/api/config/units`;
 export const getAllUnits = async (
     token: string,
     tenantId: string,
-    params: ParamsGetDto
+    params?: ParamsGetDto
 ) => {
     return getAllApiRequest(
         API_URL,

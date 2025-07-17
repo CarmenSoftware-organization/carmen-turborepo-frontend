@@ -1,60 +1,126 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
-import { useTranslations } from "next-intl";
+
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import SearchInput from "@/components/ui-custom/SearchInput";
+import { Button } from "@/components/ui/button";
 import { boolFilterOptions } from "@/constants/options";
-import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import UnitList from "./UnitList";
-import DeleteConfirmDialog from "./DeleteConfirmDialog";
+import { useAuth } from "@/context/AuthContext";
+import { useDeleteUnit, useUnitMutation, useUnitQuery, useUpdateUnit } from "@/hooks/use-unit";
+import { useQueryClient } from "@tanstack/react-query";
+import { useURL } from "@/hooks/useURL";
+import { FileDown, Plus, Printer } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
+import ListUnit from "./ListUnit";
+import { UnitDto } from "@/dtos/unit.dto";
 import UnitDialog from "@/components/shared/UnitDialog";
 import { formType } from "@/dtos/form.dto";
-import { useUnitQuery } from "@/hooks/useUnitQuery";
-import SignInDialog from "@/components/SignInDialog";
-import { useEffect, useState } from "react";
-import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import DeleteConfirmDialog from "./DeleteConfirmDialog";
 
 export default function UnitComponent() {
+  const { token, tenantId } = useAuth();
   const tCommon = useTranslations("Common");
   const tUnit = useTranslations("Unit");
-  const [signInOpen, setSignInOpen] = useState(false);
-  const {
-    // Data
-    units,
-    isLoading,
-    isUnauthorized,
-    totalPages,
-    page,
-    setPage,
-    search,
-    setSearch,
-    filter,
-    setFilter,
-    statusOpen,
-    setStatusOpen,
-    sort,
-    setSort,
-    // Form
-    dialogOpen,
-    setDialogOpen,
-    selectedUnit,
-    handleAdd,
-    handleEdit,
-    handleSubmit,
-    // Delete
-    deleteDialogOpen,
-    handleDelete,
-    handleConfirmDelete,
-    handleCancelDelete,
-  } = useUnitQuery();
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useURL("search");
+  const [filter, setFilter] = useURL("filter");
+  const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [statusOpen, setStatusOpen] = useState(false);
 
-  useEffect(() => {
-    if (isUnauthorized) {
-      setSignInOpen(true);
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
+  const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>(undefined);
+
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [unitToDelete, setUnitToDelete] = useState<UnitDto | undefined>(undefined);
+
+  const { units, isLoading } = useUnitQuery({
+    token,
+    tenantId,
+    params: {
+      search,
+      filter,
+      sort,
+      page,
     }
-  }, [isUnauthorized]);
+  });
+
+  const { mutate: createUnit } = useUnitMutation(token, tenantId);
+  const { mutate: updateUnit } = useUpdateUnit(token, tenantId, selectedUnit?.id ?? "");
+  const { mutate: deleteUnit } = useDeleteUnit(token, tenantId, selectedUnit?.id ?? "");
+
+  const currentPage = units?.paginate.page ?? 1;
+  const totalPages = units?.paginate.pages ?? 1;
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
+
+  const handleAdd = () => {
+    setDialogMode(formType.ADD);
+    setSelectedUnit(undefined);
+    setDialogOpen(true);
+  }
+
+  const handleEdit = (unit: UnitDto) => {
+    setDialogMode(formType.EDIT);
+    setSelectedUnit(unit);
+    setDialogOpen(true);
+  }
+
+  const handleDelete = (unit: UnitDto) => {
+    setUnitToDelete(unit);
+    setDeleteDialogOpen(true);
+  }
+
+  const handleConfirmDelete = () => {
+    if (unitToDelete) {
+      deleteUnit(undefined, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Delete unit successfully' });
+          queryClient.invalidateQueries({ queryKey: ["units", tenantId] });
+          setDeleteDialogOpen(false);
+          setUnitToDelete(undefined);
+        },
+        onError: (error) => {
+          toastError({ message: 'Failed to delete unit' });
+          console.error("Failed to delete unit:", error);
+        }
+      });
+    }
+  }
+
+  const handleDialogSubmit = (data: any) => {
+    if (dialogMode === formType.ADD) {
+      createUnit(data, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Create unit successfully' });
+          queryClient.invalidateQueries({ queryKey: ["units", tenantId] });
+        },
+        onError: (error) => {
+          console.error("Failed to create unit:", error);
+        }
+      });
+    } else if (dialogMode === formType.EDIT && selectedUnit) {
+      const updateData = { ...data, id: selectedUnit.id };
+      updateUnit(updateData, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Update unit successfully' });
+          queryClient.invalidateQueries({ queryKey: ["units", tenantId] });
+        },
+        onError: (error) => {
+          toastError({ message: 'Failed to create unit' });
+          console.error("Failed to update unit:", error);
+        }
+      });
+    }
+  }
 
   const sortFields = [
     { key: "name", label: "Name" },
@@ -117,26 +183,16 @@ export default function UnitComponent() {
   );
 
   const content = (
-    <>
-      {isUnauthorized ? (
-        <UnauthorizedMessage
-          onRetry={() => window.location.reload()}
-          onLogin={() => setSignInOpen(true)}
-        />
-      ) : (
-        <UnitList
-          units={units}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isLoading={isLoading}
-          currentPage={parseInt(page || "1")}
-          totalPages={totalPages}
-          onPageChange={(newPage) => setPage(newPage.toString())}
-          data-id="unit-list-template"
-        />
-      )}
-    </>
-  );
+    <ListUnit
+      units={units?.data ?? []}
+      isLoading={isLoading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+    />
+  )
 
   return (
     <>
@@ -149,18 +205,15 @@ export default function UnitComponent() {
       <UnitDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        mode={selectedUnit ? formType.EDIT : formType.ADD}
+        mode={dialogMode}
         unit={selectedUnit}
-        onSubmit={handleSubmit}
+        onSubmit={handleDialogSubmit}
       />
       <DeleteConfirmDialog
         open={deleteDialogOpen}
-        onOpenChange={handleCancelDelete}
+        onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
       />
-      {isUnauthorized && (
-        <SignInDialog open={signInOpen} onOpenChange={setSignInOpen} />
-      )}
     </>
-  );
+  )
 }

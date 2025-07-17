@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Check, Plus, SquarePen, Trash, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useUnit } from "@/hooks/useUnit";
 import { useState, useEffect } from "react";
 import {
     Table,
@@ -29,6 +28,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
+import { useUnitQuery } from "@/hooks/use-unit";
+import { UnitDto } from "@/dtos/unit.dto";
 
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -287,7 +289,11 @@ const DisplayRow = ({ ingredientUnit, onEdit, onRemove, currentMode, getUnitName
 );
 
 export default function IngredientUnit({ control, currentMode }: IngredientUnitProps) {
-    const { units } = useUnit();
+    const { token, tenantId } = useAuth();
+    const { units } = useUnitQuery({
+        token,
+        tenantId,
+    });
     const { watch, setValue } = useFormContext<ProductFormValues>();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<IngredientUnitData | null>(null);
@@ -298,8 +304,8 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
 
     // Filter units based on inventory unit ID and current ingredient units
     const filteredUnits: UnitDataDto[] = units
-        .filter((unit) => !!unit.id) // Only include units with an id
-        .filter((unit) => {
+        .filter((unit: UnitDto) => !!unit.id) // Only include units with an id
+        .filter((unit: UnitDto) => {
             // Don't include inventory unit in the list of selectable units
             if (unit.id === inventoryUnitId) return false;
 
@@ -338,7 +344,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
     const hasIngredientUnits = displayIngredientUnits.length > 0 || ingredientUnitFields.length > 0;
 
     const getUnitName = (unitId: string) => {
-        return units.find(unit => unit.id === unitId)?.name ?? '-';
+        return units.find((unit: UnitDto) => unit.id === unitId)?.name ?? '-';
     };
 
     const handleStartEdit = (ingredientUnit: IngredientUnitData) => {

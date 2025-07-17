@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createUnitSchema, UnitDto } from "@/dtos/unit.dto";
+import { unitSchema, UnitDto, CreateUnitDto } from "@/dtos/unit.dto";
 import {
     Dialog,
     DialogContent,
@@ -21,18 +21,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { useEffect, useMemo } from "react";
 import { formType } from "@/dtos/form.dto";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "next-intl";
+import FormBoolean from "../form-custom/form-boolean";
 
 interface UnitDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
     readonly mode: formType;
     readonly unit?: UnitDto;
-    readonly onSubmit: (data: UnitDto) => void;
+    readonly onSubmit: (data: CreateUnitDto) => void;
 }
 
 export default function UnitDialog({
@@ -44,16 +44,17 @@ export default function UnitDialog({
 }: UnitDialogProps) {
     const tCommon = useTranslations('Common');
     const tUnit = useTranslations('Unit');
+
     const defaultUnitValues = useMemo(() => ({
         name: '',
         description: '',
         is_active: true,
     }), []);
 
-    const form = useForm<UnitDto>({
-        resolver: zodResolver(createUnitSchema),
+    const form = useForm<CreateUnitDto>({
+        resolver: zodResolver(unitSchema),
         defaultValues: mode === formType.EDIT && unit
-            ? { ...unit }
+            ? { name: unit.name, description: unit.description, is_active: unit.is_active }
             : defaultUnitValues,
     });
 
@@ -67,10 +68,11 @@ export default function UnitDialog({
         }
     }, [open, mode, unit, form, defaultUnitValues]);
 
-    const handleSubmit = (data: UnitDto) => {
+    const handleSubmit = (data: CreateUnitDto) => {
         onSubmit(data);
         onOpenChange(false);
     };
+
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -118,19 +120,12 @@ export default function UnitDialog({
                             control={form.control}
                             name="is_active"
                             render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <FormLabel className="text-base">
-                                            {tCommon('status')}
-                                        </FormLabel>
-                                    </div>
-                                    <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            className="data-[state=checked]:bg-blue-600"
-                                        />
-                                    </FormControl>
+                                <FormItem>
+                                    <FormBoolean
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        label={tCommon('status')}
+                                    />
                                 </FormItem>
                             )}
                         />

@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Check, SquarePen, Plus, Trash, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useUnit } from "@/hooks/useUnit";
 import { useState, useEffect } from "react";
 import {
     Table,
@@ -29,6 +28,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Card } from "@/components/ui/card";
+import { useAuth } from "@/context/AuthContext";
+import { useUnitQuery } from "@/hooks/use-unit";
+import { UnitDto } from "@/dtos/unit.dto";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -312,7 +314,11 @@ const EditableRow = ({
 };
 
 export default function OrderUnit({ control, currentMode, initialValues }: OrderUnitProps) {
-    const { units } = useUnit();
+    const { token, tenantId } = useAuth();
+    const { units } = useUnitQuery({
+        token,
+        tenantId,
+    });
     const { watch, setValue } = useFormContext<ProductFormValues>();
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<OrderUnitData | null>(null);
@@ -352,8 +358,8 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
     }, [initialValues, setValue]);
 
     const filteredUnits: UnitDataDto[] = units
-        .filter((unit) => !!unit.id) // Only include units with an id
-        .filter((unit) => {
+        .filter((unit: UnitDto) => !!unit.id) // Only include units with an id
+        .filter((unit: UnitDto) => {
             if (unit.id === inventoryUnitId) return false;
             const otherOrderUnits = existingOrderUnits.filter(ou =>
                 ou.id !== editingId // Skip the currently edited order unit
@@ -409,7 +415,7 @@ export default function OrderUnit({ control, currentMode, initialValues }: Order
     const hasOrderUnits = displayOrderUnits.length > 0 || newOrderUnits.length > 0;
 
     const getUnitName = (unitId: string) => {
-        return units.find(unit => unit.id === unitId)?.name ?? '-';
+        return units?.find((unit: UnitDto) => unit.id === unitId)?.name ?? '-';
     };
 
     const handleStartEdit = (orderUnit: OrderUnitData) => {

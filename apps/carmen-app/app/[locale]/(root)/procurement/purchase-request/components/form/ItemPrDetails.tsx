@@ -16,7 +16,6 @@ import { formType } from "@/dtos/form.dto";
 import { useCurrency } from "@/hooks/useCurrency";
 import useProduct from "@/hooks/useProduct";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
-import { useUnit } from "@/hooks/useUnit";
 import {
   BoxIcon,
   Building,
@@ -38,8 +37,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
-import { useEffect, useState } from "react";
-import React from "react";
+import { useEffect, useState, Fragment } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -50,6 +48,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useUnitQuery } from "@/hooks/use-unit";
+import { useAuth } from "@/context/AuthContext";
 
 interface ItemPrProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,7 +58,8 @@ interface ItemPrProps {
   readonly onEditItems: () => void;
 }
 
-export default function ItemPrDetails({ itemsPr, onEditItems }: ItemPrProps) {
+export default function ItemPrDetails({ itemsPr, onEditItems, mode }: ItemPrProps) {
+  const { token, tenantId } = useAuth();
   const [isAdding, setIsAdding] = useState(false);
   const [displayItems, setDisplayItems] = useState(itemsPr);
   const [newRowData, setNewRowData] = useState({
@@ -73,7 +74,10 @@ export default function ItemPrDetails({ itemsPr, onEditItems }: ItemPrProps) {
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
   const { getProductName } = useProduct();
-  const { getUnitName } = useUnit();
+  const { getUnitName } = useUnitQuery({
+    token,
+    tenantId,
+  });
   const { getLocationName } = useStoreLocation();
   const { getCurrencyCode } = useCurrency();
 
@@ -153,7 +157,6 @@ export default function ItemPrDetails({ itemsPr, onEditItems }: ItemPrProps) {
       // updatedData.location_id = null;
     } else if (field === "product") {
       updatedData._product_name = value;
-      // updatedData.product_id = null;
     } else {
       updatedData[field] = value;
     }
@@ -330,7 +333,7 @@ export default function ItemPrDetails({ itemsPr, onEditItems }: ItemPrProps) {
                   </TableCell>
                 </TableRow>
               ) : (
-                <React.Fragment key={item.id}>
+                <Fragment key={item.id}>
                   <TableRow>
                     <TableCell>
                       <Checkbox />
@@ -544,7 +547,7 @@ export default function ItemPrDetails({ itemsPr, onEditItems }: ItemPrProps) {
                       </Accordion>
                     </td>
                   </tr>
-                </React.Fragment>
+                </Fragment>
               );
             })}
           </TableBody>
