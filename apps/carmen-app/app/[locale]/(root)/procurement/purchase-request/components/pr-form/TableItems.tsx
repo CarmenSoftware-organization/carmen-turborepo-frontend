@@ -11,7 +11,7 @@ import ReadonlyRow from "./ReadonlyRow";
 import EditableRow from "./EditableRow";
 import ItemDetailAccordion from "./ItemDetailAccordion";
 import React from "react";
-
+import { nanoid } from "nanoid";
 interface TableItemsProps {
   readonly prItems: PurchaseRequestDetailItem[];
   readonly isReadOnly: boolean;
@@ -20,12 +20,6 @@ interface TableItemsProps {
   readonly mode: formType;
 }
 
-/**
- * TableItems component
- * 
- * Main container component for purchase request items table
- * Manages state and orchestrates child components
- */
 export default function TableItems({
   prItems,
   isReadOnly,
@@ -40,11 +34,10 @@ export default function TableItems({
   const [tempEditData, setTempEditData] =
     useState<PurchaseRequestDetailItem | null>(null);
 
-  // Function สำหรับเพิ่มรายการใหม่
   const handleAddNewItem = () => {
     const newItem: PurchaseRequestDetailItem = {
       id: undefined,
-      tempId: `new-${Date.now()}`,
+      tempId: nanoid(),
       location_id: "",
       location_name: "",
       product_id: "",

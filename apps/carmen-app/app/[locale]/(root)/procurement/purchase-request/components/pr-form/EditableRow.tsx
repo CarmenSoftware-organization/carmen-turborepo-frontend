@@ -20,12 +20,6 @@ interface EditableRowProps {
     index: number;
 }
 
-/**
- * EditableRow component
- * 
- * Provides form inputs for editing a purchase request item
- * Includes confirm/cancel buttons and real-time data updates
- */
 export default function EditableRow({
     tempEditData,
     onUpdate,
