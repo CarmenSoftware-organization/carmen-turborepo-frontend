@@ -43,3 +43,14 @@ export enum CREDIT_NOTE_TYPE {
   QUANTITY_RETURN = "quantity_return",
   AMOUNT_DISCOUNT = "amount_discount",
 }
+
+
+export enum BUSINESS_UNIT_CONFIG_KEY {
+  CALCULATION_METHOD = "calculation_method",
+  CURRENCY_BASE = "currency_base",
+  DATE_FORMAT = "date_format",
+  LONG_TIME_FORMAT = "long_time_format",
+  SHORT_TIME_FORMAT = "short_time_format",
+  TIMEZONE = "timezone",
+  PERPAGE = "perpage",
+}

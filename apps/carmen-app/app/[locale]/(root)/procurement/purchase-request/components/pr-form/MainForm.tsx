@@ -34,6 +34,8 @@ import TableItems from "./TableItems";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BudgetPr from "./BudgetPr";
 import WorkflowPr from "./WorkflowPr";
+import TransactionSummary from "./TransactionSummaryPurchaseRequest";
+import TransactionSummaryPurchaseRequest from "./TransactionSummaryPurchaseRequest";
 
 
 interface MainPrFormProps {
@@ -380,6 +382,8 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
               </form>
             </Form>
           </Card>
+
+          <TransactionSummaryPurchaseRequest />
 
           {/* <div className="grid grid-cols-2 gap-2">
             <JsonViewer data={initValues || {}} />
