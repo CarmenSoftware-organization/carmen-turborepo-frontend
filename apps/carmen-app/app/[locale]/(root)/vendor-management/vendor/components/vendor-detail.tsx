@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { VendorFormValues } from "@/dtos/vendor.dto"
-import VendorForm from "./vendor-form"
+import VendorForm from "./form/VendorForm"
 import { formType } from "@/dtos/form.dto"
 import { Card } from "@/components/ui/card"
 import { useTranslations } from "next-intl"
@@ -56,6 +56,8 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
     const tCommon = useTranslations('Common');
     const tVendor = useTranslations('Vendor');
     const tAction = useTranslations('Action');
+
+    console.log("vendor >>>", vendor);
 
     const [isEditMode, setIsEditMode] = useState(false);
     const handleEdit = () => setIsEditMode(true);
@@ -107,14 +109,16 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
 
                 <TabsContent value="info" className="p-4 space-y-3">
                     <h3 className="text-xs font-medium">{tVendor("additional_info")}</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {vendor.info.map((item, index) => (
-                            <div key={index} className="space-y-1 mt-1">
-                                <p className="text-xs font-semibold">{item.label}</p>
-                                <p className="text-xs">{formatValue(item.value, item.data_type)}</p>
-                            </div>
-                        ))}
-                    </div>
+                    {vendor.info && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {vendor.info?.map((item, index) => (
+                                <div key={index} className="space-y-1 mt-1">
+                                    <p className="text-xs font-semibold">{item.label}</p>
+                                    <p className="text-xs">{formatValue(item.value, item.data_type)}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </TabsContent>
 
                 <TabsContent value="address" className="p-4 space-y-3">
@@ -154,14 +158,16 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                                 </div>
                                 <p className="text-xs mb-2">{contact.description}</p>
                                 <Separator className="my-2" />
-                                <div className="space-y-2">
-                                    {contact.info.map((item, infoIndex) => (
-                                        <div key={infoIndex} className="p-2">
-                                            <p className="text-xs font-medium text-gray-500">{item.label}</p>
-                                            <p className="text-sm">{formatValue(item.value, item.data_type)}</p>
-                                        </div>
-                                    ))}
-                                </div>
+                                {contact.info && (
+                                    <div className="space-y-2">
+                                        {contact.info.map((item, infoIndex) => (
+                                            <div key={infoIndex} className="p-2">
+                                                <p className="text-xs font-medium text-gray-500">{item.label}</p>
+                                                <p className="text-sm">{formatValue(item.value, item.data_type)}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

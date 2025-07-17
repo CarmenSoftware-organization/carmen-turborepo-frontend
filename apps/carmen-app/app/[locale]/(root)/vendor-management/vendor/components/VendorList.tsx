@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash2 } from "lucide-react";
+import { Eye, FileText, Trash2 } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PaginationComponent from "@/components/PaginationComponent";
@@ -41,8 +41,6 @@ export default function VendorList({
       onDeleteClick(vendor);
     }
   };
-
-  console.log("vendors 2 >>>", vendors);
 
   return (
     <div className="space-y-4">
@@ -103,7 +101,7 @@ export default function VendorList({
                           asChild
                         >
                           <Link href={`/vendor-management/vendor/${vendor.id}`}>
-                            <Eye className="h-4 w-4" />
+                            <FileText className="h-4 w-4" />
                           </Link>
                         </Button>
                         <Button
@@ -160,7 +158,7 @@ export default function VendorList({
                       asChild
                     >
                       <Link href={`/vendor-management/vendor/${vendor.id}`}>
-                        <Eye className="h-4 w-4" />
+                        <FileText className="h-4 w-4" />
                       </Link>
                     </Button>
                     <Button

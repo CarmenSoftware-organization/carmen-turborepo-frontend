@@ -1,5 +1,5 @@
 import { formType } from "@/dtos/form.dto";
-import VendorForm from "../components/vendor-form";
+import VendorForm from "../components/form/VendorForm";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
