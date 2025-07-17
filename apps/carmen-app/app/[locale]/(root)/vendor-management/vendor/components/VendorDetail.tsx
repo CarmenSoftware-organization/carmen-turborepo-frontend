@@ -56,9 +56,6 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
     const tCommon = useTranslations('Common');
     const tVendor = useTranslations('Vendor');
     const tAction = useTranslations('Action');
-
-    console.log("vendor >>>", vendor);
-
     const [isEditMode, setIsEditMode] = useState(false);
     const handleEdit = () => setIsEditMode(true);
 

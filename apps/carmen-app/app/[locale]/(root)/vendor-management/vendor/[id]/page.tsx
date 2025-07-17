@@ -1,10 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import VendorDetail from "../components/vendor-detail";
 import SignInDialog from "@/components/SignInDialog";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useVendorDetail } from "@/hooks/useVendorDetail";
+import VendorDetail from "../components/VendorDetail";
 
 export default function VendorPage() {
     const params = useParams();

@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, FileText, Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import PaginationComponent from "@/components/PaginationComponent";
 import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
+import CardLoading from "@/components/loading/CardLoading";
 
 interface VendorListProps {
   readonly vendors: VendorGetDto[];
@@ -45,8 +45,8 @@ export default function VendorList({
   return (
     <div className="space-y-4">
       <div className="hidden md:block relative">
-        <Table className="border">
-          <TableHeader className="sticky top-0 bg-muted">
+        <Table>
+          <TableHeader>
             <TableRow>
               <TableHead className="w-10 text-center">#</TableHead>
               <TableHead className="w-40 text-left">
@@ -60,81 +60,67 @@ export default function VendorList({
               <TableHead className="text-right">{tHeader("action")}</TableHead>
             </TableRow>
           </TableHeader>
-        </Table>
-        <ScrollArea className="h-[calc(102vh-300px)] w-full">
-          <Table>
-            {isLoading ? (
-              <TableBodySkeleton rows={5} />
-            ) : (
-              <TableBody>
-                {vendors.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      No vendors found
+          {isLoading ? (
+            <TableBodySkeleton rows={5} />
+          ) : (
+            <TableBody>
+              {vendors.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center">
+                    No vendors found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                vendors.map((vendor, index) => (
+                  <TableRow key={vendor.id}>
+                    <TableCell className="text-center w-10">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell>
+                      {vendor.name}
+                    </TableCell>
+                    <TableCell>
+                      {vendor.description}
+                    </TableCell>
+                    <TableCell>{vendor.business_type_name ?? "-"}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={vendor.is_active ? "active" : "inactive"}
+                      >
+                        {vendor.is_active ? "Active" : "Inactive"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        asChild
+                      >
+                        <Link href={`/vendor-management/vendor/${vendor.id}`}>
+                          <FileText className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(vendor)}
+                        className="h-7 w-7"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  vendors.map((vendor, index) => (
-                    <TableRow key={vendor.id}>
-                      <TableCell className="text-center w-10">
-                        {index + 1}
-                      </TableCell>
-                      <TableCell className="w-40 text-left">
-                        {vendor.name}
-                      </TableCell>
-                      <TableCell className="w-60 text-left">
-                        {vendor.description}
-                      </TableCell>
-                      <TableCell>{vendor.business_type_name ?? "-"}</TableCell>
-                      <TableCell className="text-left w-20">
-                        <Badge
-                          variant={vendor.is_active ? "active" : "inactive"}
-                        >
-                          {vendor.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7"
-                          asChild
-                        >
-                          <Link href={`/vendor-management/vendor/${vendor.id}`}>
-                            <FileText className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteClick(vendor)}
-                          className="h-7 w-7"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            )}
-          </Table>
-        </ScrollArea>
+                ))
+              )}
+            </TableBody>
+          )}
+        </Table>
       </div>
 
       <div className="grid gap-4 md:hidden">
         {isLoading ? (
-          <div className="space-y-4">
-            {[...Array(3)].map((_, index) => (
-              <Card key={index} className="animate-pulse">
-                <CardHeader className="h-16 bg-muted" />
-                <CardContent className="space-y-4">
-                  <div className="h-4 bg-muted rounded w-3/4" />
-                  <div className="h-4 bg-muted rounded w-1/2" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <CardLoading />
         ) : vendors.length === 0 ? (
           <div className="text-center">No vendors found</div>
         ) : (
