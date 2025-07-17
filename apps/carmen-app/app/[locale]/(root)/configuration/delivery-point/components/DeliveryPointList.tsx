@@ -13,10 +13,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { SquarePen, Trash2, MapPin } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
-import { Card } from "@/components/ui/card";
 import {
   SortConfig,
   getSortableColumnProps,
@@ -78,7 +76,7 @@ export default function DeliveryPointList({
         key={deliveryPoint.id}
         className="hover:bg-muted/30 transition-colors duration-150"
       >
-        <TableCell className="w-12 text-center font-mono text-xs text-muted-foreground">
+        <TableCell className="w-12">
           {(currentPage - 1) * 10 + index + 1}
         </TableCell>
         <TableCell className="font-medium">{deliveryPoint.name}</TableCell>
@@ -119,47 +117,43 @@ export default function DeliveryPointList({
   };
 
   return (
-    <div className="space-y-4">
-      <Card className="border-border/20 shadow-sm overflow-hidden">
-        <ScrollArea className="h-[calc(100vh-320px)] w-full">
-          <Table>
-            <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur-sm border-b border-border/50">
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="w-12 text-center text-xs font-medium text-muted-foreground">
-                  #
-                </TableHead>
-                <TableHead
-                  {...getSortableColumnProps("name", sort, onSort)}
-                  className="text-xs font-medium"
-                >
-                  <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
-                    {t("name")}
-                    {renderSortIcon("name", sort)}
-                  </div>
-                </TableHead>
-                <TableHead
-                  {...getSortableColumnProps("is_active", sort, onSort)}
-                  className="text-xs font-medium text-center w-24"
-                >
-                  {t("status")}
-                  {renderSortIcon("is_active", sort)}
-                </TableHead>
-                <TableHead className="w-24 text-center text-xs font-medium text-muted-foreground">
-                  {t("action")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            {isLoading ? (
-              <TableBodySkeleton rows={8} />
-            ) : (
-              <TableBody>{renderTableContent()}</TableBody>
-            )}
-          </Table>
-        </ScrollArea>
-      </Card>
+    <div className="flex flex-col w-full">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-12">
+              #
+            </TableHead>
+            <TableHead
+              {...getSortableColumnProps("name", sort, onSort)}
+              className="text-xs font-medium"
+            >
+              <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
+                {t("name")}
+                {renderSortIcon("name", sort)}
+              </div>
+            </TableHead>
+            <TableHead
+              {...getSortableColumnProps("is_active", sort, onSort)}
+              className="text-xs font-medium text-center w-24"
+            >
+              {t("status")}
+              {renderSortIcon("is_active", sort)}
+            </TableHead>
+            <TableHead className="w-24 text-right">
+              {t("action")}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        {isLoading ? (
+          <TableBodySkeleton rows={8} />
+        ) : (
+          <TableBody>{renderTableContent()}</TableBody>
+        )}
 
+      </Table>
       {totalPages > 1 && (
-        <div className="flex justify-center pt-2">
+        <div className="text-right pt-2">
           <PaginationComponent
             currentPage={currentPage}
             totalPages={totalPages}

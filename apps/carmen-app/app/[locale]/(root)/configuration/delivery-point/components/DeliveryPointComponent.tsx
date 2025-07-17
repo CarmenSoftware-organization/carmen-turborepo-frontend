@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import DeliveryPointList from "./DeliveryPointList";
 import DeliveryPointDialog from "./DeliveryPointDialog";
-import { DeliveryPointDto } from "@/dtos/config.dto";
+import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 import { formType } from "@/dtos/form.dto";
 import SignInDialog from "@/components/SignInDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
@@ -206,7 +206,7 @@ export function DeliveryPointComponent() {
     setSort,
   ]);
 
-  const handleDialogSubmit = (data: DeliveryPointDto) => {
+  const handleDialogSubmit = (data: DeliveryPointCreateDto | DeliveryPointUpdateDto) => {
     handleSubmit(
       data,
       selectedDeliveryPoint ? formType.EDIT : formType.ADD,
