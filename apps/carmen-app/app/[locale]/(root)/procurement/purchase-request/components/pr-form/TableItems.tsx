@@ -1,59 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
-  CheckCircleIcon,
-  MapPin,
-  MoreHorizontal,
-  Package,
-  Plus,
-  SendIcon,
-  SquarePen,
-  Trash2,
-  X,
-} from "lucide-react";
+import { Table, TableBody } from "@/components/ui/table";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useCurrency } from "@/hooks/useCurrency";
-import { DropdownMenuSeparator, DropdownMenuItem, DropdownMenuLabel, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import OnHandAndOrder from "./OnHandAndOrder";
-import PricingCard from "./PricingCard";
-import VendorFields from "./VendorFields";
 import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
-import BusinessDimensions from "./BusinessDimensions";
 import { formType } from "@/dtos/form.dto";
-import ProductLookup from "@/components/lookup/ProductLookup";
-import LocationLookup from "@/components/lookup/LocationLookup";
-import UnitLookup from "@/components/lookup/UnitLookup";
-import NumberInput from "@/components/form-custom/NumberInput";
-import { Label } from "@/components/ui/label";
-import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import TableItemsHeader from "./TableItemsHeader";
+import ReadonlyRow from "./ReadonlyRow";
+import EditableRow from "./EditableRow";
+import ItemDetailAccordion from "./ItemDetailAccordion";
+import React from "react";
 
 interface TableItemsProps {
   readonly prItems: PurchaseRequestDetailItem[];
@@ -63,6 +20,12 @@ interface TableItemsProps {
   readonly mode: formType;
 }
 
+/**
+ * TableItems component
+ * 
+ * Main container component for purchase request items table
+ * Manages state and orchestrates child components
+ */
 export default function TableItems({
   prItems,
   isReadOnly,
@@ -236,344 +199,36 @@ export default function TableItems({
       {prItems.length > 0 ? (
         <div className="border rounded-lg overflow-hidden">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[20px]">
-                  <Checkbox />
-                </TableHead>
-                <TableHead className="w-[20px] font-semibold">#</TableHead>
-                <TableHead className="w-[150px] font-semibold">Location & Status</TableHead>
-                <TableHead className="w-[150px] font-semibold">Product</TableHead>
-                {/* <TableHead className="w-[150px]">Vendor</TableHead> */}
-                <TableHead className="w-[100px] text-right font-semibold">Requested</TableHead>
-                <TableHead className="w-[40px] text-right font-semibold">Approved</TableHead>
-                <TableHead className="w-[100px] text-right font-semibold">Price</TableHead>
-                {/* <TableHead className="w-[100px]">Total</TableHead>
-                <TableHead className="w-[200px]">Description</TableHead> */}
-                <TableHead className="w-[120px] text-right font-semibold">More</TableHead>
-              </TableRow>
-            </TableHeader>
+            <TableItemsHeader />
             <TableBody>
               {prItems.map((item, index) => (
-                <>
-                  <TableRow
-                    key={item.id || item.tempId || index}
-                  >
-                    <TableCell>
-                      <Checkbox />
-                    </TableCell>
-                    <TableCell>{index + 1}</TableCell>
-                    {editingRowIndex === index ? (
-                      // Edit Mode
-                      <>
-                        <TableCell className="w-[150px]">
-                          <LocationLookup
-                            value={tempEditData?.location_id || ""}
-                            disabled={isReadOnly}
-                            onValueChange={(value) =>
-                              handleUpdateTempData(
-                                "location_id",
-                                value
-                              )
-                            }
-                          />
-                        </TableCell>
-
-                        {/* Product */}
-                        <TableCell>
-
-                          <div className="flex flex-col gap-1">
-                            <ProductLookup
-                              value={tempEditData?.product_id || ""}
-                              onValueChange={(value) =>
-                                handleUpdateTempData(
-                                  "product_id",
-                                  value
-                                )
-                              }
-                              disabled={isReadOnly}
-                            />
-                            <Input
-                              value={tempEditData?.description || ""}
-                              onChange={(e) =>
-                                handleUpdateTempData(
-                                  "description",
-                                  e.target.value
-                                )
-                              }
-                              placeholder="Description"
-                              className="text-xs h-8"
-                            />
-                          </div>
-
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <NumberInput
-                              value={tempEditData?.requested_qty || 0}
-                              onChange={(value) =>
-                                handleUpdateTempData(
-                                  "requested_qty",
-                                  value
-                                )
-                              }
-                            />
-
-                            <UnitLookup
-                              value={tempEditData?.requested_unit_id || ""}
-                              onValueChange={(value) =>
-                                handleUpdateTempData(
-                                  "requested_unit_id",
-                                  value
-                                )
-                              }
-                              disabled={isReadOnly}
-                            />
-                          </div>
-                        </TableCell>
-
-                        {/* Approved */}
-                        <TableCell className="space-y-1">
-                          <div className="flex items-center gap-1">
-                            <NumberInput
-                              value={tempEditData?.requested_qty || 0}
-                              onChange={(value) =>
-                                handleUpdateTempData(
-                                  "approved_qty",
-                                  value
-                                )
-                              }
-                            />
-
-                            <UnitLookup
-                              value={tempEditData?.approved_unit_id || ""}
-                              onValueChange={(value) =>
-                                handleUpdateTempData(
-                                  "approved_unit_id",
-                                  value
-                                )
-                              }
-                              disabled={isReadOnly}
-                            />
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Label>FOC</Label>
-                            <NumberInput
-                              value={tempEditData?.foc_qty || 0}
-                              onChange={(value) =>
-                                handleUpdateTempData(
-                                  "foc_qty",
-                                  value
-                                )
-                              }
-                            />
-                            <UnitLookup
-                              value={tempEditData?.foc_unit_id || ""}
-                              onValueChange={(value) =>
-                                handleUpdateTempData(
-                                  "foc_unit_id",
-                                  value
-                                )
-                              }
-                              disabled={isReadOnly}
-                            />
-                          </div>
-                        </TableCell>
-
-                        {/* Price */}
-                        <TableCell>
-                          <div className="flex items-center gap-1">
-                            <CurrencyLookup
-                              value={tempEditData?.currency_id || ""}
-                              onValueChange={(value) =>
-                                handleUpdateTempData("currency_id", value)
-                              }
-                              disabled={isReadOnly}
-                            />
-                            <NumberInput
-                              value={tempEditData?.price || 0}
-                              onChange={(value) =>
-                                handleUpdateTempData("price", value)
-                              }
-                            />
-                          </div>
-
-                        </TableCell>
-                        {/* Actions - Edit Mode */}
-                        <TableCell className="text-right">
-                          <div className="flex gap-1 justify-end">
-                            <Button
-                              type="button"
-                              variant="default"
-                              size="sm"
-                              onClick={handleConfirmEdit}
-                              className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700"
-                              title="ยืนยัน"
-                            >
-                              <CheckCircleIcon className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={handleCancelEdit}
-                              className="h-8 w-8 p-0 border-red-300 text-red-600 hover:bg-red-50"
-                              title="ยกเลิก"
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </>
-                    ) : (
-                      // View Mode
-                      <>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-blue-500" />
-                            <p className="text-sm font-medium">{item.location_name || "-"}</p>
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            Wait API
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Package className="h-4 w-4 text-blue-500" />
-                            <p className="text-sm font-medium">{item.product_name || "-"}</p>
-                          </div>
-                          <p className="text-xs text-muted-foreground">{item.description}</p>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <p className="text-sm text-right font-semibold">
-                            {item.requested_qty}  {item.requested_unit_name || "-"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            (= {item.requested_base_qty} {item.inventory_unit_name || "-"} )
-                          </p>
-                        </TableCell>
-                        <TableCell className="w-[40px] text-right">
-                          <p className="text-sm text-right font-semibold">
-                            {item.approved_qty}  {item.approved_unit_name || "-"}
-                          </p>
-                          <Separator />
-                          <p className="text-xs font-semibold text-blue-500">
-                            FOC: {item.foc_qty} {item.foc_unit_name || "-"}
-                          </p>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <p className="text-sm text-right font-semibold">
-                            {getCurrencyCode(item.currency_id)}  {item.price.toFixed(2)}
-                          </p>
-                          <p className="text-xs font-semibold text-blue-500">
-                            THB {item.base_price || 0}
-                          </p>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="cursor-pointer">
-                              <DropdownMenuLabel>
-                                <div className="flex items-center gap-2 text-green-500">
-                                  <CheckCircleIcon className="h-4 w-4" />
-                                  <p className="text-sm font-semibold">Approve Item</p>
-                                </div>
-                              </DropdownMenuLabel>
-                              <DropdownMenuLabel>
-                                <div className="flex items-center gap-2 text-yellow-500">
-                                  <SendIcon className="h-4 w-4" />
-                                  <p className="text-sm font-semibold">Send for Review</p>
-                                </div>
-                              </DropdownMenuLabel>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() => handleStartEdit(index)}
-                              >
-                                <div className="flex items-center gap-2">
-                                  <SquarePen className="h-4 w-4" />
-                                  <p className="text-sm font-semibold">Edit</p>
-                                </div>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                              >
-                                <div className="flex items-center text-destructive">
-                                  <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                      <div className="flex items-center gap-2 text-destructive">
-                                        <Trash2 className="h-4 w-4" />
-                                        <p className="text-sm font-semibold">Delete</p>
-                                      </div>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                      <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                          Confirm Delete
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                          Are you sure you want to delete this item?
-                                          This action cannot be undone.
-                                        </AlertDialogDescription>
-                                      </AlertDialogHeader>
-                                      <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                          Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                          onClick={() =>
-                                            handleDeleteItem(index)
-                                          }
-                                          className="bg-red-600 hover:bg-red-700"
-                                        >
-                                          Delete
-                                        </AlertDialogAction>
-                                      </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                  </AlertDialog>
-                                </div>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-
-                        </TableCell>
-                      </>
-                    )}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell colSpan={8} className="p-0">
-                      <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value={`item-${index}`}>
-                          <div className="flex items-center gap-4 w-full px-2 py-2">
-                            <AccordionTrigger
-                              iconPosition="left"
-                              className="p-0 h-5"
-                            />
-
-                            <div className="flex items-center gap-2 bg-blue-50 p-2 w-full border-l-4 border-blue-500">
-                              <p className="text-sm text-blue-500">
-                                {item.comment ? item.comment : "No comment"}
-                              </p>
-                            </div>
-                          </div>
-                          <OnHandAndOrder />
-                          <Separator />
-                          <VendorFields item={item} />
-                          <AccordionContent className="p-4 space-y-4 bg-muted">
-                            <BusinessDimensions />
-                            <PricingCard
-                              item={item}
-                              onItemUpdate={handleUpdateTempData}
-                              mode={mode}
-                            />
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </TableCell>
-                  </TableRow>
-                </>
+                <React.Fragment key={item.id || item.tempId || index}>
+                  {editingRowIndex === index ? (
+                    <EditableRow
+                      tempEditData={tempEditData!}
+                      onUpdate={handleUpdateTempData}
+                      onConfirm={handleConfirmEdit}
+                      onCancel={handleCancelEdit}
+                      isReadOnly={isReadOnly}
+                      index={index}
+                    />
+                  ) : (
+                    <ReadonlyRow
+                      item={item}
+                      index={index}
+                      getCurrencyCode={getCurrencyCode}
+                      onEdit={() => handleStartEdit(index)}
+                      onDelete={() => handleDeleteItem(index)}
+                      isReadOnly={isReadOnly}
+                    />
+                  )}
+                  <ItemDetailAccordion
+                    index={index}
+                    item={item}
+                    mode={mode}
+                    onUpdate={handleUpdateTempData}
+                  />
+                </React.Fragment>
               ))}
             </TableBody>
           </Table>
