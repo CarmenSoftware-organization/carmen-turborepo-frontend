@@ -16,31 +16,9 @@ export const useDeliveryPointQuery = ({
     tenantId: string;
     params?: ParamsGetDto;
 }) => {
-    console.log('🔍 useDeliveryPointQuery called with:', {
-        token: token ? `${token.substring(0, 10)}...` : 'empty',
-        tenantId,
-        params
-    });
-    console.log('🔍 API_URL:', API_URL);
-    console.log('🔍 backendApi:', backendApi);
-
     const { data, isLoading, error } = useQuery({
         queryKey: ["delivery-point", tenantId, params],
         queryFn: async () => {
-            console.log('🚀 queryFn executing...');
-            console.log('🚀 Token check:', { hasToken: !!token, tokenLength: token?.length });
-            console.log('🚀 TenantId check:', { hasTenantId: !!tenantId, tenantId });
-
-            if (!token || !tenantId) {
-                console.error('❌ Missing token or tenantId:', {
-                    hasToken: !!token,
-                    hasTenantId: !!tenantId,
-                    tokenLength: token?.length,
-                    tenantId
-                });
-                throw new Error("Unauthorized");
-            }
-
             try {
                 const result = await getAllApiRequest(
                     API_URL,
@@ -49,36 +27,19 @@ export const useDeliveryPointQuery = ({
                     "Error fetching delivery point",
                     params
                 );
-                console.log('✅ API response:', result);
                 return result;
             } catch (error) {
-                console.error('❌ API error:', error);
+                console.log('error', error);
                 throw error;
             }
         },
         enabled: !!token && !!tenantId,
     });
-
-    console.log('📊 Query state:', {
-        data,
-        isLoading,
-        error,
-        enabled: !!token && !!tenantId,
-        hasToken: !!token,
-        hasTenantId: !!tenantId
-    });
-
     const getDeliveryPointName = useCallback((deliveryPointId: string) => {
         const deliveryPoint = data?.data.find((dp: DeliveryPointGetDto) => dp.id === deliveryPointId);
         return deliveryPoint?.name ?? "";
     }, [data]);
-
-    console.log('data >>> ', data);
-
-    const deliveryPoints = data ?? [];
-
-    console.log('deliveryPoints', deliveryPoints);
-
+    const deliveryPoints = data;
     return { deliveryPoints, isLoading, error, getDeliveryPointName };
 };
 

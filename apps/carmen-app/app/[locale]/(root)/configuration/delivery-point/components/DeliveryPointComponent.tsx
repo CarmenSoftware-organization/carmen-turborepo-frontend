@@ -18,6 +18,7 @@ import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
 
 export default function DeliveryPointComponent() {
   const { token, tenantId } = useAuth();
@@ -25,15 +26,6 @@ export default function DeliveryPointComponent() {
   const tHeader = useTranslations("TableHeader");
   const tDeliveryPoint = useTranslations("DeliveryPoint");
   const queryClient = useQueryClient();
-
-  // Debug logs
-  console.log('🔍 DeliveryPointComponent - Auth state:', {
-    hasToken: !!token,
-    tokenLength: token?.length,
-    tokenPreview: token ? `${token.substring(0, 20)}...` : 'empty',
-    tenantId,
-    hasTenantId: !!tenantId
-  });
 
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
@@ -61,21 +53,13 @@ export default function DeliveryPointComponent() {
     },
   });
 
-  // Debug logs for query result
-  console.log('🔍 DeliveryPointComponent - Query result:', {
-    hasDeliveryPoints: !!deliveryPoints,
-    deliveryPointsType: typeof deliveryPoints,
-    deliveryPointsData: deliveryPoints?.data,
-    isLoading,
-    dataLength: deliveryPoints?.data?.length
-  });
-
   const { mutate: createDeliveryPoint } = useDeliveryPointMutation(token, tenantId);
   const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
   const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
 
-  const currentPage = deliveryPoints?.paginate.page ?? 1;
-  const totalPages = deliveryPoints?.paginate.pages ?? 1;
+
+  const currentPage = deliveryPoints?.paginate.page;
+  const totalPages = deliveryPoints?.paginate.pages;
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage.toString());
@@ -103,7 +87,7 @@ export default function DeliveryPointComponent() {
       deleteDeliveryPoint(undefined, {
         onSuccess: () => {
           toastSuccess({ message: 'Delete delivery point successfully' });
-          queryClient.invalidateQueries({ queryKey: ["deliveryPoints", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["delivery-point", tenantId] });
           setDeleteDialogOpen(false);
           setDeliveryPointToDelete(undefined);
         },
@@ -120,9 +104,12 @@ export default function DeliveryPointComponent() {
       createDeliveryPoint(data, {
         onSuccess: () => {
           toastSuccess({ message: 'Create delivery point successfully' });
-          queryClient.invalidateQueries({ queryKey: ["deliveryPoints", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["delivery-point", tenantId] });
+          setDialogOpen(false);
+          setSelectedDeliveryPoint(undefined);
         },
         onError: (error: any) => {
+          toastError({ message: 'Failed to create delivery point' });
           console.error("Failed to create delivery point:", error);
         }
       });
@@ -131,7 +118,9 @@ export default function DeliveryPointComponent() {
       updateDeliveryPoint(updateData, {
         onSuccess: () => {
           toastSuccess({ message: 'Update delivery point successfully' });
-          queryClient.invalidateQueries({ queryKey: ["deliveryPoints", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["delivery-point", tenantId] });
+          setDialogOpen(false);
+          setSelectedDeliveryPoint(undefined);
         },
         onError: (error: any) => {
           toastError({ message: 'Failed to update delivery point' });
@@ -229,6 +218,14 @@ export default function DeliveryPointComponent() {
         actionButtons={actionButtons}
         filters={filters}
         content={content}
+      />
+      <DeliveryPointDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        mode={dialogMode}
+        deliveryPoint={selectedDeliveryPoint}
+        onSubmit={handleDialogSubmit}
+        isLoading={isLoading}
       />
       <DeleteConfirmDialog
         open={deleteDialogOpen}

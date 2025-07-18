@@ -40,7 +40,6 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import DeliveryPointLookup from "@/components/lookup/DeliveryPointLookup";
 import { TaxType } from "@/constants/enum";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
@@ -52,6 +51,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import NumberInput from "@/components/form-custom/NumberInput";
+import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
 
 const defaultItemValues: GoodReceivedNoteDetailItemDto = {
   location_id: "",
@@ -254,7 +254,7 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Delivery Point</FormLabel>
                           <FormControl>
-                            <DeliveryPointLookup
+                            <LookupDeliveryPoint
                               value={field.value}
                               onValueChange={field.onChange}
                             />
@@ -604,7 +604,7 @@ export default function DialogItemGrnForm({
                         <FormItem>
                           <FormLabel>Tax Amount</FormLabel>
                           <FormControl>
-                              <NumberInput
+                            <NumberInput
                               value={field.value ?? 0}
                               onChange={(value) => field.onChange(value)}
                               disabled={mode === formType.VIEW}

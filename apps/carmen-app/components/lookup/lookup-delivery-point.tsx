@@ -7,13 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronsUpDown } from "lucide-react";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
-import { DeliveryPointDto } from "@/dtos/config.dto";
+import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
 
 interface Props {
-  value?: string;
-  onValueChange?: (value: string) => void;
-  placeholder?: string;
-  className?: string;
+  readonly value?: string;
+  readonly onValueChange?: (value: string) => void;
+  readonly placeholder?: string;
+  readonly className?: string;
 }
 
 export function LookupDeliveryPoint({
@@ -34,9 +34,9 @@ export function LookupDeliveryPoint({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const filterData = (
-    employees: DeliveryPointDto[],
+    employees: DeliveryPointGetDto[],
     term: string
-  ): DeliveryPointDto[] => {
+  ): DeliveryPointGetDto[] => {
     if (!term.trim()) return employees;
 
     return employees.filter((item) =>
@@ -55,7 +55,7 @@ export function LookupDeliveryPoint({
 
     return parts.map((part, index) =>
       regex.test(part) ? (
-        <span key={index} className="text-primary font-bold">
+        <span key={`${text}-${index}`} className="text-primary font-bold">
           {part}
         </span>
       ) : (
@@ -73,7 +73,7 @@ export function LookupDeliveryPoint({
     setIsDropdownOpen(true);
   };
 
-  const handleSelectItem = (item: DeliveryPointDto): void => {
+  const handleSelectItem = (item: DeliveryPointGetDto): void => {
     setSearchTerm(item.name);
     setIsDropdownOpen(false);
     onValueChange?.(item.id || "");
@@ -84,8 +84,8 @@ export function LookupDeliveryPoint({
   // Update search term when value prop changes
   useEffect(() => {
     if (value) {
-      const selectedDeliveryPoint = deliveryPoints.find(
-        (dp: DeliveryPointDto) => dp.id === value
+      const selectedDeliveryPoint = deliveryPoints?.data.find(
+        (dp: DeliveryPointGetDto) => dp.id === value
       );
       if (selectedDeliveryPoint) {
         setSearchTerm(selectedDeliveryPoint.name);

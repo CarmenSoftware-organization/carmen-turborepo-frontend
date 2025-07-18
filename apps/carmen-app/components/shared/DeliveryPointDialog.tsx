@@ -1,51 +1,53 @@
 "use client";
 
-import { unitSchema, UnitDto, CreateUnitDto } from "@/dtos/unit.dto";
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
+import {
+    DeliveryPointCreateDto,
+    DeliveryPointUpdateDto,
+    DeliveryPointGetDto,
+    deliveryPointCreateSchema,
+    deliveryPointUpdateSchema
+} from "@/dtos/delivery-point.dto";
 import GenericFormDialog, { FieldConfig } from "./GenericFormDialog";
 import { FORM_FIELD_TYPE } from "@/constants/enum";
 
-interface UnitDialogProps {
+interface DeliveryPointDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
     readonly mode: formType;
-    readonly unit?: UnitDto;
-    readonly onSubmit: (data: CreateUnitDto) => void;
+    readonly deliveryPoint?: DeliveryPointGetDto;
+    readonly onSubmit: (data: DeliveryPointCreateDto | DeliveryPointUpdateDto) => void;
     readonly isLoading?: boolean;
-}
+};
 
-export default function UnitDialog({
+export default function DeliveryPointDialog({
     open,
     onOpenChange,
     mode,
-    unit,
+    deliveryPoint,
     onSubmit,
     isLoading = false
-}: UnitDialogProps) {
+}: DeliveryPointDialogProps) {
     const tCommon = useTranslations('Common');
-    const tUnit = useTranslations('Unit');
+    const tDeliveryPoint = useTranslations('DeliveryPoint');
 
     const defaultValues = {
         name: '',
-        description: '',
         is_active: true,
     };
 
-    const fields: FieldConfig<CreateUnitDto>[] = [
+    const schema = mode === formType.EDIT ? deliveryPointUpdateSchema : deliveryPointCreateSchema;
+
+    const fields: FieldConfig<DeliveryPointCreateDto | DeliveryPointUpdateDto>[] = [
         {
             name: 'name',
-            label: tCommon('name'),
+            label: tCommon("name"),
             type: FORM_FIELD_TYPE.TEXT,
         },
         {
-            name: 'description',
-            label: tCommon('description'),
-            type: FORM_FIELD_TYPE.TEXTAREA,
-        },
-        {
             name: 'is_active',
-            label: tCommon('status'),
+            label: tCommon("status"),
             type: FORM_FIELD_TYPE.CHECKBOX,
         }
     ];
@@ -55,24 +57,24 @@ export default function UnitDialog({
             open={open}
             onOpenChange={onOpenChange}
             mode={mode}
-            data={unit}
+            data={deliveryPoint}
             onSubmit={onSubmit}
             isLoading={isLoading}
-            schema={unitSchema}
+            schema={schema}
             defaultValues={defaultValues}
             fields={fields}
             title={{
-                add: tCommon('add'),
-                edit: tCommon('edit')
+                add: tDeliveryPoint("add_delivery_point"),
+                edit: tDeliveryPoint("edit_delivery_point")
             }}
             description={{
-                add: tUnit('add_description'),
-                edit: tUnit('edit_description')
+                add: tDeliveryPoint("add_delivery_point_description"),
+                edit: tDeliveryPoint("edit_delivery_point_description")
             }}
             buttons={{
                 cancel: tCommon('cancel'),
-                add: tCommon('add'),
-                save: tCommon('save')
+                add: tCommon('save'),
+                save: tCommon('edit')
             }}
         />
     );

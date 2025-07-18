@@ -54,3 +54,23 @@ export enum BUSINESS_UNIT_CONFIG_KEY {
   TIMEZONE = "timezone",
   PERPAGE = "perpage",
 }
+
+export enum FORM_FIELD_TYPE {
+  TEXT = 'text',
+  TEXTAREA = 'textarea',
+  SWITCH = 'switch',
+  CHECKBOX = 'checkbox',
+  NUMBER = 'number',
+  EMAIL = 'email',
+  PASSWORD = 'password',
+  DATE = 'date',
+  DATETIME_LOCAL = 'datetime-local',
+  TIME = 'time',
+  URL = 'url',
+  TEL = 'tel',
+  SEARCH = 'search',
+  COLOR = 'color',
+  RANGE = 'range',
+  FILE = 'file',
+  CUSTOM = 'custom',
+}

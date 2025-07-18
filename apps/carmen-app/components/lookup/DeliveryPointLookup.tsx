@@ -18,7 +18,9 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
-import { useDeliveryPoint } from "@/hooks/useDeliveryPoint";
+import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
+import { useAuth } from "@/context/AuthContext";
+import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
 
 export default function DeliveryPointLookup({
     value,
@@ -26,13 +28,14 @@ export default function DeliveryPointLookup({
     placeholder = "Select delivery point",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { deliveryPoints } = useDeliveryPoint();
+    const { token, tenantId } = useAuth();
+    const { deliveryPoints } = useDeliveryPointQuery({ token, tenantId });
 
     const [open, setOpen] = useState(false);
 
     const selectedDeliveryPointName = useMemo(() => {
         if (!value || !deliveryPoints || !Array.isArray(deliveryPoints)) return null;
-        const found = deliveryPoints.find(deliveryPoint => deliveryPoint.id === value);
+        const found = deliveryPoints?.data.find((deliveryPoint: DeliveryPointGetDto) => deliveryPoint.id === value);
         return found?.name ?? null;
     }, [value, deliveryPoints]);
 
@@ -60,7 +63,7 @@ export default function DeliveryPointLookup({
                         <CommandEmpty>No delivery points found.</CommandEmpty>
                         <CommandGroup>
                             {deliveryPoints && deliveryPoints.length > 0 ? (
-                                deliveryPoints.map((deliveryPoint) => (
+                                deliveryPoints?.data.map((deliveryPoint: DeliveryPointGetDto) => (
                                     <CommandItem
                                         key={deliveryPoint.id}
                                         value={deliveryPoint.name}
