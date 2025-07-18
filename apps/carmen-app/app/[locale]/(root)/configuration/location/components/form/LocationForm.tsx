@@ -38,6 +38,7 @@ import { Transfer } from "@/components/ui-custom/Transfer";
 import { useMemo, useState } from "react";
 import useProduct from "@/hooks/useProduct";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import transferHandler from "@/components/form-custom/TransferHandler";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -59,7 +60,8 @@ interface LocationResponse {
     name: string;
     is_active: boolean;
   };
-}
+};
+
 
 export default function LocationForm({
   initialData,
@@ -151,96 +153,9 @@ export default function LocationForm({
     }
   };
 
-  const handleUsersChange = (
-    targetKeys: (string | number)[],
-    direction: "left" | "right",
-    moveKeys: (string | number)[]
-  ) => {
-    setSelectedUsers(targetKeys);
+  const handleUsersChange = transferHandler({ form, fieldName: "users", setSelected: setSelectedUsers });
 
-    const currentUsers = form.getValues("users") || { add: [], remove: [] };
-
-    // แปลงเป็น Map เพื่อ O(1) lookup
-    const addMap = new Map(currentUsers.add.map(item => [item.id, item]));
-    const removeMap = new Map(currentUsers.remove.map(item => [item.id, item]));
-
-    moveKeys.forEach((key) => {
-      const keyStr = String(key);
-      const inAdd = addMap.has(keyStr);
-      const inRemove = removeMap.has(keyStr);
-
-      if (direction === "right") {
-        // Available → Init
-        if (inRemove) {
-          removeMap.delete(keyStr);
-        } else if (!inAdd) {
-          addMap.set(keyStr, { id: keyStr });
-        }
-      } else {
-        // Init → Available
-        if (inAdd) {
-          addMap.delete(keyStr);
-        } else if (!inRemove) {
-          removeMap.set(keyStr, { id: keyStr });
-        }
-      }
-    });
-
-    form.setValue("users.add", Array.from(addMap.values()));
-    form.setValue("users.remove", Array.from(removeMap.values()));
-  };
-  const handleProductsChange = (
-    targetKeys: (string | number)[],
-    direction: "left" | "right",
-    moveKeys: (string | number)[]
-  ) => {
-    console.log("Products changed:", { targetKeys, direction, moveKeys });
-    setSelectedProducts(targetKeys);
-
-    // อัพเดต form products field
-    const currentProducts = form.getValues("products") || {
-      add: [],
-      remove: [],
-    };
-
-    let newAddArray = [...currentProducts.add];
-    let newRemoveArray = [...currentProducts.remove];
-
-    moveKeys.forEach((key) => {
-      const keyStr = String(key);
-
-      // ตรวจสอบว่า item อยู่ใน array ไหนอยู่แล้ว
-      const inAddArray = newAddArray.some((item) => item.id === keyStr);
-      const inRemoveArray = newRemoveArray.some((item) => item.id === keyStr);
-
-      if (direction === "right") {
-        // Available → Init
-        if (inRemoveArray) {
-          // ถ้าอยู่ใน remove[] แล้ว → ลบออกจาก remove[] (ย้อนกลับ)
-          newRemoveArray = newRemoveArray.filter((item) => item.id !== keyStr);
-        } else {
-          // ถ้าไม่อยู่ใน remove[] → เพิ่มเข้า add[]
-          if (!inAddArray) {
-            newAddArray.push({ id: keyStr });
-          }
-        }
-      } else {
-        // Init → Available
-        if (inAddArray) {
-          // ถ้าอยู่ใน add[] แล้ว → ลบออกจาก add[] (ย้อนกลับ)
-          newAddArray = newAddArray.filter((item) => item.id !== keyStr);
-        } else {
-          // ถ้าไม่อยู่ใน add[] → เพิ่มเข้า remove[]
-          if (!inRemoveArray) {
-            newRemoveArray.push({ id: keyStr });
-          }
-        }
-      }
-    });
-
-    form.setValue("products.add", newAddArray);
-    form.setValue("products.remove", newRemoveArray);
-  };
+  const handleProductsChange = transferHandler({ form, fieldName: "products", setSelected: setSelectedProducts });
 
   const handleSubmit = async (data: FormLocationValues) => {
     try {

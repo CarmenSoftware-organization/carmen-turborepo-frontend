@@ -13,8 +13,6 @@ import {
 } from "@/components/ui/table";
 import {
   SortConfig,
-  getSortableColumnProps,
-  renderSortIcon,
 } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
 import { FileText, Trash2 } from "lucide-react";
@@ -59,26 +57,24 @@ export default function ListLocations({
           <TableRow key={location.id}>
             <TableCell className="w-10">{i + 1}</TableCell>
             <TableCell>
-              <div>
-                <Link
-                  href={`/configuration/location/${location.id}`}
-                  className="text-xs font-bold hover:underline text-primary hover:text-primary/80 font-medium"
-                >
-                  {location.name}
-                </Link>
-                <p className="text-xs text-muted-foreground">
-                  {location.description}
-                </p>
-              </div>
+              <Link
+                href={`/configuration/location/${location.id}`}
+                className="text-xs font-bold hover:underline text-primary hover:text-primary/80 font-medium"
+              >
+                {location.name}
+              </Link>
+              <p className="text-xs text-muted-foreground">
+                {location.description}
+              </p>
             </TableCell>
-            <TableCell className="hidden md:table-cell">
+            <TableCell className="hidden md:table-cell text-center">
               <Badge
                 className={STORE_LOCATION_TYPE_COLOR(location.location_type)}
               >
                 {location.location_type.toUpperCase()}
               </Badge>
             </TableCell>
-            <TableCell>{location.delivery_point?.name}</TableCell>
+            <TableCell className="hidden md:table-cell text-center">{location.delivery_point?.name}</TableCell>
             <TableCell className="text-center">
               <Badge variant={location.is_active ? "active" : "inactive"}>
                 {location.is_active ? tCommon("active") : tCommon("inactive")}
@@ -116,25 +112,19 @@ export default function ListLocations({
 
   return (
     <div className="space-y-4">
-      <Table className="border">
-        <TableHeader className="bg-muted">
+      <Table>
+        <TableHeader>
           <TableRow>
             <TableHead className="w-10">#</TableHead>
-            <TableHead {...getSortableColumnProps("name", sort, onSort)}>
-              <div className="flex items-center">
-                {t("name")}
-                {renderSortIcon("name", sort)}
-              </div>
+            <TableHead>
+              {t("name")}
             </TableHead>
-            <TableHead className="hidden md:table-cell">{t("type")}</TableHead>
-            <TableHead className="hidden md:table-cell">
+            <TableHead className="hidden md:table-cell text-center">{t("type")}</TableHead>
+            <TableHead className="hidden md:table-cell text-center">
               {t("delivery_point")}
             </TableHead>
-            <TableHead {...getSortableColumnProps("is_active", sort, onSort)}>
-              <div className="flex items-center">
-                {t("status")}
-                {renderSortIcon("is_active", sort)}
-              </div>
+            <TableHead className="text-center">
+              {t("status")}
             </TableHead>
             <TableHead className="text-right">{t("action")}</TableHead>
           </TableRow>
