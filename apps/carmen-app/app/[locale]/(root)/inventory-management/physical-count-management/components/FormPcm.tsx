@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { statusSpotCheckOptions } from "@/constants/options";
 import { Button } from "@/components/ui/button";
 import { mockDepartments } from "@/mock-data/inventory-management";
+import DateInput from "@/components/form-custom/DateInput";
 
 interface FormPcmProps {
     readonly mode: formType;
@@ -149,38 +150,7 @@ export default function FormPcm({ mode, initialValues }: FormPcmProps) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Date</FormLabel>
-                                    <Popover>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant={"outline"}
-                                                    className={cn(
-                                                        "w-full pl-3 text-left font-normal",
-                                                        !field.value && "text-muted-foreground"
-                                                    )}
-                                                >
-                                                    {field.value ? (
-                                                        format(new Date(field.value), "PPP")
-                                                    ) : (
-                                                        <span>Pick a date</span>
-                                                    )}
-                                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value ? new Date(field.value) : undefined}
-                                                onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
-                                                disabled={(date) =>
-                                                    date > new Date() || date < new Date("1900-01-01")
-                                                }
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormMessage />
+                                    <DateInput field={field} />
                                 </FormItem>
                             )}
                         />

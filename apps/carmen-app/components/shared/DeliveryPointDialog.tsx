@@ -71,11 +71,6 @@ export default function DeliveryPointDialog({
                 add: tDeliveryPoint("add_delivery_point_description"),
                 edit: tDeliveryPoint("edit_delivery_point_description")
             }}
-            buttons={{
-                cancel: tCommon('cancel'),
-                add: tCommon('save'),
-                save: tCommon('edit')
-            }}
         />
     );
 }

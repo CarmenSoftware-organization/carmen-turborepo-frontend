@@ -1,10 +1,7 @@
 "use client";
 
 import { Building, CalendarIcon, FileText, Hash, Settings, User } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -13,35 +10,19 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { PrSchemaV2Dto } from "@/dtos/pr.dto";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useWorkflow } from "@/hooks/useWorkflow";
 import { useAuth } from "@/context/AuthContext";
 import { Label } from "@/components/ui/label";
 import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
+import DateInput from "@/components/form-custom/DateInput";
+import StatusPrInfo from "./StatusPrInfo";
 
 interface HeadFormProps {
-  form: UseFormReturn<PrSchemaV2Dto>;
-  isReadOnly: boolean;
+  readonly form: UseFormReturn<PrSchemaV2Dto>;
+  readonly isReadOnly: boolean;
   readonly statusInfo?: {
     create_date?: string;
     status?: string;
@@ -95,43 +76,7 @@ export default function HeadForm({ form, isReadOnly, statusInfo }: HeadFormProps
                 <CalendarIcon className="h-3 w-3" />
                 Date
               </FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
-                      )}
-                      disabled={isReadOnly}
-                    >
-                      {field.value ? (
-                        format(new Date(field.value), "dd/MM/yyyy")
-                      ) : (
-                        <span className="text-muted-foreground">Select Date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={
-                      field.value ? new Date(field.value) : undefined
-                    }
-                    onSelect={(date) => {
-                      field.onChange(date?.toISOString());
-                    }}
-                    disabled={(date) =>
-                      date > new Date() ||
-                      date < new Date("1900-01-01")
-                    }
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DateInput field={field} />
               <FormMessage />
             </FormItem>
           )}
@@ -211,44 +156,7 @@ export default function HeadForm({ form, isReadOnly, statusInfo }: HeadFormProps
           )}
         />
       </div>
-
-      <Card className="col-span-2 p-4">
-        <div className="space-y-4">
-          <div className="flex items-center">
-            <h3 className="text-lg font-semibold">Status Information</h3>
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Current Stage</span>
-              <Badge variant="outline" className="text-xs">
-                Requestor
-              </Badge>
-            </div>
-
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">
-                Document Status
-              </span>
-              <Badge variant={statusInfo?.status} className="text-xs">
-                {statusInfo?.status ?? "-"}
-              </Badge>
-            </div>
-
-            <Separator className="my-2" />
-
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Created</span>
-              <span className="font-medium">
-                {statusInfo?.create_date
-                  ? format(new Date(statusInfo.create_date), "PPP")
-                  : "-"}
-              </span>
-            </div>
-          </div>
-        </div>
-      </Card>
-
+      <StatusPrInfo statusInfo={statusInfo} />
     </div>
   );
 }

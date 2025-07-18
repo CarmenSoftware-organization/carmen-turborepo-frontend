@@ -8,13 +8,6 @@ import { Input } from "@/components/ui/input";
 import { formType } from "@/dtos/form.dto";
 import { PrSchemaV2Dto } from "@/dtos/pr.dto";
 import { Control } from "react-hook-form";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import {
   CalendarIcon,
   Hash,
@@ -23,7 +16,6 @@ import {
   FileText,
   Building,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
@@ -34,6 +26,8 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import DateInput from "@/components/form-custom/DateInput";
+import CalendarButton from "@/components/form-custom/CalendarButton";
 
 interface HeadPrFormProps {
   readonly control: Control<PrSchemaV2Dto>;
@@ -98,45 +92,11 @@ export default function HeadPrForm({
                         PR Date
                       </div>
                     </FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full pl-2 text-left font-normal text-xs bg-muted mt-1",
-                              !field.value && "text-muted-foreground"
-                            )}
-                            disabled
-                          >
-                            {field.value ? (
-                              format(new Date(field.value), "PPP")
-                            ) : (
-                              <span className="text-muted-foreground">
-                                Select date
-                              </span>
-                            )}
-                            <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            field.value ? new Date(field.value) : undefined
-                          }
-                          onSelect={(date) =>
-                            field.onChange(
-                              date
-                                ? date.toISOString()
-                                : new Date().toISOString()
-                            )
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    {mode === formType.VIEW ? (
+                      <CalendarButton field={field} />
+                    ) : (
+                      <DateInput field={field} />
+                    )}
                   </FormItem>
                 )}
               />

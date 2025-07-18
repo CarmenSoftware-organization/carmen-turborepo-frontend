@@ -69,11 +69,6 @@ export default function UnitDialog({
                 add: tUnit('add_description'),
                 edit: tUnit('edit_description')
             }}
-            buttons={{
-                cancel: tCommon('cancel'),
-                add: tCommon('add'),
-                save: tCommon('save')
-            }}
         />
     );
 }

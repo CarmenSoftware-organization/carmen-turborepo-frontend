@@ -29,18 +29,11 @@ import { useVendor } from "@/hooks/useVendor";
 import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import CreditTermLookup from "@/components/lookup/CreditTermLookup";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { useCreditTermQuery } from "@/hooks/useCreditTerm";
 import { useAuth } from "@/context/AuthContext";
+import CalendarButton from "@/components/form-custom/CalendarButton";
+import DateInput from "@/components/form-custom/DateInput";
 
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;
@@ -101,56 +94,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-2 text-left font-normal text-xs bg-muted",
-                    !field.value && "text-muted-foreground"
-                  )}
-                  disabled
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span className="text-muted-foreground">Select date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                </Button>
+                <CalendarButton field={field} />
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-2 text-left font-normal text-xs bg-background",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select date
-                          </span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : new Date().toISOString()
-                        )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateInput field={field} />
               )}
             </FormItem>
           )}
@@ -222,56 +168,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-2 text-left font-normal text-xs bg-muted",
-                    !field.value && "text-muted-foreground"
-                  )}
-                  disabled
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span className="text-muted-foreground">Select date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                </Button>
+                <CalendarButton field={field} />
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-2 text-left font-normal text-xs bg-background",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select date
-                          </span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : new Date().toISOString()
-                        )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateInput field={field} />
               )}
             </FormItem>
           )}
@@ -386,56 +285,9 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-2 text-left font-normal text-xs bg-muted",
-                    !field.value && "text-muted-foreground"
-                  )}
-                  disabled
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span className="text-muted-foreground">Select date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                </Button>
+                <CalendarButton field={field} />
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-2 text-left font-normal text-xs bg-background",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select date
-                          </span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : new Date().toISOString()
-                        )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateInput field={field} />
               )}
             </FormItem>
           )}

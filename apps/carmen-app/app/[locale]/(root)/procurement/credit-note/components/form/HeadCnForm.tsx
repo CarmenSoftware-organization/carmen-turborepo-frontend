@@ -17,15 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { Textarea } from "@/components/ui/textarea";
 import { CreditNoteFormDto } from "../../dto/cdn.dto";
 import {
@@ -43,6 +35,8 @@ import { useCurrency } from "@/hooks/useCurrency";
 import GrnLookup from "@/components/lookup/GrnLookup";
 import CnReasonLookup from "@/components/lookup/CnReasonLookup";
 import { useGrn } from "@/hooks/useGrn";
+import DateInput from "@/components/form-custom/DateInput";
+import CalendarButton from "@/components/form-custom/CalendarButton";
 
 interface HeadCnFormProps {
   readonly control: Control<CreditNoteFormDto>;
@@ -60,7 +54,6 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: Hea
   });
 
   const { getGrnNo } = useGrn();
-  
 
   return (
     <div className="space-y-4 my-4">
@@ -89,56 +82,9 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: Hea
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-2 text-left font-normal text-xs mt-1 bg-muted",
-                    !field.value && "text-muted-foreground"
-                  )}
-                  disabled
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span className="text-muted-foreground">Select date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                </Button>
+                <CalendarButton field={field} />
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select date
-                          </span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : new Date().toISOString()
-                        )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateInput field={field} />
               )}
             </FormItem>
           )}
@@ -242,7 +188,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: Hea
             </FormItem>
           )}
         />
-        
+
         <div className="space-y-2">
           <Label className="text-xs font-medium">
             <div className="flex items-center gap-1">
@@ -300,56 +246,9 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: Hea
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-2 text-left font-normal text-xs mt-1 bg-muted",
-                    !field.value && "text-muted-foreground"
-                  )}
-                  disabled
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span className="text-muted-foreground">Select date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                </Button>
+                <CalendarButton field={field} />
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select date
-                          </span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : new Date().toISOString()
-                        )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateInput field={field} />
               )}
             </FormItem>
           )}
@@ -425,56 +324,9 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: Hea
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-2 text-left font-normal text-xs mt-1 bg-muted",
-                    !field.value && "text-muted-foreground"
-                  )}
-                  disabled
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span className="text-muted-foreground">Select date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                </Button>
+                <CalendarButton field={field} />
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select date
-                          </span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : new Date().toISOString()
-                        )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateInput field={field} />
               )}
             </FormItem>
           )}
@@ -519,56 +371,9 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: Hea
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full pl-2 text-left font-normal text-xs mt-1 bg-muted",
-                    !field.value && "text-muted-foreground"
-                  )}
-                  disabled
-                >
-                  {field.value ? (
-                    format(new Date(field.value), "PPP")
-                  ) : (
-                    <span className="text-muted-foreground">Select date</span>
-                  )}
-                  <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                </Button>
+                <CalendarButton field={field} />
               ) : (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(new Date(field.value), "PPP")
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Select date
-                          </span>
-                        )}
-                        <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={field.value ? new Date(field.value) : undefined}
-                      onSelect={(date) =>
-                        field.onChange(
-                          date ? date.toISOString() : new Date().toISOString()
-                        )
-                      }
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+                <DateInput field={field} />
               )}
             </FormItem>
           )}

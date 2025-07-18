@@ -1,95 +1,159 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { PropsLookup } from "@/dtos/lookup.dto";
+import { useState, useRef, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+
+import { ChevronsUpDown } from "lucide-react";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
 import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
 
-export default function DeliveryPointLookup({
-    value,
-    onValueChange,
-    placeholder = "Select delivery point",
-    disabled = false
-}: Readonly<PropsLookup>) {
-    const { token, tenantId } = useAuth();
-    const { deliveryPoints } = useDeliveryPointQuery({ token, tenantId });
+interface Props {
+  readonly value?: string;
+  readonly onValueChange?: (value: string) => void;
+  readonly placeholder?: string;
+  readonly className?: string;
+}
 
-    const [open, setOpen] = useState(false);
+export function LookupDeliveryPoint({
+  value = "",
+  onValueChange,
+  placeholder = "Search delivery point...",
+  className = "",
+}: Props) {
+  const { token, tenantId } = useAuth();
 
-    const selectedDeliveryPointName = useMemo(() => {
-        if (!value || !deliveryPoints || !Array.isArray(deliveryPoints)) return null;
-        const found = deliveryPoints?.data.find((deliveryPoint: DeliveryPointGetDto) => deliveryPoint.id === value);
-        return found?.name ?? null;
-    }, [value, deliveryPoints]);
+  const { deliveryPoints } = useDeliveryPointQuery({
+    token: token,
+    tenantId: tenantId,
+  });
 
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    aria-expanded={open}
-                    className="w-full justify-between"
-                    disabled={disabled}
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const filterData = (
+    deliveryPoints: { data: DeliveryPointGetDto[] },
+    term: string
+  ): { data: DeliveryPointGetDto[] } => {
+    if (!term.trim()) return deliveryPoints;
+
+    return {
+      data: deliveryPoints.data.filter((item: DeliveryPointGetDto) =>
+        item.name.toLowerCase().includes(term.toLowerCase())
+      ),
+    };
+  };
+
+  const highlightMatch = (
+    text: string,
+    searchTerm: string
+  ): React.ReactNode => {
+    if (!searchTerm.trim()) return text;
+
+    const regex = new RegExp(`(${searchTerm})`, "gi");
+    const parts = text.split(regex);
+
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <span key={`${text}-${index}`} className="text-primary font-bold">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
+
+  const handleInputChange = (inputValue: string): void => {
+    setSearchTerm(inputValue);
+    setIsDropdownOpen(true);
+  };
+
+  const handleInputClick = (): void => {
+    setIsDropdownOpen(true);
+  };
+
+  const handleSelectItem = (item: DeliveryPointGetDto): void => {
+    setSearchTerm(item.name);
+    setIsDropdownOpen(false);
+    onValueChange?.(item.id || "");
+  };
+
+  const filteredData = deliveryPoints
+    ? filterData(deliveryPoints, searchTerm)
+    : { data: [] };
+
+  useEffect(() => {
+    if (value && deliveryPoints?.data) {
+      const selectedDeliveryPoint = deliveryPoints.data.find(
+        (dp: DeliveryPointGetDto) => dp.id === value
+      );
+      if (selectedDeliveryPoint) {
+        setSearchTerm(selectedDeliveryPoint.name);
+      }
+    } else {
+      setSearchTerm("");
+    }
+  }, [value, deliveryPoints]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className={`relative ${className}`} ref={dropdownRef}>
+      <div className="relative">
+        <Input
+          type="text"
+          placeholder={placeholder}
+          value={searchTerm}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onClick={handleInputClick}
+          className="pr-10"
+        />
+        <ChevronsUpDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+      </div>
+
+      {isDropdownOpen && filteredData.data.length > 0 && (
+        <Card className="absolute top-full left-0 right-0 mt-1 z-10 max-h-60 overflow-y-auto">
+          <CardContent className="p-0">
+            <div className="py-1">
+              {filteredData.data.map((item: DeliveryPointGetDto) => (
+                <button
+                  key={`${item.id}-${item.name}`}
+                  className="w-full text-left p-2 hover:bg-gray-100 cursor-pointer text-xs"
+                  onClick={() => handleSelectItem(item)}
+                  type="button"
                 >
-                    {value && selectedDeliveryPointName ? selectedDeliveryPointName : placeholder}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-                <Command filter={(value, search) => {
-                    if (!search) return 1;
-                    if (value.toLowerCase().includes(search.toLowerCase())) return 1;
-                    return 0;
-                }}>
-                    <CommandInput placeholder="Search delivery point..." className="w-full pr-10" />
-                    <CommandList>
-                        <CommandEmpty>No delivery points found.</CommandEmpty>
-                        <CommandGroup>
-                            {deliveryPoints && deliveryPoints.length > 0 ? (
-                                deliveryPoints?.data.map((deliveryPoint: DeliveryPointGetDto) => (
-                                    <CommandItem
-                                        key={deliveryPoint.id}
-                                        value={deliveryPoint.name}
-                                        onSelect={() => {
-                                            if (deliveryPoint.id) {
-                                                onValueChange(deliveryPoint.id);
-                                            }
-                                            setOpen(false);
-                                        }}
-                                    >
-                                        {deliveryPoint.name}
-                                        <Check
-                                            className={cn(
-                                                "ml-auto h-4 w-4",
-                                                value === deliveryPoint.id ? "opacity-100" : "opacity-0"
-                                            )}
-                                        />
-                                    </CommandItem>
-                                ))
-                            ) : (
-                                <CommandItem disabled>No delivery points available.</CommandItem>
-                            )}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
-    )
+                  <div className="font-medium text-xs">
+                    {highlightMatch(item.name, searchTerm)}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {isDropdownOpen && searchTerm.trim() && filteredData.data.length === 0 && (
+        <Card className="absolute top-full left-0 right-0 mt-1 z-10">
+          <CardContent className="p-3">
+            <div className="text-gray-500 text-center">No data found</div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
 }

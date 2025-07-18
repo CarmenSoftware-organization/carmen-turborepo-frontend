@@ -29,6 +29,7 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import NumberInput from "../form-custom/NumberInput";
 import { FORM_FIELD_TYPE } from "@/constants/enum";
+import DateInput from "../form-custom/DateInput";
 
 export interface FieldConfig<T extends FieldValues> {
     name: Path<T>;
@@ -66,12 +67,6 @@ export interface GenericFormDialogProps<T extends FieldValues> {
         add: string;
         edit: string;
     };
-    readonly buttons?: {
-        cancel?: string;
-        save?: string;
-        add?: string;
-        edit?: string;
-    };
 }
 
 export default function GenericFormDialog<T extends FieldValues>({
@@ -86,7 +81,6 @@ export default function GenericFormDialog<T extends FieldValues>({
     fields,
     title,
     description,
-    buttons
 }: GenericFormDialogProps<T>) {
     const tCommon = useTranslations('Common');
 
@@ -150,6 +144,12 @@ export default function GenericFormDialog<T extends FieldValues>({
                 />
             );
         }
+
+        if (type === 'date') {
+            return (
+                <DateInput field={field} />
+            )
+        }
         if (type === 'number') {
             return (
                 <NumberInput
@@ -203,15 +203,15 @@ export default function GenericFormDialog<T extends FieldValues>({
                                 variant="outline"
                                 onClick={handleCancel}
                             >
-                                {buttons?.cancel || tCommon('cancel')}
+                                {tCommon('cancel')}
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={isLoading || form.formState.isSubmitting}
                             >
                                 {mode === formType.ADD
-                                    ? (buttons?.add || tCommon('add'))
-                                    : (buttons?.save || tCommon('save'))
+                                    ? tCommon('add')
+                                    : tCommon('save')
                                 }
                                 {(isLoading || form.formState.isSubmitting) && (
                                     <Loader2 className="w-4 h-4 ml-2 animate-spin" />

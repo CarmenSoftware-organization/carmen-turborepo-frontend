@@ -33,7 +33,7 @@ import { useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
 import { useUserList } from "@/hooks/useUserList";
-import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
+import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Transfer } from "@/components/ui-custom/Transfer";
 import { useMemo, useState } from "react";
 import useProduct from "@/hooks/useProduct";
@@ -156,55 +156,39 @@ export default function LocationForm({
     direction: "left" | "right",
     moveKeys: (string | number)[]
   ) => {
-    console.log("Users changed:", { targetKeys, direction, moveKeys });
-
     setSelectedUsers(targetKeys);
 
-    // อัพเดต form users field
-    const currentUsers = form.getValues("users") || {
-      add: [],
-      remove: [],
-    };
+    const currentUsers = form.getValues("users") || { add: [], remove: [] };
 
-    let newAddArray = [...currentUsers.add];
-    let newRemoveArray = [...currentUsers.remove];
+    // แปลงเป็น Map เพื่อ O(1) lookup
+    const addMap = new Map(currentUsers.add.map(item => [item.id, item]));
+    const removeMap = new Map(currentUsers.remove.map(item => [item.id, item]));
 
     moveKeys.forEach((key) => {
       const keyStr = String(key);
-
-      // ตรวจสอบว่า item อยู่ใน array ไหนอยู่แล้ว
-      const inAddArray = newAddArray.some((item) => item.id === keyStr);
-      const inRemoveArray = newRemoveArray.some((item) => item.id === keyStr);
+      const inAdd = addMap.has(keyStr);
+      const inRemove = removeMap.has(keyStr);
 
       if (direction === "right") {
         // Available → Init
-        if (inRemoveArray) {
-          // ถ้าอยู่ใน remove[] แล้ว → ลบออกจาก remove[] (ย้อนกลับ)
-          newRemoveArray = newRemoveArray.filter((item) => item.id !== keyStr);
-        } else {
-          // ถ้าไม่อยู่ใน remove[] → เพิ่มเข้า add[]
-          if (!inAddArray) {
-            newAddArray.push({ id: keyStr });
-          }
+        if (inRemove) {
+          removeMap.delete(keyStr);
+        } else if (!inAdd) {
+          addMap.set(keyStr, { id: keyStr });
         }
       } else {
         // Init → Available
-        if (inAddArray) {
-          // ถ้าอยู่ใน add[] แล้ว → ลบออกจาก add[] (ย้อนกลับ)
-          newAddArray = newAddArray.filter((item) => item.id !== keyStr);
-        } else {
-          // ถ้าไม่อยู่ใน add[] → เพิ่มเข้า remove[]
-          if (!inRemoveArray) {
-            newRemoveArray.push({ id: keyStr });
-          }
+        if (inAdd) {
+          addMap.delete(keyStr);
+        } else if (!inRemove) {
+          removeMap.set(keyStr, { id: keyStr });
         }
       }
     });
 
-    form.setValue("users.add", newAddArray);
-    form.setValue("users.remove", newRemoveArray);
+    form.setValue("users.add", Array.from(addMap.values()));
+    form.setValue("users.remove", Array.from(removeMap.values()));
   };
-
   const handleProductsChange = (
     targetKeys: (string | number)[],
     direction: "left" | "right",

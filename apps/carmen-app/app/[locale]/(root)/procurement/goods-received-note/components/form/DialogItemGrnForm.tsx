@@ -51,7 +51,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import NumberInput from "@/components/form-custom/NumberInput";
-import { LookupDeliveryPoint } from "@/components/lookup/lookup-delivery-point";
+import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 
 const defaultItemValues: GoodReceivedNoteDetailItemDto = {
   location_id: "",

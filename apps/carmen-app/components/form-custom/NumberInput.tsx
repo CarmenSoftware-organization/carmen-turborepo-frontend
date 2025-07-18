@@ -2,17 +2,17 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 interface InputNumberProps {
-  value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
-  step?: number;
-  disabled?: boolean;
-  placeholder?: string;
-  showContent?: boolean;
-  permission?: "view" | "edit" | "view-edit";
-  viewStage?: "enable" | "disable" | "hidden";
-  classNames?: string;
+  readonly value: number;
+  readonly onChange: (value: number) => void;
+  readonly min?: number;
+  readonly max?: number;
+  readonly step?: number;
+  readonly disabled?: boolean;
+  readonly placeholder?: string;
+  readonly showContent?: boolean;
+  readonly permission?: "view" | "edit" | "view-edit";
+  readonly viewStage?: "enable" | "disable" | "hidden";
+  readonly classNames?: string;
 }
 
 export default function NumberInput({
