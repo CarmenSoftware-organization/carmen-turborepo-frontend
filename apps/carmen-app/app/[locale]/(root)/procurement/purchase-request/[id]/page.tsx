@@ -26,7 +26,6 @@ export default function PurchaseRequestIdPage() {
                 throw new Error('No purchase request data available');
             }
 
-            // Get inventory data for each detail
             const detailsWithInventory = await Promise.all(
                 purchaseRequest.data.purchase_request_detail.map(async (detail: any) => {
                     const inventoryData = await getOnHandOnOrderService(
@@ -35,16 +34,12 @@ export default function PurchaseRequestIdPage() {
                         detail.location_id,
                         detail.product_id
                     );
-
-                    // Merge inventory data directly into the detail
                     return {
                         ...detail,
                         ...inventoryData
                     };
                 })
             );
-
-            // Create merged PR data
             return {
                 ...purchaseRequest.data,
                 purchase_request_detail: detailsWithInventory
@@ -57,7 +52,7 @@ export default function PurchaseRequestIdPage() {
 
     if (!prDataWithInventory) return <DetailLoading />
 
-    console.log('prDataWithInventory', prDataWithInventory);
+    console.log('prDataWithInventory >>>>', prDataWithInventory);
 
     return <MainForm mode={formType.VIEW} initValues={prDataWithInventory} />
 }

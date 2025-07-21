@@ -41,12 +41,6 @@ interface ReadonlyRowProps {
     isReadOnly: boolean;
 }
 
-/**
- * ReadonlyRow component
- * 
- * Displays a purchase request item in read-only mode
- * Includes action buttons for edit, delete, approve, and review
- */
 export default function ReadonlyRow({
     item,
     index,
@@ -67,7 +61,7 @@ export default function ReadonlyRow({
                     <p className="text-sm font-medium">{item.location_name || "-"}</p>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                    Wait API
+                    {item.stages_status ? item.stages_status : ''}
                 </p>
             </TableCell>
             <TableCell>

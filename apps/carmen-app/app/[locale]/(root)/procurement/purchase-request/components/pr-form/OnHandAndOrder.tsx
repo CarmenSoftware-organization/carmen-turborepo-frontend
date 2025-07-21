@@ -1,4 +1,6 @@
 import { Card } from "@/components/ui/card";
+import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
+import { format } from "date-fns";
 
 const CardItem = ({ title, value, color }: { title: string, value: string, color: string }) => {
     return (
@@ -11,16 +13,23 @@ const CardItem = ({ title, value, color }: { title: string, value: string, color
     );
 };
 
-export default function OnHandAndOrder() {
+export default function OnHandAndOrder({ item }: { item: PurchaseRequestDetailItem }) {
+    const onHand = `${item.on_hand_qty} ${item.inventory_unit_name}`;
+    const onOrder = `${item.on_order_qty} ${item.inventory_unit_name}`;
+    const reOrderQty = `${item.re_order_qty} ${item.inventory_unit_name}`;
+    const reStockQty = `${item.re_stock_qty} ${item.inventory_unit_name}`;
+    const dateRequested = `${item.delivery_date}`;
+    const deliveryPoint = `${item.delivery_point_name}`;
+
     return (
         <div className="px-10 my-2 space-y-2">
             <div className="grid grid-cols-6 gap-4">
-                <CardItem title="On Hand" value="12 Gram" color="blue" />
-                <CardItem title="On Order" value="12 Gram" color="orange" />
-                <CardItem title="Reorder Level" value="12 Gram" color="yellow" />
-                <CardItem title="Restock Level" value="12 Gram" color="red" />
-                <CardItem title="Date Requested" value="14/07/2025" color="green" />
-                <CardItem title="Delivery Point" value="Warehouse" color="purple" />
+                <CardItem title="On Hand" value={onHand} color="blue" />
+                <CardItem title="On Order" value={onOrder} color="orange" />
+                <CardItem title="Reorder Level" value={reOrderQty} color="yellow" />
+                <CardItem title="Restock Level" value={reStockQty} color="red" />
+                <CardItem title="Date Requested" value={format(new Date(dateRequested), 'dd/MM/yyyy')} color="green" />
+                <CardItem title="Delivery Point" value={deliveryPoint} color="purple" />
             </div>
         </div>
     );

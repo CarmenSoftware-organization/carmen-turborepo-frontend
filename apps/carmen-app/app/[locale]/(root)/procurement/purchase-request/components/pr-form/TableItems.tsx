@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Table, TableBody } from "@/components/ui/table";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { Badge } from "@/components/ui/badge";
 import { useCurrency } from "@/hooks/useCurrency";
 import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
@@ -10,7 +10,6 @@ import TableItemsHeader from "./TableItemsHeader";
 import ReadonlyRow from "./ReadonlyRow";
 import EditableRow from "./EditableRow";
 import ItemDetailAccordion from "./ItemDetailAccordion";
-import React from "react";
 import { nanoid } from "nanoid";
 interface TableItemsProps {
   readonly prItems: PurchaseRequestDetailItem[];
@@ -28,11 +27,11 @@ export default function TableItems({
   mode,
 }: TableItemsProps) {
   const { getCurrencyCode } = useCurrency();
-
   const [deletedItemIds, setDeletedItemIds] = useState<string[]>([]);
   const [editingRowIndex, setEditingRowIndex] = useState<number | null>(null);
   const [tempEditData, setTempEditData] =
     useState<PurchaseRequestDetailItem | null>(null);
+
 
   const handleAddNewItem = () => {
     const newItem: PurchaseRequestDetailItem = {
@@ -81,6 +80,7 @@ export default function TableItems({
       comment: "",
       isNew: true,
       isModified: false,
+      stages_status: null,
     };
 
     const newItems = [...prItems, newItem];
@@ -195,7 +195,7 @@ export default function TableItems({
             <TableItemsHeader />
             <TableBody>
               {prItems.map((item, index) => (
-                <React.Fragment key={item.id || item.tempId || index}>
+                <Fragment key={item.id || item.tempId || index}>
                   {editingRowIndex === index ? (
                     <EditableRow
                       tempEditData={tempEditData!}
@@ -221,7 +221,7 @@ export default function TableItems({
                     mode={mode}
                     onUpdate={handleUpdateTempData}
                   />
-                </React.Fragment>
+                </Fragment>
               ))}
             </TableBody>
           </Table>

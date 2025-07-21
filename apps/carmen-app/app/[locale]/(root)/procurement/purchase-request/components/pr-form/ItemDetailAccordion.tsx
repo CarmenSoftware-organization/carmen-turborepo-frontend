@@ -20,12 +20,6 @@ interface ItemDetailAccordionProps {
     onUpdate: (field: keyof PurchaseRequestDetailItem, value: any) => void;
 }
 
-/**
- * ItemDetailAccordion component
- * 
- * Displays additional item details in an expandable accordion
- * Includes comment display, on-hand information, vendor fields, business dimensions, and pricing
- */
 export default function ItemDetailAccordion({
     index,
     item,
@@ -48,7 +42,7 @@ export default function ItemDetailAccordion({
                                 </p>
                             </div>
                         </div>
-                        <OnHandAndOrder />
+                        <OnHandAndOrder item={item} />
                         <Separator />
                         <VendorFields item={item} />
                         <AccordionContent className="p-4 space-y-4 bg-muted">

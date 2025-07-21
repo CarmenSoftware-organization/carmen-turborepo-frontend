@@ -1,6 +1,5 @@
 "use client";
 
-import JsonViewer from "@/components/JsonViewer";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -47,11 +46,9 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
   const { token, tenantId, user, departments } = useAuth();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const [openLog, setOpenLog] = useState(false);
-
   // State สำหรับจัดการ purchase request detail items
   const [prItems, setPrItems] = useState<PurchaseRequestDetailItem[]>([]);
   const [deletedItemIds, setDeletedItemIds] = useState<string[]>([]);
-
   // Convert initValues to our interface
   const convertToDetailItem = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,6 +78,7 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
     approved_base_qty: item.approved_base_qty || 0,
     requested_base_qty: item.requested_base_qty || 0,
     inventory_unit_id: item.inventory_unit_id || "",
+    inventory_unit_name: item.inventory_unit_name || "",
     currency_id: item.currency_id || "",
     currency_name: item.currency_name || "",
     exchange_rate: item.exchange_rate || 1,
@@ -104,6 +102,13 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
     comment: item.comment || "",
     isNew: false,
     isModified: false,
+    on_hand_qty: item.on_hand_qty,
+    on_order_qty: item.on_order_qty,
+    re_order_qty: item.re_order_qty,
+    re_stock_qty: item.re_stock_qty,
+    pricelist_no: item.pricelist_no,
+    pricelist_price: item.pricelist_price,
+    pricelist_unit: item.pricelist_unit,
   });
 
   // Initialize items จาก initValues
@@ -188,6 +193,10 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
         delivery_date: item.delivery_date,
         delivery_point_id: item.delivery_point_id,
         note: item.comment,
+        stages_status: item.stages_status,
+        pricelist_no: item.pricelist_no,
+        pricelist_price: item.pricelist_price,
+        pricelist_unit: item.pricelist_unit,
       }));
 
     const updateItems = prItems
@@ -233,6 +242,7 @@ export default function MainForm({ mode, initValues }: MainPrFormProps) {
         delivery_date: item.delivery_date,
         delivery_point_id: item.delivery_point_id,
         note: item.comment,
+        stages_status: item.stages_status,
       }));
 
     const deleteItems = deletedItemIds.map((id) => ({ id }));

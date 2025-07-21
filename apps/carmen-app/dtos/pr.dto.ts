@@ -120,6 +120,7 @@ export const purchaseRequestByIdSchema = z.object({
   on_order: z.number().optional(),
   re_order_qty: z.number().optional(),
   re_stock_qty: z.number().optional(),
+  stages_status: z.string().nullable().optional(),
 });
 
 // Schema สำหรับ purchase request ที่จะใช้ใน form (POST/PUT)
@@ -149,8 +150,8 @@ export const purchaseRequestExtendedSchema = purchaseRequestByIdSchema.extend({
 });
 
 export const onHandleAndOrderUnitSchema = z.object({
-  on_hand: z.number().optional(),
-  on_order: z.number().optional(),
+  on_hand_qty: z.number().optional(),
+  on_order_qty: z.number().optional(),
   re_order_qty: z.number().optional(),
   re_stock_qty: z.number().optional(),
 });
@@ -277,6 +278,9 @@ export interface PurchaseRequestDetailItem {
   vendor_name?: string;
   price_list_id: string;
   pricelist_detail_id?: string;
+  pricelist_no?: string;
+  pricelist_price?: number;
+  pricelist_unit?: string;
   description: string;
   requested_qty: number;
   requested_unit_id: string;
@@ -314,4 +318,10 @@ export interface PurchaseRequestDetailItem {
   isModified?: boolean;
   inventory_unit_name?: string;
   base_price?: number;
+  on_hand_qty?: number;
+  on_order_qty?: number;
+  re_order_qty?: number;
+  re_stock_qty?: number;
+  stages_status?: string | null;
+
 }
