@@ -64,6 +64,7 @@ const EditableRow = ({
     getUnitName: (id: string) => string;
     filteredUnits: UnitDto[];
 }) => {
+
     const [conversionPreview, setConversionPreview] = useState<{ unitRatio: string; qtyMultiplier: string }>({
         unitRatio: '',
         qtyMultiplier: ''

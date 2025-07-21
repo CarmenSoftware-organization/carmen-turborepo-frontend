@@ -1,7 +1,8 @@
 import { TransferItem } from "@/dtos/config.dto";
+import { UnitDto } from "@/dtos/unit.dto";
 
 export const getDisplayText = (
-  item: TransferItem | { name?: string; [key: string]: unknown }
+  item: TransferItem | { name?: string;[key: string]: unknown }
 ): string => {
   if ("title" in item && typeof item.title === "string") return item.title;
   if ("name" in item && typeof item.name === "string") return item.name;
@@ -22,3 +23,29 @@ export const convertPrStatus = (status: string) => {
     return "Cancelled";
   }
 };
+
+interface UnitFilterParams {
+  units?: { data?: UnitDto[] };
+  excludedUnitId?: string;
+  existingUnits: { id?: string; from_unit_id?: string; to_unit_id?: string }[];
+  editingId?: string;
+  compareField: 'from_unit_id' | 'to_unit_id';
+}
+
+export const filterUnits = ({
+  units,
+  excludedUnitId,
+  existingUnits,
+  editingId,
+  compareField,
+}: UnitFilterParams): UnitDto[] => {
+  if (!units?.data) return [];
+
+  const otherUnits = existingUnits.filter((u) => u.id !== editingId);
+  const existingCompareIds = otherUnits.map((u) => u[compareField] || "");
+
+  return units.data.filter((unit) => {
+    if (!unit.id || unit.id === excludedUnitId) return false;
+    return !existingCompareIds.includes(unit.id);
+  });
+}

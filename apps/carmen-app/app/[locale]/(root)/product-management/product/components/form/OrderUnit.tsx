@@ -11,6 +11,7 @@ import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto } from "@/dtos/unit.dto";
 import { UnitData, OrderUnitsFormData } from "./unit.type";
 import TableUnit from "./TableUnit";
+import { filterUnits } from "@/utils/helper";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -37,25 +38,18 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
         name: "order_units.add"
     });
 
-    const filteredUnits: UnitDto[] = units
-        ?.data?.filter((unit: UnitDto) => !!unit.id)
-        ?.filter((unit: UnitDto) => {
-            if (unit.id === inventoryUnitId) return false;
-            const otherOrderUnits = existingOrderUnits.filter((ou: UnitData) =>
-                ou.id !== editingId // Skip the currently edited order unit
-            );
-            const existingFromUnitIds = otherOrderUnits.map((ou: UnitData) => ou.from_unit_id || "");
-            return !existingFromUnitIds.includes(unit.id ?? "");
-        }) as UnitDto[];
+    const filteredUnits = filterUnits({
+        units,
+        excludedUnitId: inventoryUnitId,
+        existingUnits: existingOrderUnits,
+        editingId: editingId ?? undefined,
+        compareField: 'from_unit_id'
+    });
 
-
-    // Auto-initialize and calculate order unit values
     useEffect(() => {
-        // Get the current fields from watch directly inside the effect
         const currentAddFields = watch("order_units.add") || [];
 
         currentAddFields.forEach((field, index) => {
-            // Always ensure from_unit_id is set to inventoryUnitId
             if (inventoryUnitId && (!field.from_unit_id || field.from_unit_id === "")) {
                 setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId);
             }
@@ -63,15 +57,12 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
             const fromUnitId = field.from_unit_id || inventoryUnitId || "";
             const toUnitId = field.to_unit_id;
 
-            // Calculate to_unit_qty if both units are set
             if (fromUnitId && toUnitId) {
                 const fromUnitQty = field.from_unit_qty;
 
-                // If units are the same, match quantities
                 if (fromUnitId === toUnitId) {
                     setValue(`order_units.add.${index}.to_unit_qty`, fromUnitQty);
                 } else if (field.to_unit_qty === 0) {
-                    // For different units, set a default value if to_unit_qty is 0
                     setValue(`order_units.add.${index}.to_unit_qty`, 1);
                 }
             }
@@ -100,8 +91,6 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
 
     const handleStartEdit = (orderUnit: UnitData) => {
         setEditingId(orderUnit.id ?? null);
-
-        // If to_unit_id is empty, pre-fill with inventory_unit_id
         if (!orderUnit.to_unit_id) {
             const inventoryUnitId = watch("inventory_unit_id");
             if (inventoryUnitId && inventoryUnitId !== orderUnit.from_unit_id) {
@@ -111,7 +100,6 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                 };
             }
         }
-
         setEditForm(orderUnit);
     };
 
@@ -148,7 +136,6 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                     : item
             );
 
-            // Check if this order unit is already in the update array
             const existingUpdateIndex = (currentOrderUnits as OrderUnitsFormData).update?.findIndex(
                 (item) => item.product_order_unit_id === orderUnit.id
             );

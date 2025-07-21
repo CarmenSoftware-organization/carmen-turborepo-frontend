@@ -18,7 +18,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
+import { ChevronLeft, Save, X, Edit } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
@@ -200,11 +200,9 @@ export default function BasicInfo({
 
   return (
     <div className="space-y-3">
-      {/* Header Section */}
       <Card className="border-border/20 shadow-sm">
         <CardHeader className="pb-2 pt-3">
           <div className="flex items-center justify-between">
-            {/* Left Section */}
             <div className="flex items-center gap-3">
               <Button
                 variant="ghost"
@@ -231,8 +229,7 @@ export default function BasicInfo({
                       ) : (
                         <>
                           <FormLabel className="text-xs font-medium text-foreground">
-                            Product Name{" "}
-                            <span className="text-destructive">*</span>
+                            Product Name
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -335,18 +332,6 @@ export default function BasicInfo({
                 </>
               )}
             </div>
-          </div>
-        </CardHeader>
-      </Card>
-
-      {/* Main Content */}
-      <Card className="border-border/20 shadow-sm">
-        <CardHeader className="pb-2 pt-3">
-          <div className="flex items-center gap-1.5">
-            <Info className="h-3.5 w-3.5 text-primary" />
-            <h2 className="text-sm font-medium text-foreground">
-              Basic Information
-            </h2>
           </div>
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
