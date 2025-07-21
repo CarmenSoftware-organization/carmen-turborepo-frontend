@@ -174,7 +174,6 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                     addFieldName="ingredient_units.add"
                     unitFields={ingredientUnitFields}
                     removeUnit={removeIngredientUnit}
-                    inventoryUnitId={inventoryUnitId}
                 />
             ) : (
                 <div className="flex flex-col items-center justify-center py-12 px-4">

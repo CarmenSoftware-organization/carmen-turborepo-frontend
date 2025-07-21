@@ -230,7 +230,6 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                     addFieldName="order_units.add"
                     unitFields={orderUnitFields}
                     removeUnit={removeOrderUnit}
-                    inventoryUnitId={inventoryUnitId}
                 />
             ) : (
                 <div className="flex flex-col items-center justify-center py-12 px-4">

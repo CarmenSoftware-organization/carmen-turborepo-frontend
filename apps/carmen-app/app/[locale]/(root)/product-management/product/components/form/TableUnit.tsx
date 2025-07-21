@@ -47,7 +47,6 @@ interface TableUnitProps {
     readonly addFieldName: string; // e.g., "order_units.add" or "ingredient_units.add"
     readonly unitFields: any[];
     readonly removeUnit: (index: number) => void;
-    readonly inventoryUnitId?: string;
 }
 
 const EditableRow = ({
@@ -57,7 +56,6 @@ const EditableRow = ({
     setEditForm,
     getUnitName,
     filteredUnits,
-    unitTitle
 }: {
     editForm: UnitData | null;
     onSave: () => void;
@@ -65,7 +63,6 @@ const EditableRow = ({
     setEditForm: React.Dispatch<React.SetStateAction<UnitData | null>>;
     getUnitName: (id: string) => string;
     filteredUnits: UnitDto[];
-    unitTitle: string;
 }) => {
     const [conversionPreview, setConversionPreview] = useState<{ unitRatio: string; qtyMultiplier: string }>({
         unitRatio: '',
@@ -265,7 +262,6 @@ export default function TableUnit({
     addFieldName,
     unitFields,
     removeUnit,
-    inventoryUnitId
 }: TableUnitProps) {
     const { watch } = useFormContext<ProductFormValues>();
 
@@ -296,7 +292,6 @@ export default function TableUnit({
                                     setEditForm={setEditForm}
                                     getUnitName={getUnitName}
                                     filteredUnits={filteredUnits}
-                                    unitTitle={unitTitle}
                                 />
                             ) : (
                                 <DisplayRow
