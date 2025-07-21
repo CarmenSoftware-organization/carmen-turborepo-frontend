@@ -173,7 +173,7 @@ export default function BasicInfo({
       "product_info.product_item_group_id",
     ],
   });
-  // Check if all required fields are filled
+
   const isFormValid = () => {
     const [
       name,
@@ -523,7 +523,7 @@ export default function BasicInfo({
                     </FormLabel>
                     {currentMode === formType.VIEW ? (
                       <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center text-xs">
-                        {units?.find((unit: UnitDto) => unit.id === field.value)?.name ||
+                        {units?.data?.find((unit: UnitDto) => unit.id === field.value)?.name ||
                           "N/A"}
                       </div>
                     ) : (
