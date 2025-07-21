@@ -43,9 +43,12 @@ export default function SignInForm() {
         if (result) {
           if (result.access_token && result.refresh_token) {
             setSession(result.access_token, result.refresh_token);
-          }
 
-          router.push("/procurement/my-approval");
+            // รอเล็กน้อยเพื่อให้ AuthContext ประมวลผล token ก่อน redirect
+            setTimeout(() => {
+              router.push("/procurement/dashboard");
+            }, 100);
+          }
           form.reset();
         } else {
           form.setError("root", {

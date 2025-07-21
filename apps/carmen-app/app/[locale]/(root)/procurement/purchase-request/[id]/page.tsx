@@ -52,7 +52,5 @@ export default function PurchaseRequestIdPage() {
 
     if (!prDataWithInventory) return <DetailLoading />
 
-    console.log('prDataWithInventory >>>>', prDataWithInventory);
-
     return <MainForm mode={formType.VIEW} initValues={prDataWithInventory} />
 }

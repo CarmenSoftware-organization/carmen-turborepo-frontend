@@ -48,4 +48,4 @@ export const filterUnits = ({
     if (!unit.id || unit.id === excludedUnitId) return false;
     return !existingCompareIds.includes(unit.id);
   });
-}
+};

@@ -11,9 +11,10 @@ import {
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  getUserProfileService,
-  updateUserBusinessUnitService,
-} from "@/services/auth.service";
+  useUserProfileQuery,
+  useUpdateBusinessUnitMutation,
+  useAuthCache,
+} from "@/hooks/use-auth-query";
 
 interface UserInfo {
   firstname: string;
@@ -30,6 +31,13 @@ interface BusinessUnit {
     is_hod: boolean;
     name: string;
   };
+  config: {
+    id: string;
+    datatype: string;
+    key: string;
+    label: string;
+    value: any;
+  }[];
 }
 
 interface User {
@@ -50,6 +58,7 @@ interface AuthContextType {
   tenantId: string;
   handleChangeTenant: (tenantId: string) => void;
   departments: BusinessUnit["department"] | null;
+  systemConfig: BusinessUnit["config"] | null;
 }
 
 // Create context with a default value
@@ -57,13 +66,14 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isLoading: true,
   user: null,
-  setSession: () => {},
-  logout: () => {},
+  setSession: () => { },
+  logout: () => { },
   token: "",
   getServerSideToken: () => "",
   tenantId: "",
-  handleChangeTenant: () => {},
+  handleChangeTenant: () => { },
   departments: null,
+  systemConfig: null,
 });
 
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
@@ -76,122 +86,80 @@ export function getServerSideToken(): string {
 
 // Provider component
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [tenantId, setTenantId] = useState<string>(() => {
-    // เริ่มต้นจาก sessionStorage เพื่อป้องกัน 400 errors เมื่อ refresh
-    return typeof window !== "undefined"
-      ? (sessionStorage.getItem("tenant_id") ?? "")
-      : "";
-  });
-  const [departments, setDepartments] = useState<
-    BusinessUnit["department"] | null
-  >(null);
+  // State สำหรับ track hydration
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [tenantId, setTenantId] = useState<string>("");
+  const [token, setToken] = useState<string>("");
+
   const router = useRouter();
   const pathname = usePathname();
-  const token =
-    typeof window !== "undefined"
-      ? (sessionStorage.getItem("access_token") ?? "")
-      : "";
+
+  // Hydration effect - รันครั้งเดียวหลัง mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedTenantId = sessionStorage.getItem("tenant_id") ?? "";
+      const storedToken = sessionStorage.getItem("access_token") ?? "";
+
+      setTenantId(storedTenantId);
+      setToken(storedToken);
+      setIsHydrated(true);
+    }
+  }, []);
+
+  // ตรวจสอบว่าอยู่ในหน้า sign-in หรือไม่
+  const locale = pathname?.split("/")[1] || "en";
+  const signInPage = `/${locale}/sign-in`;
+  const isSignInPage = pathname === signInPage;
+
+  // ใช้ TanStack Query สำหรับ user profile - รอให้ hydrated ก่อน
+  const {
+    data: user,
+    isLoading: isUserLoading,
+  } = useUserProfileQuery(token, isHydrated && !isSignInPage && !!token);
+
+  const updateBusinessUnitMutation = useUpdateBusinessUnitMutation();
+  const { clearAuthCache } = useAuthCache();
+
+  // คำนวณ departments และ systemConfig จาก user data
+  const { departments, systemConfig } = useMemo(() => {
+    if (!user?.business_unit?.length) {
+      return { departments: null, systemConfig: null };
+    }
+
+    const defaultBu = user.business_unit.find(
+      (bu: BusinessUnit) => bu.is_default === true
+    );
+    const firstBu = user.business_unit[0];
+    const selectedBu = defaultBu || firstBu;
+
+    return {
+      departments: defaultBu?.department || null,
+      systemConfig: selectedBu?.config || null,
+    };
+  }, [user]);
 
   // กำหนด tenantId เมื่อ user เปลี่ยน
   useEffect(() => {
-    if (user?.business_unit?.length) {
+    if (user?.business_unit?.length && isHydrated) {
       const defaultBu = user.business_unit.find(
         (bu: BusinessUnit) => bu.is_default === true
       );
       const firstBu = user.business_unit[0];
       const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
-      setTenantId(newTenantId);
 
-      // เก็บ tenantId ใน sessionStorage เพื่อคงไว้เมื่อ refresh
-      if (typeof window !== "undefined" && newTenantId) {
+      if (newTenantId && newTenantId !== tenantId) {
+        setTenantId(newTenantId);
         sessionStorage.setItem("tenant_id", newTenantId);
       }
     }
-  }, [user]);
+  }, [user, tenantId, isHydrated]);
 
-  // กำหนด departments เมื่อ user เปลี่ยน
-  useEffect(() => {
-    if (user?.business_unit?.length) {
-      const defaultBu = user.business_unit.find(
-        (bu: BusinessUnit) => bu.is_default === true && bu.department
-      );
-      setDepartments(defaultBu?.department || null);
-    } else {
-      setDepartments(null);
-    }
-  }, [user]);
-
-  // ตรวจสอบข้อมูล user ที่มีอยู่เมื่อโหลด
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // ดึง locale จาก pathname แบบ dynamic
-        const locale = pathname?.split("/")[1];
-        const signInPage = `/${locale}/sign-in`;
-
-        const isSignInPage = pathname === signInPage;
-
-        if (isSignInPage) {
-          if (typeof window !== "undefined") {
-            sessionStorage.removeItem("access_token");
-            sessionStorage.removeItem("refresh_token");
-            sessionStorage.removeItem("tenant_id");
-            localStorage.removeItem("user");
-          }
-          setUser(null);
-          setTenantId("");
-          setIsLoading(false);
-          return;
-        }
-
-        // โหลดข้อมูล user จาก localStorage หากมี
-        if (typeof window !== "undefined") {
-          const storedUser = localStorage.getItem("user");
-          if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            setUser(parsedUser);
-          }
-        }
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, [pathname]);
-
+  // จัดการการเข้าสู่ระบบ
   const setSession = useCallback(
     async (accessToken: string, refreshToken: string) => {
-      if (accessToken) {
-        if (typeof window !== "undefined") {
-          sessionStorage.setItem("access_token", accessToken);
-        }
-
-        const data = await getUserProfileService(accessToken);
-
-        // เก็บข้อมูล user ใน localStorage
-        if (typeof window !== "undefined") {
-          localStorage.setItem("user", JSON.stringify(data));
-        }
-        setUser(data);
-
-        // กำหนด tenant ID เริ่มต้นเมื่อ user เข้าสู่ระบบ
-        if (data?.business_unit?.length) {
-          const defaultBu = data.business_unit.find(
-            (bu: BusinessUnit) => bu.is_default === true
-          );
-          const firstBu = data.business_unit[0];
-          const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
-
-          if (newTenantId && typeof window !== "undefined") {
-            sessionStorage.setItem("tenant_id", newTenantId);
-            setTenantId(newTenantId);
-          }
-        }
+      if (accessToken && typeof window !== "undefined") {
+        sessionStorage.setItem("access_token", accessToken);
+        setToken(accessToken);
       }
 
       if (refreshToken && typeof window !== "undefined") {
@@ -201,22 +169,24 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     []
   );
 
+  // จัดการการออกจากระบบ
   const logout = useCallback(() => {
-    const locale = pathname?.split("/")[1] || "en";
-
-    // ลบ tokens
+    // ลบ tokens และ cache
     if (typeof window !== "undefined") {
       sessionStorage.removeItem("access_token");
       sessionStorage.removeItem("refresh_token");
       sessionStorage.removeItem("tenant_id");
-      // ลบข้อมูล user จาก localStorage ด้วย
       localStorage.removeItem("user");
     }
-    setUser(null);
+
+    // ล้าง cache และ reset state
+    clearAuthCache();
     setTenantId("");
-    // เปลี่ยนเส้นทางไปหน้า sign-in ตาม locale ปัจจุบัน
-    router.push(`/${locale}/sign-in`);
-  }, [router, pathname]);
+    setToken("");
+
+    // เปลี่ยนเส้นทางไปหน้า sign-in
+    router.push(signInPage);
+  }, [router, signInPage, clearAuthCache]);
 
   // ดึง token สำหรับ server actions
   const getServerSideToken = useCallback(() => {
@@ -226,32 +196,51 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     return "";
   }, []);
 
-  // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่โดยมอง tokens
-  const hasToken =
-    typeof window !== "undefined" && !!sessionStorage.getItem("access_token");
-
   // ฟังก์ชันจัดการการเปลี่ยน tenant
   const handleChangeTenant = useCallback(
     async (id: string) => {
-      if (!id) return;
-      const data = await updateUserBusinessUnitService(token, id);
-      if (data) {
-        setTenantId(id);
-        // เก็บ tenant ID ที่อัปเดตใน sessionStorage
-        if (typeof window !== "undefined") {
-          sessionStorage.setItem("tenant_id", id);
+      if (!id || !token) return;
+
+      updateBusinessUnitMutation.mutate(
+        { token, tenantId: id },
+        {
+          onSuccess: () => {
+            setTenantId(id);
+          },
         }
-      }
+      );
     },
-    [token]
+    [token, updateBusinessUnitMutation]
   );
+
+  // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
+  useEffect(() => {
+    if (isSignInPage && isHydrated && !token) {
+      // ล้าง session เฉพาะเมื่อไม่มี token (ไม่ได้กำลัง login)
+      if (typeof window !== "undefined") {
+        sessionStorage.removeItem("access_token");
+        sessionStorage.removeItem("refresh_token");
+        sessionStorage.removeItem("tenant_id");
+        localStorage.removeItem("user");
+      }
+      clearAuthCache();
+      setTenantId("");
+      setToken("");
+    }
+  }, [isSignInPage, clearAuthCache, isHydrated, token]);
+
+  // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่
+  const hasToken = isHydrated && !!token;
+
+  // รวม loading states - แสดง loading ขณะ hydrating หรือ query loading
+  const isLoading = !isHydrated || isUserLoading || updateBusinessUnitMutation.isPending;
 
   // Context value
   const value = useMemo(
     () => ({
-      isAuthenticated: hasToken,
+      isAuthenticated: hasToken && !!user,
       isLoading,
-      user,
+      user: user || null,
       setSession,
       logout,
       token,
@@ -259,11 +248,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       tenantId,
       handleChangeTenant,
       departments,
+      systemConfig,
     }),
     [
       hasToken,
-      isLoading,
       user,
+      isLoading,
       setSession,
       logout,
       token,
@@ -271,6 +261,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       tenantId,
       handleChangeTenant,
       departments,
+      systemConfig,
     ]
   );
 

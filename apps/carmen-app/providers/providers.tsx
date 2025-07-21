@@ -5,11 +5,11 @@ import { QueryProvider } from "./query-provider";
 export function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <ThemeProvider>
-            <AuthProvider>
-                <QueryProvider>
+            <QueryProvider>
+                <AuthProvider>
                     {children}
-                </QueryProvider>
-            </AuthProvider>
+                </AuthProvider>
+            </QueryProvider>
         </ThemeProvider>
     );
 }
