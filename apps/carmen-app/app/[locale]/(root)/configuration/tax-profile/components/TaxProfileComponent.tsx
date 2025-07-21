@@ -1,8 +1,7 @@
 "use client";
 
-import { SquarePen, Trash2, Plus, FileDown, Printer } from "lucide-react";
+import { Plus, FileDown, Printer } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -28,14 +27,6 @@ import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { TableHead } from "@/components/ui/table";
-import {
-  Table,
-  TableCell,
-  TableRow,
-  TableBody,
-  TableHeader,
-} from "@/components/ui/table";
 import { useAuth } from "@/context/AuthContext";
 import {
   useDeleteTaxProfile,
@@ -43,7 +34,7 @@ import {
   useTaxProfileQuery,
   useUpdateTaxProfile,
 } from "@/hooks/useTaxProfile";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
+import TaxProfileList from "./TaxProfileList";
 
 export function TaxProfileComponent() {
   const { token, tenantId } = useAuth();
@@ -191,75 +182,30 @@ export function TaxProfileComponent() {
       handleSetSort,
     ]
   );
+  const handleEdit = (profileId: string) => {
+    setEditingProfile(profileId);
+    setIsDialogOpen(true);
+  };
+
+
+  const handleDelete = (id: string) => {
+    deleteTaxProfile(undefined, {
+      onSuccess: () => {
+        setTaxProfiles((prev) => prev.filter((profile) => profile.id !== id));
+        toastSuccess({ message: tTaxProfile("tax_profile_deleted") });
+        setDeleteProfileId(null);
+      },
+    });
+  };
 
   const content = useMemo(() => {
     return (
-      <Table className="border">
-        <TableHeader className="bg-muted">
-          <TableRow>
-            <TableHead className="w-10">#</TableHead>
-            <TableHead className="w-40">{tHeader("name")}</TableHead>
-            <TableHead className="w-40">{tHeader("rate")} %</TableHead>
-            <TableHead className="w-40">{tHeader("status")}</TableHead>
-            <TableHead className="text-right">{tHeader("action")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        {isLoading ? (
-          <TableBodySkeleton rows={5} />
-        ) : (
-          <TableBody>
-            {taxProfiles?.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  {tTaxProfile("no_tax_profile")}
-                </TableCell>
-              </TableRow>
-            ) : (
-              taxProfiles?.map(
-                (profile: TaxProfileGetAllDto, index: number) => (
-                  <TableRow key={profile.id} className="hover:bg-muted/50">
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell className="font-medium">
-                      {profile.name}
-                    </TableCell>
-                    <TableCell>{profile.tax_rate}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={profile.is_active ? "active" : "inactive"}
-                      >
-                        {profile.is_active ? "Active" : "Inactive"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(profile.id)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <SquarePen className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setDeleteProfileId(profile.id)}
-                          className="h-8 w-8 p-0 hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                )
-              )
-            )}
-          </TableBody>
-        )}
-      </Table>
+      <TaxProfileList
+        taxProfiles={taxProfiles}
+        isLoading={isLoading}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
     );
   }, [taxProfiles, isLoading]);
 
@@ -273,10 +219,7 @@ export function TaxProfileComponent() {
     });
   };
 
-  const handleEdit = (profileId: string) => {
-    setEditingProfile(profileId);
-    setIsDialogOpen(true);
-  };
+
 
   const handleUpdate = (data: TaxProfileFormData) => {
     updateTaxProfile(data as TaxProfileEditDto, {
@@ -293,15 +236,6 @@ export function TaxProfileComponent() {
     });
   };
 
-  const handleDelete = (id: string) => {
-    deleteTaxProfile(undefined, {
-      onSuccess: () => {
-        setTaxProfiles((prev) => prev.filter((profile) => profile.id !== id));
-        toastSuccess({ message: tTaxProfile("tax_profile_deleted") });
-        setDeleteProfileId(null);
-      },
-    });
-  };
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
