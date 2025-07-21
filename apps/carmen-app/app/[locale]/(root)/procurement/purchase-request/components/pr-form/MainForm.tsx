@@ -34,7 +34,6 @@ import TableItems from "./TableItems";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BudgetPr from "./BudgetPr";
 import WorkflowPr from "./WorkflowPr";
-import TransactionSummary from "./TransactionSummaryPurchaseRequest";
 import TransactionSummaryPurchaseRequest from "./TransactionSummaryPurchaseRequest";
 
 

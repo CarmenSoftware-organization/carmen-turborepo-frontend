@@ -9,7 +9,7 @@ export const getItemGroupService = async (token: string, tenantId: string) => {
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/product/item-group`, {
+        const response = await fetch(`${backendApi}/api/config/products/item-group`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -41,7 +41,7 @@ export const createItemGroupService = async (token: string, tenantId: string, da
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/product/item-group`, {
+        const response = await fetch(`${backendApi}/api/config/products/item-group`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -70,7 +70,7 @@ export const updateItemGroupService = async (token: string, tenantId: string, da
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/product/item-group/${data.id}`, {
+        const response = await fetch(`${backendApi}/api/config/products/item-group/${data.id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -99,7 +99,7 @@ export const deleteItemGroupService = async (token: string, tenantId: string, id
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/product/item-group/${id}`, {
+        const response = await fetch(`${backendApi}/api/config/products/item-group/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,

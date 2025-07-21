@@ -5,7 +5,6 @@ import { formType } from "@/dtos/form.dto";
 import { getPrByIdService } from "@/services/pr.service";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
-import MainPrForm from "../components/form/MainPrForm";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import MainForm from "../components/pr-form/MainForm";
 
@@ -17,6 +16,17 @@ export default function PurchaseRequestIdPage() {
         queryKey: ['purchaseRequest', id],
         queryFn: () => getPrByIdService(token, tenantId, id as string)
     });
+
+    const getLocationAndProductId = purchaseRequest?.data?.purchase_request_detail.map(
+        (item: any) => ({
+            location_id: item.location_id,
+            product_id: item.product_id,
+        })
+    );
+
+    console.log('getLocationAndProductId', getLocationAndProductId);
+
+
 
     if (isLoading) return <DetailLoading />
 

@@ -116,6 +116,10 @@ export const purchaseRequestByIdSchema = z.object({
   purchase_request_detail: z.array(itemPrDetailSchema),
   created_at: z.string().datetime().optional(),
   workflow_name: z.string().optional(),
+  on_hand: z.number().optional(),
+  on_order: z.number().optional(),
+  re_order_qty: z.number().optional(),
+  re_stock_qty: z.number().optional(),
 });
 
 // Schema สำหรับ purchase request ที่จะใช้ใน form (POST/PUT)
@@ -144,10 +148,20 @@ export const purchaseRequestExtendedSchema = purchaseRequestByIdSchema.extend({
   current_workflow_status: z.string().optional(),
 });
 
+export const onHandleAndOrderUnitSchema = z.object({
+  on_hand: z.number().optional(),
+  on_order: z.number().optional(),
+  re_order_qty: z.number().optional(),
+  re_stock_qty: z.number().optional(),
+});
+
+export type OnHandleAndOrderUnitDto = z.infer<typeof onHandleAndOrderUnitSchema>;
+
 // Type จาก Schema
 export type GetAllPrDto = z.infer<typeof getAllPrSchema>;
 export type WorkflowHistoryDto = z.infer<typeof workflowHistorySchema>;
 export type ItemPrDetailDto = z.infer<typeof itemPrDetailSchema>;
+
 export type ItemPrDetailExtendedDto = z.infer<
   typeof itemPrDetailExtendedSchema
 >;
@@ -160,6 +174,7 @@ export type PurchaseRequestExtendedDto = z.infer<
 export type PurchaseRequestDetailFormDto = z.infer<
   typeof purchaseRequestDetailFormSchema
 >;
+
 export type PurchaseRequestFormDto = z.infer<typeof purchaseRequestFormSchema>;
 
 // Type สำหรับ item ที่จะเพิ่มใหม่
