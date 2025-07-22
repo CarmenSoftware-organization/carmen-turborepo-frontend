@@ -8,7 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import MainForm from "../components/pr-form/MainForm";
-import { PurchaseRequestByIdDto } from "@/dtos/pr.dto";
+import RootPrForm from "../components/form/RootPrForm";
+import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 
 export default function PurchaseRequestIdPage() {
     const { id } = useParams();
@@ -52,5 +53,5 @@ export default function PurchaseRequestIdPage() {
 
     if (!prDataWithInventory) return <DetailLoading />
 
-    return <MainForm mode={formType.VIEW} initValues={prDataWithInventory} />
+    return <RootPrForm mode={formType.VIEW} initValues={prDataWithInventory} />
 }

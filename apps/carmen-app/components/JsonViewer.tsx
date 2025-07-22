@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function JsonViewer({
   data,
 }: {
-  data: Record<string, unknown>;
+  readonly data: Record<string, any>;
 }) {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -111,11 +111,10 @@ export default function JsonViewer({
         </div>
         <button
           onClick={handleCopyToClipboard}
-          className={`px-3 py-1 text-sm rounded-md transition-colors ${
-            isCopied
-              ? "bg-green-100 text-green-700 border border-green-300"
-              : "bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200"
-          }`}
+          className={`px-3 py-1 text-sm rounded-md transition-colors ${isCopied
+            ? "bg-green-100 text-green-700 border border-green-300"
+            : "bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200"
+            }`}
         >
           {isCopied ? "Copied!" : "Copy JSON"}
         </button>

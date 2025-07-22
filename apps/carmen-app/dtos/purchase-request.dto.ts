@@ -178,6 +178,13 @@ export interface PurchaseRequestListDto extends
     total_amount: number;
 }
 
+export interface OnHandOnOrder {
+    on_hand_qty: number;
+    on_order_qty: number;
+    re_order_qty: number;
+    re_stock_qty: number;
+}
+
 export interface PurchaseRequestDetail extends
     Pick<BasePurchaseRequest, 'id'>,
     ProductInfo,
@@ -193,9 +200,11 @@ export interface PurchaseRequestDetail extends
     DiscountInfo,
     PriceCalculation,
     DetailCommonInfo,
+    OnHandOnOrder,
     AuditInfo {
     purchase_request_id: string;
 }
+
 
 export interface PurchaseRequestByIdDto extends
     BasePurchaseRequest,
