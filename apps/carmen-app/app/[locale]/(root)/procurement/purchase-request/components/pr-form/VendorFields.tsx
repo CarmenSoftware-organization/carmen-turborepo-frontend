@@ -5,6 +5,7 @@ import PriceListDialog from "./PriceListDialog";
 import { cn } from "@/lib/utils";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { useAuth } from "@/context/AuthContext";
+import { formatPrice } from "@/utils/price";
 
 interface VendorFieldsProps {
     readonly item: PurchaseRequestDetailItem;
@@ -21,7 +22,7 @@ const FieldsVendor = ({ label, value, color }: { label: string, value: string, c
 
 
 export default function VendorFields({ item }: VendorFieldsProps) {
-    const { token, tenantId } = useAuth();
+    const { token, tenantId, systemConfig } = useAuth();
     const { getCurrencyCode } = useCurrency();
     const { getUnitName } = useUnitQuery({
         token: token,
@@ -40,9 +41,9 @@ export default function VendorFields({ item }: VendorFieldsProps) {
                 <p>{item.vendor_name}</p>
             </div>
             <FieldsVendor label="Currency" value={getCurrencyCode(item.currency_id)} />
-            <FieldsVendor label="Price/Unit" value={`${item.pricelist_price} / ${getUnitName(item.pricelist_unit || 'N/A')}`} />
+            {/* <FieldsVendor label="Price/Unit" value={`${formatPrice(item.pricelist_price ?? 0)} / ${getUnitName(item.pricelist_unit || 'N/A')}`} /> */}
             <FieldsVendor label="Sub Total" value={subTotal.toString()} />
-            <FieldsVendor label="Discount" value={item.discount_amount.toString()} />
+            {/* <FieldsVendor label="Discount" value={formatPrice(item.discount_amount)} /> */}
             <FieldsVendor label="Net Amount" value={netAmount.toString()} color="blue" />
             <FieldsVendor label="Tax" value={taxRate.toString()} />
             <FieldsVendor label="Total" value={total.toString()} color="green" />

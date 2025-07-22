@@ -13,4 +13,18 @@ export const STORE_LOCATION_TYPE_COLOR = (type: INVENTORY_TYPE) => {
         default:
             return 'bg-gray-500';
     }
-}
+};
+
+
+
+export const convertPrStatus = (status: string) => {
+    if (status === "pending") {
+        return "Pending";
+    } else if (status === "approve") {
+        return "Approve";
+    } else if (status === "reject") {
+        return "Reject";
+    } else if (status === "review") {
+        return "Review";
+    }
+};

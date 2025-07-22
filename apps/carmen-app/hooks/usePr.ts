@@ -4,6 +4,10 @@ import { toastError } from "@/components/ui-custom/Toast";
 import { useAuth } from "@/context/AuthContext";
 import { GetAllPrDto, PrSchemaV2Dto } from "@/dtos/pr.dto";
 import {
+  PurchaseRequestCreateFormDto,
+  PurchaseRequestUpdateFormDto,
+} from "@/dtos/purchase-request.dto";
+import {
   createPrService,
   getAllPrService,
   updatePrService,
@@ -114,7 +118,7 @@ export const usePrMutation = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (prData: PrSchemaV2Dto) =>
+    mutationFn: (prData: PurchaseRequestCreateFormDto) =>
       createPrService(token, tenantId, prData),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["prs"] });
@@ -141,7 +145,7 @@ export const useUpdatePrMutation = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: PrSchemaV2Dto }) =>
+    mutationFn: ({ id, data }: { id: string; data: PurchaseRequestUpdateFormDto }) =>
       updatePrService(token, tenantId, id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["prs"] });

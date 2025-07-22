@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link, useRouter } from "@/lib/navigation";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestByIdDto } from "@/dtos/pr.dto";
 import { convertPrStatus } from "@/utils/helper";
 import {
   ChevronLeft,
@@ -14,6 +13,7 @@ import {
   Share,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 
 interface ActionFieldsProps {
   readonly mode: formType;

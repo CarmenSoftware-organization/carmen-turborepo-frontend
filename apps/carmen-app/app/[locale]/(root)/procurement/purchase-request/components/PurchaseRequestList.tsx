@@ -1,4 +1,3 @@
-import { GetAllPrDto } from "@/dtos/pr.dto";
 import { useState } from "react";
 import { FileText, MoreVertical, Trash2 } from "lucide-react";
 import {
@@ -24,9 +23,11 @@ import PaginationComponent from "@/components/PaginationComponent";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Link } from "@/lib/navigation";
 import { currencyFormat } from "@/lib/utils";
+import { convertPrStatus } from "@/utils/badge-status-color";
+import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 
 interface PurchaseRequestListProps {
-  readonly purchaseRequests: GetAllPrDto[];
+  readonly purchaseRequests: PurchaseRequestListDto[];
   readonly currentPage?: number;
   readonly totalPages?: number;
   readonly onPageChange?: (page: number) => void;
@@ -37,7 +38,7 @@ export default function PurchaseRequestList({
   purchaseRequests,
   currentPage = 1,
   totalPages = 1,
-  onPageChange = () => {},
+  onPageChange = () => { },
   isLoading,
 }: PurchaseRequestListProps) {
   const t = useTranslations("TableHeader");
@@ -64,19 +65,6 @@ export default function PurchaseRequestList({
     purchaseRequests?.length > 0 &&
     selectedItems.length === purchaseRequests.length;
 
-  const convertPrStatus = (status: string) => {
-    if (status === "draft") {
-      return "Draft";
-    } else if (status === "work_in_process") {
-      return "Work in Process";
-    } else if (status === "approved") {
-      return "Approved";
-    } else if (status === "rejected") {
-      return "Rejected";
-    } else if (status === "cancelled") {
-      return "Cancelled";
-    }
-  };
 
   const renderTableContent = () => {
     if (isLoading) return <TableBodySkeleton rows={8} />;
@@ -118,18 +106,24 @@ export default function PurchaseRequestList({
               </Link>
             </TableCell>
             <TableCell className="text-center">
-              <Badge variant={pr.pr_status}>
-                {convertPrStatus(pr.pr_status)}
-              </Badge>
+              {pr.pr_status && (
+                <Badge variant={pr.pr_status}>
+                  {convertPrStatus(pr.pr_status)}
+                </Badge>
+              )}
             </TableCell>
             <TableCell className="text-center">
-              {pr.workflow_name ?? "-"}
+              {pr.workflow_current_stage && (
+                <Badge variant={pr.workflow_current_stage}>
+                  {pr.workflow_current_stage}
+                </Badge>
+              )}
             </TableCell>
             <TableCell className="text-center">
               {format(new Date(pr.pr_date), "dd/MM/yyyy")}
             </TableCell>
 
-            <TableCell className="text-center">-</TableCell>
+            <TableCell className="text-center">{pr.workflow_name ?? "-"}</TableCell>
             <TableCell>{pr.requestor_name}</TableCell>
             <TableCell>{pr.department_name}</TableCell>
             <TableCell>{currencyFormat(pr.total_amount)}</TableCell>

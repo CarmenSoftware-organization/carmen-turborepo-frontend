@@ -42,15 +42,14 @@ const itemPrDetailBase = {
 // Schema สำหรับ get all purchase requests
 export const getAllPrSchema = z.object({
   id: z.string().uuid(),
-  department_name: z.string(),
-  description: z.string().optional(),
-  is_active: z.boolean(),
-  pr_date: z.string(),
   pr_no: z.string(),
+  pr_date: z.string(),
+  description: z.string().optional(),
   pr_status: z.string(),
-  pr_type: z.string().optional(),
-  current_workflow_status: z.string(),
+  requestor_name: z.string(),
+  department_name: z.string(),
   workflow_name: z.string().optional(),
+  workflow_current_stage: z.string().optional(),
   purchase_request_detail: z
     .array(
       z.object({
@@ -60,7 +59,6 @@ export const getAllPrSchema = z.object({
     )
     .optional(),
   total_amount: z.number(),
-  requestor_name: z.string(),
 });
 
 // Schema for workflow history
