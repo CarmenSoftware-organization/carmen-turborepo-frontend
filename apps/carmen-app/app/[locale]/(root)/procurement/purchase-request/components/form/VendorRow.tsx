@@ -1,13 +1,18 @@
 import { Label } from "@/components/ui/label";
-import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
+import { useAuth } from "@/context/AuthContext";
+import { formType } from "@/dtos/form.dto";
+import { PurchaseRequestCreateFormDto, PurchaseRequestDetail, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
+import { useUnitQuery } from "@/hooks/use-unit";
 import { useCurrency } from "@/hooks/useCurrency";
 import { cn } from "@/lib/utils";
-import { useUnitQuery } from "@/hooks/use-unit";
-import { useAuth } from "@/context/AuthContext";
-import PriceListDialog from "../form/PriceListDialog";
+import { UseFormReturn } from "react-hook-form";
+import PriceListDialog from "./PriceListDialog";
 
-interface VendorFieldsProps {
-    readonly item: PurchaseRequestDetailItem;
+interface ItemDetailAccordionProps {
+    readonly index: number;
+    readonly item: PurchaseRequestDetail;
+    readonly mode: formType;
+    readonly form: UseFormReturn<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>;
 }
 
 const FieldsVendor = ({ label, value, color }: { label: string, value: string, color?: string }) => {
@@ -19,8 +24,12 @@ const FieldsVendor = ({ label, value, color }: { label: string, value: string, c
     );
 };
 
-
-export default function VendorFields({ item }: VendorFieldsProps) {
+export default function VendorRow({
+    index,
+    item,
+    mode,
+    form
+}: ItemDetailAccordionProps) {
     const { token, tenantId } = useAuth();
     const { getCurrencyCode } = useCurrency();
     const { getUnitName } = useUnitQuery({
@@ -28,25 +37,22 @@ export default function VendorFields({ item }: VendorFieldsProps) {
         tenantId: tenantId,
     });
 
-    const subTotal = item.pricelist_price ? item.pricelist_price * item.approved_qty : 0;
+    const subTotal = +item.pricelist_price * item.approved_qty;
     const netAmount = subTotal - item.discount_amount;
     const taxRate = item.tax_rate;
     const total = netAmount + taxRate;
-
     return (
-        <div className="px-4 grid grid-cols-10 gap-4 py-4">
+        <div className="grid grid-cols-8 pt-1">
             <div className="col-span-2 space-y-1">
                 <Label className="text-xs font-semibold">VENDOR</Label>
                 <p>{item.vendor_name}</p>
             </div>
             <FieldsVendor label="Currency" value={getCurrencyCode(item.currency_id)} />
-            {/* <FieldsVendor label="Price/Unit" value={`${formatPrice(item.pricelist_price ?? 0)} / ${getUnitName(item.pricelist_unit || 'N/A')}`} /> */}
             <FieldsVendor label="Sub Total" value={subTotal.toString()} />
-            {/* <FieldsVendor label="Discount" value={formatPrice(item.discount_amount)} /> */}
             <FieldsVendor label="Net Amount" value={netAmount.toString()} color="blue" />
             <FieldsVendor label="Tax" value={taxRate.toString()} />
             <FieldsVendor label="Total" value={total.toString()} color="green" />
-            <div className="space-y-1">
+            <div className="space-y-1 pb-2">
                 <Label className="text-xs font-semibold">Compare</Label>
                 <PriceListDialog />
             </div>

@@ -7,16 +7,16 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { TimerIcon, TrendingUp } from "lucide-react";
-import TablePriceList from "./TablePriceList";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import TablePriceList from "./TablePriceList";
 
 
 export default function PriceListDialog() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="w-fit h-7">
+                <Button variant="outline" size="sm" className="h-5">
                     <TrendingUp /> Compare
                 </Button>
             </DialogTrigger>

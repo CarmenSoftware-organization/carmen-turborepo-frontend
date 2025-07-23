@@ -14,15 +14,13 @@ import { format } from "date-fns";
 import DateInput from "@/components/form-custom/DateInput";
 import { FormField, FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
-import { Input } from "@/components/ui/input";
-
+import VendorRow from "./VendorRow";
 
 interface ItemDetailAccordionProps {
     readonly index: number;
     readonly item: PurchaseRequestDetail;
     readonly mode: formType;
     readonly form: UseFormReturn<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>;
-
 }
 
 export default function ItemDetailAccordion({
@@ -32,6 +30,24 @@ export default function ItemDetailAccordion({
     form
 }: ItemDetailAccordionProps) {
 
+    // ตรวจสอบว่าเป็น new item หรือ existing item
+    const isNewItem = item.id?.startsWith('temp-') || false;
+
+    // สร้าง field paths ที่ถูกต้องตามประเภท item
+    const getFieldPath = (fieldName: string) => {
+        if (mode === formType.ADD || isNewItem) {
+            // สำหรับ new items ใช้ add array
+            const newItemIndex = isNewItem ?
+                (form.getValues("purchase_request_detail.add") || []).findIndex((_, i) =>
+                    form.getValues(`purchase_request_detail.add.${i}`) !== undefined
+                ) : index;
+            return `purchase_request_detail.add.${newItemIndex >= 0 ? newItemIndex : index}.${fieldName}`;
+        } else {
+            // สำหรับ existing items ใช้ update array
+            return `purchase_request_detail.update.${index}.${fieldName}`;
+        }
+    };
+
     const onHand = `${item.on_hand_qty} ${item.inventory_unit_name}`;
     const onOrder = `${item.on_order_qty} ${item.inventory_unit_name}`;
     const reOrderQty = `${item.re_order_qty} ${item.inventory_unit_name}`;
@@ -39,7 +55,7 @@ export default function ItemDetailAccordion({
     const dateRequested = `${item.delivery_date}`;
     const deliveryPoint = `${item.delivery_point_name}`;
 
-    console.log('dateRequested', dateRequested);
+    const dpId = getFieldPath("delivery_point_id");
 
     return (
         <TableRow>
@@ -72,26 +88,30 @@ export default function ItemDetailAccordion({
                                 <>
                                     <FormField
                                         control={form.control}
-                                        name={`purchase_request_detail.update.${index}.delivery_date`}
+                                        name={getFieldPath("delivery_date") as any}
                                         render={({ field }) => (
-                                            console.log('field', field.value),
                                             <FormItem>
                                                 <FormLabel>Date Requested</FormLabel>
                                                 <FormControl>
-                                                    <DateInput field={field} />
+                                                    <DateInput
+                                                        field={{
+                                                            ...field,
+                                                            value: field.value || item.delivery_date || ""
+                                                        }}
+                                                    />
                                                 </FormControl>
                                             </FormItem>
                                         )}
                                     />
                                     <FormField
                                         control={form.control}
-                                        name={`purchase_request_detail.update.${index}.delivery_point_id`}
+                                        name={getFieldPath("delivery_point_id") as any}
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Delivery Point</FormLabel>
                                                 <FormControl>
                                                     <LookupDeliveryPoint
-                                                        value={field.value ? field.value : dateRequested}
+                                                        value={field.value}
                                                         onValueChange={(value) => field.onChange(value)}
                                                     />
                                                 </FormControl>
@@ -101,8 +121,14 @@ export default function ItemDetailAccordion({
                                 </>
                             )}
                         </div>
-                        <Separator />
-                        {/* <VendorFields item={item}  */}
+                        <Separator className="my-2" />
+                        <VendorRow
+                            index={index}
+                            item={item}
+                            mode={mode}
+                            form={form}
+                        />
+
                         <AccordionContent className="p-4 space-y-4 bg-muted">
                             {/* <BusinessDimensions />
                             <PricingCard
@@ -117,4 +143,4 @@ export default function ItemDetailAccordion({
             </TableCell>
         </TableRow>
     );
-}
+};

@@ -34,16 +34,56 @@ export default function RootPrForm({
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const [openLog, setOpenLog] = useState(false);
 
-    const defaultValues: PurchaseRequestCreateFormDto = {
-        pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
-        requestor_id: user?.id,
-        department_id: departments?.id,
-        workflow_id: initValues?.workflow_id,
-        description: initValues?.description || null,
-        note: initValues?.note || null,
-        info: initValues?.info,
-        dimension: initValues?.dimension,
-    }
+    const defaultValues = currentMode === formType.ADD
+        ? {
+            pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
+            requestor_id: user?.id,
+            department_id: departments?.id,
+            workflow_id: initValues?.workflow_id,
+            description: initValues?.description || null,
+            info: initValues?.info,
+            dimension: initValues?.dimension,
+            purchase_request_detail: {
+                add: []
+            }
+        }
+        : {
+            pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
+            requestor_id: user?.id,
+            department_id: departments?.id,
+            workflow_id: initValues?.workflow_id,
+            description: initValues?.description || null,
+            note: initValues?.note || null,
+            info: initValues?.info,
+            dimension: initValues?.dimension,
+            doc_version: initValues?.doc_version ? parseInt(initValues.doc_version) : undefined,
+            purchase_request_detail: {
+                update: initValues?.purchase_request_detail?.map(item => ({
+                    id: item.id,
+                    description: item.description,
+                    comment: item.comment,
+                    sequence_no: item.sequence_no,
+                    product_id: item.product_id,
+                    inventory_unit_id: item.inventory_unit_id,
+                    location_id: item.location_id,
+                    delivery_point_id: item.delivery_point_id,
+                    delivery_date: item.delivery_date ? new Date(item.delivery_date) : undefined,
+                    vendor_id: item.vendor_id,
+                    requested_qty: item.requested_qty,
+                    requested_unit_id: item.requested_unit_id,
+                    tax_profile_id: item.tax_profile_id,
+                    discount_rate: item.discount_rate,
+                    currency_id: item.currency_id,
+                    info: item.info,
+                    approved_qty: item.approved_qty,
+                    approved_unit_id: item.approved_unit_id,
+                    foc_qty: item.foc_qty,
+                    foc_unit_id: item.foc_unit_id
+                })) || [],
+                add: [],
+                remove: []
+            }
+        }
 
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
         resolver: zodResolver(currentMode === formType.ADD ? CreatePurchaseRequestSchema : UpdatePurchaseRequestSchema),

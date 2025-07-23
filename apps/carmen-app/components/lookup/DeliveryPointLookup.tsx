@@ -22,9 +22,10 @@ export function LookupDeliveryPoint({
   placeholder = "Search delivery point...",
   className = "",
 }: Props) {
+
   const { token, tenantId } = useAuth();
 
-  const { deliveryPoints } = useDeliveryPointQuery({
+  const { deliveryPoints, isLoading } = useDeliveryPointQuery({
     token: token,
     tenantId: tenantId,
   });
@@ -81,22 +82,29 @@ export function LookupDeliveryPoint({
     onValueChange?.(item.id || "");
   };
 
-  const filteredData = deliveryPoints
+  const filteredData = deliveryPoints?.data
     ? filterData(deliveryPoints, searchTerm)
     : { data: [] };
 
+  // แก้ไข useEffect เพื่อแก้ปัญหาการ map ข้อมูล
   useEffect(() => {
-    if (value && deliveryPoints?.data) {
+    // ตรวจสอบว่ามี value และข้อมูลโหลดเสร็จแล้ว
+    if (value && deliveryPoints?.data && !isLoading) {
       const selectedDeliveryPoint = deliveryPoints.data.find(
         (dp: DeliveryPointGetDto) => dp.id === value
       );
+
       if (selectedDeliveryPoint) {
         setSearchTerm(selectedDeliveryPoint.name);
+      } else {
+        // ถ้าหาไม่เจอ ให้เคลียร์ searchTerm
+        setSearchTerm("");
       }
-    } else {
+    } else if (!value) {
+      // ถ้าไม่มี value ให้เคลียร์ searchTerm
       setSearchTerm("");
     }
-  }, [value, deliveryPoints]);
+  }, [value, deliveryPoints, isLoading]); // เพิ่ม isLoading ใน dependency array
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -126,11 +134,11 @@ export function LookupDeliveryPoint({
         <ChevronsUpDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
       </div>
 
-      {isDropdownOpen && filteredData.data.length > 0 && (
+      {isDropdownOpen && filteredData?.data?.length > 0 && (
         <Card className="absolute top-full left-0 right-0 mt-1 z-10 max-h-60 overflow-y-auto">
           <CardContent className="p-0">
             <div className="py-1">
-              {filteredData.data.map((item: DeliveryPointGetDto) => (
+              {filteredData?.data?.map((item: DeliveryPointGetDto) => (
                 <button
                   key={`${item.id}-${item.name}`}
                   className="w-full text-left p-2 hover:bg-gray-100 cursor-pointer text-xs"

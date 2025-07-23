@@ -151,7 +151,6 @@ export default function ItemDetail({ form, initItems, mode }: ItemDetailProps) {
                             ))}
                             {/* แสดง new items ที่เพิ่มใหม่ */}
                             {newItems.map((item, index) => {
-                                const adjustedIndex = (filteredInitItems?.length || 0) + index;
                                 return (
                                     <Fragment key={item.id || `new-${index}`}>
                                         <PrItemBody
@@ -162,7 +161,7 @@ export default function ItemDetail({ form, initItems, mode }: ItemDetailProps) {
                                             onDelete={(item, idx) => handleDeleteRequest(item, idx)}
                                         />
                                         <ItemDetailAccordion
-                                            index={adjustedIndex}
+                                            index={index}
                                             item={item}
                                             mode={formType.ADD}
                                             form={form}

@@ -36,9 +36,6 @@ export default function ProductLookup({
         return productName ?? null;
     }, [value, products]);
 
-
-    console.log('selectedProductName', selectedProductName);
-
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -56,7 +53,6 @@ export default function ProductLookup({
                 <Command filter={(value, search) => {
                     if (!search) return 1;
                     const searchLower = search.toLowerCase();
-                    // Search in both the display value and individual code/name
                     if (value.toLowerCase().includes(searchLower)) return 1;
                     return 0;
                 }}>
