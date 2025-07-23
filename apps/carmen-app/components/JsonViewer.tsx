@@ -2,8 +2,10 @@ import { useState } from "react";
 
 export default function JsonViewer({
   data,
+  title
 }: {
   readonly data: Record<string, any>;
+  readonly title?: string;
 }) {
   const [isCopied, setIsCopied] = useState(false);
 
@@ -119,6 +121,9 @@ export default function JsonViewer({
           {isCopied ? "Copied!" : "Copy JSON"}
         </button>
       </div>
+      {title && (
+        <h1>{title}</h1>
+      )}
       <pre className="bg-muted p-4 rounded-lg text-sm font-mono overflow-auto">
         {formatJson(data)}
       </pre>

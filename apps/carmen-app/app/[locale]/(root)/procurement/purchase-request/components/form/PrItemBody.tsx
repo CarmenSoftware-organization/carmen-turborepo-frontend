@@ -17,10 +17,11 @@ import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
 import NumberInput from "@/components/form-custom/NumberInput";
 import UnitLookup from "@/components/lookup/UnitLookup";
-import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
-import DateInput from "@/components/form-custom/DateInput";
+
 import { useAuth } from "@/context/AuthContext";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import { useProductLocation } from "@/hooks/useProductLocation";
+import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
 
 interface PrItemBodyProps {
     readonly item: PurchaseRequestDetail;
@@ -28,16 +29,32 @@ interface PrItemBodyProps {
     readonly index: number;
     readonly form: UseFormReturn<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>;
     readonly onDelete?: (item: PurchaseRequestDetail, index: number) => void;
+    readonly onUpdate?: () => void;
 }
 
-export default function PrItemBody({ item, mode, index, form, onDelete }: PrItemBodyProps) {
+export default function PrItemBody({ item, mode, index, form, onDelete, onUpdate }: PrItemBodyProps) {
     const { getCurrencyCode } = useCurrency();
     const { currencyBase } = useAuth();
 
+    // Watch location_id to enable/disable ProductLocationLookup
+    const watchedLocationId = form.watch(
+        mode === formType.ADD
+            ? `purchase_request_detail.add.${index}.location_id`
+            : `purchase_request_detail.update.${index}.location_id`
+    );
+
+    const currentLocationId = watchedLocationId || item.location_id;
 
     const handleDelete = () => {
         if (onDelete) {
             onDelete(item, index);
+        }
+    };
+
+    const handleFieldChange = () => {
+        // เรียก onUpdate เมื่อมีการแก้ไขข้อมูล existing item
+        if (onUpdate && mode === formType.EDIT) {
+            onUpdate();
         }
     };
 
@@ -70,7 +87,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                 <FormControl>
                                     <LocationLookup
                                         value={field.value ? field.value : item.location_id}
-                                        onValueChange={(value) => field.onChange(value)}
+                                        onValueChange={(value) => {
+                                            field.onChange(value);
+                                            handleFieldChange();
+                                        }}
                                     />
                                 </FormControl>
                             </FormItem>
@@ -90,7 +110,7 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                         </div>
                     </>
                 ) : (
-                    <>
+                    <div className="flex flex-col gap-2">
                         <FormField
                             control={form.control}
                             name={mode === formType.ADD
@@ -100,9 +120,22 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>
-                                        <ProductLookup
+                                        <ProductLocationLookup
+                                            location_id={currentLocationId}
                                             value={field.value ? field.value : item.product_id}
-                                            onValueChange={(value) => field.onChange(value)}
+                                            onValueChange={(value, inventoryUnit) => {
+                                                field.onChange(value);
+                                                if (inventoryUnit) {
+                                                    const unitFieldName = mode === formType.ADD
+                                                        ? `purchase_request_detail.add.${index}.inventory_unit_id` as const
+                                                        : `purchase_request_detail.update.${index}.inventory_unit_id` as const;
+                                                    form.setValue(unitFieldName as any, inventoryUnit.id);
+                                                }
+
+                                                handleFieldChange();
+                                            }}
+                                            placeholder={!currentLocationId ? "Select location first" : "Select product"}
+                                            disabled={!currentLocationId}
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -120,14 +153,17 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                         <Input
                                             placeholder="Description"
                                             value={field.value || item.description || ""}
-                                            onChange={field.onChange}
+                                            onChange={(e) => {
+                                                field.onChange(e);
+                                                handleFieldChange();
+                                            }}
                                             className="text-sm"
                                         />
                                     </FormControl>
                                 </FormItem>
                             )}
                         />
-                    </>
+                    </div>
                 )}
             </TableCell>
             <TableCell className="text-right">
@@ -153,7 +189,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                     <FormControl>
                                         <NumberInput
                                             value={field.value ? field.value : item.requested_qty}
-                                            onChange={(value) => field.onChange(value)}
+                                            onChange={(value) => {
+                                                field.onChange(value);
+                                                handleFieldChange();
+                                            }}
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -170,7 +209,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                     <FormControl>
                                         <UnitLookup
                                             value={field.value ? field.value : item.requested_unit_id}
-                                            onValueChange={(value) => field.onChange(value)} />
+                                            onValueChange={(value) => {
+                                                field.onChange(value);
+                                                handleFieldChange();
+                                            }} />
                                     </FormControl>
                                 </FormItem>
                             )}
@@ -200,7 +242,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                         <FormControl>
                                             <NumberInput
                                                 value={field.value ? field.value : item.approved_qty}
-                                                onChange={(value) => field.onChange(value)}
+                                                onChange={(value) => {
+                                                    field.onChange(value);
+                                                    handleFieldChange();
+                                                }}
                                             />
                                         </FormControl>
                                     </FormItem>
@@ -214,7 +259,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                         <FormControl>
                                             <UnitLookup
                                                 value={field.value ? field.value : item.approved_unit_id}
-                                                onValueChange={(value) => field.onChange(value)} />
+                                                onValueChange={(value) => {
+                                                    field.onChange(value);
+                                                    handleFieldChange();
+                                                }} />
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -230,7 +278,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                         <FormControl>
                                             <NumberInput
                                                 value={field.value ? field.value : item.foc_qty}
-                                                onChange={(value) => field.onChange(value)}
+                                                onChange={(value) => {
+                                                    field.onChange(value);
+                                                    handleFieldChange();
+                                                }}
                                             />
                                         </FormControl>
                                     </FormItem>
@@ -244,7 +295,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                         <FormControl>
                                             <UnitLookup
                                                 value={field.value ? field.value : item.foc_unit_id}
-                                                onValueChange={(value) => field.onChange(value)} />
+                                                onValueChange={(value) => {
+                                                    field.onChange(value);
+                                                    handleFieldChange();
+                                                }} />
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -254,7 +308,7 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                 )}
             </TableCell>
             <TableCell className="text-right">
-                {mode === formType.VIEW ? (
+                {mode !== formType.EDIT ? (
                     <>
                         <p className="text-sm text-right font-semibold">
                             {getCurrencyCode(item.currency_id)} {item.total_price}
@@ -273,7 +327,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                     <FormControl>
                                         <CurrencyLookup
                                             value={field.value ? field.value : item.currency_id}
-                                            onValueChange={(value) => field.onChange(value)}
+                                            onValueChange={(value) => {
+                                                field.onChange(value);
+                                                handleFieldChange();
+                                            }}
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -287,7 +344,10 @@ export default function PrItemBody({ item, mode, index, form, onDelete }: PrItem
                                     <FormControl>
                                         <NumberInput
                                             value={field.value ? field.value : item.total_price}
-                                            onChange={(value) => field.onChange(value)}
+                                            onChange={(value) => {
+                                                field.onChange(value);
+                                                handleFieldChange();
+                                            }}
                                         />
                                     </FormControl>
                                 </FormItem>

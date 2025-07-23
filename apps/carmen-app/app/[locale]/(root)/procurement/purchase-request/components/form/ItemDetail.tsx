@@ -21,6 +21,7 @@ interface ItemDetailProps {
 export default function ItemDetail({ form, initItems, mode }: ItemDetailProps) {
     const [newItems, setNewItems] = useState<PurchaseRequestDetail[]>([]);
     const [deletedExistingItemIds, setDeletedExistingItemIds] = useState<string[]>([]);
+    const [updatedExistingItemIds, setUpdatedExistingItemIds] = useState<string[]>([]);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{
         item: PurchaseRequestDetail;
@@ -28,15 +29,53 @@ export default function ItemDetail({ form, initItems, mode }: ItemDetailProps) {
         isNewItem: boolean;
     } | null>(null);
 
-    const { fields: addFields, append: appendAdd } = useFieldArray({
+    const { append: appendAdd } = useFieldArray({
         control: form.control,
         name: "purchase_request_detail.add" as any,
     });
 
-    const { fields: removeFields, append: appendRemove } = useFieldArray({
+    const { append: appendUpdate } = useFieldArray({
+        control: form.control,
+        name: "purchase_request_detail.update" as any,
+    });
+
+    const { append: appendRemove } = useFieldArray({
         control: form.control,
         name: "purchase_request_detail.remove" as any,
     });
+
+    // จัดการการเพิ่ม existing item เข้า updateFields เมื่อมีการแก้ไข
+    const handleExistingItemUpdate = (item: PurchaseRequestDetail) => {
+        if (!item.id || updatedExistingItemIds.includes(item.id)) return;
+
+        // เพิ่มข้อมูลเดิมเข้า updateFields
+        appendUpdate({
+            id: item.id,
+            purchase_request_id: item.purchase_request_id,
+            sequence_no: item.sequence_no,
+            location_id: item.location_id,
+            delivery_point_id: item.delivery_point_id,
+            delivery_date: item.delivery_date ? new Date(item.delivery_date) : undefined,
+            product_id: item.product_id,
+            inventory_unit_id: item.inventory_unit_id,
+            description: item.description,
+            comment: item.comment,
+            vendor_id: item.vendor_id,
+            requested_qty: item.requested_qty,
+            requested_unit_id: item.requested_unit_id,
+            approved_qty: item.approved_qty,
+            approved_unit_id: item.approved_unit_id,
+            foc_qty: item.foc_qty,
+            foc_unit_id: item.foc_unit_id,
+            tax_profile_id: item.tax_profile_id,
+            discount_rate: item.discount_rate,
+            currency_id: item.currency_id,
+            total_price: item.total_price,
+        });
+
+        // เพิ่ม id เข้า state เพื่อติดตาม
+        setUpdatedExistingItemIds(prev => [...prev, item.id]);
+    };
 
     const handleAddItem = () => {
         // เพิ่ม field ใหม่ใน form
@@ -132,23 +171,29 @@ export default function ItemDetail({ form, initItems, mode }: ItemDetailProps) {
                         </TableHeader>
                         <TableBody>
                             {/* แสดง existing items */}
-                            {filteredInitItems?.map((item, index) => (
-                                <Fragment key={item.id || index}>
-                                    <PrItemBody
-                                        item={item}
-                                        mode={mode}
-                                        index={index}
-                                        form={form}
-                                        onDelete={(item, idx) => handleDeleteRequest(item, idx)}
-                                    />
-                                    <ItemDetailAccordion
-                                        index={index}
-                                        item={item}
-                                        mode={mode}
-                                        form={form}
-                                    />
-                                </Fragment>
-                            ))}
+                            {filteredInitItems?.map((item, index) => {
+                                const updateIndex = updatedExistingItemIds.findIndex(id => id === item.id);
+                                const actualIndex = updateIndex >= 0 ? updateIndex : updatedExistingItemIds.length;
+
+                                return (
+                                    <Fragment key={item.id || index}>
+                                        <PrItemBody
+                                            item={item}
+                                            mode={mode === formType.VIEW ? formType.VIEW : formType.EDIT}
+                                            index={actualIndex}
+                                            form={form}
+                                            onDelete={(item, idx) => handleDeleteRequest(item, index)}
+                                            onUpdate={() => handleExistingItemUpdate(item)}
+                                        />
+                                        <ItemDetailAccordion
+                                            index={actualIndex}
+                                            item={item}
+                                            mode={mode === formType.VIEW ? formType.VIEW : formType.EDIT}
+                                            form={form}
+                                        />
+                                    </Fragment>
+                                );
+                            })}
                             {/* แสดง new items ที่เพิ่มใหม่ */}
                             {newItems.map((item, index) => {
                                 return (
@@ -158,7 +203,7 @@ export default function ItemDetail({ form, initItems, mode }: ItemDetailProps) {
                                             mode={formType.ADD}
                                             index={index}
                                             form={form}
-                                            onDelete={(item, idx) => handleDeleteRequest(item, idx)}
+                                            onDelete={(item, _) => handleDeleteRequest(item, filteredInitItems.length + index)}
                                         />
                                         <ItemDetailAccordion
                                             index={index}

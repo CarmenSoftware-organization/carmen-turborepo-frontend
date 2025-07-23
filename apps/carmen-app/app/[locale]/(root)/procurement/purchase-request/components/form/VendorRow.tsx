@@ -1,8 +1,6 @@
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestCreateFormDto, PurchaseRequestDetail, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
-import { useUnitQuery } from "@/hooks/use-unit";
 import { useCurrency } from "@/hooks/useCurrency";
 import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
@@ -30,13 +28,7 @@ export default function VendorRow({
     mode,
     form
 }: ItemDetailAccordionProps) {
-    const { token, tenantId } = useAuth();
     const { getCurrencyCode } = useCurrency();
-    const { getUnitName } = useUnitQuery({
-        token: token,
-        tenantId: tenantId,
-    });
-
     const subTotal = +item.pricelist_price * item.approved_qty;
     const netAmount = subTotal - item.discount_amount;
     const taxRate = item.tax_rate;
@@ -44,7 +36,7 @@ export default function VendorRow({
     return (
         <div className="grid grid-cols-8 pt-1">
             <div className="col-span-2 space-y-1">
-                <Label className="text-xs font-semibold">VENDOR</Label>
+                <Label className="text-xs font-semibold">Vendor</Label>
                 <p>{item.vendor_name}</p>
             </div>
             <FieldsVendor label="Currency" value={getCurrencyCode(item.currency_id)} />

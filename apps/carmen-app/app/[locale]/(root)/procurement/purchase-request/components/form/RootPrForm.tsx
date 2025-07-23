@@ -8,10 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { mockPr } from "./payload-pr";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import DateInput from "@/components/form-custom/DateInput";
-import { Label } from "@/components/ui/label";
+import { Form } from "@/components/ui/form";
 import HeadForm from "./HeadForm";
 import StatusPrInfo from "./StatusPrInfo";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -30,7 +27,7 @@ interface RootPrFormProps {
 export default function RootPrForm({
     mode,
     initValues }: RootPrFormProps) {
-    const { token, tenantId, user, departments } = useAuth();
+    const { user, departments } = useAuth();
     const [currentMode, setCurrentMode] = useState<formType>(mode);
     const [openLog, setOpenLog] = useState(false);
 
@@ -58,28 +55,7 @@ export default function RootPrForm({
             dimension: initValues?.dimension,
             doc_version: initValues?.doc_version ? parseInt(initValues.doc_version) : undefined,
             purchase_request_detail: {
-                update: initValues?.purchase_request_detail?.map(item => ({
-                    id: item.id,
-                    description: item.description,
-                    comment: item.comment,
-                    sequence_no: item.sequence_no,
-                    product_id: item.product_id,
-                    inventory_unit_id: item.inventory_unit_id,
-                    location_id: item.location_id,
-                    delivery_point_id: item.delivery_point_id,
-                    delivery_date: item.delivery_date ? new Date(item.delivery_date) : undefined,
-                    vendor_id: item.vendor_id,
-                    requested_qty: item.requested_qty,
-                    requested_unit_id: item.requested_unit_id,
-                    tax_profile_id: item.tax_profile_id,
-                    discount_rate: item.discount_rate,
-                    currency_id: item.currency_id,
-                    info: item.info,
-                    approved_qty: item.approved_qty,
-                    approved_unit_id: item.approved_unit_id,
-                    foc_qty: item.foc_qty,
-                    foc_unit_id: item.foc_unit_id
-                })) || [],
+                update: [],
                 add: [],
                 remove: []
             }
@@ -97,7 +73,9 @@ export default function RootPrForm({
         } else {
             console.log("update", data);
         }
-    }
+    };
+
+    const watchForm = form.watch();
 
     return (
         <div className="relative">
@@ -160,10 +138,10 @@ export default function RootPrForm({
                         </Form>
                     </Card>
                     <div className="grid grid-cols-2 gap-4">
-                        <JsonViewer data={defaultValues ?? {}} />
-                        <JsonViewer data={mockPr ?? {}} />
+                        <JsonViewer data={watchForm ?? {}} title="Form Values" />
+                        <JsonViewer data={mockPr ?? {}} title="Purchase Request Payload" />
                     </div>
-                    <JsonViewer data={initValues ?? {}} />
+                    <JsonViewer data={initValues ?? {}} title="Init Values" />
                     <div
                         className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
                     >
