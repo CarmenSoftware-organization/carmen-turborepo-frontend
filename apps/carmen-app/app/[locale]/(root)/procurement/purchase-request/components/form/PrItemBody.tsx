@@ -14,13 +14,10 @@ import { UseFormReturn } from "react-hook-form";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import LocationLookup from "@/components/lookup/LocationLookup";
-import ProductLookup from "@/components/lookup/ProductLookup";
 import NumberInput from "@/components/form-custom/NumberInput";
 import UnitLookup from "@/components/lookup/UnitLookup";
-
 import { useAuth } from "@/context/AuthContext";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
-import { useProductLocation } from "@/hooks/useProductLocation";
 import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
 
 interface PrItemBodyProps {
