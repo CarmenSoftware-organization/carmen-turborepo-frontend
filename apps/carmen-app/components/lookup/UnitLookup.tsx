@@ -38,8 +38,8 @@ export default function UnitLookup({
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const selectedUnitName = useMemo(() => {
-        if (!value || !units || !Array.isArray(units)) return null;
-        const found = units.find(unit => unit.id === value);
+        if (!value || !units || !Array.isArray(units.data)) return null;
+        const found = units.data.find((unit: UnitDto) => unit.id === value);
         return found?.name ?? null;
     }, [value, units]);
 
@@ -94,8 +94,8 @@ export default function UnitLookup({
                                 <>
                                     <CommandEmpty>No units found.</CommandEmpty>
                                     <CommandGroup>
-                                        {units && units.length > 0 ? (
-                                            units.map((unit: UnitDto) => (
+                                        {units && units.data.length > 0 ? (
+                                            units.data.map((unit: UnitDto) => (
                                                 <CommandItem
                                                     key={unit.id}
                                                     value={unit.name}

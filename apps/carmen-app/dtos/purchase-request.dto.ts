@@ -241,7 +241,7 @@ export const CreatePurchaseRequestDetailSchema = z.object({
 export const CreatePurchaseRequestSchema = z.object({
     description: z.string().optional().nullable(), // Fixed typo: desceiption -> description
     requestor_id: z.string().uuid().optional(),
-    pr_date: z.string().datetime().pipe(z.coerce.date()),
+    pr_date: z.string(),
 })
     .merge(EmbeddedWorkflowSchema)
     .merge(EmbeddedDepartmentSchema)

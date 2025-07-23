@@ -31,13 +31,20 @@ interface BusinessUnit {
     is_hod: boolean;
     name: string;
   };
-  config: {
-    id: string;
-    datatype: string;
-    key: string;
-    label: string;
-    value: any;
-  }[];
+  config?: {
+    calculation_method?: string;
+    currency_base?: {
+      currency_id: string;
+      locales: string;
+      minimumIntegerDigits: number;
+      name: string;
+    };
+    date_format?: string;
+    long_time_format?: string;
+    perpage?: number;
+    short_time_format?: string;
+    timezone?: string;
+  };
 }
 
 interface User {
@@ -58,7 +65,12 @@ interface AuthContextType {
   tenantId: string;
   handleChangeTenant: (tenantId: string) => void;
   departments: BusinessUnit["department"] | null;
-  systemConfig: BusinessUnit["config"] | null;
+  currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
+  dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
+  longTimeFormat: NonNullable<BusinessUnit["config"]>["long_time_format"] | null;
+  perpage: NonNullable<BusinessUnit["config"]>["perpage"] | null;
+  shortTimeFormat: NonNullable<BusinessUnit["config"]>["short_time_format"] | null;
+  timezone: NonNullable<BusinessUnit["config"]>["timezone"] | null;
 }
 
 // Create context with a default value
@@ -73,7 +85,12 @@ export const AuthContext = createContext<AuthContextType>({
   tenantId: "",
   handleChangeTenant: () => { },
   departments: null,
-  systemConfig: null,
+  currencyBase: null,
+  dateFormat: null,
+  longTimeFormat: null,
+  perpage: null,
+  shortTimeFormat: null,
+  timezone: null,
 });
 
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
@@ -120,10 +137,18 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const updateBusinessUnitMutation = useUpdateBusinessUnitMutation();
   const { clearAuthCache } = useAuthCache();
 
-  // คำนวณ departments และ systemConfig จาก user data
-  const { departments, systemConfig } = useMemo(() => {
+  // คำนวณ departments และ system properties จาก user data
+  const { departments, currencyBase, dateFormat, longTimeFormat, perpage, shortTimeFormat, timezone } = useMemo(() => {
     if (!user?.business_unit?.length) {
-      return { departments: null, systemConfig: null };
+      return {
+        departments: null,
+        currencyBase: null,
+        dateFormat: null,
+        longTimeFormat: null,
+        perpage: null,
+        shortTimeFormat: null,
+        timezone: null
+      };
     }
 
     const defaultBu = user.business_unit.find(
@@ -134,7 +159,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     return {
       departments: defaultBu?.department || null,
-      systemConfig: selectedBu?.config || null,
+      currencyBase: selectedBu?.config?.currency_base || null,
+      dateFormat: selectedBu?.config?.date_format || null,
+      longTimeFormat: selectedBu?.config?.long_time_format || null,
+      perpage: selectedBu?.config?.perpage || null,
+      shortTimeFormat: selectedBu?.config?.short_time_format || null,
+      timezone: selectedBu?.config?.timezone || null,
     };
   }, [user]);
 
@@ -248,7 +278,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       tenantId,
       handleChangeTenant,
       departments,
-      systemConfig,
+      currencyBase,
+      dateFormat,
+      longTimeFormat,
+      perpage,
+      shortTimeFormat,
+      timezone,
     }),
     [
       hasToken,
@@ -261,7 +296,13 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       tenantId,
       handleChangeTenant,
       departments,
-      systemConfig,
+      currencyBase,
+      dateFormat,
+      longTimeFormat,
+      perpage,
+      shortTimeFormat,
+      timezone,
+
     ]
   );
 
