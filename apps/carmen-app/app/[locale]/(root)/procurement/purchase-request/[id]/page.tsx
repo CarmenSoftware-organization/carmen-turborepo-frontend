@@ -7,9 +7,8 @@ import { getOnHandOnOrderService } from "@/services/on-hand-on-order.service";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
-import MainForm from "../components/pr-form/MainForm";
-import RootPrForm from "../components/form/RootPrForm";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
+import MainForm from "../components/form-pr/MainForm";
 
 export default function PurchaseRequestIdPage() {
     const { id } = useParams();
@@ -53,5 +52,5 @@ export default function PurchaseRequestIdPage() {
 
     if (!prDataWithInventory) return <DetailLoading />
 
-    return <RootPrForm mode={formType.VIEW} initValues={prDataWithInventory} />
+    return <MainForm mode={formType.VIEW} initValues={prDataWithInventory as any} />
 }

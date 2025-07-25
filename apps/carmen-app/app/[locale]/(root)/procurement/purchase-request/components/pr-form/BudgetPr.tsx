@@ -13,7 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BudgetItem, mockBgData } from "./mock-budget";
 interface BudgetPrProps {
   readonly mode: formType;
 }
@@ -117,7 +116,7 @@ export default function BudgetPr({ mode }: BudgetPrProps) {
             ))}
           </TableBody>
         </Table>
-        
+
         <div className="flex flex-row items-center justify-between p-4">
           <p>Manage budget allocation for purchase requests</p>
           <div className="flex flex-row items-center gap-8">
@@ -148,20 +147,19 @@ export default function BudgetPr({ mode }: BudgetPrProps) {
             <div>
               <p className="text-xs font-medium">Remaining:</p>
               <p
-                className={`text-sm font-semibold ${
-                  mockBgData.reduce(
-                    (sum, item) =>
-                      sum +
-                      (item.total_budget -
-                        item.soft_commitment.dept_head -
-                        item.soft_commitment.form_po -
-                        item.hard_commitment -
-                        item.current_pr_amount),
-                    0
-                  ) < 0
+                className={`text-sm font-semibold ${mockBgData.reduce(
+                  (sum, item) =>
+                    sum +
+                    (item.total_budget -
+                      item.soft_commitment.dept_head -
+                      item.soft_commitment.form_po -
+                      item.hard_commitment -
+                      item.current_pr_amount),
+                  0
+                ) < 0
                     ? "text-red-500"
                     : "text-green-600"
-                }`}
+                  }`}
               >
                 {mockBgData
                   .reduce(

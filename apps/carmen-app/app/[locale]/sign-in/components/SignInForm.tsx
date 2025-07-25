@@ -96,6 +96,7 @@ export default function SignInForm() {
                 <FormField
                   control={form.control}
                   name="email"
+                  data-testid="email-input"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -116,6 +117,7 @@ export default function SignInForm() {
                 <FormField
                   control={form.control}
                   name="password"
+                  data-testid="password-input"
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
@@ -144,6 +146,7 @@ export default function SignInForm() {
                     type="submit"
                     className="w-full sm:w-40 h-12 sm:h-10 bg-primary hover:bg-primary/80 text-white rounded-full"
                     disabled={isPending}
+                    data-testid="sign-in-button"
                   >
                     {isPending ? t("signingIn") : t("signIn")}
                   </Button>
@@ -154,7 +157,7 @@ export default function SignInForm() {
         </div>
         <div className="flex flex-col sm:flex-row justify-between items-center mt-8 lg:mt-10 gap-4 sm:gap-0">
           <div className="order-2 sm:order-1">
-            <LanguageSwitch />
+            <LanguageSwitch data-id="language-switch" />
           </div>
           <div className="flex items-center gap-4 text-center order-1 sm:order-2">
             <p className="text-muted-foreground text-xs">
