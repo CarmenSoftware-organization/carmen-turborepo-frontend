@@ -283,11 +283,11 @@ export default function MainForm({ mode, initValues }: Props) {
                             <div className="flex flex-col md:flex-row gap-2">
                                 <HeadForm
                                     form={form}
-                                    mode={mode}
+                                    mode={currentFormType}
                                     pr_no={initValues?.pr_no}
-                                    workflow_name={initValues?.workflow_name}
                                     requestor_name={initValues?.requestor_name}
                                     department_name={initValues?.department_name}
+                                    workflow_id={initValues?.workflow_id}
                                 />
                                 <StatusPrInfo
                                     create_date={initValues?.created_at}

@@ -101,6 +101,7 @@ export default function PurchaseRequestList({
               <Link
                 href={`/procurement/purchase-request/${pr.id}`}
                 className="hover:underline text-primary hover:text-primary/80 font-medium"
+                role="button"
               >
                 {pr.pr_no}
               </Link>

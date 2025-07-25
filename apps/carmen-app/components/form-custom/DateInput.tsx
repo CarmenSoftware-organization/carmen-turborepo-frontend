@@ -11,16 +11,19 @@ import { FormControl } from "../ui/form";
 interface DateInputProps {
     readonly field: any;
     readonly wrapWithFormControl?: boolean;
+    readonly disabled?: boolean;
 }
 
-export default function DateInput({ field, wrapWithFormControl = true }: DateInputProps) {
+export default function DateInput({ field, wrapWithFormControl = true, disabled = false }: DateInputProps) {
     const ButtonComponent = (
         <Button
             variant="outline"
             className={cn(
                 "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
-                !field.value && "text-muted-foreground"
+                !field.value && "text-muted-foreground",
+                disabled && "bg-muted"
             )}
+            disabled={disabled}
         >
             {field.value ? (
                 format(new Date(field.value), "PPP")

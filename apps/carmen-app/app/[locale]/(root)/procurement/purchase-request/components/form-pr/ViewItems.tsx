@@ -1,62 +1,36 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {
     Table,
     TableBody,
     TableCell,
-    TableHead,
-    TableHeader,
     TableRow,
 } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { MapPin, Package } from 'lucide-react';
 import { UpdatableItem } from './MainForm';
-
-const fadeVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-};
-
+import TableRowMotion from '@/components/framer-motion/TableRowMotion';
+import TableHeadItemPr from './TableHeadItemPr';
+import { formType } from '@/dtos/form.dto';
 interface ViewItemsProps {
     updatableItems?: UpdatableItem[];
     getCurrencyCode?: (currencyId: string) => string;
     currencyName?: string;
+    mode: formType;
 }
 
 export default function ViewItems({
     updatableItems = [],
     getCurrencyCode,
-    currencyName
+    currencyName,
+    mode
 }: ViewItemsProps) {
     return (
         <div>
             {updatableItems.map((item, index) => (
-                <motion.div
-                    key={item.id}
-                    variants={fadeVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{
-                        duration: 0.3,
-                        delay: index * 0.05,
-                        ease: "easeOut"
-                    }}
-                >
+                <TableRowMotion key={item.id} index={index} >
                     <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="w-[20px]">
-                                    <Checkbox />
-                                </TableHead>
-                                <TableHead className="w-[20px] font-semibold">#</TableHead>
-                                <TableHead className="w-[150px] font-semibold">Location & Status</TableHead>
-                                <TableHead className="w-[150px] font-semibold">Product</TableHead>
-                                <TableHead className="w-[100px] text-right font-semibold">Requested</TableHead>
-                                <TableHead className="w-[40px] text-right font-semibold">Approved</TableHead>
-                                <TableHead className="w-[100px] text-right font-semibold">Price</TableHead>
-                            </TableRow>
-                        </TableHeader>
+                        <TableHeadItemPr mode={mode} />
                         <TableBody>
                             <TableRow>
                                 <TableCell>
@@ -109,7 +83,7 @@ export default function ViewItems({
                             </TableRow>
                         </TableBody>
                     </Table>
-                </motion.div>
+                </TableRowMotion>
             ))}
         </div>
     );
