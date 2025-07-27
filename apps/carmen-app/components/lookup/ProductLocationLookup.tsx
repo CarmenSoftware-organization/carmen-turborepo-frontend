@@ -8,6 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 interface InventoryUnit {
     id: string;
     name: string;
@@ -25,6 +26,7 @@ interface ProductLocationLookupProps {
     onValueChange: (value: string, selectedProduct?: ProductLocation) => void;
     placeholder?: string;
     disabled?: boolean;
+    classNames?: string;
 }
 
 export default function ProductLocationLookup({
@@ -33,6 +35,7 @@ export default function ProductLocationLookup({
     onValueChange,
     placeholder = "Select product location",
     disabled = false,
+    classNames
 }: ProductLocationLookupProps) {
     const { token, tenantId } = useAuth();
 
@@ -74,7 +77,7 @@ export default function ProductLocationLookup({
             onValueChange={handleValueChange}
             disabled={disabled || isLoading}
         >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className={cn(classNames)}>
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>

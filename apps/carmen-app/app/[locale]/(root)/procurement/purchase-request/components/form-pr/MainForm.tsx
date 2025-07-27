@@ -12,14 +12,9 @@ import { mockPr } from "./payload-pr";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import DateInput from "@/components/form-custom/DateInput";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import LocationLookup from "@/components/lookup/LocationLookup";
-import ProductLocationLookup from '@/components/lookup/ProductLocationLookup';
-import { nanoid } from "nanoid";
-import UnitLookup from "@/components/lookup/UnitLookup";
-import NumberInput from "@/components/form-custom/NumberInput";
-import { Trash2 } from "lucide-react";
+
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
+import PurchaseItem from "./PurchaseItem";
 
 interface Props {
     mode: formType;
@@ -58,31 +53,12 @@ export default function MainForm({ mode, initValues }: Props) {
         mode: "onBlur",
     });
 
-    const {
-        fields: addFields,
-        append: addAppend,
-        remove: addRemove,
-    } = useFieldArray({
-        control: form.control,
-        name: "purchase_request_detail.add",
-    });
-
-    const {
-        fields: updateFields,
-        append: updateAppend,
-        remove: updateRemove,
-    } = useFieldArray({
-        control: form.control,
-        name: "purchase_request_detail.update",
-    });
-
     const { append: appendRemove } = useFieldArray({
         control: form.control,
         name: "purchase_request_detail.remove",
     });
 
     const handleFieldUpdate = (item: any, fieldName: string, value: any, selectedProduct?: any) => {
-
         // Update local state สำหรับ UI
         const updateData: any = { [fieldName]: value };
 
@@ -107,20 +83,20 @@ export default function MainForm({ mode, initValues }: Props) {
             location_id: updatedItems[item.id]?.location_id ?? item.location_id,
             product_id: updatedItems[item.id]?.product_id ?? item.product_id,
             inventory_unit_id: updatedItems[item.id]?.inventory_unit_id ?? item.inventory_unit_id,
-            description: item.description,
-            requested_qty: item.requested_qty,
-            requested_unit_id: item.requested_unit_id,
-            delivery_date: new Date(item.delivery_date),
+            description: updatedItems[item.id]?.description ?? item.description,
+            requested_qty: updatedItems[item.id]?.requested_qty ?? item.requested_qty,
+            requested_unit_id: updatedItems[item.id]?.requested_unit_id ?? item.requested_unit_id,
+            delivery_date: updatedItems[item.id]?.delivery_date ?? new Date(item.delivery_date),
             ...updateData
         };
-
 
         if (existingIndex >= 0) {
             // อัพเดทค่าเดิม
             form.setValue(`purchase_request_detail.update.${existingIndex}`, updatedItem);
         } else {
             // เพิ่มใหม่
-            updateAppend(updatedItem);
+            const currentUpdateFields = form.getValues('purchase_request_detail.update') || [];
+            form.setValue('purchase_request_detail.update', [...currentUpdateFields, updatedItem]);
         }
     };
 
@@ -128,49 +104,56 @@ export default function MainForm({ mode, initValues }: Props) {
         console.log('handleSubmit', data);
     }
 
-    const handleAddItem = () => {
-        addAppend({
-            id: nanoid(),
-            location_id: "",
-            product_id: "",
-            inventory_unit_id: "",
-            description: "",
-            requested_qty: 0,
-            requested_unit_id: "",
-            delivery_date: new Date(),
-        })
-    };
 
-    const handleRemoveItemClick = (id: string, isAddItem: boolean = false, addIndex?: number) => {
-        if (isAddItem && addIndex !== undefined) {
-            // สำหรับ add items ลบออกจาก array ทันที
-            addRemove(addIndex);
-        } else {
-            // สำหรับ existing items แสดง confirm dialog
-            setItemToDelete(id);
-            setDeleteDialogOpen(true);
-        }
-    };
 
     const handleConfirmDelete = () => {
         if (itemToDelete) {
+            // เพิ่มรายการลงใน removedItems
             setRemovedItems(prev => new Set(Array.from(prev).concat(itemToDelete)));
+
+            // เพิ่มรายการลงใน purchase_request_detail.remove
             appendRemove({ id: itemToDelete });
+
+            // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
+            const currentUpdateArray = form.getValues('purchase_request_detail.update') || [];
+            const filteredUpdateArray = currentUpdateArray.filter(item => item.id !== itemToDelete);
+            form.setValue('purchase_request_detail.update', filteredUpdateArray);
+
+            // ลบออกจาก updatedItems state
+            setUpdatedItems(prev => {
+                const newState = { ...prev };
+                delete newState[itemToDelete];
+                return newState;
+            });
         }
         setDeleteDialogOpen(false);
         setItemToDelete(null);
     };
 
+    const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCurrentFormType(formType.EDIT);
+    }
+
+    const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCurrentFormType(formType.VIEW);
+    }
+
     return (
         <div className="space-y-4">
             <h1>Current Mode: {currentFormType}</h1>
-            <Button variant="outline" onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setCurrentFormType(formType.EDIT);
-            }}>
-                Edit
-            </Button>
+            <div className="flex justify-end">
+                <Button variant="outline" onClick={handleCancel}>
+                    Cancel
+                </Button>
+                <Button variant="outline" onClick={handleEdit}>
+                    Edit
+                </Button>
+            </div>
+
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)}>
                     <FormField
@@ -186,152 +169,36 @@ export default function MainForm({ mode, initValues }: Props) {
                             </FormItem>
                         )}
                     />
-                    <div className="flex justify-end">
-                        <Button variant="outline" onClick={handleAddItem}>
-                            Add Item
-                        </Button>
-                    </div>
 
-                    <div className="mt-4">
-                        <h3 className="text-lg font-semibold mb-4">รายการ Product ID</h3>
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Location</TableHead>
-                                    <TableHead>Product</TableHead>
-                                    <TableHead>Requested</TableHead>
-                                    <TableHead>More</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {addFields.map((item, index) => (
-                                    <TableRow key={item.id || `add-${index}`}>
-                                        <TableCell>
-                                            <FormField
-                                                control={form.control}
-                                                name={`purchase_request_detail.add.${index}.location_id`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <LocationLookup
-                                                                value={field.value}
-                                                                onValueChange={(value) => {
-                                                                    field.onChange(value);
-                                                                }}
-                                                            />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <FormField
-                                                control={form.control}
-                                                name={`purchase_request_detail.add.${index}.product_id`}
-                                                render={({ field }) => {
-                                                    const currentLocationId = form.watch(`purchase_request_detail.add.${index}.location_id`) ?? '';
+                    <PurchaseItem
+                        form={form}
+                        currentFormType={currentFormType}
+                        initValues={initValues}
+                        updatedItems={updatedItems}
+                        removedItems={removedItems}
+                        onFieldUpdate={handleFieldUpdate}
+                        onRemoveItem={(id, isAddItem, addIndex) => {
+                            if (!isAddItem) {
+                                // เพิ่มรายการลงใน removedItems
+                                setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
 
-                                                    return (
-                                                        <FormItem>
-                                                            <FormControl>
-                                                                <ProductLocationLookup
-                                                                    location_id={currentLocationId}
-                                                                    value={field.value ?? ''}
-                                                                    onValueChange={(value, selectedProduct) => {
-                                                                        console.log('Product onChange:', value, selectedProduct);
+                                // เพิ่มรายการลงใน purchase_request_detail.remove
+                                appendRemove({ id });
 
-                                                                        // Set product_id ก่อน
-                                                                        field.onChange(value);
+                                // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
+                                const currentUpdateArray = form.getValues('purchase_request_detail.update') || [];
+                                const filteredUpdateArray = currentUpdateArray.filter(item => item.id !== id);
+                                form.setValue('purchase_request_detail.update', filteredUpdateArray);
 
-                                                                        // ใช้ setTimeout เพื่อให้ field.onChange ทำงานเสร็จก่อน
-                                                                        setTimeout(() => {
-                                                                            if (selectedProduct?.inventory_unit?.id) {
-                                                                                form.setValue(
-                                                                                    `purchase_request_detail.add.${index}.inventory_unit_id`,
-                                                                                    selectedProduct.inventory_unit.id,
-                                                                                    { shouldValidate: true, shouldDirty: true }
-                                                                                );
-                                                                                console.log('Inventory unit id set:', selectedProduct.inventory_unit.id);
-                                                                            }
-                                                                        }, 0);
-                                                                    }}
-                                                                    disabled={!currentLocationId}
-                                                                />
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    );
-                                                }}
-                                            />
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleRemoveItemClick(item.id, true, index)}
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                                {initValues?.purchase_request_detail?.filter(item => !removedItems.has(item.id)).map((item, index) => (
-                                    <TableRow key={item.id}>
-                                        <TableCell>
-                                            {currentFormType === formType.VIEW ? (
-                                                <span>
-                                                    {item.location_name}
-                                                </span>
-                                            ) : (
-                                                <LocationLookup
-                                                    value={updatedItems[item.id]?.location_id ?? item.location_id}
-                                                    onValueChange={(value) => handleFieldUpdate(item, 'location_id', value)}
-                                                />
-                                            )}
-
-                                        </TableCell>
-                                        <TableCell>
-                                            {currentFormType === formType.VIEW ? (
-                                                <span>
-                                                    {item.product_name}
-                                                </span>
-                                            ) : (
-                                                <ProductLocationLookup
-                                                    location_id={updatedItems[item.id]?.location_id ? updatedItems[item.id]?.location_id : item.location_id}
-                                                    value={updatedItems[item.id]?.product_id ?? item.product_id}
-                                                    onValueChange={(value, selectedProduct) => handleFieldUpdate(item, 'product_id', value, selectedProduct)}
-                                                    disabled={!updatedItems[item.id]?.location_id}
-                                                />
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            {currentFormType === formType.VIEW ? (
-                                                <div className="flex items-center gap-2">
-                                                    <span>{item.requested_qty}</span>
-                                                    <span>{item.requested_unit_name}</span>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center gap-2">
-                                                    <NumberInput
-                                                        value={item.requested_qty}
-                                                        onChange={(value) => handleFieldUpdate(item, 'requested_qty', value)}
-                                                    />
-                                                    <UnitLookup
-                                                        value={item.requested_unit_id}
-                                                        onValueChange={(value) => handleFieldUpdate(item, 'requested_unit_id', value)}
-                                                    />
-                                                </div>
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveItemClick(item.id)}>
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                                // ลบออกจาก updatedItems state
+                                setUpdatedItems(prev => {
+                                    const newState = { ...prev };
+                                    delete newState[id];
+                                    return newState;
+                                });
+                            }
+                        }}
+                    />
                 </form>
             </Form>
             <div className="grid grid-cols-2 gap-2">

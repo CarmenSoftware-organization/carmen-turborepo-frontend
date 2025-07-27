@@ -26,8 +26,10 @@ export default function UnitLookup({
     value,
     onValueChange,
     placeholder = "Select unit",
-    disabled = false
+    disabled = false,
+    classNames
 }: Readonly<PropsLookup>) {
+    console.log('classNames', classNames);
     const { token, tenantId } = useAuth();
     const { units, isLoading } = useUnitQuery({
         token,
@@ -59,7 +61,7 @@ export default function UnitLookup({
                     <Button
                         variant="outline"
                         aria-expanded={open}
-                        className="w-full justify-between"
+                        className={cn(classNames)}
                         disabled={disabled}
                     >
                         {value && selectedUnitName ? selectedUnitName : placeholder}
