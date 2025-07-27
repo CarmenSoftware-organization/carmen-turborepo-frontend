@@ -5,28 +5,66 @@ import { Calendar } from "../ui/calendar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { FormControl } from "../ui/form";
+import { useState, useEffect } from "react";
 
 // <DateInput field={...} wrapWithFormControl={false} /> เพื่อไม่ต้องใช้ FormControl
 
+interface DateField {
+    value: string | Date | undefined;
+    onChange: (value: string) => void;
+}
+
 interface DateInputProps {
-    readonly field: any;
+    readonly field: DateField;
     readonly wrapWithFormControl?: boolean;
     readonly disabled?: boolean;
 }
 
 export default function DateInput({ field, wrapWithFormControl = true, disabled = false }: DateInputProps) {
+    const [internalValue, setInternalValue] = useState<string | Date | undefined>(field.value);
+
+    // Sync internal value with field value
+    useEffect(() => {
+        setInternalValue(field.value);
+    }, [field.value]);
+
+    const formatDate = (value: string | Date | undefined): string => {
+        if (!value) return "";
+        try {
+            const date = new Date(value);
+            if (isNaN(date.getTime())) return "";
+            return format(date, "PPP");
+        } catch {
+            return "";
+        }
+    };
+
+    const getSelectedDate = (): Date | undefined => {
+        if (!internalValue) return undefined;
+        try {
+            const date = new Date(internalValue);
+            return isNaN(date.getTime()) ? undefined : date;
+        } catch {
+            return undefined;
+        }
+    };
+
+    const formattedDate = formatDate(internalValue);
+    const selectedDate = getSelectedDate();
+
     const ButtonComponent = (
         <Button
             variant="outline"
             className={cn(
                 "w-full pl-2 text-left font-normal text-xs bg-background",
-                !field.value && "text-muted-foreground",
+                !internalValue && "text-muted-foreground",
                 disabled && "bg-muted"
             )}
             disabled={disabled}
+            aria-label={formattedDate ? `Selected date: ${formattedDate}` : "Select date"}
         >
-            {field.value ? (
-                format(new Date(field.value), "PPP")
+            {formattedDate ? (
+                formattedDate
             ) : (
                 <span className="text-muted-foreground">Select date</span>
             )}
@@ -42,10 +80,12 @@ export default function DateInput({ field, wrapWithFormControl = true, disabled 
             <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                     mode="single"
-                    selected={field.value ? new Date(field.value) : undefined}
+                    selected={selectedDate}
                     onSelect={(date) => {
-                        if (date) {
-                            field.onChange(date.toISOString());
+                        if (date && !isNaN(date.getTime())) {
+                            const isoString = date.toISOString();
+                            setInternalValue(isoString);
+                            field.onChange(isoString);
                         }
                     }}
                     initialFocus

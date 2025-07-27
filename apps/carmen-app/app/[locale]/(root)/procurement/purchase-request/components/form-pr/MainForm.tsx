@@ -10,11 +10,14 @@ import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 import { mockPr } from "./payload-pr";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import DateInput from "@/components/form-custom/DateInput";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
+import { enum_workflow_type } from "@/dtos/workflows.dto";
+import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 
 interface Props {
     mode: formType;
@@ -27,6 +30,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const [removedItems, setRemovedItems] = useState<Set<string>>(new Set());
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     const { user, departments } = useAuth();
 
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
@@ -38,12 +42,12 @@ export default function MainForm({ mode, initValues }: Props) {
             return zodResolver(schema)(data, context, options);
         },
         defaultValues: {
-            pr_date: format(new Date(), "yyyy-MM-dd"),
-            description: "",
+            pr_date: initValues?.pr_date ? initValues.pr_date : format(new Date(), "yyyy-MM-dd"),
+            description: initValues?.description ? initValues.description : "",
             requestor_id: user?.id,
             department_id: departments?.id,
-            workflow_id: "",
-            note: "",
+            workflow_id: initValues?.workflow_id ? initValues.workflow_id : "",
+            note: initValues?.note ? initValues.note : "",
             purchase_request_detail: {
                 add: [],
                 update: [],
@@ -58,6 +62,25 @@ export default function MainForm({ mode, initValues }: Props) {
         name: "purchase_request_detail.remove",
     });
 
+    // ฟังก์ชันตรวจสอบว่ามีการเปลี่ยนแปลงข้อมูลหรือไม่
+    const hasFormChanges = (): boolean => {
+        const currentValues = form.getValues();
+
+        // ตรวจสอบการเปลี่ยนแปลงในฟิลด์หลัก
+        const hasMainFieldChanges =
+            currentValues.pr_date !== (initValues?.pr_date || format(new Date(), "yyyy-MM-dd")) ||
+            currentValues.description !== (initValues?.description || "") ||
+            currentValues.workflow_id !== (initValues?.workflow_id || "") ||
+            currentValues.note !== (initValues?.note || "");
+
+        // ตรวจสอบการเปลี่ยนแปลงใน items
+        const hasItemChanges =
+            Object.keys(updatedItems).length > 0 ||
+            removedItems.size > 0 ||
+            (currentValues.purchase_request_detail?.add?.length ?? 0) > 0;
+        return hasMainFieldChanges || hasItemChanges;
+    };
+
     const handleFieldUpdate = (item: any, fieldName: string, value: any, selectedProduct?: any) => {
         // Update local state สำหรับ UI
         const updateData: any = { [fieldName]: value };
@@ -66,7 +89,6 @@ export default function MainForm({ mode, initValues }: Props) {
         if (fieldName === 'product_id' && selectedProduct?.inventory_unit?.id) {
             updateData.inventory_unit_id = selectedProduct.inventory_unit.id;
         }
-
         setUpdatedItems(prev => ({
             ...prev,
             [item.id]: {
@@ -86,7 +108,7 @@ export default function MainForm({ mode, initValues }: Props) {
             description: updatedItems[item.id]?.description ?? item.description,
             requested_qty: updatedItems[item.id]?.requested_qty ?? item.requested_qty,
             requested_unit_id: updatedItems[item.id]?.requested_unit_id ?? item.requested_unit_id,
-            delivery_date: updatedItems[item.id]?.delivery_date ?? new Date(item.delivery_date),
+            delivery_date: updatedItems[item.id]?.delivery_date ?? item.delivery_date,
             ...updateData
         };
 
@@ -98,13 +120,13 @@ export default function MainForm({ mode, initValues }: Props) {
             const currentUpdateFields = form.getValues('purchase_request_detail.update') || [];
             form.setValue('purchase_request_detail.update', [...currentUpdateFields, updatedItem]);
         }
+
+        console.log('Final form update array:', form.getValues('purchase_request_detail.update'));
     };
 
     const handleSubmit = (data: PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto) => {
-        console.log('handleSubmit', data);
+        console.log('handleSubmit called with data:', data);
     }
-
-
 
     const handleConfirmDelete = () => {
         if (itemToDelete) {
@@ -139,23 +161,70 @@ export default function MainForm({ mode, initValues }: Props) {
     const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        setCurrentFormType(formType.VIEW);
+
+        // ตรวจสอบว่ามีการเปลี่ยนแปลงหรือไม่
+        if (hasFormChanges()) {
+            setCancelDialogOpen(true);
+        } else {
+            // ถ้าไม่มีการเปลี่ยนแปลง ให้ cancel ได้เลย
+            performCancel();
+        }
     }
+
+    const performCancel = () => {
+        // รีเซ็ตค่าทั้งหมดกลับสู่สถานะเดิม
+        setCurrentFormType(formType.VIEW);
+        setUpdatedItems({});
+        setRemovedItems(new Set());
+
+        // รีเซ็ต form กลับสู่ค่าเริ่มต้น
+        form.reset({
+            pr_date: initValues?.pr_date ? initValues.pr_date : format(new Date(), "yyyy-MM-dd"),
+            description: initValues?.description ? initValues.description : "",
+            requestor_id: user?.id,
+            department_id: departments?.id,
+            workflow_id: initValues?.workflow_id ? initValues.workflow_id : "",
+            note: initValues?.note ? initValues.note : "",
+            purchase_request_detail: {
+                add: [],
+                update: [],
+                remove: [],
+            },
+        });
+    };
+
+    const handleConfirmCancel = () => {
+        performCancel();
+        setCancelDialogOpen(false);
+    };
 
     return (
         <div className="space-y-4">
             <h1>Current Mode: {currentFormType}</h1>
-            <div className="flex justify-end">
-                <Button variant="outline" onClick={handleCancel}>
-                    Cancel
-                </Button>
-                <Button variant="outline" onClick={handleEdit}>
-                    Edit
-                </Button>
-            </div>
-
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)}>
+                    <div className="flex justify-end gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleCancel}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleEdit}
+                        >
+                            Edit
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={!form.formState.errors}
+                        >
+                            Save
+                        </Button>
+                    </div>
                     <FormField
                         control={form.control}
                         name="pr_date"
@@ -166,6 +235,24 @@ export default function MainForm({ mode, initValues }: Props) {
                                 <FormControl>
                                     <DateInput field={field} />
                                 </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="workflow_id"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>PR Type</FormLabel>
+                                <FormControl>
+                                    <WorkflowLookup
+                                        value={field.value ? field.value : initValues?.workflow_id}
+                                        onValueChange={field.onChange}
+                                        type={enum_workflow_type.purchase_request}
+                                    />
+                                </FormControl>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -203,17 +290,31 @@ export default function MainForm({ mode, initValues }: Props) {
             </Form>
             <div className="grid grid-cols-2 gap-2">
                 <JsonViewer data={form.getValues()} title="Form Values" />
-                <JsonViewer data={mockPr} title="Mock Values" />
+                <JsonViewer data={form.formState.errors} title="Watch Error" />
             </div>
 
-            {/* แสดงรายการ Product ID */}
-
-            {/* Delete Confirm Dialog */}
             <DeleteConfirmDialog
                 open={deleteDialogOpen}
                 onOpenChange={setDeleteDialogOpen}
                 onConfirm={handleConfirmDelete}
             />
+
+            <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Confirm Cancel</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have unsaved changes. If you cancel, all changes will be lost. Do you want to cancel?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmCancel} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                            Confirm
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

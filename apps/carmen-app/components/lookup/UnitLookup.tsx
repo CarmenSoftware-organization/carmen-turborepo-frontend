@@ -29,7 +29,6 @@ export default function UnitLookup({
     disabled = false,
     classNames
 }: Readonly<PropsLookup>) {
-    console.log('classNames', classNames);
     const { token, tenantId } = useAuth();
     const { units, isLoading } = useUnitQuery({
         token,
