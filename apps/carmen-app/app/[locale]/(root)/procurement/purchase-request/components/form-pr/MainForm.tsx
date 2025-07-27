@@ -32,7 +32,6 @@ export default function MainForm({ mode, initValues }: Props) {
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     const { user, departments } = useAuth();
-
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
         resolver: (data, context, options) => {
             const schema =
@@ -109,6 +108,11 @@ export default function MainForm({ mode, initValues }: Props) {
             requested_qty: updatedItems[item.id]?.requested_qty ?? item.requested_qty,
             requested_unit_id: updatedItems[item.id]?.requested_unit_id ?? item.requested_unit_id,
             delivery_date: updatedItems[item.id]?.delivery_date ?? item.delivery_date,
+            approved_qty: updatedItems[item.id]?.approved_qty ?? item.approved_qty,
+            approved_unit_id: updatedItems[item.id]?.approved_unit_id ?? item.approved_unit_id,
+            foc_qty: updatedItems[item.id]?.foc_qty ?? item.foc_qty,
+            foc_unit_id: updatedItems[item.id]?.foc_unit_id ?? item.foc_unit_id,
+            pricelist_price: updatedItems[item.id]?.pricelist_price ?? item.pricelist_price,
             ...updateData
         };
 
@@ -120,8 +124,6 @@ export default function MainForm({ mode, initValues }: Props) {
             const currentUpdateFields = form.getValues('purchase_request_detail.update') || [];
             form.setValue('purchase_request_detail.update', [...currentUpdateFields, updatedItem]);
         }
-
-        console.log('Final form update array:', form.getValues('purchase_request_detail.update'));
     };
 
     const handleSubmit = (data: PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto) => {
@@ -260,7 +262,7 @@ export default function MainForm({ mode, initValues }: Props) {
                     <PurchaseItem
                         form={form}
                         currentFormType={currentFormType}
-                        initValues={initValues}
+                        initValues={initValues?.purchase_request_detail}
                         updatedItems={updatedItems}
                         removedItems={removedItems}
                         onFieldUpdate={handleFieldUpdate}
@@ -288,10 +290,10 @@ export default function MainForm({ mode, initValues }: Props) {
                     />
                 </form>
             </Form>
-            <div className="grid grid-cols-2 gap-2">
+            {/* <div className="grid grid-cols-2 gap-2">
                 <JsonViewer data={form.getValues()} title="Form Values" />
                 <JsonViewer data={form.formState.errors} title="Watch Error" />
-            </div>
+            </div> */}
 
             <DeleteConfirmDialog
                 open={deleteDialogOpen}

@@ -10,13 +10,12 @@ import { nanoid } from "nanoid";
 import { useState } from "react";
 import AddfieldItem from "./AddfieldItem";
 import EditFieldItem from "./EditFieldItem";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
     form: UseFormReturn<any>;
     currentFormType: formType;
-    initValues?: {
-        purchase_request_detail?: PurchaseRequestDetail[];
-    };
+    initValues?: PurchaseRequestDetail[];
     updatedItems: { [key: string]: any };
     removedItems: Set<string>;
     onFieldUpdate: (item: any, fieldName: string, value: any, selectedProduct?: any) => void;
@@ -91,10 +90,15 @@ export default function PurchaseItem({
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead className="w-10">
+                            <Checkbox />
+                        </TableHead>
+                        <TableHead className="w-10">#</TableHead>
                         <TableHead className="w-52">Location</TableHead>
                         <TableHead className="w-52">Product</TableHead>
                         <TableHead className="text-right">Requested</TableHead>
-                        <TableHead className="text-center">Delivery Date</TableHead>
+                        <TableHead className="text-right">Approved</TableHead>
+                        <TableHead className="text-right">Price</TableHead>
                         {currentFormType !== formType.VIEW && (
                             <TableHead className="text-center">More</TableHead>
                         )}
@@ -108,7 +112,7 @@ export default function PurchaseItem({
                     />
 
                     <EditFieldItem
-                        initValues={initValues?.purchase_request_detail}
+                        initValues={initValues}
                         removedItems={removedItems}
                         updatedItems={updatedItems}
                         currentFormType={currentFormType}
@@ -117,7 +121,7 @@ export default function PurchaseItem({
                     />
 
                     {/* แสดงข้อความเมื่อไม่มีรายการ */}
-                    {addFields.length === 0 && (!initValues?.purchase_request_detail || initValues.purchase_request_detail.filter(item => !removedItems.has(item.id)).length === 0) && (
+                    {addFields.length === 0 && (!initValues || initValues.filter(item => !removedItems.has(item.id)).length === 0) && (
                         <TableRow>
                             <TableCell colSpan={6} className="text-center py-8 text-gray-500">
                                 No product
