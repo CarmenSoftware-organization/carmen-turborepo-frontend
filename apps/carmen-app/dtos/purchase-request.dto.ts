@@ -220,6 +220,7 @@ export interface PurchaseRequestByIdDto extends
 
 // ========== Zod Schemas with Shared Components ==========
 export const CreatePurchaseRequestDetailSchema = z.object({
+    id: z.string().optional(),
     description: z.string().optional().nullable(),
     comment: z.string().optional().nullable(),
     sequence_no: z.number().optional(),

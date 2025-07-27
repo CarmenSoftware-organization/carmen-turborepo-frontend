@@ -8,11 +8,21 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
+interface InventoryUnit {
+    id: string;
+    name: string;
+}
+
+interface ProductLocation {
+    id: string;
+    name: string;
+    inventory_unit?: InventoryUnit;
+}
 
 interface ProductLocationLookupProps {
     location_id: string;
     value: string;
-    onValueChange: (value: string, inventoryUnit?: { id: string; name: string }) => void;
+    onValueChange: (value: string, selectedProduct?: ProductLocation) => void;
     placeholder?: string;
     disabled?: boolean;
 }
@@ -26,42 +36,74 @@ export default function ProductLocationLookup({
 }: ProductLocationLookupProps) {
     const { token, tenantId } = useAuth();
 
-    const { productLocation, isLoading } = useProductLocation(
+    const { productLocation, isLoading, error } = useProductLocation(
         token,
         tenantId,
         location_id
     );
 
-    const productLocationData = productLocation?.data?.data;
+    const productLocationData: ProductLocation[] = productLocation?.data?.data || [];
+
+    const handleValueChange = (selectedValue: string) => {
+        const selectedProduct = productLocationData.find(
+            (p: ProductLocation) => p.id === selectedValue
+        );
+        onValueChange(selectedValue, selectedProduct);
+    };
+
+    // ถ้ามี error ให้แสดง error message
+    if (error) {
+        return (
+            <Select disabled>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Error loading data" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="error" disabled>
+                        Failed to load product locations
+                    </SelectItem>
+                </SelectContent>
+            </Select>
+        );
+    }
 
     return (
         <Select
+            key={`${location_id}-${value}`}
             value={value}
-            onValueChange={(selectedValue) => {
-                const selectedProduct = productLocation?.data?.data.find((p: any) => p.id === selectedValue);
-                onValueChange(selectedValue, selectedProduct?.inventory_unit);
-            }}
-            disabled={disabled}
+            onValueChange={handleValueChange}
+            disabled={disabled || isLoading}
         >
             <SelectTrigger className="w-full">
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-                {isLoading ? (
-                    <SelectItem value="loading" disabled>
-                        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                {!location_id ? (
+                    <SelectItem value="no-location" disabled>
+                        Please select a location first
                     </SelectItem>
-                ) : productLocationData?.length === 0 ? (
+                ) : isLoading ? (
+                    <SelectItem value="loading" disabled>
+                        <div className="flex items-center gap-2">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Loading...</span>
+                        </div>
+                    </SelectItem>
+                ) : productLocationData.length === 0 ? (
                     <SelectItem value="empty" disabled>
-                        No data
+                        No products found for this location
                     </SelectItem>
                 ) : (
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    productLocationData?.map((productLocation: any) => (
-                        <SelectItem key={productLocation.id} value={productLocation.id}>
-                            {productLocation.name}
-                        </SelectItem>
-                    ))
+                    productLocationData.map((productLocationItem: ProductLocation) => {
+                        return (
+                            <SelectItem
+                                key={productLocationItem.id}
+                                value={productLocationItem.id}
+                            >
+                                {productLocationItem.name}
+                            </SelectItem>
+                        );
+                    })
                 )}
             </SelectContent>
         </Select>

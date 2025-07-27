@@ -43,8 +43,10 @@ export default function ItemsPr({
     setDeletionTarget,
 }: ItemsPrProps) {
     const isViewMode = currentFormType === formType.VIEW;
+    const isEditMode = currentFormType === formType.EDIT;
     const { getCurrencyCode } = useCurrency();
     const { currencyBase } = useAuth();
+
     return (
         <div className="space-y-4">
             <motion.div
@@ -77,7 +79,18 @@ export default function ItemsPr({
                 </div>
             </motion.div>
 
-            {/* {currentFormType === formType.EDIT && (
+            {/* แสดง ViewItems เฉพาะใน VIEW mode สำหรับ updatableItems */}
+            {isViewMode && updatableItems.length > 0 && (
+                <ViewItems
+                    updatableItems={updatableItems}
+                    getCurrencyCode={getCurrencyCode}
+                    currencyName={currencyBase?.name}
+                    mode={currentFormType}
+                />
+            )}
+
+            {/* แสดง EditItems เฉพาะใน EDIT mode สำหรับ updatableItems */}
+            {isEditMode && updatableItems.length > 0 && (
                 <EditItems
                     currentFormType={currentFormType}
                     updatableItems={updatableItems}
@@ -86,35 +99,32 @@ export default function ItemsPr({
                 />
             )}
 
-            <ViewItems
-                updatableItems={updatableItems}
-                getCurrencyCode={getCurrencyCode}
-                currencyName={currencyBase?.name}
-                mode={currentFormType}
-            /> */}
+            {/* Updated Items - แสดงเฉพาะใน EDIT mode */}
+            {isEditMode && updateFields.length > 0 && (
+                <FormDisplay
+                    fields={updateFields}
+                    form={form}
+                    formPath="purchase_request_detail.update"
+                    selectedProductIds={selectedProductIds}
+                    isViewMode={isViewMode}
+                    handleProductSelect={handleProductSelect}
+                    setDeletionTarget={setDeletionTarget}
+                />
+            )}
 
-            {/* Updated Items */}
-            <FormDisplay
-                fields={updateFields}
-                form={form}
-                formPath="purchase_request_detail.update"
-                selectedProductIds={selectedProductIds}
-                isViewMode={isViewMode}
-                handleProductSelect={handleProductSelect}
-                setDeletionTarget={setDeletionTarget}
-            />
-
-            {/* Added Items */}
-            <FormDisplay
-                fields={addFields}
-                form={form}
-                formPath="purchase_request_detail.add"
-                selectedProductIds={selectedProductIds}
-                isViewMode={isViewMode}
-                itemClassName="bg-green-50"
-                handleProductSelect={handleProductSelect}
-                setDeletionTarget={setDeletionTarget}
-            />
+            {/* Added Items - แสดงใน EDIT และ CREATE mode */}
+            {!isViewMode && addFields.length > 0 && (
+                <FormDisplay
+                    fields={addFields}
+                    form={form}
+                    formPath="purchase_request_detail.add"
+                    selectedProductIds={selectedProductIds}
+                    isViewMode={isViewMode}
+                    itemClassName="bg-green-50"
+                    handleProductSelect={handleProductSelect}
+                    setDeletionTarget={setDeletionTarget}
+                />
+            )}
         </div>
     );
 }

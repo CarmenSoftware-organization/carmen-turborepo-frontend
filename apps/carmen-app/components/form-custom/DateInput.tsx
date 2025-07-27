@@ -19,7 +19,7 @@ export default function DateInput({ field, wrapWithFormControl = true, disabled 
         <Button
             variant="outline"
             className={cn(
-                "w-full pl-2 text-left font-normal text-xs bg-background mt-1",
+                "w-full pl-2 text-left font-normal text-xs bg-background",
                 !field.value && "text-muted-foreground",
                 disabled && "bg-muted"
             )}

@@ -23,10 +23,10 @@ export const useProductLocation = (
                 token,
                 tenantId,
                 "Error fetching product location",
-                {}
+                params
             );
         },
-        enabled: !!token && !!tenantId,
+        enabled: !!token && !!tenantId && !!id,
     });
 
     const productLocation = data;
@@ -37,6 +37,5 @@ export const useProductLocation = (
         inventoryUnit,
         isLoading,
         error,
-
     };
 };
