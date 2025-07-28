@@ -14,7 +14,6 @@ import { UseFormReturn, FieldArrayWithId } from "react-hook-form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buttonVariants } from "@/utils/framer-variants";
-import TableRowMotion from "@/components/framer-motion/TableRowMotion";
 
 const cellContentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -51,11 +50,21 @@ export default function AddfieldItem({
     onRemoveItemClick
 }: AddfieldItemProps) {
     return (
-        <AnimatePresence mode="popLayout">
+        <>
             {addFields.map((item, index) => (
-                <TableRowMotion
+                <motion.tr
                     key={item.id || `add-${index}`}
-                    index={index}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -50, scale: 0.95 }}
+                    layout
+                    transition={{
+                        duration: 0.5,
+                        ease: "easeOut",
+                        layout: { duration: 0.3 },
+                        delay: index * 0.08
+                    }}
+                    className="border-b border-blue-100 transition-colors hover:bg-blue-50/30 data-[state=selected]:bg-blue-50"
                 >
                     <TableCell>
                         <motion.div
@@ -274,8 +283,8 @@ export default function AddfieldItem({
                             </motion.div>
                         </motion.div>
                     </TableCell>
-                </TableRowMotion>
+                </motion.tr>
             ))}
-        </AnimatePresence>
+        </>
     );
 }

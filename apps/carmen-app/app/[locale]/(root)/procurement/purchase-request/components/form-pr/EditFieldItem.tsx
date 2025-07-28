@@ -18,7 +18,6 @@ import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { Checkbox } from "@/components/ui/checkbox";
 import { fadeVariants, slideUpVariants, buttonVariants } from "@/utils/framer-variants";
-import TableRowMotion from "@/components/framer-motion/TableRowMotion";
 
 const cellContentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -53,11 +52,21 @@ export default function EditFieldItem({
     const { currencyBase } = useAuth();
 
     return (
-        <AnimatePresence mode="popLayout">
+        <>
             {initValues?.filter(item => !removedItems.has(item.id)).map((item, index) => (
-                <TableRowMotion
+                <motion.tr
                     key={item.id}
-                    index={index}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -50, scale: 0.95 }}
+                    layout
+                    transition={{
+                        duration: 0.4,
+                        ease: "easeOut",
+                        layout: { duration: 0.3 },
+                        delay: index * 0.05
+                    }}
+                    className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                 >
                     <TableCell>
                         <motion.div
@@ -294,8 +303,8 @@ export default function EditFieldItem({
                             )}
                         </motion.div>
                     </TableCell>
-                </TableRowMotion>
+                </motion.tr>
             ))}
-        </AnimatePresence>
+        </>
     );
 }   
