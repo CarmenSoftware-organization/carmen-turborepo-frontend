@@ -12,25 +12,16 @@ interface ActionFieldsProps {
     readonly currentMode: formType;
     readonly initValues?: PurchaseRequestByIdDto;
     readonly onModeChange: (mode: formType) => void;
+    readonly onCancel: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    readonly isError: boolean;
 }
-export default function ActionFields({ mode, currentMode, initValues, onModeChange }: ActionFieldsProps) {
-    const router = useRouter();
+export default function ActionFields({ mode, currentMode, initValues, onModeChange, onCancel, isError }: ActionFieldsProps) {
     const tCommon = useTranslations("Common");
 
     const onEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
         onModeChange(formType.EDIT);
-    };
-
-    const onCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (currentMode === formType.ADD) {
-            router.push("/procurement/purchase-request");
-        } else {
-            onModeChange(formType.VIEW);
-        }
     };
 
     return (
@@ -80,6 +71,7 @@ export default function ActionFields({ mode, currentMode, initValues, onModeChan
                             size={"sm"}
                             className="px-2 text-xs"
                             type="submit"
+                            disabled={isError}
                         >
                             <Save />
                             {tCommon("save")}

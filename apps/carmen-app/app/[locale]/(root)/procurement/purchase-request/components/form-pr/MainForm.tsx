@@ -13,11 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import DateInput from "@/components/form-custom/DateInput";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import WorkflowLookup from "@/components/lookup/WorkflowLookup";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from "@/components/ui/card";
+import { ArrowLeftRightIcon, CheckCircleIcon, ChevronRight, ChevronLeft, XCircleIcon } from "lucide-react";
+import ActionFields from "./ActionFields";
+import HeadForm from "./HeadForm";
+import StatusPrInfo from "./StatusPrInfo";
+import { useRouter } from "@/lib/navigation";
 
 interface Props {
     mode: formType;
@@ -32,6 +40,9 @@ export default function MainForm({ mode, initValues }: Props) {
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     const { user, departments } = useAuth();
+    const [openLog, setOpenLog] = useState(false);
+    const router = useRouter();
+
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
         resolver: (data, context, options) => {
             const schema =
@@ -174,25 +185,28 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     const performCancel = () => {
-        // รีเซ็ตค่าทั้งหมดกลับสู่สถานะเดิม
-        setCurrentFormType(formType.VIEW);
-        setUpdatedItems({});
-        setRemovedItems(new Set());
+        if (currentFormType === formType.ADD) {
+            router.push("/procurement/purchase-request");
+        } else {
+            setCurrentFormType(formType.VIEW);
+            setUpdatedItems({});
+            setRemovedItems(new Set());
 
-        // รีเซ็ต form กลับสู่ค่าเริ่มต้น
-        form.reset({
-            pr_date: initValues?.pr_date ? initValues.pr_date : format(new Date(), "yyyy-MM-dd"),
-            description: initValues?.description ? initValues.description : "",
-            requestor_id: user?.id,
-            department_id: departments?.id,
-            workflow_id: initValues?.workflow_id ? initValues.workflow_id : "",
-            note: initValues?.note ? initValues.note : "",
-            purchase_request_detail: {
-                add: [],
-                update: [],
-                remove: [],
-            },
-        });
+            form.reset({
+                pr_date: initValues?.pr_date ? initValues.pr_date : format(new Date(), "yyyy-MM-dd"),
+                description: initValues?.description ? initValues.description : "",
+                requestor_id: user?.id,
+                department_id: departments?.id,
+                workflow_id: initValues?.workflow_id ? initValues.workflow_id : "",
+                note: initValues?.note ? initValues.note : "",
+                purchase_request_detail: {
+                    add: [],
+                    update: [],
+                    remove: [],
+                },
+            });
+        }
+
     };
 
     const handleConfirmCancel = () => {
@@ -200,10 +214,149 @@ export default function MainForm({ mode, initValues }: Props) {
         setCancelDialogOpen(false);
     };
 
+    const watchForm = form.watch();
+    const watchError = form.formState.errors;
+    const hasError = Object.keys(watchError).length > 0;
+    const canSave = !hasError && hasFormChanges();
+
     return (
         <div className="space-y-4">
-            <h1>Current Mode: {currentFormType}</h1>
-            <Form {...form}>
+
+            <div className="flex gap-4 relative">
+                <ScrollArea
+                    className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
+                >
+                    <Card className="p-4 mb-2">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(handleSubmit)}>
+                                <ActionFields
+                                    mode={mode}
+                                    currentMode={currentFormType}
+                                    initValues={initValues}
+                                    onModeChange={setCurrentFormType}
+                                    onCancel={handleCancel}
+                                    isError={!canSave}
+                                />
+                                <div className="grid grid-cols-5 gap-2 mb-4">
+                                    <HeadForm
+                                        form={form}
+                                        mode={currentFormType}
+                                        pr_no={initValues?.pr_no}
+                                        workflow_id={initValues?.workflow_id}
+                                        requestor_name={initValues?.requestor_name}
+                                        department_name={initValues?.department_name}
+                                    />
+                                    {currentFormType !== formType.ADD && (
+                                        <StatusPrInfo
+                                            create_date={initValues?.created_at}
+                                            status={initValues?.pr_status}
+                                        />
+                                    )}
+                                </div>
+                                <Tabs defaultValue="items">
+                                    <TabsList className="w-full h-8">
+                                        <TabsTrigger className="w-full text-xs" value="items">
+                                            Items
+                                        </TabsTrigger>
+                                        <TabsTrigger className="w-full text-xs" value="budget">
+                                            Budget
+                                        </TabsTrigger>
+                                        <TabsTrigger className="w-full text-xs" value="workflow">
+                                            Workflow
+                                        </TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="items" className="mt-2">
+                                        <PurchaseItem
+                                            form={form}
+                                            currentFormType={currentFormType}
+                                            initValues={initValues?.purchase_request_detail}
+                                            updatedItems={updatedItems}
+                                            removedItems={removedItems}
+                                            onFieldUpdate={handleFieldUpdate}
+                                            onRemoveItem={(id, isAddItem, addIndex) => {
+                                                if (!isAddItem) {
+                                                    // เพิ่มรายการลงใน removedItems
+                                                    setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
+
+                                                    // เพิ่มรายการลงใน purchase_request_detail.remove
+                                                    appendRemove({ id });
+
+                                                    // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
+                                                    const currentUpdateArray = form.getValues('purchase_request_detail.update') || [];
+                                                    const filteredUpdateArray = currentUpdateArray.filter(item => item.id !== id);
+                                                    form.setValue('purchase_request_detail.update', filteredUpdateArray);
+
+                                                    // ลบออกจาก updatedItems state
+                                                    setUpdatedItems(prev => {
+                                                        const newState = { ...prev };
+                                                        delete newState[id];
+                                                        return newState;
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="budget" className="mt-2">
+                                        Budget Pr
+                                    </TabsContent>
+                                    <TabsContent value="workflow" className="mt-2">
+                                        Workflow Pr
+                                    </TabsContent>
+                                </Tabs>
+
+                            </form>
+                        </Form>
+                    </Card>
+                    <div className="grid grid-cols-2 gap-2">
+                        <JsonViewer data={watchForm} title="Form Values" />
+                        <JsonViewer data={form.formState.errors} title="Watch Error" />
+                    </div>
+                    <div
+                        className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
+                    >
+                        <Button size={"sm"} className="h-7 px-2 text-xs">
+                            <CheckCircleIcon className="w-4 h-4" />
+                            Approve
+                        </Button>
+                        <Button
+                            variant={"destructive"}
+                            size={"sm"}
+                            className="h-7 px-2 text-xs"
+                        >
+                            <XCircleIcon className="w-4 h-4" />
+                            Reject
+                        </Button>
+                        <Button
+                            variant={"outline"}
+                            size={"sm"}
+                            className="h-7 px-2 text-xs"
+                        >
+                            <ArrowLeftRightIcon className="w-4 h-4" />
+                            Send Back
+                        </Button>
+                    </div>
+                </ScrollArea>
+                {openLog && (
+                    <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
+                        <p className="flex flex-col gap-4">hello</p>
+                    </div>
+                )}
+            </div>
+            <Button
+                aria-label={openLog ? "Close log panel" : "Open log panel"}
+                onClick={() => setOpenLog(!openLog)}
+                variant="default"
+                size="sm"
+                className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg"
+            >
+                {openLog ? (
+                    <ChevronRight className="h-6 w-6" />
+                ) : (
+                    <ChevronLeft className="h-6 w-6" />
+                )}
+            </Button>
+
+            {/* <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)}>
                     <div className="flex justify-end gap-2">
                         <Button
@@ -222,7 +375,7 @@ export default function MainForm({ mode, initValues }: Props) {
                         </Button>
                         <Button
                             type="submit"
-                            disabled={!form.formState.errors}
+                            disabled={hasError}
                         >
                             Save
                         </Button>
@@ -289,7 +442,7 @@ export default function MainForm({ mode, initValues }: Props) {
                         }}
                     />
                 </form>
-            </Form>
+            </Form> */}
             {/* <div className="grid grid-cols-2 gap-2">
                 <JsonViewer data={form.getValues()} title="Form Values" />
                 <JsonViewer data={form.formState.errors} title="Watch Error" />

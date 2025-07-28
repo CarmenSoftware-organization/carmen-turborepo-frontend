@@ -13,7 +13,7 @@ export default function StatusPrInfo({
   status,
 }: StatusPrInfoProps) {
   return (
-    <Card className="p-4 w-2/5">
+    <Card className="p-4 col-span-2">
       <div className="space-y-4">
         <div className="flex items-center">
           <h3 className="text-lg font-semibold">Status Information</h3>

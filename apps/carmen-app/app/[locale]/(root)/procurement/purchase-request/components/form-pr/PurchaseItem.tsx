@@ -11,6 +11,7 @@ import { useState } from "react";
 import AddfieldItem from "./AddfieldItem";
 import EditFieldItem from "./EditFieldItem";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Package } from "lucide-react";
 
 interface Props {
     form: UseFormReturn<any>;
@@ -123,8 +124,11 @@ export default function PurchaseItem({
                     {/* แสดงข้อความเมื่อไม่มีรายการ */}
                     {addFields.length === 0 && (!initValues || initValues.filter(item => !removedItems.has(item.id)).length === 0) && (
                         <TableRow>
-                            <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                                No product
+                            <TableCell colSpan={8}>
+                                <div className="flex items-center justify-center gap-2 text-muted-foreground h-10">
+                                    <Package className="w-4 h-4" />
+                                    No product
+                                </div>
                             </TableCell>
                         </TableRow>
                     )}

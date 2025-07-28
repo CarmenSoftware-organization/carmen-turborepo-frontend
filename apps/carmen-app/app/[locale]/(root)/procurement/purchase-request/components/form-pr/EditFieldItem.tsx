@@ -18,6 +18,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { Checkbox } from "@/components/ui/checkbox";
 import { fadeVariants, slideUpVariants, buttonVariants } from "@/utils/framer-variants";
+import { Input } from "@/components/ui/input";
 
 const cellContentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -135,12 +136,18 @@ export default function EditFieldItem({
                                     </div>
                                 </div>
                             ) : (
-                                <ProductLocationLookup
-                                    location_id={updatedItems[item.id]?.location_id ? updatedItems[item.id]?.location_id : item.location_id}
-                                    value={updatedItems[item.id]?.product_id ?? item.product_id}
-                                    onValueChange={(value, selectedProduct) => onFieldUpdate(item, 'product_id', value, selectedProduct)}
-                                    disabled={!updatedItems[item.id]?.location_id && !item.location_id}
-                                />
+                                <div className="space-y-2">
+                                    <ProductLocationLookup
+                                        location_id={updatedItems[item.id]?.location_id ? updatedItems[item.id]?.location_id : item.location_id}
+                                        value={updatedItems[item.id]?.product_id ?? item.product_id}
+                                        onValueChange={(value, selectedProduct) => onFieldUpdate(item, 'product_id', value, selectedProduct)}
+                                        disabled={!updatedItems[item.id]?.location_id && !item.location_id}
+                                    />
+                                    <Input
+                                        value={updatedItems[item.id]?.description ?? item.description}
+                                        onChange={(e) => onFieldUpdate(item, 'description', e.target.value)}
+                                    />
+                                </div>
                             )}
                         </motion.div>
                     </TableCell>

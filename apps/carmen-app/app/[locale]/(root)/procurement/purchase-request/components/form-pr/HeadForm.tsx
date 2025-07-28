@@ -27,16 +27,19 @@ export default function HeadForm({
     department_name
 }: HeadFormProps) {
     return (
-        <div className="grid grid-cols-4 gap-2">
-            <div className="space-y-2">
-                <Label>PR Number</Label>
-                <Input
-                    placeholder="PR-XXXX"
-                    disabled
-                    className="bg-muted"
-                    value={pr_no}
-                />
-            </div>
+        <div className="col-span-3 grid grid-cols-4 gap-2">
+            {mode !== formType.ADD && (
+                <div className="space-y-2">
+                    <Label>PR Number</Label>
+                    <Input
+                        placeholder="PR-XXXX"
+                        disabled
+                        className="bg-muted"
+                        value={pr_no}
+                    />
+                </div>
+            )}
+
             <FormField
                 control={form.control}
                 name="pr_date"
@@ -67,22 +70,29 @@ export default function HeadForm({
                     </FormItem>
                 )}
             />
-            <div className="space-y-2">
-                <Label>Requestor</Label>
-                <Input
-                    disabled
-                    className="bg-muted"
-                    value={requestor_name}
-                />
-            </div>
-            <div className="space-y-2">
-                <Label>Department</Label>
-                <Input
-                    disabled
-                    className="bg-muted"
-                    value={department_name}
-                />
-            </div>
+            {mode !== formType.ADD && (
+                <div className="space-y-2">
+                    <Label>Requestor</Label>
+                    <Input
+                        disabled
+                        className="bg-muted"
+                        value={requestor_name}
+                    />
+                </div>
+            )}
+
+            {mode !== formType.ADD && (
+                <div className="space-y-2">
+                    <Label>Department</Label>
+                    <Input
+                        disabled
+                        className="bg-muted"
+                        value={department_name}
+                    />
+                </div>
+            )}
+
+
             <FormField
                 control={form.control}
                 name="description"

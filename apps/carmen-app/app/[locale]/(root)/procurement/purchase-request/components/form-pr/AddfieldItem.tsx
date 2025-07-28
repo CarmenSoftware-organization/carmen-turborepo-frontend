@@ -14,6 +14,7 @@ import { UseFormReturn, FieldArrayWithId } from "react-hook-form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buttonVariants } from "@/utils/framer-variants";
+import { Input } from "@/components/ui/input";
 
 const cellContentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -131,6 +132,7 @@ export default function AddfieldItem({
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
+                            className="space-y-2"
                         >
                             <FormField
                                 control={form.control}
@@ -169,6 +171,17 @@ export default function AddfieldItem({
                                     );
                                 }}
                             />
+                            <FormField
+                                control={form.control}
+                                name={`purchase_request_detail.add.${index}.description`}
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <Input value={field.value} onChange={field.onChange} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
                         </motion.div>
                     </TableCell>
                     <TableCell className="text-right flex items-center justify-end gap-2">
@@ -176,7 +189,7 @@ export default function AddfieldItem({
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
-                            className="flex items-center gap-2"
+                            className="flex items-center justify-center gap-2"
                         >
                             <FormField
                                 control={form.control}
