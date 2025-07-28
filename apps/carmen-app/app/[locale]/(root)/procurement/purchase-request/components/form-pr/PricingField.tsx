@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 
 interface PricingProps {
     label: string;
-    value: string;
+    value: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder: string;
 }

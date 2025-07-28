@@ -1,28 +1,30 @@
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
 import { DollarSign } from "lucide-react";
-import { PurchaseRequestDetailItem } from "@/dtos/pr.dto";
 import { useCurrency } from "@/hooks/useCurrency";
 import { useVendor } from "@/hooks/useVendor";
 import { formType } from "@/dtos/form.dto";
 import PricingField from "./PricingField";
 import PricingCardSummary from "./PricingCardSummary";
+import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 
 interface PricingCardProps {
-    readonly item: PurchaseRequestDetailItem;
-    readonly onItemUpdate: (field: keyof PurchaseRequestDetailItem, value: any) => void;
+    readonly item: PurchaseRequestDetail;
+    onFieldUpdate: (item: any, fieldName: string, value: any, selectedProduct?: any) => void;
     readonly mode: formType
 }
 
-export default function PricingCard({ item, onItemUpdate, mode }: PricingCardProps) {
+export default function PricingCard({ item, onFieldUpdate, mode }: PricingCardProps) {
     const { getCurrencyCode } = useCurrency();
     const { getVendorName } = useVendor();
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle >
-                    <DollarSign className="text-green-500" />
-                    Pricing
+                <CardTitle>
+                    <div className="flex items-center gap-1">
+                        <DollarSign className="text-green-500" />
+                        Pricing
+                    </div>
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -30,24 +32,24 @@ export default function PricingCard({ item, onItemUpdate, mode }: PricingCardPro
                     <PricingField
                         label="Vendor"
                         value={getVendorName(item.vendor_id)}
-                        onChange={(e) => onItemUpdate("vendor_id", e.target.value)}
+                        onChange={(value) => onFieldUpdate(item, "vendor_id", value)}
                         placeholder="Vendor"
                     />
                     <PricingField
                         label="Pricelist Number"
                         value={item.pricelist_detail_id || ""}
-                        onChange={(e) => onItemUpdate("pricelist_detail_id", e.target.value)}
+                        onChange={(value) => onFieldUpdate(item, "pricelist_detail_id", value)}
                         placeholder="Pricelist Number"
                     />
                     <PricingField
                         label="Order Currency"
                         value={getCurrencyCode(item.currency_id)}
-                        onChange={(e) => onItemUpdate("currency_id", e.target.value)}
+                        onChange={(value) => onFieldUpdate(item, "currency_id", value)}
                         placeholder="Order Currency" />
                     <PricingField
                         label="Price per Unit"
-                        value={item.price.toString()}
-                        onChange={(e) => onItemUpdate("price", e.target.value)}
+                        value={item.pricelist_price}
+                        onChange={(value) => onFieldUpdate(item, "pricelist_price", value)}
                         placeholder="Price per Unit"
                     />
                 </div>
@@ -55,7 +57,7 @@ export default function PricingCard({ item, onItemUpdate, mode }: PricingCardPro
                     <PricingCardSummary
                         label="Discount"
                         currencyCode={getCurrencyCode(item.currency_id)}
-                        value={item.discount_rate.toString()}
+                        value={item.discount_rate}
                         placeholder="Discount Rate"
                         color="green"
                         isAmount

@@ -11,7 +11,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import TablePriceList from "./TablePriceList";
 
-
 export default function PriceListDialog() {
     return (
         <Dialog>

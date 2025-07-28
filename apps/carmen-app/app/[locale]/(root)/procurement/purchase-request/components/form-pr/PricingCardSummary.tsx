@@ -6,7 +6,7 @@ import { formType } from "@/dtos/form.dto";
 interface PricingCardSummaryProps {
     label: string;
     currencyCode?: string;
-    value: string;
+    value: string | number;
     placeholder: string;
     color: string;
     isAmount?: boolean;
