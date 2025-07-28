@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
-import { Link, useRouter } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 import { convertPrStatus } from "@/utils/helper";
 import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -12,11 +12,14 @@ interface ActionFieldsProps {
     readonly currentMode: formType;
     readonly initValues?: PurchaseRequestByIdDto;
     readonly onModeChange: (mode: formType) => void;
-    readonly onCancel: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    readonly onCancel: (e: React.MouseEvent<HTMLButtonElement>, type: 'back' | 'cancel') => void;
     readonly isError: boolean;
+    readonly hasFormChanges: () => boolean;
 }
-export default function ActionFields({ mode, currentMode, initValues, onModeChange, onCancel, isError }: ActionFieldsProps) {
+
+export default function ActionFields({ mode, currentMode, initValues, onModeChange, onCancel, isError, hasFormChanges }: ActionFieldsProps) {
     const tCommon = useTranslations("Common");
+    const router = useRouter();
 
     const onEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -24,12 +27,31 @@ export default function ActionFields({ mode, currentMode, initValues, onModeChan
         onModeChange(formType.EDIT);
     };
 
+    const handleBack = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (currentMode === formType.EDIT) {
+            if (hasFormChanges()) {
+                onCancel(e, 'back');
+            } else {
+                router.push("/procurement/purchase-request");
+            }
+        } else {
+            router.push("/procurement/purchase-request");
+        }
+    };
+
     return (
         <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-                <Link href="/procurement/purchase-request">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleBack}
+                >
                     <ChevronLeft className="h-4 w-4" />
-                </Link>
+                </Button>
 
                 <div className="flex items-start gap-2">
                     {mode === formType.ADD ? (
@@ -62,7 +84,7 @@ export default function ActionFields({ mode, currentMode, initValues, onModeChan
                             variant="outline"
                             size={"sm"}
                             className="px-2 text-xs"
-                            onClick={onCancel}
+                            onClick={(e) => onCancel(e, 'cancel')}
                         >
                             <X /> {tCommon("cancel")}
                         </Button>

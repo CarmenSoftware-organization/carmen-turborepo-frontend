@@ -11,7 +11,7 @@ import { useState } from "react";
 import AddfieldItem from "./AddfieldItem";
 import EditFieldItem from "./EditFieldItem";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Package } from "lucide-react";
+import { Package, Plus } from "lucide-react";
 
 interface Props {
     form: UseFormReturn<any>;
@@ -78,13 +78,16 @@ export default function PurchaseItem({
         setItemToDelete(null);
     };
 
-
-
     return (
         <div className="mt-4">
             <div className="flex justify-end mb-4">
-                <Button variant="outline" onClick={handleAddItem}>
-                    เพิ่มรายการ
+                <Button
+                    onClick={handleAddItem}
+                    disabled={currentFormType === formType.VIEW}
+                    size={"sm"}
+                >
+                    <Plus />
+                    Add Item
                 </Button>
             </div>
 

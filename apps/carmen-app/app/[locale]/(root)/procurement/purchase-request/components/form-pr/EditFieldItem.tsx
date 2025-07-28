@@ -60,9 +60,6 @@ export default function EditFieldItem({
 }: EditFieldItemProps) {
     const { getCurrencyCode } = useCurrency();
     const { currencyBase } = useAuth();
-
-
-
     return (
         <AnimatePresence>
             {initValues?.filter(item => !removedItems.has(item.id)).map((item, index) => (

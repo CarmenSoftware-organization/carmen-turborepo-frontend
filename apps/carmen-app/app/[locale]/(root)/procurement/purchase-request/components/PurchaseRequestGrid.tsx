@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import PaginationComponent from "@/components/PaginationComponent";
 import { GetAllPrDto } from "@/dtos/pr.dto";
 import CardLoading from "@/components/loading/CardLoading";
+import { useRouter } from "@/lib/navigation";
 
 interface PurchaseRequestGridProps {
   readonly purchaseRequests: GetAllPrDto[];
@@ -23,11 +24,12 @@ export default function PurchaseRequestGrid({
   purchaseRequests = [],
   currentPage = 1,
   totalPages = 1,
-  onPageChange = () => {},
+  onPageChange = () => { },
   isLoading = false,
 }: PurchaseRequestGridProps) {
   const t = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const router = useRouter();
 
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
@@ -67,6 +69,7 @@ export default function PurchaseRequestGrid({
       <Card
         key={pr.id}
         className="transition-all duration-200 hover:shadow-lg hover:border-primary/50"
+        onClick={() => router.push(`/procurement/purchase-request/${pr.id}`)}
       >
         <CardHeader className="p-2 border-t bg-muted rounded-t-md">
           <div className="flex justify-between items-start">
@@ -121,8 +124,8 @@ export default function PurchaseRequestGrid({
                 <p className="text-xs text-muted-foreground">
                   Current Workflow
                 </p>
-                {pr.current_workflow_status ? (
-                  <Badge>{pr.current_workflow_status}</Badge>
+                {pr.workflow_current_stage ? (
+                  <Badge>{pr.workflow_current_stage}</Badge>
                 ) : (
                   <p className="text-xs font-medium">-</p>
                 )}

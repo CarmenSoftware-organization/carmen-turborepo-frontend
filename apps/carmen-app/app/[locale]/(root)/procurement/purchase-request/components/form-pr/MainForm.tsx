@@ -32,6 +32,11 @@ interface Props {
     initValues?: PurchaseRequestByIdDto;
 }
 
+interface CancelAction {
+    type: 'back' | 'cancel';
+    event: React.MouseEvent<HTMLButtonElement>;
+}
+
 export default function MainForm({ mode, initValues }: Props) {
     const [currentFormType, setCurrentFormType] = useState<formType>(mode);
     const [updatedItems, setUpdatedItems] = useState<{ [key: string]: any }>({});
@@ -39,6 +44,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+    const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
     const { user, departments } = useAuth();
     const [openLog, setOpenLog] = useState(false);
     const router = useRouter();
@@ -165,22 +171,21 @@ export default function MainForm({ mode, initValues }: Props) {
         setItemToDelete(null);
     };
 
-    const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCurrentFormType(formType.EDIT);
-    }
-
-    const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleCancel = (e: React.MouseEvent<HTMLButtonElement>, type: 'back' | 'cancel' = 'cancel') => {
         e.preventDefault();
         e.stopPropagation();
 
         // ตรวจสอบว่ามีการเปลี่ยนแปลงหรือไม่
         if (hasFormChanges()) {
+            setCancelAction({ type, event: e });
             setCancelDialogOpen(true);
         } else {
-            // ถ้าไม่มีการเปลี่ยนแปลง ให้ cancel ได้เลย
-            performCancel();
+            // ถ้าไม่มีการเปลี่ยนแปลง
+            if (type === 'back') {
+                router.push("/procurement/purchase-request");
+            } else {
+                performCancel();
+            }
         }
     }
 
@@ -210,7 +215,11 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const handleConfirmCancel = () => {
-        performCancel();
+        if (cancelAction.type === 'back') {
+            router.push("/procurement/purchase-request");
+        } else {
+            performCancel();
+        }
         setCancelDialogOpen(false);
     };
 
@@ -236,6 +245,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     onModeChange={setCurrentFormType}
                                     onCancel={handleCancel}
                                     isError={!canSave}
+                                    hasFormChanges={hasFormChanges}
                                 />
                                 <div className="grid grid-cols-5 gap-2 mb-4">
                                     <HeadForm
