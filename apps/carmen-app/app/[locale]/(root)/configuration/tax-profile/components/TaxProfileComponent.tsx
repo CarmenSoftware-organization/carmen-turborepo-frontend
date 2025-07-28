@@ -182,13 +182,12 @@ export function TaxProfileComponent() {
       handleSetSort,
     ]
   );
-  const handleEdit = (profileId: string) => {
+  const handleEdit = useCallback((profileId: string) => {
     setEditingProfile(profileId);
     setIsDialogOpen(true);
-  };
+  }, []);
 
-
-  const handleDelete = (id: string) => {
+  const handleDelete = useCallback((id: string) => {
     deleteTaxProfile(undefined, {
       onSuccess: () => {
         setTaxProfiles((prev) => prev.filter((profile) => profile.id !== id));
@@ -196,7 +195,7 @@ export function TaxProfileComponent() {
         setDeleteProfileId(null);
       },
     });
-  };
+  }, [deleteTaxProfile, tTaxProfile]);
 
   const content = useMemo(() => {
     return (
@@ -207,7 +206,7 @@ export function TaxProfileComponent() {
         onDelete={handleDelete}
       />
     );
-  }, [taxProfiles, isLoading]);
+  }, [taxProfiles, isLoading, handleEdit, handleDelete]);
 
   const handleCreate = (data: TaxProfileFormData) => {
     createTaxProfile(data, {
@@ -218,8 +217,6 @@ export function TaxProfileComponent() {
       },
     });
   };
-
-
 
   const handleUpdate = (data: TaxProfileFormData) => {
     updateTaxProfile(data as TaxProfileEditDto, {
@@ -235,7 +232,6 @@ export function TaxProfileComponent() {
       },
     });
   };
-
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);

@@ -192,6 +192,21 @@ export default function BusinessTypeComponent() {
     ]
   );
 
+  const handleEdit = useCallback((id: string) => {
+    const buType = buTypesData.find((bt) => bt.id === id);
+    if (buType) {
+      const formData: BuTypeFormDto = {
+        name: buType.name,
+        description: buType.description,
+        note: buType.note,
+        is_active: buType.is_active,
+      };
+      setEditingProfile(formData);
+      setEditingProfileId(id);
+      setIsDialogOpen(true);
+    }
+  }, [buTypesData]);
+
   const content = useMemo(() => {
     return (
       <Table className="border">
@@ -262,7 +277,7 @@ export default function BusinessTypeComponent() {
         )}
       </Table>
     );
-  }, [buTypesData]);
+  }, [buTypesData, isLoading, tBusinessType, tHeader, handleEdit]);
 
   const handleCreate = (data: BuTypeFormDto) => {
     createBuType(data, {
@@ -272,21 +287,6 @@ export default function BusinessTypeComponent() {
         toastSuccess({ message: tBusinessType("business_type_created") });
       },
     });
-  };
-
-  const handleEdit = (id: string) => {
-    const buType = buTypesData.find((bt) => bt.id === id);
-    if (buType) {
-      const formData: BuTypeFormDto = {
-        name: buType.name,
-        description: buType.description,
-        note: buType.note,
-        is_active: buType.is_active,
-      };
-      setEditingProfile(formData);
-      setEditingProfileId(id);
-      setIsDialogOpen(true);
-    }
   };
 
   const handleUpdate = (data: BuTypeEditDto) => {

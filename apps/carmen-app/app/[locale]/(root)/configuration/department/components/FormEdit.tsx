@@ -57,7 +57,7 @@ const UserItem = ({ item, hodStates, onHodChange }: UserItemProps) => (
 interface FormEditProps {
     readonly defaultValues?: DepartmentGetByIdDto;
     readonly mode: formType;
-    readonly onSuccess: (data: any) => void;
+    readonly onSuccess: (data: unknown) => void;
     readonly onBack: () => void;
 }
 
@@ -244,7 +244,7 @@ export default function FormEdit({
         }
     };
 
-    const handleHodChange = (key: string, checked: boolean) => {
+    const handleHodChange = useCallback((key: string, checked: boolean) => {
         setHodStates((prev) => ({
             ...prev,
             [key]: checked,
@@ -304,7 +304,7 @@ export default function FormEdit({
             );
             form.setValue("users.add", updatedAddArray);
         }
-    };
+    }, [form, initUsers]);
 
     const renderUserItem = useCallback((item: { key: string | number; title: string }) => (
         <UserItem

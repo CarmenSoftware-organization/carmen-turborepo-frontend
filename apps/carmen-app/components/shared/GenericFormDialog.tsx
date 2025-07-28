@@ -84,12 +84,12 @@ export default function GenericFormDialog<T extends FieldValues>({
 }: GenericFormDialogProps<T>) {
     const tCommon = useTranslations('Common');
 
-    const getFormDefaultValues = (): DefaultValues<T> => {
+    const getFormDefaultValues = useCallback((): DefaultValues<T> => {
         if (mode === formType.EDIT && data) {
             return { ...defaultValues, ...data } as DefaultValues<T>;
         }
         return defaultValues;
-    };
+    }, [mode, data, defaultValues]);
 
     const form = useForm<T>({
         resolver: zodResolver(schema),
@@ -99,7 +99,7 @@ export default function GenericFormDialog<T extends FieldValues>({
     useEffect(() => {
         const newDefaultValues = getFormDefaultValues();
         form.reset(newDefaultValues);
-    }, [mode, data, open]);
+    }, [mode, data, open, form, getFormDefaultValues]);
 
     const handleSubmit = async (formData: T) => {
         try {
@@ -115,7 +115,7 @@ export default function GenericFormDialog<T extends FieldValues>({
     const handleCancel = useCallback(() => {
         form.reset(getFormDefaultValues());
         onOpenChange(false);
-    }, [form, mode, data, defaultValues, onOpenChange]);
+    }, [form, getFormDefaultValues, onOpenChange]);
 
     const renderFieldComponent = (field: any, type: string, component: any, label: string) => {
         if (component) {
