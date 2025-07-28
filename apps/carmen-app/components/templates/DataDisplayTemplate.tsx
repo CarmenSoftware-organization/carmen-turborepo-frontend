@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import SkeltonLoad from '../loading/SkeltonLoad';
-import { motion, AnimatePresence } from 'framer-motion';
+import { MotionDiv, AnimatePresence } from '../framer-motion/MotionWrapper';
 
 interface Props {
 	title: string;
@@ -34,61 +34,61 @@ const DataDisplayTemplate: React.FC<Props> = ({
 	isLoading,
 }) => {
 	return (
-		<motion.div
+		<MotionDiv
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			className={`space-y-4 flex w-full flex-col justify-center transition-all duration-300 ease-in-out`}
 		>
-			<motion.div
+			<MotionDiv
 				className="sticky top-0 bg-background z-10 space-y-4"
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.3 }}
 			>
-				<motion.div
+				<MotionDiv
 					className="md:flex justify-between items-start"
 					{...fadeIn}
 				>
-					<motion.h1
+					<MotionDiv
 						className="text-2xl font-semibold"
 						{...fadeInUp}
 					>
 						{title}
-					</motion.h1>
+					</MotionDiv>
 					{actionButtons && (
-						<motion.div
+						<MotionDiv
 							className="mt-4 md:mt-0"
 							{...fadeInUp}
 						>
 							{actionButtons}
-						</motion.div>
+						</MotionDiv>
 					)}
-				</motion.div>
+				</MotionDiv>
 				<AnimatePresence>
 					{filters && (
-						<motion.div {...fadeIn}>
+						<MotionDiv {...fadeIn}>
 							{filters}
-						</motion.div>
+						</MotionDiv>
 					)}
 					{bulkActions && (
-						<motion.div
+						<MotionDiv
 							className="mb-4"
 							{...fadeIn}
 						>
 							{bulkActions}
-						</motion.div>
+						</MotionDiv>
 					)}
 				</AnimatePresence>
-			</motion.div>
-			<motion.div
+			</MotionDiv>
+			<MotionDiv
 				className="flex-1 overflow-y-auto bg-background rounded-lg"
 				{...fadeInUp}
 			>
 				<AnimatePresence mode="wait">
 					{isLoading ? <SkeltonLoad /> : content}
 				</AnimatePresence>
-			</motion.div>
-		</motion.div>
+			</MotionDiv>
+		</MotionDiv>
 	);
 };
 
