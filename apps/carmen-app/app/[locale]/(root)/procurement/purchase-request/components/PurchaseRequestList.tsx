@@ -71,7 +71,7 @@ export default function PurchaseRequestList({
   const renderTableContent = () => {
     if (isLoading) return <TableBodySkeleton rows={10} />;
 
-    if (purchaseRequests.length === 0) {
+    if (purchaseRequests?.length === 0) {
       return (
         <TableBody>
           <TableRow>
@@ -89,7 +89,7 @@ export default function PurchaseRequestList({
 
     return (
       <TableBody>
-        {purchaseRequests.map((pr) => (
+        {purchaseRequests?.map((pr) => (
           <TableRow key={pr.id}>
             <TableCell className="text-center w-10">
               <Checkbox

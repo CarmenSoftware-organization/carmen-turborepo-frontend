@@ -18,11 +18,12 @@ import ToggleView from "@/components/ui-custom/ToggleView";
 import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
 
 const sortFields = [
-  { key: "code", label: "Code" },
-  { key: "name", label: "Name" },
-  { key: "symbol", label: "Symbol" },
-  { key: "is_active", label: "Status" },
-  { key: "exchange_rate", label: "Exchange Rate" },
+  { key: "", label: "All" },
+  { key: "pr_no", label: "PR Number" },
+  { key: "date", label: "Date" },
+  { key: "department", label: "Department" },
+  { key: "requestor", label: "Requestor" },
+  { key: "amonut", label: "Amount" },
 ];
 
 export default function PurchaseRequestComponent() {
