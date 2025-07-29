@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Link } from "@/lib/navigation";
 
 interface PurchaseOrderListProps {
     readonly purchaseOrders: PurchaseOrderlDto[];
@@ -60,9 +61,6 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
 
     return (
         <div className="space-y-4">
-            {/* Desktop Table View */}
-
-
             <div className="hidden md:block">
                 <Table className="border">
                     <TableHeader>
@@ -98,7 +96,16 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
                                         aria-label={`Select ${po.po_number}`}
                                     />
                                 </TableCell>
-                                <TableCell className="font-medium">{po.po_number}</TableCell>
+                                <TableCell>
+                                    <Button variant={'ghost'} asChild className="p-0">
+                                        <Link
+                                            href={`/procurement/purchase-order/${po.id}`}
+                                            className="hover:underline text-primary hover:text-primary/80 font-medium"
+                                        >
+                                            {po.po_number}
+                                        </Link>
+                                    </Button>
+                                </TableCell>
                                 <TableCell>{po.vendor}</TableCell>
                                 <TableCell>{po.date_created}</TableCell>
                                 <TableCell>{po.delivery_date}</TableCell>

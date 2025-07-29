@@ -20,11 +20,12 @@ import {
 import { Badge } from "@/components/ui/badge";
 import PaginationComponent from "@/components/PaginationComponent";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import { Link } from "@/lib/navigation";
 import { convertPrStatus } from "@/utils/badge-status-color";
 import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
+import ButtonLink from "@/components/ButtonLink";
+import ButtonIcon from "@/components/ButtonIcon";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -100,15 +101,9 @@ export default function PurchaseRequestList({
               />
             </TableCell>
             <TableCell>
-              <Button variant={'ghost'} asChild className="p-0">
-                <Link
-                  href={`/procurement/purchase-request/${pr.id}`}
-                  className="hover:underline text-primary hover:text-primary/80 font-medium"
-                >
-                  {pr.pr_no}
-                </Link>
-              </Button>
-
+              <ButtonLink href={`/procurement/purchase-request/${pr.id}`}>
+                {pr.pr_no ?? "-"}
+              </ButtonLink>
             </TableCell>
             <TableCell className="text-center">
               {pr.pr_status && (
@@ -133,20 +128,13 @@ export default function PurchaseRequestList({
             <TableCell>{formatPriceConf(pr.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}</TableCell>
             <TableCell className="w-[100px] text-right">
               <div className="flex items-center justify-end">
+                <ButtonIcon href={`/procurement/purchase-request/${pr.id}`}>
+                  <FileText className="h-3 w-3" />
+                </ButtonIcon>
                 <Button
                   variant="ghost"
                   size={"sm"}
-                  className="h-7 w-7 hover:text-muted-foreground"
-                  asChild
-                >
-                  <Link href={`/procurement/purchase-request/${pr.id}`}>
-                    <FileText className="h-3 w-3" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  className="h-7 w-7 hover:text-destructive"
+                  className="h-7 w-7 hover:text-destructive hover:bg-transparent"
                 >
                   <Trash2 className="h-3 w-3" />
                 </Button>

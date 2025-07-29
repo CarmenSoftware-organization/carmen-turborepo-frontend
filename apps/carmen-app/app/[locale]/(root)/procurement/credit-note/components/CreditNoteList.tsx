@@ -17,6 +17,9 @@ import { format, isValid } from "date-fns";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import EmptyData from "@/components/EmptyData";
 import { Link } from "@/lib/navigation";
+import ButtonLink from "@/components/ButtonLink";
+import { useAuth } from "@/context/AuthContext";
+import { formatDateFns } from "@/utils/config-system";
 
 interface CreditNoteListProps {
   readonly creditNotes: CreditNoteGetAllDto[];
@@ -27,6 +30,8 @@ export default function CreditNoteList({
   creditNotes = [],
   isLoading,
 }: CreditNoteListProps) {
+  const { dateFormat } = useAuth();
+
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelectItem = (id: string) => {
@@ -77,22 +82,23 @@ export default function CreditNoteList({
                 aria-label={`Select ${cn?.cn_no || "item"}`}
               />
             </TableCell>
-            <TableCell className="font-medium text-primary hover:underline cursor-pointer">
-              <Link href={`/procurement/credit-note/${cn.id}`}>
+            <TableCell>
+              <ButtonLink href={`/procurement/credit-note/${cn.id}`}>
                 {cn?.cn_no}
-              </Link>
+              </ButtonLink>
             </TableCell>
             <TableCell>
               <Badge variant={cn?.doc_status}>{cn?.doc_status || "-"}</Badge>
             </TableCell>
-
-            <TableCell>{formatDate(cn?.cn_date)}</TableCell>
+            <TableCell>
+              {formatDateFns(cn.cn_date, dateFormat || 'yyyy/MM/dd')}
+            </TableCell>
             <TableCell>{cn?.note || "-"}</TableCell>
             <TableCell>{cn?.current_workflow_status || "-"}</TableCell>
             <TableCell>{cn?.last_action_name || "-"}</TableCell>
             <TableCell>{cn?.last_action_by_name || "-"}</TableCell>
             <TableCell>{cn?.last_action_date || "-"}</TableCell>
-            
+
             <TableCell>
               <div className="flex items-center justify-end">
                 <Button variant="ghost" size={"sm"} className="h-7 w-7" asChild>

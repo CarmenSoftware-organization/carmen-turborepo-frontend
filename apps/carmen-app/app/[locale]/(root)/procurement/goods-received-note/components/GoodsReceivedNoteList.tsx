@@ -14,10 +14,6 @@ import {
   FileText,
   MoreHorizontal,
   Trash2,
-  Calendar,
-  Store,
-  DollarSign,
-  CheckCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,11 +23,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "@/lib/navigation";
-import { format } from "date-fns";
 import PaginationComponent from "@/components/PaginationComponent";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import EmptyData from "@/components/EmptyData";
+import ButtonLink from "@/components/ButtonLink";
+import ButtonIcon from "@/components/ButtonIcon";
+import { useAuth } from "@/context/AuthContext";
+import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 
 interface GoodsReceivedNoteListProps {
   readonly goodsReceivedNotes: GoodsReceivedNoteListDto[];
@@ -50,6 +48,8 @@ export default function GoodsReceivedNoteList({
 }: GoodsReceivedNoteListProps) {
   const t = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const { dateFormat, amount, currencyBase } = useAuth();
+  const defaultAmount = { locales: 'en-US', minimumIntegerDigits: 2 }
 
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
@@ -94,35 +94,30 @@ export default function GoodsReceivedNoteList({
                 aria-label={`Select ${grn.grn_no}`}
               />
             </TableCell>
-            <TableCell className="w-[150px]">
-              <Link
-                href={`/procurement/goods-received-note/${grn.id}`}
-                className="hover:underline text-primary hover:text-primary/80 font-medium"
-              >
+            <TableCell>
+              <ButtonLink href={`/procurement/goods-received-note/${grn.id}`}>
                 {grn.grn_no ?? "-"}
-              </Link>
+              </ButtonLink>
             </TableCell>
-            <TableCell className="w-[100px]">
+            <TableCell>
               <Badge variant={grn.is_active ? "active" : "inactive"}>
                 {grn.is_active ? "Active" : "Inactive"}
               </Badge>
             </TableCell>
-            <TableCell className="w-[100px]">{grn.vendor_name ?? "-"}</TableCell>
-            <TableCell className="w-[100px]">
-              {grn.created_at
-                ? format(new Date(grn.created_at), "dd/MM/yyyy")
-                : "-"}
+            <TableCell>{grn.vendor_name ?? "-"}</TableCell>
+            <TableCell>
+              {formatDateFns(grn.created_at, dateFormat || 'yyyy-MM-dd')}
             </TableCell>
-            <TableCell className="text-right w-[100px]">{grn.total_amount}</TableCell>
-            
+            <TableCell className="text-right w-[100px]">
+              {formatPriceConf(grn.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
+            </TableCell>
+
             <TableCell className="text-right">
               <div className="flex items-center justify-end">
-                <Button variant="ghost" size={"sm"} asChild className="h-7 w-7">
-                  <Link href={`/procurement/goods-received-note/${grn.id}`}>
-                    <FileText className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" size={"sm"} className="h-7 w-7">
+                <ButtonIcon href={`/procurement/goods-received-note/${grn.id}`}>
+                  <FileText className="h-4 w-4" />
+                </ButtonIcon>
+                <Button variant="ghost" size={"sm"} className="h-7 w-7 hover:bg-transparent hover:text-destructive">
                   <Trash2 className="h-4 w-4" />
                 </Button>
                 <DropdownMenu>
@@ -160,36 +155,21 @@ export default function GoodsReceivedNoteList({
                 />
               </TableHead>
               <TableHead>
-                <div className="flex items-center gap-1">
-                  <FileText className="h-3 w-3" />
-                  {t("grn_number")}
-                </div>
+                {t("grn_number")}
               </TableHead>
               <TableHead>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="h-3 w-3" />
-                  {t("status")}
-                </div>
+                {t("status")}
               </TableHead>
               <TableHead>
-                <div className="flex items-center gap-1">
-                  <Store className="h-3 w-3" />
-                  {t("vendor")}
-                </div>
+                {t("vendor")}
               </TableHead>
               <TableHead>
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  {t("date")}
-                </div>
+                {t("date")}
               </TableHead>
               <TableHead className="text-right w-[100px]">
-                <div className="flex items-center gap-1">
-                  <DollarSign className="h-3 w-3" />
-                  {t("amount")}
-                </div>
+                {t("amount")}
               </TableHead>
-            
+
               <TableHead className="text-right">{t("action")}</TableHead>
             </TableRow>
           </TableHeader>
