@@ -3,16 +3,11 @@
 import { formType } from "@/dtos/form.dto";
 import { CreateGRNDto, GetGrnByIdDto, grnPostSchema } from "@/dtos/grn.dto";
 import { useState, useEffect } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowLeftRightIcon,
-  CheckCircleIcon,
-  ChevronRight,
   ChevronLeft,
-  XCircleIcon,
   Pencil,
   X,
   Save,
@@ -34,15 +29,14 @@ import ExtraCost from "./ExtraCost";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { useGrnMutation, useUpdateCreditNote } from "@/hooks/useGrn";
-// import JsonViewer from "@/components/JsonViewer";
-// import { postGoodReceiveNote } from "@/app/[locale]/(root)/playground/test-post/payload";
-// import { checkDiff } from "@/constants/check-diff";
+import DetailsAndComments from "@/components/DetailsAndComments";
 
 const BudgetGrn = ({ mode }: { mode: formType }) => (
   <div className="p-4 border rounded-md">
     BudgetGrn Placeholder (Mode: {mode})
   </div>
 );
+
 const WorkflowGrn = ({ workflowData }: { workflowData: unknown }) => (
   <div className="p-4 border rounded-md">
     WorkflowGrn Placeholder Data: {JSON.stringify(workflowData)}
@@ -57,7 +51,6 @@ interface FormGrnProps {
 export default function FormGrn({ mode, initialValues }: FormGrnProps) {
   const { token, tenantId } = useAuth();
   const router = useRouter();
-  const [openLog, setOpenLog] = useState<boolean>(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
 
   // ตรวจสอบว่า token และ tenantId มีค่าก่อนส่งไปยัง hooks
@@ -117,16 +110,6 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     mode: "onChange",
   });
 
-  // const watchedValues = form.watch();
-  // const isDirty = form.formState.isDirty;
-  // const errors = form.formState.errors;
-
-  // useEffect(() => {
-  //   console.log("Form Values Changed in Dialog:", watchedValues);
-  //   console.log("Form Errors in Dialog:", errors);
-  //   console.log("Is Form Dirty in Dialog:", isDirty);
-  //   console.log("Form isValid:", form.formState.isValid);
-  // }, [watchedValues, errors, isDirty, form.formState.isValid]);
 
   useEffect(() => {
     if (initialValues) {
@@ -144,11 +127,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
   }, [initialValues, form]);
 
   const onSubmit = async (data: CreateGRNDto, e?: React.BaseSyntheticEvent) => {
-    // console.log("onSubmit called with data:", data);
-    // console.log("currentMode:", currentMode);
-    // console.log("formType.ADD:", formType.ADD);
-    // console.log("token:", token);
-    // console.log("tenantId:", tenantId);
+
 
     if (e) {
       e.preventDefault();
@@ -182,253 +161,181 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     }
   };
 
-  // const watchForm = form.watch();
-
-  // const diffData = checkDiff(postGoodReceiveNote, watchForm);
   return (
-    <div className="relative">
-      <div className="flex gap-4 relative">
-        <ScrollArea
-          className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
-        >
-          <Form {...form}>
-            <form
-              className="space-y-4"
-              onSubmit={(e) => {
-                console.log("Form submit event triggered", e);
-                return form.handleSubmit(onSubmit)(e);
-              }}
-            >
-              <Card className="p-4 mb-2">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Link href="/procurement/goods-received-note">
-                      <ChevronLeft className="h-4 w-4" />
-                    </Link>
-                    <div className="flex items-start gap-2">
-                      {mode === formType.ADD ? (
-                        <p className="text-base  font-bold">
-                          Goods Received Note
-                        </p>
-                      ) : (
-                        <div className="flex flex-col gap-1">
-                          <p className="text-base font-bold">
-                            {initialValues?.grn_no}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Created on{" "}
-                            {format(
-                              new Date(initialValues?.created_at ?? ""),
-                              "PPP"
-                            )}
-                          </p>
-                        </div>
-                      )}
-                      {initialValues?.doc_status && (
-                        <Badge
-                          variant={initialValues?.doc_status}
-                          className="rounded-full text-xs"
-                        >
-                          {initialValues?.doc_status}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {currentMode === formType.VIEW ? (
-                      <>
-                        <Button
-                          variant="outline"
-                          size={"sm"}
-                          className="px-2 text-xs"
-                          asChild
-                        >
-                          <Link href="/procurement/goods-received-note">
-                            <ChevronLeft /> Back
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="default"
-                          size={"sm"}
-                          className="px-2 text-xs"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setCurrentMode(formType.EDIT);
-                          }}
-                        >
-                          <Pencil /> Edit
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline"
-                          size={"sm"}
-                          className="px-2 text-xs"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            if (currentMode === formType.ADD) {
-                              router.push("/procurement/goods-received-note");
-                            } else {
-                              setCurrentMode(formType.VIEW);
-                            }
-                          }}
-                        >
-                          <X /> Cancel
-                        </Button>
-                        <Button
-                          variant="default"
-                          size={"sm"}
-                          className="px-2 text-xs"
-                          type="submit"
-                          disabled={isCreatePending || isUpdatePending}
-                        >
-                          <Save />
-                          {isCreatePending || isUpdatePending
-                            ? "Saving..."
-                            : "Save"}
-                        </Button>
-                      </>
-                    )}
-                    <Button
-                      variant="outline"
-                      size={"sm"}
-                      className="px-2 text-xs"
-                    >
-                      <Printer />
-                      Print
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      size={"sm"}
-                      className="px-2 text-xs"
-                    >
-                      <FileDown />
-                      Export
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size={"sm"}
-                      className="px-2 text-xs"
-                    >
-                      <Share />
-                      Share
-                    </Button>
-                  </div>
-                </div>
-                <GrnFormHeader control={form.control} mode={currentMode} />
-                <Tabs defaultValue="items">
-                  <TabsList className="w-full mt-4">
-                    <TabsTrigger className="w-full text-xs" value="items">
-                      Items
-                    </TabsTrigger>
-                    <TabsTrigger className="w-full text-xs" value="extra_cost">
-                      Extra Cost
-                    </TabsTrigger>
-                    <TabsTrigger className="w-full text-xs" value="budget">
-                      Budget
-                    </TabsTrigger>
-                    <TabsTrigger className="w-full text-xs" value="workflow">
-                      Workflow
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="items" className="mt-2">
-                    <ItemGrn
-                      control={form.control}
-                      mode={currentMode}
-                      setValue={form.setValue}
-                    />
-                  </TabsContent>
-                  <TabsContent value="extra_cost" className="mt-2">
-                    <ExtraCost control={form.control} mode={currentMode} />
-                  </TabsContent>
-                  <TabsContent value="budget" className="mt-2">
-                    <BudgetGrn mode={currentMode} />
-                  </TabsContent>
-                  <TabsContent value="workflow" className="mt-2">
-                    <WorkflowGrn
-                      workflowData={initialValues?.workflow_history}
-                    />
-                  </TabsContent>
-                </Tabs>
-              </Card>
-            </form>
-          </Form>
-
-          <div
-            className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
+    <DetailsAndComments
+      commentPanel={
+        <div className="flex flex-col gap-4">
+          <ActivityLog />
+          <CommentGrn />
+        </div>
+      }
+    >
+      <Card className="p-4 mb-2">
+        <Form {...form}>
+          <form
+            className="space-y-4"
+            onSubmit={(e) => {
+              console.log("Form submit event triggered", e);
+              return form.handleSubmit(onSubmit)(e);
+            }}
           >
-            <Button
-              size={"sm"}
-              className="h-7 px-2 text-xs"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              <CheckCircleIcon className="w-4 h-4" />
-              Approve
-            </Button>
-            <Button
-              variant={"destructive"}
-              size={"sm"}
-              className="h-7 px-2 text-xs"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              <XCircleIcon className="w-4 h-4" />
-              Reject
-            </Button>
-            <Button
-              variant={"outline"}
-              size={"sm"}
-              className="h-7 px-2 text-xs"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              <ArrowLeftRightIcon className="w-4 h-4" />
-              Send Back
-            </Button>
-          </div>
-          {/* <div className="grid grid-cols-2 gap-2">
-            <JsonViewer data={postGoodReceiveNote} />
-            <JsonViewer data={watchForm} />
-          </div>
-          <JsonViewer data={diffData} /> */}
-        </ScrollArea>
-        {openLog && (
-          <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
-            <div className="flex flex-col gap-4">
-              <CommentGrn />
-              <ActivityLog />
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Link href="/procurement/goods-received-note">
+                  <ChevronLeft className="h-4 w-4" />
+                </Link>
+                <div className="flex items-start gap-2">
+                  {mode === formType.ADD ? (
+                    <p className="text-base  font-bold">
+                      Goods Received Note
+                    </p>
+                  ) : (
+                    <div className="flex flex-col gap-1">
+                      <p className="text-base font-bold">
+                        {initialValues?.grn_no}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Created on{" "}
+                        {format(
+                          new Date(initialValues?.created_at ?? ""),
+                          "PPP"
+                        )}
+                      </p>
+                    </div>
+                  )}
+                  {initialValues?.doc_status && (
+                    <Badge
+                      variant={initialValues?.doc_status}
+                      className="rounded-full text-xs"
+                    >
+                      {initialValues?.doc_status}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {currentMode === formType.VIEW ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size={"sm"}
+                      className="px-2 text-xs"
+                      asChild
+                    >
+                      <Link href="/procurement/goods-received-note">
+                        <ChevronLeft /> Back
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="default"
+                      size={"sm"}
+                      className="px-2 text-xs"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setCurrentMode(formType.EDIT);
+                      }}
+                    >
+                      <Pencil /> Edit
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      size={"sm"}
+                      className="px-2 text-xs"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (currentMode === formType.ADD) {
+                          router.push("/procurement/goods-received-note");
+                        } else {
+                          setCurrentMode(formType.VIEW);
+                        }
+                      }}
+                    >
+                      <X /> Cancel
+                    </Button>
+                    <Button
+                      variant="default"
+                      size={"sm"}
+                      className="px-2 text-xs"
+                      type="submit"
+                      disabled={isCreatePending || isUpdatePending}
+                    >
+                      <Save />
+                      {isCreatePending || isUpdatePending
+                        ? "Saving..."
+                        : "Save"}
+                    </Button>
+                  </>
+                )}
+                <Button
+                  variant="outline"
+                  size={"sm"}
+                  className="px-2 text-xs"
+                >
+                  <Printer />
+                  Print
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size={"sm"}
+                  className="px-2 text-xs"
+                >
+                  <FileDown />
+                  Export
+                </Button>
+                <Button
+                  variant="outline"
+                  size={"sm"}
+                  className="px-2 text-xs"
+                >
+                  <Share />
+                  Share
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      <Button
-        aria-label={openLog ? "Close log panel" : "Open log panel"}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setOpenLog(!openLog);
-        }}
-        variant="default"
-        size="sm"
-        className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg"
-      >
-        {openLog ? (
-          <ChevronRight className="h-6 w-6" />
-        ) : (
-          <ChevronLeft className="h-6 w-6" />
-        )}
-      </Button>
-    </div>
+            <GrnFormHeader control={form.control} mode={currentMode} />
+            <Tabs defaultValue="items">
+              <TabsList className="w-full mt-4">
+                <TabsTrigger className="w-full text-xs" value="items">
+                  Items
+                </TabsTrigger>
+                <TabsTrigger className="w-full text-xs" value="extra_cost">
+                  Extra Cost
+                </TabsTrigger>
+                <TabsTrigger className="w-full text-xs" value="budget">
+                  Budget
+                </TabsTrigger>
+                <TabsTrigger className="w-full text-xs" value="workflow">
+                  Workflow
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="items" className="mt-2">
+                <ItemGrn
+                  control={form.control}
+                  mode={currentMode}
+                  setValue={form.setValue}
+                />
+              </TabsContent>
+              <TabsContent value="extra_cost" className="mt-2">
+                <ExtraCost control={form.control} mode={currentMode} />
+              </TabsContent>
+              <TabsContent value="budget" className="mt-2">
+                <BudgetGrn mode={currentMode} />
+              </TabsContent>
+              <TabsContent value="workflow" className="mt-2">
+                <WorkflowGrn
+                  workflowData={initialValues?.workflow_history}
+                />
+              </TabsContent>
+            </Tabs>
+          </form>
+        </Form>
+      </Card>
+    </DetailsAndComments>
   );
 }

@@ -14,7 +14,7 @@ export default function CalendarButton({ field, classNames }: CalendarButtonProp
         <Button
             variant="outline"
             className={cn(
-                "w-full pl-2 text-left font-normal text-xs mt-1 bg-muted",
+                "w-full pl-2 text-left font-normal mt-1 bg-muted",
                 !field.value && "text-muted-foreground",
                 classNames
             )}

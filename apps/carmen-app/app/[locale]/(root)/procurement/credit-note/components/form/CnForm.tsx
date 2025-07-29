@@ -1,13 +1,11 @@
 "use client";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { formType } from "@/dtos/form.dto";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
-  ChevronRight,
   Pencil,
   Save,
   X,
@@ -38,6 +36,7 @@ import {
 } from "@/hooks/useCreditNote";
 import { format } from "date-fns";
 import { useCnReasonQuery } from "@/hooks/useCnReason";
+import DetailsAndComments from "@/components/DetailsAndComments";
 interface CnFormProps {
   readonly mode: formType;
   readonly initialValues?: CreditNoteByIdDto;
@@ -56,7 +55,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     tenantId: tenantId || "",
   });
 
-  const [openLog, setOpenLog] = useState(false);
   const [currentMode, setCurrentMode] = useState<formType>(mode);
 
   const defaultValues: CreditNoteFormDto = {
@@ -180,180 +178,154 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     console.log("- watched values:", watchCnForm);
   }, [isDirty, isValid, errors, watchCnForm]);
 
+
   return (
-    <div className="relative">
-      <div className="flex gap-4 relative">
-        <ScrollArea
-          className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
-        >
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)}>
-              <Card className="p-4 mb-2">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Link href="/procurement/credit-note">
-                      <ChevronLeft className="h-4 w-4" />
-                    </Link>
-                    {mode === formType.ADD ? (
-                      <p className="text-base font-bold">Credit Note</p>
-                    ) : (
-                      <div className="flex flex-col gap-1">
-                        <p className="text-base font-bold">
-                          {initialValues?.cn_no}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Created at{" "}
-                          {format(
-                            new Date(initialValues?.cn_date ?? ""),
-                            "PPP"
-                          )}
-                        </p>
-                      </div>
-                    )}
-                    {initialValues?.doc_status && (
-                      <Badge
-                        variant={initialValues?.doc_status}
-                        className="rounded-full text-xs"
-                      >
-                        {convertStatus(initialValues?.doc_status)}
-                      </Badge>
-                    )}
+    <DetailsAndComments
+      commentPanel={<p>hello 2</p>}
+    >
+      <Card className="p-4 mb-2">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Link href="/procurement/credit-note">
+                  <ChevronLeft className="h-4 w-4" />
+                </Link>
+                {mode === formType.ADD ? (
+                  <p className="text-base font-bold">Credit Note</p>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    <p className="text-base font-bold">
+                      {initialValues?.cn_no}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Created at{" "}
+                      {format(
+                        new Date(initialValues?.cn_date ?? ""),
+                        "PPP"
+                      )}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {currentMode === formType.VIEW ? (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="px-2 text-xs"
-                          onClick={() => window.history.back()}
-                        >
-                          <ChevronLeft /> Back
-                        </Button>
-                        <Button
-                          variant="default"
-                          size="sm"
-                          className="px-2 text-xs"
-                          onClick={() => setCurrentMode(formType.EDIT)}
-                        >
-                          <Pencil /> Edit
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="px-2 text-xs"
-                          onClick={() =>
-                            currentMode === formType.ADD
-                              ? window.history.back()
-                              : setCurrentMode(formType.VIEW)
-                          }
-                        >
-                          <X /> Cancel
-                        </Button>
-                        <Button
-                          variant="default"
-                          size="sm"
-                          className="px-2 text-xs"
-                          type="submit"
-                        >
-                          <Save /> Save
-                        </Button>
-                      </>
-                    )}
+                )}
+                {initialValues?.doc_status && (
+                  <Badge
+                    variant={initialValues?.doc_status}
+                    className="rounded-full text-xs"
+                  >
+                    {convertStatus(initialValues?.doc_status)}
+                  </Badge>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {currentMode === formType.VIEW ? (
+                  <>
                     <Button
                       variant="outline"
                       size="sm"
                       className="px-2 text-xs"
+                      onClick={() => window.history.back()}
                     >
-                      <Printer /> Print
+                      <ChevronLeft /> Back
                     </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="px-2 text-xs"
+                      onClick={() => setCurrentMode(formType.EDIT)}
+                    >
+                      <Pencil /> Edit
+                    </Button>
+                  </>
+                ) : (
+                  <>
                     <Button
                       variant="outline"
                       size="sm"
                       className="px-2 text-xs"
+                      onClick={() =>
+                        currentMode === formType.ADD
+                          ? window.history.back()
+                          : setCurrentMode(formType.VIEW)
+                      }
                     >
-                      <FileDown /> Export
+                      <X /> Cancel
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="default"
                       size="sm"
                       className="px-2 text-xs"
+                      type="submit"
                     >
-                      <Share /> Share
+                      <Save /> Save
                     </Button>
-                  </div>
-                </div>
-                <HeadCnForm
-                  control={form.control}
-                  mode={currentMode}
-                  cnNo={initialValues?.cn_no}
-                  getCnReasonName={getCnReasonName}
-                />
-                <Tabs defaultValue="items">
-                  <TabsList className="w-full">
-                    <TabsTrigger className="w-full text-xs" value="items">
-                      Items
-                    </TabsTrigger>
-                    <TabsTrigger
-                      className="w-full text-xs"
-                      value="stock_movement"
-                    >
-                      Stock Movement
-                    </TabsTrigger>
-                    <TabsTrigger
-                      className="w-full text-xs"
-                      value="journal_entries"
-                    >
-                      Journal Entries
-                    </TabsTrigger>
-                    <TabsTrigger className="w-full text-xs" value="tax_entries">
-                      Tax Entries
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="items" className="mt-2">
-                    <ItemsCn control={form.control} mode={currentMode} />
-                  </TabsContent>
-                  <TabsContent value="stock_movement" className="mt-2">
-                    <h1>Stock Movement</h1>
-                  </TabsContent>
-                  <TabsContent value="journal_entries" className="mt-2">
-                    <h1>Journal Entries</h1>
-                  </TabsContent>
-                  <TabsContent value="tax_entries" className="mt-2">
-                    <h1>Tax Entries</h1>
-                  </TabsContent>
-                </Tabs>
-              </Card>
-            </form>
-          </Form>
-        </ScrollArea>
-
-        {openLog && (
-          <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
-            <div className="flex flex-col gap-4">
-              <h1>Comment</h1>
-              <h1>Activity Log</h1>
+                  </>
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-2 text-xs"
+                >
+                  <Printer /> Print
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-2 text-xs"
+                >
+                  <FileDown /> Export
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="px-2 text-xs"
+                >
+                  <Share /> Share
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      <Button
-        aria-label={openLog ? "Close log panel" : "Open log panel"}
-        onClick={() => setOpenLog(!openLog)}
-        variant="default"
-        size="sm"
-        className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg"
-      >
-        {openLog ? (
-          <ChevronRight className="h-6 w-6" />
-        ) : (
-          <ChevronLeft className="h-6 w-6" />
-        )}
-      </Button>
-    </div>
-  );
+            <HeadCnForm
+              control={form.control}
+              mode={currentMode}
+              cnNo={initialValues?.cn_no}
+              getCnReasonName={getCnReasonName}
+            />
+            <Tabs defaultValue="items">
+              <TabsList className="w-full">
+                <TabsTrigger className="w-full text-xs" value="items">
+                  Items
+                </TabsTrigger>
+                <TabsTrigger
+                  className="w-full text-xs"
+                  value="stock_movement"
+                >
+                  Stock Movement
+                </TabsTrigger>
+                <TabsTrigger
+                  className="w-full text-xs"
+                  value="journal_entries"
+                >
+                  Journal Entries
+                </TabsTrigger>
+                <TabsTrigger className="w-full text-xs" value="tax_entries">
+                  Tax Entries
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="items" className="mt-2">
+                <ItemsCn control={form.control} mode={currentMode} />
+              </TabsContent>
+              <TabsContent value="stock_movement" className="mt-2">
+                <h1>Stock Movement</h1>
+              </TabsContent>
+              <TabsContent value="journal_entries" className="mt-2">
+                <h1>Journal Entries</h1>
+              </TabsContent>
+              <TabsContent value="tax_entries" className="mt-2">
+                <h1>Tax Entries</h1>
+              </TabsContent>
+            </Tabs>
+          </form>
+        </Form>
+      </Card>
+    </DetailsAndComments>
+  )
 }

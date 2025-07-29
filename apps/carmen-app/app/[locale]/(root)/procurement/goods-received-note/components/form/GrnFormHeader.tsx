@@ -46,9 +46,6 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   const { getCurrencyCode } = useCurrency();
   const { getCreditTermName } = useCreditTermQuery(token, tenantId);
 
-  // const isTypeBlank =
-  //   new URLSearchParams(window.location.search).get("type") === "blank";
-
   const { getCurrencyExchangeRate } = useCurrency();
   const currencyId = useWatch({
     control,
@@ -56,14 +53,14 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   });
 
   return (
-    <div className="space-y-6 mt-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <FormField
           control={control}
           name="grn_no"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-1">
                   <Hash className="h-3 w-3" />
                   GRN
@@ -87,7 +84,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="received_at"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-3 w-3" />
                   Date
@@ -108,7 +105,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="vendor_id"
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <Store className="h-3 w-3" />
                   Vendor
@@ -138,7 +135,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="invoice_no"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <GitBranch className="h-3 w-3" />
                   Invoice No.
@@ -161,7 +158,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="invoice_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-3 w-3" />
                   Invoice Date
@@ -181,7 +178,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="description"
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <AlignLeft className="h-3 w-3" />
                   Description
@@ -204,7 +201,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="currency_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <Coins className="h-3 w-3" />
                   Currency
@@ -230,7 +227,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
         />
 
         <div className="space-y-2">
-          <Label className="text-xs font-medium">
+          <Label className="font-medium">
             <div className="flex items-center gap-2">
               <DollarSign className="h-3 w-3" />
               Exchange Rate
@@ -248,7 +245,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="credit_term_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <Clock className="h-3 w-3" />
                   Credit Term
@@ -278,7 +275,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="payment_due_date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="h-3 w-3" />
                   Date
@@ -297,7 +294,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
           name="note"
           render={({ field }) => (
             <FormItem className="col-span-2">
-              <FormLabel className="text-xs font-medium">
+              <FormLabel className="font-medium">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="h-3 w-3" />
                   Note

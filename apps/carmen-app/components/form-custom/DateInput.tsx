@@ -9,8 +9,10 @@ import { useState, useEffect } from "react";
 
 // <DateInput field={...} wrapWithFormControl={false} /> เพื่อไม่ต้องใช้ FormControl
 
+type DateValue = string | Date | undefined;
+
 interface DateField {
-    value: string | Date | undefined;
+    value: DateValue;
     onChange: (value: string) => void;
 }
 
@@ -21,14 +23,14 @@ interface DateInputProps {
 }
 
 export default function DateInput({ field, wrapWithFormControl = true, disabled = false }: DateInputProps) {
-    const [internalValue, setInternalValue] = useState<string | Date | undefined>(field.value);
+    const [internalValue, setInternalValue] = useState<DateValue>(field.value);
 
     // Sync internal value with field value
     useEffect(() => {
         setInternalValue(field.value);
     }, [field.value]);
 
-    const formatDate = (value: string | Date | undefined): string => {
+    const formatDate = (value: DateValue): string => {
         if (!value) return "";
         try {
             const date = new Date(value);
@@ -56,18 +58,14 @@ export default function DateInput({ field, wrapWithFormControl = true, disabled 
         <Button
             variant="outline"
             className={cn(
-                "w-full pl-2 text-left font-normal text-xs bg-background",
+                "w-full pl-2 text-left font-normal bg-background",
                 !internalValue && "text-muted-foreground",
                 disabled && "bg-muted"
             )}
             disabled={disabled}
             aria-label={formattedDate ? `Selected date: ${formattedDate}` : "Select date"}
         >
-            {formattedDate ? (
-                formattedDate
-            ) : (
-                <span className="text-muted-foreground">Select date</span>
-            )}
+            {formattedDate || <span className="text-muted-foreground">Select date</span>}
             <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
         </Button>
     );

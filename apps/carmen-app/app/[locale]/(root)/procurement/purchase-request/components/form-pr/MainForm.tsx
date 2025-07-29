@@ -1,6 +1,5 @@
 "use client";
 
-// import JsonViewer from "@/components/JsonViewer";
 import { formType } from "@/dtos/form.dto";
 import { CreatePurchaseRequestSchema, PurchaseRequestByIdDto, PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto, UpdatePurchaseRequestSchema } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,13 +13,13 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { ArrowLeftRightIcon, CheckCircleIcon, ChevronRight, ChevronLeft, XCircleIcon } from "lucide-react";
+import { ArrowLeftRightIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
 import StatusPrInfo from "./StatusPrInfo";
 import { useRouter } from "@/lib/navigation";
+import DetailsAndComments from "@/components/DetailsAndComments";
 
 interface Props {
     mode: formType;
@@ -43,7 +42,6 @@ export default function MainForm({ mode, initValues }: Props) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
     const { user, departments } = useAuth();
-    const [openLog, setOpenLog] = useState(false);
     const router = useRouter();
 
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
@@ -184,18 +182,18 @@ export default function MainForm({ mode, initValues }: Props) {
         e.preventDefault();
         e.stopPropagation();
 
-        // ตรวจสอบว่ามีการเปลี่ยนแปลงหรือไม่
         if (hasFormChanges()) {
             setCancelAction({ type, event: e });
             setCancelDialogOpen(true);
-        } else {
-            // ถ้าไม่มีการเปลี่ยนแปลง
-            if (type === 'back') {
-                router.push("/procurement/purchase-request");
-            } else {
-                performCancel();
-            }
+            return;
         }
+
+        if (type === 'back') {
+            router.push("/procurement/purchase-request");
+            return;
+        }
+
+        performCancel();
     }
 
     const performCancel = () => {
@@ -237,237 +235,119 @@ export default function MainForm({ mode, initValues }: Props) {
     const canSave = !hasError && hasFormChanges();
 
     return (
-        <div className="space-y-4">
-
-            <div className="flex gap-4 relative">
-                <ScrollArea
-                    className={`${openLog ? "w-3/4" : "w-full"} transition-all duration-300 ease-in-out h-[calc(121vh-300px)]`}
-                >
-                    <Card className="p-4 mb-2">
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(handleSubmit)}>
-                                <ActionFields
-                                    mode={mode}
-                                    currentMode={currentFormType}
-                                    initValues={initValues}
-                                    onModeChange={setCurrentFormType}
-                                    onCancel={handleCancel}
-                                    isError={!canSave}
-                                    hasFormChanges={hasFormChanges}
-                                />
-                                <div className="grid grid-cols-5 gap-2 mb-4">
-                                    <HeadForm
-                                        form={form}
-                                        mode={currentFormType}
-                                        pr_no={initValues?.pr_no}
-                                        workflow_id={initValues?.workflow_id}
-                                        requestor_name={initValues?.requestor_name}
-                                        department_name={initValues?.department_name}
-                                    />
-                                    {currentFormType !== formType.ADD && (
-                                        <StatusPrInfo
-                                            create_date={initValues?.created_at}
-                                            status={initValues?.pr_status}
-                                        />
-                                    )}
-                                </div>
-                                <Tabs defaultValue="items">
-                                    <TabsList className="w-full h-8">
-                                        <TabsTrigger className="w-full text-xs" value="items">
-                                            Items
-                                        </TabsTrigger>
-                                        <TabsTrigger className="w-full text-xs" value="budget">
-                                            Budget
-                                        </TabsTrigger>
-                                        <TabsTrigger className="w-full text-xs" value="workflow">
-                                            Workflow
-                                        </TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="items" className="mt-2">
-                                        <PurchaseItem
-                                            form={form}
-                                            currentFormType={currentFormType}
-                                            initValues={initValues?.purchase_request_detail}
-                                            updatedItems={updatedItems}
-                                            removedItems={removedItems}
-                                            onFieldUpdate={handleFieldUpdate}
-                                            onRemoveItem={(id, isAddItem) => {
-                                                if (!isAddItem) {
-                                                    // เพิ่มรายการลงใน removedItems
-                                                    setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
-
-                                                    // เพิ่มรายการลงใน purchase_request_detail.remove
-                                                    appendRemove({ id });
-
-                                                    // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
-
-                                                    // ลบออกจาก updatedItems state
-                                                    setUpdatedItems(prev => {
-                                                        const newState = { ...prev };
-                                                        delete newState[id];
-                                                        return newState;
-                                                    });
-                                                }
-                                            }}
-                                        />
-                                    </TabsContent>
-                                    <TabsContent value="budget" className="mt-2">
-                                        Budget Pr
-                                    </TabsContent>
-                                    <TabsContent value="workflow" className="mt-2">
-                                        Workflow Pr
-                                    </TabsContent>
-                                </Tabs>
-
-                            </form>
-                        </Form>
-                    </Card>
-                    {/* <div className="grid grid-cols-2 gap-2">
-                        <JsonViewer data={watchForm} title="Form Values" />
-                        <JsonViewer data={form.formState.errors} title="Watch Error" />
-                    </div> */}
-                    <div
-                        className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
-                    >
-                        <Button size={"sm"} className="h-7 px-2 text-xs">
-                            <CheckCircleIcon className="w-4 h-4" />
-                            Approve
-                        </Button>
-                        <Button
-                            variant={"destructive"}
-                            size={"sm"}
-                            className="h-7 px-2 text-xs"
-                        >
-                            <XCircleIcon className="w-4 h-4" />
-                            Reject
-                        </Button>
-                        <Button
-                            variant={"outline"}
-                            size={"sm"}
-                            className="h-7 px-2 text-xs"
-                        >
-                            <ArrowLeftRightIcon className="w-4 h-4" />
-                            Send Back
-                        </Button>
-                    </div>
-                </ScrollArea>
-                {openLog && (
-                    <div className="w-1/4 transition-all duration-300 ease-in-out transform translate-x-0">
-                        <p className="flex flex-col gap-4">hello</p>
-                    </div>
-                )}
-            </div>
-            <Button
-                aria-label={openLog ? "Close log panel" : "Open log panel"}
-                onClick={() => setOpenLog(!openLog)}
-                variant="default"
-                size="sm"
-                className="fixed right-0 top-1/2 transform -translate-y-1/2 h-8 w-8 rounded-l-full rounded-r-none z-50 shadow-lg"
+        <>
+            <DetailsAndComments
+                commentPanel={<p>hello</p>}
             >
-                {openLog ? (
-                    <ChevronRight className="h-6 w-6" />
-                ) : (
-                    <ChevronLeft className="h-6 w-6" />
-                )}
-            </Button>
-
-            {/* <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSubmit)}>
-                    <div className="flex justify-end gap-2">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleCancel}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleEdit}
-                        >
-                            Edit
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={hasError}
-                        >
-                            Save
-                        </Button>
-                    </div>
-                    <FormField
-                        control={form.control}
-                        name="pr_date"
-                        disabled={mode === formType.VIEW}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Date</FormLabel>
-                                <FormControl>
-                                    <DateInput field={field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="workflow_id"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>PR Type</FormLabel>
-                                <FormControl>
-                                    <WorkflowLookup
-                                        value={field.value ? field.value : initValues?.workflow_id}
-                                        onValueChange={field.onChange}
-                                        type={enum_workflow_type.purchase_request}
+                <Card className="p-4 mb-2">
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(handleSubmit)}>
+                            <ActionFields
+                                mode={mode}
+                                currentMode={currentFormType}
+                                initValues={initValues}
+                                onModeChange={setCurrentFormType}
+                                onCancel={handleCancel}
+                                isError={!canSave}
+                                hasFormChanges={hasFormChanges}
+                            />
+                            <div className="grid grid-cols-5 gap-2 mb-4">
+                                <HeadForm
+                                    form={form}
+                                    mode={currentFormType}
+                                    pr_no={initValues?.pr_no}
+                                    workflow_id={initValues?.workflow_id}
+                                    requestor_name={initValues?.requestor_name}
+                                    department_name={initValues?.department_name}
+                                />
+                                {currentFormType !== formType.ADD && (
+                                    <StatusPrInfo
+                                        create_date={initValues?.created_at}
+                                        status={initValues?.pr_status}
                                     />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                )}
+                            </div>
+                            <Tabs defaultValue="items">
+                                <TabsList className="w-full h-8">
+                                    <TabsTrigger className="w-full" value="items">
+                                        Items
+                                    </TabsTrigger>
+                                    <TabsTrigger className="w-full" value="budget">
+                                        Budget
+                                    </TabsTrigger>
+                                    <TabsTrigger className="w-full" value="workflow">
+                                        Workflow
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="items" className="mt-2">
+                                    <PurchaseItem
+                                        form={form}
+                                        currentFormType={currentFormType}
+                                        initValues={initValues?.purchase_request_detail}
+                                        updatedItems={updatedItems}
+                                        removedItems={removedItems}
+                                        onFieldUpdate={handleFieldUpdate}
+                                        onRemoveItem={(id, isAddItem) => {
+                                            if (!isAddItem) {
+                                                // เพิ่มรายการลงใน removedItems
+                                                setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
 
-                    <PurchaseItem
-                        form={form}
-                        currentFormType={currentFormType}
-                        initValues={initValues?.purchase_request_detail}
-                        updatedItems={updatedItems}
-                        removedItems={removedItems}
-                        onFieldUpdate={handleFieldUpdate}
-                        onRemoveItem={(id, isAddItem, addIndex) => {
-                            if (!isAddItem) {
-                                // เพิ่มรายการลงใน removedItems
-                                setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
+                                                // เพิ่มรายการลงใน purchase_request_detail.remove
+                                                appendRemove({ id });
 
-                                // เพิ่มรายการลงใน purchase_request_detail.remove
-                                appendRemove({ id });
+                                                // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
+                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
 
-                                                                        // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-                                        const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
-                                        const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
-                                        form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
+                                                // ลบออกจาก updatedItems state
+                                                setUpdatedItems(prev => {
+                                                    const newState = { ...prev };
+                                                    delete newState[id];
+                                                    return newState;
+                                                });
+                                            }
+                                        }}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="budget" className="mt-2">
+                                    Budget Pr
+                                </TabsContent>
+                                <TabsContent value="workflow" className="mt-2">
+                                    Workflow Pr
+                                </TabsContent>
+                            </Tabs>
 
-                                // ลบออกจาก updatedItems state
-                                setUpdatedItems(prev => {
-                                    const newState = { ...prev };
-                                    delete newState[id];
-                                    return newState;
-                                });
-                            }
-                        }}
-                    />
-                </form>
-            </Form> */}
-            {/* <div className="grid grid-cols-2 gap-2">
-                <JsonViewer data={form.getValues()} title="Form Values" />
-                <JsonViewer data={form.formState.errors} title="Watch Error" />
-            </div> */}
+                        </form>
+                    </Form>
+                </Card>
+
+                <div className="fixed bottom-6 right-6 flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg">
+                    <Button size={"sm"} className="h-7 px-2 text-xs">
+                        <CheckCircleIcon className="w-4 h-4" />
+                        Approve
+                    </Button>
+                    <Button
+                        variant={"destructive"}
+                        size={"sm"}
+                        className="h-7 px-2 text-xs"
+                    >
+                        <XCircleIcon className="w-4 h-4" />
+                        Reject
+                    </Button>
+                    <Button
+                        variant={"outline"}
+                        size={"sm"}
+                        className="h-7 px-2 text-xs"
+                    >
+                        <ArrowLeftRightIcon className="w-4 h-4" />
+                        Send Back
+                    </Button>
+                </div>
+            </DetailsAndComments>
 
             <DeleteConfirmDialog
                 open={deleteDialogOpen}
@@ -491,6 +371,6 @@ export default function MainForm({ mode, initValues }: Props) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
-    )
+        </>
+    );
 }
