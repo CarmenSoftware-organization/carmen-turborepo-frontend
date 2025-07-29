@@ -255,6 +255,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
               localStorage.setItem("tenant_id", id);
             }
             toastSuccess({ message: "Changed Business Unit Success" });
+
+            console.log('✅ Tenant changed successfully, other tabs will refresh automatically');
           },
         }
       );
@@ -304,17 +306,17 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
               router.push(signInPage);
             }
           } else if (event.newValue !== token && event.newValue) {
-            // Tab อื่น login ใหม่ - อัปเดต token
-            console.log('🔄 Cross-tab: New login detected from another tab');
             setToken(event.newValue);
           }
           break;
 
         case 'tenant_id':
           if (event.newValue && event.newValue !== tenantId) {
-            // Tab อื่นเปลี่ยน tenant - อัปเดต tenantId
-            console.log('🔄 Cross-tab: Tenant change detected from another tab');
             setTenantId(event.newValue);
+            // Auto refresh page เพื่อโหลดข้อมูลใหม่ตาม tenant ที่เปลี่ยน
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000); // รอ 1 วินาทีให้ user เห็น toast ก่อน
           }
           break;
 
