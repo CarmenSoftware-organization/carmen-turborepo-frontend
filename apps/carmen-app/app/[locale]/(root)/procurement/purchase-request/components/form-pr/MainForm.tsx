@@ -1,24 +1,19 @@
 "use client";
 
-import JsonViewer from "@/components/JsonViewer";
+// import JsonViewer from "@/components/JsonViewer";
 import { formType } from "@/dtos/form.dto";
-import { CreatePurchaseRequestSchema, PurchaseRequestByIdDto, PurchaseRequestCreateFormDto, PurchaseRequestDetail, PurchaseRequestUpdateFormDto, UpdatePurchaseRequestDetailDto, UpdatePurchaseRequestSchema } from "@/dtos/purchase-request.dto";
+import { CreatePurchaseRequestSchema, PurchaseRequestByIdDto, PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto, UpdatePurchaseRequestSchema } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
-import { mockPr } from "./payload-pr";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import DateInput from "@/components/form-custom/DateInput";
+import { Form } from "@/components/ui/form";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
-import { enum_workflow_type } from "@/dtos/workflows.dto";
-import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { ArrowLeftRightIcon, CheckCircleIcon, ChevronRight, ChevronLeft, XCircleIcon } from "lucide-react";
@@ -39,11 +34,13 @@ interface CancelAction {
 
 export default function MainForm({ mode, initValues }: Props) {
     const [currentFormType, setCurrentFormType] = useState<formType>(mode);
-    const [updatedItems, setUpdatedItems] = useState<{ [key: string]: any }>({});
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [updatedItems, setUpdatedItems] = useState<Record<string, any>>({});
     const [removedItems, setRemovedItems] = useState<Set<string>>(new Set());
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
     const { user, departments } = useAuth();
     const [openLog, setOpenLog] = useState(false);
@@ -97,14 +94,17 @@ export default function MainForm({ mode, initValues }: Props) {
         return hasMainFieldChanges || hasItemChanges;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFieldUpdate = (item: any, fieldName: string, value: any, selectedProduct?: any) => {
         // Update local state สำหรับ UI
-        const updateData: any = { [fieldName]: value };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const updateData: Record<string, any> = { [fieldName]: value };
 
         // ถ้าเป็น product_id และมี selectedProduct ให้ set inventory_unit_id ด้วย
         if (fieldName === 'product_id' && selectedProduct?.inventory_unit?.id) {
             updateData.inventory_unit_id = selectedProduct.inventory_unit.id;
         }
+
         setUpdatedItems(prev => ({
             ...prev,
             [item.id]: {
@@ -113,8 +113,11 @@ export default function MainForm({ mode, initValues }: Props) {
             }
         }));
 
-        const currentUpdateArray = form.getValues('purchase_request_detail.update') || [];
-        const existingIndex = currentUpdateArray.findIndex(field => field.id === item.id);
+        // ใช้ type assertion เพื่อหลีกเลี่ยง type inference ที่ซับซ้อน
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const existingIndex = currentUpdateArray.findIndex((field: any) => field.id === item.id);
 
         const updatedItem = {
             id: item.id,
@@ -134,12 +137,15 @@ export default function MainForm({ mode, initValues }: Props) {
         };
 
         if (existingIndex >= 0) {
-            // อัพเดทค่าเดิม
-            form.setValue(`purchase_request_detail.update.${existingIndex}`, updatedItem);
+            // อัพเดทค่าเดิม - ใช้ type assertion
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            form.setValue(`purchase_request_detail.update.${existingIndex}` as any, updatedItem);
         } else {
-            // เพิ่มใหม่
-            const currentUpdateFields = form.getValues('purchase_request_detail.update') || [];
-            form.setValue('purchase_request_detail.update', [...currentUpdateFields, updatedItem]);
+            // เพิ่มใหม่ - ใช้ type assertion เพื่อหลีกเลี่ยง deep type inference
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const currentUpdateFields = (form.getValues('purchase_request_detail.update') || []) as any[];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            form.setValue('purchase_request_detail.update' as any, [...currentUpdateFields, updatedItem] as any);
         }
     };
 
@@ -156,9 +162,12 @@ export default function MainForm({ mode, initValues }: Props) {
             appendRemove({ id: itemToDelete });
 
             // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-            const currentUpdateArray = form.getValues('purchase_request_detail.update') || [];
-            const filteredUpdateArray = currentUpdateArray.filter(item => item.id !== itemToDelete);
-            form.setValue('purchase_request_detail.update', filteredUpdateArray);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== itemToDelete);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
 
             // ลบออกจาก updatedItems state
             setUpdatedItems(prev => {
@@ -223,7 +232,6 @@ export default function MainForm({ mode, initValues }: Props) {
         setCancelDialogOpen(false);
     };
 
-    const watchForm = form.watch();
     const watchError = form.formState.errors;
     const hasError = Object.keys(watchError).length > 0;
     const canSave = !hasError && hasFormChanges();
@@ -283,7 +291,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                             updatedItems={updatedItems}
                                             removedItems={removedItems}
                                             onFieldUpdate={handleFieldUpdate}
-                                            onRemoveItem={(id, isAddItem, addIndex) => {
+                                            onRemoveItem={(id, isAddItem) => {
                                                 if (!isAddItem) {
                                                     // เพิ่มรายการลงใน removedItems
                                                     setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
@@ -292,9 +300,12 @@ export default function MainForm({ mode, initValues }: Props) {
                                                     appendRemove({ id });
 
                                                     // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-                                                    const currentUpdateArray = form.getValues('purchase_request_detail.update') || [];
-                                                    const filteredUpdateArray = currentUpdateArray.filter(item => item.id !== id);
-                                                    form.setValue('purchase_request_detail.update', filteredUpdateArray);
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
 
                                                     // ลบออกจาก updatedItems state
                                                     setUpdatedItems(prev => {
@@ -317,10 +328,10 @@ export default function MainForm({ mode, initValues }: Props) {
                             </form>
                         </Form>
                     </Card>
-                    <div className="grid grid-cols-2 gap-2">
+                    {/* <div className="grid grid-cols-2 gap-2">
                         <JsonViewer data={watchForm} title="Form Values" />
                         <JsonViewer data={form.formState.errors} title="Watch Error" />
-                    </div>
+                    </div> */}
                     <div
                         className={`fixed bottom-6 ${openLog ? "right-1/4" : "right-6"} flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg`}
                     >
@@ -437,10 +448,10 @@ export default function MainForm({ mode, initValues }: Props) {
                                 // เพิ่มรายการลงใน purchase_request_detail.remove
                                 appendRemove({ id });
 
-                                // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-                                const currentUpdateArray = form.getValues('purchase_request_detail.update') || [];
-                                const filteredUpdateArray = currentUpdateArray.filter(item => item.id !== id);
-                                form.setValue('purchase_request_detail.update', filteredUpdateArray);
+                                                                        // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
+                                        const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
+                                        const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
+                                        form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
 
                                 // ลบออกจาก updatedItems state
                                 setUpdatedItems(prev => {

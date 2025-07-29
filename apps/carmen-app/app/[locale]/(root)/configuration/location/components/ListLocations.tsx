@@ -15,7 +15,7 @@ import {
   SortConfig,
 } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import { FileText, Trash2 } from "lucide-react";
+import { FileText, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import EmptyData from "@/components/EmptyData";
 import { INVENTORY_TYPE } from "@/constants/enum";
 
@@ -45,6 +45,21 @@ export default function ListLocations({
 }: ListLocationsProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+
+  const getSortIcon = (field: string) => {
+    if (!sort || sort.field !== field) {
+      return <ArrowUpDown className="h-4 w-4" />;
+    }
+    return sort.direction === "asc" ?
+      <ArrowUp className="h-4 w-4" /> :
+      <ArrowDown className="h-4 w-4" />;
+  };
+
+  const handleSort = (field: string) => {
+    if (onSort) {
+      onSort(field);
+    }
+  };
 
   const renderTable = () => {
     if (isLoading) return <TableBodySkeleton rows={8} />;
@@ -117,14 +132,37 @@ export default function ListLocations({
           <TableRow>
             <TableHead className="w-10">#</TableHead>
             <TableHead>
-              {t("name")}
+              <Button
+                variant="ghost"
+                onClick={() => handleSort("name")}
+                className="h-auto p-0 font-medium hover:bg-transparent"
+              >
+                {t("name")}
+                {getSortIcon("name")}
+              </Button>
             </TableHead>
-            <TableHead className="hidden md:table-cell text-center">{t("type")}</TableHead>
+            <TableHead className="hidden md:table-cell text-center">
+              <Button
+                variant="ghost"
+                onClick={() => handleSort("location_type")}
+                className="h-auto p-0 font-medium hover:bg-transparent"
+              >
+                {t("type")}
+                {getSortIcon("location_type")}
+              </Button>
+            </TableHead>
             <TableHead className="hidden md:table-cell text-center">
               {t("delivery_point")}
             </TableHead>
             <TableHead className="text-center">
-              {t("status")}
+              <Button
+                variant="ghost"
+                onClick={() => handleSort("is_active")}
+                className="h-auto p-0 font-medium hover:bg-transparent"
+              >
+                {t("status")}
+                {getSortIcon("is_active")}
+              </Button>
             </TableHead>
             <TableHead className="text-right">{t("action")}</TableHead>
           </TableRow>

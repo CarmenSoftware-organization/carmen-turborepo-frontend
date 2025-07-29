@@ -79,11 +79,11 @@ export default function PriceListLookup({
                         key={priceItem.id}
                         value={priceItem.id}
                         onSelect={() => {
-                          onValueChange(priceItem.id);
+                          onValueChange(priceItem.id ?? "");
                           setOpen(false);
                         }}
                       >
-                        {priceItem.product_name}
+                        {priceItem.vendor.name ?? ""}
                         <Check
                           className={cn(
                             "ml-auto h-4 w-4",

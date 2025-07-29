@@ -14,11 +14,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Package, Plus } from "lucide-react";
 
 interface Props {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     form: UseFormReturn<any>;
     currentFormType: formType;
     initValues?: PurchaseRequestDetail[];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updatedItems: { [key: string]: any };
     removedItems: Set<string>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFieldUpdate: (item: any, fieldName: string, value: any, selectedProduct?: any) => void;
     onRemoveItem: (id: string, isAddItem?: boolean, addIndex?: number) => void;
 }

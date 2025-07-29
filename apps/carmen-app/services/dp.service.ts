@@ -1,8 +1,8 @@
 import { backendApi } from "@/lib/backend-api";
-import { DeliveryPointDto } from "@/dtos/config.dto";
 import axios from "axios";
 import { getAllApiRequest, requestHeaders } from "@/lib/config.api";
 import { ParamsGetDto } from "@/dtos/param.dto";
+import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 
 const API_URL = `${backendApi}/api/config/delivery-point`;
 
@@ -20,7 +20,7 @@ export const getAllDeliveryPoints = async (
     );
 };
 
-export const createDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
+export const createDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointCreateDto) => {
     try {
         const response = await axios.post(API_URL, deliveryPoint, {
             headers: requestHeaders(token, tenantId)
@@ -32,7 +32,7 @@ export const createDeliveryPoint = async (token: string, tenantId: string, deliv
     }
 }
 
-export const updateDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
+export const updateDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointUpdateDto) => {
     try {
         const response = await axios.patch(`${API_URL}/${deliveryPoint.id}`, deliveryPoint, {
             headers: requestHeaders(token, tenantId)
@@ -44,7 +44,7 @@ export const updateDeliveryPoint = async (token: string, tenantId: string, deliv
     }
 }
 
-export const inactiveDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointDto) => {
+export const inactiveDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointUpdateDto) => {
     try {
         const response = await axios.put(`${API_URL}/${deliveryPoint.id}`,
             { ...deliveryPoint, is_active: !deliveryPoint.is_active },

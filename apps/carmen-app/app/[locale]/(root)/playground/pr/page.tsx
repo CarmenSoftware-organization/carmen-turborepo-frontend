@@ -183,7 +183,7 @@ export default function PrPage() {
         };
 
         if (context.type === "pristine") {
-            const { isDirty, ...itemForRHF } = { ...context.item, ...newValues, quantity: 0 };
+            const { ...itemForRHF } = { ...context.item, ...newValues, quantity: 0 };
             updateAppend(itemForRHF);
             setUpdatableItems((current) => current.filter((i) => i.id !== context.item.id));
         } else {

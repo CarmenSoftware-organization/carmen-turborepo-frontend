@@ -1,6 +1,6 @@
 import {
   CreditTermGetAllDto,
-  CreateCreditTermDto,
+  CreateCreditTermFormValues,
 } from "@/dtos/credit-term.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import {
@@ -65,7 +65,7 @@ export const useCreditTermQuery = (
 
 export const useCreateCreditTerm = (token: string, tenantId: string) => {
   return useMutation({
-    mutationFn: async (data: CreateCreditTermDto) => {
+    mutationFn: async (data: CreateCreditTermFormValues) => {
       if (!token || !tenantId) {
         throw new Error("Unauthorized: Missing token or tenantId");
       }
@@ -88,7 +88,7 @@ export const useUpdateCreditTerm = (
   const API_URL_BY_ID = `${API_URL}/${id}`;
 
   return useMutation({
-    mutationFn: async (data: CreateCreditTermDto) => {
+    mutationFn: async (data: CreateCreditTermFormValues) => {
       if (!token || !tenantId || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }

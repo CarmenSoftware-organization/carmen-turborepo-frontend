@@ -27,6 +27,7 @@ export default function PurchaseRequestIdPage() {
             }
 
             const detailsWithInventory = await Promise.all(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 purchaseRequest.data.purchase_request_detail.map(async (detail: any) => {
                     const inventoryData = await getOnHandOnOrderService(
                         token,
@@ -52,5 +53,6 @@ export default function PurchaseRequestIdPage() {
 
     if (!prDataWithInventory) return <DetailLoading />
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <MainForm mode={formType.VIEW} initValues={prDataWithInventory as any} />
 }

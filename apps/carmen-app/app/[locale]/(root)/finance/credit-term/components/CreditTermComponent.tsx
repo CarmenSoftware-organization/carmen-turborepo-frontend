@@ -207,10 +207,9 @@ export default function CreditTermComponent() {
                 variant={creditTerm.is_active ? "active" : "inactive"}
                 className={`
                   flex items-center gap-1 text-xs px-2 py-1 rounded-full border-0
-                  ${
-                    creditTerm.is_active
-                      ? "text-green-700 ring-1 ring-green-200"
-                      : "text-gray-600 ring-1 ring-gray-200"
+                  ${creditTerm.is_active
+                    ? "text-green-700 ring-1 ring-green-200"
+                    : "text-gray-600 ring-1 ring-gray-200"
                   }
                 `}
               >

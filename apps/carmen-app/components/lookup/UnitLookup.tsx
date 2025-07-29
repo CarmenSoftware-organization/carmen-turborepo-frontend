@@ -44,6 +44,7 @@ export default function UnitLookup({
         return found?.name ?? null;
     }, [value, units]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleAddUnit = (data: any) => {
         onValueChange(data.id);
         setDialogOpen(false);

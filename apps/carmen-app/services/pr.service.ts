@@ -45,7 +45,7 @@ export const getPrByIdService = async (
 // Transformation function สำหรับแปลง DTO ใหม่ไปเป็น format เก่าที่ API คาดหวัง
 const transformCreateFormToApiFormat = (data: PurchaseRequestCreateFormDto): any => {
   return {
-    pr_date: data.pr_date.toISOString(),
+    pr_date: data.pr_date,
     requestor_id: data.requestor_id,
     department_id: data.department_id,
     workflow_id: data.workflow_id,
@@ -59,7 +59,7 @@ const transformCreateFormToApiFormat = (data: PurchaseRequestCreateFormDto): any
 
 const transformUpdateFormToApiFormat = (data: PurchaseRequestUpdateFormDto): any => {
   return {
-    pr_date: data.pr_date.toISOString(),
+    pr_date: data.pr_date,
     requestor_id: data.requestor_id,
     department_id: data.department_id,
     workflow_id: data.workflow_id,
@@ -93,7 +93,7 @@ export async function createPrService(
   let apiData: any;
 
   // Check if it's the new DTO format
-  if ('pr_date' in data && data.pr_date instanceof Date) {
+  if ('pr_date' in data) {
     // New DTO format - transform it
     apiData = transformCreateFormToApiFormat(data as PurchaseRequestCreateFormDto);
   } else {
@@ -137,7 +137,7 @@ export async function updatePrService(
   let apiData: any;
 
   // Check if it's the new DTO format
-  if ('pr_date' in data && data.pr_date instanceof Date) {
+  if ('pr_date' in data) {
     // New DTO format - transform it
     apiData = transformUpdateFormToApiFormat(data as PurchaseRequestUpdateFormDto);
   } else {

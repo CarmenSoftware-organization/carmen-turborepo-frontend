@@ -1,14 +1,13 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { TableCell, TableRow } from "@/components/ui/table";
+import { TableCell } from "@/components/ui/table";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLocationLookup from '@/components/lookup/ProductLocationLookup';
 import UnitLookup from "@/components/lookup/UnitLookup";
 import NumberInput from "@/components/form-custom/NumberInput";
 import DateInput from "@/components/form-custom/DateInput";
-import { Divide, MapPin, Package, Trash2 } from "lucide-react";
+import { MapPin, Package, Trash2 } from "lucide-react";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { format } from "date-fns";
@@ -17,7 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { Checkbox } from "@/components/ui/checkbox";
-import { fadeVariants, slideUpVariants, buttonVariants } from "@/utils/framer-variants";
+import { buttonVariants, cellContentVariants } from "@/utils/framer-variants";
 import { Input } from "@/components/ui/input";
 import { Fragment } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -28,24 +27,14 @@ import { Label } from "@/components/ui/label";
 import VendorRow from "./VendorRow";
 import BusinessDimensions from "./BusinessDimensions";
 import PricingCard from "./PricingCard";
-
-const cellContentVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: {
-        opacity: 1,
-        scale: 1,
-        transition: {
-            duration: 0.3,
-            delay: 0.1
-        }
-    }
-};
-
+import { AnimatePresence, MotionDiv, MotionP, MotionTr } from "@/components/framer-motion/MotionWrapper";
 interface EditFieldItemProps {
     initValues?: PurchaseRequestDetail[];
     removedItems: Set<string>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     updatedItems: { [key: string]: any };
     currentFormType: formType;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFieldUpdate: (item: any, fieldName: string, value: any, selectedProduct?: any) => void;
     onRemoveItemClick: (id: string, isAddItem?: boolean, addIndex?: number) => void;
 }
@@ -64,7 +53,7 @@ export default function EditFieldItem({
         <AnimatePresence>
             {initValues?.filter(item => !removedItems.has(item.id)).map((item, index) => (
                 <Fragment key={item.id}>
-                    <motion.tr
+                    <MotionTr
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, x: -50, scale: 0.95 }}
@@ -78,25 +67,25 @@ export default function EditFieldItem({
                         className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
                     >
                         <TableCell>
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
                             >
                                 <Checkbox />
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
                         <TableCell>
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
                             >
                                 {index + 1}
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
                         <TableCell>
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
@@ -104,12 +93,12 @@ export default function EditFieldItem({
                                 {currentFormType === formType.VIEW ? (
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <motion.div
+                                            <MotionDiv
                                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                                 transition={{ duration: 0.2 }}
                                             >
                                                 <MapPin className="h-4 w-4 text-blue-500" />
-                                            </motion.div>
+                                            </MotionDiv>
                                             <p className="text-sm font-medium">{item.location_name || "-"}</p>
                                         </div>
                                         <p className="text-xs text-muted-foreground">
@@ -122,22 +111,22 @@ export default function EditFieldItem({
                                         onValueChange={(value) => onFieldUpdate(item, 'location_id', value)}
                                     />
                                 )}
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
                         <TableCell>
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
                             >
                                 {currentFormType === formType.VIEW ? (
                                     <div className="flex gap-2">
-                                        <motion.div
+                                        <MotionDiv
                                             whileHover={{ scale: 1.1, rotate: 5 }}
                                             transition={{ duration: 0.2 }}
                                         >
                                             <Package className="h-4 w-4 text-blue-500" />
-                                        </motion.div>
+                                        </MotionDiv>
                                         <div>
                                             <p>{item.product_name || "-"}</p>
                                             <p className="text-muted-foreground">{item.description}</p>
@@ -157,23 +146,23 @@ export default function EditFieldItem({
                                         />
                                     </div>
                                 )}
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
                         <TableCell className="text-right">
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
                             >
                                 {currentFormType === formType.VIEW ? (
                                     <>
-                                        <motion.p
+                                        <MotionP
                                             className="text-right font-semibold"
                                             whileHover={{ scale: 1.02 }}
                                             transition={{ duration: 0.2 }}
                                         >
                                             {item.requested_qty} {item.requested_unit_name || "-"}
-                                        </motion.p>
+                                        </MotionP>
                                         <p className="text-xs text-muted-foreground">
                                             (≈ {item.requested_base_qty} {item.inventory_unit_name || "-"})
                                         </p>
@@ -192,31 +181,31 @@ export default function EditFieldItem({
                                         />
                                     </div>
                                 )}
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
                         <TableCell className="text-right">
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
                             >
                                 {currentFormType === formType.VIEW ? (
                                     <>
-                                        <motion.p
+                                        <MotionP
                                             className="text-sm text-right font-semibold"
                                             whileHover={{ scale: 1.02 }}
                                             transition={{ duration: 0.2 }}
                                         >
                                             {item.approved_qty} {item.approved_unit_name || "-"}
-                                        </motion.p>
+                                        </MotionP>
                                         <Separator />
-                                        <motion.p
+                                        <MotionP
                                             className="text-xs font-semibold text-blue-500"
                                             whileHover={{ scale: 1.02 }}
                                             transition={{ duration: 0.2 }}
                                         >
                                             FOC: {item.foc_qty} {item.foc_unit_name || "-"}
-                                        </motion.p>
+                                        </MotionP>
                                     </>
                                 ) : (
                                     <div className="flex flex-col gap-1">
@@ -247,30 +236,30 @@ export default function EditFieldItem({
                                         </div>
                                     </div>
                                 )}
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
                         <TableCell className="text-right">
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
                             >
                                 {currentFormType === formType.VIEW ? (
                                     <>
-                                        <motion.p
+                                        <MotionP
                                             className="text-sm text-right font-semibold"
                                             whileHover={{ scale: 1.02 }}
                                             transition={{ duration: 0.2 }}
                                         >
                                             {getCurrencyCode(item.currency_id)} {item.total_price}
-                                        </motion.p>
-                                        <motion.p
+                                        </MotionP>
+                                        <MotionP
                                             className="text-xs font-semibold text-blue-500"
                                             whileHover={{ scale: 1.02 }}
                                             transition={{ duration: 0.2 }}
                                         >
                                             {currencyBase?.name} {item.base_total_price || 0}
-                                        </motion.p>
+                                        </MotionP>
                                     </>
                                 ) : (
                                     <div className="flex items-center gap-2 justify-end">
@@ -286,16 +275,16 @@ export default function EditFieldItem({
                                         />
                                     </div>
                                 )}
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
                         <TableCell className="text-center">
-                            <motion.div
+                            <MotionDiv
                                 variants={cellContentVariants}
                                 initial="hidden"
                                 animate="visible"
                             >
                                 {currentFormType !== formType.VIEW && (
-                                    <motion.div
+                                    <MotionDiv
                                         variants={buttonVariants}
                                         initial="idle"
                                         whileHover="hover"
@@ -307,19 +296,19 @@ export default function EditFieldItem({
                                             onClick={() => onRemoveItemClick(item.id)}
                                             className="hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
                                         >
-                                            <motion.div
+                                            <MotionDiv
                                                 whileHover={{ rotate: 10 }}
                                                 transition={{ duration: 0.2 }}
                                             >
                                                 <Trash2 className="w-4 h-4" />
-                                            </motion.div>
+                                            </MotionDiv>
                                         </Button>
-                                    </motion.div>
+                                    </MotionDiv>
                                 )}
-                            </motion.div>
+                            </MotionDiv>
                         </TableCell>
-                    </motion.tr>
-                    <motion.tr>
+                    </MotionTr>
+                    <MotionTr>
                         <TableCell colSpan={8}>
                             <Accordion type="single" collapsible className="w-full">
                                 <AccordionItem value={`item-${index}`} className="space-y-4">
@@ -384,7 +373,7 @@ export default function EditFieldItem({
                                 </AccordionItem>
                             </Accordion>
                         </TableCell>
-                    </motion.tr>
+                    </MotionTr>
                 </Fragment>
             ))}
         </AnimatePresence>

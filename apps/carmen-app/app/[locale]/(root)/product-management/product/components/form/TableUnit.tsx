@@ -45,6 +45,7 @@ interface TableUnitProps {
     readonly handleSaveEdit: (unit: UnitData) => void;
     readonly handleRemove: (unitId: string) => void;
     readonly addFieldName: string; // e.g., "order_units.add" or "ingredient_units.add"
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly unitFields: any[];
     readonly removeUnit: (index: number) => void;
 }
@@ -309,7 +310,9 @@ export default function TableUnit({
 
                     {/* New Units */}
                     {unitFields.map((field, index) => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const currentToUnitQty = (watch as any)(`${addFieldName}.${index}.to_unit_qty`) || 0;
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         const currentToUnitId = (watch as any)(`${addFieldName}.${index}.to_unit_id`) || "";
 
                         return (
@@ -325,6 +328,7 @@ export default function TableUnit({
                                     <div className="flex items-center gap-2">
                                         <FormField
                                             control={control}
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             name={`${addFieldName}.${index}.to_unit_qty` as any}
                                             render={({ field }) => (
                                                 <FormItem className="space-y-0">
@@ -347,6 +351,7 @@ export default function TableUnit({
 
                                         <FormField
                                             control={control}
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                             name={`${addFieldName}.${index}.to_unit_id` as any}
                                             render={({ field }) => (
                                                 <FormItem className="space-y-0">
@@ -374,6 +379,7 @@ export default function TableUnit({
                                 <TableCell className="text-left w-16">
                                     <FormField
                                         control={control}
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         name={`${addFieldName}.${index}.is_default` as any}
                                         render={({ field }) => (
                                             <FormItem className="space-y-0">

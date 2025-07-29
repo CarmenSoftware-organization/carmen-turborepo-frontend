@@ -16,6 +16,6 @@ export const getAllCreditTermSchema = creditTermBaseSchema.extend({
 
 export const updateCreditTermSchema = createCreditTermSchema;
 
-export type GetAllCreditTermDto = z.infer<typeof getAllCreditTermSchema>;
+export type CreditTermGetAllDto = z.infer<typeof getAllCreditTermSchema>;
 export type CreateCreditTermFormValues = z.infer<typeof createCreditTermSchema>;
 export type UpdateCreditTermDto = z.infer<typeof updateCreditTermSchema>;

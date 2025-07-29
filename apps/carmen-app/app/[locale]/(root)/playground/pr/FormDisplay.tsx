@@ -23,6 +23,7 @@ import clsx from "clsx";
 type FormPath = "items.add" | "items.update";
 
 interface FormDisplayProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fields: FieldArrayWithId<PrFormValue, any, "id">[];
     form: UseFormReturn<PrFormValue>;
     formPath: FormPath;
@@ -53,6 +54,7 @@ export default function FormDisplay({
     return (
         <>
             {fields.map((field, index) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const availableProducts = allProducts.filter(p => !selectedProductIds.has(p.id) || p.id === (field as any).product_id);
                 return (
                     <div key={field.id} className={clsx("flex gap-2 items-start p-2 border rounded-md", itemClassName)}>

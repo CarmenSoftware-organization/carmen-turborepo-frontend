@@ -56,4 +56,15 @@ export const MotionSpan = dynamic(
 export const AnimatePresence = dynamic(
     () => import("framer-motion").then((mod) => mod.AnimatePresence),
     { ssr: false }
-); 
+);
+
+export const MotionP = dynamic(
+    () => import("framer-motion").then((mod) => {
+        const Component: React.FC<MotionProps> = ({ children, ...props }) => {
+            const MotionP = mod.motion.p;
+            return <MotionP {...props}>{children}</MotionP>;
+        };
+        return Component;
+    }),
+    { ssr: false }
+);

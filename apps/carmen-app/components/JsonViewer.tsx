@@ -4,6 +4,7 @@ export default function JsonViewer({
   data,
   title
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   readonly data: Record<string, any>;
   readonly title?: string;
 }) {

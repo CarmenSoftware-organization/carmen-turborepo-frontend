@@ -96,6 +96,7 @@ export default function UnitComponent() {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDialogSubmit = (data: any) => {
     if (dialogMode === formType.ADD) {
       createUnit(data, {

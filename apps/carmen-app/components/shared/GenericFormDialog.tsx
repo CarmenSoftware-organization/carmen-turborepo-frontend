@@ -35,6 +35,7 @@ export interface FieldConfig<T extends FieldValues> {
     name: Path<T>;
     label: string;
     type?: FORM_FIELD_TYPE;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component?: (field: any) => ReactNode;
     className?: string;
     placeholder?: string;
@@ -117,6 +118,7 @@ export default function GenericFormDialog<T extends FieldValues>({
         onOpenChange(false);
     }, [form, getFormDefaultValues, onOpenChange]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const renderFieldComponent = (field: any, type: string, component: any, label: string) => {
         if (component) {
             return component(field);

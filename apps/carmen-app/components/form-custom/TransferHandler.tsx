@@ -1,6 +1,7 @@
 import { UseFormReturn } from "react-hook-form";
 
 interface TransferHandlerProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly form: UseFormReturn<any>;
     readonly fieldName: string;
     readonly setSelected: (keys: (string | number)[]) => void;
@@ -20,7 +21,9 @@ export default function transferHandler({
 
         const currentItems = form.getValues(fieldName) || { add: [], remove: [] };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const addMap = new Map(currentItems.add.map((item: any) => [item.id, item]));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const removeMap = new Map(currentItems.remove.map((item: any) => [item.id, item]));
 
         const processItemMove = (keyStr: string) => {

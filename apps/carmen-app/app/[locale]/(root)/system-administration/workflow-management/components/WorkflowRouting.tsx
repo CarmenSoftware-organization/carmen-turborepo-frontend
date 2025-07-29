@@ -30,6 +30,7 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
   const { token, tenantId } = useAuth();
   const { departments } = useDepartmentsQuery(token, tenantId);
   const { categories } = useCategory();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const departmentList = departments?.data.map((el: any) => {
     return Object.assign(
       {},

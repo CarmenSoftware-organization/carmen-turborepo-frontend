@@ -4,6 +4,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
 interface CalendarButtonProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly field: any;
     readonly classNames?: string;
 }

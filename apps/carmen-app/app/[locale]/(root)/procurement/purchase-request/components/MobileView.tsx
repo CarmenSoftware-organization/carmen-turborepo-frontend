@@ -102,7 +102,7 @@ export const MobileView = ({
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Current Workflow</p>
               <p className="text-xs font-medium">
-                {pr.current_workflow_status}
+                {pr.workflow_current_stage}
               </p>
             </div>
             <div className="space-y-1">

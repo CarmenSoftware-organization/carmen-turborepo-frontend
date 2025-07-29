@@ -9,6 +9,7 @@ import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 
 interface PricingCardProps {
     readonly item: PurchaseRequestDetail;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFieldUpdate: (item: any, fieldName: string, value: any, selectedProduct?: any) => void;
     readonly mode: formType
 }

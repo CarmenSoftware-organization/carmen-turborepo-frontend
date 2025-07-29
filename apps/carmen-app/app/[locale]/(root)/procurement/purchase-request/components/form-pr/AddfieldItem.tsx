@@ -1,9 +1,9 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
-import { TableCell, TableRow } from "@/components/ui/table";
+import { TableCell } from "@/components/ui/table";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLocationLookup from '@/components/lookup/ProductLocationLookup';
 import UnitLookup from "@/components/lookup/UnitLookup";
@@ -11,10 +11,10 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import DateInput from "@/components/form-custom/DateInput";
 import { Trash2 } from "lucide-react";
 import { UseFormReturn, FieldArrayWithId } from "react-hook-form";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buttonVariants } from "@/utils/framer-variants";
 import { Input } from "@/components/ui/input";
+import { MotionDiv, MotionTr } from "@/components/framer-motion/MotionWrapper";
 
 const cellContentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -40,7 +40,9 @@ const inputVariants = {
 };
 
 interface AddfieldItemProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     form: UseFormReturn<any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addFields: FieldArrayWithId<any, "purchase_request_detail.add", "id">[];
     onRemoveItemClick: (id: string, isAddItem: boolean, addIndex?: number) => void;
 }
@@ -53,7 +55,7 @@ export default function AddfieldItem({
     return (
         <>
             {addFields.map((item, index) => (
-                <motion.tr
+                <MotionTr
                     key={item.id || `add-${index}`}
                     initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -68,22 +70,22 @@ export default function AddfieldItem({
                     className="border-b border-blue-100 transition-colors hover:bg-blue-50/30 data-[state=selected]:bg-blue-50"
                 >
                     <TableCell>
-                        <motion.div
+                        <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
                         >
-                            <motion.div
+                            <MotionDiv
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.95 }}
                                 transition={{ duration: 0.2 }}
                             >
                                 <Checkbox />
-                            </motion.div>
-                        </motion.div>
+                            </MotionDiv>
+                        </MotionDiv>
                     </TableCell>
                     <TableCell>
-                        <motion.div
+                        <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
@@ -95,10 +97,10 @@ export default function AddfieldItem({
                             >
                                 +
                             </motion.span>
-                        </motion.div>
+                        </MotionDiv>
                     </TableCell>
                     <TableCell>
-                        <motion.div
+                        <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
@@ -109,7 +111,7 @@ export default function AddfieldItem({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <motion.div
+                                            <MotionDiv
                                                 variants={inputVariants}
                                                 whileFocus="focus"
                                                 initial="blur"
@@ -120,15 +122,15 @@ export default function AddfieldItem({
                                                         field.onChange(value);
                                                     }}
                                                 />
-                                            </motion.div>
+                                            </MotionDiv>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             />
-                        </motion.div>
+                        </MotionDiv>
                     </TableCell>
                     <TableCell>
-                        <motion.div
+                        <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
@@ -143,7 +145,7 @@ export default function AddfieldItem({
                                     return (
                                         <FormItem>
                                             <FormControl>
-                                                <motion.div
+                                                <MotionDiv
                                                     variants={inputVariants}
                                                     whileFocus="focus"
                                                     initial="blur"
@@ -165,7 +167,7 @@ export default function AddfieldItem({
                                                         }}
                                                         disabled={!currentLocationId}
                                                     />
-                                                </motion.div>
+                                                </MotionDiv>
                                             </FormControl>
                                         </FormItem>
                                     );
@@ -182,10 +184,10 @@ export default function AddfieldItem({
                                     </FormItem>
                                 )}
                             />
-                        </motion.div>
+                        </MotionDiv>
                     </TableCell>
                     <TableCell className="text-right flex items-center justify-end gap-2">
-                        <motion.div
+                        <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
@@ -197,7 +199,7 @@ export default function AddfieldItem({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <motion.div
+                                            <MotionDiv
                                                 variants={inputVariants}
                                                 whileFocus="focus"
                                                 initial="blur"
@@ -206,7 +208,7 @@ export default function AddfieldItem({
                                                     value={field.value}
                                                     onChange={field.onChange}
                                                 />
-                                            </motion.div>
+                                            </MotionDiv>
                                         </FormControl>
                                     </FormItem>
                                 )}
@@ -217,7 +219,7 @@ export default function AddfieldItem({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <motion.div
+                                            <MotionDiv
                                                 variants={inputVariants}
                                                 whileFocus="focus"
                                                 initial="blur"
@@ -226,15 +228,15 @@ export default function AddfieldItem({
                                                     value={field.value}
                                                     onValueChange={field.onChange}
                                                 />
-                                            </motion.div>
+                                            </MotionDiv>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             />
-                        </motion.div>
+                        </MotionDiv>
                     </TableCell>
                     <TableCell>
-                        <motion.div
+                        <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
@@ -245,7 +247,7 @@ export default function AddfieldItem({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <motion.div
+                                            <MotionDiv
                                                 variants={inputVariants}
                                                 whileFocus="focus"
                                                 initial="blur"
@@ -261,20 +263,20 @@ export default function AddfieldItem({
                                                     }}
                                                     wrapWithFormControl={false}
                                                 />
-                                            </motion.div>
+                                            </MotionDiv>
                                         </FormControl>
                                     </FormItem>
                                 )}
                             />
-                        </motion.div>
+                        </MotionDiv>
                     </TableCell>
                     <TableCell className="text-center">
-                        <motion.div
+                        <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
                         >
-                            <motion.div
+                            <MotionDiv
                                 variants={buttonVariants}
                                 initial="idle"
                                 whileHover="hover"
@@ -286,17 +288,17 @@ export default function AddfieldItem({
                                     onClick={() => onRemoveItemClick(item.id, true, index)}
                                     className="hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
                                 >
-                                    <motion.div
+                                    <MotionDiv
                                         whileHover={{ rotate: 15, scale: 1.1 }}
                                         transition={{ duration: 0.2 }}
                                     >
                                         <Trash2 className="w-4 h-4" />
-                                    </motion.div>
+                                    </MotionDiv>
                                 </Button>
-                            </motion.div>
-                        </motion.div>
+                            </MotionDiv>
+                        </MotionDiv>
                     </TableCell>
-                </motion.tr>
+                </MotionTr>
             ))}
         </>
     );

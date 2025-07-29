@@ -13,7 +13,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import ListDeliveryPoint from "./ListDeliveryPoint";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
+import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -91,7 +91,7 @@ export default function DeliveryPointComponent() {
           setDeleteDialogOpen(false);
           setDeliveryPointToDelete(undefined);
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
           toastError({ message: 'Failed to delete delivery point' });
           console.error("Failed to delete delivery point:", error);
         }
@@ -99,7 +99,7 @@ export default function DeliveryPointComponent() {
     }
   };
 
-  const handleDialogSubmit = (data: any) => {
+  const handleDialogSubmit = (data: DeliveryPointUpdateDto | DeliveryPointCreateDto) => {
     if (dialogMode === formType.ADD) {
       createDeliveryPoint(data, {
         onSuccess: () => {
@@ -108,7 +108,7 @@ export default function DeliveryPointComponent() {
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
           toastError({ message: 'Failed to create delivery point' });
           console.error("Failed to create delivery point:", error);
         }
@@ -122,7 +122,7 @@ export default function DeliveryPointComponent() {
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
           toastError({ message: 'Failed to update delivery point' });
           console.error("Failed to update delivery point:", error);
         }
