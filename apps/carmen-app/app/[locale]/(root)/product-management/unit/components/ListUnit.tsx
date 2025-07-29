@@ -30,10 +30,10 @@ export default function ListUnit({ units, isLoading, currentPage, totalPages, on
             <Table>
                 <TableHeader className="bg-muted">
                     <TableRow>
-                        <TableHead className="w-[40px]">
+                        <TableHead className="w-[8px]">
                             <Checkbox />
                         </TableHead>
-                        <TableHead className="w-[40px]">#</TableHead>
+                        <TableHead className="w-[8px]">#</TableHead>
                         <TableHead className="w-[400px]">Name</TableHead>
                         <TableHead className="w-[120px]">Status</TableHead>
                         <TableHead className="w-[100px] text-right">Actions</TableHead>
