@@ -31,15 +31,25 @@ export const getUserProfileService = async (accessToken: string) => {
 
 export const updateUserBusinessUnitService = async (
   accessToken: string,
-  buId: string
+  tenantId: string
 ) => {
   const url = `${backendApi}/api/business-unit/default`;
   try {
-    const response = await axios.post(url, {
-      headers: requestHeaders(accessToken, buId),
-    });
+    const response = await axios.post(
+      url,
+      {
+        tenant_id: tenantId
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Failed to update user business unit:", error);
+    throw error;
   }
 };
