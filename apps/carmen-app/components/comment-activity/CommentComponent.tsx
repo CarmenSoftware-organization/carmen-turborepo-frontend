@@ -20,11 +20,11 @@ export type CommentItem = {
 };
 
 type CommentComponentProps = {
-    initialComments: CommentItem[];
-    title?: string;
-    scrollAreaHeight?: string;
-    onCommentAdd?: (newComment: CommentItem) => void;
-    onFileDownload?: (attachment: CommentAttachment) => void;
+    readonly initialComments: CommentItem[];
+    readonly title?: string;
+    readonly scrollAreaHeight?: string;
+    readonly onCommentAdd?: (newComment: CommentItem) => void;
+    readonly onFileDownload?: (attachment: CommentAttachment) => void;
 };
 
 export default function CommentComponent({

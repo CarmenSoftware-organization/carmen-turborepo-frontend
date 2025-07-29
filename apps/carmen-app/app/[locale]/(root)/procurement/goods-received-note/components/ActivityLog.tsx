@@ -1,4 +1,4 @@
-import ActivityLogComponent, { ActivityLogItem } from "@/components/ui-custom/ActivityLogComponent";
+import ActivityLogComponent, { ActivityLogItem } from "@/components/comment-activity/ActivityLogComponent";
 
 // Sample activity log data
 const activityLogs: ActivityLogItem[] = [
