@@ -34,11 +34,6 @@ interface PurchaseRequestListProps {
   readonly isLoading: boolean;
 }
 
-interface FormatPriceConf {
-  locales: string;
-  minimumIntegerDigits: number;
-}
-
 export default function PurchaseRequestList({
   purchaseRequests,
   currentPage = 1,
