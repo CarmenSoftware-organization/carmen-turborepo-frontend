@@ -60,7 +60,7 @@ export default function PurchaseRequestComponent() {
       data-id="purchase-request-action-buttons"
     >
       <Button size={"sm"} onClick={handleOpenDialog}>
-        <Plus className="h-4 w-4" />
+        <Plus />
         {tCommon("add")} Purchase Request
       </Button>
       <Button
@@ -69,11 +69,11 @@ export default function PurchaseRequestComponent() {
         size={"sm"}
         data-id="pr-list-export-button"
       >
-        <FileDown className="h-4 w-4" />
+        <FileDown />
         {tCommon("export")}
       </Button>
       <Button variant="outline" size={"sm"} data-id="pr-list-print-button">
-        <Printer className="h-4 w-4" />
+        <Printer />
         {tCommon("print")}
       </Button>
     </div>

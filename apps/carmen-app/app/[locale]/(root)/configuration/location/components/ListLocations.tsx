@@ -13,11 +13,14 @@ import {
 } from "@/components/ui/table";
 import {
   SortConfig,
+  getSortableColumnProps,
+  renderSortIcon,
 } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import { FileText, Trash2, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import EmptyData from "@/components/EmptyData";
 import { INVENTORY_TYPE } from "@/constants/enum";
+import ButtonLink from "@/components/ButtonLink";
 
 interface Location {
   readonly id: string;
@@ -47,27 +50,10 @@ export default function ListLocations({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  const getSortIcon = (field: string) => {
-    if (!sort || sort.field !== field) {
-      return <ArrowUpDown className="h-4 w-4" />;
-    }
-    return sort.direction === "asc" ?
-      <ArrowUp className="h-4 w-4" /> :
-      <ArrowDown className="h-4 w-4" />;
-  };
-
-  const handleSort = (field: string) => {
-    if (onSort) {
-      onSort(field);
-    }
-  };
-
   const renderTable = () => {
     if (isLoading) return <TableBodySkeleton rows={8} />;
     if (locations.length === 0)
       return <EmptyData message={"Location data not found"} />;
-
-    console.log('locations', locations);
 
     return (
       <TableBody>
@@ -75,16 +61,15 @@ export default function ListLocations({
           <TableRow key={location.id}>
             <TableCell className="w-10">{i + 1}</TableCell>
             <TableCell>
-              <Link
-                href={`/configuration/location/${location.id}`}
-                className="font-bold hover:underline text-primary hover:text-primary/80 font-medium"
-                role="button"
-              >
+              <ButtonLink href={`/configuration/location/${location.id}`}>
                 {location.name}
-              </Link>
-              <p className="text-xs text-muted-foreground">
-                {location.description}
-              </p>
+              </ButtonLink>
+              {location.description && (
+                <p className="text-xs text-muted-foreground mt-[-8px]">
+                  {location.description}
+                </p>
+              )}
+
             </TableCell>
             <TableCell className="hidden md:table-cell text-center">
               <Badge
@@ -138,43 +123,46 @@ export default function ListLocations({
         <TableHeader>
           <TableRow>
             <TableHead className="w-10">#</TableHead>
-            <TableHead>
-              <Button
-                variant="ghost"
-                onClick={() => handleSort("name")}
-                className="h-auto p-0 font-medium hover:bg-transparent"
-              >
+            <TableHead
+              {...getSortableColumnProps("name", sort, onSort)}
+              className="font-semibold cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
                 {t("name")}
-                {getSortIcon("name")}
-              </Button>
+                {renderSortIcon("name", sort)}
+              </div>
             </TableHead>
-            <TableHead className="hidden md:table-cell text-center">
-              <Button
-                variant="ghost"
-                onClick={() => handleSort("location_type")}
-                className="h-auto p-0 font-medium hover:bg-transparent"
-              >
+            <TableHead
+              {...getSortableColumnProps("location_type", sort, onSort)}
+              className="hidden md:table-cell text-center font-semibold cursor-pointer"
+            >
+              <div className="flex items-center justify-center gap-2">
                 {t("type")}
-                {getSortIcon("location_type")}
-              </Button>
+                {renderSortIcon("location_type", sort)}
+              </div>
             </TableHead>
-            <TableHead>
+            <TableHead className="text-center font-semibold">
               EOP
             </TableHead>
-            <TableHead className="hidden md:table-cell text-center">
-              {t("delivery_point")}
+            <TableHead
+              {...getSortableColumnProps("delivery_point", sort, onSort)}
+              className="hidden md:table-cell text-center font-semibold cursor-pointer"
+            >
+              <div className="flex items-center justify-center gap-2">
+                {t("delivery_point")}
+                {renderSortIcon("delivery_point", sort)}
+              </div>
             </TableHead>
-            <TableHead className="text-center">
-              <Button
-                variant="ghost"
-                onClick={() => handleSort("is_active")}
-                className="h-auto p-0 font-medium hover:bg-transparent"
-              >
+            <TableHead
+              {...getSortableColumnProps("is_active", sort, onSort)}
+              className="text-center font-semibold cursor-pointer"
+            >
+              <div className="flex items-center justify-center gap-2">
                 {t("status")}
-                {getSortIcon("is_active")}
-              </Button>
+                {renderSortIcon("is_active", sort)}
+              </div>
             </TableHead>
-            <TableHead className="text-right">{t("action")}</TableHead>
+            <TableHead className="text-right font-semibold">{t("action")}</TableHead>
           </TableRow>
         </TableHeader>
         {renderTable()}

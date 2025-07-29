@@ -16,6 +16,7 @@ import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { FileText, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import ButtonLink from "@/components/ButtonLink";
 
 interface DepartmentListProps {
   readonly departments: DepartmentGetListDto[];
@@ -80,9 +81,11 @@ export default function DepartmentList({
         </TableCell>
         <TableCell className="text-left w-[300px]">
           <div>
-            <p className="text-xs font-medium">{department.name}</p>
+            <ButtonLink href={`/configuration/department/${department.id}`}>
+              <p className="font-medium">{department.name}</p>
+            </ButtonLink>
             {department.description && (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground mt-[-8px]">
                 {department.description}
               </p>
             )}

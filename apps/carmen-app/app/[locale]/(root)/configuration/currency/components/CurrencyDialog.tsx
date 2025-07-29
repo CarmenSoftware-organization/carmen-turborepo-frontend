@@ -60,6 +60,7 @@ export default function CurrencyDialog({
 
   const { exchangeRates } = useExchangeRate({ baseCurrency: "THB" });
 
+
   const defaultCurrencyValues = useMemo(
     () => ({
       name: "",
@@ -161,6 +162,7 @@ export default function CurrencyDialog({
                         onValueChange={field.onChange}
                         placeholder={tCurrency("currency_code")}
                         showExchangeRate={true}
+                        disabled={mode === formType.EDIT}
                       />
                     </FormControl>
                     <FormMessage />
@@ -209,8 +211,8 @@ export default function CurrencyDialog({
                     <FormLabel>{tCurrency("currency_exchange_rate")}</FormLabel>
                     <FormControl>
                       <NumberInput
-                        {...field}
-                        onChange={(e) => field.onChange(e)}
+                        value={field.value}
+                        onChange={field.onChange}
                         min={0.01}
                         step={0.01}
                         disabled

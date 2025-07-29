@@ -119,7 +119,7 @@ export default function ListDeliveryPoint({
                         </TableHead>
                         <TableHead
                             {...getSortableColumnProps("name", sort, onSort)}
-                            className="text-xs font-medium"
+                            className="font-medium"
                         >
                             <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
                                 {t("name")}
@@ -128,7 +128,7 @@ export default function ListDeliveryPoint({
                         </TableHead>
                         <TableHead
                             {...getSortableColumnProps("is_active", sort, onSort)}
-                            className="text-xs font-medium text-center w-24"
+                            className="font-medium text-center w-24"
                         >
                             {t("status")}
                             {renderSortIcon("is_active", sort)}

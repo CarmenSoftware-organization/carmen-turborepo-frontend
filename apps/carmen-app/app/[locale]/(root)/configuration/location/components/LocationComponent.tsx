@@ -10,11 +10,12 @@ import { Button } from "@/components/ui/button";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { boolFilterOptions } from "@/constants/options";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListLocations from "./ListLocations";
 import { Link } from "@/lib/navigation";
 import SignInDialog from "@/components/SignInDialog";
+import { SortConfig, SortDirection } from "@/utils/table-sort";
 
 export default function LocationComponent() {
   const tCommon = useTranslations("Common");
@@ -108,8 +109,27 @@ export default function LocationComponent() {
     </div>
   );
 
+  const parsedSort = useMemo((): SortConfig | undefined => {
+    if (!sort) return undefined;
+
+    const parts = sort.split(':');
+    if (parts.length !== 2) return undefined;
+
+    return {
+      field: parts[0],
+      direction: parts[1] as SortDirection
+    };
+  }, [sort]);
+
   const content = (
-    <ListLocations locations={locations?.data ?? []} isLoading={isLoading} />
+    <ListLocations
+      locations={locations?.data ?? []}
+      isLoading={isLoading}
+      sort={parsedSort}
+      onSort={(field) => {
+        const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${direction}`);
+      }} />
   );
 
   return (

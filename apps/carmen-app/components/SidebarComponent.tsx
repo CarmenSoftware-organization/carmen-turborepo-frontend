@@ -114,7 +114,7 @@ export default function SidebarComponent() {
             onKeyDown={(e) => handleKeyDown(e, item.href, true)}
         >
             <div className="flex items-center gap-2">
-                <span className="text-xs font-medium">{t(`${section}.${subItem}`)}</span>
+                <span className="font-medium">{t(`${section}.${subItem}`)}</span>
             </div>
             {renderChevron(level, openMenus[item.href])}
         </button>
@@ -130,7 +130,7 @@ export default function SidebarComponent() {
                 ${level > 0 ? `pl-${4 * (level + 1)}` : ''}
             `}
         >
-            <span className="text-xs font-medium">
+            <span className="font-medium">
                 {t(`${section}.${subItem}`)}
             </span>
         </Link>
@@ -179,7 +179,7 @@ export default function SidebarComponent() {
                     {tHome('carmenTitle')}
                 </span>
                 <span
-                    className="text-xs block tracking-wide"
+                    className="block tracking-wide"
                     data-id="sidebar-logo-text-sub"
                 >
                     {tHome('HospitalitySupplyChain')}
@@ -187,7 +187,7 @@ export default function SidebarComponent() {
             </div>
             <div className="p-4 flex items-center gap-2 border-b">
                 {Icon && <Icon className="h-5 w-5" />}
-                <h2 className="text-sm font-semibold">{t(moduleKey)}</h2>
+                <h2 className="font-semibold">{t(moduleKey)}</h2>
             </div>
 
             <div className="mt-4 space-y-2">
