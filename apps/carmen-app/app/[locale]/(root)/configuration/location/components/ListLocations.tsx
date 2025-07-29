@@ -28,6 +28,7 @@ interface Location {
   readonly delivery_point?: {
     readonly name: string;
   };
+  readonly physical_count_type: string;
 }
 
 interface ListLocationsProps {
@@ -66,6 +67,8 @@ export default function ListLocations({
     if (locations.length === 0)
       return <EmptyData message={"Location data not found"} />;
 
+    console.log('locations', locations);
+
     return (
       <TableBody>
         {locations?.map((location, i) => (
@@ -74,7 +77,8 @@ export default function ListLocations({
             <TableCell>
               <Link
                 href={`/configuration/location/${location.id}`}
-                className="text-xs font-bold hover:underline text-primary hover:text-primary/80 font-medium"
+                className="font-bold hover:underline text-primary hover:text-primary/80 font-medium"
+                role="button"
               >
                 {location.name}
               </Link>
@@ -88,6 +92,9 @@ export default function ListLocations({
               >
                 {location.location_type.toUpperCase()}
               </Badge>
+            </TableCell>
+            <TableCell className="hidden md:table-cell text-center">
+              {location.physical_count_type.toUpperCase()}
             </TableCell>
             <TableCell className="hidden md:table-cell text-center">{location.delivery_point?.name}</TableCell>
             <TableCell className="text-center">
@@ -150,6 +157,9 @@ export default function ListLocations({
                 {t("type")}
                 {getSortIcon("location_type")}
               </Button>
+            </TableHead>
+            <TableHead>
+              EOP
             </TableHead>
             <TableHead className="hidden md:table-cell text-center">
               {t("delivery_point")}

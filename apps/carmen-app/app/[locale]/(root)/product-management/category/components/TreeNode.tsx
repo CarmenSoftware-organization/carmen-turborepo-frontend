@@ -66,9 +66,9 @@ export default function TreeNode({
                 />
 
                 <div className="flex-1">
-                    <p className="text-xs font-medium">{node.name}</p>
-                    <p className="text-xs text-muted-foreground">{node.description}</p>
-                    {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-xs text-muted-foreground">{node.itemCount}</p>}
+                    <p className="font-medium">{node.name}</p>
+                    <p className="text-muted-foreground">{node.description}</p>
+                    {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-muted-foreground">{node.itemCount}</p>}
                 </div>
 
                 <div className="flex items-center gap-1">

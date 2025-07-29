@@ -19,7 +19,9 @@ export const useCategory = () => {
         const fetchData = async () => {
             try {
                 setIsUnauthorized(false);
-                const data = await getCategoryService(token, tenantId);
+                const data = await getCategoryService(token, tenantId, {
+                    sort: 'code',
+                });
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     return;
