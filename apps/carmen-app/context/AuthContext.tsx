@@ -15,6 +15,7 @@ import {
   useUpdateBusinessUnitMutation,
   useAuthCache,
 } from "@/hooks/use-auth-query";
+import { toastSuccess } from "@/components/ui-custom/Toast";
 
 interface UserInfo {
   firstname: string;
@@ -96,7 +97,7 @@ export const AuthContext = createContext<AuthContextType>({
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
 export function getServerSideToken(): string {
   if (typeof window !== "undefined") {
-    return sessionStorage.getItem("access_token") ?? "";
+    return localStorage.getItem("access_token") ?? "";
   }
   return "";
 }
@@ -107,6 +108,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
   const [tenantId, setTenantId] = useState<string>("");
   const [token, setToken] = useState<string>("");
+  const [isFromStorageEvent, setIsFromStorageEvent] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -114,8 +116,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // Hydration effect - รันครั้งเดียวหลัง mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedTenantId = sessionStorage.getItem("tenant_id") ?? "";
-      const storedToken = sessionStorage.getItem("access_token") ?? "";
+      const storedTenantId = localStorage.getItem("tenant_id") ?? "";
+      const storedToken = localStorage.getItem("access_token") ?? "";
 
       setTenantId(storedTenantId);
       setToken(storedToken);
@@ -179,7 +181,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
       if (newTenantId && newTenantId !== tenantId) {
         setTenantId(newTenantId);
-        sessionStorage.setItem("tenant_id", newTenantId);
+        localStorage.setItem("tenant_id", newTenantId);
       }
     }
   }, [user, tenantId, isHydrated]);
@@ -187,13 +189,15 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // จัดการการเข้าสู่ระบบ
   const setSession = useCallback(
     async (accessToken: string, refreshToken: string) => {
+      console.log('🔑 Login initiated from current tab');
+
       if (accessToken && typeof window !== "undefined") {
-        sessionStorage.setItem("access_token", accessToken);
+        localStorage.setItem("access_token", accessToken);
         setToken(accessToken);
       }
 
       if (refreshToken && typeof window !== "undefined") {
-        sessionStorage.setItem("refresh_token", refreshToken);
+        localStorage.setItem("refresh_token", refreshToken);
       }
     },
     []
@@ -201,11 +205,16 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
   // จัดการการออกจากระบบ
   const logout = useCallback(() => {
+    // ป้องกันการ trigger storage event ซ้ำเมื่อมาจาก cross-tab sync
+    if (isFromStorageEvent) {
+      return;
+    }
+
     // ลบ tokens และ cache
     if (typeof window !== "undefined") {
-      sessionStorage.removeItem("access_token");
-      sessionStorage.removeItem("refresh_token");
-      sessionStorage.removeItem("tenant_id");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      localStorage.removeItem("tenant_id");
       localStorage.removeItem("user");
     }
 
@@ -216,12 +225,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     // เปลี่ยนเส้นทางไปหน้า sign-in
     router.push(signInPage);
-  }, [router, signInPage, clearAuthCache]);
+  }, [router, signInPage, clearAuthCache, isFromStorageEvent]);
 
   // ดึง token สำหรับ server actions
   const getServerSideToken = useCallback(() => {
     if (typeof window !== "undefined") {
-      return sessionStorage.getItem("access_token") ?? "";
+      return localStorage.getItem("access_token") ?? "";
     }
     return "";
   }, []);
@@ -231,16 +240,26 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     async (id: string) => {
       if (!id || !token) return;
 
+      // ป้องกันการ trigger ซ้ำเมื่อมาจาก cross-tab sync
+      if (isFromStorageEvent) {
+        return;
+      }
+
       updateBusinessUnitMutation.mutate(
         { token, tenantId: id },
         {
           onSuccess: () => {
             setTenantId(id);
+            // อัปเดต localStorage เพื่อ sync กับ tabs อื่น
+            if (typeof window !== "undefined") {
+              localStorage.setItem("tenant_id", id);
+            }
+            toastSuccess({ message: "Changed Business Unit Success" });
           },
         }
       );
     },
-    [token, updateBusinessUnitMutation]
+    [token, updateBusinessUnitMutation, isFromStorageEvent]
   );
 
   // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
@@ -248,9 +267,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     if (isSignInPage && isHydrated && !token) {
       // ล้าง session เฉพาะเมื่อไม่มี token (ไม่ได้กำลัง login)
       if (typeof window !== "undefined") {
-        sessionStorage.removeItem("access_token");
-        sessionStorage.removeItem("refresh_token");
-        sessionStorage.removeItem("tenant_id");
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("tenant_id");
         localStorage.removeItem("user");
       }
       clearAuthCache();
@@ -258,6 +277,64 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       setToken("");
     }
   }, [isSignInPage, clearAuthCache, isHydrated, token]);
+
+  // Cross-Tab Synchronization - ฟังการเปลี่ยนแปลงใน localStorage
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    const handleStorageChange = (event: StorageEvent) => {
+      // ตรวจสอบเฉพาะ keys ที่เกี่ยวข้องกับ auth
+      if (!event.key || !['access_token', 'refresh_token', 'tenant_id'].includes(event.key)) {
+        return;
+      }
+
+      setIsFromStorageEvent(true);
+
+      switch (event.key) {
+        case 'access_token':
+          if (event.newValue === null) {
+            // Tab อื่น logout แล้ว - ล้าง state และ redirect
+            console.log('🔄 Cross-tab: Logout detected from another tab');
+            setToken("");
+            setTenantId("");
+            clearAuthCache();
+
+            // Redirect ไป sign-in เฉพาะเมื่อไม่อยู่ในหน้า sign-in อยู่แล้ว
+            if (!isSignInPage) {
+              router.push(signInPage);
+            }
+          } else if (event.newValue !== token && event.newValue) {
+            // Tab อื่น login ใหม่ - อัปเดต token
+            console.log('🔄 Cross-tab: New login detected from another tab');
+            setToken(event.newValue);
+          }
+          break;
+
+        case 'tenant_id':
+          if (event.newValue && event.newValue !== tenantId) {
+            // Tab อื่นเปลี่ยน tenant - อัปเดต tenantId
+            console.log('🔄 Cross-tab: Tenant change detected from another tab');
+            setTenantId(event.newValue);
+          }
+          break;
+
+        case 'refresh_token':
+          // อาจจะต้องการ handle refresh token ถ้ามี logic พิเศษ
+          break;
+      }
+
+      // Reset flag หลังจาก process เสร็จ
+      setTimeout(() => setIsFromStorageEvent(false), 100);
+    };
+
+    // เพิ่ม event listener
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [isHydrated, token, tenantId, isSignInPage, signInPage, router, clearAuthCache]);
 
   // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่
   const hasToken = isHydrated && !!token;
