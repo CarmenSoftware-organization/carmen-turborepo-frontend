@@ -258,7 +258,7 @@ export default function EditFieldItem({
                                             whileHover={{ scale: 1.02 }}
                                             transition={{ duration: 0.2 }}
                                         >
-                                            {currencyBase?.name} {item.base_total_price || 0}
+                                            {currencyBase} {item.base_total_price || 0}
                                         </MotionP>
                                     </>
                                 ) : (
