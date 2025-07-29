@@ -37,7 +37,7 @@ export const formatCurrency = (value: number, currency: string) => {
 
   const parts = formatted.match(/([^0-9.,]+)?\s?([\d,\.]+)/);
 
-  if (!parts) return formatted; 
+  if (!parts) return formatted;
 
   const [, symbol = "", number] = parts;
 
@@ -50,3 +50,4 @@ export const currencyFormat = (value: number, locale: string = "en-US") => {
     maximumFractionDigits: 2,
   }).format(value);
 };
+

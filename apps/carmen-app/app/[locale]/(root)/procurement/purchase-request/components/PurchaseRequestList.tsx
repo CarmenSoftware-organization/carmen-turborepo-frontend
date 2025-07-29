@@ -17,14 +17,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import PaginationComponent from "@/components/PaginationComponent";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Link } from "@/lib/navigation";
-import { currencyFormat } from "@/lib/utils";
 import { convertPrStatus } from "@/utils/badge-status-color";
 import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
+import { useAuth } from "@/context/AuthContext";
+import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -32,6 +32,11 @@ interface PurchaseRequestListProps {
   readonly totalPages?: number;
   readonly onPageChange?: (page: number) => void;
   readonly isLoading: boolean;
+}
+
+interface FormatPriceConf {
+  locales: string;
+  minimumIntegerDigits: number;
 }
 
 export default function PurchaseRequestList({
@@ -42,13 +47,15 @@ export default function PurchaseRequestList({
   isLoading,
 }: PurchaseRequestListProps) {
   const t = useTranslations("TableHeader");
-
+  const { dateFormat, amount, currencyBase } = useAuth();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  const defaultAmount = { locales: 'en-US', minimumIntegerDigits: 2 }
 
   const handleSelectAll = () => {
     if (selectedItems.length === purchaseRequests.length) {
@@ -67,7 +74,7 @@ export default function PurchaseRequestList({
 
 
   const renderTableContent = () => {
-    if (isLoading) return <TableBodySkeleton rows={8} />;
+    if (isLoading) return <TableBodySkeleton rows={10} />;
 
     if (purchaseRequests.length === 0) {
       return (
@@ -98,13 +105,15 @@ export default function PurchaseRequestList({
               />
             </TableCell>
             <TableCell>
-              <Link
-                href={`/procurement/purchase-request/${pr.id}`}
-                className="hover:underline text-primary hover:text-primary/80 font-medium"
-                role="button"
-              >
-                {pr.pr_no}
-              </Link>
+              <Button variant={'ghost'} asChild className="p-0">
+                <Link
+                  href={`/procurement/purchase-request/${pr.id}`}
+                  className="hover:underline text-primary hover:text-primary/80 font-medium"
+                >
+                  {pr.pr_no}
+                </Link>
+              </Button>
+
             </TableCell>
             <TableCell className="text-center">
               {pr.pr_status && (
@@ -121,13 +130,12 @@ export default function PurchaseRequestList({
               )}
             </TableCell>
             <TableCell className="text-center">
-              {format(new Date(pr.pr_date), "dd/MM/yyyy")}
+              {formatDateFns(pr.pr_date, dateFormat || 'yyyy-MM-dd')}
             </TableCell>
-
             <TableCell className="text-center">{pr.workflow_name ?? "-"}</TableCell>
             <TableCell>{pr.requestor_name}</TableCell>
             <TableCell>{pr.department_name}</TableCell>
-            <TableCell>{currencyFormat(pr.total_amount)}</TableCell>
+            <TableCell>{formatPriceConf(pr.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}</TableCell>
             <TableCell className="w-[100px] text-right">
               <div className="flex items-center justify-end">
                 <Button
@@ -216,7 +224,7 @@ export default function PurchaseRequestList({
               <TableHead className="text-center">Type</TableHead>
               <TableHead>Requestor</TableHead>
               <TableHead>Department</TableHead>
-              <TableHead>Total Amount</TableHead>
+              <TableHead>Amount</TableHead>
               <TableHead className="w-[100px] text-right">
                 {t("action")}
               </TableHead>

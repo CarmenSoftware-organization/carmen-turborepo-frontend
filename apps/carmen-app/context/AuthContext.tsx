@@ -34,17 +34,24 @@ interface BusinessUnit {
   };
   config?: {
     calculation_method?: string;
-    currency_base?: {
-      currency_id: string;
-      locales: string;
-      minimumIntegerDigits: number;
-      name: string;
-    };
+    currency_base?: string;
     date_format?: string;
     long_time_format?: string;
     perpage?: number;
     short_time_format?: string;
     timezone?: string;
+    amount?: {
+      locales: string;
+      minimumIntegerDigits: number;
+    };
+    quantity?: {
+      locales: string;
+      minimumIntegerDigits: number;
+    };
+    recipe?: {
+      locales: string;
+      minimumIntegerDigits: number;
+    };
   };
 }
 
@@ -72,6 +79,9 @@ interface AuthContextType {
   perpage: NonNullable<BusinessUnit["config"]>["perpage"] | null;
   shortTimeFormat: NonNullable<BusinessUnit["config"]>["short_time_format"] | null;
   timezone: NonNullable<BusinessUnit["config"]>["timezone"] | null;
+  amount: NonNullable<BusinessUnit["config"]>["amount"] | null;
+  quantity: NonNullable<BusinessUnit["config"]>["quantity"] | null;
+  recipe: NonNullable<BusinessUnit["config"]>["recipe"] | null;
 }
 
 // Create context with a default value
@@ -92,6 +102,9 @@ export const AuthContext = createContext<AuthContextType>({
   perpage: null,
   shortTimeFormat: null,
   timezone: null,
+  amount: null,
+  quantity: null,
+  recipe: null,
 });
 
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
@@ -140,7 +153,18 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const { clearAuthCache } = useAuthCache();
 
   // คำนวณ departments และ system properties จาก user data
-  const { departments, currencyBase, dateFormat, longTimeFormat, perpage, shortTimeFormat, timezone } = useMemo(() => {
+  const {
+    departments,
+    currencyBase,
+    dateFormat,
+    longTimeFormat,
+    perpage,
+    shortTimeFormat,
+    timezone,
+    amount,
+    quantity,
+    recipe
+  } = useMemo(() => {
     if (!user?.business_unit?.length) {
       return {
         departments: null,
@@ -149,7 +173,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         longTimeFormat: null,
         perpage: null,
         shortTimeFormat: null,
-        timezone: null
+        timezone: null,
+        amount: null,
+        quantity: null,
+        recipe: null
       };
     }
 
@@ -167,6 +194,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       perpage: selectedBu?.config?.perpage || null,
       shortTimeFormat: selectedBu?.config?.short_time_format || null,
       timezone: selectedBu?.config?.timezone || null,
+      amount: selectedBu?.config?.amount || null,
+      quantity: selectedBu?.config?.quantity || null,
+      recipe: selectedBu?.config?.recipe || null
     };
   }, [user]);
 
@@ -189,8 +219,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // จัดการการเข้าสู่ระบบ
   const setSession = useCallback(
     async (accessToken: string, refreshToken: string) => {
-      console.log('🔑 Login initiated from current tab');
-
       if (accessToken && typeof window !== "undefined") {
         localStorage.setItem("access_token", accessToken);
         setToken(accessToken);
@@ -255,8 +283,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
               localStorage.setItem("tenant_id", id);
             }
             toastSuccess({ message: "Changed Business Unit Success" });
-
-            console.log('✅ Tenant changed successfully, other tabs will refresh automatically');
           },
         }
       );
@@ -363,6 +389,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       perpage,
       shortTimeFormat,
       timezone,
+      amount,
+      quantity,
+      recipe,
     }),
     [
       hasToken,
@@ -381,10 +410,11 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       perpage,
       shortTimeFormat,
       timezone,
-
+      amount,
+      quantity,
+      recipe,
     ]
   );
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
