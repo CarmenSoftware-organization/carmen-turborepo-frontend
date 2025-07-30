@@ -16,6 +16,7 @@ import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
 import ToggleView from "@/components/ui-custom/ToggleView";
 import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const sortFields = [
   { key: "", label: "All" },
@@ -81,12 +82,32 @@ export default function PurchaseRequestComponent() {
 
   const filters = (
     <div className="filter-container" data-id="pr-list-filters">
-      <SearchInput
-        defaultValue={search}
-        onSearch={setSearch}
-        placeholder={tCommon("search")}
-        data-id="pr-list-search-input"
-      />
+      <div className="flex items-center gap-2 w-2/3">
+        <SearchInput
+          defaultValue={search}
+          onSearch={setSearch}
+          placeholder={tCommon("search")}
+          data-id="pr-list-search-input"
+        />
+        <Button size={"sm"} className="h-8">
+          My Pending
+        </Button>
+        <Button size={"sm"} className="h-8" variant={'outline'}>
+          All Document
+        </Button>
+        <Select>
+          <SelectTrigger className="w-[250px] h-8 text-xs">
+            <SelectValue placeholder="All Stage" />
+          </SelectTrigger>
+          <SelectContent >
+            <SelectItem value="all">All Stage</SelectItem>
+            <SelectItem value="requestor">Requestor</SelectItem>
+            <SelectItem value="approver">Department Head Approval</SelectItem>
+            <SelectItem value="finnace">Finance Manager Approval</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <div className="flex items-center gap-2">
         <SortComponent
           fieldConfigs={sortFields}

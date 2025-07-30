@@ -17,7 +17,7 @@ export default function SearchInput({
   defaultValue,
   onSearch,
   placeholder,
-  containerClassName = "w-full md:w-1/3",
+  containerClassName = "w-full md:w-[405px]",
   buttonClassName = "absolute right-0 top-0 h-full px-3",
 }: Props) {
   const [inputValue, setInputValue] = useState(defaultValue);
@@ -51,7 +51,7 @@ export default function SearchInput({
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          className="h-8 pr-10 text-xs"
+          className="h-8 pr-10 w-full"
         />
         <Button
           type="button"
