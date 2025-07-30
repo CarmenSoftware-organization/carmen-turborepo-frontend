@@ -226,8 +226,7 @@ export default function BasicInfo({
                       ) : (
                         <>
                           <FormLabel className="font-medium">
-                            Product Code{" "}
-                            <span className="text-destructive">*</span>
+                            Product Code
                           </FormLabel>
                           <FormControl>
                             <Input
@@ -359,7 +358,7 @@ export default function BasicInfo({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Local Name <span className="text-destructive">*</span>
+                    Local Name
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -402,9 +401,8 @@ export default function BasicInfo({
             />
           </div>
 
-          {/* Classification Section */}
-          <div className="space-y-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
               {/* Product Item Group */}
               <FormField
                 control={control}
@@ -441,6 +439,7 @@ export default function BasicInfo({
                   placeholder="Category"
                   value={categoryData.category.name}
                   disabled
+                  className="bg-muted"
                 />
               </div>
 
@@ -453,10 +452,10 @@ export default function BasicInfo({
                   placeholder="Sub category"
                   value={categoryData.subCategory.name}
                   disabled
+                  className="bg-muted"
                 />
               </div>
 
-              {/* Primary Inventory Unit */}
               <FormField
                 control={control}
                 name="inventory_unit_id"
@@ -466,9 +465,7 @@ export default function BasicInfo({
                       Inventory Unit
                     </FormLabel>
                     {currentMode === formType.VIEW ? (
-                      <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center mt-1.5">
-                        {getUnitName(field.value)}
-                      </div>
+                      <Badge className="ml-2 bg-blue-50 hover:bg-blue-100 text-primary">{getUnitName(field.value)}</Badge>
                     ) : (
                       <FormControl>
                         <UnitLookup

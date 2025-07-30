@@ -264,7 +264,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
               handleEditClick={handleEditClick}
               handleCancelClick={handleCancelClick}
             />
-
             <Tabs defaultValue="general" className="mt-2">
               <TabsList>
                 <TabsTrigger value="general">General</TabsTrigger>

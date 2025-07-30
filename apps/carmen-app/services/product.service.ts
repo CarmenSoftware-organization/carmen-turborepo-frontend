@@ -160,8 +160,6 @@ export const getCategoryListByItemGroup = async (accessToken: string, tenantId: 
     };
     const response = await fetch(url, options);
     const data = await response.json();
-    console.log('data', data);
-
     return data;
 }
 
