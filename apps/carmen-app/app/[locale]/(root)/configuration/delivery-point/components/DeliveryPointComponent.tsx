@@ -49,7 +49,7 @@ export default function DeliveryPointComponent() {
       search,
       filter,
       sort,
-      page,
+      page: page ? parseInt(page) : 1,
     },
   });
 

@@ -1,7 +1,7 @@
 export interface PaginationDto {
-    page: number;
+    page: number | string;
     pages: number;
-    perPage: number;
+    perpage: number | string;
     total: number;
 }
 

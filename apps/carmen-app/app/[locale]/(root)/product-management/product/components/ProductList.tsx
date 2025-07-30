@@ -5,6 +5,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -34,6 +35,7 @@ interface ProductListProps {
   readonly totalPages: number | undefined;
   readonly error?: string | null;
   readonly onDelete: (id: string) => void;
+  readonly totalItems: number;
 }
 
 export default function ProductList({
@@ -44,6 +46,7 @@ export default function ProductList({
   totalPages = 1,
   error = null,
   onDelete,
+  totalItems,
 }: ProductListProps) {
   const t = useTranslations("TableHeader");
 
@@ -89,19 +92,7 @@ export default function ProductList({
     }
 
     if (!products || products.length === 0) {
-      return (
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={8} className="h-24 text-center">
-              <div className="flex flex-col items-center justify-center gap-2">
-                <p className="text-sm text-muted-foreground">
-                  No products found
-                </p>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      );
+      return <TableBodySkeleton rows={8} />;
     }
 
     return (
@@ -279,7 +270,7 @@ export default function ProductList({
                   aria-label="Select all purchase requests"
                 />
               </TableHead>
-              <TableHead className="text-left w-1/2">{t("name")}</TableHead>
+              <TableHead className="text-left w-1/3">{t("name")}</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Sub Category</TableHead>
               <TableHead>Item Group</TableHead>
@@ -290,6 +281,15 @@ export default function ProductList({
             </TableRow>
           </TableHeader>
           {renderDesktopTableContent()}
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={2}>
+                <p className="text-sm text-muted-foreground">
+                  {totalItems} items found
+                </p>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
 

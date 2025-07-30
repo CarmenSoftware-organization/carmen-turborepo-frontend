@@ -1,6 +1,5 @@
-import ActivityLogComponent, { ActivityLogItem } from "@/components/ui-custom/ActivityLogComponent";
+import ActivityLogComponent, { ActivityLogItem } from "@/components/comment-activity/ActivityLogComponent";
 
-// Sample store requisition activity log data
 const storeRequisitionLogs: ActivityLogItem[] = [
     {
         id: "SR001",

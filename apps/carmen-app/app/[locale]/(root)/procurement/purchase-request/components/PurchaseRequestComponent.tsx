@@ -38,10 +38,12 @@ export default function PurchaseRequestComponent() {
   const [page, setPage] = useURL("page");
 
   const { data: prs, isLoading } = usePurchaseRequest(token, tenantId, {
-    page,
+    page: page ? parseInt(page) : 1,
     sort,
     search,
   });
+
+  const totalItems = prs?.paginate.total;
 
   useEffect(() => {
     if (search) {
@@ -152,6 +154,7 @@ export default function PurchaseRequestComponent() {
             totalPages={prs?.paginate.pages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
+            totalItems={totalItems}
           />
         ) : (
           <PurchaseRequestGrid

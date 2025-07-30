@@ -75,6 +75,7 @@ export const useProduct = ({
       return {
         products: response.data ?? [],
         totalPages: response.paginate?.pages ?? 1,
+        totalItems: response.paginate?.total ?? 0,
       };
     },
     enabled: !!token && !!tenantId,
@@ -132,6 +133,7 @@ export const useProduct = ({
 
   const products = useMemo(() => data?.products ?? [], [data]);
   const totalPages = data?.totalPages ?? 1;
+  const totalItems = data?.totalItems ?? 0;
   const error = isError
     ? queryError?.message || "Failed to load products"
     : null;
@@ -152,6 +154,7 @@ export const useProduct = ({
     isLoading,
     error,
     totalPages,
+    totalItems,
     currentPage: parseInt(page || "1"),
 
     // Filter states

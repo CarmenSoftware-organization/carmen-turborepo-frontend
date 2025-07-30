@@ -34,7 +34,7 @@ export function ProductComponent() {
     error,
     totalPages,
     currentPage,
-
+    totalItems,
     // Filter states
     search,
     status,
@@ -57,6 +57,7 @@ export function ProductComponent() {
     handleDelete,
     confirmDelete,
     closeDeleteDialog,
+
   } = useProduct();
 
   const sortFields = [
@@ -133,6 +134,7 @@ export function ProductComponent() {
       data-id="product-list-template"
       error={error}
       onDelete={handleDelete}
+      totalItems={totalItems}
     />
   );
 

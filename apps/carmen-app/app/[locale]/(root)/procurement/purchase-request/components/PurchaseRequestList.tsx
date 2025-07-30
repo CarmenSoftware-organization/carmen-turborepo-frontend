@@ -4,6 +4,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -33,6 +34,7 @@ interface PurchaseRequestListProps {
   readonly totalPages?: number;
   readonly onPageChange?: (page: number) => void;
   readonly isLoading: boolean;
+  readonly totalItems: number;
 }
 
 export default function PurchaseRequestList({
@@ -41,6 +43,7 @@ export default function PurchaseRequestList({
   totalPages = 1,
   onPageChange = () => { },
   isLoading,
+  totalItems
 }: PurchaseRequestListProps) {
   const t = useTranslations("TableHeader");
   const { dateFormat, amount, currencyBase } = useAuth();
@@ -214,13 +217,26 @@ export default function PurchaseRequestList({
             </TableRow>
           </TableHeader>
           {renderTableContent()}
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>
+                <p className="text-sm text-muted-foreground">
+                  {totalItems} items found
+                </p>
+              </TableCell>
+              {totalPages > 1 && (
+                <TableCell colSpan={2}>
+                  <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                  />
+                </TableCell>
+              )}
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
     </div>
   );
 }

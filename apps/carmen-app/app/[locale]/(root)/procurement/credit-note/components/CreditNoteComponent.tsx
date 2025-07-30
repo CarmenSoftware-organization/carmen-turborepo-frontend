@@ -8,7 +8,7 @@ import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import CreditNoteList from "./CreditNoteList";
 import { VIEW } from "@/constants/enum";
@@ -25,6 +25,7 @@ export default function CreditNoteComponent() {
   const { token, tenantId } = useAuth();
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
+  const [page, setPage] = useURL("page");
   const [statusOpen, setStatusOpen] = useState(false);
   const [sort, setSort] = useURL("sort");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
@@ -32,7 +33,18 @@ export default function CreditNoteComponent() {
   const { creditNotes, isLoading } = useCreditNoteQuery(token, tenantId, {
     search,
     sort,
+    page: page ? parseInt(page) : 1,
   });
+
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setPage(newPage.toString());
+    },
+    [setPage]
+  );
+
+
+  const totalItems = creditNotes?.paginate.total;
 
   const title = "Credit Note";
 
@@ -99,7 +111,14 @@ export default function CreditNoteComponent() {
   const ViewComponent = view === VIEW.LIST ? CreditNoteList : CreditNoteGrid;
 
   const content = (
-    <ViewComponent creditNotes={creditNotes?.data} isLoading={isLoading} />
+    <ViewComponent
+      creditNotes={creditNotes?.data}
+      isLoading={isLoading}
+      totalItems={totalItems}
+      currentPage={creditNotes?.paginate.page}
+      totalPages={creditNotes?.paginate.pages}
+      onPageChange={handlePageChange}
+    />
   );
 
   return (

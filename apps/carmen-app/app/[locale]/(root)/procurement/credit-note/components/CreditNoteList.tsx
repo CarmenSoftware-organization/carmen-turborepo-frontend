@@ -2,6 +2,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -20,15 +21,24 @@ import { Link } from "@/lib/navigation";
 import ButtonLink from "@/components/ButtonLink";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns } from "@/utils/config-system";
+import PaginationComponent from "@/components/PaginationComponent";
 
 interface CreditNoteListProps {
   readonly creditNotes: CreditNoteGetAllDto[];
   readonly isLoading: boolean;
+  readonly totalItems: number;
+  readonly currentPage: number;
+  readonly totalPages: number;
+  readonly onPageChange: (page: number) => void;
 }
 
 export default function CreditNoteList({
   creditNotes = [],
   isLoading,
+  totalItems,
+  currentPage,
+  totalPages,
+  onPageChange
 }: CreditNoteListProps) {
   const { dateFormat } = useAuth();
 
@@ -144,6 +154,24 @@ export default function CreditNoteList({
             </TableRow>
           </TableHeader>
           {renderTableContent()}
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>
+                <p className="text-sm text-muted-foreground">
+                  {totalItems} items found
+                </p>
+              </TableCell>
+              {totalPages > 1 && (
+                <TableCell colSpan={2}>
+                  <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                  />
+                </TableCell>
+              )}
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
 

@@ -8,8 +8,8 @@ const API_URL = `${backendApi}/api/config/locations`;
 export const getAllStoreLocations = async (token: string, tenantId: string,
     params: {
         search?: string;
-        page?: string;
-        perPage?: string;
+        page?: number | string;
+        perpage?: number | string;
         sort?: string;
         filter?: string;
     } = {}

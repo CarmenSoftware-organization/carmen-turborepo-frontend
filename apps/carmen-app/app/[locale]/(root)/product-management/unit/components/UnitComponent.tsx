@@ -47,7 +47,7 @@ export default function UnitComponent() {
       search,
       filter,
       sort,
-      page,
+      page: page ? parseInt(page) : 1,
     }
   });
 

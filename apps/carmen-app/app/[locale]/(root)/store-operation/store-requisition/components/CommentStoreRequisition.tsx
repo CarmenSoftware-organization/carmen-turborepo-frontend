@@ -1,5 +1,5 @@
+import CommentComponent from "@/components/comment-activity/CommentComponent";
 import { mockCommentStoreRequisition } from "@/mock-data/comment";
-import CommentComponent from "@/components/ui-custom/CommentComponent";
 
 export default function CommentStoreRequisition() {
     return (

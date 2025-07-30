@@ -35,6 +35,7 @@ export default function GoodsReceivedNoteComponent() {
         handlePageChange
     } = useGrn();
 
+    const totalItems = grns?.paginate?.total;
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -113,6 +114,7 @@ export default function GoodsReceivedNoteComponent() {
         totalPages={grns.totalPages}
         onPageChange={handlePageChange}
         isLoading={isLoading}
+        totalItems={totalItems}
     />
 
     return (

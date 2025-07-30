@@ -4,6 +4,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -37,6 +38,7 @@ interface GoodsReceivedNoteListProps {
   readonly totalPages: number;
   readonly onPageChange: (page: number) => void;
   readonly isLoading: boolean;
+  readonly totalItems?: number;
 }
 
 export default function GoodsReceivedNoteList({
@@ -45,6 +47,7 @@ export default function GoodsReceivedNoteList({
   totalPages,
   onPageChange,
   isLoading,
+  totalItems
 }: GoodsReceivedNoteListProps) {
   const t = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -174,14 +177,24 @@ export default function GoodsReceivedNoteList({
             </TableRow>
           </TableHeader>
           {renderTableContent()}
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={8}>
+                <p className="text-sm text-muted-foreground">
+                  {totalItems} items found
+                </p>
+                {totalPages > 1 && (
+                  <PaginationComponent
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={onPageChange}
+                  />
+                )}
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
-        {totalPages > 1 && (
-          <PaginationComponent
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-          />
-        )}
+
       </div>
     </div>
   );

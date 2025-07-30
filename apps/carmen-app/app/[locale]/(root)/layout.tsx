@@ -10,11 +10,11 @@ export default function RootLayout({
 }>) {
     return (
         <ProtectedRoute>
-            <div className="flex">
+            <div className="flex h-screen overflow-hidden">
                 <SidebarComponent />
-                <div className="flex-1">
+                <div className="flex-1 flex flex-col overflow-hidden">
                     <Navbar />
-                    <main className="p-4 space-y-4">
+                    <main className="flex-1 p-4 space-y-4 overflow-y-auto">
                         {children}
                     </main>
                 </div>

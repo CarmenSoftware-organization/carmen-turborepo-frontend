@@ -38,9 +38,10 @@ export const useGrn = () => {
   } = useQuery({
     queryKey: ["grns", tenantId, search, page, sort],
     queryFn: () =>
-      getAllGrn(token || "", tenantId || "", { search, page, sort }),
+      getAllGrn(token || "", tenantId || "", { search, page: page ? parseInt(page) : 1, sort }),
     enabled: !!token && !!tenantId,
   });
+
 
   const handlePageChange = useCallback(
     (newPage: number) => {

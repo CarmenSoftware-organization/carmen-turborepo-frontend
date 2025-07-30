@@ -37,6 +37,7 @@ export default function ItemGroupLookup({
         return found?.name ?? null;
     }, [value, itemGroups]);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const filterItemGroup = itemGroups?.map((item: any) => ({
         id: item.id,
         name: item.name,

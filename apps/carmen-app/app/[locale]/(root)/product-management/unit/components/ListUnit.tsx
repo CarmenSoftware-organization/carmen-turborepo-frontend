@@ -30,12 +30,12 @@ export default function ListUnit({ units, isLoading, currentPage, totalPages, on
             <Table>
                 <TableHeader className="bg-muted">
                     <TableRow>
-                        <TableHead className="w-[8px]">
+                        <TableHead className="w-[20px] text-center">
                             <Checkbox />
                         </TableHead>
-                        <TableHead className="w-[8px]">#</TableHead>
-                        <TableHead className="w-[400px]">Name</TableHead>
-                        <TableHead className="w-[120px]">Status</TableHead>
+                        <TableHead className="w-[20px] text-center">#</TableHead>
+                        <TableHead className="w-[220px]">Name</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead className="w-[100px] text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -69,14 +69,14 @@ export default function ListUnit({ units, isLoading, currentPage, totalPages, on
 
 const UnitTableRow = ({ unit, index, onEdit, onDelete }: { unit: UnitDto, index: number, onEdit: (unit: UnitDto) => void, onDelete: (unit: UnitDto) => void }) => (
     <TableRow>
-        <TableCell>
+        <TableCell className="text-center">
             <Checkbox />
         </TableCell>
-        <TableCell className="font-medium">{index + 1}</TableCell>
-        <TableCell className="font-medium">
+        <TableCell className="text-center">{index + 1}</TableCell>
+        <TableCell className="">
             <div className="flex flex-col gap-1">
-                <p className="text-xs font-semibold">{unit.name}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="font-semibold">{unit.name}</p>
+                <p className="text-muted-foreground">
                     {unit.description || "No description"}
                 </p>
             </div>
@@ -87,24 +87,24 @@ const UnitTableRow = ({ unit, index, onEdit, onDelete }: { unit: UnitDto, index:
             </Badge>
         </TableCell>
         <TableCell className="text-right">
-            <div className="flex justify-end">
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onEdit(unit)}
-                    disabled={!unit.is_active}
-                >
-                    <SquarePen className="h-4 w-4" />
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => onDelete(unit)}
-                    disabled={!unit.is_active}
-                >
-                    <Trash2 className="h-4 w-4" />
-                </Button>
-            </div>
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(unit)}
+                disabled={!unit.is_active}
+                className="hover:text-muted-foreground hover:bg-transparent"
+            >
+                <SquarePen className="h-4 w-4" />
+            </Button>
+            <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDelete(unit)}
+                disabled={!unit.is_active}
+                className="hover:text-destructive hover:bg-transparent"
+            >
+                <Trash2 className="h-4 w-4" />
+            </Button>
         </TableCell>
     </TableRow>
 );

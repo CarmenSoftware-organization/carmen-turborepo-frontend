@@ -7,8 +7,8 @@ export const getWorkflowList = async (
   tenantId: string,
   params: {
     search?: string;
-    page?: string;
-    perPage?: string;
+    page?: number | string;
+    perpage?: number | string;
     sort?: string;
     filter?: string;
   } = {}

@@ -41,7 +41,7 @@ export default function LocationComponent() {
       filter,
       sort,
       page,
-      perPage: "10",
+      perpage: 10,
     },
   });
 
