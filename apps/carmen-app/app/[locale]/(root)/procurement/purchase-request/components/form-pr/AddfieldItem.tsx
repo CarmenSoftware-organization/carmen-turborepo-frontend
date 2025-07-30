@@ -13,7 +13,6 @@ import { Trash2 } from "lucide-react";
 import { UseFormReturn, FieldArrayWithId } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buttonVariants } from "@/utils/framer-variants";
-import { Input } from "@/components/ui/input";
 import { MotionDiv, MotionTr } from "@/components/framer-motion/MotionWrapper";
 
 const cellContentVariants = {
@@ -152,18 +151,16 @@ export default function AddfieldItem({
                                                 >
                                                     <ProductLocationLookup
                                                         location_id={currentLocationId}
-                                                        value={field.value ?? ''}
+                                                        value={field.value || ''}
                                                         onValueChange={(value, selectedProduct) => {
                                                             field.onChange(value);
-                                                            setTimeout(() => {
-                                                                if (selectedProduct?.inventory_unit?.id) {
-                                                                    form.setValue(
-                                                                        `purchase_request_detail.add.${index}.inventory_unit_id`,
-                                                                        selectedProduct.inventory_unit.id,
-                                                                        { shouldValidate: true, shouldDirty: true }
-                                                                    );
-                                                                }
-                                                            }, 0);
+                                                            if (selectedProduct?.inventory_unit?.id) {
+                                                                form.setValue(
+                                                                    `purchase_request_detail.add.${index}.inventory_unit_id`,
+                                                                    selectedProduct.inventory_unit.id,
+                                                                    { shouldValidate: true, shouldDirty: true }
+                                                                );
+                                                            }
                                                         }}
                                                         disabled={!currentLocationId}
                                                     />
@@ -172,17 +169,6 @@ export default function AddfieldItem({
                                         </FormItem>
                                     );
                                 }}
-                            />
-                            <FormField
-                                control={form.control}
-                                name={`purchase_request_detail.add.${index}.description`}
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormControl>
-                                            <Input value={field.value} onChange={field.onChange} />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
                             />
                         </MotionDiv>
                     </TableCell>

@@ -17,9 +17,15 @@ import {
   DollarSign,
   HelpCircle,
   User,
+  LayoutDashboard,
 } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
+  {
+    labelKey: "Modules.dashboard",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
   {
     labelKey: "Modules.procurement",
     href: "/procurement",

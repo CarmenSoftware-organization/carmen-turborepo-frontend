@@ -32,30 +32,47 @@ export default function WorkflowLookup({
 }: Readonly<PropsWorkflowLookup>) {
     const { token, tenantId } = useAuth();
     const { workflows, isLoading } = useWorkflowQuery(token, tenantId, type);
-    const selectedWorkflow = workflows?.find((w: WorkflowDto) => w.id === value);
+
+    // Render content based on state
+    let selectContent;
+
+    if (isLoading) {
+        selectContent = (
+            <SelectItem value="loading" disabled>
+                <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Loading...</span>
+                </div>
+            </SelectItem>
+        );
+    } else if (!workflows || workflows.length === 0) {
+        selectContent = (
+            <SelectItem value="empty" disabled>
+                No workflows found
+            </SelectItem>
+        );
+    } else {
+        selectContent = workflows.map((workflow: WorkflowDto) => (
+            <SelectItem
+                key={workflow.id}
+                value={workflow.id}
+            >
+                {workflow.name}
+            </SelectItem>
+        ));
+    }
 
     return (
         <Select
-            value={value}
+            value={value || undefined}
             onValueChange={onValueChange}
             disabled={disabled || isLoading}
         >
             <SelectTrigger className="w-full">
-                <SelectValue placeholder={placeholder}>
-                    {isLoading ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : selectedWorkflow?.name}
-                </SelectValue>
+                <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-                {workflows?.map((workflow: WorkflowDto) => (
-                    <SelectItem
-                        key={workflow.id}
-                        value={workflow.id}
-                    >
-                        {workflow.name}
-                    </SelectItem>
-                ))}
+                {selectContent}
             </SelectContent>
         </Select>
     );

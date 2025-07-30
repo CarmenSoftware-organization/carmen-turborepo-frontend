@@ -141,6 +141,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // ตรวจสอบว่าอยู่ในหน้า sign-in หรือไม่
   const locale = pathname?.split("/")[1] || "en";
   const signInPage = `/${locale}/sign-in`;
+  const dashboardPage = `/${locale}/dashboard`;
   const isSignInPage = pathname === signInPage;
 
   // ใช้ TanStack Query สำหรับ user profile - รอให้ hydrated ก่อน
@@ -282,6 +283,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             if (typeof window !== "undefined") {
               localStorage.setItem("tenant_id", id);
             }
+            router.push(dashboardPage);
             toastSuccess({ message: "Changed Business Unit Success" });
           },
         }

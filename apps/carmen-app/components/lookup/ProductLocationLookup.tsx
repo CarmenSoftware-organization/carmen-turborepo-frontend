@@ -21,12 +21,12 @@ interface ProductLocation {
 }
 
 interface ProductLocationLookupProps {
-    location_id: string;
-    value: string;
-    onValueChange: (value: string, selectedProduct?: ProductLocation) => void;
-    placeholder?: string;
-    disabled?: boolean;
-    classNames?: string;
+    readonly location_id: string;
+    readonly value: string;
+    readonly onValueChange: (value: string, selectedProduct?: ProductLocation) => void;
+    readonly placeholder?: string;
+    readonly disabled?: boolean;
+    readonly classNames?: string;
 }
 
 export default function ProductLocationLookup({
@@ -70,9 +70,44 @@ export default function ProductLocationLookup({
         );
     }
 
+    // Render content based on state
+    let selectContent;
+
+    if (!location_id) {
+        selectContent = (
+            <SelectItem value="no-location" disabled>
+                Please select a location first
+            </SelectItem>
+        );
+    } else if (isLoading) {
+        selectContent = (
+            <SelectItem value="loading" disabled>
+                <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Loading...</span>
+                </div>
+            </SelectItem>
+        );
+    } else if (productLocationData.length === 0) {
+        selectContent = (
+            <SelectItem value="empty" disabled>
+                No products found for this location
+            </SelectItem>
+        );
+    } else {
+        selectContent = productLocationData.map((productLocationItem: ProductLocation) => (
+            <SelectItem
+                key={productLocationItem.id}
+                value={productLocationItem.id}
+            >
+                {productLocationItem.name}
+            </SelectItem>
+        ));
+    }
+
     return (
         <Select
-            key={`${location_id}-${value}`}
+            key={location_id}
             value={value}
             onValueChange={handleValueChange}
             disabled={disabled || isLoading}
@@ -81,33 +116,7 @@ export default function ProductLocationLookup({
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
-                {!location_id ? (
-                    <SelectItem value="no-location" disabled>
-                        Please select a location first
-                    </SelectItem>
-                ) : isLoading ? (
-                    <SelectItem value="loading" disabled>
-                        <div className="flex items-center gap-2">
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            <span>Loading...</span>
-                        </div>
-                    </SelectItem>
-                ) : productLocationData.length === 0 ? (
-                    <SelectItem value="empty" disabled>
-                        No products found for this location
-                    </SelectItem>
-                ) : (
-                    productLocationData.map((productLocationItem: ProductLocation) => {
-                        return (
-                            <SelectItem
-                                key={productLocationItem.id}
-                                value={productLocationItem.id}
-                            >
-                                {productLocationItem.name}
-                            </SelectItem>
-                        );
-                    })
-                )}
+                {selectContent}
             </SelectContent>
         </Select>
     );
