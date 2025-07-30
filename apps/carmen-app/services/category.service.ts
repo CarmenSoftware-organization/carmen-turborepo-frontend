@@ -3,7 +3,7 @@ import { backendApi } from "@/lib/backend-api";
 
 export const getCategoryService = async (token: string, tenantId: string, params?: {
     page?: number;
-    limit?: number;
+    perpage?: number;
     search?: string;
     sort?: string;
     order?: string;
@@ -11,7 +11,7 @@ export const getCategoryService = async (token: string, tenantId: string, params
 
     const queryParams = new URLSearchParams();
     if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.perpage) queryParams.append('perpage', params.perpage.toString());
     if (params?.search) queryParams.append('search', params.search);
     if (params?.sort) queryParams.append('sort', params.sort);
     if (params?.order) queryParams.append('order', params.order);

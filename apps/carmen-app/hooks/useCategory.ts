@@ -14,6 +14,8 @@ export const useCategory = () => {
     const [isUnauthorized, setIsUnauthorized] = useState(false);
 
 
+    console.log('tenantId useCategory', tenantId);
+
     const fetchCategories = useCallback(() => {
         if (!token) return;
         const fetchData = async () => {

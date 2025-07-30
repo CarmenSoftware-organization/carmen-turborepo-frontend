@@ -29,6 +29,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import CategoryLoading from "@/components/loading/CategoryLoading";
 import { useTranslations } from "next-intl";
 export default function CategoryComponent() {
+
     const tCategory = useTranslations("Category");
     const tCommon = useTranslations("Common");
     const [signInOpen, setSignInOpen] = useState(false);
@@ -40,7 +41,6 @@ export default function CategoryComponent() {
         isUnauthorized
     } = useCategory();
 
-
     // Set dialog to open when unauthorized
     useEffect(() => {
         if (isUnauthorized) {
@@ -49,6 +49,7 @@ export default function CategoryComponent() {
     }, [isUnauthorized]);
 
     const { subCategories, isPending: isSubCategoriesPending, handleSubmit: submitSubCategory } = useSubCategory();
+
     const { itemGroups, isPending: isItemGroupsPending, handleSubmit: submitItemGroup } = useItemGroup();
 
     const isLoading = isCategoriesPending || isSubCategoriesPending || isItemGroupsPending;

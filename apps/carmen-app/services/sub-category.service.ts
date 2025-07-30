@@ -2,7 +2,7 @@ import { SubCategoryDto } from "@/dtos/category.dto";
 import { backendApi } from "@/lib/backend-api";
 
 export const getSubCategoryService = async (token: string, tenantId: string) => {
-    const response = await fetch(`${backendApi}/api/config/products/sub-category`, {
+    const response = await fetch(`${backendApi}/api/config/products/sub-category?perpage=999`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,

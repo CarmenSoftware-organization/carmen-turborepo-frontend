@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CategoryNode, NODE_TYPE } from "@/dtos/category.dto";
-import { ChevronRight, Edit, FolderTree, Layers, Package, Plus, Trash2 } from "lucide-react";
+import { ChevronRight, Edit, Plus, Trash2 } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -8,12 +8,13 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
 
-const getIconColor = (type: CategoryNode["type"]) => {
-    if (type === NODE_TYPE.CATEGORY) return "text-primary";
-    if (type === NODE_TYPE.SUBCATEGORY) return "text-gray-500";
-    return "text-emerald-500";
-};
+// const getIconColor = (type: CategoryNode["type"]) => {
+//     if (type === NODE_TYPE.CATEGORY) return "text-primary";
+//     if (type === NODE_TYPE.SUBCATEGORY) return "text-gray-500";
+//     return "text-emerald-500";
+// };
 
 interface TreeNodeProps {
     readonly node: CategoryNode;
@@ -40,9 +41,9 @@ export default function TreeNode({
     const hasChildren = node.children && node.children.length > 0;
 
 
-    let Icon = Layers
-    if (node.type === NODE_TYPE.SUBCATEGORY) Icon = FolderTree
-    if (node.type === NODE_TYPE.ITEM_GROUP) Icon = Package
+    // let Icon = Layers
+    // if (node.type === NODE_TYPE.SUBCATEGORY) Icon = FolderTree
+    // if (node.type === NODE_TYPE.ITEM_GROUP) Icon = Package
 
     return (
         <div className="tree-node">
@@ -61,16 +62,24 @@ export default function TreeNode({
                     <div className="w-6"></div>
                 )}
 
-                <Icon
+                {/* <Icon
                     className={`h-5 w-5 mr-2 ${getIconColor(node.type)}`}
-                />
+                /> */}
 
                 <div className="flex-1">
-                    <p className="font-medium">{node.name}</p>
+                    <div className="flex gap-2 items-baseline">
+                        <p className="font-medium">{node.name}</p>
+                        <Badge
+                            variant="outline"
+                            className="text-xs bg-muted border-none">
+                            {node.code}
+                        </Badge>
+                        <p className="text-xs text-muted-foreground">{node.type === NODE_TYPE.CATEGORY ? tCategory("category") : node.type === NODE_TYPE.SUBCATEGORY ? tCategory("subcategory") : tCategory("itemGroup")}</p>
+                    </div>
+
                     <p className="text-muted-foreground">{node.description}</p>
                     {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-muted-foreground">{node.itemCount}</p>}
                 </div>
-
                 <div className="flex items-center gap-1">
                     {node.type !== NODE_TYPE.ITEM_GROUP && (
                         <TooltipProvider>

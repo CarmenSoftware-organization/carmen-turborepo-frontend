@@ -9,7 +9,7 @@ export const getItemGroupService = async (token: string, tenantId: string) => {
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/products/item-group`, {
+        const response = await fetch(`${backendApi}/api/config/products/item-group?perpage=999`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
