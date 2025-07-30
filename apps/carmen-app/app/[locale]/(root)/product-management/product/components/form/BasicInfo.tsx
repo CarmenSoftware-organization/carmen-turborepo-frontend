@@ -9,7 +9,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useItemGroup } from "@/hooks/useItemGroup";
 import { useAuth } from "@/context/AuthContext";
 import { getCategoryListByItemGroup } from "@/services/product.service";
 import { useEffect, useState, useRef } from "react";
@@ -44,14 +43,14 @@ export default function BasicInfo({
   handleCancelClick,
 }: BasicInfoProps) {
   const { token, tenantId } = useAuth();
-  const { units, getUnitName } = useUnitQuery({
+
+  const { getUnitName } = useUnitQuery({
     token,
     tenantId,
     params: {
       perpage: -1,
     }
   });
-  const { itemGroups } = useItemGroup();
 
   const { watch, setValue } = useFormContext<ProductFormValues>();
 
@@ -92,12 +91,12 @@ export default function BasicInfo({
         // Update local state
         const newCategoryData = {
           category: {
-            id: response.product_category.id,
-            name: response.product_category.name,
+            id: response.category.id,
+            name: response.category.name,
           },
           subCategory: {
-            id: response.product_subcategory.id,
-            name: response.product_subcategory.name,
+            id: response.sub_category.id,
+            name: response.sub_category.name,
           },
         };
 
@@ -118,6 +117,7 @@ export default function BasicInfo({
 
   // Initial data fetch on view mode
   const initialLoadRef = useRef(false);
+
   useEffect(() => {
     if (initialLoadRef.current) return;
 
@@ -136,14 +136,15 @@ export default function BasicInfo({
             productItemGroupId
           );
 
+
           const newCategoryData = {
             category: {
-              id: response.product_category.id,
-              name: response.product_category.name,
+              id: response.category.id,
+              name: response.category.name,
             },
             subCategory: {
-              id: response.product_subcategory.id,
-              name: response.product_subcategory.name,
+              id: response.sub_category.id,
+              name: response.sub_category.name,
             },
           };
 

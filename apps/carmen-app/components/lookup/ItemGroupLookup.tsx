@@ -17,6 +17,8 @@ import {
 } from "@/components/ui/popover";
 import { useItemGroup } from "@/hooks/useItemGroup";
 import { PropsLookup } from "@/dtos/lookup.dto";
+
+
 export default function ItemGroupLookup({
     value,
     onValueChange,
@@ -34,6 +36,15 @@ export default function ItemGroupLookup({
         const found = itemGroups.find(group => group?.id === value);
         return found?.name ?? null;
     }, [value, itemGroups]);
+
+    const filterItemGroup = itemGroups?.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        code: item.code,
+        is_active: item.is_active,
+        category: item.category,
+        sub_category: item.sub_category,
+    }));
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -67,8 +78,8 @@ export default function ItemGroupLookup({
                             <>
                                 <CommandEmpty>No item group found.</CommandEmpty>
                                 <CommandGroup>
-                                    {itemGroups && itemGroups.length > 0 ? (
-                                        itemGroups.map((group) => (
+                                    {filterItemGroup && filterItemGroup.length > 0 ? (
+                                        filterItemGroup.map((group) => (
                                             <CommandItem
                                                 key={group.id}
                                                 value={group.name}

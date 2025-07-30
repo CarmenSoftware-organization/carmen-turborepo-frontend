@@ -25,8 +25,6 @@ export default function ProductEdit() {
     return <DetailLoading />;
   }
 
-  console.log("product", product);
-
   return (
     <>
       <FormProduct mode={formType.VIEW} initialValues={product} />

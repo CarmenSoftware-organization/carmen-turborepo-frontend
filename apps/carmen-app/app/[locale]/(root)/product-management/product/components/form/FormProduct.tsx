@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import {
@@ -19,7 +19,7 @@ import {
   ProductInitialValues,
   productFormSchema,
 } from "../../pd-schema";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -167,23 +167,8 @@ export default function FormProduct({ mode, initialValues }: Props) {
     defaultValues: transformInitialValues() as ProductFormValues,
   });
 
-  const formValues = useWatch({
-    control: form.control,
-  });
-
-  useEffect(() => {
-    console.log("Current form values:", formValues);
-    console.log("Form errors:", form.formState.errors);
-    console.log("Is form valid:", form.formState.isValid);
-    console.log("Is form dirty:", form.formState.isDirty);
-    console.log("Is form submitting:", form.formState.isSubmitting);
-  }, [formValues, form.formState]);
 
   const onSubmit = async (data: ProductFormValues) => {
-    console.log("Form submission started");
-    console.log("Form values before submit:", form.getValues());
-    console.log("Form errors before submit:", form.formState.errors);
-
     try {
       // Create a copy of the data and remove .data properties
       const { locations, order_units, ingredient_units, ...restData } = data;
@@ -215,7 +200,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
         const result = await createProductService(token, tenantId, submitData);
         toastSuccess({ message: "Product created successfully" });
         setCurrentMode(formType.VIEW);
-        console.log("result", result);
 
         // Replace '/new' with the actual product ID from the response
         if (result?.id) {
