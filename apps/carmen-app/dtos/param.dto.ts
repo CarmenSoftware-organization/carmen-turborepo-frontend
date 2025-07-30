@@ -1,7 +1,7 @@
 export interface ParamsGetDto {
     search?: string;
-    page?: string;
-    perPage?: string;
+    page?: number;
+    perpage?: number;
     sort?: string;
     filter?: string;
 }

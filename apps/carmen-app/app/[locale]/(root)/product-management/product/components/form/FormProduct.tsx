@@ -23,8 +23,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "@/lib/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { mockStockInventoryData } from "@/mock-data/stock-invent";
-import InventoryInfo from "./InventoryInfo";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface Props {
@@ -118,9 +116,9 @@ export default function FormProduct({ mode, initialValues }: Props) {
       locations: {
         data: Array.isArray(initialValues.locations)
           ? initialValues.locations.map((location) => ({
-              id: location.id ?? "",
-              location_id: location.location_id ?? "",
-            }))
+            id: location.id ?? "",
+            location_id: location.location_id ?? "",
+          }))
           : [],
         add: [],
         remove: [],
@@ -128,12 +126,12 @@ export default function FormProduct({ mode, initialValues }: Props) {
       order_units: {
         data: Array.isArray(initialValues.order_units)
           ? initialValues.order_units.map((unit) => ({
-              id: unit.id ?? "",
-              from_unit_id: unit.from_unit_id ?? "",
-              from_unit_qty: unit.from_unit_qty ?? 0,
-              to_unit_id: unit.to_unit_id ?? "",
-              to_unit_qty: unit.to_unit_qty ?? 0,
-            }))
+            id: unit.id ?? "",
+            from_unit_id: unit.from_unit_id ?? "",
+            from_unit_qty: unit.from_unit_qty ?? 0,
+            to_unit_id: unit.to_unit_id ?? "",
+            to_unit_qty: unit.to_unit_qty ?? 0,
+          }))
           : [],
         add: [],
         update: [],
@@ -142,12 +140,12 @@ export default function FormProduct({ mode, initialValues }: Props) {
       ingredient_units: {
         data: Array.isArray(initialValues.ingredient_units)
           ? initialValues.ingredient_units.map((unit) => ({
-              id: unit.id ?? "",
-              from_unit_id: unit.from_unit_id ?? "",
-              from_unit_qty: unit.from_unit_qty ?? 0,
-              to_unit_id: unit.to_unit_id ?? "",
-              to_unit_qty: unit.to_unit_qty ?? 0,
-            }))
+            id: unit.id ?? "",
+            from_unit_id: unit.from_unit_id ?? "",
+            from_unit_qty: unit.from_unit_qty ?? 0,
+            to_unit_id: unit.to_unit_id ?? "",
+            to_unit_qty: unit.to_unit_qty ?? 0,
+          }))
           : [],
         add: [],
         update: [],
@@ -291,13 +289,9 @@ export default function FormProduct({ mode, initialValues }: Props) {
                 <TabsTrigger value="ingredientUnit">
                   Ingredient Unit
                 </TabsTrigger>
-                <TabsTrigger value="inventory">Inventory</TabsTrigger>
+                {/* <TabsTrigger value="inventory">Inventory</TabsTrigger> */}
               </TabsList>
               <TabsContent value="general">
-                {/* <div className="grid grid-cols-2 gap-4">
-                                    <PriceInfo control={form.control} currentMode={currentMode} />
-                                    <ProductAttribute control={form.control} currentMode={currentMode} />
-                                </div> */}
                 <ProductAttribute
                   control={form.control}
                   currentMode={currentMode}
@@ -318,16 +312,17 @@ export default function FormProduct({ mode, initialValues }: Props) {
                   currentMode={currentMode}
                 />
               </TabsContent>
-              <TabsContent value="inventory">
+              {/* <TabsContent value="inventory">
                 {(currentMode === formType.EDIT ||
                   currentMode === formType.VIEW) && (
                   <InventoryInfo inventoryData={mockStockInventoryData} />
                 )}
-              </TabsContent>
+              </TabsContent> */}
             </Tabs>
           </ScrollArea>
         </form>
       </Form>
+      {/* <JsonViewer data={formValues} title="Form Values" /> */}
     </div>
   );
 }

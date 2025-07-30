@@ -16,6 +16,7 @@ export const useUnitQuery = ({
     tenantId: string;
     params?: ParamsGetDto;
 }) => {
+
     const { data, isLoading, error } = useQuery({
         queryKey: ["units", tenantId, params],
         queryFn: async () => {

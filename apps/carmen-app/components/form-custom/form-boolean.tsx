@@ -9,6 +9,7 @@ interface FormBooleanProps {
   readonly positionLabel?: "left" | "right" | "top" | "bottom";
   readonly type?: "switch" | "checkbox";
   readonly disabled?: boolean;
+  readonly classNames?: string;
 }
 
 export default function FormBoolean({
@@ -18,6 +19,7 @@ export default function FormBoolean({
   positionLabel = "right",
   type = "switch",
   disabled = false,
+  classNames,
 }: FormBooleanProps) {
   const controlId = `form-boolean-${type}`;
 
@@ -28,13 +30,20 @@ export default function FormBoolean({
         checked={value}
         onCheckedChange={onChange}
         disabled={disabled}
+        className={classNames}
       />
     ) : (
-      <Checkbox id={controlId} checked={value} onCheckedChange={onChange} disabled={disabled} />
+      <Checkbox
+        id={controlId}
+        checked={value}
+        onCheckedChange={onChange}
+        disabled={disabled}
+        className={classNames}
+      />
     );
 
   const renderLabel = () => (
-    <Label htmlFor={controlId} className="text-sm font-medium cursor-pointer">
+    <Label htmlFor={controlId} className="cursor-pointer">
       {label}
     </Label>
   );

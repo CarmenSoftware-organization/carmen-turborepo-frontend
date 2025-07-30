@@ -26,6 +26,8 @@ export const getAllApiRequest = async (
     const queryString = query.toString();
     const URL = queryString ? `${API_URL}?${queryString}` : API_URL;
 
+    console.log('FULL URL', URL);
+
     const response = await axios.get(URL, {
       headers: requestHeaders(token, tenantId),
     });

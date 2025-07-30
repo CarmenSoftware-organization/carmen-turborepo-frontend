@@ -21,7 +21,8 @@ export default function ItemGroupLookup({
     value,
     onValueChange,
     placeholder = "Select product item group",
-    disabled = false
+    disabled = false,
+    classNames
 }: Readonly<PropsLookup>) {
     // เรียกใช้ hook โดยเฉพาะเจาะจงแต่ละตัวที่ต้องการ
     const { itemGroups, isLoading } = useItemGroup();
@@ -40,7 +41,10 @@ export default function ItemGroupLookup({
                 <Button
                     variant="outline"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className={cn(
+                        "w-full justify-between",
+                        classNames
+                    )}
                     disabled={disabled}
                 >
                     {value && selectedItemName ? selectedItemName : placeholder}

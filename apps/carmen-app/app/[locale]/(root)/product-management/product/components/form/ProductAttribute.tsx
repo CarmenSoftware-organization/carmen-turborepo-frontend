@@ -64,7 +64,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
             </div>
 
             <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     {/* Price Fields */}
                     <FormField
                         control={control}
@@ -153,7 +153,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         control={control}
                         name="product_info.is_used_in_recipe"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-2">
                                 <div className="space-y-0.5">
                                     <FormLabel>Used in Recipe</FormLabel>
                                 </div>
@@ -172,7 +172,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         control={control}
                         name="product_info.is_sold_directly"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-2">
                                 <div className="space-y-0.5">
                                     <FormLabel>Sold Directly</FormLabel>
                                 </div>

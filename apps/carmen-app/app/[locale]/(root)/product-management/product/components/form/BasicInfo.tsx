@@ -9,22 +9,21 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useItemGroup } from "@/hooks/useItemGroup";
 import { useAuth } from "@/context/AuthContext";
 import { getCategoryListByItemGroup } from "@/services/product.service";
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit } from "lucide-react";
-import { useRouter } from "@/lib/navigation";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
-import { Separator } from "@/components/ui/separator";
 import { useUnitQuery } from "@/hooks/use-unit";
-import { UnitDto } from "@/dtos/unit.dto";
+import ButtonLink from "@/components/ButtonLink";
+import { cn } from "@/lib/utils";
+import FormBoolean from "@/components/form-custom/form-boolean";
+import { Label } from "@/components/ui/label";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -45,13 +44,16 @@ export default function BasicInfo({
   handleCancelClick,
 }: BasicInfoProps) {
   const { token, tenantId } = useAuth();
-  const { units } = useUnitQuery({
+  const { units, getUnitName } = useUnitQuery({
     token,
     tenantId,
+    params: {
+      perpage: -1,
+    }
   });
   const { itemGroups } = useItemGroup();
+
   const { watch, setValue } = useFormContext<ProductFormValues>();
-  const router = useRouter();
 
   const [categoryData, setCategoryData] = useState<CategoryData>({
     category: { id: "", name: "" },
@@ -199,27 +201,21 @@ export default function BasicInfo({
   };
 
   return (
-    <div className="space-y-3">
-      <Card className="border-border/20 shadow-sm">
-        <CardHeader className="pb-2 pt-3">
+    <div className="space-y-2">
+      <Card>
+        <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  router.push("/product-management/product");
-                }}
-                className="text-muted-foreground hover:text-foreground h-8 w-8 p-0"
+              <ButtonLink
+                href="/product-management/product"
               >
                 <ChevronLeft className="h-4 w-4" />
-              </Button>
+              </ButtonLink>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-6">
                 <FormField
                   control={control}
-                  name="name"
+                  name="code"
                   render={({ field }) => (
                     <FormItem>
                       {currentMode === formType.VIEW ? (
@@ -228,42 +224,13 @@ export default function BasicInfo({
                         </h1>
                       ) : (
                         <>
-                          <FormLabel className="text-xs font-medium text-foreground">
-                            Product Name
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Product Name"
-                              className="font-semibold bg-transparent focus-visible:ring-0 leading-tight"
-                              {...field}
-                            />
-                          </FormControl>
-                        </>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={control}
-                  name="code"
-                  render={({ field }) => (
-                    <FormItem>
-                      {currentMode === formType.VIEW ? (
-                        <p className="text-xs text-muted-foreground">
-                          Code: {field.value || "N/A"}
-                        </p>
-                      ) : (
-                        <>
-                          <FormLabel className="text-xs font-medium text-foreground">
+                          <FormLabel className="font-medium">
                             Product Code{" "}
                             <span className="text-destructive">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
                               placeholder="Product Code"
-                              className="text-xs text-muted-foreground bg-transparent focus-visible:ring-0"
                               {...field}
                             />
                           </FormControl>
@@ -273,15 +240,43 @@ export default function BasicInfo({
                     </FormItem>
                   )}
                 />
+                <div className="flex items-center gap-2">
+                  <FormField
+                    control={control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        {currentMode === formType.VIEW ? (
+                          <h1 className="text-lg font-semibold text-foreground leading-tight">
+                            {field.value || "Untitled Product"}
+                          </h1>
+                        ) : (
+                          <>
+                            <FormLabel>
+                              Product Name
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Product Name"
+                                {...field}
+                              />
+                            </FormControl>
+                          </>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                {status && currentMode === formType.VIEW && (
-                  <Badge
-                    variant={status === "active" ? "default" : "secondary"}
-                    className="bg-primary/10 text-primary border-primary/20 text-xs px-1.5 py-0.5"
-                  >
-                    {status === "active" ? "Active" : "Inactive"}
-                  </Badge>
-                )}
+                  {status && currentMode === formType.VIEW && (
+                    <Badge
+                      variant={status === "active" ? "active" : "inactive"}
+                    >
+                      {status === "active" ? "Active" : "Inactive"}
+                    </Badge>
+                  )}
+                </div>
+
               </div>
             </div>
 
@@ -293,18 +288,16 @@ export default function BasicInfo({
                     variant="outline"
                     size="sm"
                     onClick={handleCancelClick}
-                    className="text-muted-foreground border-border/50 h-8 px-2.5"
                   >
-                    <ChevronLeft className="h-3 w-3 mr-1" />
+                    <ChevronLeft className="h-3 w-3" />
                     Back
                   </Button>
                   <Button
                     variant="default"
                     size="sm"
                     onClick={handleEditClick}
-                    className="bg-primary text-primary-foreground h-8 px-2.5"
                   >
-                    <Edit className="h-3 w-3 mr-1" />
+                    <Edit />
                     Edit
                   </Button>
                 </>
@@ -314,9 +307,8 @@ export default function BasicInfo({
                     variant="outline"
                     size="sm"
                     onClick={handleCancelClick}
-                    className="text-muted-foreground border-border/50 hover:border-destructive/50 hover:text-destructive h-8 px-2.5"
                   >
-                    <X className="h-3 w-3 mr-1" />
+                    <X />
                     Cancel
                   </Button>
                   <Button
@@ -324,9 +316,8 @@ export default function BasicInfo({
                     size="sm"
                     type="submit"
                     disabled={!isFormValid()}
-                    className="bg-primary text-primary-foreground h-8 px-2.5 disabled:opacity-50"
                   >
-                    <Save className="h-3 w-3 mr-1" />
+                    <Save />
                     Save
                   </Button>
                 </>
@@ -335,30 +326,26 @@ export default function BasicInfo({
           </div>
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
-          {/* Basic Information Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {/* Description */}
             <FormField
               control={control}
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">
+                  <FormLabel>
                     Description
                   </FormLabel>
-                  {currentMode === formType.VIEW ? (
-                    <div className="min-h-[32px] p-2 bg-muted/30 rounded border border-border/30 text-xs">
-                      {field.value || "No description"}
-                    </div>
-                  ) : (
-                    <FormControl>
-                      <Textarea
-                        placeholder="Product description"
-                        className="resize-none min-h-[60px] text-xs bg-background border-border/50 focus:border-primary/50"
-                        {...field}
-                      />
-                    </FormControl>
-                  )}
+                  <FormControl>
+                    <Input
+                      placeholder="Enter description"
+                      {...field}
+                      disabled={currentMode === formType.VIEW}
+                      className={cn(
+                        currentMode === formType.VIEW && "bg-muted",
+                        ""
+                      )}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -370,64 +357,52 @@ export default function BasicInfo({
               name="local_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">
+                  <FormLabel>
                     Local Name <span className="text-destructive">*</span>
                   </FormLabel>
-                  {currentMode === formType.VIEW ? (
-                    <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center text-xs">
-                      {field.value || "N/A"}
-                    </div>
-                  ) : (
-                    <FormControl>
-                      <Input
-                        placeholder="Local name"
-                        className="h-8 text-xs bg-background border-border/50 focus:border-primary/50"
-                        {...field}
-                      />
-                    </FormControl>
-                  )}
+                  <FormControl>
+                    <Input
+                      placeholder="Local name"
+                      {...field}
+                      disabled={currentMode === formType.VIEW}
+                      className={cn(
+                        currentMode === formType.VIEW && "bg-muted",
+                        ""
+                      )}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Use for Ingredients */}
             <FormField
               control={control}
               name="product_info.is_ingredients"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-xs font-medium text-foreground">
-                    Use for Ingredients
-                  </FormLabel>
-                  <div className="h-8 flex items-center">
-                    <FormControl>
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          disabled={currentMode === formType.VIEW}
-                          className="data-[state=checked]:bg-primary scale-75"
-                        />
-                        <span className="text-xs text-muted-foreground">
-                          {field.value ? "Yes" : "No"}
-                        </span>
-                      </div>
-                    </FormControl>
-                  </div>
+                <FormItem className="mt-2">
+                  <FormControl>
+                    <FormBoolean
+                      value={field.value}
+                      onChange={field.onChange}
+                      label="Use for Ingredients"
+                      positionLabel="top"
+                      type="checkbox"
+                      disabled={currentMode === formType.VIEW}
+                      classNames={cn(
+                        currentMode === formType.VIEW && "bg-muted",
+                        ""
+                      )}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
 
-          <Separator className="bg-border/30" />
-
           {/* Classification Section */}
           <div className="space-y-3">
-            <h3 className="text-xs font-medium text-foreground">
-              Classification
-            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Product Item Group */}
               <FormField
@@ -435,66 +410,49 @@ export default function BasicInfo({
                 name="product_info.product_item_group_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">
-                      Item Group <span className="text-destructive">*</span>
+                    <FormLabel>
+                      Item Group
                     </FormLabel>
-                    {currentMode === formType.VIEW ? (
-                      <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center text-xs">
-                        {itemGroups.find((group) => group.id === field.value)
-                          ?.name || "N/A"}
-                      </div>
-                    ) : (
-                      <FormControl>
-                        <ItemGroupLookup
-                          value={field.value}
-                          onValueChange={(value) => {
-                            handleItemGroupChange(value);
-                            field.onChange(value);
-                          }}
-                        />
-                      </FormControl>
-                    )}
+                    <FormControl>
+                      <ItemGroupLookup
+                        value={field.value}
+                        onValueChange={(value) => {
+                          handleItemGroupChange(value);
+                          field.onChange(value);
+                        }}
+                        disabled={currentMode === formType.VIEW}
+                        classNames={cn(
+                          currentMode === formType.VIEW && "bg-muted",
+                          ""
+                        )}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Category */}
-              <div>
-                <FormLabel className="text-xs font-medium text-foreground">
+              <div className="space-y-2">
+                <Label>
                   Category
-                </FormLabel>
-                {currentMode === formType.VIEW ? (
-                  <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center text-xs mt-1.5">
-                    {categoryData.category.name || "N/A"}
-                  </div>
-                ) : (
-                  <Input
-                    placeholder="Category"
-                    value={categoryData.category.name}
-                    disabled
-                    className="h-8 text-xs bg-muted/50 text-muted-foreground mt-1.5"
-                  />
-                )}
+                </Label>
+                <Input
+                  placeholder="Category"
+                  value={categoryData.category.name}
+                  disabled
+                />
               </div>
 
               {/* Sub Category */}
-              <div>
-                <FormLabel className="text-xs font-medium text-foreground">
+              <div className="space-y-2">
+                <Label>
                   Sub Category
-                </FormLabel>
-                {currentMode === formType.VIEW ? (
-                  <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center text-xs mt-1.5">
-                    {categoryData.subCategory.name || "N/A"}
-                  </div>
-                ) : (
-                  <Input
-                    placeholder="Sub category"
-                    value={categoryData.subCategory.name}
-                    disabled
-                    className="h-8 text-xs bg-muted/50 text-muted-foreground mt-1.5"
-                  />
-                )}
+                </Label>
+                <Input
+                  placeholder="Sub category"
+                  value={categoryData.subCategory.name}
+                  disabled
+                />
               </div>
 
               {/* Primary Inventory Unit */}
@@ -503,13 +461,12 @@ export default function BasicInfo({
                 name="inventory_unit_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-medium text-foreground">
-                      Inventory Unit <span className="text-destructive">*</span>
+                    <FormLabel>
+                      Inventory Unit
                     </FormLabel>
                     {currentMode === formType.VIEW ? (
-                      <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center text-xs">
-                        {units?.data?.find((unit: UnitDto) => unit.id === field.value)?.name ||
-                          "N/A"}
+                      <div className="h-8 p-2 bg-muted/30 rounded border border-border/30 flex items-center mt-1.5">
+                        {getUnitName(field.value)}
                       </div>
                     ) : (
                       <FormControl>

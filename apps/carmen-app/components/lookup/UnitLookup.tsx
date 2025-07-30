@@ -33,7 +33,12 @@ export default function UnitLookup({
     const { units, isLoading } = useUnitQuery({
         token,
         tenantId,
+        params: {
+            perpage: -1,
+        }
     });
+
+    // console.log('units', units?.data);
 
     const [open, setOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
