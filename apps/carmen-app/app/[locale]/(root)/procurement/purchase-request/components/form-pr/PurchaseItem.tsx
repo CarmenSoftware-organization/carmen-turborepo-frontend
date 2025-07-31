@@ -113,7 +113,7 @@ export default function PurchaseItem({
                                 <TableHead className="text-right">Price</TableHead>
                             </>
                         )}
-                        {currentFormType !== formType.ADD && (
+                        {currentFormType === formType.EDIT && (
                             <TableHead className="text-center">More</TableHead>
                         )}
                     </TableRow>
