@@ -101,9 +101,6 @@ export default function EditFieldItem({
                                             </MotionDiv>
                                             <p className="text-sm font-medium">{item.location_name || "-"}</p>
                                         </div>
-                                        <p className="text-xs text-muted-foreground">
-                                            {item.stages_status ? item.stages_status : ''}
-                                        </p>
                                     </div>
                                 ) : (
                                     <LocationLookup
