@@ -20,6 +20,8 @@ import HeadForm from "./HeadForm";
 import StatusPrInfo from "./StatusPrInfo";
 import { useRouter } from "@/lib/navigation";
 import DetailsAndComments from "@/components/DetailsAndComments";
+import { usePrMutation } from "@/hooks/usePurchaseRequest";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
     mode: formType;
@@ -32,6 +34,7 @@ interface CancelAction {
 }
 
 export default function MainForm({ mode, initValues }: Props) {
+    const { token, tenantId, user, departments, dateFormat } = useAuth();
     const [currentFormType, setCurrentFormType] = useState<formType>(mode);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [updatedItems, setUpdatedItems] = useState<Record<string, any>>({});
@@ -41,7 +44,6 @@ export default function MainForm({ mode, initValues }: Props) {
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
-    const { user, departments } = useAuth();
     const router = useRouter();
 
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
@@ -53,7 +55,7 @@ export default function MainForm({ mode, initValues }: Props) {
             return zodResolver(schema)(data, context, options);
         },
         defaultValues: {
-            pr_date: initValues?.pr_date ? initValues.pr_date : format(new Date(), "yyyy-MM-dd"),
+            pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
             description: initValues?.description ? initValues.description : "",
             requestor_id: user?.id,
             department_id: departments?.id,
@@ -68,6 +70,8 @@ export default function MainForm({ mode, initValues }: Props) {
         mode: "onBlur",
     });
 
+    const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, tenantId);
+
     const { append: appendRemove } = useFieldArray({
         control: form.control,
         name: "purchase_request_detail.remove",
@@ -79,7 +83,7 @@ export default function MainForm({ mode, initValues }: Props) {
 
         // ตรวจสอบการเปลี่ยนแปลงในฟิลด์หลัก
         const hasMainFieldChanges =
-            currentValues.pr_date !== (initValues?.pr_date || format(new Date(), "yyyy-MM-dd")) ||
+            currentValues.pr_date !== (initValues?.pr_date || format(new Date(), dateFormat || "dd/MM/yyyy")) ||
             currentValues.description !== (initValues?.description || "") ||
             currentValues.workflow_id !== (initValues?.workflow_id || "") ||
             currentValues.note !== (initValues?.note || "");
@@ -148,7 +152,26 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const handleSubmit = (data: PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto) => {
-        console.log('handleSubmit called with data:', data);
+        if (mode === formType.ADD) {
+            createPr(data, {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                onSuccess: (responseData: any) => {
+                    console.log('responseData', responseData.data.id);
+
+                    if (responseData?.data?.id) {
+                        // Navigate to the specific purchase request page
+                        router.replace(`/procurement/purchase-request/${responseData.data.id}`);
+                        // window.location.reload();
+                    }
+                },
+                onError: () => {
+                    alert('error');
+                }
+            });
+        } else {
+            alert('update data');
+            console.log('update data:', data);
+        }
     }
 
     const handleConfirmDelete = () => {
@@ -196,6 +219,7 @@ export default function MainForm({ mode, initValues }: Props) {
         performCancel();
     }
 
+
     const performCancel = () => {
         if (currentFormType === formType.ADD) {
             router.push("/procurement/purchase-request");
@@ -205,7 +229,7 @@ export default function MainForm({ mode, initValues }: Props) {
             setRemovedItems(new Set());
 
             form.reset({
-                pr_date: initValues?.pr_date ? initValues.pr_date : format(new Date(), "yyyy-MM-dd"),
+                pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
                 description: initValues?.description ? initValues.description : "",
                 requestor_id: user?.id,
                 department_id: departments?.id,
@@ -233,6 +257,8 @@ export default function MainForm({ mode, initValues }: Props) {
     const watchError = form.formState.errors;
     const hasError = Object.keys(watchError).length > 0;
     const canSave = !hasError && hasFormChanges();
+
+    const watchForm = form.watch();
 
     return (
         <>
@@ -320,7 +346,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     Workflow Pr
                                 </TabsContent>
                             </Tabs>
-
+                            <JsonViewer data={watchForm} title="Form Data" />
                         </form>
                     </Form>
                 </Card>

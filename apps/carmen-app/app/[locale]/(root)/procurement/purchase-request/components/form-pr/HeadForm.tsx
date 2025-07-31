@@ -45,7 +45,7 @@ export default function HeadForm({
                 name="pr_date"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>Date</FormLabel>
+                        <FormLabel>PR Date</FormLabel>
                         <FormControl>
                             <DateInput field={field} disabled={true} />
                         </FormControl>

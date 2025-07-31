@@ -17,6 +17,13 @@ import {
 } from "@/hooks/use-auth-query";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 
+enum LOCAL_STORAGE {
+  ACCESS_TOKEN = "access_token",
+  REFRESH_TOKEN = "refresh_token",
+  TENANT_ID = "tenant_id",
+  USER = "user",
+}
+
 interface UserInfo {
   firstname: string;
   middlename?: string;
@@ -110,7 +117,7 @@ export const AuthContext = createContext<AuthContextType>({
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
 export function getServerSideToken(): string {
   if (typeof window !== "undefined") {
-    return localStorage.getItem("access_token") ?? "";
+    return localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
   }
   return "";
 }
@@ -129,8 +136,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // Hydration effect - รันครั้งเดียวหลัง mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedTenantId = localStorage.getItem("tenant_id") ?? "";
-      const storedToken = localStorage.getItem("access_token") ?? "";
+      const storedTenantId = localStorage.getItem(LOCAL_STORAGE.TENANT_ID) ?? "";
+      const storedToken = localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
 
       setTenantId(storedTenantId);
       setToken(storedToken);
@@ -201,7 +208,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     };
   }, [user]);
 
-  // กำหนด tenantId เมื่อ user เปลี่ยน
   useEffect(() => {
     if (user?.business_unit?.length && isHydrated) {
       const defaultBu = user.business_unit.find(
@@ -212,7 +218,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
       if (newTenantId && newTenantId !== tenantId) {
         setTenantId(newTenantId);
-        localStorage.setItem("tenant_id", newTenantId);
+        localStorage.setItem(LOCAL_STORAGE.TENANT_ID, newTenantId);
       }
     }
   }, [user, tenantId, isHydrated]);
@@ -221,12 +227,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const setSession = useCallback(
     async (accessToken: string, refreshToken: string) => {
       if (accessToken && typeof window !== "undefined") {
-        localStorage.setItem("access_token", accessToken);
+        localStorage.setItem(LOCAL_STORAGE.ACCESS_TOKEN, accessToken);
         setToken(accessToken);
       }
 
       if (refreshToken && typeof window !== "undefined") {
-        localStorage.setItem("refresh_token", refreshToken);
+        localStorage.setItem(LOCAL_STORAGE.REFRESH_TOKEN, refreshToken);
       }
     },
     []
@@ -241,10 +247,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     // ลบ tokens และ cache
     if (typeof window !== "undefined") {
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      localStorage.removeItem("tenant_id");
-      localStorage.removeItem("user");
+      localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
+      localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
+      localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
+      localStorage.removeItem(LOCAL_STORAGE.USER);
     }
 
     // ล้าง cache และ reset state
@@ -259,7 +265,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // ดึง token สำหรับ server actions
   const getServerSideToken = useCallback(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("access_token") ?? "";
+      return localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
     }
     return "";
   }, []);
@@ -281,7 +287,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             setTenantId(id);
             // อัปเดต localStorage เพื่อ sync กับ tabs อื่น
             if (typeof window !== "undefined") {
-              localStorage.setItem("tenant_id", id);
+              localStorage.setItem(LOCAL_STORAGE.TENANT_ID, id);
             }
             router.push(dashboardPage);
             toastSuccess({ message: "Changed Business Unit Success" });
@@ -297,10 +303,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     if (isSignInPage && isHydrated && !token) {
       // ล้าง session เฉพาะเมื่อไม่มี token (ไม่ได้กำลัง login)
       if (typeof window !== "undefined") {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        localStorage.removeItem("tenant_id");
-        localStorage.removeItem("user");
+        localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
+        localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
+        localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
+        localStorage.removeItem(LOCAL_STORAGE.USER);
       }
       clearAuthCache();
       setTenantId("");
@@ -323,8 +329,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       switch (event.key) {
         case 'access_token':
           if (event.newValue === null) {
-            // Tab อื่น logout แล้ว - ล้าง state และ redirect
-            console.log('🔄 Cross-tab: Logout detected from another tab');
             setToken("");
             setTenantId("");
             clearAuthCache();

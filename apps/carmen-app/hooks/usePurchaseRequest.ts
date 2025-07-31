@@ -1,6 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { getAllPrService, getPrByIdService } from "@/services/pr.service";
+import { PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
+import { backendApi } from "@/lib/backend-api";
+import { postApiRequest, updateApiRequest } from "@/lib/config.api";
+
+const API_URL = `${backendApi}/api/purchase-request`;
+
 
 export const usePurchaseRequest = (
     token: string,
@@ -46,3 +52,33 @@ export const usePriceListById = (
 
     return { data, isLoading, error, isUnauthorized };
 }
+
+export const usePrMutation = (token: string, tenantId: string) => {
+    return useMutation({
+        mutationFn: async (data: PurchaseRequestCreateFormDto) => {
+            return await postApiRequest(
+                API_URL,
+                token,
+                tenantId,
+                data,
+                "Error creating PR"
+            );
+        },
+    });
+};
+
+export const useUpdateUPr = (token: string, tenantId: string, id: string) => {
+    const API_URL_BY_ID = `${API_URL}/${id}`;
+    return useMutation({
+        mutationFn: async (data: PurchaseRequestUpdateFormDto) => {
+            return await updateApiRequest(
+                API_URL_BY_ID,
+                token,
+                tenantId,
+                data,
+                "Error updating PR",
+                "PUT"
+            );
+        },
+    });
+};

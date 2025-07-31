@@ -104,9 +104,16 @@ export default function PurchaseItem({
                         <TableHead className="w-52">Location</TableHead>
                         <TableHead className="w-52">Product</TableHead>
                         <TableHead className="text-right">Requested</TableHead>
-                        <TableHead className="text-right">Approved</TableHead>
-                        <TableHead className="text-right">Price</TableHead>
-                        {currentFormType !== formType.VIEW && (
+                        {currentFormType === formType.ADD && (
+                            <TableHead className="text-right">Delivery Date</TableHead>
+                        )}
+                        {currentFormType !== formType.ADD && (
+                            <>
+                                <TableHead className="text-right">Approved</TableHead>
+                                <TableHead className="text-right">Price</TableHead>
+                            </>
+                        )}
+                        {currentFormType !== formType.ADD && (
                             <TableHead className="text-center">More</TableHead>
                         )}
                     </TableRow>
@@ -116,6 +123,7 @@ export default function PurchaseItem({
                         form={form}
                         addFields={addFields}
                         onRemoveItemClick={handleRemoveItemClick}
+                        currentFormType={currentFormType}
                     />
 
                     <EditFieldItem

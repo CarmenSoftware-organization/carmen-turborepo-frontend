@@ -31,3 +31,4 @@ export const formatPriceConf = (price: number, config: FormatPriceConf, currency
 export const formatDateFns = (date: string, conf: string) => {
     return format(new Date(date), conf);
 }
+

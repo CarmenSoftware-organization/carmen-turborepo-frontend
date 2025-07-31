@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { MenuCardGrid, MenuCardItem } from '@/components/ui/menu-card';
-import { ClipboardCheck, ShoppingCart, FileText, Package, UserCheck, Receipt, FileCode, Building } from 'lucide-react';
+import { ClipboardCheck, ShoppingCart, FileText, Package, Receipt, FileCode, Building } from 'lucide-react';
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -42,11 +42,11 @@ export default function ProcurementPage() {
             href: '/procurement/vendor-comparison',
             icon: Building
         },
-        {
-            name: t('Procurement.purchaseRequestApprovals'),
-            href: '/procurement/purchase-request-approvals',
-            icon: UserCheck
-        },
+        // {
+        //     name: t('Procurement.purchaseRequestApprovals'),
+        //     href: '/procurement/purchase-request-approvals',
+        //     icon: UserCheck
+        // },
 
         {
             name: t('Procurement.purchaseRequestTemplate'),

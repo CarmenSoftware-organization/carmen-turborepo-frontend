@@ -49,6 +49,7 @@ export default function ActionFields({ mode, currentMode, initValues, onModeChan
                     variant="ghost"
                     size="icon"
                     onClick={handleBack}
+                    className="hover:bg-transparent"
                 >
                     <ChevronLeft className="h-4 w-4" />
                 </Button>

@@ -14,6 +14,7 @@ import { UseFormReturn, FieldArrayWithId } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buttonVariants } from "@/utils/framer-variants";
 import { MotionDiv, MotionTr } from "@/components/framer-motion/MotionWrapper";
+import { formType } from "@/dtos/form.dto";
 
 const cellContentVariants = {
     hidden: { opacity: 0, scale: 0.9 },
@@ -44,12 +45,14 @@ interface AddfieldItemProps {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     addFields: FieldArrayWithId<any, "purchase_request_detail.add", "id">[];
     onRemoveItemClick: (id: string, isAddItem: boolean, addIndex?: number) => void;
+    currentFormType: formType;
 }
 
 export default function AddfieldItem({
     form,
     addFields,
-    onRemoveItemClick
+    onRemoveItemClick,
+    currentFormType
 }: AddfieldItemProps) {
     return (
         <>
@@ -256,34 +259,36 @@ export default function AddfieldItem({
                             />
                         </MotionDiv>
                     </TableCell>
-                    <TableCell className="text-center">
-                        <MotionDiv
-                            variants={cellContentVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
+                    {currentFormType !== formType.ADD && (
+                        <TableCell className="text-center">
                             <MotionDiv
-                                variants={buttonVariants}
-                                initial="idle"
-                                whileHover="hover"
-                                whileTap="tap"
+                                variants={cellContentVariants}
+                                initial="hidden"
+                                animate="visible"
                             >
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => onRemoveItemClick(item.id, true, index)}
-                                    className="hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
+                                <MotionDiv
+                                    variants={buttonVariants}
+                                    initial="idle"
+                                    whileHover="hover"
+                                    whileTap="tap"
                                 >
-                                    <MotionDiv
-                                        whileHover={{ rotate: 15, scale: 1.1 }}
-                                        transition={{ duration: 0.2 }}
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => onRemoveItemClick(item.id, true, index)}
+                                        className="hover:bg-red-50 hover:text-red-600 transition-colors duration-200"
                                     >
-                                        <Trash2 className="w-4 h-4" />
-                                    </MotionDiv>
-                                </Button>
+                                        <MotionDiv
+                                            whileHover={{ rotate: 15, scale: 1.1 }}
+                                            transition={{ duration: 0.2 }}
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </MotionDiv>
+                                    </Button>
+                                </MotionDiv>
                             </MotionDiv>
-                        </MotionDiv>
-                    </TableCell>
+                        </TableCell>
+                    )}
                 </MotionTr>
             ))}
         </>

@@ -59,10 +59,10 @@ export const moduleItems: ModuleItem[] = [
         labelKey: "Modules.Procurement.vendorComparison",
         href: "/procurement/vendor-comparison",
       },
-      {
-        labelKey: "Modules.Procurement.purchaseRequestApprovals",
-        href: "/procurement/purchase-request-approval",
-      },
+      // {
+      //   labelKey: "Modules.Procurement.purchaseRequestApprovals",
+      //   href: "/procurement/purchase-request-approval",
+      // },
 
       {
         labelKey: "Modules.Procurement.purchaseRequestTemplate",
