@@ -4,7 +4,7 @@ import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 import { useRouter } from "@/lib/navigation";
 import { convertPrStatus } from "@/utils/helper";
-import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
+import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface ActionFieldsProps {
@@ -15,9 +15,19 @@ interface ActionFieldsProps {
     readonly onCancel: (e: React.MouseEvent<HTMLButtonElement>, type: 'back' | 'cancel') => void;
     readonly isError: boolean;
     readonly hasFormChanges: () => boolean;
+    readonly isCreatingPr: boolean;
 }
 
-export default function ActionFields({ mode, currentMode, initValues, onModeChange, onCancel, isError, hasFormChanges }: ActionFieldsProps) {
+export default function ActionFields({
+    mode,
+    currentMode,
+    initValues,
+    onModeChange,
+    onCancel,
+    isError,
+    hasFormChanges,
+    isCreatingPr
+}: ActionFieldsProps) {
     const tCommon = useTranslations("Common");
     const router = useRouter();
 
@@ -94,9 +104,9 @@ export default function ActionFields({ mode, currentMode, initValues, onModeChan
                             size={"sm"}
                             className="px-2 text-xs"
                             type="submit"
-                            disabled={isError}
+                            disabled={isError || isCreatingPr}
                         >
-                            <Save />
+                            {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
                             {tCommon("save")}
                         </Button>
                     </>

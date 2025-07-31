@@ -21,7 +21,7 @@ import StatusPrInfo from "./StatusPrInfo";
 import { useRouter } from "@/lib/navigation";
 import DetailsAndComments from "@/components/DetailsAndComments";
 import { usePrMutation } from "@/hooks/usePurchaseRequest";
-import JsonViewer from "@/components/JsonViewer";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface Props {
     mode: formType;
@@ -159,13 +159,16 @@ export default function MainForm({ mode, initValues }: Props) {
                     console.log('responseData', responseData.data.id);
 
                     if (responseData?.data?.id) {
-                        // Navigate to the specific purchase request page
                         router.replace(`/procurement/purchase-request/${responseData.data.id}`);
-                        // window.location.reload();
+                        toastSuccess({
+                            message: "Purchase Request created successfully",
+                        })
                     }
                 },
                 onError: () => {
-                    alert('error');
+                    toastError({
+                        message: "Purchase Request created failed",
+                    })
                 }
             });
         } else {
@@ -258,8 +261,6 @@ export default function MainForm({ mode, initValues }: Props) {
     const hasError = Object.keys(watchError).length > 0;
     const canSave = !hasError && hasFormChanges();
 
-    const watchForm = form.watch();
-
     return (
         <>
             <DetailsAndComments
@@ -276,6 +277,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                 onCancel={handleCancel}
                                 isError={!canSave}
                                 hasFormChanges={hasFormChanges}
+                                isCreatingPr={isCreatingPr}
                             />
                             <div className="grid grid-cols-5 gap-2 mb-4">
                                 <HeadForm
@@ -346,7 +348,6 @@ export default function MainForm({ mode, initValues }: Props) {
                                     Workflow Pr
                                 </TabsContent>
                             </Tabs>
-                            <JsonViewer data={watchForm} title="Form Data" />
                         </form>
                     </Form>
                 </Card>
