@@ -4,7 +4,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -24,13 +23,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import PaginationComponent from "@/components/PaginationComponent";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import EmptyData from "@/components/EmptyData";
 import ButtonLink from "@/components/ButtonLink";
 import ButtonIcon from "@/components/ButtonIcon";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
+import FooterCustom from "@/components/table/FooterCustom";
 
 interface GoodsReceivedNoteListProps {
   readonly goodsReceivedNotes: GoodsReceivedNoteListDto[];
@@ -146,7 +145,7 @@ export default function GoodsReceivedNoteList({
   return (
     <div className="space-y-4">
       <div className="hidden md:block">
-        <Table>
+        <Table className="border">
           <TableHeader className="border">
             <TableRow className="bg-muted">
               <TableHead className="w-10 text-center">
@@ -177,24 +176,13 @@ export default function GoodsReceivedNoteList({
             </TableRow>
           </TableHeader>
           {renderTableContent()}
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={8}>
-                <p className="text-sm text-muted-foreground">
-                  {totalItems} items found
-                </p>
-                {totalPages > 1 && (
-                  <PaginationComponent
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={onPageChange}
-                  />
-                )}
-              </TableCell>
-            </TableRow>
-          </TableFooter>
+          <FooterCustom
+            totalPages={totalPages}
+            totalItems={totalItems}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+          />
         </Table>
-
       </div>
     </div>
   );

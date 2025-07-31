@@ -4,7 +4,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -19,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import PaginationComponent from "@/components/PaginationComponent";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { convertPrStatus } from "@/utils/badge-status-color";
 import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
@@ -27,6 +25,7 @@ import { useAuth } from "@/context/AuthContext";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import ButtonLink from "@/components/ButtonLink";
 import ButtonIcon from "@/components/ButtonIcon";
+import FooterCustom from "@/components/table/FooterCustom";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -109,6 +108,10 @@ export default function PurchaseRequestList({
               </ButtonLink>
             </TableCell>
             <TableCell className="text-center">
+              {formatDateFns(pr.pr_date, dateFormat || 'yyyy-MM-dd')}
+            </TableCell>
+            <TableCell className="text-center">{pr.workflow_name ?? "-"}</TableCell>
+            <TableCell className="text-center">
               {pr.pr_status && (
                 <Badge variant={pr.pr_status}>
                   {convertPrStatus(pr.pr_status)}
@@ -122,10 +125,6 @@ export default function PurchaseRequestList({
                 </Badge>
               )}
             </TableCell>
-            <TableCell className="text-center">
-              {formatDateFns(pr.pr_date, dateFormat || 'yyyy-MM-dd')}
-            </TableCell>
-            <TableCell className="text-center">{pr.workflow_name ?? "-"}</TableCell>
             <TableCell>{pr.requestor_name}</TableCell>
             <TableCell>{pr.department_name}</TableCell>
             <TableCell>{formatPriceConf(pr.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}</TableCell>
@@ -204,10 +203,10 @@ export default function PurchaseRequestList({
                 />
               </TableHead>
               <TableHead className="w-[150px]">PR Number</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-center">Stage</TableHead>
               <TableHead className="text-center">Date</TableHead>
               <TableHead className="text-center">Type</TableHead>
+              <TableHead className="text-center">Status</TableHead>
+              <TableHead className="text-center">Stage</TableHead>
               <TableHead>Requestor</TableHead>
               <TableHead>Department</TableHead>
               <TableHead>Amount</TableHead>
@@ -217,24 +216,12 @@ export default function PurchaseRequestList({
             </TableRow>
           </TableHeader>
           {renderTableContent()}
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={8}>
-                <p className="text-sm text-muted-foreground">
-                  {totalItems} items found
-                </p>
-              </TableCell>
-              {totalPages > 1 && (
-                <TableCell colSpan={2}>
-                  <PaginationComponent
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={onPageChange}
-                  />
-                </TableCell>
-              )}
-            </TableRow>
-          </TableFooter>
+          <FooterCustom
+            totalPages={totalPages}
+            totalItems={totalItems}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+          />
         </Table>
       </div>
     </div>
