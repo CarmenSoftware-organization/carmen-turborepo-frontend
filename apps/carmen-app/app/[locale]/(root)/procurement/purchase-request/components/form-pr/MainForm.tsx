@@ -293,6 +293,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     status={initValues?.pr_status}
                                     requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
                                     department_name={initValues?.department_name ? initValues.department_name : departments?.name}
+                                    workflow_current_stage={initValues?.workflow_current_stage}
                                 />
                             </div>
                             <Tabs defaultValue="items">

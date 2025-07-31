@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/context/AuthContext";
+import { convertPrStatus } from "@/utils/badge-status-color";
 import { format } from "date-fns"
 
 interface StatusPrInfoProps {
@@ -8,6 +10,7 @@ interface StatusPrInfoProps {
   readonly status?: string;
   readonly requestor_name?: string;
   readonly department_name?: string;
+  readonly workflow_current_stage?: string;
 }
 
 export default function StatusPrInfo({
@@ -15,7 +18,9 @@ export default function StatusPrInfo({
   status,
   requestor_name,
   department_name,
+  workflow_current_stage
 }: StatusPrInfoProps) {
+  const { dateFormat } = useAuth();
   return (
     <Card className="p-4 col-span-2">
       <div className="space-y-4">
@@ -24,12 +29,15 @@ export default function StatusPrInfo({
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Current Stage</span>
-            <Badge variant="outline" className="text-xs">
-              Requestor
-            </Badge>
-          </div>
+
+          {workflow_current_stage && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">Current Stage</span>
+              <Badge variant="outline" className="text-xs">
+                {workflow_current_stage}
+              </Badge>
+            </div>
+          )}
 
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">Requestor</span>
@@ -47,20 +55,23 @@ export default function StatusPrInfo({
                 Document Status
               </span>
               <Badge variant={status} className="text-xs">
-                {status ?? "-"}
+                {convertPrStatus(status) ?? "-"}
               </Badge>
             </div>
           )}
-          <Separator className="my-2" />
-
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Created</span>
-            <span className="font-medium">
-              {create_date
-                ? format(new Date(create_date), "PPP")
-                : "-"}
-            </span>
-          </div>
+          {create_date && (
+            <>
+              <Separator className="my-2" />
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Created</span>
+                <span className="font-medium">
+                  {create_date
+                    ? format(new Date(create_date), dateFormat || "dd/MM/yyyy")
+                    : "-"}
+                </span>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Card>

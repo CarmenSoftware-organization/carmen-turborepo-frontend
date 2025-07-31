@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 import { useRouter } from "@/lib/navigation";
-import { convertPrStatus } from "@/utils/helper";
+import { convertPrStatus } from "@/utils/badge-status-color";
 import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 

@@ -110,6 +110,15 @@
     @apply border-border;
   }
 
+  button,
+  input,
+  optgroup,
+  select,
+  label,
+  textarea {
+    font-size: 0.876rem;
+  }
+
   body {
     @apply bg-background text-foreground;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
