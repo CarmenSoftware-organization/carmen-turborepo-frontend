@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { SquarePen, Trash2 } from "lucide-react";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import PaginationComponent from "@/components/PaginationComponent";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   SortConfig,
@@ -22,6 +21,7 @@ import {
 } from "@/utils/table-sort";
 import EmptyData from '@/components/EmptyData';
 import { CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
+import FooterCustom from "@/components/table/FooterCustom";
 
 interface CurrencyListProps {
   readonly isLoading: boolean;
@@ -30,6 +30,7 @@ interface CurrencyListProps {
   readonly onToggleStatus: (currency: CurrencyUpdateDto) => void;
   readonly currentPage: number;
   readonly totalPages: number;
+  readonly totalItems: number;
   readonly onPageChange: (page: number) => void;
   readonly sort?: SortConfig;
   readonly onSort?: (field: string) => void;
@@ -168,6 +169,7 @@ export default function CurrencyList({
   onToggleStatus,
   currentPage,
   totalPages,
+  totalItems,
   onPageChange,
   sort,
   onSort,
@@ -204,16 +206,19 @@ export default function CurrencyList({
           <CurrencyTableHeader sort={sort} onSort={onSort} t={t} />
         </Table>
         <ScrollArea className="h-[calc(102vh-300px)] w-full">
-          <Table>{renderTableContent()}</Table>
+          <Table>
+            {renderTableContent()}
+            <FooterCustom
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              onPageChange={onPageChange}
+              colSpanItems={5}
+              colSpanPagination={2}
+            />
+          </Table>
         </ScrollArea>
       </div>
-
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-        position="right"
-      />
     </div>
   );
 }

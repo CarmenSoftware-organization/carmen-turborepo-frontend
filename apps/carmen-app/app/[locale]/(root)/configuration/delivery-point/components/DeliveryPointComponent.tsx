@@ -60,6 +60,7 @@ export default function DeliveryPointComponent() {
 
   const currentPage = deliveryPoints?.paginate.page;
   const totalPages = deliveryPoints?.paginate.pages;
+  const totalItems = deliveryPoints?.paginate.total;
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage.toString());
@@ -205,6 +206,7 @@ export default function DeliveryPointComponent() {
       isLoading={isLoading}
       currentPage={currentPage}
       totalPages={totalPages}
+      totalItems={totalItems}
       onPageChange={handlePageChange}
       onEdit={handleEdit}
       onToggleStatus={handleDelete}

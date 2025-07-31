@@ -6,19 +6,21 @@ interface Props {
     readonly totalItems?: number;
     readonly currentPage: number;
     readonly onPageChange: (page: number) => void;
+    readonly colSpanItems: number;
+    readonly colSpanPagination: number;
 }
 
-export default function FooterCustom({ totalPages, totalItems, currentPage, onPageChange }: Props) {
+export default function FooterCustom({ totalPages, totalItems, currentPage, onPageChange, colSpanItems, colSpanPagination }: Props) {
     return (
         <TableFooter className="h-16">
             <TableRow>
-                <TableCell colSpan={8}>
+                <TableCell colSpan={colSpanItems}>
                     <p className="text-sm text-muted-foreground">
                         {totalItems} items found
                     </p>
                 </TableCell>
                 {totalPages > 1 && (
-                    <TableCell colSpan={2}>
+                    <TableCell colSpan={colSpanPagination}>
                         <PaginationComponent
                             currentPage={currentPage}
                             totalPages={totalPages}

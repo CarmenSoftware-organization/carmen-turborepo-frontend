@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { FileText, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ButtonLink from "@/components/ButtonLink";
+import FooterCustom from "@/components/table/FooterCustom";
 
 interface DepartmentListProps {
   readonly departments: DepartmentGetListDto[];
@@ -29,6 +30,7 @@ interface DepartmentListProps {
   readonly selectedDepartments: string[];
   readonly onSelectAll: (isChecked: boolean) => void;
   readonly onSelect: (id: string) => void;
+  readonly totalItems: number;
 }
 
 export default function DepartmentList({
@@ -41,7 +43,8 @@ export default function DepartmentList({
   onSort,
   selectedDepartments,
   onSelectAll,
-  onSelect
+  onSelect,
+  totalItems
 }: DepartmentListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -158,13 +161,16 @@ export default function DepartmentList({
             {renderTableContent()}
           </TableBody>
         )}
+        <FooterCustom
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          totalItems={totalItems}
+          colSpanItems={3}
+          colSpanPagination={2}
+        />
       </Table>
 
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
     </div>
   )
 }

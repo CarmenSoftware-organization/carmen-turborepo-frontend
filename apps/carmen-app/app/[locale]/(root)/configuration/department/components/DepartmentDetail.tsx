@@ -21,6 +21,8 @@ export default function DepartmentDetail({
   const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
 
+  console.log("defaultValues", defaultValues);
+
   const initUsers = useMemo(() => {
     return (
       defaultValues?.tb_department_user?.map((user) => ({

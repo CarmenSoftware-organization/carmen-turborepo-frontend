@@ -40,6 +40,7 @@ export default function CurrencyComponent() {
         setConfirmDialogOpen,
         selectedCurrency,
         totalPages,
+        totalItems,
         loginDialogOpen,
         setLoginDialogOpen,
         page,
@@ -130,6 +131,7 @@ export default function CurrencyComponent() {
             onToggleStatus={handleToggleStatus}
             currentPage={parseInt(page || '1')}
             totalPages={totalPages}
+            totalItems={totalItems}
             onPageChange={handlePageChange}
             sort={parsedSort}
             onSort={(field) => {

@@ -55,12 +55,14 @@ export const useCurrency = () => {
         select: (data) => ({
             currencies: data?.data ?? [],
             totalPages: data?.paginate?.pages ?? 1,
+            totalItems: data?.paginate?.total ?? 0,
         }),
         enabled: !!token,
     });
 
     const currencies = currenciesData?.currencies ?? [];
     const totalPages = currenciesData?.totalPages ?? 1;
+    const totalItems = currenciesData?.totalItems ?? 0;
 
     const handleSetFilter = useCallback((filterValue: string) => {
         setFilter(filterValue);
@@ -210,6 +212,7 @@ export const useCurrency = () => {
         setConfirmDialogOpen,
         selectedCurrency,
         totalPages,
+        totalItems,
         loginDialogOpen,
         setLoginDialogOpen,
         page,

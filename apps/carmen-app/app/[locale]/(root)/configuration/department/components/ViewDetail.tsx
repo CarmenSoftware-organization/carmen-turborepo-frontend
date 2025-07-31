@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Users, User, ArrowLeft, SquarePen } from "lucide-react";
+import { Users, User, ArrowLeft, SquarePen, CrownIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
 interface ViewDetailProps {
@@ -47,26 +47,19 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
                         </Label>
                         <p className="text-gray-700">{data.description || "-"}</p>
                     </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                         <Users className="h-5 w-5" />
                         Department Members ({data.users.length} people)
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
+                    </div>
                     {data.users.length > 0 ? (
                         <div className="space-y-3">
                             {data.users.map((user) => (
                                 <div
                                     key={user.key}
-                                    className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                                    className="flex items-center gap-3"
                                 >
                                     <Avatar>
-                                        <AvatarFallback>
+                                        <AvatarFallback className="text-xs">
                                             {user.title
                                                 ?.split(" ")[0]
                                                 ?.charAt(0)
@@ -82,11 +75,10 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
                                         <p className="font-medium">{user.title}</p>
                                         {user.isHod && (
                                             <Badge variant="outline" className="text-xs">
-                                                Head of Department
+                                                <CrownIcon className="text-ember-500" /> Head of Department
                                             </Badge>
                                         )}
                                     </div>
-                                    <User className="h-4 w-4 text-gray-400" />
                                 </div>
                             ))}
                         </div>

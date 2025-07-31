@@ -58,6 +58,7 @@ export default function DepartmentComponent() {
 
   const currentPage = departments?.paginate.page ?? 1;
   const totalPages = departments?.paginate.pages ?? 1;
+  const totalItems = departments?.paginate.total ?? 0;
 
   const parsedSort = useMemo((): SortConfig | undefined => {
     if (!sort) return undefined;
@@ -172,6 +173,7 @@ export default function DepartmentComponent() {
       selectedDepartments={selectedDepartments}
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
+      totalItems={totalItems}
     />
   )
 

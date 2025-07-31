@@ -13,13 +13,14 @@ import { SquarePen, Trash2, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import PaginationComponent from "@/components/PaginationComponent";
+import FooterCustom from "@/components/table/FooterCustom";
 
 interface ListDeliveryPointProps {
     readonly deliveryPoints: DeliveryPointGetDto[];
     readonly isLoading: boolean;
     readonly currentPage: number;
     readonly totalPages: number;
+    readonly totalItems: number;
     readonly onPageChange: (page: number) => void;
     readonly sort?: SortConfig;
     readonly onSort?: (field: string) => void;
@@ -32,6 +33,7 @@ export default function ListDeliveryPoint({
     isLoading,
     currentPage,
     totalPages,
+    totalItems,
     onPageChange,
     sort,
     onSort,
@@ -111,8 +113,8 @@ export default function ListDeliveryPoint({
 
     return (
         <div className="flex flex-col w-full">
-            <Table>
-                <TableHeader>
+            <Table className="border">
+                <TableHeader className="bg-muted">
                     <TableRow>
                         <TableHead className="w-12">
                             #
@@ -143,17 +145,15 @@ export default function ListDeliveryPoint({
                 ) : (
                     <TableBody>{renderTableContent()}</TableBody>
                 )}
-
+                <FooterCustom
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalItems}
+                    onPageChange={onPageChange}
+                    colSpanItems={3}
+                    colSpanPagination={2}
+                />
             </Table>
-            {totalPages > 1 && (
-                <div className="text-right pt-2">
-                    <PaginationComponent
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={onPageChange}
-                    />
-                </div>
-            )}
         </div>
     );
 }
