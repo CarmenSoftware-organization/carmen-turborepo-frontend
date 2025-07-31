@@ -136,7 +136,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
   };
 
   const handleSubmit = async (data: CreditNoteSubmitDto) => {
-    console.log("✅ Form submitted with data:", data);
     try {
       if (mode === formType.ADD) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -177,7 +176,6 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     console.log("- errors:", errors);
     console.log("- watched values:", watchCnForm);
   }, [isDirty, isValid, errors, watchCnForm]);
-
 
   return (
     <DetailsAndComments
