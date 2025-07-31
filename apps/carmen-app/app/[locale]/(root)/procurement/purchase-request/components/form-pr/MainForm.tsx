@@ -261,6 +261,8 @@ export default function MainForm({ mode, initValues }: Props) {
     const hasError = Object.keys(watchError).length > 0;
     const canSave = !hasError && hasFormChanges();
 
+    const requestorName = user?.user_info.firstname + ' ' + user?.user_info.lastname;
+
     return (
         <>
             <DetailsAndComments
@@ -285,15 +287,13 @@ export default function MainForm({ mode, initValues }: Props) {
                                     mode={currentFormType}
                                     pr_no={initValues?.pr_no}
                                     workflow_id={initValues?.workflow_id}
-                                    requestor_name={initValues?.requestor_name}
-                                    department_name={initValues?.department_name}
                                 />
-                                {currentFormType !== formType.ADD && (
-                                    <StatusPrInfo
-                                        create_date={initValues?.created_at}
-                                        status={initValues?.pr_status}
-                                    />
-                                )}
+                                <StatusPrInfo
+                                    create_date={initValues?.created_at}
+                                    status={initValues?.pr_status}
+                                    requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
+                                    department_name={initValues?.department_name ? initValues.department_name : departments?.name}
+                                />
                             </div>
                             <Tabs defaultValue="items">
                                 <TabsList className="w-full h-8">

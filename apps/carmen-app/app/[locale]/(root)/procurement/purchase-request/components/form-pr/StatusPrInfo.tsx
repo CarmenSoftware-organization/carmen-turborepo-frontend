@@ -6,11 +6,15 @@ import { format } from "date-fns"
 interface StatusPrInfoProps {
   readonly create_date?: string;
   readonly status?: string;
+  readonly requestor_name?: string;
+  readonly department_name?: string;
 }
 
 export default function StatusPrInfo({
   create_date,
   status,
+  requestor_name,
+  department_name,
 }: StatusPrInfoProps) {
   return (
     <Card className="p-4 col-span-2">
@@ -28,14 +32,25 @@ export default function StatusPrInfo({
           </div>
 
           <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              Document Status
-            </span>
-            <Badge variant={status} className="text-xs">
-              {status ?? "-"}
-            </Badge>
+            <span className="text-muted-foreground">Requestor</span>
+            <p>{requestor_name}</p>
           </div>
 
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Department</span>
+            <p>{department_name}</p>
+          </div>
+
+          {status && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground">
+                Document Status
+              </span>
+              <Badge variant={status} className="text-xs">
+                {status ?? "-"}
+              </Badge>
+            </div>
+          )}
           <Separator className="my-2" />
 
           <div className="flex items-center justify-between text-xs">

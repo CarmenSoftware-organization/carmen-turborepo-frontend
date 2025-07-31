@@ -3,6 +3,7 @@ import WorkflowLookup from "@/components/lookup/WorkflowLookup";
 import { FormControl, FormItem, FormField, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
@@ -14,17 +15,13 @@ interface HeadFormProps {
     readonly mode: formType;
     readonly pr_no?: string;
     readonly workflow_id?: string;
-    readonly requestor_name?: string;
-    readonly department_name?: string;
 }
 
 export default function HeadForm({
     form,
     mode,
     pr_no,
-    workflow_id,
-    requestor_name,
-    department_name
+    workflow_id
 }: HeadFormProps) {
     return (
         <div className="col-span-3 grid grid-cols-4 gap-2">
@@ -56,7 +53,7 @@ export default function HeadForm({
                 control={form.control}
                 name="workflow_id"
                 render={({ field }) => (
-                    <FormItem>
+                    <FormItem className={cn(mode === formType.ADD ? "col-span-3" : "col-span-2")}>
                         <FormLabel>PR Type</FormLabel>
                         <FormControl>
                             <WorkflowLookup
@@ -70,37 +67,15 @@ export default function HeadForm({
                     </FormItem>
                 )}
             />
-            {mode !== formType.ADD && (
-                <div className="space-y-2">
-                    <Label>Requestor</Label>
-                    <Input
-                        disabled
-                        className="bg-muted"
-                        value={requestor_name}
-                    />
-                </div>
-            )}
-
-            {mode !== formType.ADD && (
-                <div className="space-y-2">
-                    <Label>Department</Label>
-                    <Input
-                        disabled
-                        className="bg-muted"
-                        value={department_name}
-                    />
-                </div>
-            )}
-
 
             <FormField
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                    <FormItem className="col-span-2 mt-0">
+                    <FormItem className="col-span-4">
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                            <Input
+                            <Textarea
                                 value={field.value ?? ""}
                                 onChange={(e) => field.onChange(e.target.value)}
                                 placeholder="Description"
