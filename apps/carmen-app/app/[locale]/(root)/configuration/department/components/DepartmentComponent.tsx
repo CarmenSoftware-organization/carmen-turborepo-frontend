@@ -10,7 +10,7 @@ import { boolFilterOptions } from "@/constants/options";
 import { useAuth } from "@/context/AuthContext";
 import { useDepartmentsQuery } from "@/hooks/useDepartments";
 import { useURL } from "@/hooks/useURL";
-import { Link } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
@@ -21,7 +21,7 @@ export default function DepartmentComponent() {
   const { token, tenantId } = useAuth();
   const tDepartment = useTranslations("Department");
   const tCommon = useTranslations("Common");
-
+  const router = useRouter();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [search, setSearch] = useURL("search");
@@ -117,11 +117,11 @@ export default function DepartmentComponent() {
       className="action-btn-container"
       data-id="department-list-action-buttons"
     >
-      <Button size={"sm"} asChild>
-        <Link href="/configuration/department/new">
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Link>
+      <Button size={"sm"} onClick={() => {
+        router.push("/configuration/department/new");
+      }}>
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
       </Button>
       <Button variant="outline" size={"sm"} data-id="department-export-button">
         <FileDown className="h-4 w-4" />

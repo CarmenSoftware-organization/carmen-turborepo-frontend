@@ -221,6 +221,8 @@ export default function PurchaseRequestList({
             totalItems={totalItems}
             currentPage={currentPage}
             onPageChange={onPageChange}
+            colSpanItems={7}
+            colSpanPagination={3}
           />
         </Table>
       </div>

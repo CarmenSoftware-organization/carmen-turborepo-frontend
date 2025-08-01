@@ -14,7 +14,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import EmptyData from "@/components/EmptyData";
-import { Link } from "@/lib/navigation";
 import ButtonLink from "@/components/ButtonLink";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns } from "@/utils/config-system";
@@ -104,11 +103,9 @@ export default function CreditNoteList({
 
             <TableCell>
               <div className="flex items-center justify-end">
-                <Button variant="ghost" size={"sm"} className="h-7 w-7" asChild>
-                  <Link href={`/procurement/credit-note/${cn.id}`}>
-                    <FileText className="h-4 w-4" />
-                  </Link>
-                </Button>
+                <ButtonLink href={`/procurement/credit-note/${cn.id}/edit`}>
+                  <FileText className="h-4 w-4" />
+                </ButtonLink>
                 <Button variant="ghost" size={"sm"} className="h-7 w-7">
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -151,6 +148,8 @@ export default function CreditNoteList({
             totalItems={totalItems}
             currentPage={currentPage}
             onPageChange={onPageChange}
+            colSpanItems={8}
+            colSpanPagination={2}
           />
         </Table>
       </div>

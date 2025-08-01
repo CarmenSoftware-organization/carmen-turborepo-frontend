@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { getAllPrService, getPrByIdService } from "@/services/pr.service";
-import { PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
+import { ActionPr, PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { backendApi } from "@/lib/backend-api";
 import { postApiRequest, updateApiRequest } from "@/lib/config.api";
 
@@ -67,8 +67,8 @@ export const usePrMutation = (token: string, tenantId: string) => {
     });
 };
 
-export const useUpdateUPr = (token: string, tenantId: string, id: string) => {
-    const API_URL_BY_ID = `${API_URL}/${id}`;
+export const useUpdateUPr = (token: string, tenantId: string, id: string, action?: ActionPr) => {
+    const API_URL_BY_ID = `${API_URL}/${id}/save`;
     return useMutation({
         mutationFn: async (data: PurchaseRequestUpdateFormDto) => {
             return await updateApiRequest(
@@ -77,7 +77,7 @@ export const useUpdateUPr = (token: string, tenantId: string, id: string) => {
                 tenantId,
                 data,
                 "Error updating PR",
-                "PUT"
+                "PATCH"
             );
         },
     });

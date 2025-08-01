@@ -181,6 +181,8 @@ export default function GoodsReceivedNoteList({
             totalItems={totalItems}
             currentPage={currentPage}
             onPageChange={onPageChange}
+            colSpanItems={6}
+            colSpanPagination={2}
           />
         </Table>
       </div>

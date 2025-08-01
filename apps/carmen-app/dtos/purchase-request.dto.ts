@@ -331,3 +331,5 @@ export type PurchaseRequestUpdateFormDto = z.infer<typeof UpdatePurchaseRequestS
 // ========== Additional Type Exports ==========
 export type CreatePurchaseRequestDetailDto = z.infer<typeof CreatePurchaseRequestDetailSchema>;
 export type UpdatePurchaseRequestDetailDto = z.infer<typeof UpdatePurchaseRequestDetailSchema>;
+
+export type ActionPr = "save" | "approve" | "reject" | "review" | 'submit';

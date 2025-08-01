@@ -16,12 +16,13 @@ import CreditNoteGrid from "./CreditNoteGrid";
 import ToggleView from "@/components/ui-custom/ToggleView";
 import { useCreditNoteQuery } from "@/hooks/useCreditNote";
 import { useAuth } from "@/context/AuthContext";
-import { Link } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
 export default function CreditNoteComponent() {
   const tCommon = useTranslations("Common");
+  const router = useRouter();
   const { token, tenantId } = useAuth();
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
@@ -43,24 +44,26 @@ export default function CreditNoteComponent() {
     [setPage]
   );
 
-
   const totalItems = creditNotes?.paginate.total;
 
   const title = "Credit Note";
 
   const actionButtons = (
     <div className="action-btn-container" data-id="credit-note-action-buttons">
-      <Button size={"sm"} asChild>
-        <Link href="/procurement/credit-note/new">
-          <Plus className="h-4 w-4" />
-          New Credit Note
-        </Link>
+      <Button size={"sm"} data-id="credit-note-new-button" onClick={() => {
+        router.push("/procurement/credit-note/new");
+      }}>
+        <Plus className="h-4 w-4" />
+        New Credit Note
       </Button>
       <Button
         variant="outline"
         className="group"
         size={"sm"}
         data-id="credit-note-list-export-button"
+        onClick={() => {
+          alert("export");
+        }}
       >
         <FileDown className="h-4 w-4" />
         {tCommon("export")}

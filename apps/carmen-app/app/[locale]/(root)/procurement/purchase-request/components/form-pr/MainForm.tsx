@@ -20,8 +20,11 @@ import HeadForm from "./HeadForm";
 import StatusPrInfo from "./StatusPrInfo";
 import { useRouter } from "@/lib/navigation";
 import DetailsAndComments from "@/components/DetailsAndComments";
-import { usePrMutation } from "@/hooks/usePurchaseRequest";
+import { usePrMutation, useUpdateUPr } from "@/hooks/usePurchaseRequest";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { mockActivityPr, mockCommentsPr } from "./mock-budget";
+import ActivityLogComponent from "@/components/comment-activity/ActivityLogComponent";
+import CommentComponent from "@/components/comment-activity/CommentComponent";
 
 interface Props {
     mode: formType;
@@ -71,6 +74,7 @@ export default function MainForm({ mode, initValues }: Props) {
     });
 
     const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, tenantId);
+    const { mutate: updatePr, isPending: isUpdatingPr } = useUpdateUPr(token, tenantId, initValues?.id ?? "");
 
     const { append: appendRemove } = useFieldArray({
         control: form.control,
@@ -172,8 +176,19 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            alert('update data');
-            console.log('update data:', data);
+            updatePr(data, {
+                onSuccess: () => {
+                    toastSuccess({
+                        message: "Purchase Request updated successfully",
+                    })
+                    setCurrentFormType(formType.VIEW);
+                },
+                onError: () => {
+                    toastError({
+                        message: "Purchase Request updated failed",
+                    })
+                }
+            });
         }
     }
 
@@ -266,7 +281,12 @@ export default function MainForm({ mode, initValues }: Props) {
     return (
         <>
             <DetailsAndComments
-                commentPanel={<p>hello</p>}
+                commentPanel={
+                    <div className="flex flex-col gap-4">
+                        <ActivityLogComponent initialActivities={mockActivityPr} />
+                        <CommentComponent initialComments={mockCommentsPr} />
+                    </div>
+                }
             >
                 <Card className="p-4 mb-2">
                     <Form {...form}>
