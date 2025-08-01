@@ -29,7 +29,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import CategoryLoading from "@/components/loading/CategoryLoading";
 import { useTranslations } from "next-intl";
 export default function CategoryComponent() {
-
     const tCategory = useTranslations("Category");
     const tCommon = useTranslations("Common");
     const [signInOpen, setSignInOpen] = useState(false);

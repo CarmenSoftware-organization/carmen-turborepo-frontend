@@ -62,70 +62,86 @@ const TableTemplate = ({
     const colSpan = colLength;
 
     return (
-        <Table>
-            <TableHeader className="bg-muted">
-                <TableRow>
-                    {columns.map((column) => (
-                        <TableHead
-                            key={column.key}
-                            className={cn(getAlignClass(column.align), column.width)}>
-                            {column.title}
-                        </TableHead>
-                    ))}
-                </TableRow>
-            </TableHeader>
-            {isLoading ? (
-                <TableBodySkeleton rows={colLength} />
-            ) : (
-                <TableBody>
-                    {dataSource.length > 0 ? (
-                        dataSource.map((record, index) => (
-                            <TableRow key={record.key}>
-                                {columns.map((column) => (
-                                    <TableCell
-                                        key={`${record.key}-${column.key}`}
-                                        className={cn(getAlignClass(column.align), column.width)}
-                                    >
-                                        {column.render
-                                            ? column.render(record[column.dataIndex], record, index)
-                                            : record[column.dataIndex]
-                                        }
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))
-                    ) : (
+        <div className="border rounded-lg">
+            {/* Fixed Header */}
+            <div className="bg-muted rounded-t-lg">
+                <Table>
+                    <TableHeader>
                         <TableRow>
-                            <TableCell colSpan={columns.length}>
-                                {emptyMessage}
-                            </TableCell>
+                            {columns.map((column) => (
+                                <TableHead
+                                    key={column.key}
+                                    className={cn(getAlignClass(column.align), column.width)}>
+                                    {column.title}
+                                </TableHead>
+                            ))}
                         </TableRow>
+                    </TableHeader>
+                </Table>
+            </div>
+
+            {/* Scrollable Body */}
+            <div className="max-h-96 overflow-y-auto">
+                <Table>
+                    {isLoading ? (
+                        <TableBodySkeleton rows={colLength} />
+                    ) : (
+                        <TableBody>
+                            {dataSource.length > 0 ? (
+                                dataSource.map((record, index) => (
+                                    <TableRow key={record.key}>
+                                        {columns.map((column) => (
+                                            <TableCell
+                                                key={`${record.key}-${column.key}`}
+                                                className={cn(getAlignClass(column.align), column.width)}
+                                            >
+                                                {column.render
+                                                    ? column.render(record[column.dataIndex], record, index)
+                                                    : record[column.dataIndex]
+                                                }
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length}>
+                                        {emptyMessage}
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
                     )}
-                </TableBody>
-            )}
+                </Table>
+            </div>
+
             {totalItems!! > 0 && (
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={colSpan} className="px-4">
-                            <div className="flex items-center justify-between w-full">
-                                <p className="text-sm text-muted-foreground">
-                                    {totalItems} {tCommon("itemFound")}
-                                </p>
-                                <div>
-                                    {totalPages && totalPages > 1 && currentPage && onPageChange && (
-                                        <PaginationComponent
-                                            currentPage={currentPage}
-                                            totalPages={totalPages}
-                                            onPageChange={onPageChange}
-                                        />
-                                    )}
-                                </div>
-                            </div>
-                        </TableCell>
-                    </TableRow>
-                </TableFooter>
+                <div>
+                    <Table>
+                        <TableFooter>
+                            <TableRow>
+                                <TableCell colSpan={colSpan} className="px-4">
+                                    <div className="flex items-center justify-between w-full">
+                                        <p className="text-sm text-muted-foreground">
+                                            {totalItems} {tCommon("itemFound")}
+                                        </p>
+                                        <div>
+                                            {totalPages && totalPages > 1 && currentPage && onPageChange && (
+                                                <PaginationComponent
+                                                    currentPage={currentPage}
+                                                    totalPages={totalPages}
+                                                    onPageChange={onPageChange}
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </div>
             )}
-        </Table>
+        </div>
     );
 };
 
