@@ -24,6 +24,34 @@ export const renderSortIcon = (field: string, sort?: SortConfig) => {
 };
 
 /**
+ * Converts sort string to SortConfig object
+ * @param sortString - String in format "field:direction" (e.g., "name:asc")
+ * @returns SortConfig object or undefined if invalid
+ */
+export const parseSortString = (sortString?: string): SortConfig | undefined => {
+    if (!sortString) return undefined;
+
+    const [field, direction] = sortString.split(':');
+    if (!field || !direction || (direction !== 'asc' && direction !== 'desc')) {
+        return undefined;
+    }
+
+    return {
+        field,
+        direction: direction as SortDirection
+    };
+};
+
+/**
+ * Converts SortConfig object to sort string
+ * @param sortConfig - SortConfig object
+ * @returns String in format "field:direction"
+ */
+export const stringifySortConfig = (sortConfig: SortConfig): string => {
+    return `${sortConfig.field}:${sortConfig.direction}`;
+};
+
+/**
  * Gets props for a sortable table column
  */
 export const getSortableColumnProps = (

@@ -265,7 +265,8 @@
     "fax": "โทรสาร",
     "other": "อื่นๆ",
     "code": "รหัส",
-    "continue": "ต่อไป"
+    "continue": "ต่อไป",
+    "itemFound": "รายการ"
   },
   "TableHeader": {
     "name": "ชื่อ",

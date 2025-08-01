@@ -40,6 +40,12 @@ export default function TreeNode({
     const isExpanded = expanded[node.id] ?? false;
     const hasChildren = node.children && node.children.length > 0;
 
+    const getTypeLabel = (type: CategoryNode["type"]) => {
+        if (type === NODE_TYPE.CATEGORY) return tCategory("category");
+        if (type === NODE_TYPE.SUBCATEGORY) return tCategory("subcategory");
+        return tCategory("itemGroup");
+    };
+
 
     // let Icon = Layers
     // if (node.type === NODE_TYPE.SUBCATEGORY) Icon = FolderTree
@@ -48,7 +54,7 @@ export default function TreeNode({
     return (
         <div className="tree-node">
             <div
-                className={`flex items-center p-2 hover:bg-muted/50 rounded-md ${level > 0 ? "ml-6" : ""}`}
+                className={`flex items-center p-2 hover:bg-muted/50 rounded-md group ${level > 0 ? "ml-6" : ""}`}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
             >
                 {hasChildren ? (
@@ -62,10 +68,6 @@ export default function TreeNode({
                     <div className="w-6"></div>
                 )}
 
-                {/* <Icon
-                    className={`h-5 w-5 mr-2 ${getIconColor(node.type)}`}
-                /> */}
-
                 <div className="flex-1">
                     <div className="flex gap-2 items-baseline">
                         <p className="font-medium">{node.name}</p>
@@ -74,13 +76,14 @@ export default function TreeNode({
                             className="text-xs bg-muted border-none">
                             {node.code}
                         </Badge>
-                        <p className="text-xs text-muted-foreground">{node.type === NODE_TYPE.CATEGORY ? tCategory("category") : node.type === NODE_TYPE.SUBCATEGORY ? tCategory("subcategory") : tCategory("itemGroup")}</p>
+                        <p className="text-xs text-muted-foreground">{getTypeLabel(node.type)}</p>
                     </div>
 
                     <p className="text-muted-foreground">{node.description}</p>
                     {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-muted-foreground">{node.itemCount}</p>}
                 </div>
-                <div className="flex items-center gap-1">
+
+                <div className="flex items-center gap-1 group-hover:block hidden">
                     {node.type !== NODE_TYPE.ITEM_GROUP && (
                         <TooltipProvider>
                             <Tooltip>
@@ -101,6 +104,7 @@ export default function TreeNode({
                         </TooltipProvider>
 
                     )}
+
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -128,6 +132,7 @@ export default function TreeNode({
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
+
             </div>
 
             {hasChildren && isExpanded && (

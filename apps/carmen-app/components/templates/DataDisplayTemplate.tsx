@@ -81,7 +81,7 @@ const DataDisplayTemplate: React.FC<Props> = ({
 				</AnimatePresence>
 			</MotionDiv>
 			<MotionDiv
-				className="flex-1 overflow-y-auto bg-background rounded-lg"
+				className="flex-1 overflow-y-auto bg-background"
 				{...fadeInUp}
 			>
 				<AnimatePresence mode="wait">

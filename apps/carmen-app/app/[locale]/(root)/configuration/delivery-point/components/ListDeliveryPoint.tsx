@@ -1,19 +1,11 @@
 import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import { useTranslations } from "next-intl";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { SquarePen, Trash2, MapPin } from "lucide-react";
+import { MoreVertical, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import FooterCustom from "@/components/table/FooterCustom";
+import { useTranslations } from "next-intl";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface ListDeliveryPointProps {
     readonly deliveryPoints: DeliveryPointGetDto[];
@@ -42,118 +34,116 @@ export default function ListDeliveryPoint({
 }: ListDeliveryPointProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
-    const tDeliveryPoint = useTranslations("DeliveryPoint");
-    const renderTableContent = () => {
-        if (deliveryPoints.length === 0 && !isLoading) {
-            return (
-                <TableRow>
-                    <TableCell colSpan={4} className="h-32 text-center">
-                        <div className="flex flex-col items-center justify-center gap-3">
-                            <div className="p-3 bg-muted/50 rounded-full">
-                                <MapPin className="h-6 w-6 text-muted-foreground" />
-                            </div>
-                            <div>
-                                <p className="text-sm font-medium text-foreground">
-                                    No delivery points found
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    {tDeliveryPoint("notFoundDeliveryPoint")}
-                                </p>
-                            </div>
-                        </div>
-                    </TableCell>
-                </TableRow>
-            );
-        }
 
-        return deliveryPoints.map((deliveryPoint, index) => (
-            <TableRow
-                key={deliveryPoint.id}
-                className="hover:bg-muted/30 transition-colors duration-150"
-            >
-                <TableCell className="w-12">
-                    {index + 1}
-                </TableCell>
-                <TableCell className="font-medium">{deliveryPoint.name}</TableCell>
-                <TableCell className="text-center w-24">
-                    <Badge variant={deliveryPoint.is_active ? "active" : "inactive"}>
-                        {deliveryPoint.is_active ? tCommon("active") : tCommon("inactive")}
-                    </Badge>
-                </TableCell>
-                <TableCell className="w-24">
-                    <div className="flex items-center justify-end gap-1">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onEdit(deliveryPoint)}
-                            aria-label="Edit delivery point"
-                            className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
-                        >
-                            <SquarePen className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => onToggleStatus(deliveryPoint)}
-                            disabled={!deliveryPoint.is_active}
-                            aria-label={
-                                deliveryPoint.is_active
-                                    ? "Deactivate delivery point"
-                                    : "Activate delivery point"
-                            }
-                            className="h-7 w-7 hover:bg-destructive/10 hover:text-destructive transition-colors disabled:opacity-50"
-                        >
-                            <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+    const columns: TableColumn[] = [
+        {
+            title: "#",
+            dataIndex: "no",
+            key: "no",
+            width: "w-12",
+            align: "center",
+        },
+        {
+            title: (
+                <div
+                    {...getSortableColumnProps("name", sort, onSort)}
+                    className="font-medium"
+                >
+                    <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
+                        {t("name")}
+                        {renderSortIcon("name", sort)}
                     </div>
-                </TableCell>
-            </TableRow>
-        ));
-    };
+                </div>
+            ),
+            dataIndex: "name",
+            key: "name",
+            align: "left",
+            render: (_: any, record: TableDataSource) => {
+                const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
+                if (!deliveryPoint) return null;
+                return (
+                    <button
+                        type="button"
+                        className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+                        onClick={() => onEdit(deliveryPoint)}
+                    >
+                        {deliveryPoint.name}
+                    </button>
+                );
+            },
+        },
+        {
+            title: (
+                <div
+                    {...getSortableColumnProps("is_active", sort, onSort)}
+                    className="font-medium"
+                >
+                    <div className="flex items-center justify-center gap-1 hover:text-foreground transition-colors cursor-pointer">
+                        {t("status")}
+                        {renderSortIcon("is_active", sort)}
+                    </div>
+                </div>
+            ),
+            dataIndex: "is_active",
+            key: "is_active",
+            width: "w-0 md:w-20",
+            align: "center",
+            render: (is_active: boolean) => (
+                <Badge
+                    variant={is_active ? "active" : "inactive"}
+                >
+                    {is_active ? tCommon("active") : tCommon("inactive")}
+                </Badge>
+            ),
+        },
+        {
+            title: t("action"),
+            dataIndex: "action",
+            key: "action",
+            width: "w-0 md:w-20",
+            align: "right",
+            render: (_: any, record: TableDataSource) => {
+                const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
+                if (!deliveryPoint) return null;
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <MoreVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                className="text-destructive cursor-pointer hover:bg-transparent"
+                                onClick={() => onToggleStatus(deliveryPoint)}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        },
+    ];
+
+    const dataSource: TableDataSource[] = deliveryPoints.map((deliveryPoint, index) => ({
+        key: deliveryPoint.id,
+        no: (currentPage - 1) * 10 + index + 1,
+        name: deliveryPoint.name,
+        is_active: deliveryPoint.is_active,
+    }));
 
     return (
-        <div className="flex flex-col w-full">
-            <Table className="border">
-                <TableHeader className="bg-muted">
-                    <TableRow>
-                        <TableHead className="w-12">
-                            #
-                        </TableHead>
-                        <TableHead
-                            {...getSortableColumnProps("name", sort, onSort)}
-                            className="font-medium"
-                        >
-                            <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
-                                {t("name")}
-                                {renderSortIcon("name", sort)}
-                            </div>
-                        </TableHead>
-                        <TableHead
-                            {...getSortableColumnProps("is_active", sort, onSort)}
-                            className="font-medium text-center w-24"
-                        >
-                            {t("status")}
-                            {renderSortIcon("is_active", sort)}
-                        </TableHead>
-                        <TableHead className="w-24 text-right">
-                            {t("action")}
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-                {isLoading ? (
-                    <TableBodySkeleton rows={8} />
-                ) : (
-                    <TableBody>{renderTableContent()}</TableBody>
-                )}
-                <FooterCustom
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalItems={totalItems}
-                    onPageChange={onPageChange}
-                    colSpanItems={3}
-                    colSpanPagination={2}
-                />
-            </Table>
-        </div>
+        <TableTemplate
+            columns={columns}
+            dataSource={dataSource}
+            emptyMessage="No data"
+            totalItems={totalItems}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            isLoading={isLoading}
+        />
     );
 }

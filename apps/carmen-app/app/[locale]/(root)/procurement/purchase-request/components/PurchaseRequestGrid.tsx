@@ -68,10 +68,9 @@ export default function PurchaseRequestGrid({
     return purchaseRequests.map((pr: GetAllPrDto) => (
       <Card
         key={pr.id}
-        className="transition-all duration-200 hover:shadow-lg hover:border-primary/50"
         onClick={() => router.push(`/procurement/purchase-request/${pr.id}`)}
       >
-        <CardHeader className="p-2 border-t bg-muted rounded-t-md">
+        <CardHeader className="p-2 bg-muted">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
               <Checkbox

@@ -12,6 +12,7 @@ import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import ListDeliveryPoint from "./ListDeliveryPoint";
+import { parseSortString } from "@/utils/table-sort";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { DeliveryPointCreateDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 import { formType } from "@/dtos/form.dto";
@@ -173,6 +174,22 @@ export default function DeliveryPointComponent() {
     </div>
   );
 
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort]);
+
   const filters = (
     <div className="filter-container" data-id="delivery-point-list-filters">
       <SearchInput
@@ -208,8 +225,10 @@ export default function DeliveryPointComponent() {
       totalPages={totalPages}
       totalItems={totalItems}
       onPageChange={handlePageChange}
+      sort={parseSortString(sort)}
       onEdit={handleEdit}
       onToggleStatus={handleDelete}
+      onSort={handleSort}
     />
   );
 
