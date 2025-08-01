@@ -6,8 +6,8 @@ import { TableBodySkeleton } from "../loading/TableBodySkeleton";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui-custom/table";
+import { FileX } from "lucide-react";
 
-// Helper function สำหรับแปลง align เป็น Tailwind classes
 const getAlignClass = (align?: 'left' | 'center' | 'right'): string => {
     switch (align) {
         case 'center':
@@ -20,7 +20,6 @@ const getAlignClass = (align?: 'left' | 'center' | 'right'): string => {
     }
 };
 
-// Export types แบบ antd pattern
 export interface TableColumn {
     readonly title: string | ReactNode;
     readonly dataIndex: string;
@@ -38,7 +37,6 @@ export interface TableDataSource {
 export interface TableProps {
     readonly columns: TableColumn[];
     readonly dataSource: TableDataSource[];
-    readonly emptyMessage?: string;
     readonly totalItems?: number;
     readonly totalPages?: number;
     readonly currentPage?: number;
@@ -46,11 +44,9 @@ export interface TableProps {
     readonly isLoading?: boolean;
 }
 
-// Main Table component แบบ antd pattern
 const TableTemplate = ({
     columns,
     dataSource,
-    emptyMessage = "No data",
     totalItems,
     totalPages,
     currentPage,
@@ -81,7 +77,7 @@ const TableTemplate = ({
             </div>
 
             {/* Scrollable Body */}
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-screen overflow-y-auto">
                 <Table>
                     {isLoading ? (
                         <TableBodySkeleton rows={colLength} />
@@ -105,8 +101,11 @@ const TableTemplate = ({
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={columns.length}>
-                                        {emptyMessage}
+                                    <TableCell className="text-center">
+                                        <div className="flex flex-col items-center justify-center py-8 gap-4 text-gray-500">
+                                            <FileX className="w-12 h-12 text-gray-400" />
+                                            <p className="text-sm">No data found matching your filters.</p>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -145,11 +144,8 @@ const TableTemplate = ({
     );
 };
 
-// Export default component แบบ antd
 export default TableTemplate;
 
-// Export ทั้งหมดใน namespace แบบ antd (optional)
 export type { TableColumn as ColumnType, TableDataSource as DataSourceType };
 
-// Export static property แบบ antd (ถ้าต้องการขยายในอนาคต)
 TableTemplate.displayName = "TableTemplate";

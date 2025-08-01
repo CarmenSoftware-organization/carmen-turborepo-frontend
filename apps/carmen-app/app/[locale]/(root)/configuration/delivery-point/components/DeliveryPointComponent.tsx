@@ -43,6 +43,8 @@ export default function DeliveryPointComponent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deliveryPointToDelete, setDeliveryPointToDelete] = useState<DeliveryPointUpdateDto | undefined>(undefined);
 
+  const [selectedDeliveryPoints, setSelectedDeliveryPoints] = useState<string[]>([]);
+
   const { deliveryPoints, isLoading } = useDeliveryPointQuery({
     token,
     tenantId,
@@ -59,9 +61,28 @@ export default function DeliveryPointComponent() {
   const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
 
 
-  const currentPage = deliveryPoints?.paginate.page;
-  const totalPages = deliveryPoints?.paginate.pages;
-  const totalItems = deliveryPoints?.paginate.total;
+  const currentPage = deliveryPoints?.paginate.page ?? 1;
+  const totalPages = deliveryPoints?.paginate.pages ?? 1;
+  const totalItems = deliveryPoints?.paginate.total ?? deliveryPoints?.data?.length ?? 0;
+
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setSelectedDeliveryPoints(deliveryPoints?.data.map((dept: any) => dept.id) ?? []);
+    } else {
+      setSelectedDeliveryPoints([]);
+    }
+  };
+
+  const handleSelect = (id: string) => {
+    setSelectedDeliveryPoints((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter(dpId => dpId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage.toString());
@@ -229,6 +250,9 @@ export default function DeliveryPointComponent() {
       onEdit={handleEdit}
       onToggleStatus={handleDelete}
       onSort={handleSort}
+      onSelectAll={handleSelectAll}
+      onSelect={handleSelect}
+      selectedDeliveryPoints={selectedDeliveryPoints}
     />
   );
 

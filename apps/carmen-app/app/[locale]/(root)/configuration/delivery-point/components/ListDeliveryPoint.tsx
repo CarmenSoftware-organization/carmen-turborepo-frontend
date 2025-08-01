@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ListDeliveryPointProps {
     readonly deliveryPoints: DeliveryPointGetDto[];
@@ -18,6 +19,9 @@ interface ListDeliveryPointProps {
     readonly onSort?: (field: string) => void;
     readonly onEdit: (deliveryPoint: DeliveryPointGetDto) => void;
     readonly onToggleStatus: (deliveryPoint: DeliveryPointGetDto) => void;
+    readonly selectedDeliveryPoints: string[];
+    readonly onSelectAll: (isChecked: boolean) => void;
+    readonly onSelect: (id: string) => void;
 }
 
 export default function ListDeliveryPoint({
@@ -30,12 +34,30 @@ export default function ListDeliveryPoint({
     sort,
     onSort,
     onEdit,
-    onToggleStatus
+    onToggleStatus,
+    selectedDeliveryPoints,
+    onSelectAll,
+    onSelect,
 }: ListDeliveryPointProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
 
     const columns: TableColumn[] = [
+        {
+            title: (
+                <Checkbox
+                    checked={selectedDeliveryPoints.length === deliveryPoints.length}
+                    onCheckedChange={onSelectAll}
+                />
+            ),
+            dataIndex: "select",
+            key: "select",
+            width: "w-12",
+            align: "center",
+            render: (_: any, record: TableDataSource) => {
+                return <Checkbox checked={selectedDeliveryPoints.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
+            },
+        },
         {
             title: "#",
             dataIndex: "no",
@@ -128,6 +150,7 @@ export default function ListDeliveryPoint({
     ];
 
     const dataSource: TableDataSource[] = deliveryPoints.map((deliveryPoint, index) => ({
+        select: false,
         key: deliveryPoint.id,
         no: (currentPage - 1) * 10 + index + 1,
         name: deliveryPoint.name,
@@ -138,7 +161,6 @@ export default function ListDeliveryPoint({
         <TableTemplate
             columns={columns}
             dataSource={dataSource}
-            emptyMessage="No data"
             totalItems={totalItems}
             totalPages={totalPages}
             currentPage={currentPage}
