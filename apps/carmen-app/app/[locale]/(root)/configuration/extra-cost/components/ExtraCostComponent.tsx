@@ -1,97 +1,277 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
-import { useExtraCostTypeQuery } from "@/hooks/useExtraCostType";
-import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import SearchInput from "@/components/ui-custom/SearchInput";
+import SortComponent from "@/components/ui-custom/SortComponent";
+import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import {
-  DollarSign,
-  Plus,
-  FileText,
-  SquarePen,
-  Trash2,
-} from "lucide-react";
+import { boolFilterOptions } from "@/constants/options";
+import { useAuth } from "@/context/AuthContext";
+import { useExtraCostTypeQuery, useCreateExtraCostType, useUpdateExtraCostType, useDeleteExtraCostType } from "@/hooks/useExtraCostType";
+import { useURL } from "@/hooks/useURL";
+import { FileDown, Plus, Printer } from "lucide-react";
+import { useCallback, useState } from "react";
+import ListExtraCost from "./ListExtraCost";
+import { parseSortString } from "@/utils/table-sort";
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
+import { formType } from "@/dtos/form.dto";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useQueryClient } from "@tanstack/react-query";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
+import ExtraCostDialog from "./ExtraCostDialog";
 
-export function ExtraCostComponent() {
+export default function ExtraCostComponent() {
   const { token, tenantId } = useAuth();
+  const queryClient = useQueryClient();
 
-  const { extraCostTypes } = useExtraCostTypeQuery(token, tenantId);
+  const [search, setSearch] = useURL("search");
+  const [filter, setFilter] = useURL("filter");
+  const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [statusOpen, setStatusOpen] = useState(false);
 
-  return (
-    <div className="p-6 space-y-6">
-      {/* Header Section */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <DollarSign className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Extra Cost Management
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Manage extra cost types and types
-            </p>
-          </div>
-        </div>
-        <Button size="sm" className="gap-2">
-            <Plus className="h-4 w-4" />
-            Add New
-          </Button>
-      </div>
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
+  const [selectedExtraCost, setSelectedExtraCost] = useState<ExtraCostTypeDto | undefined>(undefined);
 
-      <Separator />
+  // Delete confirmation dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [extraCostToDelete, setExtraCostToDelete] = useState<ExtraCostTypeDto | undefined>(undefined);
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {extraCostTypes?.data?.map((extraCostType: ExtraCostTypeDto) => (
-              <Card
-                key={extraCostType.id}
-                className="group hover:shadow-lg transition-all duration-300 border-border hover:border-primary/50"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-medium text-foreground group-hover:text-primary transition-colors">
-                      {extraCostType.name}
-                    </CardTitle>
-                    <Badge
-                      variant={
-                        extraCostType.is_active ? "active" : "inactive"
-                      }
-                    >
-                      {extraCostType.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                    <p className="text-sm text-muted-foreground line-clamp-3">
-                      {extraCostType.description || "No description available"}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-end">
-                    <Button variant="ghost" size="sm">
-                      <SquarePen className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+  const [selectedExtraCosts, setSelectedExtraCosts] = useState<string[]>([]);
+
+  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(
+    token,
+    tenantId,
+    {
+      search,
+      filter,
+      sort,
+      page: page ? parseInt(page) : 1,
+    }
+  );
+
+  const { mutate: createExtraCost } = useCreateExtraCostType(token, tenantId);
+  const { mutate: updateExtraCost } = useUpdateExtraCostType(token, tenantId, selectedExtraCost?.id ?? "");
+  const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, tenantId, extraCostToDelete?.id ?? "");
+
+  const extraCostData = Array.isArray(extraCostTypes) ? extraCostTypes : extraCostTypes?.data || [];
+  const currentPage = extraCostTypes?.paginate?.page ?? 1;
+  const totalPages = extraCostTypes?.paginate?.pages ?? 1;
+  const totalItems = extraCostTypes?.paginate?.total ?? extraCostData.length;
+
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedExtraCosts(extraCostData.map((ec: ExtraCostTypeDto) => ec.id) ?? []);
+    } else {
+      setSelectedExtraCosts([]);
+    }
+  };
+
+  const handleSelect = (id: string) => {
+    setSelectedExtraCosts((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter(ecId => ecId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
+
+  const handleAdd = () => {
+    setDialogMode(formType.ADD);
+    setSelectedExtraCost(undefined);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (data: ExtraCostTypeDto) => {
+    setDialogMode(formType.EDIT);
+    setSelectedExtraCost(data);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = (data: ExtraCostTypeDto) => {
+    setExtraCostToDelete(data);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (extraCostToDelete) {
+      deleteExtraCost(undefined, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Delete extra cost successfully' });
+          queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
+          setDeleteDialogOpen(false);
+          setExtraCostToDelete(undefined);
+        },
+        onError: (error: Error) => {
+          toastError({ message: 'Failed to delete extra cost' });
+          console.error("Failed to delete extra cost:", error);
+        }
+      });
+    }
+  };
+
+  const handleDialogSubmit = (data: ExtraCostTypeDto) => {
+    if (dialogMode === formType.ADD) {
+      createExtraCost(data, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Create extra cost successfully' });
+          queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
+          setDialogOpen(false);
+          setSelectedExtraCost(undefined);
+        },
+        onError: (error: Error) => {
+          toastError({ message: 'Failed to create extra cost' });
+          console.error("Failed to create extra cost:", error);
+        }
+      });
+    } else if (dialogMode === formType.EDIT && selectedExtraCost) {
+      const updateData = { ...data, id: selectedExtraCost.id };
+      updateExtraCost(updateData, {
+        onSuccess: () => {
+          toastSuccess({ message: 'Update extra cost successfully' });
+          queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
+          setDialogOpen(false);
+          setSelectedExtraCost(undefined);
+        },
+        onError: (error: Error) => {
+          toastError({ message: 'Failed to update extra cost' });
+          console.error("Failed to update extra cost:", error);
+        }
+      });
+    }
+  };
+
+  const sortFields = [
+    {
+      key: "name",
+      label: "Name",
+    },
+    {
+      key: "is_active",
+      label: "Status",
+    },
+  ];
+
+  const title = "Extra Cost";
+
+  const actionButtons = (
+    <div
+      className="action-btn-container"
+      data-id="extra-cost-list-action-buttons"
+    >
+      <Button size="sm" onClick={handleAdd}>
+        <Plus className="h-4 w-4" />
+        Add
+      </Button>
+      <Button
+        variant="outline"
+        className="group"
+        size="sm"
+        data-id="extra-cost-export-button"
+      >
+        <FileDown className="h-4 w-4" />
+        Export
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        data-id="extra-cost-print-button"
+      >
+        <Printer className="h-4 w-4" />
+        Print
+      </Button>
+    </div>
+  );
+
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort, setPage]);
+
+  const filters = (
+    <div className="filter-container" data-id="extra-cost-list-filters">
+      <SearchInput
+        defaultValue={search}
+        onSearch={setSearch}
+        placeholder="Search"
+        data-id="extra-cost-list-search-input"
+      />
+      <div className="flex items-center gap-2">
+        <StatusSearchDropdown
+          options={boolFilterOptions}
+          value={filter}
+          onChange={setFilter}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
+          data-id="extra-cost-status-search-dropdown"
+        />
+        <SortComponent
+          fieldConfigs={sortFields}
+          sort={sort}
+          setSort={setSort}
+          data-id="extra-cost-sort-dropdown"
+        />
       </div>
     </div>
+  );
+
+  const content = (
+    <ListExtraCost
+      extraCosts={extraCostData}
+      isLoading={isLoading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      onPageChange={handlePageChange}
+      sort={parseSortString(sort)}
+      onEdit={handleEdit}
+      onToggleStatus={handleDelete}
+      onSort={handleSort}
+      onSelectAll={handleSelectAll}
+      onSelect={handleSelect}
+      selectedExtraCosts={selectedExtraCosts}
+    />
+  );
+
+  return (
+    <>
+      <DataDisplayTemplate
+        title={title}
+        actionButtons={actionButtons}
+        filters={filters}
+        content={content}
+      />
+      <ExtraCostDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        mode={dialogMode}
+        extraCost={selectedExtraCost}
+        onSubmit={handleDialogSubmit}
+        isLoading={isLoading}
+      />
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+      />
+    </>
   );
 }

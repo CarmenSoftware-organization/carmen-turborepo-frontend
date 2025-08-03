@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { ExtraCostComponent } from "./components/ExtraCostComponent";
+import ExtraCostComponent from "./components/ExtraCostComponent";
 
 export const metadata: Metadata = {
   title: "Extra Cost",

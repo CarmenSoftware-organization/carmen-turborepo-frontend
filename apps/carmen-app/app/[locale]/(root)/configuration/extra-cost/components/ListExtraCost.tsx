@@ -1,53 +1,49 @@
-import SortableColumnHeader from "@/components/table/SortableColumnHeader";
-import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import { Activity, DollarSign, Info, MoreVertical, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
-import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import { Activity, List, MoreVertical, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 
-interface TaxProfileListProps {
-    readonly taxProfiles: TaxProfileGetAllDto[];
+interface ListExtraCostProps {
+    readonly extraCosts: ExtraCostTypeDto[];
     readonly isLoading: boolean;
-    readonly onEdit: (id: string) => void;
-    readonly onDelete: (id: string) => void;
     readonly currentPage: number;
     readonly totalPages: number;
-    readonly onPageChange: (page: number) => void;
     readonly totalItems: number;
+    readonly onPageChange: (page: number) => void;
     readonly sort?: SortConfig;
     readonly onSort?: (field: string) => void;
-    readonly selectedTaxProfiles: string[];
+    readonly onEdit: (extraCost: ExtraCostTypeDto) => void;
+    readonly onToggleStatus: (extraCost: ExtraCostTypeDto) => void;
+    readonly selectedExtraCosts: string[];
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
 }
 
-export default function TaxProfileList({
-    taxProfiles,
+export default function ListExtraCost({
+    extraCosts,
     isLoading,
-    onEdit,
-    onDelete,
     currentPage,
     totalPages,
-    onPageChange,
     totalItems,
+    onPageChange,
     sort,
     onSort,
-    selectedTaxProfiles,
+    onEdit,
+    onToggleStatus,
+    selectedExtraCosts,
     onSelectAll,
     onSelect,
-}: TaxProfileListProps) {
-    const t = useTranslations("TableHeader");
-    const tCommon = useTranslations("Common");
-
+}: ListExtraCostProps) {
     const columns: TableColumn[] = [
         {
             title: (
                 <Checkbox
-                    checked={selectedTaxProfiles.length === taxProfiles.length}
+                    checked={selectedExtraCosts.length === extraCosts.length}
                     onCheckedChange={onSelectAll}
                 />
             ),
@@ -56,7 +52,7 @@ export default function TaxProfileList({
             width: "w-8",
             align: "center",
             render: (_: unknown, record: TableDataSource) => {
-                return <Checkbox checked={selectedTaxProfiles.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
+                return <Checkbox checked={selectedExtraCosts.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
             },
         },
         {
@@ -70,7 +66,7 @@ export default function TaxProfileList({
             title: (
                 <SortableColumnHeader
                     columnKey="name"
-                    label={t("name")}
+                    label="Name"
                     sort={sort ?? { field: "name", direction: "asc" }}
                     onSort={onSort ?? (() => { })}
                     getSortableColumnProps={getSortableColumnProps}
@@ -79,27 +75,39 @@ export default function TaxProfileList({
             ),
             dataIndex: "name",
             key: "name",
-            icon: <List className="h-4 w-4" />,
+            icon: <DollarSign className="h-4 w-4" />,
             align: "left",
             render: (_: unknown, record: TableDataSource) => {
-                const taxProfile = taxProfiles.find(tp => tp.id === record.key);
-                if (!taxProfile) return null;
+                const extraCost = extraCosts.find(ec => ec.id === record.key);
+                if (!extraCost) return null;
                 return (
                     <button
                         type="button"
                         className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
-                        onClick={() => onEdit(taxProfile.id)}
+                        onClick={() => onEdit(extraCost)}
                     >
-                        {taxProfile.name}
+                        {extraCost.name}
                     </button>
                 );
             },
         },
         {
+            title: "Description",
+            dataIndex: "description",
+            key: "description",
+            align: "left",
+            icon: <Info className="h-4 w-4" />,
+            render: (description: string) => (
+                <span className="text-xs md:text-sm text-muted-foreground">
+                    {description}
+                </span>
+            ),
+        },
+        {
             title: (
                 <SortableColumnHeader
                     columnKey="is_active"
-                    label={t("status")}
+                    label="Status"
                     sort={sort ?? { field: "is_active", direction: "asc" }}
                     onSort={onSort ?? (() => { })}
                     getSortableColumnProps={getSortableColumnProps}
@@ -115,19 +123,19 @@ export default function TaxProfileList({
                 <Badge
                     variant={is_active ? "active" : "inactive"}
                 >
-                    {is_active ? tCommon("active") : tCommon("inactive")}
+                    {is_active ? "Active" : "Inactive"}
                 </Badge>
             ),
         },
         {
-            title: t("action"),
+            title: "Action",
             dataIndex: "action",
             key: "action",
             width: "w-0 md:w-20",
             align: "right",
             render: (_: unknown, record: TableDataSource) => {
-                const taxProfile = taxProfiles.find(tp => tp.id === record.key);
-                if (!taxProfile) return null;
+                const extraCost = extraCosts.find(ec => ec.id === record.key);
+                if (!extraCost) return null;
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -138,7 +146,7 @@ export default function TaxProfileList({
                         <DropdownMenuContent>
                             <DropdownMenuItem
                                 className="text-destructive cursor-pointer hover:bg-transparent"
-                                onClick={() => onDelete(taxProfile.id)}
+                                onClick={() => onToggleStatus(extraCost)}
                             >
                                 <Trash2 className="h-4 w-4" />
                                 Delete
@@ -150,23 +158,24 @@ export default function TaxProfileList({
         },
     ];
 
-    const dataSource: TableDataSource[] = taxProfiles.map((taxProfile, index) => ({
+    const dataSource: TableDataSource[] = extraCosts.map((extraCost, index) => ({
         select: false,
-        key: taxProfile.id,
-        no: index + 1,
-        name: taxProfile.name,
-        is_active: taxProfile.is_active,
+        key: extraCost.id,
+        no: (currentPage - 1) * 10 + index + 1,
+        name: extraCost.name,
+        description: extraCost.description,
+        is_active: extraCost.is_active,
     }));
 
     return (
         <TableTemplate
             columns={columns}
             dataSource={dataSource}
-            isLoading={isLoading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
             totalItems={totalItems}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            isLoading={isLoading}
         />
-    )
+    );
 }

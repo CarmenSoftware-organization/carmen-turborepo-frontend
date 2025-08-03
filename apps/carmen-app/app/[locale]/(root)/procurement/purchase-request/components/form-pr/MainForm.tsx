@@ -74,7 +74,7 @@ export default function MainForm({ mode, initValues }: Props) {
     });
 
     const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, tenantId);
-    const { mutate: updatePr, isPending: isUpdatingPr } = useUpdateUPr(token, tenantId, initValues?.id ?? "");
+    const { mutate: updatePr } = useUpdateUPr(token, tenantId, initValues?.id ?? "");
 
     const { append: appendRemove } = useFieldArray({
         control: form.control,

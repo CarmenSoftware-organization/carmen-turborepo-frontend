@@ -32,7 +32,6 @@ export function ProductComponent() {
     // Data states
     products,
     isLoading,
-    error,
     totalPages,
     currentPage,
     totalItems,
@@ -133,7 +132,6 @@ export function ProductComponent() {
       onPageChange={handlePageChange}
       totalPages={totalPages}
       data-id="product-list-template"
-      error={error}
       onDelete={handleDelete}
       totalItems={totalItems}
       sort={parseSortString(sort) ?? { field: "name", direction: "asc" }}

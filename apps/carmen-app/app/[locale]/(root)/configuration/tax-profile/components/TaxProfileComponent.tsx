@@ -239,7 +239,7 @@ export function TaxProfileComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort]);
+  }, [setSort, sort, setPage]);
 
   const handleSelect = (id: string) => {
     setSelectedTaxProfiles((prev) => {
@@ -251,25 +251,23 @@ export function TaxProfileComponent() {
     });
   };
 
-  const content = useMemo(() => {
-    return (
-      <TaxProfileList
-        taxProfiles={taxProfiles}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        totalItems={totalItems}
-        sort={parseSortString(sort)}
-        onSort={handleSort}
-        selectedTaxProfiles={selectedTaxProfiles}
-        onSelectAll={handleSelectAll}
-        onSelect={handleSelect}
-      />
-    );
-  }, [taxProfiles, isLoading, handleEdit, handleDelete]);
+  const content = (
+    <TaxProfileList
+      taxProfiles={taxProfiles}
+      isLoading={isLoading}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+      totalItems={totalItems}
+      sort={parseSortString(sort)}
+      onSort={handleSort}
+      selectedTaxProfiles={selectedTaxProfiles}
+      onSelectAll={handleSelectAll}
+      onSelect={handleSelect}
+    />
+  );
 
   const handleCreate = (data: TaxProfileFormData) => {
     createTaxProfile(data, {

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Users, User, ArrowLeft, SquarePen, CrownIcon } from "lucide-react";
+import { Users, ArrowLeft, SquarePen, CrownIcon } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
 interface ViewDetailProps {

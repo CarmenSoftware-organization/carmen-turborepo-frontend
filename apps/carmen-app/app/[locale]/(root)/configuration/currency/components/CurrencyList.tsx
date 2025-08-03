@@ -62,7 +62,7 @@ export default function CurrencyList({
       key: "select",
       width: "w-4",
       align: "center",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         return <Checkbox checked={selectedCurrencies.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
       },
     },
@@ -89,7 +89,7 @@ export default function CurrencyList({
       align: "left",
       width: "w-0 md:w-96",
       icon: <List className="h-4 w-4" />,
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const currency = currencies.find(c => c.id === record.key);
         if (!currency) return null;
         return (
@@ -188,7 +188,7 @@ export default function CurrencyList({
       key: "action",
       width: "w-0 md:w-20",
       align: "right",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const currency = currencies.find(c => c.id === record.key);
         if (!currency) return null;
         return (

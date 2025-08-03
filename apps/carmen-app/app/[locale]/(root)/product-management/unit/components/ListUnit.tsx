@@ -55,7 +55,7 @@ export default function ListUnit({
             key: "select",
             width: "w-6",
             align: "center",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 return <Checkbox checked={selectedUnits.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
             },
         },
@@ -82,7 +82,7 @@ export default function ListUnit({
             icon: <List className="h-4 w-4" />,
             align: "left",
             width: "w-48",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const unit = units.find(u => u.id === record.key);
                 if (!unit) return null;
                 return (
@@ -134,7 +134,7 @@ export default function ListUnit({
             icon: <Settings className="h-4 w-4" />,
             width: "w-24",
             align: "right",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const unit = units.find(u => u.id === record.key);
                 if (!unit) return null;
                 return (

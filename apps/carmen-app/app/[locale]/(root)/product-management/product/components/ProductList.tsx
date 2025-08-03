@@ -20,7 +20,6 @@ interface ProductListProps {
   readonly currentPage: number;
   readonly onPageChange: (page: number) => void;
   readonly totalPages: number | undefined;
-  readonly error?: string | null;
   readonly onDelete: (id: string) => void;
   readonly totalItems: number;
   readonly sort: SortConfig;
@@ -33,7 +32,6 @@ export default function ProductList({
   currentPage,
   onPageChange,
   totalPages = 1,
-  error = null,
   onDelete,
   totalItems,
   sort,
@@ -77,7 +75,7 @@ export default function ProductList({
       key: "select",
       width: "w-6",
       align: "center",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         return <Checkbox checked={selectedItems.includes(record.key)} onCheckedChange={() => handleSelectItem(record.key)} />;
       },
     },
@@ -103,7 +101,7 @@ export default function ProductList({
       key: "name",
       icon: <List className="h-4 w-4" />,
       align: "left",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const product = products.find(p => p.id === record.key);
         if (!product) return null;
         return (
@@ -180,7 +178,7 @@ export default function ProductList({
       dataIndex: "action",
       key: "action",
       align: "right",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

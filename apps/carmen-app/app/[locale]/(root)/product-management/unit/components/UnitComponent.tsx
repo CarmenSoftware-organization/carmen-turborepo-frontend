@@ -99,7 +99,7 @@ export default function UnitComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort]);
+  }, [setSort, sort, setPage]);
 
   const handleAdd = () => {
     setDialogMode(formType.ADD);

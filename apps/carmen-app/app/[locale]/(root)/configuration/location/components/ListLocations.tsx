@@ -64,7 +64,7 @@ export default function ListLocations({
       key: "select",
       width: "w-8",
       align: "center",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         return (
           <Checkbox
             checked={selectedLocations?.includes(record.key)}
@@ -96,7 +96,7 @@ export default function ListLocations({
       icon: <List className="h-4 w-4" />,
       align: "left",
       width: "w-40",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
         return (
@@ -118,7 +118,7 @@ export default function ListLocations({
       dataIndex: "location_type",
       key: "location_type",
       align: "center",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
         return (
@@ -135,7 +135,7 @@ export default function ListLocations({
       dataIndex: "eop",
       key: "eop",
       align: "center",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         return (
           <p>{record.eop.toUpperCase()}</p>
         );
@@ -152,7 +152,7 @@ export default function ListLocations({
       dataIndex: "is_active",
       key: "is_active",
       align: "center",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
         return <Badge variant={location.is_active ? "active" : "inactive"}>
@@ -166,7 +166,7 @@ export default function ListLocations({
       key: "action",
       width: "w-0 md:w-20",
       align: "right",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
         return (

@@ -48,6 +48,7 @@ export default function LocationComponent() {
 
   const handleSelectAll = (isChecked: boolean) => {
     if (isChecked) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       setSelectedLocations(locations?.data.map((location: any) => location.id) ?? []);
     } else {
       setSelectedLocations([]);
@@ -89,7 +90,7 @@ export default function LocationComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort]);
+  }, [setSort, sort, setPage]);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage.toString());

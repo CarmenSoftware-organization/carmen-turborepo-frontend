@@ -54,7 +54,7 @@ export default function BuTypeList({
             key: "select",
             width: "w-8",
             align: "center",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 return <Checkbox checked={selectedBuTypes.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
             },
         },
@@ -80,7 +80,7 @@ export default function BuTypeList({
             key: "name",
             icon: <List className="h-4 w-4" />,
             align: "left",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
                 return (
@@ -100,7 +100,7 @@ export default function BuTypeList({
             key: "description",
             icon: <Info className="h-4 w-4" />,
             align: "left",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
                 return <p className="truncate max-w-[300px] inline-block">{buType.description}</p>;
@@ -128,7 +128,7 @@ export default function BuTypeList({
             key: "is_active",
             icon: <Activity className="h-4 w-4" />,
             align: "center",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
                 return <Badge variant={buType.is_active ? "active" : "inactive"}>{buType.is_active ? "Active" : "Inactive"}</Badge>;
@@ -140,7 +140,7 @@ export default function BuTypeList({
             key: "action",
             width: "w-0 md:w-20",
             align: "right",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
                 return (

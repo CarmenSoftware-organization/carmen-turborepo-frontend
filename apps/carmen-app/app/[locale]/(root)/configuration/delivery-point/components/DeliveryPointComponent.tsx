@@ -209,7 +209,7 @@ export default function DeliveryPointComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort]);
+  }, [setSort, sort, setPage]);
 
   const filters = (
     <div className="filter-container" data-id="delivery-point-list-filters">

@@ -52,7 +52,7 @@ export default function DepartmentList({
       key: "select",
       width: "w-8",
       align: "center",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         return <Checkbox checked={selectedDepartments.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
       },
     },
@@ -78,7 +78,7 @@ export default function DepartmentList({
       key: "name",
       icon: <List className="h-4 w-4" />,
       align: "left",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const department = departments.find(d => d.id === record.key);
         if (!department) return null;
         return (
@@ -94,7 +94,7 @@ export default function DepartmentList({
       key: "description",
       icon: <Info className="h-4 w-4" />,
       align: "left",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         return <p className="truncate max-w-[200px] inline-block ">{record.description}</p>
       },
     },
@@ -128,7 +128,7 @@ export default function DepartmentList({
       key: "action",
       width: "w-0 md:w-20",
       align: "right",
-      render: (_: any, record: TableDataSource) => {
+      render: (_: unknown, record: TableDataSource) => {
         const department = departments.find(d => d.id === record.key);
         if (!department) return null;
         return (

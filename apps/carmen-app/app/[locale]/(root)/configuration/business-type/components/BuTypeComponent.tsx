@@ -139,7 +139,7 @@ export default function BusinessTypeComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort]);
+  }, [setSort, sort, setPage]);
 
   const handleAddNew = useCallback(() => {
     setEditingProfile(null);
@@ -296,7 +296,22 @@ export default function BusinessTypeComponent() {
         onSelect={handleSelect}
       />
     );
-  }, [buTypesData, isLoading, handleEdit, handleDelete, page, sort, handlePageChange, handleSort, selectedBuTypes, handleSelectAll, handleSelect]);
+  }, [
+    buTypesData,
+    isLoading,
+    handleEdit,
+    handleDelete,
+    page,
+    sort,
+    handlePageChange,
+    handleSort,
+    selectedBuTypes,
+    handleSelectAll,
+    handleSelect,
+    buTypes?.paginate.pages,
+    buTypes?.paginate.total,
+    buTypes?.data?.length
+  ]);
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);

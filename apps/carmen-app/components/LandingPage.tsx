@@ -18,7 +18,7 @@ export default function LandingPage() {
         if (isAuthenticated) {
             router.push('/dashboard');
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, router]);
 
     return (
         <div className="flex flex-col min-h-screen bg-background overflow-hidden">

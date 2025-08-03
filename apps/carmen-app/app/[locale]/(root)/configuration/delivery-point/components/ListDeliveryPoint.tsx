@@ -55,7 +55,7 @@ export default function ListDeliveryPoint({
             key: "select",
             width: "w-8",
             align: "center",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 return <Checkbox checked={selectedDeliveryPoints.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
             },
         },
@@ -81,7 +81,7 @@ export default function ListDeliveryPoint({
             key: "name",
             icon: <List className="h-4 w-4" />,
             align: "left",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
                 if (!deliveryPoint) return null;
                 return (
@@ -125,7 +125,7 @@ export default function ListDeliveryPoint({
             key: "action",
             width: "w-0 md:w-20",
             align: "right",
-            render: (_: any, record: TableDataSource) => {
+            render: (_: unknown, record: TableDataSource) => {
                 const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
                 if (!deliveryPoint) return null;
                 return (

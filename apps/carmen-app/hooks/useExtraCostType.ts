@@ -132,3 +132,26 @@ export const useUpdateExtraCostType = (
     },
   });
 };
+
+export const useDeleteExtraCostType = (
+  token: string,
+  tenantId: string,
+  id: string
+) => {
+  const API_ID = `${API_URL}/${id}`;
+  return useMutation({
+    mutationFn: async () => {
+      if (!token || !tenantId || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      return updateApiRequest(
+        API_ID,
+        token,
+        tenantId,
+        {},
+        "Failed to delete extra cost type",
+        "DELETE"
+      );
+    },
+  });
+};

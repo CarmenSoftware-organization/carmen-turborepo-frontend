@@ -41,11 +41,13 @@ export interface TableColumn {
     readonly key: string;
     readonly width?: string;
     readonly align?: 'left' | 'center' | 'right';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly render?: (value: any, record: TableDataSource, index: number) => ReactNode;
 }
 
 export interface TableDataSource {
     readonly key: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly [key: string]: any;
 }
 
