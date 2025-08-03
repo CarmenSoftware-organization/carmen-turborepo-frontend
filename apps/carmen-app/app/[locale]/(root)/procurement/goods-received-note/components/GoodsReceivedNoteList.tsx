@@ -1,18 +1,9 @@
 import { GoodsReceivedNoteListDto } from "@/dtos/grn.dto";
 import { useTranslations } from "next-intl";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  FileText,
-  MoreHorizontal,
+  MoreVertical,
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
@@ -23,13 +14,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import EmptyData from "@/components/EmptyData";
 import ButtonLink from "@/components/ButtonLink";
-import ButtonIcon from "@/components/ButtonIcon";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
-import FooterCustom from "@/components/table/FooterCustom";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 
 interface GoodsReceivedNoteListProps {
   readonly goodsReceivedNotes: GoodsReceivedNoteListDto[];
@@ -38,6 +28,8 @@ interface GoodsReceivedNoteListProps {
   readonly onPageChange: (page: number) => void;
   readonly isLoading: boolean;
   readonly totalItems?: number;
+  readonly sort: SortConfig;
+  readonly onSort: (field: string) => void;
 }
 
 export default function GoodsReceivedNoteList({
@@ -46,7 +38,9 @@ export default function GoodsReceivedNoteList({
   totalPages,
   onPageChange,
   isLoading,
-  totalItems
+  totalItems,
+  sort,
+  onSort,
 }: GoodsReceivedNoteListProps) {
   const t = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -75,117 +69,140 @@ export default function GoodsReceivedNoteList({
     goodsReceivedNotes?.length > 0 &&
     selectedItems.length === goodsReceivedNotes.length;
 
-  const renderTableContent = () => {
-    if (isLoading) {
-      return <TableBodySkeleton rows={7} />;
-    }
 
-    if (goodsReceivedNotes.length === 0) {
-      return <EmptyData message="No goods received notes found" />;
-    }
+  const columns: TableColumn[] = [
+    {
+      title: (
+        <Checkbox
+          checked={isAllSelected}
+          onCheckedChange={handleSelectAll}
+        />
+      ),
+      dataIndex: "select",
+      key: "select",
+      width: "w-10",
+      align: "center",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <Checkbox
+            checked={selectedItems.includes(record.key)}
+            onCheckedChange={() => handleSelectItem(record.key)}
+            aria-label={`Select ${record.grn_no}`}
+          />
+        );
+      },
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="grn_no"
+          label={t("grn_number")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "grn_no",
+      key: "grn_no",
+      align: "left",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <ButtonLink href={`/procurement/goods-received-note/${record.key}`}>
+            {record.grn_no ?? "-"}
+          </ButtonLink>
+        );
+      },
+    },
+    {
+      title: t("status"),
+      dataIndex: "is_active",
+      key: "is_active",
+      align: "left",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <Badge variant={record.is_active ? "active" : "inactive"}>
+            {record.is_active ? "Active" : "Inactive"}
+          </Badge>
+        );
+      },
+    },
+    {
+      title: t("vendor"),
+      dataIndex: "vendor_name",
+      key: "vendor_name",
+      align: "left",
+      render: (_: unknown, record: TableDataSource) => {
+        return record.vendor_name ?? "-";
+      },
+    },
+    {
+      title: t("date"),
+      dataIndex: "created_at",
+      key: "created_at",
+      align: "center",
+      render: (_: unknown, record: TableDataSource) => {
+        return formatDateFns(record.created_at, dateFormat || 'yyyy-MM-dd');
+      },
+    },
+    {
+      title: t("amount"),
+      dataIndex: "total_amount",
+      key: "total_amount",
+      align: "right",
+      width: "w-[100px]",
+      render: (_: unknown, record: TableDataSource) => {
+        return formatPriceConf(record.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB');
+      },
+    },
+    {
+      title: t("action"),
+      dataIndex: "action",
+      key: "action",
+      align: "right",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="text-destructive"
+                onClick={() => console.log(record.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuItem>Print GRN</DropdownMenuItem>
+              <DropdownMenuItem>Download PDF</DropdownMenuItem>
+              <DropdownMenuItem>Copy Reference</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
-    return (
-      <TableBody>
-        {goodsReceivedNotes?.map((grn) => (
-          <TableRow key={grn.id}>
-            <TableCell className="text-center w-10">
-              <Checkbox
-                id={`checkbox-${grn.id}`}
-                checked={selectedItems.includes(grn.id ?? "")}
-                onCheckedChange={() => handleSelectItem(grn.id ?? "")}
-                aria-label={`Select ${grn.grn_no}`}
-              />
-            </TableCell>
-            <TableCell>
-              <ButtonLink href={`/procurement/goods-received-note/${grn.id}`}>
-                {grn.grn_no ?? "-"}
-              </ButtonLink>
-            </TableCell>
-            <TableCell>
-              <Badge variant={grn.is_active ? "active" : "inactive"}>
-                {grn.is_active ? "Active" : "Inactive"}
-              </Badge>
-            </TableCell>
-            <TableCell>{grn.vendor_name ?? "-"}</TableCell>
-            <TableCell>
-              {formatDateFns(grn.created_at, dateFormat || 'yyyy-MM-dd')}
-            </TableCell>
-            <TableCell className="text-right w-[100px]">
-              {formatPriceConf(grn.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
-            </TableCell>
-
-            <TableCell className="text-right">
-              <div className="flex items-center justify-end">
-                <ButtonIcon href={`/procurement/goods-received-note/${grn.id}`}>
-                  <FileText className="h-4 w-4" />
-                </ButtonIcon>
-                <Button variant="ghost" size={"sm"} className="h-7 w-7 hover:bg-transparent hover:text-destructive">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Print GRN</DropdownMenuItem>
-                    <DropdownMenuItem>Download PDF</DropdownMenuItem>
-                    <DropdownMenuItem>Copy Reference</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    );
-  };
+  const dataSource: TableDataSource[] = goodsReceivedNotes?.map((grn) => ({
+    key: grn.id ?? "",
+    grn_no: grn.grn_no,
+    is_active: grn.is_active,
+    vendor_name: grn.vendor_name,
+    created_at: grn.created_at,
+    total_amount: grn.total_amount,
+  })) || [];
 
   return (
-    <div className="space-y-4">
-      <div className="hidden md:block">
-        <Table className="border">
-          <TableHeader className="border">
-            <TableRow className="bg-muted">
-              <TableHead className="w-10 text-center">
-                <Checkbox
-                  id="select-all"
-                  checked={isAllSelected}
-                  onCheckedChange={handleSelectAll}
-                  aria-label="Select all purchase requests"
-                />
-              </TableHead>
-              <TableHead>
-                {t("grn_number")}
-              </TableHead>
-              <TableHead>
-                {t("status")}
-              </TableHead>
-              <TableHead>
-                {t("vendor")}
-              </TableHead>
-              <TableHead>
-                {t("date")}
-              </TableHead>
-              <TableHead className="text-right w-[100px]">
-                {t("amount")}
-              </TableHead>
-
-              <TableHead className="text-right">{t("action")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          {renderTableContent()}
-          <FooterCustom
-            totalPages={totalPages}
-            totalItems={totalItems}
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            colSpanItems={6}
-            colSpanPagination={2}
-          />
-        </Table>
-      </div>
-    </div>
+    <TableTemplate
+      columns={columns}
+      dataSource={dataSource}
+      totalItems={totalItems}
+      totalPages={totalPages}
+      currentPage={currentPage}
+      onPageChange={onPageChange}
+      isLoading={isLoading}
+    />
   );
 }

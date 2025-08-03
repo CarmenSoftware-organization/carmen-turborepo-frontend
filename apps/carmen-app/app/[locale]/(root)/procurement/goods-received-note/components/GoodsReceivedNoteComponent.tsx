@@ -13,6 +13,7 @@ import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
 import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
 import { useGrn } from "@/hooks/useGrn";
 import SignInDialog from "@/components/SignInDialog";
+import { parseSortString } from "@/utils/table-sort";
 
 const grnStatusOptions = [
     { label: 'Pending', value: 'pending' },
@@ -32,8 +33,11 @@ export default function GoodsReceivedNoteComponent() {
         sort, setSort,
         loginDialogOpen, setLoginDialogOpen,
         dialogOpen, setDialogOpen,
-        handlePageChange
+        handlePageChange,
+        handleSort
     } = useGrn();
+
+
 
     const totalItems = grns?.paginate?.total;
 
@@ -115,6 +119,8 @@ export default function GoodsReceivedNoteComponent() {
         onPageChange={handlePageChange}
         isLoading={isLoading}
         totalItems={totalItems}
+        sort={parseSortString(sort) || { field: '', direction: 'asc' }}
+        onSort={handleSort}
     />
 
     return (

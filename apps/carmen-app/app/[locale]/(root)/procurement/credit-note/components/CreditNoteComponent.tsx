@@ -17,6 +17,7 @@ import ToggleView from "@/components/ui-custom/ToggleView";
 import { useCreditNoteQuery } from "@/hooks/useCreditNote";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "@/lib/navigation";
+import { parseSortString } from "@/utils/table-sort";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
@@ -43,6 +44,22 @@ export default function CreditNoteComponent() {
     },
     [setPage]
   );
+
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort, setPage]);
 
   const totalItems = creditNotes?.paginate.total;
 
@@ -121,6 +138,8 @@ export default function CreditNoteComponent() {
       currentPage={creditNotes?.paginate.page}
       totalPages={creditNotes?.paginate.pages}
       onPageChange={handlePageChange}
+      sort={parseSortString(sort) ?? { field: '', direction: 'asc' }}
+      onSort={handleSort}
     />
   );
 

@@ -145,7 +145,7 @@ export const useProduct = ({
       }
       setPage("1");
     }
-  }, [setSort, sort]);
+  }, [setSort, sort, setPage]);
 
   const products = useMemo(() => data?.products ?? [], [data]);
   const totalPages = data?.totalPages ?? 1;

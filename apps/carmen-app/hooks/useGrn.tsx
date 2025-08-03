@@ -65,6 +65,22 @@ export const useGrn = () => {
     return found?.grn_no ?? null;
   };
 
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort]);
+
   return {
     grns,
     getGrnNo,
@@ -84,6 +100,7 @@ export const useGrn = () => {
     dialogOpen,
     setDialogOpen,
     handlePageChange,
+    handleSort
   };
 };
 
