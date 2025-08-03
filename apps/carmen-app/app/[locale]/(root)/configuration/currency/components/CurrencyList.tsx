@@ -1,27 +1,19 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { SquarePen, Trash2 } from "lucide-react";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Activity, Banknote, Coins, List, MoreVertical, Replace, Trash2 } from "lucide-react";
 import {
   SortConfig,
   getSortableColumnProps,
   renderSortIcon,
 } from "@/utils/table-sort";
-import EmptyData from '@/components/EmptyData';
 import { CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
-import FooterCustom from "@/components/table/FooterCustom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { Checkbox } from "@/components/ui/checkbox";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 
 interface CurrencyListProps {
   readonly isLoading: boolean;
@@ -34,133 +26,11 @@ interface CurrencyListProps {
   readonly onPageChange: (page: number) => void;
   readonly sort?: SortConfig;
   readonly onSort?: (field: string) => void;
+  readonly selectedCurrencies: string[];
+  readonly onSelectAll: (isChecked: boolean) => void;
+  readonly onSelect: (id: string) => void;
 }
 
-const CurrencyTableHeader = ({
-  sort,
-  onSort,
-  t,
-}: {
-  sort?: SortConfig;
-  onSort?: (field: string) => void;
-  t: (key: string) => string;
-}) => (
-  <TableHeader className="sticky top-0 bg-muted/50 backdrop-blur supports-[backdrop-filter]:bg-muted/50">
-    <TableRow className="hover:bg-transparent">
-      <TableHead className="w-[10px] text-center font-semibold">#</TableHead>
-      <TableHead
-        {...getSortableColumnProps("name", sort, onSort)}
-        className="w-[200px] text-left font-semibold cursor-pointer"
-      >
-        <div className="flex items-center gap-2">
-          {t("name")}
-          {renderSortIcon("name", sort)}
-        </div>
-      </TableHead>
-      <TableHead
-        {...getSortableColumnProps("code", sort, onSort)}
-        className="w-[100px] text-center font-semibold cursor-pointer"
-      >
-        <div className="flex items-center justify-center gap-2">
-          {t("code")}
-          {renderSortIcon("code", sort)}
-        </div>
-      </TableHead>
-      <TableHead className="w-[80px] text-center font-semibold">
-        {t("symbol")}
-      </TableHead>
-      <TableHead
-        {...getSortableColumnProps("exchange_rate", sort, onSort)}
-        className="w-[120px] text-right font-semibold cursor-pointer"
-      >
-        <div className="flex items-center justify-end gap-2">
-          {t("exchangeRate")}
-          {renderSortIcon("exchange_rate", sort)}
-        </div>
-      </TableHead>
-      <TableHead
-        {...getSortableColumnProps("is_active", sort, onSort)}
-        className="w-[100px] text-center font-semibold"
-      >
-        <div className="flex items-center justify-center gap-2">
-          {t("status")}
-          {renderSortIcon("is_active", sort)}
-        </div>
-      </TableHead>
-      <TableHead className="w-[120px] text-right font-semibold">
-        {t("action")}
-      </TableHead>
-    </TableRow>
-  </TableHeader>
-);
-
-const CurrencyTableRow = ({
-  currency,
-  index,
-  onEdit,
-  onToggleStatus,
-  tCommon,
-}: {
-  currency: CurrencyGetDto;
-  index: number;
-  onEdit: (currency: CurrencyUpdateDto) => void;
-  onToggleStatus: (currency: CurrencyUpdateDto) => void;
-  tCommon: (key: string) => string;
-}) => (
-  <TableRow className="hover:bg-accent/50 transition-colors">
-    <TableCell className="w-[10px] text-center font-medium">
-      {index + 1}
-    </TableCell>
-    <TableCell
-      className="w-[200px] text-left font-medium truncate"
-      title={currency.name}
-    >
-      {currency.name}
-    </TableCell>
-    <TableCell className="w-[100px] text-center">
-      {currency.code}
-    </TableCell>
-    <TableCell className="w-[80px] text-center">
-      {currency.symbol}
-    </TableCell>
-    <TableCell className="w-[120px] text-right tabular-nums">
-      {currency.exchange_rate}
-    </TableCell>
-    <TableCell className="w-[100px] text-center">
-      <Badge
-        variant={currency.is_active ? "active" : "inactive"}
-        className="font-medium"
-      >
-        {currency.is_active ? tCommon("active") : tCommon("inactive")}
-      </Badge>
-    </TableCell>
-    <TableCell className="w-[120px] text-right">
-      <div className="flex items-center justify-end">
-        <Button
-          variant="ghost"
-          size={"sm"}
-          onClick={() => onEdit(currency)}
-          aria-label="Edit currency"
-          className="h-8 w-8 hover:bg-primary/10"
-        >
-          <SquarePen className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size={"sm"}
-          onClick={() => onToggleStatus(currency)}
-          aria-label={
-            currency.is_active ? "Deactivate currency" : "Activate currency"
-          }
-          disabled={!currency.is_active}
-          className="h-8 w-8 disabled:opacity-50"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
-    </TableCell>
-  </TableRow>
-);
 
 export default function CurrencyList({
   isLoading,
@@ -173,52 +43,192 @@ export default function CurrencyList({
   onPageChange,
   sort,
   onSort,
+  selectedCurrencies,
+  onSelectAll,
+  onSelect,
 }: CurrencyListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const tCurrency = useTranslations("Currency");
 
-  const renderTableContent = () => {
-    if (isLoading) return <TableBodySkeleton rows={7} />;
-    if (!currencies || currencies.length === 0)
-      return <EmptyData message={tCurrency("notFoundCurrency")} />;
+  const columns: TableColumn[] = [
+    {
+      title: (
+        <Checkbox
+          checked={selectedCurrencies.length === currencies.length}
+          onCheckedChange={onSelectAll}
+        />
+      ),
+      dataIndex: "select",
+      key: "select",
+      width: "w-4",
+      align: "center",
+      render: (_: any, record: TableDataSource) => {
+        return <Checkbox checked={selectedCurrencies.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
+      },
+    },
+    {
+      title: "#",
+      dataIndex: "no",
+      key: "no",
+      width: "w-4",
+      align: "center",
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="name"
+          label={t("name")}
+          sort={sort ?? { field: "name", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "name",
+      key: "name",
+      align: "left",
+      width: "w-0 md:w-96",
+      icon: <List className="h-4 w-4" />,
+      render: (_: any, record: TableDataSource) => {
+        const currency = currencies.find(c => c.id === record.key);
+        if (!currency) return null;
+        return (
+          <button
+            type="button"
+            className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+            onClick={() => onEdit(currency)}
+          >
+            {currency.name}
+          </button>
+        );
+      },
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="code"
+          label={t("code")}
+          sort={sort ?? { field: "code", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "code",
+      key: "code",
+      align: "center",
+      width: "w-20",
+      icon: <Banknote className="h-4 w-4" />,
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="symbol"
+          label={t("symbol")}
+          sort={sort ?? { field: "symbol", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "symbol",
+      key: "symbol",
+      width: "w-20",
+      align: "center",
+      icon: <Coins className="h-4 w-4" />,
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="exchange_rate"
+          label={t("exchangeRate")}
+          sort={sort ?? { field: "exchange_rate", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "exchange_rate",
+      key: "exchange_rate",
+      width: "w-20",
+      align: "right",
+      icon: <Replace className="h-4 w-4" />,
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="is_active"
+          label={t("status")}
+          sort={sort ?? { field: "is_active", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "is_active",
+      key: "is_active",
+      width: "w-0 md:w-20",
+      align: "center",
+      icon: <Activity className="h-4 w-4" />,
+      render: (is_active: boolean) => (
+        <Badge
+          variant={is_active ? "active" : "inactive"}
+        >
+          {is_active ? tCommon("active") : tCommon("inactive")}
+        </Badge>
+      ),
+    },
+    {
+      title: t("action"),
+      dataIndex: "action",
+      key: "action",
+      width: "w-0 md:w-20",
+      align: "right",
+      render: (_: any, record: TableDataSource) => {
+        const currency = currencies.find(c => c.id === record.key);
+        if (!currency) return null;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="text-destructive cursor-pointer hover:bg-transparent"
+                onClick={() => onToggleStatus(currency)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
-    return (
-      <TableBody>
-        {currencies.map((currency, index) => (
-          <CurrencyTableRow
-            key={currency.id}
-            currency={currency}
-            index={index}
-            onEdit={onEdit}
-            onToggleStatus={onToggleStatus}
-            tCommon={tCommon}
-          />
-        ))}
-      </TableBody>
-    );
-  };
+  const dataSource: TableDataSource[] = currencies.map((currency, index) => ({
+    select: false,
+    key: currency.id,
+    no: (currentPage - 1) * 10 + index + 1,
+    name: currency.name,
+    code: currency.code,
+    symbol: currency.symbol,
+    exchange_rate: currency.exchange_rate,
+    is_active: currency.is_active,
+  }));
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <Table className="border">
-          <CurrencyTableHeader sort={sort} onSort={onSort} t={t} />
-        </Table>
-        <ScrollArea className="h-[calc(102vh-300px)] w-full">
-          <Table>
-            {renderTableContent()}
-            <FooterCustom
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              onPageChange={onPageChange}
-              colSpanItems={5}
-              colSpanPagination={2}
-            />
-          </Table>
-        </ScrollArea>
-      </div>
-    </div>
+    <TableTemplate
+      columns={columns}
+      dataSource={dataSource}
+      totalItems={totalItems}
+      totalPages={totalPages}
+      currentPage={currentPage}
+      onPageChange={onPageChange}
+      isLoading={isLoading}
+    />
   );
 }

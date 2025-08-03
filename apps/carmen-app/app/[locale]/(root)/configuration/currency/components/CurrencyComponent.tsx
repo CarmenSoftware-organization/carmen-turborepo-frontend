@@ -52,7 +52,10 @@ export default function CurrencyComponent() {
         handleEdit,
         handleToggleStatus,
         handleConfirmToggle,
-        handleSubmit
+        handleSubmit,
+        handleSelectAll,
+        handleSelect,
+        selectedCurrencies,
     } = useCurrency();
 
     // Parse the sort string into field and direction
@@ -138,6 +141,9 @@ export default function CurrencyComponent() {
                 const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
                 setSort(`${field}:${direction}`);
             }}
+            selectedCurrencies={selectedCurrencies}
+            onSelectAll={handleSelectAll}
+            onSelect={handleSelect}
         />
     );
 

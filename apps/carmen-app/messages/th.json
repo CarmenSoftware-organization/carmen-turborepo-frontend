@@ -306,7 +306,8 @@
     "vendor": "ผู้จัดจำหน่าย",
     "business_type": "ประเภทธุรกิจ",
     "rate": "อัตรา",
-    "note": "หมายเหตุ"
+    "note": "หมายเหตุ",
+    "inventory_unit": "หน่วยนับ"
   },
   "Product": {
     "title": "สินค้า"

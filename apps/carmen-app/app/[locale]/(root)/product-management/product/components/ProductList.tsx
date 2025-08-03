@@ -1,31 +1,18 @@
 "use client";
 
 import { ProductGetDto } from "@/dtos/product.dto";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { FileText, Trash2 } from "lucide-react";
+import { Activity, Box, Folder, Layers, List, MoreVertical, Package } from "lucide-react";
 import { Link } from "@/lib/navigation";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import PaginationComponent from "@/components/PaginationComponent";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 
 interface ProductListProps {
   readonly products?: ProductGetDto[];
@@ -36,6 +23,8 @@ interface ProductListProps {
   readonly error?: string | null;
   readonly onDelete: (id: string) => void;
   readonly totalItems: number;
+  readonly sort: SortConfig;
+  readonly onSort: (field: string) => void;
 }
 
 export default function ProductList({
@@ -47,6 +36,8 @@ export default function ProductList({
   error = null,
   onDelete,
   totalItems,
+  sort,
+  onSort,
 }: ProductListProps) {
   const t = useTranslations("TableHeader");
 
@@ -71,235 +62,166 @@ export default function ProductList({
     }
   };
 
-  const isAllSelected =
-    products?.length > 0 && selectedItems.length === products?.length;
 
-  const renderDesktopTableContent = () => {
-    if (isLoading) return <TableBodySkeleton rows={7} />;
 
-    if (error) {
-      return (
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={8} className="h-24 text-center">
-              <div className="flex flex-col items-center justify-center gap-2">
-                <p className="text-sm text-destructive">{error}</p>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      );
-    }
 
-    if (!products || products.length === 0) {
-      return <TableBodySkeleton rows={8} />;
-    }
+  const columns: TableColumn[] = [
+    {
+      title: (
+        <Checkbox
+          checked={selectedItems.length === products.length}
+          onCheckedChange={handleSelectAll}
+        />
+      ),
+      dataIndex: "select",
+      key: "select",
+      width: "w-6",
+      align: "center",
+      render: (_: any, record: TableDataSource) => {
+        return <Checkbox checked={selectedItems.includes(record.key)} onCheckedChange={() => handleSelectItem(record.key)} />;
+      },
+    },
+    {
+      title: "#",
+      dataIndex: "no",
+      key: "no",
+      width: "w-6",
+      align: "center",
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="name"
+          label={t("name")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "name",
+      key: "name",
+      icon: <List className="h-4 w-4" />,
+      align: "left",
+      render: (_: any, record: TableDataSource) => {
+        const product = products.find(p => p.id === record.key);
+        if (!product) return null;
+        return (
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/product-management/product/${record.key}`}
+              className="hover:underline text-primary/80 font-semibold truncate max-w-[200px] inline-block align-bottom"
+            >
+              {record.name}
+            </Link>
 
-    return (
-      <TableBody>
-        {products.map((pd) => (
-          <TableRow key={pd.id}>
-            <TableCell className="text-center w-10">
-              <Checkbox
-                id={`checkbox-${pd.id}`}
-                checked={selectedItems.includes(pd.id ?? "")}
-                onCheckedChange={() => handleSelectItem(pd.id ?? "")}
-                aria-label={`Select ${pd.name}`}
-              />
-            </TableCell>
-            <TableCell>
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={`/product-management/product/${pd.id}`}
-                    className="hover:underline text-primary/80 font-semibold"
-                  >
-                    {pd.name}
-                  </Link>
-                  <Badge
-                    variant="secondary"
-                    className="text-xs rounded-full text-gray-700"
-                  >
-                    {pd.code}
-                  </Badge>
-                </div>
-
-                <span className="text-xs text-muted-foreground">
-                  {pd.description}
-                </span>
-              </div>
-            </TableCell>
-            <TableCell className="text-muted-foreground">
-              {pd.product_category?.name}
-            </TableCell>
-            <TableCell className="text-muted-foreground">
-              {pd.product_sub_category?.name}
-            </TableCell>
-            <TableCell className="text-muted-foreground">
-              {pd.product_item_group?.name}
-            </TableCell>
-            <TableCell className="text-muted-foreground">
-              {pd.inventory_unit_name}
-            </TableCell>
-            <TableCell>
-              <Badge
-                variant={
-                  pd.product_status_type === "active" ? "active" : "inactive"
-                }
-              >
-                {pd.product_status_type === "active" ? "Active" : "Inactive"}
-              </Badge>
-            </TableCell>
-            <TableCell>
-              <div className="flex items-center justify-end">
-                <Button
-                  variant="ghost"
-                  className="w-4 h-4 hover:text-muted-foreground"
-                  asChild
-                >
-                  <Link href={`/product-management/product/${pd.id}`}>
-                    <FileText className="w-3 h-3" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  className="w-4 h-4 hover:text-destructive"
-                  onClick={() => onDelete(pd.id ?? "")}
-                  aria-label={`Delete ${pd.name}`}
-                >
-                  <Trash2 className="w-3 h-3" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    );
-  };
-
-  const renderMobileContent = () => {
-    if (isLoading) {
-      return (
-        <div className="space-y-4">
-          {["skeleton-1", "skeleton-2", "skeleton-3"].map((id) => (
-            <Card key={id} className="animate-pulse">
-              <CardHeader className="h-16 bg-muted" />
-              <CardContent className="space-y-4">
-                <div className="h-4 bg-muted rounded w-3/4" />
-                <div className="h-4 bg-muted rounded w-1/2" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-destructive">
-              {error}
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      );
-    }
-
-    if (!products || products.length === 0) {
-      return (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center text-muted-foreground">
-              No products found
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      );
-    }
-
-    return products.map((pd) => (
-      <Card key={pd.id}>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>{pd.name}</span>
             <Badge
-              variant={
-                pd.product_status_type === "active" ? "default" : "destructive"
-              }
+              variant="secondary"
             >
-              {pd.product_status_type === "active" ? "Active" : "Inactive"}
+              {record.code}
             </Badge>
-          </CardTitle>
-          <CardDescription>{pd.description}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-end">
-            <Button variant="ghost" size={"sm"} asChild>
-              <Link href={`/product-management/product/${pd.id}`}>
-                <FileText className="w-3 h-3" />
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              size={"sm"}
-              className="w-4 h-4"
-              onClick={() => onDelete(pd.id ?? "")}
-              aria-label={`Delete ${pd.name}`}
-            >
-              <Trash2 className="w-3 h-3" />
-            </Button>
           </div>
-        </CardContent>
-      </Card>
-    ));
-  };
+        );
+      },
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="category"
+          label={t("category")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "category",
+      key: "category",
+      align: "center",
+      icon: <Folder className="h-4 w-4" />,
+    },
+    {
+      title: t("sub_category"),
+      dataIndex: "sub_category",
+      key: "sub_category",
+      align: "center",
+      icon: <Layers className="h-4 w-4" />,
+    },
+    {
+      title: t("item_group"),
+      dataIndex: "item_group",
+      key: "item_group",
+      align: "center",
+      icon: <Box className="h-4 w-4" />,
+    },
+    {
+      title: t("inventory_unit"),
+      dataIndex: "inventory_unit",
+      key: "inventory_unit",
+      align: "center",
+      icon: <Package className="h-4 w-4" />,
+    },
+    {
+      title: t("status"),
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      icon: <Activity className="h-4 w-4" />,
+      render: (status: string) => (
+        <Badge
+          variant={status === "active" ? "active" : "inactive"}
+        >
+          {status === "active" ? "Active" : "Inactive"}
+        </Badge>
+      ),
+    },
+    {
+      title: t("action"),
+      dataIndex: "action",
+      key: "action",
+      align: "right",
+      render: (_: any, record: TableDataSource) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-transparent" onClick={() => onDelete(record.key)}>
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ];
+
+  const dataSource: TableDataSource[] = products.map((product, index) => ({
+    select: false,
+    key: product.id,
+    no: (currentPage - 1) * 10 + index + 1,
+    name: product.name,
+    code: product.code,
+    category: product.product_category?.name,
+    sub_category: product.product_sub_category?.name,
+    item_group: product.product_item_group?.name,
+    inventory_unit: product.inventory_unit_name,
+    status: product.product_status_type,
+  }));
+
 
   return (
-    <div className="space-y-4">
-      <div className="hidden md:block">
-        <Table className="border">
-          <TableHeader className="bg-muted">
-            <TableRow>
-              <TableHead className="w-10 text-center">
-                <Checkbox
-                  id="select-all"
-                  checked={isAllSelected}
-                  onCheckedChange={handleSelectAll}
-                  aria-label="Select all purchase requests"
-                />
-              </TableHead>
-              <TableHead className="text-left w-1/3">{t("name")}</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Sub Category</TableHead>
-              <TableHead>Item Group</TableHead>
-              <TableHead>Inventory Unit</TableHead>
-              {/* <TableHead>Base Price</TableHead> */}
-              <TableHead>{t("status")}</TableHead>
-              <TableHead className="w-20 text-right">{t("action")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          {renderDesktopTableContent()}
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={2}>
-                <p className="text-sm text-muted-foreground">
-                  {totalItems} items found
-                </p>
-              </TableCell>
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
-
-      <div className="grid gap-4 md:hidden">{renderMobileContent()}</div>
-
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages || 1}
-        onPageChange={onPageChange}
-      />
-    </div>
+    <TableTemplate
+      columns={columns}
+      dataSource={dataSource}
+      totalItems={totalItems}
+      totalPages={totalPages}
+      currentPage={currentPage}
+      onPageChange={onPageChange}
+      isLoading={isLoading}
+    />
   );
 }

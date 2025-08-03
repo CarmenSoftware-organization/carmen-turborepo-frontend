@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import useProduct from "@/hooks/useProduct";
+import { parseSortString } from "@/utils/table-sort";
 
 export function ProductComponent() {
   const tCommon = useTranslations("Common");
@@ -57,7 +58,7 @@ export function ProductComponent() {
     handleDelete,
     confirmDelete,
     closeDeleteDialog,
-
+    handleSort
   } = useProduct();
 
   const sortFields = [
@@ -135,6 +136,8 @@ export function ProductComponent() {
       error={error}
       onDelete={handleDelete}
       totalItems={totalItems}
+      sort={parseSortString(sort) ?? { field: "name", direction: "asc" }}
+      onSort={handleSort}
     />
   );
 

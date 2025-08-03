@@ -8,7 +8,9 @@ import { cn } from "@/lib/utils";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui-custom/table";
 import { FileX } from "lucide-react";
 
-const getAlignClass = (align?: 'left' | 'center' | 'right'): string => {
+type Align = 'left' | 'center' | 'right';
+
+const getAlignClass = (align?: Align): string => {
     switch (align) {
         case 'center':
             return 'text-center';
@@ -20,8 +22,21 @@ const getAlignClass = (align?: 'left' | 'center' | 'right'): string => {
     }
 };
 
+const getFlexAlignClass = (align?: Align): string => {
+    switch (align) {
+        case 'center':
+            return 'justify-center';
+        case 'right':
+            return 'justify-end';
+        case 'left':
+        default:
+            return 'justify-start';
+    }
+};
+
 export interface TableColumn {
     readonly title: string | ReactNode;
+    readonly icon?: ReactNode;
     readonly dataIndex: string;
     readonly key: string;
     readonly width?: string;
@@ -42,6 +57,7 @@ export interface TableProps {
     readonly currentPage?: number;
     readonly onPageChange?: (page: number) => void;
     readonly isLoading?: boolean;
+    readonly maxHeight?: string;
 }
 
 const TableTemplate = ({
@@ -52,95 +68,91 @@ const TableTemplate = ({
     currentPage,
     onPageChange,
     isLoading = false,
+    maxHeight = "max-h-screen",
 }: TableProps) => {
     const tCommon = useTranslations("Common");
     const colLength = columns.length;
     const colSpan = colLength;
 
     return (
-        <div className="border rounded-lg">
-            {/* Fixed Header */}
-            <div className="bg-muted rounded-t-lg">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            {columns.map((column) => (
-                                <TableHead
-                                    key={column.key}
-                                    className={cn(getAlignClass(column.align), column.width)}>
-                                    {column.title}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                </Table>
-            </div>
+        <Table>
+            {/* Sticky Header */}
+            <TableHeader className={cn(
+                "bg-muted"
+            )}>
+                <TableRow>
+                    {columns.map((column) => (
+                        <TableHead
+                            key={column.key}
+                            className={cn(getAlignClass(column.align), column.width)}
+                        >
+                            <div className={cn("flex items-center gap-1", getFlexAlignClass(column.align))}>
+                                {column.icon}
+                                {column.title}
+                            </div>
+                        </TableHead>
+                    ))}
+                </TableRow>
+            </TableHeader>
 
-            {/* Scrollable Body */}
-            <div className="max-h-screen overflow-y-auto">
-                <Table>
-                    {isLoading ? (
-                        <TableBodySkeleton rows={colLength} />
-                    ) : (
-                        <TableBody>
-                            {dataSource.length > 0 ? (
-                                dataSource.map((record, index) => (
-                                    <TableRow key={record.key}>
-                                        {columns.map((column) => (
-                                            <TableCell
-                                                key={`${record.key}-${column.key}`}
-                                                className={cn(getAlignClass(column.align), column.width)}
-                                            >
-                                                {column.render
-                                                    ? column.render(record[column.dataIndex], record, index)
-                                                    : record[column.dataIndex]
-                                                }
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell className="text-center">
-                                        <div className="flex flex-col items-center justify-center py-8 gap-4 text-gray-500">
-                                            <FileX className="w-12 h-12 text-gray-400" />
-                                            <p className="text-sm">No data found matching your filters.</p>
-                                        </div>
+            {/* Table Body */}
+            {isLoading ? (
+                <TableBodySkeleton rows={colLength} />
+            ) : (
+                <TableBody>
+                    {dataSource.length > 0 ? (
+                        dataSource.map((record, index) => (
+                            <TableRow key={record.key}>
+                                {columns.map((column) => (
+                                    <TableCell
+                                        key={`${record.key}-${column.key}`}
+                                        className={cn(getAlignClass(column.align), column.width)}
+                                    >
+                                        {column.render
+                                            ? column.render(record[column.dataIndex], record, index)
+                                            : record[column.dataIndex]
+                                        }
                                     </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    )}
-                </Table>
-            </div>
-
-            {totalItems!! > 0 && (
-                <div>
-                    <Table>
-                        <TableFooter>
-                            <TableRow>
-                                <TableCell colSpan={colSpan} className="px-4">
-                                    <div className="flex items-center justify-between w-full">
-                                        <p className="text-sm text-muted-foreground">
-                                            {totalItems} {tCommon("itemFound")}
-                                        </p>
-                                        <div>
-                                            {totalPages && totalPages > 1 && currentPage && onPageChange && (
-                                                <PaginationComponent
-                                                    currentPage={currentPage}
-                                                    totalPages={totalPages}
-                                                    onPageChange={onPageChange}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
-                                </TableCell>
+                                ))}
                             </TableRow>
-                        </TableFooter>
-                    </Table>
-                </div>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={colSpan} className="text-center">
+                                <div className="flex flex-col items-center justify-center py-8 gap-4 text-gray-500">
+                                    <FileX className="w-12 h-12 text-gray-400" />
+                                    <p className="text-sm">No data found matching your filters.</p>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
             )}
-        </div>
+
+            {/* Footer */}
+            {totalItems! > 0 && (
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={colSpan} className="px-4">
+                            <div className="flex items-center justify-between w-full">
+                                <p className="text-sm text-muted-foreground">
+                                    {totalItems} {tCommon("itemFound")}
+                                </p>
+                                <div>
+                                    {totalPages && totalPages > 1 && currentPage && onPageChange && (
+                                        <PaginationComponent
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={onPageChange}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                </TableFooter>
+            )}
+        </Table>
     );
 };
 

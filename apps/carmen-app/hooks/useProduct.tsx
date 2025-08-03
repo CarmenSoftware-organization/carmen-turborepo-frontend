@@ -131,6 +131,22 @@ export const useProduct = ({
     setDeleteId(null);
   };
 
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort]);
+
   const products = useMemo(() => data?.products ?? [], [data]);
   const totalPages = data?.totalPages ?? 1;
   const totalItems = data?.totalItems ?? 0;
@@ -181,6 +197,7 @@ export const useProduct = ({
     confirmDelete,
     closeDeleteDialog,
     getProductName,
+    handleSort
   };
 };
 

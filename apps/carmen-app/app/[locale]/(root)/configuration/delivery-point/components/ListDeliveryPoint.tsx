@@ -1,12 +1,13 @@
 import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import { MoreVertical, Trash2 } from "lucide-react";
+import { Activity, List, MoreVertical, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 
 interface ListDeliveryPointProps {
     readonly deliveryPoints: DeliveryPointGetDto[];
@@ -52,7 +53,7 @@ export default function ListDeliveryPoint({
             ),
             dataIndex: "select",
             key: "select",
-            width: "w-12",
+            width: "w-8",
             align: "center",
             render: (_: any, record: TableDataSource) => {
                 return <Checkbox checked={selectedDeliveryPoints.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
@@ -62,23 +63,23 @@ export default function ListDeliveryPoint({
             title: "#",
             dataIndex: "no",
             key: "no",
-            width: "w-12",
+            width: "w-8",
             align: "center",
         },
         {
             title: (
-                <div
-                    {...getSortableColumnProps("name", sort, onSort)}
-                    className="font-medium"
-                >
-                    <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
-                        {t("name")}
-                        {renderSortIcon("name", sort)}
-                    </div>
-                </div>
+                <SortableColumnHeader
+                    columnKey="name"
+                    label={t("name")}
+                    sort={sort ?? { field: "name", direction: "asc" }}
+                    onSort={onSort ?? (() => { })}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
             ),
             dataIndex: "name",
             key: "name",
+            icon: <List className="h-4 w-4" />,
             align: "left",
             render: (_: any, record: TableDataSource) => {
                 const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
@@ -96,20 +97,20 @@ export default function ListDeliveryPoint({
         },
         {
             title: (
-                <div
-                    {...getSortableColumnProps("is_active", sort, onSort)}
-                    className="font-medium"
-                >
-                    <div className="flex items-center justify-center gap-1 hover:text-foreground transition-colors cursor-pointer">
-                        {t("status")}
-                        {renderSortIcon("is_active", sort)}
-                    </div>
-                </div>
+                <SortableColumnHeader
+                    columnKey="is_active"
+                    label={t("status")}
+                    sort={sort ?? { field: "is_active", direction: "asc" }}
+                    onSort={onSort ?? (() => { })}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
             ),
             dataIndex: "is_active",
             key: "is_active",
             width: "w-0 md:w-20",
             align: "center",
+            icon: <Activity className="h-4 w-4" />,
             render: (is_active: boolean) => (
                 <Badge
                     variant={is_active ? "active" : "inactive"}

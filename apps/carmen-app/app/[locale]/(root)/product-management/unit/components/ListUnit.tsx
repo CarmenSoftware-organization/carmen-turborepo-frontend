@@ -1,110 +1,182 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, SquarePen } from "lucide-react";
+import { Trash2, MoreVertical, List, Info, Settings, Activity } from "lucide-react";
 import { UnitDto } from "@/dtos/unit.dto";
-import PaginationComponent from "@/components/PaginationComponent";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Checkbox } from "@/components/ui/checkbox";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { useTranslations } from "next-intl";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 
 interface ListUnitProps {
     readonly units: UnitDto[];
     readonly isLoading: boolean;
     readonly currentPage: number;
     readonly totalPages: number;
+    readonly totalItems: number;
     readonly onPageChange: (page: number) => void;
     readonly onEdit: (unit: UnitDto) => void;
     readonly onDelete: (unit: UnitDto) => void;
+    readonly sort?: SortConfig;
+    readonly onSort?: (field: string) => void;
+    readonly selectedUnits: string[];
+    readonly onSelectAll: (isChecked: boolean) => void;
+    readonly onSelect: (id: string) => void;
 }
 
-export default function ListUnit({ units, isLoading, currentPage, totalPages, onPageChange, onEdit, onDelete }: ListUnitProps) {
+export default function ListUnit({
+    units,
+    isLoading,
+    currentPage,
+    totalPages,
+    onPageChange,
+    onEdit,
+    onDelete,
+    sort,
+    onSort,
+    selectedUnits,
+    onSelectAll,
+    totalItems,
+    onSelect }: ListUnitProps) {
+
+    const t = useTranslations("TableHeader");
+    const tCommon = useTranslations("Common");
+
+    const columns: TableColumn[] = [
+        {
+            title: (
+                <Checkbox
+                    checked={selectedUnits.length === units.length}
+                    onCheckedChange={onSelectAll}
+                />
+            ),
+            dataIndex: "select",
+            key: "select",
+            width: "w-6",
+            align: "center",
+            render: (_: any, record: TableDataSource) => {
+                return <Checkbox checked={selectedUnits.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
+            },
+        },
+        {
+            title: "#",
+            dataIndex: "no",
+            key: "no",
+            width: "w-6",
+            align: "center",
+        },
+        {
+            title: (
+                <SortableColumnHeader
+                    columnKey="name"
+                    label={t("name")}
+                    sort={sort ?? { field: "name", direction: "asc" }}
+                    onSort={onSort ?? (() => { })}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
+            ),
+            dataIndex: "name",
+            key: "name",
+            icon: <List className="h-4 w-4" />,
+            align: "left",
+            width: "w-48",
+            render: (_: any, record: TableDataSource) => {
+                const unit = units.find(u => u.id === record.key);
+                if (!unit) return null;
+                return (
+                    <button
+                        type="button"
+                        className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+                        onClick={() => onEdit(unit)}
+                    >
+                        {unit.name}
+                    </button>
+                );
+            },
+        },
+        {
+            title: t("description"),
+            dataIndex: "description",
+            icon: <Info className="h-4 w-4" />,
+            key: "description",
+            align: "left",
+        },
+        {
+            title: (
+                <SortableColumnHeader
+                    columnKey="is_active"
+                    label={t("status")}
+                    sort={sort ?? { field: "is_active", direction: "asc" }}
+                    onSort={onSort ?? (() => { })}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
+            ),
+            dataIndex: "is_active",
+            key: "is_active",
+            icon: <Activity className="h-4 w-4" />,
+            width: "w-36",
+            align: "center",
+            render: (is_active: boolean) => (
+                <Badge
+                    variant={is_active ? "active" : "inactive"}
+                >
+                    {is_active ? tCommon("active") : tCommon("inactive")}
+                </Badge>
+            ),
+        },
+        {
+            title: t("action"),
+            dataIndex: "action",
+            key: "action",
+            icon: <Settings className="h-4 w-4" />,
+            width: "w-24",
+            align: "right",
+            render: (_: any, record: TableDataSource) => {
+                const unit = units.find(u => u.id === record.key);
+                if (!unit) return null;
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <MoreVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                className="text-destructive cursor-pointer hover:bg-transparent"
+                                onClick={() => onDelete(unit)}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        },
+    ];
+
+    const dataSource: TableDataSource[] = units.map((unit, index) => ({
+        select: false,
+        key: unit.id,
+        no: (currentPage - 1) * 10 + index + 1,
+        name: unit.name,
+        description: unit.description,
+        is_active: unit.is_active,
+    }));
+
     return (
-        <div className="space-y-4">
-            <Table>
-                <TableHeader className="bg-muted">
-                    <TableRow>
-                        <TableHead className="w-[20px] text-center">
-                            <Checkbox />
-                        </TableHead>
-                        <TableHead className="w-[20px] text-center">#</TableHead>
-                        <TableHead className="w-[220px]">Name</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="w-[100px] text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                {isLoading ? (
-                    <TableBodySkeleton rows={5} />
-                ) : (
-                    <TableBody>
-                        {units && units.length > 0 ? (
-                            units.map((unit, index) => (
-                                <UnitTableRow key={`unit-row-${unit.id}`} unit={unit} index={index} onEdit={onEdit} onDelete={onDelete} />
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={3} className="text-center text-muted-foreground">
-                                    No units found
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                )}
-
-            </Table>
-            <PaginationComponent
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={onPageChange}
-            />
-        </div>
-    )
+        <TableTemplate
+            columns={columns}
+            dataSource={dataSource}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            isLoading={isLoading}
+        />
+    );
 };
-
-const UnitTableRow = ({ unit, index, onEdit, onDelete }: { unit: UnitDto, index: number, onEdit: (unit: UnitDto) => void, onDelete: (unit: UnitDto) => void }) => (
-    <TableRow>
-        <TableCell className="text-center">
-            <Checkbox />
-        </TableCell>
-        <TableCell className="text-center">{index + 1}</TableCell>
-        <TableCell className="">
-            <div className="flex flex-col gap-1">
-                <p className="font-semibold">{unit.name}</p>
-                <p className="text-muted-foreground">
-                    {unit.description || "No description"}
-                </p>
-            </div>
-        </TableCell>
-        <TableCell>
-            <Badge variant={unit.is_active ? "active" : "inactive"}>
-                {unit.is_active ? "Active" : "Inactive"}
-            </Badge>
-        </TableCell>
-        <TableCell className="text-right">
-            <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onEdit(unit)}
-                disabled={!unit.is_active}
-                className="hover:text-muted-foreground hover:bg-transparent"
-            >
-                <SquarePen className="h-4 w-4" />
-            </Button>
-            <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onDelete(unit)}
-                disabled={!unit.is_active}
-                className="hover:text-destructive hover:bg-transparent"
-            >
-                <Trash2 className="h-4 w-4" />
-            </Button>
-        </TableCell>
-    </TableRow>
-);

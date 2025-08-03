@@ -17,6 +17,11 @@ export const useCurrency = () => {
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyGetDto | undefined>();
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [page, setPage] = useURL("page");
+    const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
+
+
+
+
 
     const queryClient = useQueryClient();
 
@@ -64,6 +69,40 @@ export const useCurrency = () => {
     const totalPages = currenciesData?.totalPages ?? 1;
     const totalItems = currenciesData?.totalItems ?? 0;
 
+    const handleSelectAll = (isChecked: boolean) => {
+        if (isChecked) {
+            setSelectedCurrencies(currencies.map((currency: CurrencyGetDto) => currency.id));
+        } else {
+            setSelectedCurrencies([]);
+        }
+    };
+
+    const handleSelect = (id: string) => {
+        setSelectedCurrencies((prev) => {
+            if (prev.includes(id)) {
+                return prev.filter(currencyId => currencyId !== id);
+            } else {
+                return [...prev, id];
+            }
+        });
+    };
+
+    const handleSort = useCallback((field: string) => {
+        if (!sort) {
+            setSort(`${field}:asc`);
+        } else {
+            const [currentField, currentDirection] = sort.split(':');
+
+            if (currentField === field) {
+                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+                setSort(`${field}:${newDirection}`);
+            } else {
+                setSort(`${field}:asc`);
+            }
+            setPage("1");
+        }
+    }, [setSort, sort]);
+
     const handleSetFilter = useCallback((filterValue: string) => {
         setFilter(filterValue);
         setPage('');
@@ -76,9 +115,6 @@ export const useCurrency = () => {
         { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
-    const handleSetSort = useCallback((sortValue: string) => {
-        setSort(sortValue);
-    }, [setSort]);
 
     const handleAdd = useCallback(() => {
         setSelectedCurrency(undefined);
@@ -221,7 +257,7 @@ export const useCurrency = () => {
         handleSetFilter,
 
         // Sort helper
-        handleSetSort,
+        handleSort,
 
         // Functions
         handlePageChange,
@@ -233,6 +269,11 @@ export const useCurrency = () => {
         handleSubmit,
         fetchCurrencies,
         getCurrencyCode,
-        getCurrencyExchangeRate
+        getCurrencyExchangeRate,
+
+        // Selection
+        selectedCurrencies,
+        handleSelectAll,
+        handleSelect
     };
 }; 
