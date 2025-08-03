@@ -153,6 +153,10 @@ export default function CurrencyList({
       width: "w-20",
       align: "right",
       icon: <Replace className="h-4 w-4" />,
+      render: (value: number) => {
+        return <span className="text-sm font-medium font-mono">{value}</span>;
+      },
+
     },
     {
       title: (

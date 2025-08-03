@@ -57,7 +57,6 @@ export interface TableProps {
     readonly currentPage?: number;
     readonly onPageChange?: (page: number) => void;
     readonly isLoading?: boolean;
-    readonly maxHeight?: string;
 }
 
 const TableTemplate = ({
@@ -68,7 +67,6 @@ const TableTemplate = ({
     currentPage,
     onPageChange,
     isLoading = false,
-    maxHeight = "max-h-screen",
 }: TableProps) => {
     const tCommon = useTranslations("Common");
     const colLength = columns.length;
@@ -76,7 +74,6 @@ const TableTemplate = ({
 
     return (
         <Table>
-            {/* Sticky Header */}
             <TableHeader className={cn(
                 "bg-muted"
             )}>
@@ -129,7 +126,6 @@ const TableTemplate = ({
                 </TableBody>
             )}
 
-            {/* Footer */}
             {totalItems! > 0 && (
                 <TableFooter>
                     <TableRow>

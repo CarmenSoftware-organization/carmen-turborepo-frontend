@@ -29,26 +29,25 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  Banknote,
+  DollarSign,
+  BadgeDollarSign,
+  Globe,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
+import { useAuth } from "@/context/AuthContext";
 
 type SortDirection = "asc" | "desc";
 
 type SortField = "code" | "symbol" | "name" | "country" | "rate";
 
 export default function ExchangeRateComponent() {
+  const { currencyBase } = useAuth();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const [baseCurrency, setBaseCurrency] = useState<string>("THB");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortField, setSortField] = useState<SortField>("code");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -61,7 +60,7 @@ export default function ExchangeRateComponent() {
     error,
     refetch,
     isRefetching,
-  } = useExchangeRate({ baseCurrency });
+  } = useExchangeRate({ baseCurrency: currencyBase ?? "USD" });
 
   const filteredCurrencies = currenciesIso.filter((currency) => {
     if (!searchQuery.trim()) return true;
@@ -110,9 +109,7 @@ export default function ExchangeRateComponent() {
     setCurrentPage(pageNumber);
   };
 
-  const handleBaseCurrencyChange = (currency: string) => {
-    setBaseCurrency(currency);
-  };
+
 
   const handleRefresh = () => {
     refetch();
@@ -166,8 +163,6 @@ export default function ExchangeRateComponent() {
 
     return pageNumbers;
   };
-
-  const activeCurrency = ["USD", "THB", "JPY"];
 
   const formatExchangeRate = (rate: number) => {
     return rate ? rate.toFixed(4) : "-";
@@ -249,7 +244,7 @@ export default function ExchangeRateComponent() {
     <div className="w-full">
       <div className="p-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
-          <p className="text-xl font-semibold">Exchange Rates</p>
+          <p className="text-2xl font-semibold">Exchange Rates</p>
           <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto">
             <div className="flex items-center gap-1.5 ml-auto">
               <Button
@@ -276,22 +271,7 @@ export default function ExchangeRateComponent() {
 
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-medium">Base:</span>
-              <Select
-                value={baseCurrency}
-                onValueChange={handleBaseCurrencyChange}
-                disabled={isLoading || isRefetching}
-              >
-                <SelectTrigger className="w-[80px] h-8">
-                  <SelectValue placeholder="Select currency" />
-                </SelectTrigger>
-                <SelectContent>
-                  {activeCurrency.map((currency) => (
-                    <SelectItem key={currency} value={currency}>
-                      {currency}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <span className="text-sm font-medium">{currencyBase}</span>
             </div>
           </div>
         </div>
@@ -327,13 +307,17 @@ export default function ExchangeRateComponent() {
         <Table className="border">
           <TableHeader>
             <TableRow className="bg-muted/50">
+              <TableHead className="font-semibold">#</TableHead>
               <TableHead
                 className="font-semibold cursor-pointer"
                 onClick={() => handleSort("code")}
                 tabIndex={0}
                 aria-label="Sort by code"
               >
-                Code {renderSortIcon("code")}
+                <div className="flex items-center gap-1">
+                  <Banknote className="h-4 w-4" />
+                  Code {renderSortIcon("code")}
+                </div>
               </TableHead>
               <TableHead
                 className="hidden sm:table-cell font-semibold cursor-pointer"
@@ -341,7 +325,10 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by symbol"
               >
-                Symbol {renderSortIcon("symbol")}
+                <div className="flex items-center gap-1">
+                  <DollarSign className="h-4 w-4" />
+                  Symbol {renderSortIcon("symbol")}
+                </div>
               </TableHead>
               <TableHead
                 className="hidden md:table-cell font-semibold cursor-pointer"
@@ -349,7 +336,10 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by name"
               >
-                Name {renderSortIcon("name")}
+                <div className="flex items-center gap-1">
+                  <BadgeDollarSign className="h-4 w-4" />
+                  Name {renderSortIcon("name")}
+                </div>
               </TableHead>
               <TableHead
                 className="hidden lg:table-cell font-semibold cursor-pointer"
@@ -357,7 +347,10 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by country"
               >
-                Country {renderSortIcon("country")}
+                <div className="flex items-center gap-1">
+                  <Globe className="h-4 w-4" />
+                  Country {renderSortIcon("country")}
+                </div>
               </TableHead>
               <TableHead
                 className="font-semibold cursor-pointer"
@@ -365,17 +358,21 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by exchange rate"
               >
-                Exchange Rate {renderSortIcon("rate")}
-                {(isLoading || isRefetching) && (
-                  <Loader2 className="inline ml-2 h-3 w-3 animate-spin" />
-                )}
+                <div className="flex items-center gap-1">
+                  <ArrowLeftRight className="h-4 w-4" />
+                  Exchange Rate {renderSortIcon("rate")}
+                  {(isLoading || isRefetching) && (
+                    <Loader2 className="inline ml-2 h-3 w-3 animate-spin" />
+                  )}
+                </div>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentItems.length > 0 ? (
-              currentItems.map((currency) => (
+              currentItems.map((currency, index) => (
                 <TableRow key={currency.code} className="hover:bg-muted/30">
+                  <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell className="font-medium">{currency.code}</TableCell>
                   <TableCell className="hidden sm:table-cell">
                     {currency.symbol}
@@ -391,7 +388,7 @@ export default function ExchangeRateComponent() {
                       <Skeleton className="h-4 w-16" />
                     ) : (
                       <span
-                        className={`font-mono ${currency.code === baseCurrency ? "font-semibold" : ""}`}
+                        className={`font-mono ${currency.code === currencyBase ? "font-semibold" : ""}`}
                       >
                         {formatExchangeRate(exchangeRates[currency.code])}
                       </span>
