@@ -93,6 +93,12 @@ export default function GoodsReceivedNoteList({
       },
     },
     {
+      title: "#",
+      dataIndex: "no",
+      key: "no",
+      align: "center",
+    },
+    {
       title: (
         <SortableColumnHeader
           columnKey="grn_no"
@@ -185,7 +191,8 @@ export default function GoodsReceivedNoteList({
     },
   ];
 
-  const dataSource: TableDataSource[] = goodsReceivedNotes?.map((grn) => ({
+  const dataSource: TableDataSource[] = goodsReceivedNotes?.map((grn, index) => ({
+    no: index + 1,
     key: grn.id ?? "",
     grn_no: grn.grn_no,
     is_active: grn.is_active,
