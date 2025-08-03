@@ -6,7 +6,7 @@ import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseRequestList from "./PurchaseRequestList";
 import PurchaseRequestGrid from "./PurchaseRequestGrid";
@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import ToggleView from "@/components/ui-custom/ToggleView";
 import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { parseSortString } from "@/utils/table-sort";
 
 const sortFields = [
   { key: "", label: "All" },
@@ -50,6 +51,22 @@ export default function PurchaseRequestComponent() {
       setPage("");
     }
   }, [search, setPage]);
+
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort, setPage]);
 
   const title = "Purchase Request";
 
@@ -155,6 +172,8 @@ export default function PurchaseRequestComponent() {
             onPageChange={handlePageChange}
             isLoading={isLoading}
             totalItems={totalItems}
+            sort={parseSortString(sort) || { field: '', direction: 'asc' }}
+            onSort={handleSort}
           />
         ) : (
           <PurchaseRequestGrid

@@ -60,9 +60,6 @@ export default function ProductList({
     }
   };
 
-
-
-
   const columns: TableColumn[] = [
     {
       title: (

@@ -1,13 +1,5 @@
 import { useState } from "react";
-import { FileText, MoreVertical, Trash2 } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { MoreVertical } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -17,15 +9,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import { convertPrStatus } from "@/utils/badge-status-color";
 import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import ButtonLink from "@/components/ButtonLink";
-import ButtonIcon from "@/components/ButtonIcon";
-import FooterCustom from "@/components/table/FooterCustom";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -34,6 +24,8 @@ interface PurchaseRequestListProps {
   readonly onPageChange?: (page: number) => void;
   readonly isLoading: boolean;
   readonly totalItems: number;
+  readonly sort: SortConfig;
+  readonly onSort: (field: string) => void;
 }
 
 export default function PurchaseRequestList({
@@ -42,11 +34,14 @@ export default function PurchaseRequestList({
   totalPages = 1,
   onPageChange = () => { },
   isLoading,
-  totalItems
+  totalItems,
+  sort,
+  onSort,
 }: PurchaseRequestListProps) {
   const t = useTranslations("TableHeader");
   const { dateFormat, amount, currencyBase } = useAuth();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
@@ -70,162 +65,176 @@ export default function PurchaseRequestList({
     purchaseRequests?.length > 0 &&
     selectedItems.length === purchaseRequests.length;
 
+  const columns: TableColumn[] = [
+    {
+      title: (
+        <Checkbox
+          checked={isAllSelected}
+          onCheckedChange={handleSelectAll}
+        />
+      ),
+      dataIndex: "select",
+      key: "select",
+      width: "w-6",
+      align: "center",
+      render: (_: unknown, record: TableDataSource) => {
+        return <Checkbox checked={selectedItems.includes(record.key)} onCheckedChange={() => handleSelectItem(record.key)} />;
+      },
+    },
+    {
+      title: "#",
+      dataIndex: "no",
+      key: "no",
+      width: "w-6",
+      align: "center",
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="pr_no"
+          label={t("pr_no")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "pr_no",
+      key: "pr_no",
+      align: "left",
+      render: (_: unknown, record: TableDataSource) => {
+        return <ButtonLink href={`/procurement/purchase-request/${record.key}`}>
+          {record.pr_no ?? "-"}
+        </ButtonLink>;
+      },
+    },
+    {
+      title: "Date",
+      dataIndex: "pr_date",
+      key: "pr_date",
+      align: "center",
+      render: (_: unknown, record: TableDataSource) => {
+        return <div className="text-center">
+          {formatDateFns(record.pr_date, dateFormat || 'yyyy-MM-dd')}
+        </div>;
+      },
+    },
+    {
+      title: "Type",
+      dataIndex: "workflow_name",
+      key: "workflow_name",
+      align: "center",
+    },
+    {
+      title: "Status",
+      dataIndex: "pr_status",
+      key: "pr_status",
+      align: "left",
+    },
+    {
+      title: "Stage",
+      dataIndex: "workflow_current_stage",
+      key: "workflow_current_stage",
+      align: "left",
+    },
+    {
+      title: "Requestor",
+      dataIndex: "requestor_name",
+      key: "requestor_name",
+      align: "left",
+    },
+    {
+      title: "Department",
+      dataIndex: "department_name",
+      key: "department_name",
+      align: "left",
+    },
+    {
+      title: "Amount",
+      dataIndex: "total_amount",
+      key: "total_amount",
+      align: "right",
+      render: (_: unknown, record: TableDataSource) => {
+        return <div className="text-center">
+          {formatPriceConf(record.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
+        </div>;
+      },
+    },
+    {
+      title: "Action",
+      dataIndex: "action",
+      key: "action",
+      align: "center",
+      render: (_: unknown, pr: TableDataSource) => {
+        return <div className="text-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="sr-only">More options</span>
+                <MoreVertical className="h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log("Approve", pr.id);
+                }}
+              >
+                Print
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log("Download", pr.id);
+                }}
+              >
+                Download
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log("Delete", pr.id);
+                }}
+                className="text-destructive"
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>;
+      },
+    },
+  ];
 
-  const renderTableContent = () => {
-    if (isLoading) return <TableBodySkeleton rows={10} />;
-
-    if (purchaseRequests?.length === 0) {
-      return (
-        <TableBody>
-          <TableRow>
-            <TableCell colSpan={9} className="h-24 text-center">
-              <div className="flex flex-col items-center justify-center gap-2">
-                <p className="text-sm text-muted-foreground">
-                  No purchase requests found
-                </p>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      );
-    }
-
-    return (
-      <TableBody>
-        {purchaseRequests?.map((pr) => (
-          <TableRow key={pr.id}>
-            <TableCell className="text-center w-10">
-              <Checkbox
-                id={`checkbox-${pr.id}`}
-                checked={selectedItems.includes(pr.id ?? "")}
-                onCheckedChange={() => handleSelectItem(pr.id ?? "")}
-                aria-label={`Select ${pr.pr_no}`}
-              />
-            </TableCell>
-            <TableCell>
-              <ButtonLink href={`/procurement/purchase-request/${pr.id}`}>
-                {pr.pr_no ?? "-"}
-              </ButtonLink>
-            </TableCell>
-            <TableCell className="text-center">
-              {formatDateFns(pr.pr_date, dateFormat || 'yyyy-MM-dd')}
-            </TableCell>
-            <TableCell className="text-center">{pr.workflow_name ?? "-"}</TableCell>
-            <TableCell className="text-center">
-              {pr.pr_status && (
-                <Badge variant={pr.pr_status}>
-                  {convertPrStatus(pr.pr_status)}
-                </Badge>
-              )}
-            </TableCell>
-            <TableCell className="text-center">
-              {pr.workflow_current_stage && (
-                <Badge variant={pr.workflow_current_stage}>
-                  {pr.workflow_current_stage}
-                </Badge>
-              )}
-            </TableCell>
-            <TableCell>{pr.requestor_name}</TableCell>
-            <TableCell>{pr.department_name}</TableCell>
-            <TableCell>{formatPriceConf(pr.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}</TableCell>
-            <TableCell className="w-[100px] text-right">
-              <div className="flex items-center justify-end">
-                <ButtonIcon href={`/procurement/purchase-request/${pr.id}`}>
-                  <FileText className="h-3 w-3" />
-                </ButtonIcon>
-                <Button
-                  variant="ghost"
-                  size={"sm"}
-                  className="h-7 w-7 hover:text-destructive hover:bg-transparent"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <span className="sr-only">More options</span>
-                      <MoreVertical className="h-3 w-3" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log("Approve", pr.id);
-                      }}
-                    >
-                      Print
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log("Download", pr.id);
-                      }}
-                    >
-                      Download
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        console.log("Delete", pr.id);
-                      }}
-                      className="text-destructive"
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    );
-  };
+  const dataSource: TableDataSource[] = purchaseRequests?.map((pr, index) => ({
+    select: false,
+    key: pr.id ?? "",
+    no: index + 1,
+    pr_no: pr.pr_no ?? "-",
+    pr_date: pr.pr_date,
+    workflow_name: pr.workflow_name,
+    pr_status: pr.pr_status,
+    workflow_current_stage: pr.workflow_current_stage,
+    requestor_name: pr.requestor_name,
+    department_name: pr.department_name,
+    total_amount: pr.total_amount,
+  }));
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <Table className="border">
-          <TableHeader className="sticky top-0 bg-muted">
-            <TableRow>
-              <TableHead className="w-10 text-center">
-                <Checkbox
-                  id="select-all"
-                  checked={isAllSelected}
-                  onCheckedChange={handleSelectAll}
-                  aria-label="Select all purchase requests"
-                />
-              </TableHead>
-              <TableHead className="w-[150px]">PR Number</TableHead>
-              <TableHead className="text-center">Date</TableHead>
-              <TableHead className="text-center">Type</TableHead>
-              <TableHead className="text-center">Status</TableHead>
-              <TableHead className="text-center">Stage</TableHead>
-              <TableHead>Requestor</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead className="w-[100px] text-right">
-                {t("action")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          {renderTableContent()}
-          <FooterCustom
-            totalPages={totalPages}
-            totalItems={totalItems}
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            colSpanItems={7}
-            colSpanPagination={3}
-          />
-        </Table>
-      </div>
-    </div>
+    <TableTemplate
+      columns={columns}
+      dataSource={dataSource}
+      totalItems={totalItems}
+      totalPages={totalPages}
+      currentPage={currentPage}
+      onPageChange={onPageChange}
+      isLoading={isLoading}
+    />
   );
 }
