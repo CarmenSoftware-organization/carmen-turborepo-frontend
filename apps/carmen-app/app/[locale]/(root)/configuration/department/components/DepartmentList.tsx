@@ -1,23 +1,14 @@
-import PaginationComponent from "@/components/PaginationComponent";
 import { DepartmentGetListDto } from "@/dtos/department.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Trash2 } from "lucide-react";
+import { Activity, Info, List, MoreVertical, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ButtonLink from "@/components/ButtonLink";
-import FooterCustom from "@/components/table/FooterCustom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 
 interface DepartmentListProps {
   readonly departments: DepartmentGetListDto[];
@@ -49,128 +40,136 @@ export default function DepartmentList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  const handleSelectAll = (checked: boolean) => {
-    onSelectAll(checked);
-  };
+  const columns: TableColumn[] = [
+    {
+      title: (
+        <Checkbox
+          checked={selectedDepartments.length === departments.length}
+          onCheckedChange={onSelectAll}
+        />
+      ),
+      dataIndex: "select",
+      key: "select",
+      width: "w-8",
+      align: "center",
+      render: (_: any, record: TableDataSource) => {
+        return <Checkbox checked={selectedDepartments.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
+      },
+    },
+    {
+      title: "#",
+      dataIndex: "no",
+      key: "no",
+      width: "w-8",
+      align: "center",
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="name"
+          label={t("name")}
+          sort={sort ?? { field: "name", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "name",
+      key: "name",
+      icon: <List className="h-4 w-4" />,
+      align: "left",
+      render: (_: any, record: TableDataSource) => {
+        const department = departments.find(d => d.id === record.key);
+        if (!department) return null;
+        return (
+          <ButtonLink href={`/configuration/department/${department.id}`}>
+            {department.name}
+          </ButtonLink>
+        );
+      },
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      icon: <Info className="h-4 w-4" />,
+      align: "left",
+      render: (_: any, record: TableDataSource) => {
+        return <p className="truncate max-w-[200px] inline-block ">{record.description}</p>
+      },
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="is_active"
+          label={t("status")}
+          sort={sort ?? { field: "is_active", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "is_active",
+      key: "is_active",
+      width: "w-0 md:w-20",
+      align: "center",
+      icon: <Activity className="h-4 w-4" />,
+      render: (is_active: boolean) => (
+        <Badge
+          variant={is_active ? "active" : "inactive"}
+        >
+          {is_active ? tCommon("active") : tCommon("inactive")}
+        </Badge>
+      ),
+    },
+    {
+      title: t("action"),
+      dataIndex: "action",
+      key: "action",
+      width: "w-0 md:w-20",
+      align: "right",
+      render: (_: any, record: TableDataSource) => {
+        const department = departments.find(d => d.id === record.key);
+        if (!department) return null;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="text-destructive cursor-pointer hover:bg-transparent"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
-  const handleSelect = (id: string) => {
-    onSelect(id);
-  }
-
-  const renderTableContent = () => {
-
-    if (departments.length === 0) {
-      return (
-        <TableRow>
-          <TableCell colSpan={4} className="h-24 text-center">
-            <div className="flex flex-col items-center justify-center gap-2">
-              <p className="text-sm text-muted-foreground">No departments found</p>
-            </div>
-          </TableCell>
-        </TableRow>
-      );
-    }
-
-    return departments.map((department, index) => (
-      <TableRow key={department.id}>
-        <TableCell className="w-10">
-          <Checkbox
-            checked={selectedDepartments.includes(department.id)}
-            onCheckedChange={() => handleSelect(department.id)}
-          />
-        </TableCell>
-        <TableCell className="text-left w-10">
-          {(currentPage - 1) * 10 + index + 1}
-        </TableCell>
-        <TableCell className="text-left w-[300px]">
-          <div>
-            <ButtonLink href={`/configuration/department/${department.id}`}>
-              <p className="font-medium">{department.name}</p>
-            </ButtonLink>
-            {department.description && (
-              <p className="text-xs text-muted-foreground mt-[-8px]">
-                {department.description}
-              </p>
-            )}
-          </div>
-        </TableCell>
-        <TableCell className="text-left">
-          <Badge variant={department.is_active ? "active" : "inactive"}>
-            {department.is_active ? tCommon("active") : tCommon("inactive")}
-          </Badge>
-        </TableCell>
-        <TableCell className="w-20 text-right">
-          <Button
-            variant="ghost"
-            size={"sm"}
-            aria-label="Edit department"
-            className="h-7 w-7 hover:text-muted-foreground"
-            asChild
-          >
-            <Link href={`/configuration/department/${department.id}`}>
-              <FileText className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size={"sm"}
-            aria-label={`${department.is_active ? "Deactivate" : "Activate"} department`}
-            disabled={!department.is_active}
-            className="h-7 w-7 hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </TableCell>
-      </TableRow>
-    ));
-  };
+  const dataSource: TableDataSource[] = departments.map((department, index) => ({
+    select: false,
+    key: department.id,
+    no: index + 1,
+    name: department.name,
+    description: department.description,
+    is_active: department.is_active,
+  }));
 
   return (
-    <div className="space-y-4">
-      <Table className="border">
-        <TableHeader className="sticky top-0 bg-muted">
-          <TableRow>
-            <TableHead className="w-10">
-              <Checkbox
-                checked={selectedDepartments.length === departments.length && departments.length > 0}
-                onCheckedChange={handleSelectAll}
-              />
-            </TableHead>
-            <TableHead className="text-left w-10">#</TableHead>
-            <TableHead {...getSortableColumnProps("name", sort, onSort)}>
-              <div className="flex items-center text-left">
-                {t("name")}
-                {renderSortIcon("name", sort)}
-              </div>
-            </TableHead>
-            <TableHead
-              {...getSortableColumnProps("is_active", sort, onSort)}
-            >
-              <div className="flex items-center text-left">
-                {t("status")}
-                {renderSortIcon("is_active", sort)}
-              </div>
-            </TableHead>
-            <TableHead className="w-20 text-right">{t("action")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        {isLoading ? (
-          <TableBodySkeleton rows={4} />
-        ) : (
-          <TableBody>
-            {renderTableContent()}
-          </TableBody>
-        )}
-        <FooterCustom
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-          totalItems={totalItems}
-          colSpanItems={3}
-          colSpanPagination={2}
-        />
-      </Table>
-
-    </div>
+    <TableTemplate
+      columns={columns}
+      dataSource={dataSource}
+      isLoading={isLoading}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={onPageChange}
+      totalItems={totalItems}
+    />
   )
 }

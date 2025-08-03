@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { boolFilterOptions } from "@/constants/options";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListLocations from "./ListLocations";
 import { Link } from "@/lib/navigation";
@@ -25,9 +25,10 @@ export default function LocationComponent() {
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
-  const [page] = useURL("page");
+  const [page, setPage] = useURL("page");
   const [statusOpen, setStatusOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
 
   const {
     data: locations,
@@ -45,6 +46,24 @@ export default function LocationComponent() {
     },
   });
 
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedLocations(locations?.data.map((location: any) => location.id) ?? []);
+    } else {
+      setSelectedLocations([]);
+    }
+  };
+
+  const handleSelect = (id: string) => {
+    setSelectedLocations((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter(locationId => locationId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
   useEffect(() => {
     if (
       (error as { response?: { status?: number } })?.response?.status === 401
@@ -54,6 +73,27 @@ export default function LocationComponent() {
   }, [error, setLoginDialogOpen]);
 
   const sortFields = [{ key: "name", label: tHeader("name") }];
+
+
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
 
   const actionButtons = (
     <div
@@ -126,10 +166,12 @@ export default function LocationComponent() {
       locations={locations?.data ?? []}
       isLoading={isLoading}
       sort={parsedSort}
-      onSort={(field) => {
-        const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${direction}`);
-      }} />
+      onSort={handleSort}
+      onPageChange={handlePageChange}
+      onSelectAll={handleSelectAll}
+      onSelect={handleSelect}
+      selectedLocations={selectedLocations}
+    />
   );
 
   return (

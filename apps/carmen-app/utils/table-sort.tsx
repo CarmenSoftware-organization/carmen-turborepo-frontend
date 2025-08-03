@@ -85,4 +85,4 @@ export const getSortableColumnProps = (
         },
         className: `cursor-pointer hover:bg-accent/50 transition-colors ${additionalClassName ?? ''}`
     };
-}; 
+};

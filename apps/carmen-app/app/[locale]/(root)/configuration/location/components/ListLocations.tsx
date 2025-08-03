@@ -1,26 +1,19 @@
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Button } from "@/components/ui/button";
-import { Link } from "@/lib/navigation";
 import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   SortConfig,
   getSortableColumnProps,
   renderSortIcon,
 } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import { FileText, Trash2 } from "lucide-react";
-import EmptyData from "@/components/EmptyData";
+import { List, MoreVertical, Trash2 } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import ButtonLink from "@/components/ButtonLink";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { Checkbox } from "@/components/ui/checkbox";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface Location {
   readonly id: string;
@@ -39,6 +32,10 @@ interface ListLocationsProps {
   readonly isLoading: boolean;
   readonly sort?: SortConfig;
   readonly onSort?: (field: string) => void;
+  readonly onPageChange?: (page: number) => void;
+  readonly onSelectAll?: (isChecked: boolean) => void;
+  readonly onSelect?: (id: string) => void;
+  readonly selectedLocations?: string[];
 }
 
 export default function ListLocations({
@@ -46,127 +43,174 @@ export default function ListLocations({
   isLoading,
   sort,
   onSort,
+  onPageChange,
+  onSelectAll,
+  onSelect,
+  selectedLocations,
+
 }: ListLocationsProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  const renderTable = () => {
-    if (isLoading) return <TableBodySkeleton rows={8} />;
-    if (locations.length === 0)
-      return <EmptyData message={"Location data not found"} />;
-
-    return (
-      <TableBody>
-        {locations?.map((location, i) => (
-          <TableRow key={location.id}>
-            <TableCell className="w-10">{i + 1}</TableCell>
-            <TableCell>
-              <ButtonLink href={`/configuration/location/${location.id}`}>
-                {location.name}
-              </ButtonLink>
-              {location.description && (
-                <p className="text-xs text-muted-foreground mt-[-8px]">
-                  {location.description}
-                </p>
-              )}
-
-            </TableCell>
-            <TableCell className="hidden md:table-cell text-center">
-              <Badge
-                className={STORE_LOCATION_TYPE_COLOR(location.location_type)}
+  const columns: TableColumn[] = [
+    {
+      title: (
+        <Checkbox
+          checked={selectedLocations?.length === locations.length}
+          onCheckedChange={onSelectAll}
+        />
+      ),
+      dataIndex: "select",
+      key: "select",
+      width: "w-8",
+      align: "center",
+      render: (_: any, record: TableDataSource) => {
+        return (
+          <Checkbox
+            checked={selectedLocations?.includes(record.key)}
+            onCheckedChange={() => onSelect?.(record.key)}
+          />
+        );
+      },
+    },
+    {
+      title: "#",
+      dataIndex: "no",
+      key: "no",
+      width: "w-8",
+      align: "center",
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="name"
+          label={t("name")}
+          sort={sort ?? { field: "name", direction: "asc" }}
+          onSort={onSort ?? (() => { })}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "name",
+      key: "name",
+      icon: <List className="h-4 w-4" />,
+      align: "left",
+      width: "w-40",
+      render: (_: any, record: TableDataSource) => {
+        const location = locations.find(l => l.id === record.key);
+        if (!location) return null;
+        return (
+          <ButtonLink href={`/configuration/location/${location.id}`}>
+            {location.name}
+          </ButtonLink>
+        );
+      },
+    },
+    // {
+    //   title: "Description",
+    //   dataIndex: "description",
+    //   key: "description",
+    //   icon: <Info className="h-4 w-4" />,
+    //   align: "left",
+    // },
+    {
+      title: "Type",
+      dataIndex: "location_type",
+      key: "location_type",
+      align: "center",
+      render: (_: any, record: TableDataSource) => {
+        const location = locations.find(l => l.id === record.key);
+        if (!location) return null;
+        return (
+          <Badge
+            className={STORE_LOCATION_TYPE_COLOR(location.location_type)}
+          >
+            {location.location_type.toUpperCase()}
+          </Badge>
+        );
+      },
+    },
+    {
+      title: "EOP",
+      dataIndex: "eop",
+      key: "eop",
+      align: "center",
+      render: (_: any, record: TableDataSource) => {
+        return (
+          <p>{record.eop.toUpperCase()}</p>
+        );
+      },
+    },
+    {
+      title: "Delivery Point",
+      dataIndex: "delivery_point",
+      key: "delivery_point",
+      align: "center",
+    },
+    {
+      title: "Status",
+      dataIndex: "is_active",
+      key: "is_active",
+      align: "center",
+      render: (_: any, record: TableDataSource) => {
+        const location = locations.find(l => l.id === record.key);
+        if (!location) return null;
+        return <Badge variant={location.is_active ? "active" : "inactive"}>
+          {location.is_active ? tCommon("active") : tCommon("inactive")}
+        </Badge>;
+      },
+    },
+    {
+      title: t("action"),
+      dataIndex: "action",
+      key: "action",
+      width: "w-0 md:w-20",
+      align: "right",
+      render: (_: any, record: TableDataSource) => {
+        const location = locations.find(l => l.id === record.key);
+        if (!location) return null;
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="text-destructive cursor-pointer hover:bg-transparent"
               >
-                {location.location_type.toUpperCase()}
-              </Badge>
-            </TableCell>
-            <TableCell className="hidden md:table-cell text-center">
-              {location.physical_count_type.toUpperCase()}
-            </TableCell>
-            <TableCell className="hidden md:table-cell text-center">{location.delivery_point?.name}</TableCell>
-            <TableCell className="text-center">
-              <Badge variant={location.is_active ? "active" : "inactive"}>
-                {location.is_active ? tCommon("active") : tCommon("inactive")}
-              </Badge>
-            </TableCell>
-            <TableCell className="text-right">
-              <div className="flex items-center justify-end">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label="Edit location"
-                  className="h-7 w-7 hover:text-muted-foreground"
-                  asChild
-                >
-                  <Link href={`/configuration/location/${location.id}`}>
-                    <FileText className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label={`${location.is_active ? "Deactivate" : "Activate"} location`}
-                  disabled={!location.is_active}
-                  className="h-7 w-7 hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    );
-  };
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
+  const dataSource: TableDataSource[] = locations.map((location, index) => ({
+    select: false,
+    key: location.id,
+    no: index + 1,
+    name: location.name,
+    description: location.description,
+    location_type: location.location_type,
+    eop: location.physical_count_type,
+    delivery_point: location.delivery_point?.name,
+    is_active: location.is_active,
+  }));
 
   return (
-    <div className="space-y-4">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-10">#</TableHead>
-            <TableHead
-              {...getSortableColumnProps("name", sort, onSort)}
-              className="font-semibold cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                {t("name")}
-                {renderSortIcon("name", sort)}
-              </div>
-            </TableHead>
-            <TableHead
-              {...getSortableColumnProps("location_type", sort, onSort)}
-              className="hidden md:table-cell text-center font-semibold cursor-pointer"
-            >
-              <div className="flex items-center justify-center gap-2">
-                {t("type")}
-                {renderSortIcon("location_type", sort)}
-              </div>
-            </TableHead>
-            <TableHead className="text-center font-semibold">
-              EOP
-            </TableHead>
-            <TableHead
-              {...getSortableColumnProps("delivery_point", sort, onSort)}
-              className="hidden md:table-cell text-center font-semibold cursor-pointer"
-            >
-              <div className="flex items-center justify-center gap-2">
-                {t("delivery_point")}
-                {renderSortIcon("delivery_point", sort)}
-              </div>
-            </TableHead>
-            <TableHead
-              {...getSortableColumnProps("is_active", sort, onSort)}
-              className="text-center font-semibold cursor-pointer"
-            >
-              <div className="flex items-center justify-center gap-2">
-                {t("status")}
-                {renderSortIcon("is_active", sort)}
-              </div>
-            </TableHead>
-            <TableHead className="text-right font-semibold">{t("action")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        {renderTable()}
-      </Table>
-    </div>
+    <TableTemplate
+      columns={columns}
+      dataSource={dataSource}
+      totalItems={locations.length}
+      totalPages={1}
+      currentPage={1}
+      onPageChange={onPageChange}
+      isLoading={isLoading}
+    />
   );
 }
