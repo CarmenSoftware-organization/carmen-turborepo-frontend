@@ -13,7 +13,7 @@ import {
   BuTypeGetAllDto,
 } from "@/dtos/bu-type.dto";
 import { useURL } from "@/hooks/useURL";
-import { Plus, Printer, SquarePen, Trash2, FileDown } from "lucide-react";
+import { Plus, Printer, FileDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -27,29 +27,22 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Table,
-  TableCell,
-  TableRow,
-  TableBody,
-  TableHeader,
-  TableHead,
-} from "@/components/ui/table";
-import {
   useBuTypeMutation,
   useBuTypeQuery,
   useDeleteBuType,
   useUpdateBuType,
 } from "@/hooks/useBuType";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import { Badge } from "@/components/ui/badge";
 import { FormBuType } from "./FormBuType";
 import { toastSuccess } from "@/components/ui-custom/Toast";
+import BuTypeList from "./BuTypeList";
+import { parseSortString } from "@/utils/table-sort";
 
 export default function BusinessTypeComponent() {
   const { token, tenantId } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tBusinessType = useTranslations("BusinessType");
+  const [page, setPage] = useURL("page");
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
   const [filter, setFilter] = useURL("filter");
@@ -61,9 +54,15 @@ export default function BusinessTypeComponent() {
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
 
-  const { buTypes, isLoading } = useBuTypeQuery(token, tenantId);
+  const { buTypes, isLoading } = useBuTypeQuery(token, tenantId, {
+    page: page ? parseInt(page) : 1,
+    search,
+    filter,
+    sort
+  });
 
   const [buTypesData, setBuTypesData] = useState<BuTypeGetAllDto[]>([]);
+  const [selectedBuTypes, setSelectedBuTypes] = useState<string[]>([]);
 
   useEffect(() => {
     if (buTypes?.data) {
@@ -94,11 +93,30 @@ export default function BusinessTypeComponent() {
     [tHeader]
   );
 
+
   useEffect(() => {
     if (search) {
       setSort("");
     }
   }, [search, setSort]);
+
+  const handleSelectAll = useCallback((isChecked: boolean) => {
+    if (isChecked) {
+      setSelectedBuTypes(buTypesData.map((bu) => bu.id));
+    } else {
+      setSelectedBuTypes([]);
+    }
+  }, [buTypesData]);
+
+  const handleSelect = useCallback((id: string) => {
+    setSelectedBuTypes((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter(buId => buId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  }, []);
 
   const handleSetFilter = useCallback(
     (filterValue: string) => {
@@ -107,12 +125,22 @@ export default function BusinessTypeComponent() {
     [setFilter]
   );
 
-  const handleSetSort = useCallback(
-    (sortValue: string) => {
-      setSort(sortValue);
-    },
-    [setSort]
-  );
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort]);
+
   const handleAddNew = useCallback(() => {
     setEditingProfile(null);
     setEditingProfileId(null);
@@ -172,7 +200,7 @@ export default function BusinessTypeComponent() {
           <SortComponent
             fieldConfigs={sortFields}
             sort={sort}
-            setSort={handleSetSort}
+            setSort={handleSort}
             data-id="delivery-point-sort-dropdown"
           />
         </div>
@@ -188,7 +216,7 @@ export default function BusinessTypeComponent() {
       setStatusOpen,
       sortFields,
       sort,
-      handleSetSort,
+      handleSort,
     ]
   );
 
@@ -207,77 +235,9 @@ export default function BusinessTypeComponent() {
     }
   }, [buTypesData]);
 
-  const content = useMemo(() => {
-    return (
-      <Table className="border">
-        <TableHeader className="bg-muted">
-          <TableRow>
-            <TableHead className="w-10">#</TableHead>
-            <TableHead className="w-56">{tHeader("name")}</TableHead>
-            <TableHead className="w-56">{tHeader("note")}</TableHead>
-            <TableHead className="w-40">{tHeader("status")}</TableHead>
-            <TableHead className="text-right">{tHeader("action")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        {isLoading ? (
-          <TableBodySkeleton rows={5} />
-        ) : (
-          <TableBody>
-            {buTypesData?.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center text-muted-foreground py-8"
-                >
-                  {tBusinessType("no_business_type")}
-                </TableCell>
-              </TableRow>
-            ) : (
-              buTypesData?.map((bu: BuTypeGetAllDto, index: number) => (
-                <TableRow key={bu.id} className="hover:bg-muted/50">
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>
-                    <div className="flex flex-col gap-1">
-                      <p className="font-medium">{bu.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {bu.description}
-                      </p>
-                    </div>
-                  </TableCell>
-                  <TableCell>{bu.note}</TableCell>
-                  <TableCell>
-                    <Badge variant={bu.is_active ? "active" : "inactive"}>
-                      {bu.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end space-x-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(bu.id)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <SquarePen className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeleteProfileId(bu.id)}
-                        className="h-8 w-8 p-0 hover:text-destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        )}
-      </Table>
-    );
-  }, [buTypesData, isLoading, tBusinessType, tHeader, handleEdit]);
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
 
   const handleCreate = (data: BuTypeFormDto) => {
     createBuType(data, {
@@ -302,15 +262,41 @@ export default function BusinessTypeComponent() {
     });
   };
 
-  const handleDelete = (id: string) => {
-    deleteBuType(undefined, {
-      onSuccess: () => {
-        setBuTypesData((prev) => prev.filter((bu) => bu.id !== id));
-        toastSuccess({ message: tBusinessType("business_type_deleted") });
-        setDeleteProfileId(null);
-      },
-    });
+  const handleDelete = useCallback((id: string) => {
+    setDeleteProfileId(id);
+  }, []);
+
+  const confirmDelete = () => {
+    if (deleteProfileId) {
+      deleteBuType(undefined, {
+        onSuccess: () => {
+          setBuTypesData((prev) => prev.filter((bu) => bu.id !== deleteProfileId));
+          toastSuccess({ message: tBusinessType("business_type_deleted") });
+          setDeleteProfileId(null);
+        },
+      });
+    }
   };
+
+  const content = useMemo(() => {
+    return (
+      <BuTypeList
+        buTypes={buTypesData}
+        isLoading={isLoading}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        currentPage={parseInt(page || "1")}
+        totalPages={buTypes?.paginate.pages ?? 1}
+        onPageChange={handlePageChange}
+        totalItems={buTypes?.paginate.total ?? buTypes?.data?.length ?? 0}
+        sort={parseSortString(sort)}
+        onSort={handleSort}
+        selectedBuTypes={selectedBuTypes}
+        onSelectAll={handleSelectAll}
+        onSelect={handleSelect}
+      />
+    );
+  }, [buTypesData, isLoading, handleEdit, handleDelete, page, sort, handlePageChange, handleSort, selectedBuTypes, handleSelectAll, handleSelect]);
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
@@ -363,7 +349,7 @@ export default function BusinessTypeComponent() {
           <AlertDialogFooter>
             <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteProfileId && handleDelete(deleteProfileId)}
+              onClick={confirmDelete}
               className="bg-destructive hover:bg-destructive/90"
             >
               {tCommon("delete")}

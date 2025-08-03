@@ -51,7 +51,6 @@ export const FormTaxProfile = ({
     },
   });
 
-  // Reset form when dialog opens/closes or editing profile changes
   useEffect(() => {
     if (open) {
       if (editingProfile) {
@@ -133,7 +132,7 @@ export const FormTaxProfile = ({
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <FormBoolean {...field} label={tCommon("active")} type="switch" />
+                    <FormBoolean {...field} label={tCommon("active")} type="checkbox" />
                   </FormControl>
                 </FormItem>
               )}

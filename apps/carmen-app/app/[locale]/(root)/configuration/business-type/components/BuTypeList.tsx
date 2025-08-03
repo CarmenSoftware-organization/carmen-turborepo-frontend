@@ -1,16 +1,16 @@
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
+import { BuTypeGetAllDto } from "@/dtos/bu-type.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import { Activity, List, MoreVertical, Trash2 } from "lucide-react";
+import { Activity, Info, List, MoreVertical, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
-interface TaxProfileListProps {
-    readonly taxProfiles: TaxProfileGetAllDto[];
+interface BuTypeListProps {
+    readonly buTypes: BuTypeGetAllDto[];
     readonly isLoading: boolean;
     readonly onEdit: (id: string) => void;
     readonly onDelete: (id: string) => void;
@@ -20,13 +20,13 @@ interface TaxProfileListProps {
     readonly totalItems: number;
     readonly sort?: SortConfig;
     readonly onSort?: (field: string) => void;
-    readonly selectedTaxProfiles: string[];
+    readonly selectedBuTypes: string[];
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
 }
 
-export default function TaxProfileList({
-    taxProfiles,
+export default function BuTypeList({
+    buTypes,
     isLoading,
     onEdit,
     onDelete,
@@ -36,18 +36,17 @@ export default function TaxProfileList({
     totalItems,
     sort,
     onSort,
-    selectedTaxProfiles,
+    selectedBuTypes,
     onSelectAll,
-    onSelect,
-}: TaxProfileListProps) {
+    onSelect
+}: BuTypeListProps) {
     const t = useTranslations("TableHeader");
-    const tCommon = useTranslations("Common");
 
     const columns: TableColumn[] = [
         {
             title: (
                 <Checkbox
-                    checked={selectedTaxProfiles.length === taxProfiles.length}
+                    checked={selectedBuTypes.length === buTypes.length}
                     onCheckedChange={onSelectAll}
                 />
             ),
@@ -56,7 +55,7 @@ export default function TaxProfileList({
             width: "w-8",
             align: "center",
             render: (_: any, record: TableDataSource) => {
-                return <Checkbox checked={selectedTaxProfiles.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
+                return <Checkbox checked={selectedBuTypes.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
             },
         },
         {
@@ -82,18 +81,37 @@ export default function TaxProfileList({
             icon: <List className="h-4 w-4" />,
             align: "left",
             render: (_: any, record: TableDataSource) => {
-                const taxProfile = taxProfiles.find(tp => tp.id === record.key);
-                if (!taxProfile) return null;
+                const buType = buTypes.find(bt => bt.id === record.key);
+                if (!buType) return null;
                 return (
                     <button
                         type="button"
                         className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
-                        onClick={() => onEdit(taxProfile.id)}
+                        onClick={() => onEdit(buType.id)}
                     >
-                        {taxProfile.name}
+                        {buType.name}
                     </button>
                 );
             },
+        },
+        {
+            title: "Description",
+            dataIndex: "description",
+            key: "description",
+            icon: <Info className="h-4 w-4" />,
+            align: "left",
+            render: (_: any, record: TableDataSource) => {
+                const buType = buTypes.find(bt => bt.id === record.key);
+                if (!buType) return null;
+                return <p className="truncate max-w-[300px] inline-block">{buType.description}</p>;
+            },
+        },
+        {
+            title: "Note",
+            dataIndex: "note",
+            key: "note",
+            icon: <Info className="h-4 w-4" />,
+            align: "left",
         },
         {
             title: (
@@ -108,16 +126,13 @@ export default function TaxProfileList({
             ),
             dataIndex: "is_active",
             key: "is_active",
-            width: "w-0 md:w-20",
-            align: "center",
             icon: <Activity className="h-4 w-4" />,
-            render: (is_active: boolean) => (
-                <Badge
-                    variant={is_active ? "active" : "inactive"}
-                >
-                    {is_active ? tCommon("active") : tCommon("inactive")}
-                </Badge>
-            ),
+            align: "center",
+            render: (_: any, record: TableDataSource) => {
+                const buType = buTypes.find(bt => bt.id === record.key);
+                if (!buType) return null;
+                return <Badge variant={buType.is_active ? "active" : "inactive"}>{buType.is_active ? "Active" : "Inactive"}</Badge>;
+            },
         },
         {
             title: t("action"),
@@ -126,8 +141,8 @@ export default function TaxProfileList({
             width: "w-0 md:w-20",
             align: "right",
             render: (_: any, record: TableDataSource) => {
-                const taxProfile = taxProfiles.find(tp => tp.id === record.key);
-                if (!taxProfile) return null;
+                const buType = buTypes.find(bt => bt.id === record.key);
+                if (!buType) return null;
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -138,7 +153,7 @@ export default function TaxProfileList({
                         <DropdownMenuContent>
                             <DropdownMenuItem
                                 className="text-destructive cursor-pointer hover:bg-transparent"
-                                onClick={() => onDelete(taxProfile.id)}
+                                onClick={() => onDelete(buType.id)}
                             >
                                 <Trash2 className="h-4 w-4" />
                                 Delete
@@ -148,14 +163,15 @@ export default function TaxProfileList({
                 );
             },
         },
-    ];
+    ]
 
-    const dataSource: TableDataSource[] = taxProfiles.map((taxProfile, index) => ({
+    const dataSource: TableDataSource[] = buTypes.map((bu, index) => ({
         select: false,
-        key: taxProfile.id,
+        key: bu.id,
         no: index + 1,
-        name: taxProfile.name,
-        is_active: taxProfile.is_active,
+        name: bu.name,
+        note: bu.note,
+        is_active: bu.is_active,
     }));
 
     return (

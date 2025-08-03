@@ -35,15 +35,27 @@ import {
   useUpdateTaxProfile,
 } from "@/hooks/useTaxProfile";
 import TaxProfileList from "./TaxProfileList";
+import { parseSortString } from "@/utils/table-sort";
 
 export function TaxProfileComponent() {
   const { token, tenantId } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tTaxProfile = useTranslations("TaxProfile");
+  const [page, setPage] = useURL("page");
+  const [search, setSearch] = useURL("search");
+  const [sort, setSort] = useURL("sort");
+  const [filter, setFilter] = useURL("filter");
+
   const { taxProfiles: taxProfileData, isLoading } = useTaxProfileQuery(
     token,
-    tenantId
+    tenantId,
+    {
+      search,
+      filter,
+      sort,
+      page: page ? parseInt(page) : 1,
+    },
   );
   const [taxProfiles, setTaxProfiles] = useState<TaxProfileGetAllDto[]>([]);
 
@@ -70,10 +82,13 @@ export function TaxProfileComponent() {
     deleteProfileId ?? ""
   );
 
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [filter, setFilter] = useURL("filter");
+
   const [statusOpen, setStatusOpen] = useState(false);
+  const [selectedTaxProfiles, setSelectedTaxProfiles] = useState<string[]>([]);
+
+  const currentPage = taxProfileData?.paginate.page ?? 1;
+  const totalPages = taxProfileData?.paginate.pages ?? 1;
+  const totalItems = taxProfileData?.paginate.total ?? taxProfileData?.data?.length ?? 0;
 
   const title = tTaxProfile("title");
 
@@ -197,6 +212,45 @@ export function TaxProfileComponent() {
     });
   }, [deleteTaxProfile, tTaxProfile]);
 
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
+
+  const handleSelectAll = (isChecked: boolean) => {
+    if (isChecked) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setSelectedTaxProfiles(taxProfiles?.map((tp: any) => tp.id) ?? []);
+    } else {
+      setSelectedTaxProfiles([]);
+    }
+  };
+
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':');
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort]);
+
+  const handleSelect = (id: string) => {
+    setSelectedTaxProfiles((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter(tpId => tpId !== id);
+      } else {
+        return [...prev, id];
+      }
+    });
+  };
+
   const content = useMemo(() => {
     return (
       <TaxProfileList
@@ -204,6 +258,15 @@ export function TaxProfileComponent() {
         isLoading={isLoading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        totalItems={totalItems}
+        sort={parseSortString(sort)}
+        onSort={handleSort}
+        selectedTaxProfiles={selectedTaxProfiles}
+        onSelectAll={handleSelectAll}
+        onSelect={handleSelect}
       />
     );
   }, [taxProfiles, isLoading, handleEdit, handleDelete]);
