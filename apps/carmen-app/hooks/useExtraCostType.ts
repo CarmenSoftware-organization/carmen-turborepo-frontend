@@ -150,7 +150,7 @@ export const useDeleteExtraCostType = (
         tenantId,
         {},
         "Failed to delete extra cost type",
-        "DELETE"
+        "PUT"
       );
     },
   });
