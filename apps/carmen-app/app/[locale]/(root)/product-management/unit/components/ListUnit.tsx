@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, MoreVertical, List, Info, Settings, Activity } from "lucide-react";
+import { Trash2, MoreHorizontal, List, Info, Settings, Activity } from "lucide-react";
 import { UnitDto } from "@/dtos/unit.dto";
 import { Checkbox } from "@/components/ui/checkbox";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
@@ -141,7 +141,7 @@ export default function ListUnit({
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7">
-                                <MoreVertical className="h-4 w-4" />
+                                <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>

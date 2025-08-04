@@ -1,6 +1,6 @@
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import { Activity, DollarSign, Info, MoreVertical, Trash2 } from "lucide-react";
+import { Activity, DollarSign, Info, MoreHorizontal, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
@@ -140,7 +140,7 @@ export default function ListExtraCost({
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-7 w-7">
-                                <MoreVertical className="h-4 w-4" />
+                                <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>

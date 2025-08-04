@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Activity, Banknote, Coins, List, MoreVertical, Replace, Trash2 } from "lucide-react";
+import { Activity, Banknote, Coins, List, MoreHorizontal, Replace, Trash2 } from "lucide-react";
 import {
   SortConfig,
   getSortableColumnProps,
@@ -195,7 +195,7 @@ export default function CurrencyList({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreVertical className="h-4 w-4" />
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

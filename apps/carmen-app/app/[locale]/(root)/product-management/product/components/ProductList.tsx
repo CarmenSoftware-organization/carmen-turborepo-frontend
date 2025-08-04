@@ -5,7 +5,7 @@ import { ProductGetDto } from "@/dtos/product.dto";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Activity, Box, Folder, Layers, List, MoreVertical, Package } from "lucide-react";
+import { Activity, Box, Folder, Layers, List, MoreHorizontal, Package } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -180,7 +180,7 @@ export default function ProductList({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreVertical className="h-4 w-4" />
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

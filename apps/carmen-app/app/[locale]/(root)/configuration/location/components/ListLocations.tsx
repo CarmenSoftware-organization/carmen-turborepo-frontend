@@ -7,7 +7,7 @@ import {
   renderSortIcon,
 } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import { List, MoreVertical, Trash2 } from "lucide-react";
+import { List, MoreHorizontal, Trash2 } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import ButtonLink from "@/components/ButtonLink";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
@@ -173,7 +173,7 @@ export default function ListLocations({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreVertical className="h-4 w-4" />
+                <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreVertical } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -178,7 +178,7 @@ export default function PurchaseRequestList({
                 onClick={(e) => e.stopPropagation()}
               >
                 <span className="sr-only">More options</span>
-                <MoreVertical className="h-3 w-3" />
+                <MoreHorizontal className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
