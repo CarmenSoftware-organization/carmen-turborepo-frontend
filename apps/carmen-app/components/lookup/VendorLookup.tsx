@@ -30,11 +30,13 @@ export default function VendorLookup({
     const { vendors, isLoading } = useVendor(token, tenantId);
     const [open, setOpen] = useState(false);
 
+    const vendorsData = vendors?.data ?? [];
+
     const selectedVendorName = useMemo(() => {
-        if (!value || !vendors || !Array.isArray(vendors)) return null;
-        const found = vendors.find(vendor => vendor.id === value);
+        if (!value || !vendorsData || !Array.isArray(vendorsData)) return null;
+        const found = vendorsData?.find((vendor: VendorGetDto) => vendor.id === value);
         return found?.name ?? null;
-    }, [value, vendors]);
+    }, [value, vendorsData]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -65,8 +67,8 @@ export default function VendorLookup({
                             <>
                                 <CommandEmpty>No vendors found.</CommandEmpty>
                                 <CommandGroup>
-                                    {vendors && vendors.length > 0 ? (
-                                        vendors.map((vendor: VendorGetDto) => (
+                                    {vendorsData && vendorsData.length > 0 ? (
+                                        vendorsData.map((vendor: VendorGetDto) => (
                                             <CommandItem
                                                 key={vendor.id}
                                                 value={vendor.name}
