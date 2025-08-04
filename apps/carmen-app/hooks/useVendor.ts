@@ -36,7 +36,7 @@ export const useVendor = (
 
   const getVendorName = useCallback(
     (vendorId: string) => {
-      const vendor = vendors?.find((v: VendorGetDto) => v.id === vendorId);
+      const vendor = vendors?.data?.find((v: VendorGetDto) => v.id === vendorId);
       return vendor?.name ?? "";
     },
     [vendors]
