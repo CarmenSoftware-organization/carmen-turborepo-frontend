@@ -21,6 +21,7 @@ interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
   readonly currentPage?: number;
   readonly totalPages?: number;
+  readonly perpage?: number;
   readonly onPageChange?: (page: number) => void;
   readonly isLoading: boolean;
   readonly totalItems: number;
@@ -32,6 +33,7 @@ export default function PurchaseRequestList({
   purchaseRequests,
   currentPage = 1,
   totalPages = 1,
+  perpage = 10,
   onPageChange = () => { },
   isLoading,
   totalItems,
@@ -232,6 +234,7 @@ export default function PurchaseRequestList({
       dataSource={dataSource}
       totalItems={totalItems}
       totalPages={totalPages}
+      perpage={perpage}
       currentPage={currentPage}
       onPageChange={onPageChange}
       isLoading={isLoading}

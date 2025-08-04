@@ -33,7 +33,6 @@ export default function WorkflowLookup({
     const { token, tenantId } = useAuth();
     const { workflows, isLoading } = useWorkflowQuery(token, tenantId, type);
 
-    // Render content based on state
     let selectContent;
 
     if (isLoading) {

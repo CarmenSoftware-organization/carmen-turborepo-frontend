@@ -30,6 +30,7 @@ interface GoodsReceivedNoteListProps {
   readonly totalItems?: number;
   readonly sort: SortConfig;
   readonly onSort: (field: string) => void;
+  readonly perpage?: number;
 }
 
 export default function GoodsReceivedNoteList({
@@ -41,6 +42,7 @@ export default function GoodsReceivedNoteList({
   totalItems,
   sort,
   onSort,
+  perpage,
 }: GoodsReceivedNoteListProps) {
   const t = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -210,6 +212,7 @@ export default function GoodsReceivedNoteList({
       currentPage={currentPage}
       onPageChange={onPageChange}
       isLoading={isLoading}
+      perpage={perpage}
     />
   );
 }

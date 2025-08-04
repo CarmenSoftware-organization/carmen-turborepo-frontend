@@ -49,7 +49,7 @@ export default function CreditNoteComponent() {
     if (!sort) {
       setSort(`${field}:asc`);
     } else {
-      const [currentField, currentDirection] = sort.split(':');
+      const [currentField, currentDirection] = sort.split(':') as [string, string];
 
       if (currentField === field) {
         const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
@@ -62,6 +62,7 @@ export default function CreditNoteComponent() {
   }, [setSort, sort, setPage]);
 
   const totalItems = creditNotes?.paginate.total;
+  const perpage = creditNotes?.paginate.perpage;
 
   const title = "Credit Note";
 
@@ -137,6 +138,7 @@ export default function CreditNoteComponent() {
       totalItems={totalItems}
       currentPage={creditNotes?.paginate.page}
       totalPages={creditNotes?.paginate.pages}
+      perpage={perpage}
       onPageChange={handlePageChange}
       sort={parseSortString(sort) ?? { field: '', direction: 'asc' }}
       onSort={handleSort}

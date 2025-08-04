@@ -1,11 +1,7 @@
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PriceListDto } from "@/dtos/price-list.dto";
-import { Link } from "@/lib/navigation";
-import { format } from "date-fns";
-import { FileText, Trash2 } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useDeletePriceList } from "@/hooks/usePriceList";
@@ -20,19 +16,48 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import ButtonLink from "@/components/ButtonLink";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { formatDateFns } from "@/utils/config-system";
 
 interface ListPriceListProps {
     readonly priceLists?: PriceListDto[];
     readonly isLoading?: boolean;
+    readonly totalItems?: number;
+    readonly totalPages?: number;
+    readonly perpage?: number;
+    readonly currentPage?: number;
+    readonly onPageChange?: (page: number) => void;
+    readonly sort?: SortConfig;
+    readonly onSort?: (field: string) => void;
 }
 
-export default function ListPriceList({ priceLists = [], isLoading = false }: ListPriceListProps) {
-    const { token, tenantId } = useAuth();
+export default function ListPriceList({
+    priceLists = [],
+    isLoading = false,
+    totalItems = 0,
+    totalPages = 1,
+    perpage = 10,
+    currentPage = 1,
+    onPageChange,
+    sort,
+    onSort
+}: ListPriceListProps) {
+    const { token, tenantId, dateFormat } = useAuth();
     const queryClient = useQueryClient();
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [deleteId, setDeleteId] = useState<string>('');
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [selectedPriceList, setSelectedPriceList] = useState<PriceListDto | null>(null);
 
     const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, tenantId, deleteId);
 
@@ -54,106 +79,184 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         }
     };
 
-    const handleDelete = (id: string) => {
-        setDeleteId(id);
+    const handleDeleteClick = (priceList: PriceListDto) => {
+        setSelectedPriceList(priceList);
+        setAlertOpen(true);
+    };
+
+    const handleDelete = () => {
+        if (!selectedPriceList?.id) return;
+
+        setDeleteId(selectedPriceList.id);
         deletePriceList(undefined, {
             onSuccess: () => {
                 toastSuccess({ message: 'Price list deleted successfully' });
                 setDeleteId('');
+                setAlertOpen(false);
+                setSelectedPriceList(null);
                 // Invalidate and refetch price list data
                 queryClient.invalidateQueries({ queryKey: ["price-list", tenantId] });
             },
             onError: () => {
                 toastError({ message: 'Failed to delete price list' });
                 setDeleteId('');
+                setAlertOpen(false);
+                setSelectedPriceList(null);
             }
         });
     };
 
     const isAllSelected = priceLists?.length > 0 && selectedItems.length === priceLists.length;
 
-    if (isLoading) {
-        return <TableBodySkeleton rows={6} />
-    }
+    const columns: TableColumn[] = [
+        {
+            title: (
+                <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={handleSelectAll}
+                />
+            ),
+            dataIndex: "select",
+            key: "select",
+            width: "w-10",
+            align: "center",
+            render: (_: unknown, record: TableDataSource) => {
+                return (
+                    <Checkbox
+                        checked={selectedItems.includes(record.key)}
+                        onCheckedChange={() => handleSelectItem(record.key)}
+                        aria-label={`Select ${record.cn_no || "item"}`}
+                    />
+                );
+            },
+        },
+        {
+            title: "#",
+            dataIndex: "no",
+            key: "no",
+            align: "center",
+        },
+        {
+            title: (
+                <SortableColumnHeader
+                    columnKey="name"
+                    label="Name"
+                    sort={sort ?? { field: '', direction: 'asc' }}
+                    onSort={onSort ?? (() => { })}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
+            ),
+            dataIndex: "name",
+            key: "name",
+            align: "left",
+            render: (_: unknown, record: TableDataSource) => {
+                return (
+                    <ButtonLink href={`/vendor-management/price-list/${record.key}`}>
+                        {record.name}
+                    </ButtonLink>
+                );
+            },
+        },
+        {
+            title: "Start Date",
+            dataIndex: "from_date",
+            key: "from_date",
+            align: "left",
+            render: (_: unknown, record: TableDataSource) => {
+                return (
+                    <p>{formatDateFns(record.from_date ?? '', dateFormat ?? 'dd/MM/yyyy')}</p>
+                );
+            },
+        },
+        {
+            title: "End Date",
+            dataIndex: "to_date",
+            key: "to_date",
+            align: "left",
+            render: (_: unknown, record: TableDataSource) => {
+                return (
+                    <p>{formatDateFns(record.to_date ?? '', dateFormat ?? 'dd/MM/yyyy')}</p>
+                );
+            },
+        },
+        {
+            title: "Action",
+            dataIndex: "action",
+            key: "action",
+            align: "right",
+            render: (_: unknown, record: TableDataSource) => {
+                const currentPriceList = priceLists.find(pl => pl.id === record.key);
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                className="text-destructive"
+                                disabled={isDeleting && deleteId === currentPriceList?.id}
+                                onClick={() => currentPriceList && handleDeleteClick(currentPriceList)}
+                            >
+                                <Trash2 className="h-3 w-3 mr-2" />
+                                Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        },
+    ];
+
+    const dataSource: TableDataSource[] = priceLists?.map((pl, index) => ({
+        key: pl?.id ?? '',
+        no: index + 1,
+        name: pl?.vendor?.name,
+        from_date: pl?.from_date,
+        to_date: pl?.to_date,
+    })) || [];
+
+    console.log(priceLists);
 
     return (
-        <div className="space-y-4">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>
-                            <Checkbox
-                                checked={isAllSelected}
-                                onCheckedChange={handleSelectAll}
-                            />
-                        </TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Start Date</TableHead>
-                        <TableHead>End Date</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {priceLists.length > 0 ? (
-                        priceLists.map((priceList) => (
-                            <TableRow key={priceList.id}>
-                                <TableCell>
-                                    <Checkbox
-                                        checked={selectedItems.includes(priceList.id ?? '')}
-                                        onCheckedChange={() => handleSelectItem(priceList.id ?? '')}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <p>{priceList.vendor.name}</p>
-                                </TableCell>
-                                <TableCell>{format(priceList.from_date, 'dd/MM/yyyy')}</TableCell>
-                                <TableCell>{format(priceList.to_date, 'dd/MM/yyyy')}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant="ghost" size="sm" className="w-7 h-7" asChild>
-                                        <Link href={`/vendor-management/price-list/${priceList.id}`}>
-                                            <FileText className="h-3 w-3" />
-                                        </Link>
-                                    </Button>
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="w-7 h-7"
-                                                disabled={isDeleting && deleteId === priceList.id}
-                                            >
-                                                <Trash2 className="h-3 w-3" />
-                                            </Button>
-                                        </AlertDialogTrigger>
-                                        <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Delete Price List</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                    Are you sure you want to delete this price list for &quot;{priceList.vendor.name}&quot;?
-                                                    This action cannot be undone.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                    onClick={() => handleDelete(priceList.id ?? '')}
-                                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                                >
-                                                    Delete
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                        </AlertDialogContent>
-                                    </AlertDialog>
-                                </TableCell>
-                            </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={2} className="h-24 text-center">No results.</TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </div>
+        <>
+            <TableTemplate
+                columns={columns}
+                dataSource={dataSource}
+                totalItems={totalItems}
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onPageChange={onPageChange}
+                isLoading={isLoading}
+                perpage={perpage}
+            />
+
+            <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Price List</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete this price list for &quot;{selectedPriceList?.vendor?.name}&quot;?
+                            This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setAlertOpen(false)}>
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? 'Deleting...' : 'Delete'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     )
 }

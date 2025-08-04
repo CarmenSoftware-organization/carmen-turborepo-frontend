@@ -169,6 +169,7 @@ export default function PurchaseRequestComponent() {
             purchaseRequests={prs?.data}
             currentPage={currentPageNumber}
             totalPages={prs?.paginate.pages}
+            perpage={prs?.paginate.perpage}
             onPageChange={handlePageChange}
             isLoading={isLoading}
             totalItems={totalItems}

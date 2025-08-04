@@ -8,18 +8,25 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { boolFilterOptions } from "@/constants/options";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
 import { useAuth } from "@/context/AuthContext";
 import { usePriceList } from "@/hooks/usePriceList";
 import SignInDialog from "@/components/SignInDialog";
 import FormDialogPriceList from "./FormDialogPriceList";
+import { SortConfig } from "@/utils/table-sort";
 
 const sortFields = [
     { key: 'name', label: 'Name' },
     { key: 'is_active', label: 'Status' }
 ];
+
+const parseSortString = (sortString: string | null): SortConfig => {
+    if (!sortString) return { field: '', direction: 'asc' };
+    const [field, direction] = sortString.split(':');
+    return { field: field || '', direction: (direction as 'asc' | 'desc') || 'asc' };
+};
 
 export default function PriceListComponent() {
     const tCommon = useTranslations('Common');
@@ -30,20 +37,50 @@ export default function PriceListComponent() {
     const { token, tenantId } = useAuth();
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [addDialogOpen, setAddDialogOpen] = useState(false);
+    const [page, setPage] = useURL('page');
 
     const { data: response, isLoading, isUnauthorized } = usePriceList(token, tenantId, {
+        page,
         search,
         filter,
         sort
     });
 
     const priceLists = response?.data ?? [];
+    const totalItems = response?.paginate.total ?? 0;
+    const totalPages = response?.paginate.pages ?? 1;
+    const perpage = response?.paginate.perpage ?? 10;
+    const currentPage = response?.paginate.page ?? 1;
 
     useEffect(() => {
         if (isUnauthorized) {
             setLoginDialogOpen(true);
         }
     }, [isUnauthorized]);
+
+    const handleSort = useCallback((field: string) => {
+        if (!sort) {
+            setSort(`${field}:asc`);
+        } else {
+            const [currentField, currentDirection] = sort.split(':') as [string, string];
+
+            if (currentField === field) {
+                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+                setSort(`${field}:${newDirection}`);
+            } else {
+                setSort(`${field}:asc`);
+            }
+            setPage("1");
+        }
+    }, [setSort, sort, setPage]);
+
+    const handlePageChange = useCallback(
+        (newPage: number) => {
+            setPage(newPage.toString());
+        },
+        [setPage]
+    );
+
 
     const actionButtons = (
         <div className="action-btn-container" data-id="price-list-list-action-buttons">
@@ -97,7 +134,19 @@ export default function PriceListComponent() {
         </div>
     )
 
-    const content = <ListPriceList priceLists={priceLists} isLoading={isLoading} />
+    const content = (
+        <ListPriceList
+            priceLists={priceLists}
+            isLoading={isLoading}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            currentPage={currentPage}
+            perpage={perpage}
+            onPageChange={handlePageChange}
+            sort={parseSortString(sort)}
+            onSort={handleSort}
+        />
+    )
 
     return (
         <>
@@ -114,3 +163,5 @@ export default function PriceListComponent() {
         </>
     )
 }
+
+

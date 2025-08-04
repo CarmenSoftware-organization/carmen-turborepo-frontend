@@ -40,6 +40,7 @@ export default function GoodsReceivedNoteComponent() {
 
 
     const totalItems = grns?.paginate?.total;
+    const perpage = grns?.paginate?.perpage;
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -121,6 +122,7 @@ export default function GoodsReceivedNoteComponent() {
         totalItems={totalItems}
         sort={parseSortString(sort) || { field: '', direction: 'asc' }}
         onSort={handleSort}
+        perpage={perpage}
     />
 
     return (

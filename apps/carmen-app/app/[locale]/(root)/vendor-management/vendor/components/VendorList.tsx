@@ -1,191 +1,196 @@
 import { VendorGetDto } from "@/dtos/vendor-management";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FileText, Trash2 } from "lucide-react";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import PaginationComponent from "@/components/PaginationComponent";
-import { Link } from "@/lib/navigation";
-import { Badge } from "@/components/ui/badge";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import CardLoading from "@/components/loading/CardLoading";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { Checkbox } from "@/components/ui/checkbox";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import ButtonLink from "@/components/ButtonLink";
+import { Button } from "@/components/ui/button";
+import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface VendorListProps {
   readonly vendors: VendorGetDto[];
-  readonly onDeleteClick?: (vendor: VendorGetDto) => void;
-  readonly isLoading?: boolean;
+  readonly getVendorName: (vendorId: string) => string;
+  readonly isLoading: boolean;
   readonly currentPage: number;
   readonly totalPages: number;
   readonly onPageChange: (page: number) => void;
+  readonly sort: SortConfig;
+  readonly onSort: (field: string) => void;
+  readonly totalItems: number;
+  readonly perpage: number;
 }
 
 export default function VendorList({
   vendors,
-  onDeleteClick,
-  isLoading = false,
+  getVendorName,
+  isLoading,
   currentPage,
   totalPages,
   onPageChange,
+  sort,
+  onSort,
+  totalItems,
+  perpage
 }: VendorListProps) {
-  const tHeader = useTranslations("TableHeader");
+  const tCommon = useTranslations("Common");
+  const tVendor = useTranslations("Vendor");
 
-  const handleDeleteClick = (vendor: VendorGetDto) => {
-    if (onDeleteClick) {
-      onDeleteClick(vendor);
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  const handleSelectItem = (id: string) => {
+    if (!id) return;
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === vendors.length) {
+      setSelectedItems([]);
+    } else {
+      const allIds = vendors
+        .filter((v) => v && v.id)
+        .map((v) => v.id as string);
+      setSelectedItems(allIds);
     }
   };
 
-  return (
-    <div className="space-y-4">
-      <div className="hidden md:block relative">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-10 text-center">#</TableHead>
-              <TableHead className="w-40 text-left">
-                {tHeader("name")}
-              </TableHead>
-              <TableHead className="w-60">{tHeader("description")}</TableHead>
-              <TableHead>{tHeader("business_type")}</TableHead>
-              <TableHead className="w-20 text-left">
-                {tHeader("status")}
-              </TableHead>
-              <TableHead className="text-right">{tHeader("action")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          {isLoading ? (
-            <TableBodySkeleton rows={5} />
-          ) : (
-            <TableBody>
-              {vendors.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center">
-                    No vendors found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                vendors.map((vendor, index) => (
-                  <TableRow key={vendor.id}>
-                    <TableCell className="text-center w-10">
-                      {index + 1}
-                    </TableCell>
-                    <TableCell>
-                      {vendor.name}
-                    </TableCell>
-                    <TableCell>
-                      {vendor.description}
-                    </TableCell>
-                    <TableCell>{vendor.business_type_name ?? "-"}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={vendor.is_active ? "active" : "inactive"}
-                      >
-                        {vendor.is_active ? "Active" : "Inactive"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7"
-                        asChild
-                      >
-                        <Link href={`/vendor-management/vendor/${vendor.id}`}>
-                          <FileText className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteClick(vendor)}
-                        className="h-7 w-7"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          )}
-        </Table>
-      </div>
+  const isAllSelected =
+    vendors?.length > 0 && selectedItems.length === vendors.length;
 
-      <div className="grid gap-4 md:hidden">
-        {isLoading ? (
-          <CardLoading />
-        ) : vendors.length === 0 ? (
-          <div className="text-center">No vendors found</div>
-        ) : (
-          vendors.map((vendor) => (
-            <Card key={vendor.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium">{vendor.name}</p>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${vendor.is_active ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}
-                    >
-                      {vendor.is_active ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      asChild
-                    >
-                      <Link href={`/vendor-management/vendor/${vendor.id}`}>
-                        <FileText className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => handleDeleteClick(vendor)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="p-4 pt-0">
-                <div className="grid gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Description</p>
-                    <p className="text-sm font-medium">{vendor.description}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">
-                      Business Type
-                    </p>
-                    <p className="text-sm font-medium">
-                      {vendor.business_type_name ?? "-"}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+  const title = tVendor("title");
 
-      {totalPages > 1 && (
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
+  const columns: TableColumn[] = [
+    {
+      title: (
+        <Checkbox
+          checked={isAllSelected}
+          onCheckedChange={handleSelectAll}
         />
-      )}
-    </div>
+      ),
+      dataIndex: "select",
+      key: "select",
+      width: "w-10",
+      align: "center",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <Checkbox
+            checked={selectedItems.includes(record.key)}
+            onCheckedChange={() => handleSelectItem(record.key)}
+            aria-label={`Select ${record.name || "item"}`}
+          />
+        );
+      },
+    },
+    {
+      title: "#",
+      dataIndex: "no",
+      key: "no",
+      align: "center",
+    },
+    {
+      title: (
+        <SortableColumnHeader
+          columnKey="name"
+          label="Name"
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
+      dataIndex: "name",
+      key: "name",
+      align: "left",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <ButtonLink href={`/vendor-management/vendor/${record.key}`}>
+            {record.name}
+          </ButtonLink>
+        );
+      },
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      align: "left",
+    },
+    {
+      title: "Business Type",
+      dataIndex: "business_type_name",
+      key: "business_type_name",
+      align: "left",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      align: "center",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <Badge variant={record.status ? "active" : "inactive"}>
+            {record.status ? tCommon('active') : tCommon('inactive')}
+          </Badge>
+        );
+      },
+    },
+
+    {
+      title: "Action",
+      dataIndex: "action",
+      key: "action",
+      align: "right",
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className="text-destructive"
+                onClick={() => console.log(record.id)}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
+
+  const dataSource: TableDataSource[] = vendors?.map((v, index) => ({
+    key: v?.id || "",
+    no: index + 1,
+    name: v?.name,
+    description: v?.description,
+    business_type_name: v?.business_type_name,
+    status: v?.is_active,
+  })) || [];
+
+  return (
+    <TableTemplate
+      columns={columns}
+      dataSource={dataSource}
+      totalItems={totalItems}
+      totalPages={totalPages}
+      currentPage={currentPage}
+      onPageChange={onPageChange}
+      isLoading={isLoading}
+      perpage={perpage}
+    />
   );
 }

@@ -24,6 +24,7 @@ interface CreditNoteListProps {
   readonly totalItems: number;
   readonly currentPage: number;
   readonly totalPages: number;
+  readonly perpage: number;
   readonly onPageChange: (page: number) => void;
   readonly sort: SortConfig;
   readonly onSort: (field: string) => void;
@@ -36,6 +37,7 @@ export default function CreditNoteList({
   totalItems,
   currentPage,
   totalPages,
+  perpage,
   onPageChange,
   sort,
   onSort
@@ -200,19 +202,8 @@ export default function CreditNoteList({
                 <Trash2 className="h-4 w-4" />
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuItem>Print GRN</DropdownMenuItem>
-              <DropdownMenuItem>Download PDF</DropdownMenuItem>
-              <DropdownMenuItem>Copy Reference</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          // <div className="flex items-center justify-end">
-          //   <ButtonLink href={`/procurement/credit-note/${record.key}/edit`}>
-          //     <FileText className="h-4 w-4" />
-          //   </ButtonLink>
-          //   <Button variant="ghost" size="sm" className="h-7 w-7">
-          //     <Trash2 className="h-4 w-4" />
-          //   </Button>
-          // </div>
         );
       },
     },
@@ -242,6 +233,7 @@ export default function CreditNoteList({
           currentPage={currentPage}
           onPageChange={onPageChange}
           isLoading={isLoading}
+          perpage={perpage}
         />
       </div>
 

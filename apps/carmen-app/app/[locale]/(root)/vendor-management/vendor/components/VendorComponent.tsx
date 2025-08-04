@@ -14,36 +14,60 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 import { useVendor } from "@/hooks/useVendor";
 import { Link } from "@/lib/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useURL } from "@/hooks/useURL";
+import { useCallback, useEffect, useState } from "react";
+import { parseSortString } from "@/utils/table-sort";
+
+const sortFields = [{ key: "name", label: "Name" }];
+
 
 export default function VendorComponent() {
     const tCommon = useTranslations('Common');
     const tVendor = useTranslations('Vendor');
     const tAction = useTranslations('Action');
-    const {
+    const { token, tenantId } = useAuth();
+    const [search, setSearch] = useURL("search");
+    const [status, setStatus] = useURL("status");
+    const [statusOpen, setStatusOpen] = useState(false);
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [sort, setSort] = useURL("sort");
+    const [page, setPage] = useURL("page");
+
+    const { vendors, getVendorName, isLoading, isUnauthorized } = useVendor(token, tenantId, {
         search,
-        setSearch,
-        filter,
-        setFilter,
-        statusOpen,
-        setStatusOpen,
         sort,
-        setSort,
-        page,
-        vendors,
-        loginDialogOpen,
-        setLoginDialogOpen,
-        deleteDialogOpen,
-        setDeleteDialogOpen,
-        isDeleting,
-        isLoading,
-        isUnauthorized,
-        totalPages,
-        sortFields,
-        handlePageChange,
-        handleDeleteClick,
-        handleConfirmDelete,
-        handleFormSuccess
-    } = useVendor();
+        page: page ? parseInt(page) : 1,
+    });
+
+    const handlePageChange = useCallback(
+        (newPage: number) => {
+            setPage(newPage.toString());
+        },
+        [setPage]
+    );
+
+    useEffect(() => {
+        if (isUnauthorized) {
+            setLoginDialogOpen(true);
+        }
+    }, [isUnauthorized]);
+
+    const handleSort = useCallback((field: string) => {
+        if (!sort) {
+            setSort(`${field}:asc`);
+        } else {
+            const [currentField, currentDirection] = sort.split(':') as [string, string];
+
+            if (currentField === field) {
+                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+                setSort(`${field}:${newDirection}`);
+            } else {
+                setSort(`${field}:asc`);
+            }
+            setPage("1");
+        }
+    }, [setSort, sort, setPage]);
 
     const title = tVendor('title');
 
@@ -86,8 +110,8 @@ export default function VendorComponent() {
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
                     options={boolFilterOptions}
-                    value={filter}
-                    onChange={setFilter}
+                    value={status}
+                    onChange={setStatus}
                     open={statusOpen}
                     onOpenChange={setStatusOpen}
                     data-id="vendor-list-status-search-dropdown"
@@ -106,23 +130,18 @@ export default function VendorComponent() {
     );
 
     const content = (
-        <>
-            {isUnauthorized ? (
-                <UnauthorizedMessage
-                    onRetry={handleFormSuccess}
-                    onLogin={() => setLoginDialogOpen(true)}
-                />
-            ) : (
-                <VendorList
-                    vendors={vendors}
-                    onDeleteClick={handleDeleteClick}
-                    isLoading={isLoading}
-                    currentPage={parseInt(page || '1')}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                />
-            )}
-        </>
+        <VendorList
+            vendors={vendors?.data}
+            getVendorName={getVendorName}
+            isLoading={isLoading}
+            currentPage={parseInt(page || '1')}
+            totalPages={vendors?.paginate.pages ?? 1}
+            onPageChange={handlePageChange}
+            sort={parseSortString(sort) ?? { field: '', direction: 'asc' }}
+            onSort={handleSort}
+            totalItems={vendors?.paginate.total ?? 0}
+            perpage={vendors?.paginate.perpage ?? 10}
+        />
     );
 
     return (
@@ -137,14 +156,6 @@ export default function VendorComponent() {
             <SignInDialog
                 open={loginDialogOpen}
                 onOpenChange={setLoginDialogOpen}
-            />
-            <DeleteConfirmDialog
-                open={deleteDialogOpen}
-                onOpenChange={setDeleteDialogOpen}
-                onConfirm={handleConfirmDelete}
-                title={tVendor('delete_vendor')}
-                description={tVendor('delete_vendor_description')}
-                isLoading={isDeleting}
             />
         </>
     )
