@@ -17,6 +17,8 @@ import {
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import { VendorGetDto } from "@/dtos/vendor-management";
 
 export default function VendorLookup({
     value,
@@ -24,7 +26,8 @@ export default function VendorLookup({
     placeholder = "Select vendor",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { vendors, isLoading } = useVendor();
+    const { token, tenantId } = useAuth();
+    const { vendors, isLoading } = useVendor(token, tenantId);
     const [open, setOpen] = useState(false);
 
     const selectedVendorName = useMemo(() => {
@@ -63,7 +66,7 @@ export default function VendorLookup({
                                 <CommandEmpty>No vendors found.</CommandEmpty>
                                 <CommandGroup>
                                     {vendors && vendors.length > 0 ? (
-                                        vendors.map((vendor) => (
+                                        vendors.map((vendor: VendorGetDto) => (
                                             <CommandItem
                                                 key={vendor.id}
                                                 value={vendor.name}

@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/select";
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
 import VendorLookup from "@/components/lookup/VendorLookup";
-import { useVendor } from "@/hooks/useVendor";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { useCurrency } from "@/hooks/useCurrency";
 import GrnLookup from "@/components/lookup/GrnLookup";
@@ -43,10 +42,10 @@ interface HeadCnFormProps {
   readonly mode: formType;
   readonly cnNo?: string;
   readonly getCnReasonName: (id: string) => string | null;
+  readonly getVendorName: (id: string) => string | null;
 }
 
-export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: HeadCnFormProps) {
-  const { getVendorName } = useVendor();
+export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVendorName }: HeadCnFormProps) {
   const { getCurrencyCode, getCurrencyExchangeRate } = useCurrency();
   const currencyId = useWatch({
     control,
@@ -142,7 +141,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName }: Hea
               </FormLabel>
               {mode === formType.VIEW ? (
                 <Input
-                  value={getVendorName(field.value ?? "")}
+                  value={getVendorName(field.value ?? "") ?? ''}
                   disabled
                   className="bg-muted"
                 />

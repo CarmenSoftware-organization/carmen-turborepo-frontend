@@ -18,7 +18,6 @@ import { Badge } from "@/components/ui/badge";
 
 interface VendorListProps {
   readonly vendors: VendorGetDto[];
-  readonly getVendorName: (vendorId: string) => string;
   readonly isLoading: boolean;
   readonly currentPage: number;
   readonly totalPages: number;
@@ -31,7 +30,6 @@ interface VendorListProps {
 
 export default function VendorList({
   vendors,
-  getVendorName,
   isLoading,
   currentPage,
   totalPages,
@@ -42,8 +40,6 @@ export default function VendorList({
   perpage
 }: VendorListProps) {
   const tCommon = useTranslations("Common");
-  const tVendor = useTranslations("Vendor");
-
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelectItem = (id: string) => {
@@ -66,8 +62,6 @@ export default function VendorList({
 
   const isAllSelected =
     vendors?.length > 0 && selectedItems.length === vendors.length;
-
-  const title = tVendor("title");
 
   const columns: TableColumn[] = [
     {

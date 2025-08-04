@@ -37,6 +37,7 @@ import {
 import { format } from "date-fns";
 import { useCnReasonQuery } from "@/hooks/useCnReason";
 import DetailsAndComments from "@/components/DetailsAndComments";
+import { useVendor } from "@/hooks/useVendor";
 interface CnFormProps {
   readonly mode: formType;
   readonly initialValues?: CreditNoteByIdDto;
@@ -44,6 +45,7 @@ interface CnFormProps {
 
 export default function CnForm({ initialValues, mode }: CnFormProps) {
   const { token, tenantId } = useAuth();
+  const { getVendorName } = useVendor(token, tenantId);
   const createMutation = useCreateCreditNote(token, tenantId);
   const updateMutation = useUpdateCreditNote(
     token,
@@ -286,6 +288,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
               mode={currentMode}
               cnNo={initialValues?.cn_no}
               getCnReasonName={getCnReasonName}
+              getVendorName={getVendorName}
             />
             <Tabs defaultValue="items">
               <TabsList className="w-full">

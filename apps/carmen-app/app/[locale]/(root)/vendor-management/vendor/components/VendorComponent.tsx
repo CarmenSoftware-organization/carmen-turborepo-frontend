@@ -10,8 +10,6 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
 import SignInDialog from "@/components/SignInDialog";
-import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { UnauthorizedMessage } from "@/components/UnauthorizedMessage";
 import { useVendor } from "@/hooks/useVendor";
 import { Link } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -34,7 +32,7 @@ export default function VendorComponent() {
     const [sort, setSort] = useURL("sort");
     const [page, setPage] = useURL("page");
 
-    const { vendors, getVendorName, isLoading, isUnauthorized } = useVendor(token, tenantId, {
+    const { vendors, isLoading, isUnauthorized } = useVendor(token, tenantId, {
         search,
         sort,
         page: page ? parseInt(page) : 1,
@@ -132,7 +130,6 @@ export default function VendorComponent() {
     const content = (
         <VendorList
             vendors={vendors?.data}
-            getVendorName={getVendorName}
             isLoading={isLoading}
             currentPage={parseInt(page || '1')}
             totalPages={vendors?.paginate.pages ?? 1}

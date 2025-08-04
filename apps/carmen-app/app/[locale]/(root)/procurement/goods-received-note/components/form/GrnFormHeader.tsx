@@ -42,7 +42,7 @@ interface GrnFormHeaderProps {
 
 export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   const { token, tenantId } = useAuth();
-  const { getVendorName } = useVendor();
+  const { getVendorName } = useVendor(token, tenantId);
   const { getCurrencyCode } = useCurrency();
   const { getCreditTermName } = useCreditTermQuery(token, tenantId);
 
