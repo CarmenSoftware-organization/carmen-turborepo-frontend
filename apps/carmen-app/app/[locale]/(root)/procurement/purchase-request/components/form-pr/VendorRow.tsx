@@ -1,8 +1,9 @@
 import { Label } from "@/components/ui/label";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
-import { useCurrency } from "@/hooks/useCurrency";
 import { cn } from "@/lib/utils";
 import PriceListDialog from "./PriceListDialog";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
+import { useAuth } from "@/context/AuthContext";
 
 interface ItemDetailAccordionProps {
     readonly item: PurchaseRequestDetail;
@@ -20,7 +21,8 @@ const FieldsVendor = ({ label, value, color }: { label: string, value: string, c
 export default function VendorRow({
     item,
 }: ItemDetailAccordionProps) {
-    const { getCurrencyCode } = useCurrency();
+    const { token, tenantId } = useAuth();
+    const { getCurrencyCode } = useCurrenciesQuery(token, tenantId);
     const subTotal = +item.pricelist_price * item.approved_qty;
     const netAmount = subTotal - item.discount_amount;
     const taxRate = item.tax_rate;

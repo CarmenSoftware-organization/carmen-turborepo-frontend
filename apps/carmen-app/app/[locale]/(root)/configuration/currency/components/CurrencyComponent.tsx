@@ -12,51 +12,163 @@ import CurrencyList from "./CurrencyList";
 import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import SignInDialog from "@/components/SignInDialog";
-import { useCurrency } from "@/hooks/useCurrency";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { SortConfig, SortDirection } from "@/utils/table-sort";
+import { useAuth } from "@/context/AuthContext";
+import { useCurrenciesQuery, useCurrencyMutation, useCurrencyUpdateMutation, useCurrencyDeleteMutation } from "@/hooks/useCurrencie";
+import { useURL } from "@/hooks/useURL";
+import { CurrencyGetDto, CurrencyCreateDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
+import { useQueryClient } from "@tanstack/react-query";
+import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 
 export default function CurrencyComponent() {
+    const { token, tenantId } = useAuth();
+    const [search, setSearch] = useURL('search');
+    const [filter, setFilter] = useURL('filter');
+    const [statusOpen, setStatusOpen] = useState(false);
+    const [sort, setSort] = useURL('sort');
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState<CurrencyGetDto | undefined>();
+    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [page, setPage] = useURL("page");
+    const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
     const boolFilterOptions = useBoolFilterOptions();
+    const queryClient = useQueryClient();
 
-    const {
-        // State
-        search,
-        setSearch,
-        filter,
-        setFilter,
-        statusOpen,
-        setStatusOpen,
-        sort,
-        setSort,
-        currencies,
-        isLoading,
-        isSubmitting,
-        dialogOpen,
-        setDialogOpen,
-        confirmDialogOpen,
-        setConfirmDialogOpen,
-        selectedCurrency,
-        totalPages,
-        totalItems,
-        loginDialogOpen,
-        setLoginDialogOpen,
-        page,
+    // เพิ่ม parameters สำหรับ search และ pagination
+    const params = useMemo(() => ({
+        search: search || undefined,
+        page: page || '1',
+        filter: filter || undefined,
+        sort: sort || undefined
+    }), [search, page, filter, sort]);
 
-        // Functions
-        handlePageChange,
-        sortFields,
-        handleAdd,
-        handleEdit,
-        handleToggleStatus,
-        handleConfirmToggle,
-        handleSubmit,
-        handleSelectAll,
-        handleSelect,
-        selectedCurrencies,
-    } = useCurrency();
+    const { currencies: data, isLoading } = useCurrenciesQuery(token, tenantId, params);
+    const currenciesData = data?.data ?? [];
+    const currencies = Array.isArray(data) ? data : currenciesData;
+
+    const totalPages = data?.paginate?.pages ?? 1;
+    const totalItems = data?.paginate?.total ?? 0;
+    const perpage = data?.paginate?.per_page ?? 10;
+
+    const handleAdd = useCallback(() => {
+        setSelectedCurrency(undefined);
+        setDialogOpen(true);
+    }, []);
+
+    const handleEdit = useCallback((currency: CurrencyGetDto) => {
+        setSelectedCurrency(currency);
+        setDialogOpen(true);
+    }, []);
+
+    const deleteStatusMutation = useCurrencyDeleteMutation(token, tenantId);
+
+    const handleToggleStatus = useCallback(async (currency: CurrencyUpdateDto) => {
+        if (!currency.id) {
+            toastError({ message: 'Invalid currency ID' });
+            return;
+        }
+
+        if (currency.is_active) {
+            setSelectedCurrency(currency);
+            setConfirmDialogOpen(true);
+        } else {
+            // Activate currency logic here
+            toastSuccess({ message: 'Currency activated successfully' });
+        }
+    }, []);
+
+    const handleConfirmToggle = useCallback(() => {
+        if (selectedCurrency?.id) {
+            deleteStatusMutation.mutate(selectedCurrency.id, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({ queryKey: ['currencies'] });
+                    toastSuccess({ message: 'Currency deactivated successfully' });
+                    setConfirmDialogOpen(false);
+                    setSelectedCurrency(undefined);
+                },
+                onError: (error: any) => {
+                    console.error('Error deactivating currency:', error);
+                    toastError({ message: 'Error deactivating currency' });
+                }
+            });
+        }
+    }, [selectedCurrency, deleteStatusMutation, queryClient]);
+
+    // Create currency mutation
+    const createCurrencyMutation = useCurrencyMutation(token, tenantId);
+
+    // Update currency mutation  
+    const updateCurrencyMutation = useCurrencyUpdateMutation(token, tenantId, selectedCurrency?.id || '');
+
+    const handleSubmit = useCallback(async (data: CurrencyCreateDto) => {
+        if (selectedCurrency) {
+            updateCurrencyMutation.mutate({ ...data, id: selectedCurrency.id }, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({ queryKey: ['currencies'] });
+                    toastSuccess({ message: 'Currency updated successfully' });
+                    setDialogOpen(false);
+                    setSelectedCurrency(undefined);
+                },
+                onError: (error: any) => {
+                    console.error('Error updating currency:', error);
+                    toastError({ message: 'Error updating currency' });
+                }
+            });
+        } else {
+            createCurrencyMutation.mutate(data, {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({ queryKey: ['currencies'] });
+                    toastSuccess({ message: 'Currency created successfully' });
+                    setDialogOpen(false);
+                    setSelectedCurrency(undefined);
+                },
+                onError: (error: any) => {
+                    console.error('Error creating currency:', error);
+                    toastError({ message: 'Error creating currency' });
+                }
+            });
+        }
+    }, [selectedCurrency, updateCurrencyMutation, createCurrencyMutation, queryClient]);
+
+    const handlePageChange = useCallback((newPage: number) => {
+        setPage(newPage.toString());
+    }, [setPage]);
+
+    const isSubmitting = createCurrencyMutation.isPending ||
+        updateCurrencyMutation.isPending ||
+        deleteStatusMutation.isPending;
+
+
+
+    // Sort fields configuration
+    const sortFields = useMemo(() => [
+        { key: "name", label: "Name" },
+        { key: "code", label: "Code" },
+        { key: "exchange_rate", label: "Exchange Rate" }
+    ], []);
+
+    // Selection handlers
+    const handleSelectAll = useCallback((checked: boolean) => {
+        if (checked) {
+            setSelectedCurrencies(currencies.map((c: CurrencyGetDto) => c.id));
+        } else {
+            setSelectedCurrencies([]);
+        }
+    }, [currencies]);
+
+    const handleSelect = useCallback((currencyId: string) => {
+        setSelectedCurrencies(prev =>
+            prev.includes(currencyId)
+                ? prev.filter(id => id !== currencyId)
+                : [...prev, currencyId]
+        );
+    }, []);
+
+
 
     // Parse the sort string into field and direction
     const parsedSort = useMemo((): SortConfig | undefined => {
@@ -144,6 +256,7 @@ export default function CurrencyComponent() {
             selectedCurrencies={selectedCurrencies}
             onSelectAll={handleSelectAll}
             onSelect={handleSelect}
+            perpage={perpage}
         />
     );
 

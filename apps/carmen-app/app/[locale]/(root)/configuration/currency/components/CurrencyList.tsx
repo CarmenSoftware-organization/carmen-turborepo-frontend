@@ -29,6 +29,7 @@ interface CurrencyListProps {
   readonly selectedCurrencies: string[];
   readonly onSelectAll: (isChecked: boolean) => void;
   readonly onSelect: (id: string) => void;
+  readonly perpage: number;
 }
 
 
@@ -46,6 +47,7 @@ export default function CurrencyList({
   selectedCurrencies,
   onSelectAll,
   onSelect,
+  perpage,
 }: CurrencyListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -233,6 +235,7 @@ export default function CurrencyList({
       currentPage={currentPage}
       onPageChange={onPageChange}
       isLoading={isLoading}
+      perpage={perpage}
     />
   );
 }

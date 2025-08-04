@@ -30,12 +30,13 @@ import {
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
-import { useCurrency } from "@/hooks/useCurrency";
 import GrnLookup from "@/components/lookup/GrnLookup";
 import CnReasonLookup from "@/components/lookup/CnReasonLookup";
 import { useGrn } from "@/hooks/useGrn";
 import DateInput from "@/components/form-custom/DateInput";
 import CalendarButton from "@/components/form-custom/CalendarButton";
+import { useAuth } from "@/context/AuthContext";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
 
 interface HeadCnFormProps {
   readonly control: Control<CreditNoteFormDto>;
@@ -46,7 +47,8 @@ interface HeadCnFormProps {
 }
 
 export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVendorName }: HeadCnFormProps) {
-  const { getCurrencyCode, getCurrencyExchangeRate } = useCurrency();
+  const { token, tenantId } = useAuth();
+  const { getCurrencyCode, getCurrencyExchangeRate } = useCurrenciesQuery(token, tenantId);
   const currencyId = useWatch({
     control,
     name: "currency_id",

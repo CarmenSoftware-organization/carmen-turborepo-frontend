@@ -15,9 +15,10 @@ import {
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useCurrency } from "@/hooks/useCurrency";
 import { PropsLookup } from "@/dtos/lookup.dto";
 import { CurrencyGetDto } from "@/dtos/currency.dto";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CurrencyLookup({
   value,
@@ -25,14 +26,21 @@ export default function CurrencyLookup({
   placeholder = "Select currency",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { currencies, isLoading } = useCurrency();
+  const { token, tenantId } = useAuth();
+  const { currencies, isLoading } = useCurrenciesQuery(token, tenantId, {
+    perpage: -1,
+  });
+
   const [open, setOpen] = useState(false);
 
+  const currenciesData = currencies?.data ?? [];
+
+
   const selectedCurrencyName = useMemo(() => {
-    if (!value || !currencies || !Array.isArray(currencies)) return null;
-    const found = currencies.find((currency) => currency.id === value);
+    if (!value || !currenciesData || !Array.isArray(currenciesData)) return null;
+    const found = currenciesData.find((currency) => currency.id === value);
     return found?.code ?? null;
-  }, [value, currencies]);
+  }, [value, currenciesData]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -68,8 +76,8 @@ export default function CurrencyLookup({
               <>
                 <CommandEmpty>No currencies found.</CommandEmpty>
                 <CommandGroup>
-                  {currencies && currencies.length > 0 ? (
-                    currencies.map((currency: CurrencyGetDto) => (
+                  {currenciesData && currenciesData.length > 0 ? (
+                    currenciesData.map((currency: CurrencyGetDto) => (
                       <CommandItem
                         key={currency.id}
                         value={currency.id}

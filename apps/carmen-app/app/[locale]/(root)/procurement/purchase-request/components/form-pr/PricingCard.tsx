@@ -1,12 +1,12 @@
 import { Card, CardContent, CardTitle, CardHeader } from "@/components/ui/card";
 import { DollarSign } from "lucide-react";
-import { useCurrency } from "@/hooks/useCurrency";
 import { useVendor } from "@/hooks/useVendor";
 import { formType } from "@/dtos/form.dto";
 import PricingField from "./PricingField";
 import PricingCardSummary from "./PricingCardSummary";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { useAuth } from "@/context/AuthContext";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
 
 interface PricingCardProps {
     readonly item: PurchaseRequestDetail;
@@ -17,7 +17,7 @@ interface PricingCardProps {
 
 export default function PricingCard({ item, onFieldUpdate, mode }: PricingCardProps) {
     const { token, tenantId } = useAuth();
-    const { getCurrencyCode } = useCurrency();
+    const { getCurrencyCode } = useCurrenciesQuery(token, tenantId);
     const { getVendorName } = useVendor(token, tenantId);
 
     return (

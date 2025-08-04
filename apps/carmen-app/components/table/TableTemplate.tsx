@@ -81,92 +81,88 @@ const TableTemplate = ({
     const endItem = totalItems > 0 && dataSource.length > 0 ? Math.min(currentPage * perpage, totalItems) : 0;
 
     return (
-        <div className="border rounded-lg">
-            <Table>
-                <TableHeader className={cn(
-                    "bg-muted"
-                )}>
-                    <TableRow>
-                        {columns.map((column) => (
-                            <TableHead
-                                key={column.key}
-                                className={cn(getAlignClass(column.align), column.width)}
-                            >
-                                <div className={cn("flex items-center gap-1", getFlexAlignClass(column.align))}>
-                                    {column.icon}
-                                    {column.title}
-                                </div>
-                            </TableHead>
-                        ))}
-                    </TableRow>
-                </TableHeader>
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    {columns.map((column) => (
+                        <TableHead
+                            key={column.key}
+                            className={cn(getAlignClass(column.align), column.width)}
+                        >
+                            <div className={cn("flex items-center gap-1", getFlexAlignClass(column.align))}>
+                                {column.icon}
+                                {column.title}
+                            </div>
+                        </TableHead>
+                    ))}
+                </TableRow>
+            </TableHeader>
 
-                {/* Table Body */}
-                {isLoading ? (
-                    <TableBodySkeleton rows={colLength} />
-                ) : (
-                    <TableBody>
-                        {dataSource.length > 0 ? (
-                            dataSource.map((record, index) => (
-                                <TableRow key={record.key}>
-                                    {columns.map((column) => (
-                                        <TableCell
-                                            key={`${record.key}-${column.key}`}
-                                            className={cn(getAlignClass(column.align), column.width)}
-                                        >
-                                            {column.render
-                                                ? column.render(record[column.dataIndex], record, index)
-                                                : record[column.dataIndex]
-                                            }
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={colSpan} className="text-center">
-                                    <div className="flex flex-col items-center justify-center py-8 gap-4 text-gray-500">
-                                        <FileX className="w-12 h-12 text-gray-400" />
-                                        <p className="text-sm">No data found matching your filters.</p>
-                                    </div>
-                                </TableCell>
+            {/* Table Body */}
+            {isLoading ? (
+                <TableBodySkeleton rows={colLength} />
+            ) : (
+                <TableBody>
+                    {dataSource.length > 0 ? (
+                        dataSource.map((record, index) => (
+                            <TableRow key={record.key}>
+                                {columns.map((column) => (
+                                    <TableCell
+                                        key={`${record.key}-${column.key}`}
+                                        className={cn(getAlignClass(column.align), column.width)}
+                                    >
+                                        {column.render
+                                            ? column.render(record[column.dataIndex], record, index)
+                                            : record[column.dataIndex]
+                                        }
+                                    </TableCell>
+                                ))}
                             </TableRow>
-                        )}
-                    </TableBody>
-                )}
-
-                {totalItems > 0 && (
-                    <TableFooter>
+                        ))
+                    ) : (
                         <TableRow>
-                            <TableCell colSpan={colSpan} className="px-4">
-                                <div className="flex items-center justify-between w-full">
-                                    <p className="text-sm text-muted-foreground">
-                                        {dataSource.length > 0 ? (
-                                            <>
-                                                {startItem}-{endItem} of {totalItems} {tCommon("itemFound")}
-                                            </>
-                                        ) : (
-                                            <>
-                                                {totalItems} {tCommon("itemFound")} (filtered out)
-                                            </>
-                                        )}
-                                    </p>
-                                    <div>
-                                        {totalPages > 1 && onPageChange && (
-                                            <PaginationComponent
-                                                currentPage={currentPage}
-                                                totalPages={totalPages}
-                                                onPageChange={onPageChange}
-                                            />
-                                        )}
-                                    </div>
+                            <TableCell colSpan={colSpan} className="text-center">
+                                <div className="flex flex-col items-center justify-center py-8 gap-4 text-gray-500">
+                                    <FileX className="w-12 h-12 text-gray-400" />
+                                    <p className="text-sm">No data found matching your filters.</p>
                                 </div>
                             </TableCell>
                         </TableRow>
-                    </TableFooter>
-                )}
-            </Table>
-        </div>
+                    )}
+                </TableBody>
+            )}
+
+            {totalItems > 0 && (
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={colSpan} className="px-4">
+                            <div className="flex items-center justify-between w-full">
+                                <p className="text-sm">
+                                    {dataSource.length > 0 ? (
+                                        <>
+                                            {startItem}-{endItem} of {totalItems} {tCommon("itemFound")}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {totalItems} {tCommon("itemFound")} (filtered out)
+                                        </>
+                                    )}
+                                </p>
+                                <div>
+                                    {totalPages > 1 && onPageChange && (
+                                        <PaginationComponent
+                                            currentPage={currentPage}
+                                            totalPages={totalPages}
+                                            onPageChange={onPageChange}
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                </TableFooter>
+            )}
+        </Table>
     );
 };
 

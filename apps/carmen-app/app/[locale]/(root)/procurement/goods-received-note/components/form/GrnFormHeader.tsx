@@ -12,7 +12,6 @@ import {
   DollarSign,
   Hash,
 } from "lucide-react";
-
 import {
   FormControl,
   FormField,
@@ -26,7 +25,6 @@ import { formType } from "@/dtos/form.dto";
 import { CreateGRNDto } from "@/dtos/grn.dto";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import { useVendor } from "@/hooks/useVendor";
-import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import CreditTermLookup from "@/components/lookup/CreditTermLookup";
 import { Label } from "@/components/ui/label";
@@ -34,6 +32,7 @@ import { useCreditTermQuery } from "@/hooks/useCreditTerm";
 import { useAuth } from "@/context/AuthContext";
 import CalendarButton from "@/components/form-custom/CalendarButton";
 import DateInput from "@/components/form-custom/DateInput";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
 
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;
@@ -43,10 +42,9 @@ interface GrnFormHeaderProps {
 export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
   const { token, tenantId } = useAuth();
   const { getVendorName } = useVendor(token, tenantId);
-  const { getCurrencyCode } = useCurrency();
   const { getCreditTermName } = useCreditTermQuery(token, tenantId);
+  const { getCurrencyCode, getCurrencyExchangeRate } = useCurrenciesQuery(token, tenantId);
 
-  const { getCurrencyExchangeRate } = useCurrency();
   const currencyId = useWatch({
     control,
     name: "currency_id",

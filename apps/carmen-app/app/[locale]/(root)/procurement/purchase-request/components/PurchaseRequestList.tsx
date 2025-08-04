@@ -157,9 +157,9 @@ export default function PurchaseRequestList({
       key: "total_amount",
       align: "right",
       render: (_: unknown, record: TableDataSource) => {
-        return <div className="text-center">
+        return <p>
           {formatPriceConf(record.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
-        </div>;
+        </p>;
       },
     },
     {

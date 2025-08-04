@@ -13,7 +13,6 @@ import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { format } from "date-fns";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
-import { useCurrency } from "@/hooks/useCurrency";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { Checkbox } from "@/components/ui/checkbox";
 import { buttonVariants, cellContentVariants } from "@/utils/framer-variants";
@@ -28,6 +27,7 @@ import VendorRow from "./VendorRow";
 import BusinessDimensions from "./BusinessDimensions";
 import PricingCard from "./PricingCard";
 import { AnimatePresence, MotionDiv, MotionP, MotionTr } from "@/components/framer-motion/MotionWrapper";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
 interface EditFieldItemProps {
     initValues?: PurchaseRequestDetail[];
     removedItems: Set<string>;
@@ -47,8 +47,8 @@ export default function EditFieldItem({
     onFieldUpdate,
     onRemoveItemClick
 }: EditFieldItemProps) {
-    const { getCurrencyCode } = useCurrency();
-    const { currencyBase } = useAuth();
+    const { token, tenantId, currencyBase } = useAuth();
+    const { getCurrencyCode } = useCurrenciesQuery(token, tenantId);
     return (
         <AnimatePresence>
             {initValues?.filter(item => !removedItems.has(item.id)).map((item, index) => (

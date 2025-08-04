@@ -20,8 +20,9 @@ import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import currenciesIso from "@/constants/currency";
-import { useCurrency } from "@/hooks/useCurrency";
 import { CurrencyGetDto } from "@/dtos/currency.dto";
+import { useAuth } from "@/context/AuthContext";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
 
 type ExchangeRateLookupProps = PropsLookup & {
   baseCurrency?: string;
@@ -37,7 +38,11 @@ const ExchangeRateLookup = forwardRef<HTMLButtonElement, ExchangeRateLookupProps
   showExchangeRate = false,
 }, ref) => {
   const { exchangeRates, isLoading } = useExchangeRate({ baseCurrency });
-  const { currencies } = useCurrency();
+
+  const { token, tenantId } = useAuth();
+  const { currencies } = useCurrenciesQuery(token, tenantId, {
+    page: -1,
+  });
 
   const [open, setOpen] = useState(false);
 
