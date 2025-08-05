@@ -6,6 +6,7 @@ import { formType } from "@/dtos/form.dto";
 import { DepartmentGetByIdDto } from "@/dtos/department.dto";
 import FormEdit from "./FormEdit";
 import ViewDetail from "./ViewDetail";
+import { DepartmentLoading } from "@/components/loading/DepartmentLoading";
 
 interface DepartmentDetailProps {
   readonly defaultValues?: DepartmentGetByIdDto;
@@ -20,8 +21,6 @@ export default function DepartmentDetail({
 }: DepartmentDetailProps) {
   const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
-
-  console.log("defaultValues", defaultValues);
 
   const initUsers = useMemo(() => {
     return (
@@ -60,15 +59,12 @@ export default function DepartmentDetail({
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSuccess = (data: any) => {
-    // อัปเดต view data จากข้อมูลที่ส่งกลับมาจาก FormEdit
     setViewData({
       name: data.name,
       description: data.description || "",
       is_active: data.is_active || false,
       users: data.users || [],
     });
-
-    // เปลี่ยนเป็น view mode
     setCurrentMode(formType.VIEW);
   };
 
@@ -85,7 +81,7 @@ export default function DepartmentDetail({
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <DepartmentLoading />
   }
 
   // แสดง FormEdit สำหรับ mode ADD และ EDIT

@@ -13,7 +13,6 @@ export default function DepartmentIdPage() {
 
   const { data: department, isLoading } = useDepartmentByIdQuery(token, tenantId, id);
 
-
   return (
     <DepartmentDetail
       defaultValues={department}
