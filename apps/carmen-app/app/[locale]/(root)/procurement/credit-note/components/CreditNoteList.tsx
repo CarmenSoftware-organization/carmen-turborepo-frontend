@@ -143,7 +143,7 @@ export default function CreditNoteList({
       key: "note",
       align: "left",
       render: (_: unknown, record: TableDataSource) => {
-        return record.note || "-";
+        return <p className="max-w-32 truncate text-ellipsis">{record.note || "-"}</p>
       },
     },
     {
