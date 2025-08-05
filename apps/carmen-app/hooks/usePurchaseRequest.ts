@@ -13,7 +13,6 @@ export const usePurchaseRequest = (
     tenantId: string,
     params?: ParamsGetDto
 ) => {
-
     const { data, isLoading, error } = useQuery({
         queryKey: ["purchase-request", tenantId, params],
         queryFn: async () => {

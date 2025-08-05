@@ -37,14 +37,17 @@ export default function PurchaseRequestComponent() {
   const [sort, setSort] = useURL("sort");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
 
   const { data: prs, isLoading } = usePurchaseRequest(token, tenantId, {
     page: page ? parseInt(page) : 1,
     sort,
     search,
+    perpage: perpage ? parseInt(perpage) : 10,
   });
 
   const totalItems = prs?.paginate.total;
+  const totalPages = prs?.paginate.pages;
 
   useEffect(() => {
     if (search) {
@@ -67,6 +70,10 @@ export default function PurchaseRequestComponent() {
       setPage("1");
     }
   }, [setSort, sort, setPage]);
+
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
 
   const title = "Purchase Request";
 
@@ -157,7 +164,7 @@ export default function PurchaseRequestComponent() {
         <PurchaseRequestGrid
           purchaseRequests={prs?.data}
           currentPage={currentPageNumber}
-          totalPages={prs?.paginate.pages}
+          totalPages={totalPages}
           onPageChange={handlePageChange}
           isLoading={isLoading}
         />
@@ -168,19 +175,20 @@ export default function PurchaseRequestComponent() {
           <PurchaseRequestList
             purchaseRequests={prs?.data}
             currentPage={currentPageNumber}
-            totalPages={prs?.paginate.pages}
+            totalPages={totalPages}
             perpage={prs?.paginate.perpage}
             onPageChange={handlePageChange}
             isLoading={isLoading}
             totalItems={totalItems}
             sort={parseSortString(sort) || { field: '', direction: 'asc' }}
             onSort={handleSort}
+            setPerpage={handleSetPerpage}
           />
         ) : (
           <PurchaseRequestGrid
             purchaseRequests={prs?.data}
             currentPage={currentPageNumber}
-            totalPages={prs?.paginate.pages}
+            totalPages={totalPages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
           />

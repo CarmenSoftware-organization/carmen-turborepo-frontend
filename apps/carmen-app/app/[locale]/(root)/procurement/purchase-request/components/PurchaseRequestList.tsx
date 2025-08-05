@@ -27,6 +27,7 @@ interface PurchaseRequestListProps {
   readonly totalItems: number;
   readonly sort: SortConfig;
   readonly onSort: (field: string) => void;
+  readonly setPerpage: (perpage: number) => void;
 }
 
 export default function PurchaseRequestList({
@@ -39,6 +40,7 @@ export default function PurchaseRequestList({
   totalItems,
   sort,
   onSort,
+  setPerpage,
 }: PurchaseRequestListProps) {
   const t = useTranslations("TableHeader");
   const { dateFormat, amount, currencyBase } = useAuth();
@@ -235,6 +237,7 @@ export default function PurchaseRequestList({
       totalItems={totalItems}
       totalPages={totalPages}
       perpage={perpage}
+      setPerpage={setPerpage}
       currentPage={currentPage}
       onPageChange={onPageChange}
       isLoading={isLoading}

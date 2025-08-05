@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
 	Pagination,
 	PaginationContent,
@@ -8,26 +8,34 @@ import {
 	// PaginationNext,
 	// PaginationPrevious,
 } from "@/components/ui-custom/pagination";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronFirst, ChevronLastIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "./ui/input";
+import { cn } from "@/lib/utils";
 
 interface PaginationProps {
 	currentPage: number;
 	totalPages: number;
 	onPageChange: (page: number) => void;
-	limit?: string;
-	onLimitChange?: (newLimit: string) => void;
 	position?: 'left' | 'right' | 'center';
+	perpage: number;
+	setPerpage?: (perpage: number) => void;
 }
 
 const PaginationComponent = ({
 	currentPage,
 	totalPages,
 	onPageChange,
-	limit,
-	onLimitChange,
 	position = 'right',
+	perpage,
+	setPerpage,
 }: PaginationProps) => {
+
+	const [inputValue, setInputValue] = useState(currentPage.toString());
+
+	useEffect(() => {
+		setInputValue(currentPage.toString());
+	}, [currentPage]);
 
 	const handlePageChange = (newPage: number) => {
 		if (newPage >= 1 && newPage <= totalPages) {
@@ -43,28 +51,41 @@ const PaginationComponent = ({
 		right: 'justify-end'
 	};
 
+	const handlePerPageChange = (newPerpage: string) => {
+		if (setPerpage) {
+			setPerpage(parseInt(newPerpage));
+		}
+	};
+
+	const onGoToPage = (value: string) => {
+		const page = parseInt(value);
+		if (!isNaN(page)) {
+			handlePageChange(page);
+		}
+	};
+
 	return (
 		<Pagination
 			className={`flex ${justifyPositions[position]} items-center`}
 			data-id="pagination-container"
 		>
-			{limit && onLimitChange && (
-				<div className="flex items-center gap-2">
-					<span className="text-sm">Items per page:</span>
-					<Select value={limit} onValueChange={onLimitChange}>
-						<SelectTrigger className="w-16 h-8">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="10">10</SelectItem>
-							<SelectItem value="25">25</SelectItem>
-							<SelectItem value="50">50</SelectItem>
-							<SelectItem value="100">100</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
-			)}
 			<PaginationContent data-id="pagination-content">
+
+				<PaginationItem data-id="first-item">
+					<ChevronFirst
+						size={18}
+						href="#"
+						onClick={(e) => {
+							e.preventDefault();
+							handlePageChange(1);
+						}}
+						className={
+							currentPage <= 1
+								? 'pointer-events-none opacity-50 mr-2'
+								: 'cursor-pointer'
+						}
+					/>
+				</PaginationItem>
 				<PaginationItem data-id="pagination-item">
 					<ChevronLeft
 						href="#"
@@ -181,6 +202,52 @@ const PaginationComponent = ({
 						size={18}
 						data-id="pagination-chevron-right"
 					/>
+				</PaginationItem>
+				<PaginationItem data-id="last-item">
+					<ChevronLastIcon
+						size={18}
+						href="#"
+						onClick={(e) => {
+							e.preventDefault();
+							handlePageChange(totalPages);
+						}}
+						className={cn(
+							currentPage >= totalPages
+								? 'pointer-events-none opacity-50 mr-2'
+								: 'cursor-pointer',
+							'mr-2'
+						)}
+					/>
+				</PaginationItem>
+				<PaginationItem data-id="select-perpage">
+					<Select value={String(perpage || 10)} onValueChange={handlePerPageChange}>
+						<SelectTrigger className="h-8 bg-background">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="5">5 / page</SelectItem>
+							<SelectItem value="10">10 / page</SelectItem>
+							<SelectItem value="25">25 / page</SelectItem>
+							<SelectItem value="50">50 / page</SelectItem>
+						</SelectContent>
+					</Select>
+				</PaginationItem>
+				<PaginationItem data-id="go-to-page">
+					<div className="flex items-center gap-2 mx-1">
+						<p className="text-xs">Go to</p>
+						<Input
+							value={inputValue}
+							onChange={(e) => setInputValue(e.target.value)}
+							onClick={() => onGoToPage(inputValue)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									onGoToPage(inputValue);
+								}
+							}}
+							className="h-8 bg-background w-10 text-center"
+						/>
+						<p className="text-xs">Page</p>
+					</div>
 				</PaginationItem>
 			</PaginationContent>
 		</Pagination>

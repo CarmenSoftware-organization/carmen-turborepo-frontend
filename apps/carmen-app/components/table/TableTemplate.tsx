@@ -60,6 +60,7 @@ export interface TableProps {
     readonly onPageChange?: (page: number) => void;
     readonly isLoading?: boolean;
     readonly perpage?: number;
+    readonly setPerpage?: (perpage: number) => void;
 }
 
 const TableTemplate = ({
@@ -71,6 +72,7 @@ const TableTemplate = ({
     onPageChange,
     perpage = 10,
     isLoading = false,
+    setPerpage,
 }: TableProps) => {
 
     const tCommon = useTranslations("Common");
@@ -79,6 +81,7 @@ const TableTemplate = ({
 
     const startItem = totalItems > 0 && dataSource.length > 0 ? (currentPage - 1) * perpage + 1 : 0;
     const endItem = totalItems > 0 && dataSource.length > 0 ? Math.min(currentPage * perpage, totalItems) : 0;
+
 
     return (
         <Table>
@@ -154,6 +157,8 @@ const TableTemplate = ({
                                             currentPage={currentPage}
                                             totalPages={totalPages}
                                             onPageChange={onPageChange}
+                                            setPerpage={setPerpage}
+                                            perpage={perpage}
                                         />
                                     )}
                                 </div>
