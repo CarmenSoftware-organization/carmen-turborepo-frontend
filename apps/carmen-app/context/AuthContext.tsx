@@ -49,7 +49,7 @@ interface BusinessUnit {
     timezone?: string;
     amount?: {
       locales: string;
-      minimumIntegerDigits: number;
+      minimumFractionDigits: number;
     };
     quantity?: {
       locales: string;

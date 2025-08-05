@@ -2,7 +2,7 @@ import { format } from "date-fns";
 
 interface FormatPriceConf {
     locales: string;
-    minimumIntegerDigits: number;
+    minimumFractionDigits: number;
 }
 
 export const formatPriceWithCurrency = (locale: string, currency: string, price: number) => {
@@ -19,12 +19,17 @@ export const formatPrice = (locale: string, price: number, minimumFractionDigits
     }).format(price);
 }
 
-export const formatPriceConf = (price: number, config: FormatPriceConf, currency: string) => {
+export const formatPriceConf = (
+    price: number,
+    config: FormatPriceConf,
+    currency: string
+) => {
     return new Intl.NumberFormat(config.locales, {
         style: 'currency',
+        // currencyDisplay: 'symbol',
+        // currencySign: 'standard',
         currency: currency,
-        minimumIntegerDigits: config.minimumIntegerDigits,
-        maximumFractionDigits: 2
+        minimumFractionDigits: config.minimumFractionDigits ?? 2,
     }).format(price);
 }
 

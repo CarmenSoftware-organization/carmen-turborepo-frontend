@@ -47,7 +47,7 @@ export default function GoodsReceivedNoteList({
   const t = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const { dateFormat, amount, currencyBase } = useAuth();
-  const defaultAmount = { locales: 'en-US', minimumIntegerDigits: 2 }
+  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
 
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
