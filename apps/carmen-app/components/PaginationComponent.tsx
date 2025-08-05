@@ -94,15 +94,14 @@ const PaginationComponent = ({
 							handlePageChange(currentPage - 1);
 						}}
 						size={18}
-						className={
+						className={cn(
 							currentPage <= 1
 								? 'pointer-events-none opacity-50 mr-2'
-								: 'cursor-pointer'
-						}
+								: 'cursor-pointer',
+						)}
 						data-id="pagination-chevron-left"
 					/>
 				</PaginationItem>
-
 				<PaginationItem data-id="pagination-item">
 					<PaginationLink
 						href="#"
@@ -112,6 +111,7 @@ const PaginationComponent = ({
 							handlePageChange(1);
 						}}
 						data-id="pagination-link"
+						className="text-sm"
 					>
 						1
 					</PaginationLink>
@@ -119,7 +119,7 @@ const PaginationComponent = ({
 
 				{currentPage > 3 && (
 					<PaginationItem data-id="pagination-item">
-						<PaginationEllipsis data-id="pagination-ellipsis" />
+						<PaginationEllipsis data-id="pagination-ellipsis" className="text-sm" />
 					</PaginationItem>
 				)}
 
@@ -132,6 +132,7 @@ const PaginationComponent = ({
 								handlePageChange(currentPage - 1);
 							}}
 							data-id="pagination-link"
+							className="text-sm"
 						>
 							{currentPage - 1}
 						</PaginationLink>
@@ -144,6 +145,7 @@ const PaginationComponent = ({
 							href="#"
 							isActive={true}
 							data-id="pagination-link"
+							className="text-sm"
 						>
 							{currentPage}
 						</PaginationLink>
@@ -159,6 +161,7 @@ const PaginationComponent = ({
 								handlePageChange(currentPage + 1);
 							}}
 							data-id="pagination-link"
+							className="text-sm"
 						>
 							{currentPage + 1}
 						</PaginationLink>
@@ -167,7 +170,7 @@ const PaginationComponent = ({
 
 				{currentPage < totalPages - 2 && (
 					<PaginationItem data-id="pagination-item">
-						<PaginationEllipsis data-id="pagination-ellipsis" />
+						<PaginationEllipsis data-id="pagination-ellipsis" className="text-sm" />
 					</PaginationItem>
 				)}
 
@@ -181,6 +184,7 @@ const PaginationComponent = ({
 								handlePageChange(totalPages);
 							}}
 							data-id="pagination-link"
+							className="text-sm"
 						>
 							{totalPages}
 						</PaginationLink>
@@ -194,11 +198,12 @@ const PaginationComponent = ({
 							e.preventDefault();
 							handlePageChange(currentPage + 1);
 						}}
-						className={
+						className={cn(
 							currentPage >= totalPages
 								? 'pointer-events-none opacity-50 mr-2'
-								: 'cursor-pointer'
-						}
+								: 'cursor-pointer',
+							'text-sm'
+						)}
 						size={18}
 						data-id="pagination-chevron-right"
 					/>
@@ -215,7 +220,7 @@ const PaginationComponent = ({
 							currentPage >= totalPages
 								? 'pointer-events-none opacity-50 mr-2'
 								: 'cursor-pointer',
-							'mr-2'
+							'mr-2 text-sm'
 						)}
 					/>
 				</PaginationItem>
@@ -224,7 +229,7 @@ const PaginationComponent = ({
 						<SelectTrigger className="h-8 bg-background">
 							<SelectValue />
 						</SelectTrigger>
-						<SelectContent>
+						<SelectContent className="text-sm">
 							<SelectItem value="5">5 / page</SelectItem>
 							<SelectItem value="10">10 / page</SelectItem>
 							<SelectItem value="25">25 / page</SelectItem>
@@ -234,7 +239,7 @@ const PaginationComponent = ({
 				</PaginationItem>
 				<PaginationItem data-id="go-to-page">
 					<div className="flex items-center gap-2 mx-1">
-						<p className="text-xs">Go to</p>
+						<p className="text-sm">Go to</p>
 						<Input
 							value={inputValue}
 							onChange={(e) => setInputValue(e.target.value)}
@@ -246,7 +251,7 @@ const PaginationComponent = ({
 							}}
 							className="h-8 bg-background w-10 text-center"
 						/>
-						<p className="text-xs">Page</p>
+						<p className="text-sm">Page</p>
 					</div>
 				</PaginationItem>
 			</PaginationContent>
