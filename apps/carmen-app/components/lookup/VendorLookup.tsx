@@ -36,7 +36,7 @@ export default function VendorLookup({
         if (!value || !vendorsData || !Array.isArray(vendorsData)) return null;
         const found = vendorsData?.find((vendor: VendorGetDto) => vendor.id === value);
         return found?.name ?? null;
-    }, [value, vendorsData]);
+    }, [value, vendorsData, onValueChange]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>

@@ -50,7 +50,7 @@ export default function PurchaseRequestList({
     );
   };
 
-  const defaultAmount = { locales: 'en-US', minimumIntegerDigits: 2 }
+  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
 
   const handleSelectAll = () => {
     if (selectedItems.length === purchaseRequests.length) {

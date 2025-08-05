@@ -90,7 +90,7 @@ export default function CurrencyComponent() {
                     setConfirmDialogOpen(false);
                     setSelectedCurrency(undefined);
                 },
-                onError: (error: any) => {
+                onError: (error: unknown) => {
                     console.error('Error deactivating currency:', error);
                     toastError({ message: 'Error deactivating currency' });
                 }
@@ -113,7 +113,7 @@ export default function CurrencyComponent() {
                     setDialogOpen(false);
                     setSelectedCurrency(undefined);
                 },
-                onError: (error: any) => {
+                onError: (error: unknown) => {
                     console.error('Error updating currency:', error);
                     toastError({ message: 'Error updating currency' });
                 }
@@ -126,7 +126,7 @@ export default function CurrencyComponent() {
                     setDialogOpen(false);
                     setSelectedCurrency(undefined);
                 },
-                onError: (error: any) => {
+                onError: (error: unknown) => {
                     console.error('Error creating currency:', error);
                     toastError({ message: 'Error creating currency' });
                 }
