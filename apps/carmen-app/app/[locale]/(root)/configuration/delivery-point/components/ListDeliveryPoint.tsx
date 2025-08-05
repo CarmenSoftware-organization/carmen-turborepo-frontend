@@ -15,6 +15,7 @@ interface ListDeliveryPointProps {
     readonly currentPage: number;
     readonly totalPages: number;
     readonly totalItems: number;
+    readonly perpage: number;
     readonly onPageChange: (page: number) => void;
     readonly sort?: SortConfig;
     readonly onSort?: (field: string) => void;
@@ -31,6 +32,7 @@ export default function ListDeliveryPoint({
     currentPage,
     totalPages,
     totalItems,
+    perpage,
     onPageChange,
     sort,
     onSort,
@@ -164,6 +166,7 @@ export default function ListDeliveryPoint({
             dataSource={dataSource}
             totalItems={totalItems}
             totalPages={totalPages}
+            perpage={perpage}
             currentPage={currentPage}
             onPageChange={onPageChange}
             isLoading={isLoading}

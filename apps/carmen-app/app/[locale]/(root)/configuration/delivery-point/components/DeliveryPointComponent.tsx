@@ -60,10 +60,11 @@ export default function DeliveryPointComponent() {
   const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
   const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
 
-
+  const deliveryPointsData = deliveryPoints?.data ?? [];
   const currentPage = deliveryPoints?.paginate.page ?? 1;
   const totalPages = deliveryPoints?.paginate.pages ?? 1;
   const totalItems = deliveryPoints?.paginate.total ?? deliveryPoints?.data?.length ?? 0;
+  const perpage = deliveryPoints?.paginate.per_page ?? 10;
 
   const handleSelectAll = (isChecked: boolean) => {
     if (isChecked) {
@@ -240,11 +241,12 @@ export default function DeliveryPointComponent() {
 
   const content = (
     <ListDeliveryPoint
-      deliveryPoints={deliveryPoints?.data ?? []}
+      deliveryPoints={deliveryPointsData}
       isLoading={isLoading}
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
+      perpage={perpage}
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
       onEdit={handleEdit}
