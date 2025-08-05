@@ -13,7 +13,6 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { VIEW } from "@/constants/enum";
 import { fetchRecipe } from "@/services/operational-planning.service";
 import { RecipeDto } from "@/dtos/operational-planning.dto";
-import PaginationComponent from "@/components/PaginationComponent";
 import RecipeList from "./RecipeList";
 import RecipeGrid from "./RecipeGrid";
 
@@ -25,30 +24,15 @@ export default function RecipeComponent() {
     const [sort, setSort] = useURL('sort');
     const [view, setView] = useState<VIEW>(VIEW.GRID);
     const [recipe, setRecipe] = useState<RecipeDto[]>([]);
-    const [limit, setLimit] = useURL('limit', { defaultValue: '10' });
-    const [skip, setSkip] = useURL('skip', { defaultValue: '0' });
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
-    const handleSkip = (page: number) => {
-        const newSkip = (page - 1) * Number(limit);
-        setSkip(newSkip.toString());
-        setCurrentPage(page);
-    };
 
-    const handleLimitChange = (newLimit: string) => {
-        setLimit(newLimit);
-        setSkip('0');
-        setCurrentPage(1);
-    };
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const response = await fetchRecipe(`limit=${limit || '10'}&skip=${skip || '0'}`);
+                const response = await fetchRecipe(`limit=10&skip=0`);
                 setRecipe(response.recipes);
-                setTotalPages(Math.ceil(response.total / Number(limit)));
             } catch (error) {
                 console.error('Error fetching recipes:', error);
             } finally {
@@ -56,7 +40,7 @@ export default function RecipeComponent() {
             }
         };
         fetchData();
-    }, [limit, skip]);
+    }, []);
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -140,13 +124,6 @@ export default function RecipeComponent() {
         <div className="space-y-2">
             {view === VIEW.LIST && <RecipeList data={recipe} isLoading={isLoading} />}
             {view === VIEW.GRID && <RecipeGrid data={recipe} isLoading={isLoading} />}
-            <PaginationComponent
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handleSkip}
-                limit={limit}
-                onLimitChange={handleLimitChange}
-            />
         </div>
     )
 

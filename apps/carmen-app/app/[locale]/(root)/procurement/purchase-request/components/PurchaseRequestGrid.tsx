@@ -178,6 +178,7 @@ export default function PurchaseRequestGrid({
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={onPageChange}
+        perpage={10}
       />
     </div>
   );

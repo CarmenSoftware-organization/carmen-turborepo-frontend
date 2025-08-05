@@ -174,7 +174,7 @@ const WorkflowList = () => {
           </TableBody>
         )}
       </Table>
-      <PaginationComponent currentPage={+page} totalPages={totalPages} onPageChange={handlePageChange} />
+      <PaginationComponent currentPage={+page} totalPages={totalPages} onPageChange={handlePageChange} perpage={10} />
     </>
   );
 
