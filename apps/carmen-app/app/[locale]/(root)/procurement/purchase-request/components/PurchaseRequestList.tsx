@@ -42,7 +42,7 @@ export default function PurchaseRequestList({
   onSort,
   setPerpage,
 }: PurchaseRequestListProps) {
-  const t = useTranslations("TableHeader");
+  const tTableHeader = useTranslations("TableHeader");
   const { dateFormat, amount, currencyBase } = useAuth();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -96,7 +96,7 @@ export default function PurchaseRequestList({
       title: (
         <SortableColumnHeader
           columnKey="pr_no"
-          label={t("pr_no")}
+          label={tTableHeader("pr_no")}
           sort={sort}
           onSort={onSort}
           getSortableColumnProps={getSortableColumnProps}
@@ -113,7 +113,7 @@ export default function PurchaseRequestList({
       },
     },
     {
-      title: "Date",
+      title: tTableHeader("date"),
       dataIndex: "pr_date",
       key: "pr_date",
       align: "center",
@@ -124,37 +124,37 @@ export default function PurchaseRequestList({
       },
     },
     {
-      title: "Type",
+      title: tTableHeader("type"),
       dataIndex: "workflow_name",
       key: "workflow_name",
       align: "center",
     },
     {
-      title: "Status",
+      title: tTableHeader("status"),
       dataIndex: "pr_status",
       key: "pr_status",
       align: "left",
     },
     {
-      title: "Stage",
+      title: tTableHeader("stage"),
       dataIndex: "workflow_current_stage",
       key: "workflow_current_stage",
       align: "left",
     },
     {
-      title: "Requestor",
+      title: tTableHeader("requestor"),
       dataIndex: "requestor_name",
       key: "requestor_name",
       align: "left",
     },
     {
-      title: "Department",
+      title: tTableHeader("department"),
       dataIndex: "department_name",
       key: "department_name",
       align: "left",
     },
     {
-      title: "Amount",
+      title: tTableHeader("amount"),
       dataIndex: "total_amount",
       key: "total_amount",
       align: "right",
@@ -165,7 +165,7 @@ export default function PurchaseRequestList({
       },
     },
     {
-      title: "Action",
+      title: tTableHeader("action"),
       dataIndex: "action",
       key: "action",
       align: "center",

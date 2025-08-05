@@ -266,9 +266,13 @@
     "other": "Other",
     "code": "Code",
     "continue": "Continue",
-    "itemFound": "Items"
+    "itemFound": "Items",
+    "page": "Page",
+    "goTo": "Go to",
+    "perPage": "Per Page"
   },
   "TableHeader": {
+    "all": "All",
     "name": "Name",
     "email": "Email",
     "businessUnit": "Business Unit",
@@ -308,7 +312,8 @@
     "business_type": "Business Type",
     "rate": "Rate",
     "note": "Note",
-    "inventory_unit": "Inventory Unit"
+    "inventory_unit": "Inventory Unit",
+    "stage": "Stage"
   },
   "Product": {
     "title": "Product"
@@ -468,5 +473,17 @@
     "business_type_created": "Business type created successfully",
     "business_type_updated": "Business type updated successfully",
     "business_type_deleted": "Business type deleted successfully"
+  },
+  "DataControls": {
+    "myPening": "My Pending",
+    "allDoc": "All Document",
+    "allStage": "All Stage",
+    "requestor": "Requestor",
+    "department_head_approval": "Department Head Approval",
+    "finance_manager_approval": "Finance Manager Approval",
+    "filter": "Filter"
+  },
+  "PurchaseRequest": {
+    "title": "Purchase Request"
   }
 }

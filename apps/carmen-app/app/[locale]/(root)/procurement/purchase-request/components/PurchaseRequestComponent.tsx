@@ -19,18 +19,14 @@ import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { parseSortString } from "@/utils/table-sort";
 
-const sortFields = [
-  { key: "", label: "All" },
-  { key: "pr_no", label: "PR Number" },
-  { key: "date", label: "Date" },
-  { key: "department", label: "Department" },
-  { key: "requestor", label: "Requestor" },
-  { key: "amonut", label: "Amount" },
-];
+
 
 export default function PurchaseRequestComponent() {
   const { token, tenantId } = useAuth();
   const tCommon = useTranslations("Common");
+  const tTableHeader = useTranslations("TableHeader");
+  const tPurchaseRequest = useTranslations("PurchaseRequest");
+  const tDataControls = useTranslations("DataControls");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [view, setView] = useState<VIEW>(VIEW.LIST);
   const [search, setSearch] = useURL("search");
@@ -38,6 +34,15 @@ export default function PurchaseRequestComponent() {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
+
+  const sortFields = [
+    { key: "", label: tTableHeader("all") },
+    { key: "pr_no", label: tTableHeader("pr_no") },
+    { key: "date", label: tTableHeader("date") },
+    { key: "department", label: tTableHeader("department") },
+    { key: "requestor", label: tTableHeader("requestor") },
+    { key: "amonut", label: tTableHeader("amount") },
+  ];
 
   const { data: prs, isLoading } = usePurchaseRequest(token, tenantId, {
     page: page ? parseInt(page) : 1,
@@ -75,7 +80,7 @@ export default function PurchaseRequestComponent() {
     setPerpage(newPerpage.toString());
   };
 
-  const title = "Purchase Request";
+  const title = tPurchaseRequest("title");
 
   const handleOpenDialog = () => {
     setDialogOpen(true);
@@ -88,7 +93,7 @@ export default function PurchaseRequestComponent() {
     >
       <Button size={"sm"} onClick={handleOpenDialog}>
         <Plus />
-        {tCommon("add")} Purchase Request
+        {tCommon("add")}{title}
       </Button>
       <Button
         variant="outline"
@@ -116,20 +121,20 @@ export default function PurchaseRequestComponent() {
           data-id="pr-list-search-input"
         />
         <Button size={"sm"} className="h-8">
-          My Pending
+          {tDataControls("myPening")}
         </Button>
         <Button size={"sm"} className="h-8" variant={'outline'}>
-          All Document
+          {tDataControls("allDoc")}
         </Button>
         <Select>
           <SelectTrigger className="w-[250px] h-8 text-xs">
-            <SelectValue placeholder="All Stage" />
+            <SelectValue placeholder={tDataControls("allStage")} />
           </SelectTrigger>
           <SelectContent >
-            <SelectItem value="all">All Stage</SelectItem>
-            <SelectItem value="requestor">Requestor</SelectItem>
-            <SelectItem value="approver">Department Head Approval</SelectItem>
-            <SelectItem value="finnace">Finance Manager Approval</SelectItem>
+            <SelectItem value="all">{tDataControls("allStage")}</SelectItem>
+            <SelectItem value="requestor">{tDataControls("requestor")}</SelectItem>
+            <SelectItem value="approver">{tDataControls("department_head_approval")}</SelectItem>
+            <SelectItem value="finnace">{tDataControls("finance_manager_approval")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -143,7 +148,7 @@ export default function PurchaseRequestComponent() {
         />
         <Button size={"sm"}>
           <Filter className="h-4 w-4" />
-          Filter
+          {tDataControls("filter")}
         </Button>
         <div className="hidden lg:block">
           <ToggleView view={view} setView={setView} />

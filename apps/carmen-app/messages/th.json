@@ -266,9 +266,13 @@
     "other": "อื่นๆ",
     "code": "รหัส",
     "continue": "ต่อไป",
-    "itemFound": "รายการ"
+    "itemFound": "รายการ",
+    "page": "หน้า",
+    "goTo": "ไปที่",
+    "perPage": "ต่อหน้า"
   },
   "TableHeader": {
+    "all": "ทั้งหมด",
     "name": "ชื่อ",
     "email": "อีเมล",
     "businessUnit": "หน่วยงาน",
@@ -307,7 +311,8 @@
     "business_type": "ประเภทธุรกิจ",
     "rate": "อัตรา",
     "note": "หมายเหตุ",
-    "inventory_unit": "หน่วยนับ"
+    "inventory_unit": "หน่วยนับ",
+    "stage": "ขั้นตอน"
   },
   "Product": {
     "title": "สินค้า"
@@ -464,5 +469,17 @@
     "business_type_created": "สร้างประเภทธุรกิจเรียบร้อย",
     "business_type_updated": "แก้ไขประเภทธุรกิจเรียบร้อย",
     "business_type_deleted": "ลบประเภทธุรกิจเรียบร้อย"
+  },
+  "DataControls": {
+    "myPening": "รายการที่รอการอนุมัติ",
+    "allDoc": "รายการทั้งหมด",
+    "allStage": "ทั้งหมด",
+    "requestor": "ผู้ขอซื้อ",
+    "department_head_approval": "การอนุมัติหัวหน้ากลุ่ม",
+    "finance_manager_approval": "การอนุมัติผู้ดูแลการเงิน",
+    "filter": "ตัวกรอง"
+  },
+  "PurchaseRequest": {
+    "title": "ใบขอซื้อ"
   }
 }

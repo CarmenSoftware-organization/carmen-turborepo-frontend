@@ -12,6 +12,7 @@ import { ChevronFirst, ChevronLastIcon, ChevronLeft, ChevronRight } from "lucide
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 interface PaginationProps {
 	currentPage: number;
@@ -30,6 +31,7 @@ const PaginationComponent = ({
 	perpage,
 	setPerpage,
 }: PaginationProps) => {
+	const tCommon = useTranslations("Common");
 
 	const [inputValue, setInputValue] = useState(currentPage.toString());
 
@@ -230,16 +232,16 @@ const PaginationComponent = ({
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent className="text-sm">
-							<SelectItem value="5">5 / page</SelectItem>
-							<SelectItem value="10">10 / page</SelectItem>
-							<SelectItem value="25">25 / page</SelectItem>
-							<SelectItem value="50">50 / page</SelectItem>
+							<SelectItem value="5">5 / {tCommon("perPage")}</SelectItem>
+							<SelectItem value="10">10 / {tCommon("perPage")}</SelectItem>
+							<SelectItem value="25">25 / {tCommon("perPage")}</SelectItem>
+							<SelectItem value="50">50 / {tCommon("perPage")}</SelectItem>
 						</SelectContent>
 					</Select>
 				</PaginationItem>
 				<PaginationItem data-id="go-to-page">
 					<div className="flex items-center gap-2 mx-1">
-						<p className="text-sm">Go to</p>
+						<p className="text-sm">{tCommon("goTo")}</p>
 						<Input
 							value={inputValue}
 							onChange={(e) => setInputValue(e.target.value)}
@@ -251,7 +253,7 @@ const PaginationComponent = ({
 							}}
 							className="h-8 bg-background w-10 text-center"
 						/>
-						<p className="text-sm">Page</p>
+						<p className="text-sm">{tCommon("page")}</p>
 					</div>
 				</PaginationItem>
 			</PaginationContent>
