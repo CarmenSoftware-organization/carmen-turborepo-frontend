@@ -17,10 +17,11 @@ import { useTranslations } from "next-intl";
 export default function UserAvatar() {
     const { logout, user } = useAuth();
     const t = useTranslations('Common');
+
     const getInitials = () => {
         if (!user?.user_info) return "U";
         const { firstname, lastname } = user.user_info;
-        return `${firstname?.[0] || ""}${lastname?.[0] || ""}`;
+        return `${firstname?.[0].toUpperCase() || ""}${lastname?.[0].toUpperCase() || ""}`;
     };
 
     const getMiddleName = () => {
@@ -37,9 +38,9 @@ export default function UserAvatar() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-label="User menu">
-                    <Avatar className="h-10 w-10">
-                        <AvatarFallback className="text-xs font-medium">
+                <Button variant="ghost" className="mx-2 relative h-8 w-8 rounded-full" aria-label="User menu">
+                    <Avatar className="h-8 w-8">
+                        <AvatarFallback className="font-medium text-xs">
                             {getInitials()}
                         </AvatarFallback>
                     </Avatar>

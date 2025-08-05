@@ -38,10 +38,13 @@ export default function PurchaseRequestComponent() {
   const sortFields = [
     { key: "", label: tTableHeader("all") },
     { key: "pr_no", label: tTableHeader("pr_no") },
-    { key: "date", label: tTableHeader("date") },
-    { key: "department", label: tTableHeader("department") },
-    { key: "requestor", label: tTableHeader("requestor") },
-    { key: "amonut", label: tTableHeader("amount") },
+    { key: "pr_date", label: tTableHeader("date") },
+    { key: "workflow_name", label: tTableHeader("type") },
+    { key: "pr_status", label: tTableHeader("status") },
+    { key: "workflow_current_stage", label: tTableHeader("stage") },
+    { key: "requestor_name", label: tTableHeader("requestor") },
+    { key: "department_name", label: tTableHeader("department") },
+    { key: "total_amount", label: tTableHeader("amount") },
   ];
 
   const { data: prs, isLoading } = usePurchaseRequest(token, tenantId, {

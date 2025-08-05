@@ -69,7 +69,7 @@ export default function Notification() {
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <div className="relative inline-block">
+                {/* <div className="relative inline-block">
                     <Button
                         aria-label="Notifications"
                         variant={'ghost'}
@@ -84,7 +84,17 @@ export default function Notification() {
                             {displayCount}
                         </div>
                     )}
-                </div>
+                </div> */}
+                <Button
+                    variant={'ghost'}
+                    className="relative inline-flex justify-center items-center"
+                    size={'sm'}
+                >
+                    <Bell className="h-4 w-4" />
+                    {notificationCount > 0 && (
+                        <span className="absolute top-1 end-1 inline-flex items-center py-1 px-2 rounded-full text-xs font-medium transform -translate-y-1/2 translate-x-1/2 bg-red-500 text-white">{displayCount}</span>
+                    )}
+                </Button>
             </PopoverTrigger>
             <PopoverContent className="w-96 max-h-[450px] overflow-y-auto p-0 shadow-lg">
                 <div className="p-4 border-b bg-muted/50">

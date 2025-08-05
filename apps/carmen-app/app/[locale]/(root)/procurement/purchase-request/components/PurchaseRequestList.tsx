@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { FileDown, MoreHorizontal, Printer, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,7 @@ export default function PurchaseRequestList({
   setPerpage,
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
+  const tCommon = useTranslations("Common");
   const { dateFormat, amount, currencyBase } = useAuth();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -113,42 +114,96 @@ export default function PurchaseRequestList({
       },
     },
     {
-      title: tTableHeader("date"),
+      title: (
+        <SortableColumnHeader
+          columnKey="pr_date"
+          label={tTableHeader("date")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
       dataIndex: "pr_date",
       key: "pr_date",
-      align: "center",
+      align: "left",
       render: (_: unknown, record: TableDataSource) => {
-        return <div className="text-center">
+        return <div className="text-left">
           {formatDateFns(record.pr_date, dateFormat || 'yyyy-MM-dd')}
         </div>;
       },
     },
     {
-      title: tTableHeader("type"),
+      title: (
+        <SortableColumnHeader
+          columnKey="workflow_name"
+          label={tTableHeader("type")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
       dataIndex: "workflow_name",
       key: "workflow_name",
-      align: "center",
+      align: "left",
     },
     {
-      title: tTableHeader("status"),
+      title: (
+        <SortableColumnHeader
+          columnKey="pr_status"
+          label={tTableHeader("status")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
       dataIndex: "pr_status",
       key: "pr_status",
       align: "left",
     },
     {
-      title: tTableHeader("stage"),
+      title: (
+        <SortableColumnHeader
+          columnKey="workflow_current_stage"
+          label={tTableHeader("stage")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
       dataIndex: "workflow_current_stage",
       key: "workflow_current_stage",
       align: "left",
     },
     {
-      title: tTableHeader("requestor"),
+      title: (
+        <SortableColumnHeader
+          columnKey="requestor_name"
+          label={tTableHeader("requestor")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
       dataIndex: "requestor_name",
       key: "requestor_name",
       align: "left",
     },
     {
-      title: tTableHeader("department"),
+      title: (
+        <SortableColumnHeader
+          columnKey="department_name"
+          label={tTableHeader("department")}
+          sort={sort}
+          onSort={onSort}
+          getSortableColumnProps={getSortableColumnProps}
+          renderSortIcon={renderSortIcon}
+        />
+      ),
       dataIndex: "department_name",
       key: "department_name",
       align: "left",
@@ -168,15 +223,15 @@ export default function PurchaseRequestList({
       title: tTableHeader("action"),
       dataIndex: "action",
       key: "action",
-      align: "center",
+      align: "right",
       render: (_: unknown, pr: TableDataSource) => {
-        return <div className="text-center">
+        return <div className="text-right">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7"
+                className="h-7 w-7 hover:bg-transparent"
                 onClick={(e) => e.stopPropagation()}
               >
                 <span className="sr-only">More options</span>
@@ -190,7 +245,8 @@ export default function PurchaseRequestList({
                   console.log("Approve", pr.id);
                 }}
               >
-                Print
+                <Printer />
+                {tCommon("print")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={(e) => {
@@ -198,7 +254,8 @@ export default function PurchaseRequestList({
                   console.log("Download", pr.id);
                 }}
               >
-                Download
+                <FileDown />
+                {tCommon("export")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={(e) => {
@@ -207,6 +264,7 @@ export default function PurchaseRequestList({
                 }}
                 className="text-destructive"
               >
+                <Trash2 />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
