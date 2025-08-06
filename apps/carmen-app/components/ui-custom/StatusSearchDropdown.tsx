@@ -43,7 +43,7 @@ export default function StatusSearchDropdown({
 		<Popover open={open} onOpenChange={onOpenChange}>
 			<PopoverTrigger asChild>
 				<Button
-					variant="outline"
+					variant="outlinePrimary"
 					aria-expanded={open}
 					size={'sm'}
 				>

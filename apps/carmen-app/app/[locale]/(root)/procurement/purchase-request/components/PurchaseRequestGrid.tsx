@@ -137,7 +137,7 @@ export default function PurchaseRequestGrid({
             </div>
           </div>
         </CardContent>
-        <div className="flex items-center justify-end p-2 border-t bg-muted">
+        <div className="flex items-center justify-end p-2 border-t border-border bg-muted">
           <ActionButtons prId={pr.id ?? ""} />
         </div>
       </Card>

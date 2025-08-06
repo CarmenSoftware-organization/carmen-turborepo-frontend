@@ -37,8 +37,6 @@ export default function GoodsReceivedNoteComponent() {
         handleSort
     } = useGrn();
 
-
-
     const totalItems = grns?.paginate?.total;
     const perpage = grns?.paginate?.perpage;
 
@@ -63,7 +61,7 @@ export default function GoodsReceivedNoteComponent() {
                 New Goods Received Note
             </Button>
             <Button
-                variant="outline"
+                variant="outlinePrimary"
                 className="group"
                 size={'sm'}
                 data-id="grn-list-export-button"
@@ -72,7 +70,7 @@ export default function GoodsReceivedNoteComponent() {
                 {tCommon('export')}
             </Button>
             <Button
-                variant="outline"
+                variant="outlinePrimary"
                 size={'sm'}
                 data-id="grn-list-print-button"
             >

@@ -6,7 +6,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Activity, Box, Folder, Layers, List, MoreHorizontal, Package } from "lucide-react";
-import { Link } from "@/lib/navigation";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";

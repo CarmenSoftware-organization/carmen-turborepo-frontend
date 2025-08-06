@@ -10,10 +10,10 @@ import { useTranslations } from "next-intl";
 export default function Navbar() {
     const tHome = useTranslations('HomePage');
     return (
-        <div className="flex items-center justify-between p-2 bg-background border-b gap-2">
+        <div className="flex items-center justify-between p-2 bg-background border-b border-border gap-2">
             <div className="px-2">
                 <span
-                    className={"text-2xl font-bold block tracking-wide"}
+                    className={"text-3xl text-primary font-bold block tracking-wide"}
                     data-id="sidebar-logo-text"
                 >
                     {tHome('carmenTitle')}

@@ -123,11 +123,11 @@ export default function DepartmentComponent() {
         <Plus className="h-4 w-4" />
         {tCommon("add")}
       </Button>
-      <Button variant="outline" size={"sm"} data-id="department-export-button">
+      <Button variant="outlinePrimary" size={"sm"} data-id="department-export-button">
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button variant="outline" size={"sm"} data-id="department-print-button">
+      <Button variant="outlinePrimary" size={"sm"} data-id="department-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>

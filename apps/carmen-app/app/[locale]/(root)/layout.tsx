@@ -17,7 +17,7 @@ export default function RootLayout({
                 <div className="flex h-screen">
                     <SidebarComponent />
                     <div className="flex-1 flex flex-col overflow-hidden">
-                        <main className="flex-1 space-y-4 overflow-y-auto px-4 pt-20">
+                        <main className="flex-1 space-y-4 overflow-y-auto px-4 py-20 pb-5">
                             {children}
                         </main>
                     </div>

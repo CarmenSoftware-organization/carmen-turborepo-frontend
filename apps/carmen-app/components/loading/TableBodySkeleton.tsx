@@ -1,8 +1,8 @@
 import { Skeleton } from "../ui/skeleton";
-import { TableBody, TableCell, TableRow } from "../ui/table";
+import { TableBody, TableCell, TableRow } from "../ui-custom/table";
 
 interface TableBodySkeletonProps {
-    rows: number; // จำนวนเซลล์แนวนอนในแต่ละแถว
+    rows: number;
 }
 
 export const TableBodySkeleton = ({ rows }: TableBodySkeletonProps) => (

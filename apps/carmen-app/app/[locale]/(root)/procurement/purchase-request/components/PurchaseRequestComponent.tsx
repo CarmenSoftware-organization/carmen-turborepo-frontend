@@ -96,10 +96,10 @@ export default function PurchaseRequestComponent() {
     >
       <Button size={"sm"} onClick={handleOpenDialog}>
         <Plus />
-        {tCommon("add")}{title}
+        {tCommon("add")} {title}
       </Button>
       <Button
-        variant="outline"
+        variant="outlinePrimary"
         className="group"
         size={"sm"}
         data-id="pr-list-export-button"
@@ -107,7 +107,7 @@ export default function PurchaseRequestComponent() {
         <FileDown />
         {tCommon("export")}
       </Button>
-      <Button variant="outline" size={"sm"} data-id="pr-list-print-button">
+      <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
         <Printer />
         {tCommon("print")}
       </Button>
@@ -126,11 +126,11 @@ export default function PurchaseRequestComponent() {
         <Button size={"sm"} className="h-8">
           {tDataControls("myPening")}
         </Button>
-        <Button size={"sm"} className="h-8" variant={'outline'}>
+        <Button size={"sm"} className="h-8" variant={'outlinePrimary'}>
           {tDataControls("allDoc")}
         </Button>
         <Select>
-          <SelectTrigger className="w-[250px] h-8 text-xs">
+          <SelectTrigger className="w-[250px] h-8 text-xs bg-muted">
             <SelectValue placeholder={tDataControls("allStage")} />
           </SelectTrigger>
           <SelectContent >

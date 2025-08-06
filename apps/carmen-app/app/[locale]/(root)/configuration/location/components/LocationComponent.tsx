@@ -108,7 +108,7 @@ export default function LocationComponent() {
         </Link>
       </Button>
       <Button
-        variant="outline"
+        variant="outlinePrimary"
         className="group"
         size="sm"
         data-id="store-location-export-button"
@@ -116,7 +116,7 @@ export default function LocationComponent() {
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button variant="outline" size="sm" data-id="store-location-print-button">
+      <Button variant="outlinePrimary" size="sm" data-id="store-location-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>

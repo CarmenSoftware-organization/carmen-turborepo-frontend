@@ -311,11 +311,11 @@ export default function CategoryComponent() {
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
                     <div className="flex items-center gap-2">
-                        <Button onClick={expandAll} size={'sm'} variant={'outline'}>
+                        <Button onClick={expandAll} size={'sm'} variant={'outlinePrimary'}>
                             <ChevronDown className="h-4 w-4" />
                             {tCategory("expand_all")}
                         </Button>
-                        <Button onClick={collapseAll} size={'sm'} variant={'outline'}>
+                        <Button onClick={collapseAll} size={'sm'} variant={'outlinePrimary'}>
                             <ChevronUp className="h-4 w-4" />
                             {tCategory("collapse_all")}
                         </Button>
@@ -327,7 +327,7 @@ export default function CategoryComponent() {
 
                 </div>
 
-                <ScrollArea className="h-[calc(98vh-120px)] border rounded-lg">
+                <ScrollArea className="h-[calc(98vh-120px)] border border-border rounded-lg">
                     {categoryData.length > 0 ? (
                         categoryData.map((category: CategoryNode) => (
                             <TreeNode

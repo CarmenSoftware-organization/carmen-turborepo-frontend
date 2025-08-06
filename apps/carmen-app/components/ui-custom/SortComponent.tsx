@@ -44,7 +44,7 @@ const SortComponent = <T extends Record<string, unknown>>({ fieldConfigs, sort, 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outlinePrimary" size="sm">
                     <ArrowUpDown className="mr-2 h-4 w-4" />
                     {t('sort')}
                 </Button>

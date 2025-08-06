@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PriceListDto } from "@/dtos/price-list.dto";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Calendar, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useDeletePriceList } from "@/hooks/usePriceList";
@@ -148,6 +148,7 @@ export default function ListPriceList({
                 />
             ),
             dataIndex: "name",
+            icon: <List className="h-4 w-4" />,
             key: "name",
             align: "left",
             render: (_: unknown, record: TableDataSource) => {
@@ -161,6 +162,7 @@ export default function ListPriceList({
         {
             title: "Start Date",
             dataIndex: "from_date",
+            icon: <Calendar className="h-4 w-4" />,
             key: "from_date",
             align: "left",
             render: (_: unknown, record: TableDataSource) => {
@@ -172,6 +174,7 @@ export default function ListPriceList({
         {
             title: "End Date",
             dataIndex: "to_date",
+            icon: <Calendar className="h-4 w-4" />,
             key: "to_date",
             align: "left",
             render: (_: unknown, record: TableDataSource) => {

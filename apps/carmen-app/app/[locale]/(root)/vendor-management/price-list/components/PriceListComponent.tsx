@@ -89,7 +89,7 @@ export default function PriceListComponent() {
                 onOpenChange={setAddDialogOpen}
             />
             <Button
-                variant="outline"
+                variant="outlinePrimary"
                 size={'sm'}
                 data-id="price-list-export-button"
             >
@@ -97,7 +97,7 @@ export default function PriceListComponent() {
                 {tCommon('export')}
             </Button>
             <Button
-                variant="outline"
+                variant="outlinePrimary"
                 size={'sm'}
                 data-id="price-list-print-button"
             >

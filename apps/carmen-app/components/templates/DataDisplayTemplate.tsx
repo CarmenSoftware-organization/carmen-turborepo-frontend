@@ -50,7 +50,7 @@ const DataDisplayTemplate: React.FC<Props> = ({
 					{...fadeIn}
 				>
 					<MotionDiv
-						className="text-2xl font-semibold"
+						className="text-2xl font-bold tracking-wide"
 						{...fadeInUp}
 					>
 						{title}

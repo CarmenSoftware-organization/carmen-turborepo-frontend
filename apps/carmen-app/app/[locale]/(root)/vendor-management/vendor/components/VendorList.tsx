@@ -13,7 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import ButtonLink from "@/components/ButtonLink";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Activity, Building, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface VendorListProps {
@@ -104,6 +104,7 @@ export default function VendorList({
       ),
       dataIndex: "name",
       key: "name",
+      icon: <List className="h-4 w-4" />,
       align: "left",
       render: (_: unknown, record: TableDataSource) => {
         return (
@@ -115,18 +116,21 @@ export default function VendorList({
     },
     {
       title: "Description",
+      icon: <Info className="h-4 w-4" />,
       dataIndex: "description",
       key: "description",
       align: "left",
     },
     {
       title: "Business Type",
+      icon: <Building className="h-4 w-4" />,
       dataIndex: "business_type_name",
       key: "business_type_name",
       align: "left",
     },
     {
       title: "Status",
+      icon: <Activity className="h-4 w-4" />,
       dataIndex: "status",
       key: "status",
       align: "center",

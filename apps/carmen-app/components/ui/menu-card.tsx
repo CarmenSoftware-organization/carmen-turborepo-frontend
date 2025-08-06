@@ -41,9 +41,9 @@ export function MenuCard({ item, className }: MenuCardProps) {
             tabIndex={0}
         >
             <Card className="h-full transition-all hover:shadow-md hover:border-primary">
-                <CardContent className="flex flex-col items-center justify-center p-4">
-                    <item.icon className="h-8 w-8" />
-                    <h2 className="text-lg text-foreground font-semibold text-center">{item.name}</h2>
+                <CardContent className="flex flex-col items-center justify-center p-4 space-y-2">
+                    <item.icon className="h-8 w-8 text-muted-foreground" />
+                    <h2 className="text-lg text-muted-foreground font-semibold text-center">{item.name}</h2>
                 </CardContent>
             </Card>
         </Link>

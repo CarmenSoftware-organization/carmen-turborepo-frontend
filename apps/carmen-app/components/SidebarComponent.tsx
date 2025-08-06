@@ -191,7 +191,7 @@ const SidebarContent = () => {
             >
                 <div className="flex items-center gap-2">
                     {item.icon && <item.icon className="h-4 w-4" />}
-                    {!isActuallyCollapsed && <span className="font-medium">{t(`${section}.${subItem}`)}</span>}
+                    {!isActuallyCollapsed && <span className="font-medium text-muted-foreground">{t(`${section}.${subItem}`)}</span>}
                 </div>
                 {!isActuallyCollapsed && renderChevron(level, openMenus[item.href])}
             </button>
@@ -207,7 +207,7 @@ const SidebarContent = () => {
             <Link
                 href={item.href}
                 className={cn(
-                    'flex items-center justify-between p-2 rounded-md text-sm mt-1',
+                    'flex items-center justify-between p-2 rounded-md text-sm mt-1 text-muted-foreground',
                     isActive
                         ? 'bg-primary text-primary-foreground'
                         : 'hover:bg-accent hover:text-accent-foreground',
@@ -274,7 +274,7 @@ const SidebarContent = () => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={cn(
-                'flex flex-col border-r h-screen hidden md:block mt-16'
+                'flex flex-col border-r border-border h-screen hidden md:block mt-16'
             )}
             aria-label="Sidebar Navigation"
         >
@@ -289,8 +289,8 @@ const SidebarContent = () => {
                         isActuallyCollapsed ? 'justify-center' : ''
                     )}
                 >
-                    {Icon && <Icon className="h-5 w-5" />}
-                    {!isActuallyCollapsed && <h2 className="font-semibold">{t(moduleKey)}</h2>}
+                    {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
+                    {!isActuallyCollapsed && <h2 className="font-semibold text-muted-foreground">{t(moduleKey)}</h2>}
                 </MotionDiv>
                 {activeModuleData.children && renderSubMenu(activeModuleData.children)}
             </div>
@@ -299,7 +299,7 @@ const SidebarContent = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
-                className="mt-auto border-t bg-muted/30"
+                className="mt-auto border-t border-border bg-muted/30"
             >
                 <div className="p-3">
                     <MotionDiv

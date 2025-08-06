@@ -18,7 +18,7 @@ export default function SearchInput({
   onSearch,
   placeholder,
   containerClassName = "w-full md:w-[405px]",
-  buttonClassName = "absolute right-0 top-0 h-full px-3 hover:bg-transparent hover:text-muted-foreground",
+  buttonClassName = "absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent hover:text-muted-foreground/80",
 }: Props) {
   const [inputValue, setInputValue] = useState(defaultValue);
 

@@ -43,7 +43,7 @@ export default function PurchaseOrderComponent() {
                         New Purchase Order
                     </Button>
                     <Button
-                        variant="outline"
+                        variant="outlinePrimary"
                         className="group"
                         size={'sm'}
                         data-id="po-list-export-button"
@@ -52,7 +52,7 @@ export default function PurchaseOrderComponent() {
                         {tCommon('export')}
                     </Button>
                     <Button
-                        variant="outline"
+                        variant="outlinePrimary"
                         size={'sm'}
                         data-id="po-list-print-button"
                     >

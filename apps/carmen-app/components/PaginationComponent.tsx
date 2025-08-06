@@ -228,7 +228,7 @@ const PaginationComponent = ({
 				</PaginationItem>
 				<PaginationItem data-id="select-perpage">
 					<Select value={String(perpage || 10)} onValueChange={handlePerPageChange}>
-						<SelectTrigger className="h-8 bg-background">
+						<SelectTrigger className="h-8">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent className="text-sm">

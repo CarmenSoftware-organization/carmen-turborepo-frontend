@@ -158,7 +158,7 @@ export default function BusinessTypeComponent() {
           {tCommon("add")}
         </Button>
         <Button
-          variant="outline"
+          variant="outlinePrimary"
           className="group"
           size="sm"
           data-id="delivery-point-export-button"
@@ -167,7 +167,7 @@ export default function BusinessTypeComponent() {
           {tCommon("export")}
         </Button>
         <Button
-          variant="outline"
+          variant="outlinePrimary"
           size="sm"
           data-id="delivery-point-print-button"
         >

@@ -9,7 +9,7 @@ export default function ToggleView({ view, setView }: ViewToggleButtonsProps) {
     return (
         <div className="flex items-center gap-2">
             <Button
-                variant={view === VIEW.LIST ? 'default' : 'outline'}
+                variant={view === VIEW.LIST ? 'default' : 'outlinePrimary'}
                 size={'sm'}
                 onClick={() => setView(VIEW.LIST)}
                 aria-label="List view"
@@ -17,7 +17,7 @@ export default function ToggleView({ view, setView }: ViewToggleButtonsProps) {
                 <List className="h-4 w-4" />
             </Button>
             <Button
-                variant={view === VIEW.GRID ? 'default' : 'outline'}
+                variant={view === VIEW.GRID ? 'default' : 'outlinePrimary'}
                 size={'sm'}
                 onClick={() => setView(VIEW.GRID)}
                 aria-label="Grid view"

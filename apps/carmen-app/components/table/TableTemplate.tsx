@@ -101,13 +101,12 @@ const TableTemplate = ({
                 </TableRow>
             </TableHeader>
 
-            {/* Table Body */}
             {isLoading ? (
                 <TableBodySkeleton rows={colLength} />
             ) : (
                 <TableBody>
-                    {dataSource.length > 0 ? (
-                        dataSource.map((record, index) => (
+                    {dataSource?.length > 0 ? (
+                        dataSource?.map((record, index) => (
                             <TableRow key={record.key}>
                                 {columns.map((column) => (
                                     <TableCell

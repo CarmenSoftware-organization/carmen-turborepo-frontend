@@ -75,7 +75,7 @@ export default function CreditNoteComponent() {
         New Credit Note
       </Button>
       <Button
-        variant="outline"
+        variant="outlinePrimary"
         className="group"
         size={"sm"}
         data-id="credit-note-list-export-button"
@@ -87,7 +87,7 @@ export default function CreditNoteComponent() {
         {tCommon("export")}
       </Button>
       <Button
-        variant="outline"
+        variant="outlinePrimary"
         size={"sm"}
         data-id="credit-note-list-print-button"
       >

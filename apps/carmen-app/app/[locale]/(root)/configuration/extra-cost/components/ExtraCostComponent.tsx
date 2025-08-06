@@ -171,7 +171,7 @@ export default function ExtraCostComponent() {
         Add
       </Button>
       <Button
-        variant="outline"
+        variant="outlinePrimary"
         className="group"
         size="sm"
         data-id="extra-cost-export-button"
@@ -180,7 +180,7 @@ export default function ExtraCostComponent() {
         Export
       </Button>
       <Button
-        variant="outline"
+        variant="outlinePrimary"
         size="sm"
         data-id="extra-cost-print-button"
       >

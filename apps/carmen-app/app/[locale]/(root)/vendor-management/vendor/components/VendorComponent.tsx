@@ -78,7 +78,7 @@ export default function VendorComponent() {
                 </Link>
             </Button>
             <Button
-                variant="outline"
+                variant="outlinePrimary"
                 className="group"
                 size={'sm'}
                 data-id="vendor-list-export-button"
@@ -87,7 +87,7 @@ export default function VendorComponent() {
                 {tCommon('export')}
             </Button>
             <Button
-                variant="outline"
+                variant="outlinePrimary"
                 size={'sm'}
                 data-id="vendor-list-print-button"
             >

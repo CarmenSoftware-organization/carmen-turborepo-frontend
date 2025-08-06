@@ -136,7 +136,7 @@ export function TaxProfileComponent() {
           {tCommon("add")}
         </Button>
         <Button
-          variant="outline"
+          variant="outlinePrimary"
           className="group"
           size="sm"
           data-id="delivery-point-export-button"
@@ -145,7 +145,7 @@ export function TaxProfileComponent() {
           {tCommon("export")}
         </Button>
         <Button
-          variant="outline"
+          variant="outlinePrimary"
           size="sm"
           data-id="delivery-point-print-button"
         >
