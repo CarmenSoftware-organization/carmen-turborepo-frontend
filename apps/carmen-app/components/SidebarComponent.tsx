@@ -1,13 +1,15 @@
 'use client';
 
-import { useState, KeyboardEvent } from 'react';
+import { useState, KeyboardEvent, useMemo, Suspense, Component, ReactNode } from 'react';
 import { moduleItems } from "@/constants/modules-list";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { usePathname } from "next/navigation";
-import { ChevronRight, ChevronDown } from "lucide-react";
+import { AlertCircle, ChevronRight, PanelLeftClose, PanelRightClose } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { Button } from './ui/button';
+import { MotionDiv, AnimatePresence } from './framer-motion/MotionWrapper';
 
-// Type definitions
 type MenuIcon = React.ComponentType<{ className?: string }>;
 
 interface MenuItem {
@@ -17,30 +19,105 @@ interface MenuItem {
     icon?: MenuIcon;
 }
 
-export default function SidebarComponent() {
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+    constructor(props: { children: ReactNode }) {
+        super(props);
+        this.state = { hasError: false };
+    }
+
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        console.error('Sidebar Error:', error, errorInfo);
+    }
+
+    render() {
+        if (this.state.hasError) {
+            return (
+                <div className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block overflow-y-auto">
+                    <div className="flex items-center gap-2 text-destructive">
+                        <AlertCircle className="h-5 w-5" />
+                        <span className="text-sm">เกิดข้อผิดพลาดในการโหลดเมนู</span>
+                    </div>
+                </div>
+            );
+        }
+
+        return this.props.children;
+    }
+}
+
+const SidebarLoading = () => (
+    <nav className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block overflow-y-auto">
+        <div className="animate-pulse">
+            <div className="h-8 bg-gray-200 rounded mb-2"></div>
+            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        </div>
+        <div className="p-4 border-b">
+            <div className="flex items-center gap-2">
+                <div className="h-5 w-5 bg-gray-200 rounded"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
+        </div>
+        <div className="mt-4 space-y-2">
+            {Array.from({ length: 5 }, (_, i) => (
+                <div key={`loading-${i}`} className="h-8 bg-gray-200 rounded"></div>
+            ))}
+        </div>
+    </nav>
+);
+
+const SidebarContent = () => {
     const t = useTranslations('Modules');
-    const tHome = useTranslations('HomePage');
     const pathname = usePathname();
     const [openMenus, setOpenMenus] = useState<{ [key: string]: boolean }>({});
+    const [isCollapsed, setIsCollapsed] = useState(false); // เริ่มต้นในสถานะปกติ (ไม่ย่อ)
+    const [isHovered, setIsHovered] = useState(false);
 
-    // ตัด locale ออกจาก pathname ถ้ามี
-    const pathWithoutLocale = pathname.split('/').slice(2).join('/');
+    const pathWithoutLocale = useMemo(() => {
+        return pathname.split('/').slice(2).join('/');
+    }, [pathname]);
 
-    // หา module ที่ตรงกับ pathname ปัจจุบัน
-    const activeModuleData = moduleItems.find(module =>
-        ('/' + pathWithoutLocale).startsWith(module.href) && module.href !== "/"
-    );
+    const activeModuleData = useMemo(() => {
+        return moduleItems.find(module =>
+            ('/' + pathWithoutLocale).startsWith(module.href) && module.href !== "/"
+        );
+    }, [pathWithoutLocale]);
 
-    // ถ้าไม่มี module ที่ตรงกับ pathname ไม่แสดงอะไร
+    const moduleKey = useMemo(() => {
+        return activeModuleData?.labelKey.split('.').pop() ?? '';
+    }, [activeModuleData?.labelKey]);
+
+    const isPathActive = useMemo(() => {
+        return (href: string) => {
+            const fullItemPath = '/' + pathWithoutLocale;
+            return fullItemPath === href || fullItemPath.startsWith(href + '/');
+        };
+    }, [pathWithoutLocale]);
+
     if (!activeModuleData) {
         return null;
     }
 
-    // แยก key สำหรับการแปลภาษา
-    const moduleKey = activeModuleData.labelKey.split('.').pop() ?? '';
     const Icon = activeModuleData.icon;
 
-    // ฟังก์ชันสำหรับสลับการแสดงผลเมนูย่อย
+    const handleMouseEnter = () => {
+        setIsHovered(true);
+    };
+
+    const handleMouseLeave = () => {
+        setIsHovered(false);
+    };
+
+
+    const handleToggleCollapse = () => {
+        setIsCollapsed(!isCollapsed);
+    };
+
+    const isActuallyCollapsed = isCollapsed && !isHovered;
+
     const toggleMenu = (key: string) => {
         setOpenMenus(prev => ({
             ...prev,
@@ -48,26 +125,17 @@ export default function SidebarComponent() {
         }));
     };
 
-    // ฟังก์ชันจัดการ Keyboard Event
     const handleKeyDown = (
         event: KeyboardEvent<Element>,
         key: string,
         hasChildren: boolean
     ) => {
-        // ถ้ากด Enter หรือ Space
         if (hasChildren && (event.key === 'Enter' || event.key === ' ')) {
             event.preventDefault();
             toggleMenu(key);
         }
     };
 
-    // ฟังก์ชันตรวจสอบเส้นทางที่เลือก
-    const isPathActive = (href: string) => {
-        const fullItemPath = '/' + pathWithoutLocale;
-        return fullItemPath === href || fullItemPath.startsWith(href + '/');
-    };
-
-    // ฟังก์ชันแสดงเมนูย่อย (Recursive)
     const renderSubMenu = (items: MenuItem[], level = 0) => {
         return items.map((item) => {
             const segments = item.labelKey.split('.');
@@ -78,21 +146,23 @@ export default function SidebarComponent() {
             const hasChildren = Boolean(item.children && item.children.length > 0);
 
             return (
-                <div key={item.labelKey} className="relative">
+                <MotionDiv key={item.labelKey} className="relative">
                     {renderMenuItem(item, section, subItem, level, isActive, hasChildren)}
 
-                    {hasChildren && openMenus[item.href] && (
-                        <div
-                            className={`
-                                overflow-hidden
-                                transition-all duration-300 ease-in-out
-                                ${openMenus[item.href] ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}
-                            `}
-                        >
-                            {renderSubMenu(item.children!, level + 1)}
-                        </div>
-                    )}
-                </div>
+                    <AnimatePresence>
+                        {hasChildren && openMenus[item.href] && !isActuallyCollapsed && (
+                            <MotionDiv
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3, ease: "easeInOut" }}
+                                className="overflow-hidden"
+                            >
+                                {renderSubMenu(item.children!, level + 1)}
+                            </MotionDiv>
+                        )}
+                    </AnimatePresence>
+                </MotionDiv>
             );
         });
     };
@@ -105,94 +175,169 @@ export default function SidebarComponent() {
     };
 
     const renderParentMenuItem = (item: MenuItem, section: string, subItem: string, level: number, isActive: boolean) => (
-        <button
-            type="button"
-            aria-expanded={openMenus[item.href] || false}
-            aria-haspopup={true}
-            className={getMenuItemClassName(level, isActive, openMenus[item.href])}
-            onClick={() => toggleMenu(item.href)}
-            onKeyDown={(e) => handleKeyDown(e, item.href, true)}
+        <MotionDiv
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2 }}
         >
-            <div className="flex items-center gap-2">
-                <span className="font-medium">{t(`${section}.${subItem}`)}</span>
-            </div>
-            {renderChevron(level, openMenus[item.href])}
-        </button>
+            <button
+                type="button"
+                aria-expanded={openMenus[item.href] || false}
+                aria-haspopup={true}
+                className={getMenuItemClassName(level, isActive, openMenus[item.href])}
+                onClick={() => toggleMenu(item.href)}
+                onKeyDown={(e) => handleKeyDown(e, item.href, true)}
+                title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
+            >
+                <div className="flex items-center gap-2">
+                    {item.icon && <item.icon className="h-4 w-4" />}
+                    {!isActuallyCollapsed && <span className="font-medium">{t(`${section}.${subItem}`)}</span>}
+                </div>
+                {!isActuallyCollapsed && renderChevron(level, openMenus[item.href])}
+            </button>
+        </MotionDiv>
     );
 
     const renderLeafMenuItem = (item: MenuItem, section: string, subItem: string, level: number, isActive: boolean) => (
-        <Link
-            href={item.href}
-            className={`
-                flex items-center justify-between p-2 rounded-md text-sm 
-                transition-colors duration-300 mt-1
-                ${isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent hover:text-accent-foreground'}
-                ${level > 0 ? `pl-${4 * (level + 1)}` : ''}
-            `}
+        <MotionDiv
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.2 }}
         >
-            <span className="font-medium">
-                {t(`${section}.${subItem}`)}
-            </span>
-        </Link>
+            <Link
+                href={item.href}
+                className={cn(
+                    'flex items-center justify-between p-2 rounded-md text-sm mt-1',
+                    isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-accent hover:text-accent-foreground',
+                    level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
+                    isActuallyCollapsed && 'justify-center'
+                )}
+                title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
+            >
+                <div
+                    className={cn(
+                        'flex items-center',
+                        isActuallyCollapsed ? 'justify-center' : 'gap-2'
+                    )}
+                >
+                    {item.icon && <item.icon className="h-4 w-4" />}
+                    {!isActuallyCollapsed && (
+                        <span className="font-medium">
+                            {t(`${section}.${subItem}`)}
+                        </span>
+                    )}
+                </div>
+            </Link>
+        </MotionDiv>
     );
 
     const renderChevron = (level: number, isOpen: boolean) => {
         if (level === 0) {
-            return isOpen ? (
-                <ChevronDown
-                    size={16}
-                    aria-hidden="true"
-                    className="transition-transform duration-300 rotate-180"
-                />
-            ) : (
-                <ChevronRight
-                    size={16}
-                    aria-hidden="true"
-                    className="transition-transform duration-300"
-                />
+            return (
+                <MotionDiv
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                >
+                    <ChevronRight
+                        size={16}
+                        aria-hidden="true"
+                    />
+                </MotionDiv>
             );
         }
         return null;
     };
 
-    const getMenuItemClassName = (level: number, isActive: boolean, isOpen: boolean) => {
-        return `
-            flex items-center justify-between p-2 rounded-md text-sm w-full text-left
-            transition-all duration-300 ease-in-out
-            ${isActive ? 'bg-primary text-primary-foreground' : 'hover:bg-accent hover:text-accent-foreground'}
-            cursor-pointer
-            ${level > 0 ? `pl-${4 * (level + 1)}` : ''}
-            ${isOpen ? 'bg-accent/50' : ''}
-        `;
+    const getMenuItemClassName = (
+        level: number,
+        isActive: boolean,
+        isOpen: boolean
+    ) => {
+        return cn(
+            'flex items-center justify-between p-2 rounded-md text-sm w-full text-left cursor-pointer',
+            isActive
+                ? 'bg-primary text-primary-foreground'
+                : 'hover:bg-accent hover:text-accent-foreground',
+            level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
+            isOpen && !isActuallyCollapsed && 'bg-accent/50',
+            isActuallyCollapsed && 'justify-center'
+        );
     };
 
     return (
-        <nav
-            className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block overflow-y-auto"
+        <MotionDiv
+            initial={{ width: isActuallyCollapsed ? 64 : 250 }}
+            animate={{ width: isActuallyCollapsed ? 64 : 250 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className={cn(
+                'flex flex-col border-r h-screen hidden md:block mt-16'
+            )}
             aria-label="Sidebar Navigation"
         >
-            <div>
-                <span
-                    className="text-2xl font-bold block tracking-wide"
-                    data-id="sidebar-logo-text"
-                >
-                    {tHome('carmenTitle')}
-                </span>
-                <span
-                    className="block tracking-wide"
-                    data-id="sidebar-logo-text-sub"
-                >
-                    {tHome('HospitalitySupplyChain')}
-                </span>
-            </div>
-            <div className="p-4 flex items-center gap-2 border-b">
-                {Icon && <Icon className="h-5 w-5" />}
-                <h2 className="font-semibold">{t(moduleKey)}</h2>
-            </div>
 
-            <div className="mt-4 space-y-2">
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                <MotionDiv
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className={cn(
+                        "flex border-b border-primary pb-4 items-center gap-2 mb-4",
+                        isActuallyCollapsed ? 'justify-center' : ''
+                    )}
+                >
+                    {Icon && <Icon className="h-5 w-5" />}
+                    {!isActuallyCollapsed && <h2 className="font-semibold">{t(moduleKey)}</h2>}
+                </MotionDiv>
                 {activeModuleData.children && renderSubMenu(activeModuleData.children)}
             </div>
-        </nav>
+
+            <MotionDiv
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="mt-auto border-t bg-muted/30"
+            >
+                <div className="p-3">
+                    <MotionDiv
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Button
+                            variant={'ghost'}
+                            onClick={handleToggleCollapse}
+                            className={cn(
+                                "w-full h-10 hover:bg-accent",
+                                isActuallyCollapsed ? 'justify-center' : 'justify-between bg-muted'
+                            )}
+                            aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                        >
+                            {!isActuallyCollapsed && (
+                                <span className="text-sm font-medium text-muted-foreground">Collapse</span>
+                            )}
+                            {isActuallyCollapsed ? (
+                                <PanelRightClose className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                                <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
+                            )}
+                        </Button>
+                    </MotionDiv>
+                </div>
+            </MotionDiv>
+        </MotionDiv>
+    );
+};
+
+export default function SidebarComponent() {
+    return (
+        <ErrorBoundary>
+            <Suspense fallback={<SidebarLoading />}>
+                <SidebarContent />
+            </Suspense>
+        </ErrorBoundary>
     );
 }

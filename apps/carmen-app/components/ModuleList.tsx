@@ -9,7 +9,7 @@ import {
 import { moduleItems } from "@/constants/modules-list";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "@/lib/navigation";
-import { Grip } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -48,11 +48,11 @@ export default function ModuleList() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" className="rounded-full w-10 h-10">
-          <Grip className="h-5 w-5" />
+          <LayoutGrid className="h-5 w-5" strokeWidth={0.95} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[500px]">
-        <div className="grid grid-cols-4 gap-2">
+      <PopoverContent className="max-w-[360px]">
+        <div className="grid grid-cols-3 gap-2">
           {moduleItems.map((module) => {
             const key = module.labelKey.split(".").pop() ?? "";
             const Icon = module.icon;
@@ -61,11 +61,10 @@ export default function ModuleList() {
             return (
               <button
                 key={module.labelKey}
-                className={`w-full text-left cursor-pointer rounded-md p-3 ${
-                  isActive
-                    ? "bg-accent border-primary"
-                    : "hover:bg-accent/50 border-gray-200"
-                }`}
+                className={`w-full text-left cursor-pointer rounded-md p-3 ${isActive
+                  ? "bg-accent border-primary"
+                  : "hover:bg-accent/50 border-gray-200"
+                  }`}
                 onClick={() => handleModuleClick(module.href)}
                 aria-label={t(key)}
               >

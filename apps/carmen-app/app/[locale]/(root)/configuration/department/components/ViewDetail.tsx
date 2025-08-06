@@ -23,7 +23,7 @@ interface ViewDetailProps {
 export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
 
     return (
-        <div className="max-w-4xl mx-auto p-6 space-y-6">
+        <div className="mx-auto p-6 space-y-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Button onClick={onBack} size="sm" variant="ghost">
@@ -110,46 +110,6 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
                     </Table>
                 </CardContent>
             </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium">Total Members</p>
-                                <p className="text-2xl font-bold">{data.users.length}</p>
-                            </div>
-                            <Users className="h-8 w-8 text-blue-500" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium">data Heads</p>
-                                <p className="text-2xl font-bold">
-                                    {data.users.filter((user) => user.isHod).length}
-                                </p>
-                            </div>
-                            <Building2 className="h-8 w-8 text-green-500" />
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm font-medium">Status</p>
-                                <p className="text-2xl font-bold text-green-600">{data.is_active ? "Active" : "Inactive"}</p>
-                            </div>
-                            <CheckCircle className="h-8 w-8 text-green-500" />
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
         </div>
     );
 }

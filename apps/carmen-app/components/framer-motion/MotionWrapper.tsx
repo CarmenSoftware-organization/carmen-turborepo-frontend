@@ -17,6 +17,9 @@ interface MotionProps {
     whileFocus?: TargetAndTransition | VariantLabels;
     children: ReactNode;
     className?: string;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
+    onClick?: () => void;
 }
 
 // Dynamic import สำหรับ motion components

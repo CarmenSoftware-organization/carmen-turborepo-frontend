@@ -13,6 +13,7 @@ import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import ButtonLink from "@/components/ButtonLink";
 
 interface ProductListProps {
   readonly products?: ProductGetDto[];
@@ -103,13 +104,9 @@ export default function ProductList({
         if (!product) return null;
         return (
           <div className="flex items-center gap-2">
-            <Link
-              href={`/product-management/product/${record.key}`}
-              className="hover:underline text-primary/80 font-semibold truncate max-w-[200px] inline-block align-bottom"
-            >
+            <ButtonLink href={`/product-management/product/${record.key}`}>
               {record.name}
-            </Link>
-
+            </ButtonLink>
             <Badge
               variant="secondary"
             >
