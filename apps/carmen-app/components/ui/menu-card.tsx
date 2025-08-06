@@ -48,4 +48,19 @@ export function MenuCard({ item, className }: MenuCardProps) {
             </Card>
         </Link>
     );
-} 
+}
+
+export function GenericMenuPage({
+    title,
+    subMenu
+}: {
+    readonly title: string;
+    readonly subMenu: MenuCardItem[];
+}) {
+    return (
+        <div>
+            <h1 className="text-3xl font-bold mb-4">{title}</h1>
+            <MenuCardGrid items={subMenu} />
+        </div>
+    )
+}
