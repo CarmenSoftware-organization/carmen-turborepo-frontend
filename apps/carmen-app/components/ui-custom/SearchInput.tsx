@@ -43,7 +43,7 @@ export default function SearchInput({
   };
 
   return (
-    <div className="flex gap-2 w-full">
+    <div className="flex gap-2">
       <div className={`relative ${containerClassName}`}>
         <Input
           name="search"

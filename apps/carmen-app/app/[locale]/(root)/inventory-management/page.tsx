@@ -45,7 +45,7 @@ export default function InventoryManagementPage() {
     ]
 
     return (
-        <div className="container">
+        <div>
             <h1 className="text-3xl font-bold mb-8">{t('inventoryManagement')}</h1>
             <MenuCardGrid items={subMenu} />
         </div>

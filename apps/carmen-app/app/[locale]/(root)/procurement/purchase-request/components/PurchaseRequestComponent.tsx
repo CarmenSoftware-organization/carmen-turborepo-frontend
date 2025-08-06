@@ -116,7 +116,7 @@ export default function PurchaseRequestComponent() {
 
   const filters = (
     <div className="filter-container" data-id="pr-list-filters">
-      <div className="flex items-center gap-2 w-2/3">
+      <div className="flex items-center gap-2">
         <SearchInput
           defaultValue={search}
           onSearch={setSearch}
@@ -130,7 +130,7 @@ export default function PurchaseRequestComponent() {
           {tDataControls("allDoc")}
         </Button>
         <Select>
-          <SelectTrigger className="w-[250px] h-8 text-xs bg-muted">
+          <SelectTrigger className="w-[120px] h-8 text-xs bg-muted">
             <SelectValue placeholder={tDataControls("allStage")} />
           </SelectTrigger>
           <SelectContent >

@@ -24,7 +24,7 @@ export default function FinancePage() {
         }
     ]
     return (
-        <div className="container">
+        <div>
             <h1 className="text-3xl font-bold mb-8">{t('finance')}</h1>
             <MenuCardGrid items={subMenu} />
         </div>

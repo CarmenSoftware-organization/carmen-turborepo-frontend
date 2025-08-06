@@ -56,7 +56,7 @@ export default function Configuration() {
   const title = t("configurationTitle");
 
   return (
-    <div className="container">
+    <div>
       <h1 className="text-3xl font-bold mb-8">{title}</h1>
       <MenuCardGrid items={subMenu} />
     </div>

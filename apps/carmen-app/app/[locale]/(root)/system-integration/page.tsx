@@ -12,7 +12,7 @@ export default function SystemIntegrationPage() {
         }
     ]
     return (
-        <div className="container">
+        <div>
             <h1 className="text-3xl font-bold mb-8">{t('SystemIntegration.pos')}</h1>
             <MenuCardGrid items={subMenu} />
         </div>

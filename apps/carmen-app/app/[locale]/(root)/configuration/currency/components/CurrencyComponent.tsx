@@ -43,7 +43,8 @@ export default function CurrencyComponent() {
         search: search || undefined,
         page: page || '1',
         filter: filter || undefined,
-        sort: sort || undefined
+        sort: sort || undefined,
+        perpage: 10
     }), [search, page, filter, sort]);
 
     const { currencies: data, isLoading } = useCurrenciesQuery(token, tenantId, params);
@@ -201,7 +202,7 @@ export default function CurrencyComponent() {
                 {tCommon('export')}
             </Button>
             <Button
-                variant="outlinePrimary"
+                variant="outline"
                 size={'sm'}
                 data-id="delivery-point-print-button"
             >
