@@ -6,9 +6,14 @@ import { Providers } from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Carmen",
-  description: "Carmen Description",
-};
+  title: 'Carmen Inventory',
+  description: 'Carmen Inventory Description',
+  icons: {
+    icon: '/fav.ico',
+    shortcut: '/fav-16x16.png',
+    apple: '/apple-touch-icon.png',
+  },
+}
 
 export default async function RootLayout({
   children,
