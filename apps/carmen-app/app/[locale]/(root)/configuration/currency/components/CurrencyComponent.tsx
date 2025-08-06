@@ -32,28 +32,25 @@ export default function CurrencyComponent() {
     const [selectedCurrency, setSelectedCurrency] = useState<CurrencyGetDto | undefined>();
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [page, setPage] = useURL("page");
+    const [perpage, setPerpage] = useURL("perpage");
     const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
     const boolFilterOptions = useBoolFilterOptions();
     const queryClient = useQueryClient();
 
-    // เพิ่ม parameters สำหรับ search และ pagination
-    const params = useMemo(() => ({
+    const { currencies: data, isLoading } = useCurrenciesQuery(token, tenantId, {
         search: search || undefined,
-        page: page || '1',
+        page: page || 1,
         filter: filter || undefined,
         sort: sort || undefined,
-        perpage: 10
-    }), [search, page, filter, sort]);
+        perpage: perpage || 10
+    });
 
-    const { currencies: data, isLoading } = useCurrenciesQuery(token, tenantId, params);
     const currenciesData = data?.data ?? [];
     const currencies = Array.isArray(data) ? data : currenciesData;
-
     const totalPages = data?.paginate?.pages ?? 1;
     const totalItems = data?.paginate?.total ?? 0;
-    const perpage = data?.paginate?.per_page ?? 10;
 
     const handleAdd = useCallback(() => {
         setSelectedCurrency(undefined);
@@ -184,6 +181,10 @@ export default function CurrencyComponent() {
         };
     }, [sort]);
 
+    const handleSetPerpage = (newPerpage: number) => {
+        setPerpage(newPerpage.toString());
+    };
+
     const title = tCurrency('title');
 
     const actionButtons = (
@@ -257,7 +258,8 @@ export default function CurrencyComponent() {
             selectedCurrencies={selectedCurrencies}
             onSelectAll={handleSelectAll}
             onSelect={handleSelect}
-            perpage={perpage}
+            perpage={data?.paginate?.perpage}
+            setPerpage={handleSetPerpage}
         />
     );
 

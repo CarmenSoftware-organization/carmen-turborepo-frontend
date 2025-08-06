@@ -30,6 +30,7 @@ interface CurrencyListProps {
   readonly onSelectAll: (isChecked: boolean) => void;
   readonly onSelect: (id: string) => void;
   readonly perpage: number;
+  readonly setPerpage: (perpage: number) => void;
 }
 
 
@@ -48,6 +49,7 @@ export default function CurrencyList({
   onSelectAll,
   onSelect,
   perpage,
+  setPerpage
 }: CurrencyListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -152,7 +154,7 @@ export default function CurrencyList({
       ),
       dataIndex: "exchange_rate",
       key: "exchange_rate",
-      width: "w-20",
+      width: "w-44",
       align: "right",
       icon: <Replace className="h-4 w-4" />,
       render: (value: number) => {
@@ -188,7 +190,7 @@ export default function CurrencyList({
       title: t("action"),
       dataIndex: "action",
       key: "action",
-      width: "w-0 md:w-20",
+      width: "w-0 md:w-32",
       align: "right",
       render: (_: unknown, record: TableDataSource) => {
         const currency = currencies.find(c => c.id === record.key);
@@ -236,6 +238,7 @@ export default function CurrencyList({
       onPageChange={onPageChange}
       isLoading={isLoading}
       perpage={perpage}
+      setPerpage={setPerpage}
     />
   );
 }

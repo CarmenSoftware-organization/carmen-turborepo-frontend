@@ -24,6 +24,7 @@ interface ListDeliveryPointProps {
     readonly selectedDeliveryPoints: string[];
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
+    readonly setPerpage: (perpage: number) => void;
 }
 
 export default function ListDeliveryPoint({
@@ -41,6 +42,7 @@ export default function ListDeliveryPoint({
     selectedDeliveryPoints,
     onSelectAll,
     onSelect,
+    setPerpage
 }: ListDeliveryPointProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -125,7 +127,7 @@ export default function ListDeliveryPoint({
             title: t("action"),
             dataIndex: "action",
             key: "action",
-            width: "w-0 md:w-20",
+            width: "w-0 md:w-32",
             align: "right",
             render: (_: unknown, record: TableDataSource) => {
                 const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
@@ -170,6 +172,7 @@ export default function ListDeliveryPoint({
             currentPage={currentPage}
             onPageChange={onPageChange}
             isLoading={isLoading}
+            setPerpage={setPerpage}
         />
     );
 }

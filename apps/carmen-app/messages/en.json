@@ -269,7 +269,9 @@
     "itemFound": "Items",
     "page": "Page",
     "goTo": "Go to",
-    "perPage": "Per Page"
+    "perPage": "Per Page",
+    "yes": "YES",
+    "no": "NO"
   },
   "TableHeader": {
     "all": "All",
@@ -313,7 +315,9 @@
     "rate": "Rate",
     "note": "Note",
     "inventory_unit": "Inventory Unit",
-    "stage": "Stage"
+    "stage": "Stage",
+    "yes": "Yes",
+    "no": "No"
   },
   "Product": {
     "title": "Product"
@@ -485,5 +489,8 @@
   },
   "PurchaseRequest": {
     "title": "Purchase Request"
+  },
+  "Procurement": {
+    "title": "Procurement"
   }
 }

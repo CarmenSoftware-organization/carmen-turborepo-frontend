@@ -36,6 +36,8 @@ interface ListLocationsProps {
   readonly onSelectAll?: (isChecked: boolean) => void;
   readonly onSelect?: (id: string) => void;
   readonly selectedLocations?: string[];
+  readonly perpage?: number;
+  readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function ListLocations({
@@ -47,7 +49,8 @@ export default function ListLocations({
   onSelectAll,
   onSelect,
   selectedLocations,
-
+  perpage,
+  setPerpage
 }: ListLocationsProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -114,7 +117,7 @@ export default function ListLocations({
     //   align: "left",
     // },
     {
-      title: "Type",
+      title: t("type"),
       dataIndex: "location_type",
       key: "location_type",
       align: "center",
@@ -137,18 +140,18 @@ export default function ListLocations({
       align: "center",
       render: (_: unknown, record: TableDataSource) => {
         return (
-          <p>{record.eop.toUpperCase()}</p>
+          <p>{record.eop === "yes" ? tCommon("yes") : tCommon("no")}</p>
         );
       },
     },
     {
-      title: "Delivery Point",
+      title: t("delivery_point"),
       dataIndex: "delivery_point",
       key: "delivery_point",
       align: "center",
     },
     {
-      title: "Status",
+      title: t("status"),
       dataIndex: "is_active",
       key: "is_active",
       align: "center",
@@ -156,7 +159,7 @@ export default function ListLocations({
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
         return <Badge variant={location.is_active ? "active" : "inactive"}>
-          {location.is_active ? tCommon("active") : tCommon("inactive")}
+          {location.is_active ? tCommon("yes") : tCommon("no")}
         </Badge>;
       },
     },
@@ -164,7 +167,6 @@ export default function ListLocations({
       title: t("action"),
       dataIndex: "action",
       key: "action",
-      width: "w-0 md:w-20",
       align: "right",
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
@@ -211,6 +213,8 @@ export default function ListLocations({
       currentPage={1}
       onPageChange={onPageChange}
       isLoading={isLoading}
+      perpage={perpage}
+      setPerpage={setPerpage}
     />
   );
 }

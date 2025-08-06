@@ -23,6 +23,8 @@ interface ListUnitProps {
     readonly selectedUnits: string[];
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
+    readonly perpage?: number;
+    readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function ListUnit({
@@ -38,7 +40,10 @@ export default function ListUnit({
     selectedUnits,
     onSelectAll,
     totalItems,
-    onSelect }: ListUnitProps) {
+    onSelect,
+    perpage,
+    setPerpage
+}: ListUnitProps) {
 
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -177,6 +182,8 @@ export default function ListUnit({
             currentPage={currentPage}
             onPageChange={onPageChange}
             isLoading={isLoading}
+            perpage={perpage}
+            setPerpage={setPerpage}
         />
     );
 };

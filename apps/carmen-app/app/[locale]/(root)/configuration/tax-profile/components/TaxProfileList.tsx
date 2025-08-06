@@ -23,6 +23,8 @@ interface TaxProfileListProps {
     readonly selectedTaxProfiles: string[];
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
+    readonly perpage?: number;
+    readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function TaxProfileList({
@@ -39,6 +41,8 @@ export default function TaxProfileList({
     selectedTaxProfiles,
     onSelectAll,
     onSelect,
+    perpage,
+    setPerpage
 }: TaxProfileListProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -108,7 +112,7 @@ export default function TaxProfileList({
             ),
             dataIndex: "is_active",
             key: "is_active",
-            width: "w-0 md:w-20",
+            width: "w-0 md:w-32",
             align: "center",
             icon: <Activity className="h-4 w-4" />,
             render: (is_active: boolean) => (
@@ -123,7 +127,7 @@ export default function TaxProfileList({
             title: t("action"),
             dataIndex: "action",
             key: "action",
-            width: "w-0 md:w-20",
+            width: "w-0 md:w-32",
             align: "right",
             render: (_: unknown, record: TableDataSource) => {
                 const taxProfile = taxProfiles.find(tp => tp.id === record.key);
@@ -167,6 +171,8 @@ export default function TaxProfileList({
             totalPages={totalPages}
             onPageChange={onPageChange}
             totalItems={totalItems}
+            perpage={perpage}
+            setPerpage={setPerpage}
         />
     )
 }

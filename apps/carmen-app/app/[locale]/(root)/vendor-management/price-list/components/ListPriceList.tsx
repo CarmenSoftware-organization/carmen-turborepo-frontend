@@ -39,6 +39,7 @@ interface ListPriceListProps {
     readonly onPageChange?: (page: number) => void;
     readonly sort?: SortConfig;
     readonly onSort?: (field: string) => void;
+    readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function ListPriceList({
@@ -50,7 +51,8 @@ export default function ListPriceList({
     currentPage = 1,
     onPageChange,
     sort,
-    onSort
+    onSort,
+    setPerpage
 }: ListPriceListProps) {
     const { token, tenantId, dateFormat } = useAuth();
     const queryClient = useQueryClient();
@@ -235,6 +237,7 @@ export default function ListPriceList({
                 onPageChange={onPageChange}
                 isLoading={isLoading}
                 perpage={perpage}
+                setPerpage={setPerpage}
             />
 
             <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>

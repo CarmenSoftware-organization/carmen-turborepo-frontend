@@ -28,12 +28,14 @@ export default function DepartmentComponent() {
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
 
   const { departments, isLoading, isUnauthorized } = useDepartmentsQuery(token, tenantId, {
     search,
     page,
     sort,
     filter,
+    perpage
   });
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
 
@@ -99,6 +101,10 @@ export default function DepartmentComponent() {
       }
     }
   }, [setSort, sort]);
+
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
 
   if (isUnauthorized) {
     return <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />;
@@ -174,6 +180,8 @@ export default function DepartmentComponent() {
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
       totalItems={totalItems}
+      perpage={departments?.paginate.perpage}
+      setPerpage={handleSetPerpage}
     />
   )
 

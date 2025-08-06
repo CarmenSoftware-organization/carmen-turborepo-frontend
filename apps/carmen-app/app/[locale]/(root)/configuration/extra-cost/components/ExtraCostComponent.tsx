@@ -19,11 +19,13 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import ExtraCostDialog from "./ExtraCostDialog";
+import { useTranslations } from "next-intl";
 
 export default function ExtraCostComponent() {
   const { token, tenantId } = useAuth();
   const queryClient = useQueryClient();
-
+  const tCommon = useTranslations("Common");
+  const tConfig = useTranslations("Modules.Configuration");
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
@@ -159,7 +161,7 @@ export default function ExtraCostComponent() {
     },
   ];
 
-  const title = "Extra Cost";
+  const title = tConfig("extra_cost");
 
   const actionButtons = (
     <div
@@ -168,7 +170,7 @@ export default function ExtraCostComponent() {
     >
       <Button size="sm" onClick={handleAdd}>
         <Plus className="h-4 w-4" />
-        Add
+        {tCommon("add")}
       </Button>
       <Button
         variant="outlinePrimary"
@@ -177,7 +179,7 @@ export default function ExtraCostComponent() {
         data-id="extra-cost-export-button"
       >
         <FileDown className="h-4 w-4" />
-        Export
+        {tCommon("export")}
       </Button>
       <Button
         variant="outlinePrimary"
@@ -185,7 +187,7 @@ export default function ExtraCostComponent() {
         data-id="extra-cost-print-button"
       >
         <Printer className="h-4 w-4" />
-        Print
+        {tCommon("print")}
       </Button>
     </div>
   );

@@ -16,6 +16,7 @@ export const useCurrenciesQuery = (
     tenantId: string,
     params?: ParamsGetDto
 ) => {
+
     const { data, isLoading, error } = useQuery({
         queryKey: ["currencies", tenantId, params],
         queryFn: async () => {

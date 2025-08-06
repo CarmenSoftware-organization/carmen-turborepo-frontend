@@ -32,6 +32,7 @@ export default function DeliveryPointComponent() {
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
 
   // Dialog state
@@ -53,6 +54,7 @@ export default function DeliveryPointComponent() {
       filter,
       sort,
       page: page ? parseInt(page) : 1,
+      perpage: perpage ? parseInt(perpage) : 10
     },
   });
 
@@ -64,7 +66,6 @@ export default function DeliveryPointComponent() {
   const currentPage = deliveryPoints?.paginate.page ?? 1;
   const totalPages = deliveryPoints?.paginate.pages ?? 1;
   const totalItems = deliveryPoints?.paginate.total ?? deliveryPoints?.data?.length ?? 0;
-  const perpage = deliveryPoints?.paginate.per_page ?? 10;
 
   const handleSelectAll = (isChecked: boolean) => {
     if (isChecked) {
@@ -212,6 +213,10 @@ export default function DeliveryPointComponent() {
     }
   }, [setSort, sort, setPage]);
 
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
+
   const filters = (
     <div className="filter-container" data-id="delivery-point-list-filters">
       <SearchInput
@@ -246,7 +251,6 @@ export default function DeliveryPointComponent() {
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
-      perpage={perpage}
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
       onEdit={handleEdit}
@@ -255,6 +259,8 @@ export default function DeliveryPointComponent() {
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
       selectedDeliveryPoints={selectedDeliveryPoints}
+      setPerpage={handleSetPerpage}
+      perpage={deliveryPoints?.paginate.perpage}
     />
   );
 

@@ -26,6 +26,7 @@ export default function LocationComponent() {
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
@@ -42,7 +43,7 @@ export default function LocationComponent() {
       filter,
       sort,
       page,
-      perpage: 10,
+      perpage: perpage,
     },
   });
 
@@ -162,6 +163,10 @@ export default function LocationComponent() {
     };
   }, [sort]);
 
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
+
   const content = (
     <ListLocations
       locations={locations?.data ?? []}
@@ -172,6 +177,8 @@ export default function LocationComponent() {
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
       selectedLocations={selectedLocations}
+      perpage={locations?.paginate.perpage}
+      setPerpage={handleSetPerpage}
     />
   );
 

@@ -7,6 +7,7 @@ import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { useTranslations } from "next-intl";
 
 interface ListExtraCostProps {
     readonly extraCosts: ExtraCostTypeDto[];
@@ -39,6 +40,8 @@ export default function ListExtraCost({
     onSelectAll,
     onSelect,
 }: ListExtraCostProps) {
+    const t = useTranslations("TableHeader");
+
     const columns: TableColumn[] = [
         {
             title: (
@@ -66,7 +69,7 @@ export default function ListExtraCost({
             title: (
                 <SortableColumnHeader
                     columnKey="name"
-                    label="Name"
+                    label={t("name")}
                     sort={sort ?? { field: "name", direction: "asc" }}
                     onSort={onSort ?? (() => { })}
                     getSortableColumnProps={getSortableColumnProps}
@@ -92,7 +95,7 @@ export default function ListExtraCost({
             },
         },
         {
-            title: "Description",
+            title: t("description"),
             dataIndex: "description",
             key: "description",
             align: "left",
@@ -128,10 +131,10 @@ export default function ListExtraCost({
             ),
         },
         {
-            title: "Action",
+            title: t("action"),
             dataIndex: "action",
             key: "action",
-            width: "w-0 md:w-20",
+            width: "w-0 md:w-32",
             align: "right",
             render: (_: unknown, record: TableDataSource) => {
                 const extraCost = extraCosts.find(ec => ec.id === record.key);

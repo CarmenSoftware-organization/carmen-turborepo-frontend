@@ -30,6 +30,7 @@ export default function UnitComponent() {
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
 
   // Dialog state
@@ -50,6 +51,7 @@ export default function UnitComponent() {
       filter,
       sort,
       page: page ? parseInt(page) : 1,
+      perpage: perpage ? parseInt(perpage) : 10,
     }
   });
 
@@ -100,6 +102,10 @@ export default function UnitComponent() {
       setPage("1");
     }
   }, [setSort, sort, setPage]);
+
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  }
 
   const handleAdd = () => {
     setDialogMode(formType.ADD);
@@ -237,6 +243,8 @@ export default function UnitComponent() {
       onSelect={handleSelect}
       sort={parseSortString(sort)}
       onSort={handleSort}
+      perpage={units?.paginate.perpage}
+      setPerpage={handleSetPerpage}
     />
   )
 

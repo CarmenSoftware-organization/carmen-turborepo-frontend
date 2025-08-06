@@ -40,6 +40,7 @@ export function ProductComponent() {
     status,
     statusOpen,
     sort,
+    perpage,
 
     // Delete states
     deleteDialogOpen,
@@ -49,6 +50,7 @@ export function ProductComponent() {
     loginRequired,
 
     // Setters and handlers
+    handleSetPerpage,
     setSearch,
     setStatus,
     setStatusOpen,
@@ -136,6 +138,8 @@ export function ProductComponent() {
       totalItems={totalItems}
       sort={parseSortString(sort) ?? { field: "name", direction: "asc" }}
       onSort={handleSort}
+      perpage={perpage}
+      setPerpage={handleSetPerpage}
     />
   );
 

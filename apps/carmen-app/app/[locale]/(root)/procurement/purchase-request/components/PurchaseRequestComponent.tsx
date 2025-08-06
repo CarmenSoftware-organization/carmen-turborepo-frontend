@@ -51,7 +51,7 @@ export default function PurchaseRequestComponent() {
     page: page ? parseInt(page) : 1,
     sort,
     search,
-    perpage: perpage ? parseInt(perpage) : 10,
+    perpage: perpage,
   });
 
   const totalItems = prs?.paginate.total;

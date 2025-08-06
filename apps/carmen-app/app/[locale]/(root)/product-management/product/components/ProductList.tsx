@@ -24,6 +24,8 @@ interface ProductListProps {
   readonly totalItems: number;
   readonly sort: SortConfig;
   readonly onSort: (field: string) => void;
+  readonly perpage: number;
+  readonly setPerpage: (perpage: number) => void;
 }
 
 export default function ProductList({
@@ -36,6 +38,8 @@ export default function ProductList({
   totalItems,
   sort,
   onSort,
+  perpage,
+  setPerpage
 }: ProductListProps) {
   const t = useTranslations("TableHeader");
 
@@ -213,6 +217,8 @@ export default function ProductList({
       currentPage={currentPage}
       onPageChange={onPageChange}
       isLoading={isLoading}
+      perpage={perpage}
+      setPerpage={setPerpage}
     />
   );
 }

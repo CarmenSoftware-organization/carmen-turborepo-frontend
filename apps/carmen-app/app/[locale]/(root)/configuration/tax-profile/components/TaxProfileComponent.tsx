@@ -46,6 +46,7 @@ export function TaxProfileComponent() {
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
   const [filter, setFilter] = useURL("filter");
+  const [perpage, setPerpage] = useURL("perpage");
 
   const { taxProfiles: taxProfileData, isLoading } = useTaxProfileQuery(
     token,
@@ -225,6 +226,10 @@ export function TaxProfileComponent() {
     }
   };
 
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
+
   const handleSort = useCallback((field: string) => {
     if (!sort) {
       setSort(`${field}:asc`);
@@ -266,6 +271,8 @@ export function TaxProfileComponent() {
       selectedTaxProfiles={selectedTaxProfiles}
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
+      perpage={taxProfileData?.paginate.perpage}
+      setPerpage={handleSetPerpage}
     />
   );
 

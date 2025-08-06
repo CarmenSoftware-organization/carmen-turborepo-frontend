@@ -33,6 +33,7 @@ export const useProduct = ({
   const [status, setStatus] = useURL("status", { defaultValue: initialStatus });
   const [sort, setSort] = useURL("sort", { defaultValue: initialSort });
   const [page, setPage] = useURL("page", { defaultValue: initialPage });
+  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
   const [loginRequired, setLoginRequired] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -50,12 +51,13 @@ export const useProduct = ({
     error: queryError,
     isError,
   } = useQuery({
-    queryKey: ["products", search, sort, page, status, tenantId],
+    queryKey: ["products", search, sort, page, status, tenantId, perpage],
     queryFn: async () => {
       const response = await getProductService(token, tenantId, {
         search,
         sort,
         page,
+        perpage,
         ...(status ? { filter: status } : {}),
       });
 
@@ -147,6 +149,10 @@ export const useProduct = ({
     }
   }, [setSort, sort, setPage]);
 
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
+
   const products = useMemo(() => data?.products ?? [], [data]);
   const totalPages = data?.totalPages ?? 1;
   const totalItems = data?.totalItems ?? 0;
@@ -172,7 +178,7 @@ export const useProduct = ({
     totalPages,
     totalItems,
     currentPage: parseInt(page || "1"),
-
+    perpage: perpage ? parseInt(perpage) : 10,
     // Filter states
     search,
     status,
@@ -188,6 +194,7 @@ export const useProduct = ({
     loginRequired,
 
     // Setters and handlers
+    handleSetPerpage,
     setSearch,
     setStatus,
     setStatusOpen,

@@ -31,11 +31,12 @@ export default function VendorComponent() {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [sort, setSort] = useURL("sort");
     const [page, setPage] = useURL("page");
-
+    const [perpage, setPerpage] = useURL("perpage");
     const { vendors, isLoading, isUnauthorized } = useVendor(token, tenantId, {
         search,
         sort,
         page: page ? parseInt(page) : 1,
+        perpage: perpage ? parseInt(perpage) : 10,
     });
 
     const handlePageChange = useCallback(
@@ -66,6 +67,10 @@ export default function VendorComponent() {
             setPage("1");
         }
     }, [setSort, sort, setPage]);
+
+    const handleSetPerpage = (newPerpage: number) => {
+        setPerpage(newPerpage.toString());
+    }
 
     const title = tVendor('title');
 
@@ -138,6 +143,7 @@ export default function VendorComponent() {
             onSort={handleSort}
             totalItems={vendors?.paginate.total ?? 0}
             perpage={vendors?.paginate.perpage ?? 10}
+            setPerpage={handleSetPerpage}
         />
     );
 

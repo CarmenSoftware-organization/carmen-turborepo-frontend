@@ -38,18 +38,18 @@ export default function PriceListComponent() {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [addDialogOpen, setAddDialogOpen] = useState(false);
     const [page, setPage] = useURL('page');
-
+    const [perpage, setPerpage] = useURL('perpage');
     const { data: response, isLoading, isUnauthorized } = usePriceList(token, tenantId, {
         page,
         search,
         filter,
-        sort
+        sort,
+        perpage: perpage ? parseInt(perpage) : 10,
     });
 
     const priceLists = response?.data ?? [];
     const totalItems = response?.paginate.total ?? 0;
     const totalPages = response?.paginate.pages ?? 1;
-    const perpage = response?.paginate.perpage ?? 10;
     const currentPage = response?.paginate.page ?? 1;
 
     useEffect(() => {
@@ -80,6 +80,10 @@ export default function PriceListComponent() {
         },
         [setPage]
     );
+
+    const handleSetPerpage = (newPerpage: number) => {
+        setPerpage(newPerpage.toString());
+    }
 
 
     const actionButtons = (
@@ -141,10 +145,11 @@ export default function PriceListComponent() {
             totalItems={totalItems}
             totalPages={totalPages}
             currentPage={currentPage}
-            perpage={perpage}
+            perpage={response?.paginate.perpage}
             onPageChange={handlePageChange}
             sort={parseSortString(sort)}
             onSort={handleSort}
+            setPerpage={handleSetPerpage}
         />
     )
 

@@ -43,6 +43,7 @@ export default function BusinessTypeComponent() {
   const tHeader = useTranslations("TableHeader");
   const tBusinessType = useTranslations("BusinessType");
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
   const [filter, setFilter] = useURL("filter");
@@ -56,6 +57,7 @@ export default function BusinessTypeComponent() {
 
   const { buTypes, isLoading } = useBuTypeQuery(token, tenantId, {
     page: page ? parseInt(page) : 1,
+    perpage: perpage,
     search,
     filter,
     sort
@@ -140,6 +142,10 @@ export default function BusinessTypeComponent() {
       setPage("1");
     }
   }, [setSort, sort, setPage]);
+
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
 
   const handleAddNew = useCallback(() => {
     setEditingProfile(null);
@@ -294,6 +300,8 @@ export default function BusinessTypeComponent() {
         selectedBuTypes={selectedBuTypes}
         onSelectAll={handleSelectAll}
         onSelect={handleSelect}
+        perpage={buTypes?.paginate.perpage}
+        setPerpage={handleSetPerpage}
       />
     );
   }, [

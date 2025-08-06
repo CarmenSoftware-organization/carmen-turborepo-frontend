@@ -227,16 +227,11 @@ export default function PurchaseRequestList({
       render: (_: unknown, pr: TableDataSource) => {
         return <div className="text-right">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 hover:bg-transparent"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <span className="sr-only">More options</span>
-                <MoreHorizontal className="h-3 w-3" />
-              </Button>
+            <DropdownMenuTrigger
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="sr-only">More options</span>
+              <MoreHorizontal />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
@@ -262,7 +257,7 @@ export default function PurchaseRequestList({
                   e.stopPropagation();
                   console.log("Delete", pr.id);
                 }}
-                className="text-destructive"
+                className="text-red-500 hover:text-red-300"
               >
                 <Trash2 />
                 Delete

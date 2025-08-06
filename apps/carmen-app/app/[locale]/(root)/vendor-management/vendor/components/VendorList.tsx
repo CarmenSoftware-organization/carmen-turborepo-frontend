@@ -26,6 +26,7 @@ interface VendorListProps {
   readonly onSort: (field: string) => void;
   readonly totalItems: number;
   readonly perpage: number;
+  readonly setPerpage: (perpage: number) => void;
 }
 
 export default function VendorList({
@@ -37,7 +38,8 @@ export default function VendorList({
   sort,
   onSort,
   totalItems,
-  perpage
+  perpage,
+  setPerpage
 }: VendorListProps) {
   const tCommon = useTranslations("Common");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -189,6 +191,7 @@ export default function VendorList({
       onPageChange={onPageChange}
       isLoading={isLoading}
       perpage={perpage}
+      setPerpage={setPerpage}
     />
   );
 }

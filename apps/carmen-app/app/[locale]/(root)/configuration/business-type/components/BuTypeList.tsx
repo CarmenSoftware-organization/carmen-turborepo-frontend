@@ -23,6 +23,8 @@ interface BuTypeListProps {
     readonly selectedBuTypes: string[];
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
+    readonly perpage?: number;
+    readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function BuTypeList({
@@ -38,7 +40,9 @@ export default function BuTypeList({
     onSort,
     selectedBuTypes,
     onSelectAll,
-    onSelect
+    onSelect,
+    perpage,
+    setPerpage
 }: BuTypeListProps) {
     const t = useTranslations("TableHeader");
 
@@ -95,7 +99,7 @@ export default function BuTypeList({
             },
         },
         {
-            title: "Description",
+            title: t("description"),
             dataIndex: "description",
             key: "description",
             icon: <Info className="h-4 w-4" />,
@@ -107,7 +111,7 @@ export default function BuTypeList({
             },
         },
         {
-            title: "Note",
+            title: t("note"),
             dataIndex: "note",
             key: "note",
             icon: <Info className="h-4 w-4" />,
@@ -138,7 +142,7 @@ export default function BuTypeList({
             title: t("action"),
             dataIndex: "action",
             key: "action",
-            width: "w-0 md:w-20",
+            width: "w-0 md:w-32",
             align: "right",
             render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
@@ -183,6 +187,8 @@ export default function BuTypeList({
             totalPages={totalPages}
             onPageChange={onPageChange}
             totalItems={totalItems}
+            perpage={perpage}
+            setPerpage={setPerpage}
         />
     )
 }

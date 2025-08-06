@@ -22,6 +22,8 @@ interface DepartmentListProps {
   readonly onSelectAll: (isChecked: boolean) => void;
   readonly onSelect: (id: string) => void;
   readonly totalItems: number;
+  readonly perpage?: number;
+  readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function DepartmentList({
@@ -35,7 +37,9 @@ export default function DepartmentList({
   selectedDepartments,
   onSelectAll,
   onSelect,
-  totalItems
+  totalItems,
+  perpage,
+  setPerpage
 }: DepartmentListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -89,7 +93,7 @@ export default function DepartmentList({
       },
     },
     {
-      title: "Description",
+      title: t("description"),
       dataIndex: "description",
       key: "description",
       icon: <Info className="h-4 w-4" />,
@@ -126,7 +130,7 @@ export default function DepartmentList({
       title: t("action"),
       dataIndex: "action",
       key: "action",
-      width: "w-0 md:w-20",
+      width: "w-0 md:w-32",
       align: "right",
       render: (_: unknown, record: TableDataSource) => {
         const department = departments.find(d => d.id === record.key);
@@ -170,6 +174,8 @@ export default function DepartmentList({
       totalPages={totalPages}
       onPageChange={onPageChange}
       totalItems={totalItems}
+      perpage={perpage}
+      setPerpage={setPerpage}
     />
   )
 }
