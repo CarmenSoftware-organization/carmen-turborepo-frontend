@@ -37,7 +37,6 @@ export default function ActivityLogStoreRequisition() {
     return (
         <ActivityLogComponent
             initialActivities={storeRequisitionLogs}
-            title="Store Requisition Activity"
             searchPlaceholder="Search store requisition activities..."
         />
     );

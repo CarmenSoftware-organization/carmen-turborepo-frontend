@@ -21,7 +21,6 @@ export type CommentItem = {
 
 type CommentComponentProps = {
     readonly initialComments: CommentItem[];
-    readonly title?: string;
     readonly scrollAreaHeight?: string;
     readonly onCommentAdd?: (newComment: CommentItem) => void;
     readonly onFileDownload?: (attachment: CommentAttachment) => void;
@@ -29,8 +28,7 @@ type CommentComponentProps = {
 
 export default function CommentComponent({
     initialComments,
-    title = "Comments & Attachments",
-    scrollAreaHeight = "h-[200px]",
+    scrollAreaHeight = "h-[calc(80vh-120px)]",
     onCommentAdd,
     onFileDownload = (attachment) => console.log(`Downloading ${attachment.file}`)
 }: CommentComponentProps) {
@@ -93,8 +91,7 @@ export default function CommentComponent({
     };
 
     return (
-        <Card className="p-4">
-            <p className="font-semibold text-base mb-2">{title}</p>
+        <div>
             <ScrollArea className={scrollAreaHeight}>
                 <div className="space-y-2">
                     {comments.map((comment) => (
@@ -206,6 +203,6 @@ export default function CommentComponent({
                     </div>
                 )}
             </div>
-        </Card>
+        </div>
     );
 } 

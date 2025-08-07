@@ -161,8 +161,7 @@ export default function DetailsAndComments({ children, className, activityCompon
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.2 }}
                             >
-                                {/* Header */}
-                                <div className="flex items-center justify-between p-4 border-b border-border bg-muted/50">
+                                <div className="flex items-center justify-between p-2 border-b border-border bg-muted/50">
                                     <h3 className="text-lg font-semibold flex items-center gap-2">
                                         {activeTab === 'activity' ? (
                                             <>

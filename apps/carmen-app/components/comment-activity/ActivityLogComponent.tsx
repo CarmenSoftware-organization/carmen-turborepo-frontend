@@ -12,14 +12,12 @@ export type ActivityLogItem = {
 
 type ActivityLogComponentProps = {
     readonly initialActivities: ActivityLogItem[];
-    readonly title?: string;
     readonly onSearchChange?: (searchTerm: string) => void;
     readonly searchPlaceholder?: string;
 };
 
 export default function ActivityLogComponent({
     initialActivities,
-    title = "Activity Log",
     onSearchChange,
     searchPlaceholder = "Search Activity log..."
 }: ActivityLogComponentProps) {
@@ -46,8 +44,7 @@ export default function ActivityLogComponent({
     };
 
     return (
-        <Card className="p-4">
-            <p className="font-semibold text-base mb-4">{title}</p>
+        <div>
             <Input
                 className="h-7 mb-3"
                 placeholder={searchPlaceholder}
@@ -55,7 +52,7 @@ export default function ActivityLogComponent({
                 onChange={handleSearchChange}
             />
 
-            <ScrollArea className="h-[200px]">
+            <ScrollArea className="h-[calc(80vh-120px)]">
                 {activities.length > 0 ? (
                     activities.map((activity) => (
                         <Card key={activity.id} className="p-2 mb-2">
@@ -79,6 +76,6 @@ export default function ActivityLogComponent({
                     </p>
                 )}
             </ScrollArea>
-        </Card>
+        </div>
     );
 } 
