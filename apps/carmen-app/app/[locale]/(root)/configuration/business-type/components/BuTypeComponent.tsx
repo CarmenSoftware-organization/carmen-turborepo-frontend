@@ -284,42 +284,25 @@ export default function BusinessTypeComponent() {
     }
   };
 
-  const content = useMemo(() => {
-    return (
-      <BuTypeList
-        buTypes={buTypesData}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        currentPage={parseInt(page || "1")}
-        totalPages={buTypes?.paginate.pages ?? 1}
-        onPageChange={handlePageChange}
-        totalItems={buTypes?.paginate.total ?? buTypes?.data?.length ?? 0}
-        sort={parseSortString(sort)}
-        onSort={handleSort}
-        selectedBuTypes={selectedBuTypes}
-        onSelectAll={handleSelectAll}
-        onSelect={handleSelect}
-        perpage={buTypes?.paginate.perpage}
-        setPerpage={handleSetPerpage}
-      />
-    );
-  }, [
-    buTypesData,
-    isLoading,
-    handleEdit,
-    handleDelete,
-    page,
-    sort,
-    handlePageChange,
-    handleSort,
-    selectedBuTypes,
-    handleSelectAll,
-    handleSelect,
-    buTypes?.paginate.pages,
-    buTypes?.paginate.total,
-    buTypes?.data?.length
-  ]);
+  const content = (
+    <BuTypeList
+      buTypes={buTypesData}
+      isLoading={isLoading}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      currentPage={parseInt(page || "1")}
+      totalPages={buTypes?.paginate.pages ?? 1}
+      onPageChange={handlePageChange}
+      totalItems={buTypes?.paginate.total ?? buTypes?.data?.length ?? 0}
+      sort={parseSortString(sort)}
+      onSort={handleSort}
+      selectedBuTypes={selectedBuTypes}
+      onSelectAll={handleSelectAll}
+      onSelect={handleSelect}
+      perpage={buTypes?.paginate.perpage}
+      setPerpage={handleSetPerpage}
+    />
+  )
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);

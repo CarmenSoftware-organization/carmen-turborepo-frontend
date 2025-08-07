@@ -1,6 +1,5 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Activity, Banknote, Coins, List, MoreHorizontal, Replace, Trash2 } from "lucide-react";
@@ -179,11 +178,14 @@ export default function CurrencyList({
       align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (is_active: boolean) => (
-        <Badge
-          variant={is_active ? "active" : "inactive"}
-        >
+        <p className={`text-xs font-medium ${is_active ? 'text-active' : 'text-inactive'}`}>
           {is_active ? tCommon("active") : tCommon("inactive")}
-        </Badge>
+        </p>
+        // <Badge
+        //   variant={is_active ? "active" : "inactive"}
+        // >
+        //   {is_active ? tCommon("active") : tCommon("inactive")}
+        // </Badge>
       ),
     },
     {
