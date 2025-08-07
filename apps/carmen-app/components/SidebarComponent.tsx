@@ -5,7 +5,7 @@ import { moduleItems } from "@/constants/modules-list";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { usePathname } from "next/navigation";
-import { AlertCircle, ChevronRight, PanelLeftClose, PanelRightClose } from "lucide-react";
+import { AlertCircle, ChevronRight, PanelLeftClose } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { MotionDiv, AnimatePresence } from './framer-motion/MotionWrapper';
