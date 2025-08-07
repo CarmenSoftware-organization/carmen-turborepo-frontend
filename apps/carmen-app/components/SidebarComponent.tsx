@@ -268,66 +268,49 @@ const SidebarContent = () => {
 
     return (
         <MotionDiv
-            initial={{ width: isActuallyCollapsed ? 64 : 250 }}
             animate={{ width: isActuallyCollapsed ? 64 : 250 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={cn(
-                'flex flex-col border-r border-border h-screen hidden md:block mt-16'
+                'flex flex-col border-r border-border h-screen hidden md:block mt-16 relative'
             )}
             aria-label="Sidebar Navigation"
         >
-
+            <Button
+                variant={'ghost'}
+                onClick={handleToggleCollapse}
+                className={cn(
+                    "absolute -right-3 top-1/2 -translate-y-1/2 z-10 border border-border p-2 hover:bg-muted/50",
+                    !isActuallyCollapsed ? 'bg-muted' : 'bg-background'
+                )}
+                aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+                {isActuallyCollapsed ? (
+                    <PanelRightClose className="h-4 w-4 text-muted-foreground" />
+                ) : (
+                    <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
+                )}
+            </Button>
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 <MotionDiv
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                     className={cn(
-                        "flex border-b border-primary pb-4 items-center gap-2 mb-4",
+                        "flex border-b border-border pb-4 items-center gap-2 mb-4",
                         isActuallyCollapsed ? 'justify-center' : ''
                     )}
                 >
                     {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
-                    {!isActuallyCollapsed && <h2 className="font-semibold text-muted-foreground">{t(moduleKey)}</h2>}
+                    {!isActuallyCollapsed &&
+                        <h2 className="font-semibold text-muted-foreground">{t(moduleKey)}</h2>
+                    }
+
+
                 </MotionDiv>
                 {activeModuleData.children && renderSubMenu(activeModuleData.children)}
             </div>
-
-            <MotionDiv
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="mt-auto border-t border-border bg-muted/30"
-            >
-                <div className="p-3">
-                    <MotionDiv
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        <Button
-                            variant={'ghost'}
-                            onClick={handleToggleCollapse}
-                            className={cn(
-                                "w-full h-10 hover:bg-accent",
-                                isActuallyCollapsed ? 'justify-center' : 'justify-between bg-muted'
-                            )}
-                            aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                        >
-                            {!isActuallyCollapsed && (
-                                <span className="text-sm font-medium text-muted-foreground">Collapse</span>
-                            )}
-                            {isActuallyCollapsed ? (
-                                <PanelRightClose className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                                <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
-                            )}
-                        </Button>
-                    </MotionDiv>
-                </div>
-            </MotionDiv>
         </MotionDiv>
     );
 };
