@@ -56,6 +56,7 @@ export function TaxProfileComponent() {
       filter,
       sort,
       page: page ? parseInt(page) : 1,
+      perpage: perpage ? parseInt(perpage) : 10,
     },
   );
   const [taxProfiles, setTaxProfiles] = useState<TaxProfileGetAllDto[]>([]);

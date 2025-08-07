@@ -2,7 +2,6 @@ import { useState } from "react";
 import { FileDown, MoreHorizontal, Printer, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
