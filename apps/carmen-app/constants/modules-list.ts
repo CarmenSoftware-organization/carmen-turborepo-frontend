@@ -51,7 +51,9 @@ import {
   Download,
   Zap,
   UserCheck,
-  FileCheck
+  FileCheck,
+  Hotel,
+  Coins,
 } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
@@ -142,17 +144,17 @@ export const moduleItems: ModuleItem[] = [
   {
     labelKey: "Modules.vendorManagement",
     href: "/vendor-management",
-    icon: Users,
+    icon: Hotel,
     children: [
       {
         labelKey: "Modules.VendorManagement.manageVendors",
         href: "/vendor-management/vendor",
-        icon: Users,
+        icon: Hotel,
       },
       {
         labelKey: "Modules.VendorManagement.priceLists",
         href: "/vendor-management/price-list",
-        icon: FileText,
+        icon: Coins,
       },
       {
         labelKey: "Modules.VendorManagement.priceComparisons",

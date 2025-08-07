@@ -277,17 +277,20 @@ const SidebarContent = () => {
             )}
             aria-label="Sidebar Navigation"
         >
-            <Button
-                variant={'ghost'}
-                onClick={handleToggleCollapse}
-                className={cn(
-                    "absolute -right-3 top-3 z-10 border border-border p-2 hover:bg-muted/50",
-                    !isActuallyCollapsed ? 'bg-muted' : 'bg-background'
-                )}
-                aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-                {!isActuallyCollapsed && <PanelLeftClose className="h-4 w-4 text-muted-foreground" />}
-            </Button>
+            {!isActuallyCollapsed && (
+                <Button
+                    variant={'ghost'}
+                    onClick={handleToggleCollapse}
+                    className={cn(
+                        "absolute -right-3 top-3 z-10 border border-border p-2 hover:bg-muted/50",
+                        !isActuallyCollapsed ? 'bg-muted' : 'bg-background'
+                    )}
+                    aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                    <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
+                </Button>
+            )}
+
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 <MotionDiv
                     initial={{ opacity: 0, y: -10 }}
