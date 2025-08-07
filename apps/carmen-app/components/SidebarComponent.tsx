@@ -282,7 +282,7 @@ const SidebarContent = () => {
                     variant={'ghost'}
                     onClick={handleToggleCollapse}
                     className={cn(
-                        "absolute -right-3 top-3 z-10 border border-border p-2 hover:bg-muted/50",
+                        "absolute -right-3 top-3 z-10 border border-border p-2 hover:bg-background",
                         !isActuallyCollapsed ? 'bg-muted' : 'bg-background'
                     )}
                     aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
