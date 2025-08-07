@@ -188,7 +188,7 @@ export const moduleItems: ModuleItem[] = [
   {
     labelKey: "Modules.inventoryManagement",
     href: "/inventory-management",
-    icon: Package,
+    icon: Ruler,
     children: [
       {
         labelKey: "Modules.InventoryManagement.inventoryAdjustments",

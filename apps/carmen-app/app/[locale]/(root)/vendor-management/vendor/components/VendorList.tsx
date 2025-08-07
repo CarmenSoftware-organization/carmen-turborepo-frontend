@@ -14,7 +14,7 @@ import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import ButtonLink from "@/components/ButtonLink";
 import { Button } from "@/components/ui/button";
 import { Activity, Building, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface VendorListProps {
   readonly vendors: VendorGetDto[];
@@ -42,6 +42,7 @@ export default function VendorList({
   setPerpage
 }: VendorListProps) {
   const tCommon = useTranslations("Common");
+  const tTableHeader = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelectItem = (id: string) => {
@@ -97,7 +98,7 @@ export default function VendorList({
       title: (
         <SortableColumnHeader
           columnKey="name"
-          label="Name"
+          label={tTableHeader("name")}
           sort={sort}
           onSort={onSort}
           getSortableColumnProps={getSortableColumnProps}
@@ -117,36 +118,36 @@ export default function VendorList({
       },
     },
     {
-      title: "Description",
+      title: tTableHeader("description"),
       icon: <Info className="h-4 w-4" />,
       dataIndex: "description",
       key: "description",
       align: "left",
     },
     {
-      title: "Business Type",
+      title: tTableHeader("business_type"),
       icon: <Building className="h-4 w-4" />,
       dataIndex: "business_type_name",
       key: "business_type_name",
       align: "left",
     },
     {
-      title: "Status",
+      title: tTableHeader("status"),
       icon: <Activity className="h-4 w-4" />,
       dataIndex: "status",
       key: "status",
       align: "center",
       render: (_: unknown, record: TableDataSource) => {
         return (
-          <Badge variant={record.status ? "active" : "inactive"}>
+          <StatusCustom is_active={record.status}>
             {record.status ? tCommon('active') : tCommon('inactive')}
-          </Badge>
+          </StatusCustom>
         );
       },
     },
 
     {
-      title: "Action",
+      title: tTableHeader("action"),
       dataIndex: "action",
       key: "action",
       align: "right",

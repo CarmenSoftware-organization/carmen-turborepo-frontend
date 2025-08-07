@@ -271,7 +271,10 @@
     "goTo": "Go to",
     "perPage": "Per Page",
     "yes": "YES",
-    "no": "NO"
+    "no": "NO",
+    "of": "of",
+    "filtered_out": "filtered out",
+    "no_data_found": "No data found matching your filters"
   },
   "TableHeader": {
     "all": "All",
@@ -321,7 +324,9 @@
     "reference": "Reference",
     "last_action": "Last Action",
     "last_action_by": "Last Action By",
-    "last_action_date": "Last Action Date"
+    "last_action_date": "Last Action Date",
+    "start_date": "Start Date",
+    "end_date": "End Date"
   },
   "Product": {
     "title": "Product"
@@ -510,5 +515,8 @@
   },
   "CreditNote": {
     "title": "Credit Note"
+  },
+  "PriceList": {
+    "title": "Price List"
   }
 }

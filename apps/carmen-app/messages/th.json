@@ -115,7 +115,7 @@
       "stockReplenishment": "ซื้อสินค้าเพิ่ม",
       "wastageReporting": "รายงานสินค้าสูญหาย"
     },
-    "inventoryManagement": "การจัดการสินค้า",
+    "inventoryManagement": "การจัดการหน่วยนับ",
     "InventoryManagement": {
       "storeOperations": "การดำเนินการร้านค้า",
       "stockOverview": "ตรวจสอบสินค้า",
@@ -271,7 +271,10 @@
     "goTo": "ไปที่",
     "perPage": "ต่อหน้า",
     "yes": "ใช้งาน",
-    "no": "ไม่ใช้งาน"
+    "no": "ไม่ใช้งาน",
+    "of": "จาก",
+    "filtered_out": "กรองออก",
+    "no_data_found": "ไม่พบข้อมูลที่ตรงกับตัวกรอง"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -320,7 +323,9 @@
     "reference": "อ้างอิง",
     "last_action": "การดำเนินการล่าสุด",
     "last_action_by": "ผู้ดำเนินการล่าสุด",
-    "last_action_date": "วันที่ดำเนินการล่าสุด"
+    "last_action_date": "วันที่ดำเนินการล่าสุด",
+    "start_date": "วันที่เริ่มต้น",
+    "end_date": "วันที่สิ้นสุด"
   },
   "Product": {
     "title": "สินค้า"
@@ -506,5 +511,8 @@
   },
   "CreditNote": {
     "title": "ใบลดหนี้"
+  },
+  "PriceList": {
+    "title": "ราคาขาย"
   }
 }

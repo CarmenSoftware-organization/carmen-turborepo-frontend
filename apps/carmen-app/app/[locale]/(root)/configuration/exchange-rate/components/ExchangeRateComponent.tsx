@@ -242,51 +242,49 @@ export default function ExchangeRateComponent() {
 
   return (
     <div className="w-full">
-      <div className="p-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 w-full">
-          <p className="text-2xl font-semibold">Exchange Rates</p>
-          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto">
-            <div className="flex items-center gap-1.5 ml-auto">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={handleRefresh}
-                disabled={isLoading || isRefetching}
-                className="h-8 w-8"
-                aria-label="Refresh exchange rates"
-                tabIndex={0}
-              >
-                <RefreshCw
-                  className={`h-4 w-4 ${isLoading || isRefetching ? "animate-spin" : ""}`}
-                />
-              </Button>
-              <span className="text-xs font-medium whitespace-nowrap">
-                {isLoading ? (
-                  <Skeleton className="h-4 w-32" />
-                ) : (
-                  `Updated: ${formatDate(lastUpdated)}`
-                )}
-              </span>
-            </div>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <p className="text-2xl font-semibold">Exchange Rates</p>
+        <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto">
+          <div className="flex items-center gap-1.5 ml-auto">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={handleRefresh}
+              disabled={isLoading || isRefetching}
+              className="h-8 w-8"
+              aria-label="Refresh exchange rates"
+              tabIndex={0}
+            >
+              <RefreshCw
+                className={`h-4 w-4 ${isLoading || isRefetching ? "animate-spin" : ""}`}
+              />
+            </Button>
+            <span className="text-xs font-medium whitespace-nowrap">
+              {isLoading ? (
+                <Skeleton className="h-4 w-32" />
+              ) : (
+                `Updated: ${formatDate(lastUpdated)}`
+              )}
+            </span>
+          </div>
 
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-medium">Base:</span>
-              <span className="text-sm font-medium">{currencyBase}</span>
-            </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-medium">Base:</span>
+            <span className="text-sm font-medium">{currencyBase}</span>
           </div>
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="pt-2">
         <div className="relative mb-4">
           <div className="flex">
             <div className="relative w-full max-w-sm">
-              <Search className="absolute left-3 top-2.5 h-3 w-3 text-muted-foreground" />
+              <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder="Search currency..."
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className="pl-9 pr-8 h-8"
+                className="pl-9 pr-8 h-9"
               />
               {searchQuery && (
                 <button
@@ -304,7 +302,7 @@ export default function ExchangeRateComponent() {
           {renderSearchResultsMessage()}
         </div>
 
-        <Table className="border">
+        <Table className="border border-border">
           <TableHeader>
             <TableRow className="bg-muted/50">
               <TableHead className="font-semibold">#</TableHead>
@@ -314,7 +312,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by code"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 justify-center">
                   <Banknote className="h-4 w-4" />
                   Code {renderSortIcon("code")}
                 </div>
@@ -325,7 +323,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by symbol"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 justify-center">
                   <DollarSign className="h-4 w-4" />
                   Symbol {renderSortIcon("symbol")}
                 </div>
@@ -358,7 +356,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by exchange rate"
               >
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 justify-end">
                   <ArrowLeftRight className="h-4 w-4" />
                   Exchange Rate {renderSortIcon("rate")}
                   {(isLoading || isRefetching) && (
@@ -373,8 +371,8 @@ export default function ExchangeRateComponent() {
               currentItems.map((currency, index) => (
                 <TableRow key={currency.code} className="hover:bg-muted/30">
                   <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell className="font-medium">{currency.code}</TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="font-medium text-center">{currency.code}</TableCell>
+                  <TableCell className="hidden sm:table-cell text-center">
                     {currency.symbol}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
@@ -383,7 +381,7 @@ export default function ExchangeRateComponent() {
                   <TableCell className="hidden lg:table-cell">
                     {currency.country}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="text-right">
                     {isLoading ? (
                       <Skeleton className="h-4 w-16" />
                     ) : (

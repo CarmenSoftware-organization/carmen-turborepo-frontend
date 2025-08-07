@@ -28,6 +28,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDateFns } from "@/utils/config-system";
+import { useTranslations } from "next-intl";
 
 interface ListPriceListProps {
     readonly priceLists?: PriceListDto[];
@@ -55,6 +56,8 @@ export default function ListPriceList({
     setPerpage
 }: ListPriceListProps) {
     const { token, tenantId, dateFormat } = useAuth();
+    const tTableHeader = useTranslations("TableHeader");
+    const tCommon = useTranslations("Common");
     const queryClient = useQueryClient();
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [deleteId, setDeleteId] = useState<string>('');
@@ -142,7 +145,7 @@ export default function ListPriceList({
             title: (
                 <SortableColumnHeader
                     columnKey="name"
-                    label="Name"
+                    label={tTableHeader("name")}
                     sort={sort ?? { field: '', direction: 'asc' }}
                     onSort={onSort ?? (() => { })}
                     getSortableColumnProps={getSortableColumnProps}
@@ -162,7 +165,7 @@ export default function ListPriceList({
             },
         },
         {
-            title: "Start Date",
+            title: tTableHeader("start_date"),
             dataIndex: "from_date",
             icon: <Calendar className="h-4 w-4" />,
             key: "from_date",
@@ -174,7 +177,7 @@ export default function ListPriceList({
             },
         },
         {
-            title: "End Date",
+            title: tTableHeader("end_date"),
             dataIndex: "to_date",
             icon: <Calendar className="h-4 w-4" />,
             key: "to_date",
@@ -186,7 +189,7 @@ export default function ListPriceList({
             },
         },
         {
-            title: "Action",
+            title: tTableHeader("action"),
             dataIndex: "action",
             key: "action",
             align: "right",

@@ -126,7 +126,7 @@ const TableTemplate = ({
                             <TableCell colSpan={colSpan} className="text-center">
                                 <div className="flex flex-col items-center justify-center py-8 gap-4 text-gray-500">
                                     <FileX className="w-12 h-12 text-gray-400" />
-                                    <p className="text-sm">No data found matching your filters.</p>
+                                    <p className="text-sm">{tCommon("no_data_found")}</p>
                                 </div>
                             </TableCell>
                         </TableRow>
@@ -142,11 +142,11 @@ const TableTemplate = ({
                                 <p className="text-sm">
                                     {dataSource.length > 0 ? (
                                         <>
-                                            {startItem}-{endItem} of {totalItems} {tCommon("itemFound")}
+                                            {startItem}-{endItem} {tCommon("of")} {totalItems} {tCommon("itemFound")}
                                         </>
                                     ) : (
                                         <>
-                                            {totalItems} {tCommon("itemFound")} (filtered out)
+                                            {totalItems} {tCommon("itemFound")} ({tCommon("filtered_out")})
                                         </>
                                     )}
                                 </p>

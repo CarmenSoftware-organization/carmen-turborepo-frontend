@@ -30,6 +30,7 @@ const parseSortString = (sortString: string | null): SortConfig => {
 
 export default function PriceListComponent() {
     const tCommon = useTranslations('Common');
+    const tPriceList = useTranslations('PriceList');
     const [search, setSearch] = useURL('search');
     const [filter, setFilter] = useURL('filter');
     const [sort, setSort] = useURL('sort');
@@ -157,7 +158,7 @@ export default function PriceListComponent() {
         <>
             <DataDisplayTemplate
                 content={content}
-                title="Price List"
+                title={tPriceList("title")}
                 actionButtons={actionButtons}
                 filters={filters}
             />

@@ -5,7 +5,7 @@ import { ProductGetDto } from "@/dtos/product.dto";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Activity, Box, Folder, Layers, List, MoreHorizontal, Package } from "lucide-react";
+import { Activity, Box, Layers, List, MoreHorizontal, Ruler, Tag } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import ButtonLink from "@/components/ButtonLink";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface ProductListProps {
   readonly products?: ProductGetDto[];
@@ -42,7 +43,7 @@ export default function ProductList({
   setPerpage
 }: ProductListProps) {
   const t = useTranslations("TableHeader");
-
+  const tCommon = useTranslations("Common");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelectItem = (id: string) => {
@@ -133,28 +134,28 @@ export default function ProductList({
       dataIndex: "category",
       key: "category",
       align: "center",
-      icon: <Folder className="h-4 w-4" />,
+      icon: <Tag className="h-4 w-4" />,
     },
     {
       title: t("sub_category"),
       dataIndex: "sub_category",
       key: "sub_category",
-      align: "center",
+      align: "left",
       icon: <Layers className="h-4 w-4" />,
     },
     {
       title: t("item_group"),
       dataIndex: "item_group",
       key: "item_group",
-      align: "center",
+      align: "left",
       icon: <Box className="h-4 w-4" />,
     },
     {
       title: t("inventory_unit"),
       dataIndex: "inventory_unit",
       key: "inventory_unit",
-      align: "center",
-      icon: <Package className="h-4 w-4" />,
+      align: "left",
+      icon: <Ruler className="h-4 w-4" />,
     },
     {
       title: t("status"),
@@ -163,11 +164,9 @@ export default function ProductList({
       align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (status: string) => (
-        <Badge
-          variant={status === "active" ? "active" : "inactive"}
-        >
-          {status === "active" ? "Active" : "Inactive"}
-        </Badge>
+        <StatusCustom is_active={status === "active"}>
+          {status === "active" ? tCommon("active") : tCommon("inactive")}
+        </StatusCustom>
       ),
     },
     {

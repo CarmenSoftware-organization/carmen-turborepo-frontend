@@ -1,6 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, MoreHorizontal, List, Info, Settings, Activity } from "lucide-react";
+import { Trash2, MoreHorizontal, List, Info, Activity } from "lucide-react";
 import { UnitDto } from "@/dtos/unit.dto";
 import { Checkbox } from "@/components/ui/checkbox";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
@@ -8,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface ListUnitProps {
     readonly units: UnitDto[];
@@ -93,7 +93,7 @@ export default function ListUnit({
                 return (
                     <button
                         type="button"
-                        className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+                        className="btn-dialog"
                         onClick={() => onEdit(unit)}
                     >
                         {unit.name}
@@ -125,19 +125,16 @@ export default function ListUnit({
             width: "w-36",
             align: "center",
             render: (is_active: boolean) => (
-                <Badge
-                    variant={is_active ? "active" : "inactive"}
-                >
+                <StatusCustom is_active={is_active}>
                     {is_active ? tCommon("active") : tCommon("inactive")}
-                </Badge>
+                </StatusCustom>
             ),
         },
         {
             title: t("action"),
             dataIndex: "action",
             key: "action",
-            icon: <Settings className="h-4 w-4" />,
-            width: "w-24",
+            width: "w-40",
             align: "right",
             render: (_: unknown, record: TableDataSource) => {
                 const unit = units.find(u => u.id === record.key);
