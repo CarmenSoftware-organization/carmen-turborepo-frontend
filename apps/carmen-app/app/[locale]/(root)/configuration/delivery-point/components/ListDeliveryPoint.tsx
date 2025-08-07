@@ -1,13 +1,13 @@
 import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { Activity, List, MoreHorizontal, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface ListDeliveryPointProps {
     readonly deliveryPoints: DeliveryPointGetDto[];
@@ -91,7 +91,7 @@ export default function ListDeliveryPoint({
                 return (
                     <button
                         type="button"
-                        className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+                        className="btn-dialog"
                         onClick={() => onEdit(deliveryPoint)}
                     >
                         {deliveryPoint.name}
@@ -116,11 +116,9 @@ export default function ListDeliveryPoint({
             align: "center",
             icon: <Activity className="h-4 w-4" />,
             render: (is_active: boolean) => (
-                <Badge
-                    variant={is_active ? "active" : "inactive"}
-                >
+                <StatusCustom is_active={is_active}>
                     {is_active ? tCommon("active") : tCommon("inactive")}
-                </Badge>
+                </StatusCustom>
             ),
         },
         {

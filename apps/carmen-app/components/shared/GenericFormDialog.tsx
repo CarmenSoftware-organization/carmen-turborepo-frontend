@@ -19,7 +19,7 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form";
+} from "@/components/form-custom/form";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -68,6 +68,7 @@ export interface GenericFormDialogProps<T extends FieldValues> {
         add: string;
         edit: string;
     };
+    readonly required?: boolean;
 }
 
 export default function GenericFormDialog<T extends FieldValues>({
@@ -82,6 +83,7 @@ export default function GenericFormDialog<T extends FieldValues>({
     fields,
     title,
     description,
+    required = false,
 }: GenericFormDialogProps<T>) {
     const tCommon = useTranslations('Common');
 
@@ -133,6 +135,7 @@ export default function GenericFormDialog<T extends FieldValues>({
                     onChange={field.onChange}
                     label={label}
                     type="switch"
+                    required={required}
                 />
             );
         }
@@ -143,6 +146,7 @@ export default function GenericFormDialog<T extends FieldValues>({
                     onChange={field.onChange}
                     label={label}
                     type="checkbox"
+                    required={required}
                 />
             );
         }
@@ -172,6 +176,7 @@ export default function GenericFormDialog<T extends FieldValues>({
                 key={name}
                 control={form.control}
                 name={name}
+                required={required}
                 render={({ field }) => (
                     <FormItem className={className}>
                         {type !== 'checkbox' && type !== 'switch' && <FormLabel>{label}</FormLabel>}

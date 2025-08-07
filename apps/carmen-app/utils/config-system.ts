@@ -37,3 +37,8 @@ export const formatDateFns = (date: string, conf: string) => {
     return format(new Date(date), conf);
 }
 
+
+export const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+
+

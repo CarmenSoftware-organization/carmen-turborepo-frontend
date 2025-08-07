@@ -19,9 +19,8 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form";
+} from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -32,6 +31,7 @@ import {
     deliveryPointCreateSchema,
     deliveryPointUpdateSchema
 } from "@/dtos/delivery-point.dto";
+import FormBoolean from "@/components/form-custom/form-boolean";
 
 interface DeliveryPointDialogProps {
     readonly open: boolean;
@@ -113,6 +113,7 @@ export default function DeliveryPointDialog({
                         <FormField
                             control={form.control}
                             name="name"
+                            required
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>{tCommon("name")}</FormLabel>
@@ -127,17 +128,14 @@ export default function DeliveryPointDialog({
                             control={form.control}
                             name="is_active"
                             render={({ field }) => (
-                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                    <div className="space-y-0.5">
-                                        <FormLabel className="text-base">
-                                            {tCommon("status")}
-                                        </FormLabel>
-                                    </div>
+                                <FormItem>
                                     <FormControl>
-                                        <Switch
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                            className="data-[state=checked]:bg-blue-600"
+                                        <FormBoolean
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            label={tCommon("status")}
+                                            type="checkbox"
+                                            required
                                         />
                                     </FormControl>
                                 </FormItem>

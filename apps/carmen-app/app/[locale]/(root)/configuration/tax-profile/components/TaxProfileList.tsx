@@ -1,6 +1,5 @@
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
@@ -8,6 +7,7 @@ import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/tabl
 import { Activity, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface TaxProfileListProps {
     readonly taxProfiles: TaxProfileGetAllDto[];
@@ -91,7 +91,7 @@ export default function TaxProfileList({
                 return (
                     <button
                         type="button"
-                        className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+                        className="btn-dialog"
                         onClick={() => onEdit(taxProfile.id)}
                     >
                         {taxProfile.name}
@@ -116,11 +116,9 @@ export default function TaxProfileList({
             align: "center",
             icon: <Activity className="h-4 w-4" />,
             render: (is_active: boolean) => (
-                <Badge
-                    variant={is_active ? "active" : "inactive"}
-                >
+                <StatusCustom is_active={is_active}>
                     {is_active ? tCommon("active") : tCommon("inactive")}
-                </Badge>
+                </StatusCustom>
             ),
         },
         {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileDown, MoreHorizontal, Printer, Trash2 } from "lucide-react";
+import { Activity, Building, Calendar, DollarSign, FileDown, FileText, MoreHorizontal, Printer, Trash2, TypeIcon, User, Workflow } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
 import {
@@ -43,6 +43,7 @@ export default function PurchaseRequestList({
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const tPurchaseRequest = useTranslations("PurchaseRequest");
   const { dateFormat, amount, currencyBase } = useAuth();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
@@ -51,6 +52,13 @@ export default function PurchaseRequestList({
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
+
+  const getTypeName = (type: string) => {
+    if (type === "General") {
+      return tPurchaseRequest("general");
+    }
+    return tPurchaseRequest("market_list");
+  }
 
   const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
 
@@ -106,6 +114,7 @@ export default function PurchaseRequestList({
       dataIndex: "pr_no",
       key: "pr_no",
       align: "left",
+      icon: <FileText className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return <ButtonLink href={`/procurement/purchase-request/${record.key}`}>
           {record.pr_no ?? "-"}
@@ -126,6 +135,7 @@ export default function PurchaseRequestList({
       dataIndex: "pr_date",
       key: "pr_date",
       align: "left",
+      icon: <Calendar className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return <div className="text-left">
           {formatDateFns(record.pr_date, dateFormat || 'yyyy-MM-dd')}
@@ -146,6 +156,14 @@ export default function PurchaseRequestList({
       dataIndex: "workflow_name",
       key: "workflow_name",
       align: "left",
+      icon: <TypeIcon className="h-4 w-4" />,
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <p>
+            {getTypeName(record.workflow_name)}
+          </p>
+        )
+      },
     },
     {
       title: (
@@ -161,6 +179,7 @@ export default function PurchaseRequestList({
       dataIndex: "pr_status",
       key: "pr_status",
       align: "left",
+      icon: <Activity className="h-4 w-4" />,
     },
     {
       title: (
@@ -176,6 +195,7 @@ export default function PurchaseRequestList({
       dataIndex: "workflow_current_stage",
       key: "workflow_current_stage",
       align: "left",
+      icon: <Workflow className="h-4 w-4" />,
     },
     {
       title: (
@@ -191,6 +211,7 @@ export default function PurchaseRequestList({
       dataIndex: "requestor_name",
       key: "requestor_name",
       align: "left",
+      icon: <User className="h-4 w-4" />,
     },
     {
       title: (
@@ -206,12 +227,14 @@ export default function PurchaseRequestList({
       dataIndex: "department_name",
       key: "department_name",
       align: "left",
+      icon: <Building className="h-4 w-4" />,
     },
     {
       title: tTableHeader("amount"),
       dataIndex: "total_amount",
       key: "total_amount",
       align: "right",
+      icon: <DollarSign className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return <p>
           {formatPriceConf(record.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}

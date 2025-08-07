@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslations } from "next-intl";
 
 interface CreditNoteListProps {
   readonly creditNotes: CreditNoteGetAllDto[];
@@ -43,7 +44,7 @@ export default function CreditNoteList({
   onSort
 }: CreditNoteListProps) {
   const { dateFormat } = useAuth();
-
+  const tTableHeader = useTranslations("TableHeader");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelectItem = (id: string) => {
@@ -99,7 +100,7 @@ export default function CreditNoteList({
       title: (
         <SortableColumnHeader
           columnKey="cn_no"
-          label="Reference #"
+          label={tTableHeader("reference")}
           sort={sort}
           onSort={onSort}
           getSortableColumnProps={getSortableColumnProps}
@@ -118,7 +119,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Status",
+      title: tTableHeader("status"),
       dataIndex: "doc_status",
       key: "doc_status",
       align: "left",
@@ -129,7 +130,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Date",
+      title: tTableHeader("date"),
       dataIndex: "cn_date",
       key: "cn_date",
       align: "center",
@@ -138,7 +139,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Note",
+      title: tTableHeader("note"),
       dataIndex: "note",
       key: "note",
       align: "left",
@@ -147,7 +148,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Workflow Status",
+      title: tTableHeader("workflow_status"),
       dataIndex: "current_workflow_status",
       key: "current_workflow_status",
       align: "left",
@@ -156,7 +157,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Last Action",
+      title: tTableHeader("last_action"),
       dataIndex: "last_action_name",
       key: "last_action_name",
       align: "left",
@@ -165,7 +166,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Last Action By",
+      title: tTableHeader("last_action_by"),
       dataIndex: "last_action_by_name",
       key: "last_action_by_name",
       align: "left",
@@ -174,7 +175,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Last Action Date",
+      title: tTableHeader("last_action_date"),
       dataIndex: "last_action_date",
       key: "last_action_date",
       align: "left",
@@ -183,7 +184,7 @@ export default function CreditNoteList({
       },
     },
     {
-      title: "Action",
+      title: tTableHeader("action"),
       dataIndex: "action",
       key: "action",
       align: "right",

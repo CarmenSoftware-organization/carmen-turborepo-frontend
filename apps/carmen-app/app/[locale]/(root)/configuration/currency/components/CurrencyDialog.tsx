@@ -19,7 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -37,6 +37,7 @@ import {
   currencyUpdateSchema
 } from "@/dtos/currency.dto";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import { useAuth } from "@/context/AuthContext";
 
 interface CurrencyDialogProps {
   readonly open: boolean;
@@ -57,9 +58,8 @@ export default function CurrencyDialog({
 }: CurrencyDialogProps) {
   const tCurrency = useTranslations("Currency");
   const tCommon = useTranslations("Common");
-
-  const { exchangeRates } = useExchangeRate({ baseCurrency: "THB" });
-
+  const { currencyBase } = useAuth();
+  const { exchangeRates } = useExchangeRate({ baseCurrency: currencyBase || "THB" });
 
   const defaultCurrencyValues = useMemo(
     () => ({
@@ -153,6 +153,7 @@ export default function CurrencyDialog({
               <FormField
                 control={form.control}
                 name="code"
+                required
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{tCurrency("currency_code")}</FormLabel>
@@ -173,6 +174,7 @@ export default function CurrencyDialog({
               <FormField
                 control={form.control}
                 name="name"
+                required
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{tCurrency("currency_name")}</FormLabel>
@@ -187,6 +189,7 @@ export default function CurrencyDialog({
               <FormField
                 control={form.control}
                 name="symbol"
+                required
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{tCurrency("currency_symbol")}</FormLabel>
@@ -206,6 +209,7 @@ export default function CurrencyDialog({
               <FormField
                 control={form.control}
                 name="exchange_rate"
+                required
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{tCurrency("currency_exchange_rate")}</FormLabel>
@@ -251,6 +255,7 @@ export default function CurrencyDialog({
                       onChange={field.onChange}
                       label={tCommon("status")}
                       type="checkbox"
+                      required
                     />
                   </FormControl>
                 </FormItem>

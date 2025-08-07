@@ -23,6 +23,8 @@ const sortFields = [{ key: "name", label: "Name" }];
 
 export default function CreditNoteComponent() {
   const tCommon = useTranslations("Common");
+  const tDataControls = useTranslations("DataControls");
+  const tCreditNote = useTranslations("CreditNote");
   const router = useRouter();
   const { token, tenantId } = useAuth();
   const [search, setSearch] = useURL("search");
@@ -64,7 +66,7 @@ export default function CreditNoteComponent() {
   const totalItems = creditNotes?.paginate.total;
   const perpage = creditNotes?.paginate.perpage;
 
-  const title = "Credit Note";
+  const title = tCreditNote("title");
 
   const actionButtons = (
     <div className="action-btn-container" data-id="credit-note-action-buttons">
@@ -72,7 +74,7 @@ export default function CreditNoteComponent() {
         router.push("/procurement/credit-note/new");
       }}>
         <Plus className="h-4 w-4" />
-        New Credit Note
+        {tCommon("add")}
       </Button>
       <Button
         variant="outlinePrimary"
@@ -122,7 +124,7 @@ export default function CreditNoteComponent() {
         />
         <Button size={"sm"}>
           <Filter className="h-4 w-4" />
-          Add Filter
+          {tDataControls("add_filter")}
         </Button>
         <ToggleView view={view} setView={setView} />
       </div>

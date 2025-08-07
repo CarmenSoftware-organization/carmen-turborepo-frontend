@@ -10,6 +10,7 @@ interface FormBooleanProps {
   readonly type?: "switch" | "checkbox";
   readonly disabled?: boolean;
   readonly classNames?: string;
+  readonly required?: boolean;
 }
 
 export default function FormBoolean({
@@ -20,6 +21,7 @@ export default function FormBoolean({
   type = "switch",
   disabled = false,
   classNames,
+  required = false,
 }: FormBooleanProps) {
   const controlId = `form-boolean-${type}`;
 
@@ -45,6 +47,7 @@ export default function FormBoolean({
   const renderLabel = () => (
     <Label htmlFor={controlId} className="cursor-pointer">
       {label}
+      {required && <span className="ml-1 text-red-500">*</span>}
     </Label>
   );
 

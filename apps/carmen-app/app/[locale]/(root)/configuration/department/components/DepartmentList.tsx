@@ -2,13 +2,13 @@ import { DepartmentGetListDto } from "@/dtos/department.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Activity, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import ButtonLink from "@/components/ButtonLink";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface DepartmentListProps {
   readonly departments: DepartmentGetListDto[];
@@ -119,11 +119,9 @@ export default function DepartmentList({
       align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (is_active: boolean) => (
-        <Badge
-          variant={is_active ? "active" : "inactive"}
-        >
+        <StatusCustom is_active={is_active}>
           {is_active ? tCommon("active") : tCommon("inactive")}
-        </Badge>
+        </StatusCustom>
       ),
     },
     {

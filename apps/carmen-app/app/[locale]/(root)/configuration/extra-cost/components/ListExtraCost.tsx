@@ -1,13 +1,13 @@
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { Activity, DollarSign, Info, MoreHorizontal, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import { useTranslations } from "next-intl";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface ListExtraCostProps {
     readonly extraCosts: ExtraCostTypeDto[];
@@ -41,6 +41,7 @@ export default function ListExtraCost({
     onSelect,
 }: ListExtraCostProps) {
     const t = useTranslations("TableHeader");
+    const tCommon = useTranslations("Common");
 
     const columns: TableColumn[] = [
         {
@@ -86,7 +87,7 @@ export default function ListExtraCost({
                 return (
                     <button
                         type="button"
-                        className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+                        className="btn-dialog"
                         onClick={() => onEdit(extraCost)}
                     >
                         {extraCost.name}
@@ -123,11 +124,9 @@ export default function ListExtraCost({
             align: "center",
             icon: <Activity className="h-4 w-4" />,
             render: (is_active: boolean) => (
-                <Badge
-                    variant={is_active ? "active" : "inactive"}
-                >
-                    {is_active ? "Active" : "Inactive"}
-                </Badge>
+                <StatusCustom is_active={is_active}>
+                    {is_active ? tCommon("active") : tCommon("inactive")}
+                </StatusCustom>
             ),
         },
         {

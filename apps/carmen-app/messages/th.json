@@ -316,7 +316,11 @@
     "inventory_unit": "หน่วยนับ",
     "stage": "ขั้นตอน",
     "yes": "ใช้งาน",
-    "no": "ไม่ใช้งาน"
+    "no": "ไม่ใช้งาน",
+    "reference": "อ้างอิง",
+    "last_action": "การดำเนินการล่าสุด",
+    "last_action_by": "ผู้ดำเนินการล่าสุด",
+    "last_action_date": "วันที่ดำเนินการล่าสุด"
   },
   "Product": {
     "title": "สินค้า"
@@ -337,7 +341,15 @@
     "add_currency": "เพิ่มสกุลเงิน",
     "edit_currency": "แก้ไขสกุลเงิน",
     "add_currency_description": "กรอกข้อมูลเพื่อสร้างสกุลเงินใหม่",
-    "edit_currency_description": "อัพเดตข้อมูลสกุลเงินด้านล่าง"
+    "edit_currency_description": "อัพเดตข้อมูลสกุลเงินด้านล่าง",
+    "errors": {
+      "code_required": "กรุณากรอกรหัสสกุลเงิน",
+      "name_required": "กรุณากรอกชื่อสกุลเงิน",
+      "symbol_required": "กรุณากรอกสัญลักษณ์สกุลเงิน",
+      "symbol_max_length": "สัญลักษณ์สกุลเงินต้องไม่เกิน 3 ตัวอักษร",
+      "exchange_rate_positive": "อัตราแลกเปลี่ยนต้องมากกว่า 0",
+      "exchange_rate_required": "กรุณากรอกอัตราแลกเปลี่ยน"
+    }
   },
   "DeliveryPoint": {
     "title": "จุดส่งสินค้า",
@@ -481,12 +493,18 @@
     "requestor": "ผู้ขอซื้อ",
     "department_head_approval": "การอนุมัติหัวหน้ากลุ่ม",
     "finance_manager_approval": "การอนุมัติผู้ดูแลการเงิน",
-    "filter": "ตัวกรอง"
+    "filter": "ตัวกรอง",
+    "add_filter": "เพิ่มตัวกรอง"
   },
   "PurchaseRequest": {
-    "title": "ใบขอซื้อ"
+    "title": "ใบขอซื้อ",
+    "general": "ทั่วไป",
+    "market_list": "รายการตลาด"
   },
   "Procurement": {
     "title": "การจัดซื้อ"
+  },
+  "CreditNote": {
+    "title": "ใบลดหนี้"
   }
 }

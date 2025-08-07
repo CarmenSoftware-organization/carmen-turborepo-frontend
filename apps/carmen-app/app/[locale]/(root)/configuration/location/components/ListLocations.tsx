@@ -1,19 +1,18 @@
 import { Button } from "@/components/ui/button";
-import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
-import { Badge } from "@/components/ui/badge";
 import {
   SortConfig,
   getSortableColumnProps,
   renderSortIcon,
 } from "@/utils/table-sort";
 import { useTranslations } from "next-intl";
-import { List, MoreHorizontal, Trash2 } from "lucide-react";
+import { Activity, FileCheck, FileType, Info, List, MapPin, MoreHorizontal, Trash2 } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import ButtonLink from "@/components/ButtonLink";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { Checkbox } from "@/components/ui/checkbox";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface Location {
   readonly id: string;
@@ -54,7 +53,16 @@ export default function ListLocations({
 }: ListLocationsProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const tStoreLocation = useTranslations("StoreLocation");
 
+  const getLocationType = (location_type: INVENTORY_TYPE) => {
+    if (location_type === INVENTORY_TYPE.DIRECT) {
+      return tStoreLocation("direct");
+    } else if (location_type === INVENTORY_TYPE.CONSIGNMENT) {
+      return tStoreLocation("consignment");
+    }
+    return tStoreLocation("inventory");
+  }
   const columns: TableColumn[] = [
     {
       title: (
@@ -109,27 +117,26 @@ export default function ListLocations({
         );
       },
     },
-    // {
-    //   title: "Description",
-    //   dataIndex: "description",
-    //   key: "description",
-    //   icon: <Info className="h-4 w-4" />,
-    //   align: "left",
-    // },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      icon: <Info className="h-4 w-4" />,
+      align: "left",
+    },
     {
       title: t("type"),
       dataIndex: "location_type",
       key: "location_type",
-      align: "center",
+      icon: <FileType className="h-4 w-4" />,
+      align: "left",
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
         return (
-          <Badge
-            className={STORE_LOCATION_TYPE_COLOR(location.location_type)}
-          >
-            {location.location_type.toUpperCase()}
-          </Badge>
+          <p className="text-xs md:text-base">
+            {getLocationType(location.location_type)}
+          </p>
         );
       },
     },
@@ -138,6 +145,7 @@ export default function ListLocations({
       dataIndex: "eop",
       key: "eop",
       align: "center",
+      icon: <FileCheck className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (
           <p>{record.eop === "yes" ? tCommon("yes") : tCommon("no")}</p>
@@ -148,19 +156,21 @@ export default function ListLocations({
       title: t("delivery_point"),
       dataIndex: "delivery_point",
       key: "delivery_point",
+      icon: <MapPin className="h-4 w-4" />,
       align: "center",
     },
     {
       title: t("status"),
       dataIndex: "is_active",
       key: "is_active",
+      icon: <Activity className="h-4 w-4" />,
       align: "center",
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
-        return <Badge variant={location.is_active ? "active" : "inactive"}>
-          {location.is_active ? tCommon("yes") : tCommon("no")}
-        </Badge>;
+        return <StatusCustom is_active={location.is_active}>
+          {location.is_active ? tCommon("active") : tCommon("inactive")}
+        </StatusCustom>
       },
     },
     {

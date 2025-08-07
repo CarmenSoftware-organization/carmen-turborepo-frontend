@@ -1,8 +1,12 @@
 import { GoodsReceivedNoteListDto } from "@/dtos/grn.dto";
 import { useTranslations } from "next-intl";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Activity,
+  Building,
+  Calendar,
+  DollarSign,
+  FileText,
   MoreHorizontal,
   Trash2,
 } from "lucide-react";
@@ -20,6 +24,7 @@ import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface GoodsReceivedNoteListProps {
   readonly goodsReceivedNotes: GoodsReceivedNoteListDto[];
@@ -45,6 +50,8 @@ export default function GoodsReceivedNoteList({
   perpage,
 }: GoodsReceivedNoteListProps) {
   const t = useTranslations("TableHeader");
+  const tCommon = useTranslations("Common");
+
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const { dateFormat, amount, currencyBase } = useAuth();
   const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
@@ -114,6 +121,7 @@ export default function GoodsReceivedNoteList({
       dataIndex: "grn_no",
       key: "grn_no",
       align: "left",
+      icon: <FileText className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (
           <ButtonLink href={`/procurement/goods-received-note/${record.key}`}>
@@ -122,23 +130,12 @@ export default function GoodsReceivedNoteList({
         );
       },
     },
-    {
-      title: t("status"),
-      dataIndex: "is_active",
-      key: "is_active",
-      align: "left",
-      render: (_: unknown, record: TableDataSource) => {
-        return (
-          <Badge variant={record.is_active ? "active" : "inactive"}>
-            {record.is_active ? "Active" : "Inactive"}
-          </Badge>
-        );
-      },
-    },
+
     {
       title: t("vendor"),
       dataIndex: "vendor_name",
       key: "vendor_name",
+      icon: <Building className="h-4 w-4" />,
       align: "left",
       render: (_: unknown, record: TableDataSource) => {
         return record.vendor_name ?? "-";
@@ -149,6 +146,7 @@ export default function GoodsReceivedNoteList({
       dataIndex: "created_at",
       key: "created_at",
       align: "center",
+      icon: <Calendar className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return formatDateFns(record.created_at, dateFormat || 'yyyy-MM-dd');
       },
@@ -158,9 +156,23 @@ export default function GoodsReceivedNoteList({
       dataIndex: "total_amount",
       key: "total_amount",
       align: "right",
-      width: "w-[100px]",
+      icon: <DollarSign className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return formatPriceConf(record.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB');
+      },
+    },
+    {
+      title: t("status"),
+      dataIndex: "is_active",
+      key: "is_active",
+      align: "center",
+      icon: <Activity className="h-4 w-4" />,
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <StatusCustom is_active={record.is_active}>
+            {record.is_active ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
+        );
       },
     },
     {

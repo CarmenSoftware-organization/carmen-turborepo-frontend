@@ -317,7 +317,11 @@
     "inventory_unit": "Inventory Unit",
     "stage": "Stage",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "reference": "Reference",
+    "last_action": "Last Action",
+    "last_action_by": "Last Action By",
+    "last_action_date": "Last Action Date"
   },
   "Product": {
     "title": "Product"
@@ -338,7 +342,15 @@
     "add_currency": "Add Currency",
     "edit_currency": "Edit Currency",
     "add_currency_description": "Fill in the details to create a new currency.",
-    "edit_currency_description": "Update the currency information below."
+    "edit_currency_description": "Update the currency information below.",
+    "errors": {
+      "code_required": "Please enter currency code",
+      "name_required": "Please enter currency name",
+      "symbol_required": "Please enter currency symbol",
+      "symbol_max_length": "Currency symbol must not exceed 3 characters",
+      "exchange_rate_positive": "Exchange rate must be greater than 0",
+      "exchange_rate_required": "Please enter exchange rate"
+    }
   },
   "DeliveryPoint": {
     "title": "Delivery Point",
@@ -485,12 +497,18 @@
     "requestor": "Requestor",
     "department_head_approval": "Department Head Approval",
     "finance_manager_approval": "Finance Manager Approval",
-    "filter": "Filter"
+    "filter": "Filter",
+    "add_filter": "Add Filter"
   },
   "PurchaseRequest": {
-    "title": "Purchase Request"
+    "title": "Purchase Request",
+    "general": "General",
+    "market_list": "Market List"
   },
   "Procurement": {
     "title": "Procurement"
+  },
+  "CreditNote": {
+    "title": "Credit Note"
   }
 }

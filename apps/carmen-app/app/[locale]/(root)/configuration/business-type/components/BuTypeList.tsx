@@ -1,6 +1,5 @@
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BuTypeGetAllDto } from "@/dtos/bu-type.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
@@ -8,6 +7,7 @@ import { Activity, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface BuTypeListProps {
     readonly buTypes: BuTypeGetAllDto[];
@@ -45,6 +45,7 @@ export default function BuTypeList({
     setPerpage
 }: BuTypeListProps) {
     const t = useTranslations("TableHeader");
+    const tCommon = useTranslations("Common");
 
     const columns: TableColumn[] = [
         {
@@ -90,7 +91,7 @@ export default function BuTypeList({
                 return (
                     <button
                         type="button"
-                        className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+                        className="btn-dialog"
                         onClick={() => onEdit(buType.id)}
                     >
                         {buType.name}
@@ -135,7 +136,11 @@ export default function BuTypeList({
             render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
-                return <Badge variant={buType.is_active ? "active" : "inactive"}>{buType.is_active ? "Active" : "Inactive"}</Badge>;
+                return (
+                    <StatusCustom is_active={buType.is_active}>
+                        {buType.is_active ? tCommon("active") : tCommon("inactive")}
+                    </StatusCustom>
+                )
             },
         },
         {
