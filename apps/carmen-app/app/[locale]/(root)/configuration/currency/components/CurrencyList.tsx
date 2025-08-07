@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { Checkbox } from "@/components/ui/checkbox";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface CurrencyListProps {
   readonly isLoading: boolean;
@@ -178,14 +179,9 @@ export default function CurrencyList({
       align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (is_active: boolean) => (
-        <p className={`text-xs font-medium ${is_active ? 'text-active' : 'text-inactive'}`}>
+        <StatusCustom is_active={is_active}>
           {is_active ? tCommon("active") : tCommon("inactive")}
-        </p>
-        // <Badge
-        //   variant={is_active ? "active" : "inactive"}
-        // >
-        //   {is_active ? tCommon("active") : tCommon("inactive")}
-        // </Badge>
+        </StatusCustom>
       ),
     },
     {

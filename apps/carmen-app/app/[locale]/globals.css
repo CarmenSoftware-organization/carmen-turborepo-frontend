@@ -53,8 +53,10 @@
     --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
     --tracking-normal: 0.025em;
     --spacing: 0.25rem;
-    --active: 151.3274 66.8639% 66.8627%;
+    --active: 154.9deg 100% 19.2%;
     --inactive: 9.8901 81.9820% 43.5294%;
+
+
   }
 
   .dark {
@@ -100,7 +102,7 @@
     --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
     --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
     --active: 154.8980 100.0000% 19.2157%;
-    --inactive: 6.6667 60.0000% 20.5882%;
+    --inactive: 9.8901 81.9820% 43.5294%;
   }
 }
 
