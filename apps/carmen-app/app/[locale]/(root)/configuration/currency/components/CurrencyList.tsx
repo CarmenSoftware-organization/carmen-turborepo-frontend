@@ -14,6 +14,7 @@ import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/
 import { Checkbox } from "@/components/ui/checkbox";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import ButtonLink from "@/components/ButtonLink";
 
 interface CurrencyListProps {
   readonly isLoading: boolean;
@@ -97,13 +98,9 @@ export default function CurrencyList({
         const currency = currencies.find(c => c.id === record.key);
         if (!currency) return null;
         return (
-          <button
-            type="button"
-            className="text-primary cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
-            onClick={() => onEdit(currency)}
-          >
+          <ButtonLink href={`/configuration/currency/${currency.id}`}>
             {currency.name}
-          </button>
+          </ButtonLink>
         );
       },
     },
