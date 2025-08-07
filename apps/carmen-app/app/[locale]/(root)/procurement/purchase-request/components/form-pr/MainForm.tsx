@@ -281,119 +281,118 @@ export default function MainForm({ mode, initValues }: Props) {
     return (
         <>
             <DetailsAndComments
-                commentPanel={
-                    <div className="flex flex-col gap-4">
-                        <ActivityLogComponent initialActivities={mockActivityPr} />
-                        <CommentComponent initialComments={mockCommentsPr} />
-                    </div>
-                }
+                activityComponent={<ActivityLogComponent initialActivities={mockActivityPr} />}
+                commentComponent={<CommentComponent initialComments={mockCommentsPr} />}
             >
-                <Card className="p-4 mb-2">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(handleSubmit)}>
-                            <ActionFields
-                                mode={mode}
-                                currentMode={currentFormType}
-                                initValues={initValues}
-                                onModeChange={setCurrentFormType}
-                                onCancel={handleCancel}
-                                isError={!canSave}
-                                hasFormChanges={hasFormChanges}
-                                isCreatingPr={isCreatingPr}
-                            />
-                            <div className="grid grid-cols-5 gap-2 mb-4">
-                                <HeadForm
-                                    form={form}
-                                    mode={currentFormType}
-                                    pr_no={initValues?.pr_no}
-                                    workflow_id={initValues?.workflow_id}
+                <div className="space-y-4">
+                    <Card className="p-4">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(handleSubmit)}>
+                                <ActionFields
+                                    mode={mode}
+                                    currentMode={currentFormType}
+                                    initValues={initValues}
+                                    onModeChange={setCurrentFormType}
+                                    onCancel={handleCancel}
+                                    isError={!canSave}
+                                    hasFormChanges={hasFormChanges}
+                                    isCreatingPr={isCreatingPr}
                                 />
-                                <StatusPrInfo
-                                    create_date={initValues?.created_at}
-                                    status={initValues?.pr_status}
-                                    requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
-                                    department_name={initValues?.department_name ? initValues.department_name : departments?.name}
-                                    workflow_current_stage={initValues?.workflow_current_stage}
-                                />
-                            </div>
-                            <Tabs defaultValue="items">
-                                <TabsList className="w-full h-8">
-                                    <TabsTrigger className="w-full" value="items">
-                                        Items
-                                    </TabsTrigger>
-                                    <TabsTrigger className="w-full" value="budget">
-                                        Budget
-                                    </TabsTrigger>
-                                    <TabsTrigger className="w-full" value="workflow">
-                                        Workflow
-                                    </TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="items" className="mt-2">
-                                    <PurchaseItem
+                                <div className="grid grid-cols-5 gap-2 mb-4">
+                                    <HeadForm
                                         form={form}
-                                        currentFormType={currentFormType}
-                                        initValues={initValues?.purchase_request_detail}
-                                        updatedItems={updatedItems}
-                                        removedItems={removedItems}
-                                        onFieldUpdate={handleFieldUpdate}
-                                        onRemoveItem={(id, isAddItem) => {
-                                            if (!isAddItem) {
-                                                // เพิ่มรายการลงใน removedItems
-                                                setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
-
-                                                // เพิ่มรายการลงใน purchase_request_detail.remove
-                                                appendRemove({ id });
-
-                                                // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
-                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
-                                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
-
-                                                // ลบออกจาก updatedItems state
-                                                setUpdatedItems(prev => {
-                                                    const newState = { ...prev };
-                                                    delete newState[id];
-                                                    return newState;
-                                                });
-                                            }
-                                        }}
+                                        mode={currentFormType}
+                                        pr_no={initValues?.pr_no}
+                                        workflow_id={initValues?.workflow_id}
                                     />
-                                </TabsContent>
-                                <TabsContent value="budget" className="mt-2">
-                                    Budget Pr
-                                </TabsContent>
-                                <TabsContent value="workflow" className="mt-2">
-                                    Workflow Pr
-                                </TabsContent>
-                            </Tabs>
-                        </form>
-                    </Form>
-                </Card>
+                                    <StatusPrInfo
+                                        create_date={initValues?.created_at}
+                                        status={initValues?.pr_status}
+                                        requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
+                                        department_name={initValues?.department_name ? initValues.department_name : departments?.name}
+                                        workflow_current_stage={initValues?.workflow_current_stage}
+                                    />
+                                </div>
+                                <Tabs defaultValue="items">
+                                    <TabsList className="w-full h-8">
+                                        <TabsTrigger className="w-full" value="items">
+                                            Items
+                                        </TabsTrigger>
+                                        <TabsTrigger className="w-full" value="budget">
+                                            Budget
+                                        </TabsTrigger>
+                                        <TabsTrigger className="w-full" value="workflow">
+                                            Workflow
+                                        </TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="items" className="mt-2">
+                                        <PurchaseItem
+                                            form={form}
+                                            currentFormType={currentFormType}
+                                            initValues={initValues?.purchase_request_detail}
+                                            updatedItems={updatedItems}
+                                            removedItems={removedItems}
+                                            onFieldUpdate={handleFieldUpdate}
+                                            onRemoveItem={(id, isAddItem) => {
+                                                if (!isAddItem) {
+                                                    // เพิ่มรายการลงใน removedItems
+                                                    setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
 
-                <div className="fixed bottom-6 right-6 flex gap-2 z-50 bg-background border shadow-lg p-2 rounded-lg">
-                    <Button size={"sm"} className="h-7 px-2 text-xs">
-                        <CheckCircleIcon className="w-4 h-4" />
-                        Approve
-                    </Button>
-                    <Button
-                        variant={"destructive"}
-                        size={"sm"}
-                        className="h-7 px-2 text-xs"
-                    >
-                        <XCircleIcon className="w-4 h-4" />
-                        Reject
-                    </Button>
-                    <Button
-                        variant={"outline"}
-                        size={"sm"}
-                        className="h-7 px-2 text-xs"
-                    >
-                        <ArrowLeftRightIcon className="w-4 h-4" />
-                        Send Back
-                    </Button>
+                                                    // เพิ่มรายการลงใน purchase_request_detail.remove
+                                                    appendRemove({ id });
+
+                                                    // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
+                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                                    form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
+
+                                                    // ลบออกจาก updatedItems state
+                                                    setUpdatedItems(prev => {
+                                                        const newState = { ...prev };
+                                                        delete newState[id];
+                                                        return newState;
+                                                    });
+                                                }
+                                            }}
+                                        />
+                                    </TabsContent>
+                                    <TabsContent value="budget" className="mt-2">
+                                        Budget Pr
+                                    </TabsContent>
+                                    <TabsContent value="workflow" className="mt-2">
+                                        Workflow Pr
+                                    </TabsContent>
+                                </Tabs>
+                            </form>
+                        </Form>
+                    </Card>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 justify-end">
+                        <Button size={"sm"} className="h-8 px-3 text-xs">
+                            <CheckCircleIcon className="w-4 h-4 mr-1" />
+                            Approve
+                        </Button>
+                        <Button
+                            variant={"destructive"}
+                            size={"sm"}
+                            className="h-8 px-3 text-xs"
+                        >
+                            <XCircleIcon className="w-4 h-4 mr-1" />
+                            Reject
+                        </Button>
+                        <Button
+                            variant={"outline"}
+                            size={"sm"}
+                            className="h-8 px-3 text-xs"
+                        >
+                            <ArrowLeftRightIcon className="w-4 h-4 mr-1" />
+                            Send Back
+                        </Button>
+                    </div>
                 </div>
             </DetailsAndComments>
 

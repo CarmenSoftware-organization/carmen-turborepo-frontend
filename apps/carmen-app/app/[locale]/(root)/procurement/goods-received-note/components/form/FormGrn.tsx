@@ -163,12 +163,8 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
 
   return (
     <DetailsAndComments
-      commentPanel={
-        <div className="flex flex-col gap-4">
-          <ActivityLog />
-          <CommentGrn />
-        </div>
-      }
+      activityComponent={<ActivityLog />}
+      commentComponent={<CommentGrn />}
     >
       <Card className="p-4 mb-2">
         <Form {...form}>

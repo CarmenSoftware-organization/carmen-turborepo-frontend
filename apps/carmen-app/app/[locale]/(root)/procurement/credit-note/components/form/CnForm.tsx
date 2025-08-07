@@ -181,7 +181,8 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
 
   return (
     <DetailsAndComments
-      commentPanel={<p>hello 2</p>}
+      activityComponent={<p>hello 2</p>}
+      commentComponent={<p>hello 2</p>}
     >
       <Card className="p-4 mb-2">
         <Form {...form}>
