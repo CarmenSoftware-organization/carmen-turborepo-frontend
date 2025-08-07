@@ -135,7 +135,7 @@ const TableTemplate = ({
             )}
 
             {totalItems > 0 && (
-                <TableFooter>
+                <TableFooter className="h-14">
                     <TableRow>
                         <TableCell colSpan={colSpan} className="px-4">
                             <div className="flex items-center justify-between w-full">
