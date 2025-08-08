@@ -84,11 +84,59 @@ const config: Config = {
 					to: {
 						height: '0'
 					}
+				},
+				'typewriter': {
+					'0%': {
+						opacity: '0',
+						transform: 'scale(0.8)'
+					},
+					'50%': {
+						opacity: '1',
+						transform: 'scale(1.1)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'scale(1)'
+					}
+				},
+				'pulse-glow': {
+					'0%, 100%': {
+						opacity: '1',
+						transform: 'scale(1)'
+					},
+					'50%': {
+						opacity: '0.7',
+						transform: 'scale(1.05)'
+					}
+				},
+				'loading-dots': {
+					'0%, 20%': {
+						opacity: '0',
+						transform: 'scale(0.8)'
+					},
+					'50%': {
+						opacity: '1',
+						transform: 'scale(1.2)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'scale(1)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'typewriter-1': 'typewriter 2s ease-in-out infinite 0s',
+				'typewriter-2': 'typewriter 2s ease-in-out infinite 0.3s',
+				'typewriter-3': 'typewriter 2s ease-in-out infinite 0.6s',
+				'typewriter-4': 'typewriter 2s ease-in-out infinite 0.9s',
+				'typewriter-5': 'typewriter 2s ease-in-out infinite 1.2s',
+				'typewriter-6': 'typewriter 2s ease-in-out infinite 1.5s',
+				'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+				'loading-dot-1': 'loading-dots 1.5s ease-in-out infinite 0s',
+				'loading-dot-2': 'loading-dots 1.5s ease-in-out infinite 0.2s',
+				'loading-dot-3': 'loading-dots 1.5s ease-in-out infinite 0.4s'
 			}
 		}
 	},

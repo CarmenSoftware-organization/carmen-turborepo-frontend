@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import SpinLoading from './loading/SpinLoading';
+import CarmenLoading from './loading/CarmenLoading';
 
 interface ProtectedRouteProps {
     readonly children: React.ReactNode;
@@ -23,7 +23,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
     // Show loading state while checking authentication
     if (isLoading) {
-        return <SpinLoading />
+        return <CarmenLoading />
     }
 
     // Only render children if authenticated
