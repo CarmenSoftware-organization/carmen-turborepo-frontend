@@ -4,16 +4,17 @@ import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { useTranslations } from "next-intl";
+import NumberInput from "@/components/form-custom/NumberInput";
+import FormBoolean from "@/components/form-custom/form-boolean";
 
 interface ProductAttributeProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
-
 interface AttributeItem {
     label: string;
     value: string;
@@ -21,6 +22,8 @@ interface AttributeItem {
 }
 
 export default function ProductAttribute({ control, currentMode }: ProductAttributeProps) {
+    const tProducts = useTranslations("Products");
+
     const { fields, append, remove } = useFieldArray({
         control,
         name: "product_info.info"
@@ -43,43 +46,38 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
         append({ label: "", value: "", data_type: "string" });
     };
 
-    // Check if we're in view mode
     const isViewMode = currentMode === formType.VIEW;
 
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Product Attributes</h2>
+                <h2 className="text-lg font-semibold">{tProducts("product_attribute")}</h2>
                 <Button
                     type="button"
-                    variant="default"
+                    variant="outlinePrimary"
                     size="sm"
                     onClick={handleAddAttribute}
                     className="flex items-center gap-2"
                     disabled={isViewMode}
                 >
                     <Plus className="h-4 w-4" />
-                    Add Attribute
+                    {tProducts("add_attribute")}
                 </Button>
             </div>
 
             <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    {/* Price Fields */}
                     <FormField
                         control={control}
                         name="product_info.price"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Price</FormLabel>
+                                <FormLabel>{tProducts("price")}</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
-                                        step="0.01"
-                                        min="0.01"
-                                        placeholder="Enter price"
-                                        {...field}
-                                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    <NumberInput
+                                        value={field.value}
+                                        onChange={(value) => field.onChange(value)}
+                                        placeholder={tProducts("price")}
                                         disabled={isViewMode}
                                     />
                                 </FormControl>
@@ -93,14 +91,12 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         name="product_info.price_deviation_limit"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Price Deviation Limit (%)</FormLabel>
+                                <FormLabel>{tProducts("price_deviation_limit")}(%)</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
-                                        min="1"
-                                        placeholder="Enter price deviation limit"
-                                        {...field}
-                                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                    <NumberInput
+                                        value={field.value}
+                                        onChange={(value) => field.onChange(value)}
+                                        placeholder={tProducts("price_deviation_limit")}
                                         disabled={isViewMode}
                                     />
                                 </FormControl>
@@ -114,14 +110,12 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         name="product_info.qty_deviation_limit"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Quantity Deviation Limit (%)</FormLabel>
+                                <FormLabel>{tProducts("qty_deviation_limit")}(%)</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
-                                        min="1"
-                                        placeholder="Enter quantity deviation limit"
-                                        {...field}
-                                        onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                    <NumberInput
+                                        value={field.value}
+                                        onChange={(value) => field.onChange(value)}
+                                        placeholder={tProducts("qty_deviation_limit")}
                                         disabled={isViewMode}
                                     />
                                 </FormControl>
@@ -130,16 +124,15 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         )}
                     />
 
-                    {/* Existing fields */}
                     <FormField
                         control={control}
                         name="product_info.barcode"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Barcode</FormLabel>
+                                <FormLabel>{tProducts("barcode")}</FormLabel>
                                 <FormControl>
                                     <Input
-                                        placeholder="Enter barcode"
+                                        placeholder={tProducts("barcode")}
                                         {...field}
                                         disabled={isViewMode}
                                     />
@@ -149,45 +142,42 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         )}
                     />
 
-                    <FormField
-                        control={control}
-                        name="product_info.is_used_in_recipe"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-2">
-                                <div className="space-y-0.5">
-                                    <FormLabel>Used in Recipe</FormLabel>
-                                </div>
-                                <FormControl>
-                                    <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        disabled={isViewMode}
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={control}
-                        name="product_info.is_sold_directly"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 col-span-2">
-                                <div className="space-y-0.5">
-                                    <FormLabel>Sold Directly</FormLabel>
-                                </div>
-                                <FormControl>
-                                    <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        disabled={isViewMode}
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
                 </div>
+                <FormField
+                    control={control}
+                    name="product_info.is_used_in_recipe"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <FormBoolean
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    label={tProducts("used_in_recipe")}
+                                    type="checkbox"
+                                    disabled={isViewMode}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
 
+                <FormField
+                    control={control}
+                    name="product_info.is_sold_directly"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <FormBoolean
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    label={tProducts("sold_directly")}
+                                    type="checkbox"
+                                    disabled={isViewMode}
+                                />
+                            </FormControl>
+                        </FormItem>
+                    )}
+                />
                 {isViewMode ? (
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                         {attributeValues && attributeValues.length > 0 ? (
@@ -198,7 +188,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                 </div>
                             ))
                         ) : (
-                            <p className="text-sm text-muted-foreground">No attributes added</p>
+                            <p className="text-sm text-muted-foreground">{tProducts("no_attributes_added")}</p>
                         )}
                     </div>
 
@@ -213,7 +203,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                         <FormItem>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="Enter label"
+                                                    placeholder={tProducts("enter_label")}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -229,7 +219,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                         <FormItem>
                                             <FormControl>
                                                 <Input
-                                                    placeholder="Enter value"
+                                                    placeholder={tProducts("enter_value")}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -243,12 +233,13 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => remove(index)}
+                                    className="hover:text-destructive hover:bg-transparent"
                                 >
-                                    <Trash className="h-4 w-4 text-destructive" />
+                                    <Trash2 className="h-4 w-4 " />
                                 </Button>
 
-                                <div className="flex gap-2">
-                                    {/* <FormField
+                                {/* <div className="flex gap-2">
+                                    <FormField
                                         control={control}
                                         name={`product_info.info.${index}.data_type`}
                                         render={({ field }) => (
@@ -273,10 +264,9 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                                                 <FormMessage />
                                             </FormItem>
                                         )}
-                                    /> */}
+                                    />
 
-
-                                </div>
+                                </div> */}
                             </div>
                         ))}
                     </>

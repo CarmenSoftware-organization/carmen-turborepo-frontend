@@ -6,7 +6,7 @@ import { Providers } from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: 'Carmen Inventory',
+  title: 'Carmen',
   description: 'Carmen Inventory Description',
   icons: {
     icon: '/fav.ico',

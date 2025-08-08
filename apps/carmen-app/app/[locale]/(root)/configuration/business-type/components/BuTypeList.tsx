@@ -137,9 +137,11 @@ export default function BuTypeList({
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
                 return (
-                    <StatusCustom is_active={buType.is_active}>
-                        {buType.is_active ? tCommon("active") : tCommon("inactive")}
-                    </StatusCustom>
+                    <div className="flex justify-center">
+                        <StatusCustom is_active={buType.is_active}>
+                            {buType.is_active ? tCommon("active") : tCommon("inactive")}
+                        </StatusCustom>
+                    </div>
                 )
             },
         },

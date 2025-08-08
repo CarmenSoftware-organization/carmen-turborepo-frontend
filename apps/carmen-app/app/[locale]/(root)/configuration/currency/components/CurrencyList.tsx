@@ -99,7 +99,7 @@ export default function CurrencyList({
         return (
           <button
             type="button"
-            className="text-primary dark:text-primary-foreground cursor-pointer hover:underline transition-colors text-left text-xs md:text-base"
+            className="btn-dialog"
             onClick={() => onEdit(currency)}
           >
             {currency.name}
@@ -179,9 +179,11 @@ export default function CurrencyList({
       align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (is_active: boolean) => (
-        <StatusCustom is_active={is_active}>
-          {is_active ? tCommon("active") : tCommon("inactive")}
-        </StatusCustom>
+        <div className="flex justify-center">
+          <StatusCustom is_active={is_active}>
+            {is_active ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
+        </div>
       ),
     },
     {

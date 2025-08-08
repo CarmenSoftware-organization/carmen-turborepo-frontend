@@ -11,6 +11,7 @@ import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto } from "@/dtos/unit.dto";
 import { UnitData, IngredientUnitsFormData } from "./unit.type";
 import TableUnit from "./TableUnit";
+import { useTranslations } from "next-intl";
 
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -20,6 +21,8 @@ interface IngredientUnitProps {
 
 
 export default function IngredientUnit({ control, currentMode }: IngredientUnitProps) {
+
+    const tProducts = useTranslations("Products");
     const { token, tenantId } = useAuth();
     const { units } = useUnitQuery({
         token,
@@ -130,11 +133,11 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Ingredient Units</h2>
+                <h2 className="text-lg font-semibold">{tProducts("ingredient_unit")}</h2>
                 {currentMode !== formType.VIEW && (
                     <Button
                         type="button"
-                        variant="default"
+                        variant="outlinePrimary"
                         size="sm"
                         onClick={() => {
                             appendIngredientUnit({
@@ -151,7 +154,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                         disabled={!inventoryUnitId}
                     >
                         <Plus className="h-4 w-4" />
-                        Add Ingredient Unit
+                        {tProducts("add_ingredient_unit")}
                     </Button>
                 )}
             </div>
@@ -160,7 +163,7 @@ export default function IngredientUnit({ control, currentMode }: IngredientUnitP
                 <TableUnit
                     control={control}
                     currentMode={currentMode}
-                    unitTitle="Ingredient"
+                    unitTitle={tProducts("ingredient_unit")}
                     displayUnits={displayIngredientUnits}
                     editingId={editingId}
                     editForm={editForm}

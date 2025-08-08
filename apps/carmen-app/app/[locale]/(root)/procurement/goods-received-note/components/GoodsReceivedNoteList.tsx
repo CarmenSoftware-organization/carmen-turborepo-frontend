@@ -169,9 +169,11 @@ export default function GoodsReceivedNoteList({
       icon: <Activity className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (
-          <StatusCustom is_active={record.is_active}>
-            {record.is_active ? tCommon("active") : tCommon("inactive")}
-          </StatusCustom>
+          <div className="flex justify-center">
+            <StatusCustom is_active={record.is_active}>
+              {record.is_active ? tCommon("active") : tCommon("inactive")}
+            </StatusCustom>
+          </div>
         );
       },
     },

@@ -24,6 +24,7 @@ const grnStatusOptions = [
 ]
 export default function GoodsReceivedNoteComponent() {
     const tCommon = useTranslations('Common');
+    const tHeader = useTranslations('TableHeader');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const {
@@ -48,7 +49,7 @@ export default function GoodsReceivedNoteComponent() {
         { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
-    const title = "Goods Received Note";
+    const title = tHeader("title_goods_received_note")
 
     const actionButtons = (
         <div className="action-btn-container" data-id="grn-action-buttons">
@@ -58,7 +59,7 @@ export default function GoodsReceivedNoteComponent() {
                 data-id="grn-new-button"
             >
                 <Plus className="h-4 w-4" />
-                New Goods Received Note
+                {tCommon("add")}
             </Button>
             <Button
                 variant="outlinePrimary"
@@ -105,7 +106,7 @@ export default function GoodsReceivedNoteComponent() {
                 />
                 <Button size={'sm'}>
                     <Filter className="h-4 w-4" />
-                    Add Filter
+                    {tCommon("filter")}
                 </Button>
             </div>
         </div>

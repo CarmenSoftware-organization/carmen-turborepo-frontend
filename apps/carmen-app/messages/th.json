@@ -218,6 +218,12 @@
     "notFoundMessage": "ไม่พบหน้าที่คุณต้องการ",
     "backToHome": "กลับไปหน้าหลัก"
   },
+  "Status": {
+    "draft": "ร่าง",
+    "in_progress": "กำลังดำเนินการ",
+    "completed": "เสร็จสิ้น",
+    "cancelled": "ยกเลิก"
+  },
   "UserManagement": {
     "title": "การจัดการผู้ใช้งาน"
   },
@@ -277,7 +283,9 @@
     "no_data_found": "ไม่พบข้อมูลที่ตรงกับตัวกรอง",
     "users": "ผู้ใช้งาน",
     "products": "สินค้า",
-    "data_not_found": "ไม่พบข้อมูล"
+    "data_not_found": "ไม่พบข้อมูล",
+    "filter": "ตัวกรอง",
+    "back": "กลับ"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -518,5 +526,47 @@
   },
   "PriceList": {
     "title": "ราคาขาย"
+  },
+  "Products": {
+    "title": "สินค้า",
+    "product_name": "ชื่อสินค้า",
+    "local_name": "ชื่อท้องถิ่น",
+    "product_code": "รหัสสินค้า",
+    "description": "คำอธิบาย",
+    "general": "ทั่วไป",
+    "location": "สถานที่",
+    "order_unit": "หน่วยสั่งซื้อ",
+    "ingredient_unit": "หน่วยส่วนผสม",
+    "use_for_ingredient": "ใช้สำหรับส่วนผสม",
+    "item_group": "หมวดสินค้ากลุ่ม",
+    "sub_category": "หมวดสินค้าย่อย",
+    "category": "หมวดสินค้า",
+    "inventory_unit": "หน่วยนับสินค้า",
+    "product_attribute": "คุณลักษณะสินค้า",
+    "add_attribute": "เพิ่มคุณลักษณะ",
+    "price": "ราคา",
+    "price_deviation_limit": "ลิมิตการยอมรับความคลาดเคลื่อนราคา",
+    "qty_deviation_limit": "ลิมิตการยอมรับความคลาดเคลื่อนปริมาณ",
+    "barcode": "บาร์โค้ด",
+    "used_in_recipe": "ใช้ในสูตรอาหาร",
+    "sold_directly": "ขายตรง",
+    "no_attributes_added": "ไม่มีคุณลักษณะสินค้า",
+    "enter_label": "กรอกชื่อ",
+    "enter_value": "กรอกค่า",
+    "location_name": "ชื่อสถานที่",
+    "type": "ประเภทสถานที่",
+    "delivery_point": "จุดส่งสินค้า",
+    "status": "สถานะ",
+    "action": "การดำเนินการ",
+    "add_locations": "เพิ่มสถานที่เก็บสินค้า",
+    "add_order_unit": "เพิ่มหน่วยสั่งซื้อ",
+    "add_ingredient_unit": "เพิ่มหน่วยส่วนผสม",
+    "to_unit": "หน่วยสั่งซื้อ",
+    "default": "ค่าเริ่มต้น",
+    "conversion": "การแปลง",
+    "pls_select_order_unit": "กรุณาเลือกหน่วยสั่งซื้อ",
+    "no_order_units_defined": "ไม่มีหน่วยสั่งซื้อ",
+    "units": "หน่วย",
+    "remove": "ลบ"
   }
 }

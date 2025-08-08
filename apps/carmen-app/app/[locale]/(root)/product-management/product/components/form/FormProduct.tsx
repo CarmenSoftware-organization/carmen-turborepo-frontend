@@ -24,6 +24,7 @@ import { useRouter } from "@/lib/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useTranslations } from "next-intl";
 
 interface Props {
   readonly mode: formType;
@@ -32,6 +33,7 @@ interface Props {
 
 export default function FormProduct({ mode, initialValues }: Props) {
   const { token, tenantId } = useAuth();
+  const tProducts = useTranslations("Products");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const router = useRouter();
 
@@ -201,7 +203,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
         toastSuccess({ message: "Product created successfully" });
         setCurrentMode(formType.VIEW);
 
-        // Replace '/new' with the actual product ID from the response
         if (result?.id) {
           const newUrl = window.location.pathname.replace(
             "/new",
@@ -209,7 +210,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
           );
           router.replace(newUrl);
         } else {
-          // Fallback if no ID is provided
           console.warn(
             "No ID found in create product response, redirecting to list"
           );
@@ -266,13 +266,12 @@ export default function FormProduct({ mode, initialValues }: Props) {
             />
             <Tabs defaultValue="general" className="mt-2">
               <TabsList>
-                <TabsTrigger value="general">General</TabsTrigger>
-                <TabsTrigger value="location">Location</TabsTrigger>
-                <TabsTrigger value="orderUnit">Order Unit</TabsTrigger>
+                <TabsTrigger value="general">{tProducts("general")}</TabsTrigger>
+                <TabsTrigger value="location">{tProducts("location")}</TabsTrigger>
+                <TabsTrigger value="orderUnit">{tProducts("order_unit")}</TabsTrigger>
                 <TabsTrigger value="ingredientUnit">
-                  Ingredient Unit
+                  {tProducts("ingredient_unit")}
                 </TabsTrigger>
-                {/* <TabsTrigger value="inventory">Inventory</TabsTrigger> */}
               </TabsList>
               <TabsContent value="general">
                 <ProductAttribute
@@ -295,12 +294,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
                   currentMode={currentMode}
                 />
               </TabsContent>
-              {/* <TabsContent value="inventory">
-                {(currentMode === formType.EDIT ||
-                  currentMode === formType.VIEW) && (
-                  <InventoryInfo inventoryData={mockStockInventoryData} />
-                )}
-              </TabsContent> */}
             </Tabs>
           </ScrollArea>
         </form>

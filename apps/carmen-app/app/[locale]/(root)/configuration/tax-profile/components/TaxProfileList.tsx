@@ -116,9 +116,11 @@ export default function TaxProfileList({
             align: "center",
             icon: <Activity className="h-4 w-4" />,
             render: (is_active: boolean) => (
-                <StatusCustom is_active={is_active}>
-                    {is_active ? tCommon("active") : tCommon("inactive")}
-                </StatusCustom>
+                <div className="flex justify-center">
+                    <StatusCustom is_active={is_active}>
+                        {is_active ? tCommon("active") : tCommon("inactive")}
+                    </StatusCustom>
+                </div>
             ),
         },
         {

@@ -42,6 +42,12 @@
     "notFoundMessage": "Could not find the requested resource",
     "backToHome": "Go to Home"
   },
+  "Status": {
+    "draft": "Draft",
+    "in_progress": "In Progress",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  },
   "Action": {
     "title": "Action",
     "add": "Add",
@@ -277,7 +283,9 @@
     "no_data_found": "No data found matching your filters",
     "users": "Users",
     "products": "Products",
-    "data_not_found": "No data found"
+    "data_not_found": "No data found",
+    "filter": "Filter",
+    "back": "Back"
   },
   "TableHeader": {
     "all": "All",
@@ -522,5 +530,47 @@
   },
   "PriceList": {
     "title": "Price List"
+  },
+  "Products": {
+    "title": "Products",
+    "product_name": "Product Name",
+    "local_name": "Local Name",
+    "product_code": "Product Code",
+    "description": "Description",
+    "general": "General",
+    "location": "Location",
+    "order_unit": "Order Unit",
+    "ingredient_unit": "Ingredient Unit",
+    "use_for_ingredient": "Use for Ingredient",
+    "item_group": "Item Group",
+    "sub_category": "Sub Category",
+    "category": "Category",
+    "inventory_unit": "Inventory Unit",
+    "product_attribute": "Product Attribute",
+    "add_attribute": "Add Attribute",
+    "price": "Price",
+    "price_deviation_limit": "Price Deviation Limit",
+    "qty_deviation_limit": "Quantity Deviation Limit",
+    "barcode": "Barcode",
+    "used_in_recipe": "Used in Recipe",
+    "sold_directly": "Sold Directly",
+    "no_attributes_added": "No attributes added",
+    "enter_label": "Enter label",
+    "enter_value": "Enter value",
+    "location_name": "Location Name",
+    "type": "Location Type",
+    "delivery_point": "Delivery Point",
+    "status": "Status",
+    "action": "Action",
+    "add_locations": "Add Locations",
+    "add_order_unit": "Add Order Unit",
+    "add_ingredient_unit": "Add Ingredient Unit",
+    "to_unit": "To Unit",
+    "default": "Default",
+    "conversion": "Conversion",
+    "pls_select_order_unit": "Please select order unit",
+    "no_order_units_defined": "No order units defined yet",
+    "units": "Units",
+    "remove": "Remove"
   }
 }

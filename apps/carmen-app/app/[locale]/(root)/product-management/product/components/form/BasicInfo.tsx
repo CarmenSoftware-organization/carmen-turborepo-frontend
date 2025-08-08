@@ -23,6 +23,8 @@ import ButtonLink from "@/components/ButtonLink";
 import { cn } from "@/lib/utils";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { Label } from "@/components/ui/label";
+import { useTranslations } from "next-intl";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -43,7 +45,8 @@ export default function BasicInfo({
   handleCancelClick,
 }: BasicInfoProps) {
   const { token, tenantId } = useAuth();
-
+  const tCommon = useTranslations("Common");
+  const tProducts = useTranslations("Products");
   const { getUnitName } = useUnitQuery({
     token,
     tenantId,
@@ -60,23 +63,19 @@ export default function BasicInfo({
   });
 
   const status = watch("product_status_type");
-
-  // Store selectedValue for change detection
   const [selectedItemGroup, setSelectedItemGroup] = useState<string>("");
   const productItemGroupId = watch("product_info.product_item_group_id");
 
-  // Always ensure product_status_type is set to 'active' as required by the schema
   useEffect(() => {
     setValue("product_status_type", "active");
   }, [setValue]);
 
-  // Fetch data when selectedItemGroup changes (user interaction)
   useEffect(() => {
     if (!selectedItemGroup) return;
 
     const fetchCategoryData = async () => {
       try {
-        // Clear previous values first
+
         setCategoryData({
           category: { id: "", name: "" },
           subCategory: { id: "", name: "" },
@@ -226,11 +225,11 @@ export default function BasicInfo({
                       ) : (
                         <>
                           <FormLabel className="font-medium">
-                            Product Code
+                            {tProducts("product_code")}
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Product Code"
+                              placeholder={tProducts("product_code")}
                               {...field}
                             />
                           </FormControl>
@@ -253,11 +252,11 @@ export default function BasicInfo({
                         ) : (
                           <>
                             <FormLabel>
-                              Product Name
+                              {tProducts("product_name")}
                             </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Product Name"
+                                placeholder={tProducts("product_name")}
                                 {...field}
                               />
                             </FormControl>
@@ -269,11 +268,9 @@ export default function BasicInfo({
                   />
 
                   {status && currentMode === formType.VIEW && (
-                    <Badge
-                      variant={status === "active" ? "active" : "inactive"}
-                    >
-                      {status === "active" ? "Active" : "Inactive"}
-                    </Badge>
+                    <StatusCustom is_active={status === "active"}>
+                      {status === "active" ? tCommon("active") : tCommon("inactive")}
+                    </StatusCustom>
                   )}
                 </div>
 
@@ -285,40 +282,40 @@ export default function BasicInfo({
               {currentMode === formType.VIEW ? (
                 <>
                   <Button
-                    variant="outline"
+                    variant="outlinePrimary"
                     size="sm"
                     onClick={handleCancelClick}
                   >
                     <ChevronLeft className="h-3 w-3" />
-                    Back
+                    {tCommon("back")}
                   </Button>
                   <Button
-                    variant="default"
+                    variant="outlinePrimary"
                     size="sm"
                     onClick={handleEditClick}
                   >
                     <Edit />
-                    Edit
+                    {tCommon("edit")}
                   </Button>
                 </>
               ) : (
                 <>
                   <Button
-                    variant="outline"
+                    variant="outlinePrimary"
                     size="sm"
                     onClick={handleCancelClick}
                   >
                     <X />
-                    Cancel
+                    {tCommon("cancel")}
                   </Button>
                   <Button
-                    variant="default"
+                    variant="outlinePrimary"
                     size="sm"
                     type="submit"
                     disabled={!isFormValid()}
                   >
                     <Save />
-                    Save
+                    {tCommon("save")}
                   </Button>
                 </>
               )}
@@ -333,11 +330,11 @@ export default function BasicInfo({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Description
+                    {tProducts("description")}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter description"
+                      placeholder={tProducts("description")}
                       {...field}
                       disabled={currentMode === formType.VIEW}
                       className={cn(
@@ -358,11 +355,11 @@ export default function BasicInfo({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Local Name
+                    {tProducts("local_name")}
                   </FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Local name"
+                      placeholder={tProducts("local_name")}
                       {...field}
                       disabled={currentMode === formType.VIEW}
                       className={cn(
@@ -385,7 +382,7 @@ export default function BasicInfo({
                     <FormBoolean
                       value={field.value}
                       onChange={field.onChange}
-                      label="Use for Ingredients"
+                      label={tProducts("use_for_ingredient")}
                       positionLabel="top"
                       type="checkbox"
                       disabled={currentMode === formType.VIEW}
@@ -410,7 +407,7 @@ export default function BasicInfo({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Item Group
+                      {tProducts("item_group")}
                     </FormLabel>
                     <FormControl>
                       <ItemGroupLookup
@@ -424,6 +421,7 @@ export default function BasicInfo({
                           currentMode === formType.VIEW && "bg-muted",
                           ""
                         )}
+                        placeholder={tProducts("item_group")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -433,28 +431,28 @@ export default function BasicInfo({
 
               <div className="space-y-2">
                 <Label>
-                  Category
+                  {tProducts("sub_category")}
                 </Label>
                 <Input
-                  placeholder="Category"
+                  placeholder={tProducts("sub_category")}
+                  value={categoryData.subCategory.name}
+                  disabled
+                  className="bg-muted"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>
+                  {tProducts("category")}
+                </Label>
+                <Input
+                  placeholder={tProducts("category")}
                   value={categoryData.category.name}
                   disabled
                   className="bg-muted"
                 />
               </div>
 
-              {/* Sub Category */}
-              <div className="space-y-2">
-                <Label>
-                  Sub Category
-                </Label>
-                <Input
-                  placeholder="Sub category"
-                  value={categoryData.subCategory.name}
-                  disabled
-                  className="bg-muted"
-                />
-              </div>
 
               <FormField
                 control={control}
@@ -462,10 +460,15 @@ export default function BasicInfo({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Inventory Unit
+                      {tProducts("inventory_unit")}
                     </FormLabel>
                     {currentMode === formType.VIEW ? (
-                      <Badge className="ml-2 bg-blue-50 hover:bg-blue-100 text-primary">{getUnitName(field.value)}</Badge>
+                      <Badge
+                        variant="outline"
+                        className="bg-muted border-border ml-2"
+                      >
+                        {getUnitName(field.value)}
+                      </Badge>
                     ) : (
                       <FormControl>
                         <UnitLookup
@@ -473,6 +476,7 @@ export default function BasicInfo({
                           onValueChange={(value) => {
                             field.onChange(value);
                           }}
+                          placeholder={tProducts("inventory_unit")}
                         />
                       </FormControl>
                     )}

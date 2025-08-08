@@ -3,7 +3,7 @@ import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Check, SquarePen, Trash, X } from "lucide-react";
+import { Check, SquarePen, Trash2, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -26,9 +26,10 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Switch } from "@/components/ui/switch";
 import { UnitDto } from "@/dtos/unit.dto";
 import { UnitData } from "./unit.type";
+import { useTranslations } from "next-intl";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface TableUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -120,7 +121,7 @@ const EditableRow = ({
                 </div>
             </TableCell>
             <TableCell className="text-left w-16">
-                <Switch checked={editForm?.is_default} onCheckedChange={() => handleFieldChange('is_default', !editForm?.is_default)} />
+                <Checkbox checked={editForm?.is_default} onCheckedChange={() => handleFieldChange('is_default', !editForm?.is_default)} />
             </TableCell>
             <TableCell className="text-left w-28">
                 {editForm?.from_unit_id && editForm?.to_unit_id ? (
@@ -186,8 +187,8 @@ const DisplayRow = ({
                 <span>{getUnitName(unit.to_unit_id)}</span>
             </div>
         </TableCell>
-        <TableCell className="text-left w-16">
-            <Switch checked={unit.is_default} disabled />
+        <TableCell className="text-center w-16">
+            <Checkbox checked={unit.is_default} disabled />
         </TableCell>
         <TableCell className="text-left w-28">
             <div>
@@ -204,7 +205,7 @@ const DisplayRow = ({
                         size="sm"
                         onClick={onEdit}
                         aria-label={`Edit ${unitTitle.toLowerCase()} unit`}
-                        className="h-7 w-7"
+                        className="h-7 w-7 hover:bg-transparent"
                     >
                         <SquarePen className="h-4 w-4" />
                     </Button>
@@ -215,15 +216,15 @@ const DisplayRow = ({
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="h-7 w-7 text-destructive hover:text-destructive/80"
+                                className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
                                 aria-label={`Remove ${unitTitle.toLowerCase()} unit`}
                             >
-                                <Trash className="h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                             </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent className="max-w-md">
                             <AlertDialogHeader>
-                                <AlertDialogTitle className="text-xl">Remove {unitTitle} Unit</AlertDialogTitle>
+                                <AlertDialogTitle className="text-xl">Remove {unitTitle}</AlertDialogTitle>
                                 <AlertDialogDescription className="space-y-2 text-gray-600">
                                     <p>Are you sure you want to remove this {unitTitle.toLowerCase()} unit?</p>
                                     <div className="mt-2 p-4 space-y-1.5 text-sm">
@@ -265,6 +266,8 @@ export default function TableUnit({
     unitFields,
     removeUnit,
 }: TableUnitProps) {
+
+    const tProducts = useTranslations("Products");
     const { watch } = useFormContext<ProductFormValues>();
 
     return (
@@ -272,11 +275,11 @@ export default function TableUnit({
             <Table>
                 <TableHeader className="bg-muted">
                     <TableRow>
-                        <TableHead className="text-left w-24 font-medium">{unitTitle} Unit</TableHead>
-                        <TableHead className="text-left w-24 font-medium">To Unit</TableHead>
-                        <TableHead className="text-left w-16 font-medium">Default</TableHead>
-                        <TableHead className="text-left w-28 font-medium">Conversion</TableHead>
-                        {currentMode !== formType.VIEW && <TableHead className="text-right w-20 font-medium">Actions</TableHead>}
+                        <TableHead className="text-left w-24 font-medium">{unitTitle}</TableHead>
+                        <TableHead className="text-left w-24 font-medium">{tProducts("to_unit")}</TableHead>
+                        <TableHead className="text-center w-16 font-medium">{tProducts("default")}</TableHead>
+                        <TableHead className="text-left w-28 font-medium">{tProducts("conversion")}</TableHead>
+                        {currentMode !== formType.VIEW && <TableHead className="text-right w-20 font-medium">{tProducts("action")}</TableHead>}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -358,7 +361,7 @@ export default function TableUnit({
                                                     <FormControl>
                                                         <Select onValueChange={field.onChange} value={field.value as string}>
                                                             <SelectTrigger className="w-20 h-7">
-                                                                <SelectValue placeholder="Unit" />
+                                                                <SelectValue placeholder={tProducts("unit")} />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {filteredUnits.map((unit) => (
@@ -376,7 +379,7 @@ export default function TableUnit({
                                     </div>
                                 </TableCell>
 
-                                <TableCell className="text-left w-16">
+                                <TableCell className="text-center w-16">
                                     <FormField
                                         control={control}
                                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -384,7 +387,7 @@ export default function TableUnit({
                                         render={({ field }) => (
                                             <FormItem className="space-y-0">
                                                 <FormControl>
-                                                    <Switch checked={field.value as boolean} onCheckedChange={field.onChange} />
+                                                    <Checkbox checked={field.value as boolean} onCheckedChange={field.onChange} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -407,9 +410,9 @@ export default function TableUnit({
                                             size="sm"
                                             onClick={() => removeUnit(index)}
                                             aria-label={`Remove ${unitTitle.toLowerCase()} unit`}
-                                            className="h-7 w-7 text-destructive hover:text-destructive/80"
+                                            className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
                                         >
-                                            <Trash className="h-4 w-4" />
+                                            <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </TableCell>
                                 )}

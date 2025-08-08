@@ -1,6 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { Calendar, FileText, FileType2, Info, MoreHorizontal, StickyNote, Trash2, User } from "lucide-react";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
@@ -18,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTranslations } from "next-intl";
+import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 
 interface CreditNoteListProps {
   readonly creditNotes: CreditNoteGetAllDto[];
@@ -45,6 +45,7 @@ export default function CreditNoteList({
 }: CreditNoteListProps) {
   const { dateFormat } = useAuth();
   const tTableHeader = useTranslations("TableHeader");
+  const tStatus = useTranslations("Status");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelectItem = (id: string) => {
@@ -67,6 +68,19 @@ export default function CreditNoteList({
 
   const isAllSelected =
     creditNotes?.length > 0 && selectedItems.length === creditNotes.length;
+
+  const getStatusText = (status: string) => {
+    if (status === 'in_progress') {
+      return tStatus("in_progress");
+    }
+    if (status === 'completed') {
+      return tStatus("completed");
+    }
+    if (status === 'cancelled') {
+      return tStatus("cancelled");
+    }
+    return tStatus("draft");
+  }
 
   const columns: TableColumn[] = [
     {
@@ -110,6 +124,7 @@ export default function CreditNoteList({
       dataIndex: "cn_no",
       key: "cn_no",
       align: "left",
+      icon: <FileText className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (
           <ButtonLink href={`/procurement/credit-note/${record.key}`}>
@@ -122,10 +137,14 @@ export default function CreditNoteList({
       title: tTableHeader("status"),
       dataIndex: "doc_status",
       key: "doc_status",
-      align: "left",
+      align: "center",
+      width: "w-32",
+      icon: <FileText className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (
-          <Badge variant={record.doc_status}>{record.doc_status || "-"}</Badge>
+          <StatusBadge status={record.doc_status}>
+            {getStatusText(record.doc_status || "-")}
+          </StatusBadge>
         );
       },
     },
@@ -134,6 +153,7 @@ export default function CreditNoteList({
       dataIndex: "cn_date",
       key: "cn_date",
       align: "center",
+      icon: <Calendar className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return formatDateFns(record.cn_date, dateFormat || 'yyyy/MM/dd');
       },
@@ -143,6 +163,7 @@ export default function CreditNoteList({
       dataIndex: "note",
       key: "note",
       align: "left",
+      icon: <Info className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return <p className="max-w-32 truncate text-ellipsis">{record.note || "-"}</p>
       },
@@ -152,6 +173,7 @@ export default function CreditNoteList({
       dataIndex: "current_workflow_status",
       key: "current_workflow_status",
       align: "left",
+      icon: <FileType2 className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return record.current_workflow_status || "-";
       },
@@ -161,6 +183,7 @@ export default function CreditNoteList({
       dataIndex: "last_action_name",
       key: "last_action_name",
       align: "left",
+      icon: <StickyNote className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return record.last_action_name || "-";
       },
@@ -170,6 +193,7 @@ export default function CreditNoteList({
       dataIndex: "last_action_by_name",
       key: "last_action_by_name",
       align: "left",
+      icon: <User className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return record.last_action_by_name || "-";
       },
@@ -179,6 +203,7 @@ export default function CreditNoteList({
       dataIndex: "last_action_date",
       key: "last_action_date",
       align: "left",
+      icon: <Calendar className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return record.last_action_date || "-";
       },

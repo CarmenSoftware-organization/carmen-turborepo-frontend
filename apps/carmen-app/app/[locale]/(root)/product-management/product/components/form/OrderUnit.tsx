@@ -12,6 +12,7 @@ import { UnitDto } from "@/dtos/unit.dto";
 import { UnitData, OrderUnitsFormData } from "./unit.type";
 import TableUnit from "./TableUnit";
 import { filterUnits } from "@/utils/helper";
+import { useTranslations } from "next-intl";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -19,6 +20,7 @@ interface OrderUnitProps {
 }
 
 export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
+    const tProducts = useTranslations("Products");
     const { token, tenantId } = useAuth();
     const { units } = useUnitQuery({
         token,
@@ -173,11 +175,11 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">Order Units</h2>
+                <h2 className="text-lg font-semibold">{tProducts("order_unit")}</h2>
                 {currentMode !== formType.VIEW && (
                     <Button
                         type="button"
-                        variant="default"
+                        variant="outlinePrimary"
                         size="sm"
                         onClick={() => {
                             appendOrderUnit({
@@ -194,7 +196,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                         disabled={!inventoryUnitId}
                     >
                         <Plus className="h-4 w-4" />
-                        Add Order Unit
+                        {tProducts("add_order_unit")}
                     </Button>
                 )}
             </div>
@@ -203,7 +205,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                 <TableUnit
                     control={control}
                     currentMode={currentMode}
-                    unitTitle="Order"
+                    unitTitle={tProducts("order_unit")}
                     displayUnits={displayOrderUnits}
                     editingId={editingId}
                     editForm={editForm}
@@ -221,9 +223,9 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
             ) : (
                 <div className="flex flex-col items-center justify-center py-12 px-4">
                     {!inventoryUnitId ? (
-                        <p className="text-gray-500 mb-4">Please select inventory unit first</p>
+                        <p className="text-gray-500 mb-4">{tProducts("pls_select_order_unit")}</p>
                     ) : (
-                        <p className="text-gray-500 mb-4">No order units defined yet</p>
+                        <p className="text-gray-500 mb-4">{tProducts("no_order_units_defined")}</p>
                     )}
                 </div>
             )}

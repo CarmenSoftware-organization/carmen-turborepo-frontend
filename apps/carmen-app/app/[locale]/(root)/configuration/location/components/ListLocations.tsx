@@ -63,6 +63,7 @@ export default function ListLocations({
     }
     return tStoreLocation("inventory");
   }
+
   const columns: TableColumn[] = [
     {
       title: (
@@ -168,11 +169,13 @@ export default function ListLocations({
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
-        return <div className="flex items-center justify-center">
-          <StatusCustom is_active={location.is_active}>
-            {location.is_active ? tCommon("active") : tCommon("inactive")}
-          </StatusCustom>
-        </div>
+        return (
+          <div className="flex justify-center">
+            <StatusCustom is_active={location.is_active}>
+              {location.is_active ? tCommon("active") : tCommon("inactive")}
+            </StatusCustom>
+          </div>
+        )
       },
     },
     {
