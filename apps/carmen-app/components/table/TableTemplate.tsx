@@ -92,7 +92,7 @@ const TableTemplate = ({
                             key={column.key}
                             className={cn(getAlignClass(column.align), column.width)}
                         >
-                            <div className={cn("flex items-center gap-1", getFlexAlignClass(column.align))}>
+                            <div className={cn("flex items-center gap-1 h-11", getFlexAlignClass(column.align))}>
                                 {column.icon}
                                 {column.title}
                             </div>
