@@ -1,12 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, ChevronLeft, SquarePen, CrownIcon, Building2, CheckCircle, FileText, } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Separator } from "@/components/ui/separator";
+import { ChevronLeft, SquarePen, } from "lucide-react";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { useTranslations } from "next-intl";
 
 interface ViewDetailProps {
     readonly data: {
@@ -21,95 +18,67 @@ interface ViewDetailProps {
 
 
 export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
-
+    const tCommon = useTranslations("Common");
+    const tHeader = useTranslations("TableHeader");
     return (
-        <div className="mx-auto p-6 space-y-6">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <Button onClick={onBack} size="sm" variant="ghost">
-                        <ChevronLeft />
-                    </Button>
-                    <Building2 className="h-8 w-8 text-blue-600" />
-                    <h1 className="text-2xl font-bold">{data.name}</h1>
-                    <Badge variant={data.is_active ? "active" : "inactive"} className="flex items-center gap-1">
-                        <CheckCircle className="h-3 w-3" />
-                        {data.is_active ? "Active" : "Inactive"}
-                    </Badge>
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="flex items-center gap-3">
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hover:bg-transparent"
+                    onClick={onBack}
+                >
+                    <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <h1 className="text-3xl font-bold leading-tight">{data.name}</h1>
+            </div>
+
+            {/* Details */}
+            <div className="px-6 space-y-4">
+                <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 items-start">
+                    <p className="font-semibold text-base">{tHeader("status")}</p>
+                    <StatusCustom is_active={data?.is_active ?? true}>
+                        {data?.is_active ? tCommon("active") : tCommon("inactive")}
+                    </StatusCustom>
+
+                    <p className="font-semibold text-base">{tHeader("description")}</p>
+                    <p className="text-base">{data?.description ?? '-'}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Button onClick={onEdit} size={'sm'}>
-                        <SquarePen />
-                        Edit
-                    </Button>
+
+                {/* Users */}
+                <div className="space-y-2 pt-4">
+                    <p className="font-semibold text-base">
+                        {tCommon("users")} ({data.users.length ?? 0})
+                    </p>
+                    {(data?.users?.length ?? 0) > 0 ? (
+                        <div className="overflow-y-auto max-h-[200px]">
+                            {data?.users.map((user) => (
+                                <ul key={user.key} className="list-disc list-inside">
+                                    <li className="text-sm font-medium">{user.title}</li>
+                                </ul>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm">{tCommon("data_not_found")}</p>
+                    )}
                 </div>
             </div>
-            <Separator />
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <FileText className="h-5 w-5" />
-                        Information
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                            <div>
-                                <Label className="text-sm font-medium">Department</Label>
-                                <p className="text-base font-medium">{data.name}</p>
-                            </div>
-                            <div>
-                                <Label className="text-sm font-medium">Status</Label>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <div className={`w-2 h-2 rounded-full ${data.is_active ? "bg-green-500" : "bg-gray-400"}`} />
-                                    <span className="text-sm">{data.is_active ? "Active" : "Inactive"}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <Label className="text-sm font-medium">Description</Label>
-                            <p className="text-base mt-1">{data.description}</p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Users className="h-5 w-5" />
-                        Members
-                        <Badge variant="outline" className="ml-2">
-                            {data.users.length} {data.users.length === 1 ? "Member" : "Members"}
-                        </Badge>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Role</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {data.users.map((user) => (
-                                <TableRow key={user.key}>
-                                    <TableCell className="font-medium">{user.title}</TableCell>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            {user.isHod && (
-                                                <CrownIcon />
-                                            )}
-                                            {user.isHod ? "Hod" : "Member"}
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+            {/* Edit button */}
+            <div className="px-6">
+                <Button
+                    onClick={onEdit}
+                    size="sm"
+                    variant="outlinePrimary"
+                    className="flex items-center gap-2"
+                >
+                    <SquarePen className="w-4 h-4" />
+                    {tCommon("edit")}
+                </Button>
+            </div>
         </div>
+
     );
 }

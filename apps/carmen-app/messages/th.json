@@ -270,11 +270,14 @@
     "page": "หน้า",
     "goTo": "ไปที่",
     "perPage": "ต่อหน้า",
-    "yes": "ใช้งาน",
-    "no": "ไม่ใช้งาน",
+    "yes": "ใช่",
+    "no": "ไม่ใช่",
     "of": "จาก",
     "filtered_out": "กรองออก",
-    "no_data_found": "ไม่พบข้อมูลที่ตรงกับตัวกรอง"
+    "no_data_found": "ไม่พบข้อมูลที่ตรงกับตัวกรอง",
+    "users": "ผู้ใช้งาน",
+    "products": "สินค้า",
+    "data_not_found": "ไม่พบข้อมูล"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -390,7 +393,8 @@
     "delivery_point_placeholder": "เลือกจุดส่งสินค้า",
     "inventory": "รายการสินค้า",
     "direct": "สินค้าตรง",
-    "consignment": "สินค้าฝากขาย"
+    "consignment": "สินค้าฝากขาย",
+    "physical_count_type": "ประเภทการตรวจนับสินค้า"
   },
   "InventoryManagement": {
     "StockOverview": {

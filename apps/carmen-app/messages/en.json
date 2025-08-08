@@ -274,7 +274,10 @@
     "no": "NO",
     "of": "of",
     "filtered_out": "filtered out",
-    "no_data_found": "No data found matching your filters"
+    "no_data_found": "No data found matching your filters",
+    "users": "Users",
+    "products": "Products",
+    "data_not_found": "No data found"
   },
   "TableHeader": {
     "all": "All",
@@ -391,7 +394,8 @@
     "delivery_point_placeholder": "Select a delivery point",
     "inventory": "Inventory",
     "direct": "Direct",
-    "consignment": "Consignment"
+    "consignment": "Consignment",
+    "physical_count_type": "Physical Count Type"
   },
   "InventoryManagement": {
     "StockOverview": {

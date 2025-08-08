@@ -6,7 +6,7 @@ import { formType } from "@/dtos/form.dto";
 import { DepartmentGetByIdDto } from "@/dtos/department.dto";
 import FormEdit from "./FormEdit";
 import ViewDetail from "./ViewDetail";
-import { DepartmentLoading } from "@/components/loading/DepartmentLoading";
+import { DetailSkeleton } from "@/components/loading/DetailSkeleton";
 
 interface DepartmentDetailProps {
   readonly defaultValues?: DepartmentGetByIdDto;
@@ -81,7 +81,7 @@ export default function DepartmentDetail({
   };
 
   if (isLoading) {
-    return <DepartmentLoading />
+    return <DetailSkeleton />
   }
 
   // แสดง FormEdit สำหรับ mode ADD และ EDIT

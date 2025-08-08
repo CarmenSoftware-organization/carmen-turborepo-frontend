@@ -168,9 +168,11 @@ export default function ListLocations({
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
-        return <StatusCustom is_active={location.is_active}>
-          {location.is_active ? tCommon("active") : tCommon("inactive")}
-        </StatusCustom>
+        return <div className="flex items-center justify-center">
+          <StatusCustom is_active={location.is_active}>
+            {location.is_active ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
+        </div>
       },
     },
     {

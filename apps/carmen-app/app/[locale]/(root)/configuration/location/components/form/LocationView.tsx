@@ -1,24 +1,20 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LocationByIdDto } from "@/dtos/config.dto";
+import { LocationByIdDto, PHYSICAL_COUNT_TYPE } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState } from "react";
 import LocationForm from "./LocationForm";
 import {
-  ArrowLeft,
-  MapPin,
-  Package,
-  Settings,
+  ChevronLeft,
   SquarePen,
-  Users,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
-import { STORE_LOCATION_TYPE_COLOR } from "@/utils/badge-status-color";
 import { Link } from "@/lib/navigation";
+import { useTranslations } from "next-intl";
+import { INVENTORY_TYPE } from "@/constants/enum";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface LocationViewProps {
   readonly initialData?: LocationByIdDto;
@@ -28,6 +24,19 @@ interface LocationViewProps {
 export default function LocationView({ initialData, mode }: LocationViewProps) {
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, tenantId } = useAuth();
+
+  const tStoreLocation = useTranslations("StoreLocation");
+  const tCommon = useTranslations("Common");
+  const tHeader = useTranslations("TableHeader");
+
+  const getLocationType = (location_type: INVENTORY_TYPE) => {
+    if (location_type === INVENTORY_TYPE.DIRECT) {
+      return tStoreLocation("direct");
+    } else if (location_type === INVENTORY_TYPE.CONSIGNMENT) {
+      return tStoreLocation("consignment");
+    }
+    return tStoreLocation("inventory");
+  }
 
   const handleViewMode = () => {
     setCurrentMode(formType.VIEW);
@@ -49,155 +58,114 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
           tenantId={tenantId}
         />
       ) : (
-        <div className="max-w-4xl mx-auto space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size={"icon"} asChild>
-                <Link href={`/configuration/location`}>
-                  <ArrowLeft className="w-4 h-4" />
-                </Link>
-              </Button>
-              <h1 className="text-3xl font-bold">{initialData?.name}</h1>
-            </div>
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center gap-3">
             <Button
-              onClick={handleEditMode}
-              className="flex items-center gap-2 h-7"
-              variant="outline"
+              variant="ghost"
+              size="sm"
+              asChild
+              className="hover:bg-transparent"
             >
-              <SquarePen className="w-4 h-4" />
-              Edit
+              <Link href={`/configuration/location`}>
+                <ChevronLeft className="w-4 h-4" />
+              </Link>
             </Button>
+            <h1 className="text-3xl font-bold leading-tight">
+              {initialData?.name}
+            </h1>
           </div>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
-                Basic Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="font-semibold mb-1 text-sm">Name</p>
-                  <p className="text-sm">{initialData?.name}</p>
-                </div>
-                <div>
-                  <p className="font-semibold mb-1 text-sm">Delivery Point</p>
-                  <p className="text-sm font-mono">
-                    {getDeliveryPointName(initialData?.delivery_point.id ?? "")}
-                  </p>
-                </div>
-                {initialData?.description && (
-                  <div>
-                    <p className="font-semibold mb-1 text-sm">Description</p>
-                    <p className="text-sm">{initialData?.description}</p>
-                  </div>
-                )}
 
-                <div>
-                  <p className="font-semibold mb-1 text-sm">Type</p>
-                  {initialData?.location_type && (
-                    <Badge
-                      className={STORE_LOCATION_TYPE_COLOR(
-                        initialData.location_type
-                      )}
-                    >
-                      {initialData.location_type.toUpperCase()}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5 text-primary" />
-                Configuration
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p className="font-semibold mb-1 text-sm">Status</p>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={`w-3 h-3 rounded-full ${initialData?.is_active ? "bg-green-500" : "bg-gray-400"}`}
-                    ></div>
-                    <span className="text-sm">
-                      {initialData?.is_active ? "Active" : "Inactive"}
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <p className="font-semibold mb-1 text-sm">
-                    Physical Count Type
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-muted-foreground" />
-                    <span className="tcapitalize">
-                      {initialData?.physical_count_type}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" />
-                Users ({initialData?.user_location?.length ?? 0})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+          {/* Details */}
+          <div className="px-6 space-y-4">
+            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 items-start">
+              <p className="font-semibold text-base">{tHeader("delivery_point")}</p>
+              <p className="text-base">
+                {getDeliveryPointName(initialData?.delivery_point.id ?? "")}
+              </p>
+
+              <p className="font-semibold text-base">{tHeader("description")}</p>
+              <p className="text-base">{initialData?.description ?? '-'}</p>
+
+              <p className="font-semibold text-base">{tHeader("type")}</p>
+              {initialData?.location_type && (
+                <p className="text-base">
+                  {getLocationType(initialData.location_type)}
+                </p>
+              )}
+
+              <p className="font-semibold text-base">{tHeader("status")}</p>
+              <StatusCustom is_active={initialData?.is_active ?? true}>
+                {initialData?.is_active ? tCommon("active") : tCommon("inactive")}
+              </StatusCustom>
+
+              <p className="font-semibold text-base">
+                {tStoreLocation("physical_count_type")}
+              </p>
+              <p className="text-base capitalize">
+                {initialData?.physical_count_type === PHYSICAL_COUNT_TYPE.YES
+                  ? tCommon("yes")
+                  : tCommon("no")}
+              </p>
+            </div>
+
+            {/* Users */}
+            <div className="space-y-2">
+              <p className="font-semibold text-base">
+                {tCommon("users")} ({initialData?.user_location?.length ?? 0})
+              </p>
               {(initialData?.user_location?.length ?? 0) > 0 ? (
                 <div className="overflow-y-auto max-h-[200px]">
                   {initialData?.user_location.map((user) => (
                     <ul key={user.id} className="list-disc list-inside">
-                      <li className="text-xs font-medium">
+                      <li className="text-sm font-medium">
                         {user.firstname} {user.lastname}
                       </li>
                     </ul>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Users className="w-12 h-12 mx-auto mb-3" />
-                  <p className="text-xs">
-                    No users associated with this location
-                  </p>
+                <div className="text-center py-6">
+                  <p className="text-sm">{tCommon("data_not_found")}</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-primary" />
-                Products ({initialData?.product_location?.length ?? 0})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+            </div>
+
+            {/* Products */}
+            <div className="space-y-2">
+              <p className="font-semibold text-base">
+                {tCommon("products")} ({initialData?.product_location?.length ?? 0})
+              </p>
               {(initialData?.product_location?.length ?? 0) > 0 ? (
                 <div className="overflow-y-auto max-h-[200px]">
                   {initialData?.product_location.map((product) => (
                     <ul key={product.id} className="list-disc list-inside">
-                      <li className="text-xs">{product.name}</li>
+                      <li className="text-sm">{product.name}</li>
                     </ul>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Package className="w-12 h-12 mx-auto mb-3" />
-                  <p className="text-sm">
-                    No products associated with this location
-                  </p>
+                <div className="text-center py-6">
+                  <p className="text-sm">{tCommon("data_not_found")}</p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+
+          {/* Edit button */}
+          <div className="px-6">
+            <Button
+              onClick={handleEditMode}
+              size="sm"
+              variant="outlinePrimary"
+              className="flex items-center gap-2"
+            >
+              <SquarePen className="w-4 h-4" />
+              {tCommon("edit")}
+            </Button>
+          </div>
         </div>
+
       )}
     </>
   );
