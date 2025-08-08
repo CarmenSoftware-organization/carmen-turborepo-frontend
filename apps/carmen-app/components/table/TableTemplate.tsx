@@ -5,7 +5,7 @@ import PaginationComponent from "../PaginationComponent";
 import { TableBodySkeleton } from "../loading/TableBodySkeleton";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "../ui-custom/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "./table";
 import { FileX } from "lucide-react";
 
 type Align = 'left' | 'center' | 'right';

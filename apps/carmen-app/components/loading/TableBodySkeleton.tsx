@@ -1,5 +1,5 @@
 import { Skeleton } from "../ui/skeleton";
-import { TableBody, TableCell, TableRow } from "../ui-custom/table";
+import { TableBody, TableCell, TableRow } from "../table/table";
 
 interface TableBodySkeletonProps {
     rows: number;
