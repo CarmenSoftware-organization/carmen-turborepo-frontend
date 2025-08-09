@@ -3,8 +3,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { useBoolFilterOptions } from "@/constants/status-option";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { formType } from "@/dtos/form.dto";
@@ -20,6 +18,7 @@ import { useURL } from "@/hooks/useURL";
 import { CurrencyGetDto, CurrencyCreateDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function CurrencyComponent() {
     const { token, tenantId } = useAuth();
@@ -36,7 +35,6 @@ export default function CurrencyComponent() {
     const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
-    const boolFilterOptions = useBoolFilterOptions();
     const queryClient = useQueryClient();
 
     const { currencies: data, isLoading } = useCurrenciesQuery(token, tenantId, {
@@ -223,7 +221,6 @@ export default function CurrencyComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={boolFilterOptions}
                     value={filter}
                     onChange={setFilter}
                     open={statusOpen}

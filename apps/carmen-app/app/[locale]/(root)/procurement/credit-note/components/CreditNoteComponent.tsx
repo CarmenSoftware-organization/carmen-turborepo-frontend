@@ -4,8 +4,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useCallback, useState } from "react";
@@ -18,6 +16,7 @@ import { useCreditNoteQuery } from "@/hooks/useCreditNote";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "@/lib/navigation";
 import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
@@ -109,7 +108,6 @@ export default function CreditNoteComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={statusOptions}
           value={status}
           onChange={setStatus}
           open={statusOpen}

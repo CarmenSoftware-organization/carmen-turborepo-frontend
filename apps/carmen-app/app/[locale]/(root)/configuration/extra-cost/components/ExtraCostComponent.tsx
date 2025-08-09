@@ -2,9 +2,7 @@
 
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { boolFilterOptions } from "@/constants/options";
 import { useAuth } from "@/context/AuthContext";
 import { useExtraCostTypeQuery, useCreateExtraCostType, useUpdateExtraCostType, useDeleteExtraCostType } from "@/hooks/useExtraCostType";
 import { useURL } from "@/hooks/useURL";
@@ -20,12 +18,15 @@ import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import ExtraCostDialog from "./ExtraCostDialog";
 import { useTranslations } from "next-intl";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function ExtraCostComponent() {
   const { token, tenantId } = useAuth();
   const queryClient = useQueryClient();
   const tCommon = useTranslations("Common");
   const tConfig = useTranslations("Modules.Configuration");
+  const tExtraCost = useTranslations("ExtraCost");
+
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
@@ -106,13 +107,13 @@ export default function ExtraCostComponent() {
     if (extraCostToDelete) {
       deleteExtraCost(undefined, {
         onSuccess: () => {
-          toastSuccess({ message: 'Delete extra cost successfully' });
+          toastSuccess({ message: tExtraCost("delete_success") });
           queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
           setDeleteDialogOpen(false);
           setExtraCostToDelete(undefined);
         },
         onError: (error: Error) => {
-          toastError({ message: 'Failed to delete extra cost' });
+          toastError({ message: tExtraCost("delete_error") });
           console.error("Failed to delete extra cost:", error);
         }
       });
@@ -123,13 +124,13 @@ export default function ExtraCostComponent() {
     if (dialogMode === formType.ADD) {
       createExtraCost(data, {
         onSuccess: () => {
-          toastSuccess({ message: 'Create extra cost successfully' });
+          toastSuccess({ message: tExtraCost("create_success") });
           queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
           setDialogOpen(false);
           setSelectedExtraCost(undefined);
         },
         onError: (error: Error) => {
-          toastError({ message: 'Failed to create extra cost' });
+          toastError({ message: tExtraCost("create_error") });
           console.error("Failed to create extra cost:", error);
         }
       });
@@ -137,13 +138,13 @@ export default function ExtraCostComponent() {
       const updateData = { ...data, id: selectedExtraCost.id };
       updateExtraCost(updateData, {
         onSuccess: () => {
-          toastSuccess({ message: 'Update extra cost successfully' });
+          toastSuccess({ message: tExtraCost("update_success") });
           queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
           setDialogOpen(false);
           setSelectedExtraCost(undefined);
         },
         onError: (error: Error) => {
-          toastError({ message: 'Failed to update extra cost' });
+          toastError({ message: tExtraCost("update_error") });
           console.error("Failed to update extra cost:", error);
         }
       });
@@ -153,11 +154,11 @@ export default function ExtraCostComponent() {
   const sortFields = [
     {
       key: "name",
-      label: "Name",
+      label: tCommon("name"),
     },
     {
       key: "is_active",
-      label: "Status",
+      label: tCommon("status"),
     },
   ];
 
@@ -218,7 +219,6 @@ export default function ExtraCostComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={boolFilterOptions}
           value={filter}
           onChange={setFilter}
           open={statusOpen}

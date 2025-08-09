@@ -4,8 +4,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
@@ -16,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";
 import { useCallback, useEffect, useState } from "react";
 import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
@@ -112,7 +111,6 @@ export default function VendorComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={boolFilterOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

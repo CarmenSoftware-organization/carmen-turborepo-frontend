@@ -4,14 +4,13 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PeriodEndList from "./PeriodEndList";
 import { mockPeriodEndData } from "@/mock-data/inventory-management";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 
 export default function PeriodEndComponent() {
@@ -65,7 +64,6 @@ export default function PeriodEndComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

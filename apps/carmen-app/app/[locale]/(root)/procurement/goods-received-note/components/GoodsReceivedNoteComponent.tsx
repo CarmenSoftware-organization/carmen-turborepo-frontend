@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
@@ -14,14 +13,8 @@ import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
 import { useGrn } from "@/hooks/useGrn";
 import SignInDialog from "@/components/SignInDialog";
 import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
-const grnStatusOptions = [
-    { label: 'Pending', value: 'pending' },
-    { label: 'Received', value: 'received' },
-    { label: 'Partial', value: 'partial' },
-    { label: 'Voided', value: 'voided' },
-    { label: 'Cancelled', value: 'cancelled' },
-]
 export default function GoodsReceivedNoteComponent() {
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
@@ -91,7 +84,6 @@ export default function GoodsReceivedNoteComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={grnStatusOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

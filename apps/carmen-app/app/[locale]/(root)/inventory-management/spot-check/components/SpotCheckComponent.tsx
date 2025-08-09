@@ -6,14 +6,13 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusSpotCheckOptions } from "@/constants/options";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { mockDepartments, mockSpotCheckData } from "@/mock-data/inventory-management";
 import SpotCheckList from "./SpotCheckList";
 import { Link } from "@/lib/navigation";
 import SpotCheckGrid from "./SpotCheckGrid";
 import { VIEW } from "@/constants/enum";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 export default function SpotCheckComponent() {
     const t = useTranslations("InventoryManagement");
     const tCommon = useTranslations('Common');
@@ -49,7 +48,6 @@ export default function SpotCheckComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusSpotCheckOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

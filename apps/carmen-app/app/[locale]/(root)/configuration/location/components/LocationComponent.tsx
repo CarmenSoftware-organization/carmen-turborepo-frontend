@@ -7,15 +7,14 @@ import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import { boolFilterOptions } from "@/constants/options";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListLocations from "./ListLocations";
 import { Link } from "@/lib/navigation";
 import SignInDialog from "@/components/SignInDialog";
 import { SortConfig, SortDirection } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function LocationComponent() {
   const tCommon = useTranslations("Common");
@@ -134,7 +133,6 @@ export default function LocationComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={boolFilterOptions}
           value={filter}
           onChange={setFilter}
           open={statusOpen}

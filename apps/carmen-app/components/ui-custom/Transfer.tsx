@@ -5,6 +5,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 import { TransferItem } from "@/dtos/config.dto";
 import { getDisplayText } from "@/utils/helper";
+import { useTranslations } from "next-intl";
 export interface TransferProps {
   dataSource: TransferItem[];
   leftDataSource?: TransferItem[];
@@ -27,8 +28,8 @@ export interface TransferProps {
   disabled?: boolean;
   operations?: [string, string];
   listStyle?:
-    | React.CSSProperties
-    | ((args: { direction: "left" | "right" }) => React.CSSProperties);
+  | React.CSSProperties
+  | ((args: { direction: "left" | "right" }) => React.CSSProperties);
   footer?: (props: { direction: "left" | "right" }) => React.ReactNode;
   showSelectAll?: boolean;
   pagination?: boolean | { pageSize: number };
@@ -53,6 +54,7 @@ export const Transfer: React.FC<TransferProps> = ({
   showSelectAll = true,
   pagination = false,
 }) => {
+  const tDataControls = useTranslations("DataControls");
   const [sourceSelectedKeys, setSourceSelectedKeys] = useState<
     (string | number)[]
   >(() =>
@@ -71,7 +73,7 @@ export const Transfer: React.FC<TransferProps> = ({
   const pageSize = typeof pagination === "object" ? pagination.pageSize : 10;
 
   // Helper function to get display text from item
- 
+
 
   // รวมข้อมูลทั้งหมดเพื่อใช้ในการแสดงผล
   const allItems = useMemo(() => {
@@ -197,7 +199,7 @@ export const Transfer: React.FC<TransferProps> = ({
               }
               disabled={disabled}
             />
-            <span className="text-xs text-muted-foreground">Select All</span>
+            <span className="text-muted-foreground">{tDataControls("select_all")}</span>
           </div>
         )}
 
@@ -211,7 +213,7 @@ export const Transfer: React.FC<TransferProps> = ({
                 }
                 disabled={disabled || item.disabled}
               />
-              <div className="text-xs">
+              <div className="w-full">
                 {direction === "left" && leftRender
                   ? leftRender(item)
                   : direction === "right" && rightRender
@@ -223,12 +225,12 @@ export const Transfer: React.FC<TransferProps> = ({
             </div>
           ))}
           {paginated.length === 0 && (
-            <div className="text-muted-foreground">No items</div>
+            <div className="text-muted-foreground">{tDataControls("data_not_found")}</div>
           )}
         </div>
 
         {pagination && totalPages > 1 && (
-          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+          <div className="flex justify-between mt-2 text-muted-foreground">
             <Button
               variant="ghost"
               size="sm"

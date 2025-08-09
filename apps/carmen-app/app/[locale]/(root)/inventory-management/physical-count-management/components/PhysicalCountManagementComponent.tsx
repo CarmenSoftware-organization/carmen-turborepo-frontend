@@ -6,14 +6,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/navigation";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
 import { Building, Grid, List, Plus } from "lucide-react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { Select, SelectValue, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { mockDepartments, mockPhysicalCountData } from "@/mock-data/inventory-management";
 import PcmList from "./PcmList";
 import PcmGrid from "./PcmGrid";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 enum VIEW {
     List = 'list',
     Grid = 'grid',
@@ -54,7 +53,6 @@ export default function PhysicalCountManagementComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

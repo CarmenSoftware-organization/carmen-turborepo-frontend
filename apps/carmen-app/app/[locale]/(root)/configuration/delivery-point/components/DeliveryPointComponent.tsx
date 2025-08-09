@@ -2,9 +2,7 @@
 
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { boolFilterOptions } from "@/constants/options";
 import { useAuth } from "@/context/AuthContext";
 import { useDeleteDeliveryPoint, useDeliveryPointMutation, useDeliveryPointQuery, useUpdateDeliveryPoint } from "@/hooks/use-delivery-point";
 import { useURL } from "@/hooks/useURL";
@@ -20,6 +18,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function DeliveryPointComponent() {
   const { token, tenantId } = useAuth();
@@ -227,7 +226,6 @@ export default function DeliveryPointComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={boolFilterOptions}
           value={filter}
           onChange={setFilter}
           open={statusOpen}

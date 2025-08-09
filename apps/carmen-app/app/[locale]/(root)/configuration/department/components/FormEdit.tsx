@@ -30,7 +30,9 @@ import {
     DepartmentGetByIdDto,
     departmentUpdateSchema
 } from "@/dtos/department.dto";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { useTranslations } from "next-intl";
 
 interface UserItemProps {
     item: {
@@ -42,10 +44,10 @@ interface UserItemProps {
 }
 
 const UserItem = ({ item, hodStates, onHodChange }: UserItemProps) => (
-    <div className="flex items-center justify-between w-full gap-2">
+    <div className="flex items-center justify-between w-full gap-4">
         <p>{item.title}</p>
         <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Head of Dept.</span>
+            <span className="text-muted-foreground">Hod</span>
             <Switch
                 checked={hodStates[item.key.toString()] || false}
                 onCheckedChange={(checked) => onHodChange(item.key.toString(), checked)}
@@ -70,7 +72,9 @@ export default function FormEdit({
     const { token, tenantId } = useAuth();
     const router = useRouter();
     const { userList } = useUserList();
-
+    const tDepartment = useTranslations("Department");
+    const tHeader = useTranslations("TableHeader");
+    const tDataControls = useTranslations("DataControls");
     const availableUsers = useMemo(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return userList?.map((user: any) => ({
@@ -354,7 +358,7 @@ export default function FormEdit({
             createDepartment(updatedData as any, {
                 onSuccess: (data: unknown) => {
                     const response = data as { id: string };
-                    toastSuccess({ message: "Department created successfully" });
+                    toastSuccess({ message: tDepartment("add_success") });
 
                     // เตรียมข้อมูลสำหรับ callback
                     const successData = {
@@ -369,14 +373,14 @@ export default function FormEdit({
                 },
                 onError: (error: unknown) => {
                     console.error("Error creating department:", error);
-                    toastError({ message: "Error creating department" });
+                    toastError({ message: tDepartment("add_error") });
                 },
             });
         } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             updateDepartment(updatedData as any, {
                 onSuccess: () => {
-                    toastSuccess({ message: "Department updated successfully" });
+                    toastSuccess({ message: tDepartment("edit_success") });
 
                     // เตรียมข้อมูลสำหรับ callback
                     const successData = {
@@ -388,7 +392,7 @@ export default function FormEdit({
                 },
                 onError: (error: unknown) => {
                     console.error("Error updating department:", error);
-                    toastError({ message: "Error updating department" });
+                    toastError({ message: tDepartment("edit_error") });
                 },
             });
         }
@@ -398,73 +402,76 @@ export default function FormEdit({
         <div className="space-y-4 max-w-4xl mx-auto">
             <div className="flex items-center gap-2">
                 <Button onClick={onBack} variant="ghost" size="sm">
-                    <ArrowLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <h1 className="text-2xl font-bold">
-                    {mode === formType.ADD ? "Create Department" : "Edit Department"}
+                    {mode === formType.ADD ? tDepartment("add_department") : tDepartment("edit_department")}
                 </h1>
             </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl>
-                                    <Input {...field} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
 
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Description</FormLabel>
-                                <FormControl>
-                                    <Input {...field} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
+                    <div className="max-w-md space-y-2 mb-6">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tHeader("name")}</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
 
-                    <FormField
-                        control={form.control}
-                        name="is_active"
-                        render={({ field }) => (
-                            <FormItem className="my-2">
-                                <FormControl>
-                                    <FormBoolean
-                                        value={field.value}
-                                        onChange={field.onChange}
-                                        label="Is Active"
-                                        type="checkbox"
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tHeader("description")}</FormLabel>
+                                    <FormControl>
+                                        <Textarea {...field} />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="is_active"
+                            render={({ field }) => (
+                                <FormItem className="my-2">
+                                    <FormControl>
+                                        <FormBoolean
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            label={tHeader("status")}
+                                            type="checkbox"
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                    </div>
 
                     <Transfer
                         dataSource={availableUsers}
                         leftDataSource={initUsers}
                         targetKeys={targetKeys}
                         onChange={handleTransferChange}
-                        titles={["Init Users", "Available Users"]}
+                        titles={[tDepartment("init_users"), tDepartment("available_users")]}
                         operations={["<", ">"]}
                         leftRender={renderUserItem}
                     />
 
                     <div className="flex gap-2 mt-4">
-                        <Button type="button" variant="outline" onClick={onBack}>
-                            Cancel
+                        <Button type="button" variant="outlinePrimary" onClick={onBack}>
+                            {tDataControls("cancel")}
                         </Button>
                         <Button type="submit" disabled={isCreating || isUpdating}>
-                            {isCreating || isUpdating ? "Saving..." : "Save"}
+                            {isCreating || isUpdating ? tDataControls("saving") : tDataControls("save")}
                         </Button>
                     </div>
                 </form>

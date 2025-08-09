@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FileDown, Printer } from "lucide-react";
 import { useURL } from "@/hooks/useURL";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import { boolFilterOptions } from "@/constants/options";
 import { useCallback, useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
@@ -16,6 +14,7 @@ import { usePriceList } from "@/hooks/usePriceList";
 import SignInDialog from "@/components/SignInDialog";
 import FormDialogPriceList from "./FormDialogPriceList";
 import { SortConfig } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 const sortFields = [
     { key: 'name', label: 'Name' },
@@ -122,7 +121,6 @@ export default function PriceListComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={boolFilterOptions}
                     value={filter}
                     onChange={setFilter}
                     open={statusOpen}

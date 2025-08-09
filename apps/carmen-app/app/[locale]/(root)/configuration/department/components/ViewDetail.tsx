@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, SquarePen, } from "lucide-react";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useTranslations } from "next-intl";
+import { Separator } from "@/components/ui/separator";
 
 interface ViewDetailProps {
     readonly data: {
@@ -21,64 +22,66 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
     const tCommon = useTranslations("Common");
     const tHeader = useTranslations("TableHeader");
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center gap-3">
+
+        <div className="space-y-4 p-2">
+            <div className="flex items-center gap-2">
                 <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     className="hover:bg-transparent"
                     onClick={onBack}
                 >
                     <ChevronLeft className="w-4 h-4" />
                 </Button>
-                <h1 className="text-3xl font-bold leading-tight">{data.name}</h1>
+                <h1 className="text-xl font-semibold">{data.name}</h1>
             </div>
 
-            {/* Details */}
-            <div className="px-6 space-y-4">
-                <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 items-start">
-                    <p className="font-semibold text-base">{tHeader("status")}</p>
+            <Separator />
+
+            <dl className="grid grid-cols-[140px_1fr] gap-y-2 gap-x-4 text-sm">
+                <dt className="font-medium text-muted-foreground">{tHeader("status")}</dt>
+                <dd>
                     <StatusCustom is_active={data?.is_active ?? true}>
                         {data?.is_active ? tCommon("active") : tCommon("inactive")}
                     </StatusCustom>
+                </dd>
 
-                    <p className="font-semibold text-base">{tHeader("description")}</p>
-                    <p className="text-base">{data?.description ?? '-'}</p>
-                </div>
+                <dt className="font-medium text-muted-foreground">{tHeader("description")}</dt>
+                <dd>{data?.description ?? '-'}</dd>
+            </dl>
 
-                {/* Users */}
-                <div className="space-y-2 pt-4">
-                    <p className="font-semibold text-base">
-                        {tCommon("users")} ({data.users.length ?? 0})
+            <Separator />
+
+            <div className="space-y-2">
+                <h2 className="text-sm font-semibold">
+                    {tCommon("users")} ({data?.users?.length ?? 0})
+                </h2>
+                {(data?.users?.length ?? 0) > 0 ? (
+                    <ul className="space-y-1 max-h-[150px] overflow-y-auto text-sm pl-4 list-disc">
+                        {data?.users.map((user) => (
+                            <li key={user.key} className="font-medium">{user.title}</li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-muted-foreground text-xs text-center py-2">
+                        {tCommon("data_not_found")}
                     </p>
-                    {(data?.users?.length ?? 0) > 0 ? (
-                        <div className="overflow-y-auto max-h-[200px]">
-                            {data?.users.map((user) => (
-                                <ul key={user.key} className="list-disc list-inside">
-                                    <li className="text-sm font-medium">{user.title}</li>
-                                </ul>
-                            ))}
-                        </div>
-                    ) : (
-                        <p className="text-sm">{tCommon("data_not_found")}</p>
-                    )}
-                </div>
+                )}
             </div>
 
-            {/* Edit button */}
-            <div className="px-6">
-                <Button
-                    onClick={onEdit}
-                    size="sm"
-                    variant="outlinePrimary"
-                    className="flex items-center gap-2"
-                >
-                    <SquarePen className="w-4 h-4" />
-                    {tCommon("edit")}
-                </Button>
-            </div>
+            <Separator />
+
+            <Button
+                onClick={onEdit}
+                size="sm"
+                variant="outlinePrimary"
+                className="flex items-center gap-1 text-sm"
+            >
+                <SquarePen className="w-4 h-4" />
+                {tCommon("edit")}
+            </Button>
         </div>
+
 
     );
 }

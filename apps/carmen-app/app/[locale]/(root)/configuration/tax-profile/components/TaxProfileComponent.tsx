@@ -22,8 +22,6 @@ import { toastSuccess } from "@/components/ui-custom/Toast";
 import { FormTaxProfile } from "./FormTaxProfile";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -36,6 +34,7 @@ import {
 } from "@/hooks/useTaxProfile";
 import TaxProfileList from "./TaxProfileList";
 import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export function TaxProfileComponent() {
   const { token, tenantId } = useAuth();
@@ -170,7 +169,6 @@ export function TaxProfileComponent() {
         />
         <div className="flex items-center gap-2">
           <StatusSearchDropdown
-            options={boolFilterOptions}
             value={filter}
             onChange={handleSetFilter}
             open={statusOpen}

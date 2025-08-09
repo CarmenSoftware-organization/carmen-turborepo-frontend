@@ -3,14 +3,13 @@
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import UmList from "./UmList";
-import { statusOptions } from "@/constants/options";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 
 const sortFields = [
@@ -64,7 +63,6 @@ export default function UserManagementList() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

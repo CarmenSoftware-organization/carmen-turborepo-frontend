@@ -120,7 +120,6 @@ export default function ListExtraCost({
             ),
             dataIndex: "is_active",
             key: "is_active",
-            width: "w-0 md:w-20",
             align: "center",
             icon: <Activity className="h-4 w-4" />,
             render: (is_active: boolean) => (

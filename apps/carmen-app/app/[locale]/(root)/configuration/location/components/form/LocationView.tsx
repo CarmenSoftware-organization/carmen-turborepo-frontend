@@ -6,6 +6,7 @@ import { formType } from "@/dtos/form.dto";
 import { useState } from "react";
 import LocationForm from "./LocationForm";
 import {
+  Building,
   ChevronLeft,
   SquarePen,
 } from "lucide-react";
@@ -15,6 +16,7 @@ import { Link } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { Separator } from "@/components/ui/separator";
 
 interface LocationViewProps {
   readonly initialData?: LocationByIdDto;
@@ -58,113 +60,102 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
           tenantId={tenantId}
         />
       ) : (
-        <div className="space-y-6">
+
+        <div className="space-y-4 p-2">
           {/* Header */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="hover:bg-transparent"
-            >
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" asChild className="hover:bg-transparent">
               <Link href={`/configuration/location`}>
                 <ChevronLeft className="w-4 h-4" />
               </Link>
             </Button>
-            <h1 className="text-3xl font-bold leading-tight">
-              {initialData?.name}
-            </h1>
+            <div className="flex items-center gap-2">
+              <Building />
+              <h1 className="text-xl font-semibold">{initialData?.name}</h1>
+            </div>
           </div>
 
-          {/* Details */}
-          <div className="px-6 space-y-4">
-            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-3 items-start">
-              <p className="font-semibold text-base">{tHeader("delivery_point")}</p>
-              <p className="text-base">
-                {getDeliveryPointName(initialData?.delivery_point.id ?? "")}
-              </p>
+          <Separator />
 
-              <p className="font-semibold text-base">{tHeader("description")}</p>
-              <p className="text-base">{initialData?.description ?? '-'}</p>
+          <dl className="grid grid-cols-[160px_1fr] gap-y-2 gap-x-4 text-sm">
+            <dt className="font-medium text-muted-foreground">{tHeader("delivery_point")}</dt>
+            <dd>{getDeliveryPointName(initialData?.delivery_point.id ?? "")}</dd>
 
-              <p className="font-semibold text-base">{tHeader("type")}</p>
-              {initialData?.location_type && (
-                <p className="text-base">
-                  {getLocationType(initialData.location_type)}
-                </p>
-              )}
+            <dt className="font-medium text-muted-foreground">{tHeader("description")}</dt>
+            <dd>{initialData?.description ?? '-'}</dd>
 
-              <p className="font-semibold text-base">{tHeader("status")}</p>
+            <dt className="font-medium text-muted-foreground">{tHeader("type")}</dt>
+            <dd>{initialData?.location_type && getLocationType(initialData.location_type)}</dd>
+
+            <dt className="font-medium text-muted-foreground">{tHeader("status")}</dt>
+            <dd>
               <StatusCustom is_active={initialData?.is_active ?? true}>
                 {initialData?.is_active ? tCommon("active") : tCommon("inactive")}
               </StatusCustom>
+            </dd>
 
-              <p className="font-semibold text-base">
-                {tStoreLocation("physical_count_type")}
-              </p>
-              <p className="text-base capitalize">
-                {initialData?.physical_count_type === PHYSICAL_COUNT_TYPE.YES
-                  ? tCommon("yes")
-                  : tCommon("no")}
-              </p>
-            </div>
+            <dt className="font-medium text-muted-foreground">{tStoreLocation("physical_count_type")}</dt>
+            <dd className="capitalize">
+              {initialData?.physical_count_type === PHYSICAL_COUNT_TYPE.YES
+                ? tCommon("yes")
+                : tCommon("no")}
+            </dd>
+          </dl>
 
-            {/* Users */}
-            <div className="space-y-2">
-              <p className="font-semibold text-base">
-                {tCommon("users")} ({initialData?.user_location?.length ?? 0})
-              </p>
-              {(initialData?.user_location?.length ?? 0) > 0 ? (
-                <div className="overflow-y-auto max-h-[200px]">
-                  {initialData?.user_location.map((user) => (
-                    <ul key={user.id} className="list-disc list-inside">
-                      <li className="text-sm font-medium">
-                        {user.firstname} {user.lastname}
-                      </li>
-                    </ul>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-sm">{tCommon("data_not_found")}</p>
-                </div>
-              )}
-            </div>
+          <Separator />
 
-            {/* Products */}
-            <div className="space-y-2">
-              <p className="font-semibold text-base">
-                {tCommon("products")} ({initialData?.product_location?.length ?? 0})
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold">
+              {tCommon("users")} ({initialData?.user_location?.length ?? 0})
+            </h2>
+            {(initialData?.user_location?.length ?? 0) > 0 ? (
+              <ul className="space-y-1 max-h-[150px] overflow-y-auto text-sm pl-4 list-disc">
+                {initialData?.user_location.map((user) => (
+                  <li key={user.id}>
+                    {user.firstname} {user.lastname}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted-foreground text-xs text-center py-2">
+                {tCommon("data_not_found")}
               </p>
-              {(initialData?.product_location?.length ?? 0) > 0 ? (
-                <div className="overflow-y-auto max-h-[200px]">
-                  {initialData?.product_location.map((product) => (
-                    <ul key={product.id} className="list-disc list-inside">
-                      <li className="text-sm">{product.name}</li>
-                    </ul>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-6">
-                  <p className="text-sm">{tCommon("data_not_found")}</p>
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
-          {/* Edit button */}
-          <div className="px-6">
-            <Button
-              onClick={handleEditMode}
-              size="sm"
-              variant="outlinePrimary"
-              className="flex items-center gap-2"
-            >
-              <SquarePen className="w-4 h-4" />
-              {tCommon("edit")}
-            </Button>
+          <Separator />
+
+          <div className="space-y-2">
+            <h2 className="text-sm font-semibold">
+              {tCommon("products")} ({initialData?.product_location?.length ?? 0})
+            </h2>
+            {(initialData?.product_location?.length ?? 0) > 0 ? (
+              <ul className="space-y-1 max-h-[150px] overflow-y-auto text-sm pl-4 list-disc">
+                {initialData?.product_location.map((product) => (
+                  <li key={product.id}>{product.name}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-muted-foreground text-xs text-center py-2">
+                {tCommon("data_not_found")}
+              </p>
+            )}
           </div>
+
+          <Separator />
+
+          <Button
+            onClick={handleEditMode}
+            size="sm"
+            variant="outlinePrimary"
+            className="flex items-center gap-1 text-sm"
+          >
+            <SquarePen className="w-4 h-4" />
+            {tCommon("edit")}
+          </Button>
         </div>
+
+
 
       )}
     </>

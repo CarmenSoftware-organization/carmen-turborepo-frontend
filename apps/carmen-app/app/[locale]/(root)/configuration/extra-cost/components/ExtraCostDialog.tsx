@@ -15,6 +15,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { formType } from "@/dtos/form.dto";
+import { useTranslations } from "next-intl";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface ExtraCostDialogProps {
     open: boolean;
@@ -33,6 +35,10 @@ export default function ExtraCostDialog({
     onSubmit,
     isLoading = false,
 }: ExtraCostDialogProps) {
+
+    const tExtraCost = useTranslations("ExtraCost");
+    const tCommon = useTranslations("Common");
+
     const {
         register,
         handleSubmit,
@@ -91,17 +97,17 @@ export default function ExtraCostDialog({
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? "Add Extra Cost" : "Edit Extra Cost"}
+                        {mode === formType.ADD ? tExtraCost("add_extra_cost") : tExtraCost("edit_extra_cost")}
                     </DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Name *</Label>
+                        <Label htmlFor="name">{tExtraCost("name")} <span className="text-destructive">*</span></Label>
                         <Input
                             id="name"
-                            {...register("name", { required: "Name is required" })}
-                            placeholder="Enter extra cost name"
+                            {...register("name", { required: tCommon("name") })}
+                            placeholder={tExtraCost("name_placeholder")}
                         />
                         {errors.name && (
                             <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -109,63 +115,63 @@ export default function ExtraCostDialog({
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="description">Description</Label>
+                        <Label htmlFor="description">{tCommon("description")}</Label>
                         <Textarea
                             id="description"
                             {...register("description")}
-                            placeholder="Enter description"
-                            rows={3}
+                            placeholder={tCommon("description")}
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="note">Note</Label>
+                        <Label htmlFor="note">{tCommon("note")}</Label>
                         <Textarea
                             id="note"
                             {...register("note")}
-                            placeholder="Enter note"
-                            rows={2}
+                            placeholder={tCommon("note")}
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="info">Info</Label>
+                        <Label htmlFor="info">{tCommon("info")}</Label>
                         <Input
                             id="info"
                             {...register("info")}
-                            placeholder="Enter additional info"
+                            placeholder={tCommon("info")}
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="dimension">Dimension</Label>
+                        <Label htmlFor="dimension">{tCommon("dimension")}</Label>
                         <Input
                             id="dimension"
                             {...register("dimension")}
-                            placeholder="Enter dimension"
+                            placeholder={tCommon("dimension")}
                         />
                     </div>
 
                     <div className="flex items-center space-x-2">
-                        <Switch
+                        <Checkbox
                             id="is_active"
                             checked={watchedIsActive}
-                            onCheckedChange={(checked) => setValue("is_active", checked)}
+                            onCheckedChange={(checked) => {
+                                setValue("is_active", checked as boolean)
+                            }}
                         />
-                        <Label htmlFor="is_active">Active</Label>
+                        <Label htmlFor="is_active">{tCommon("status")}</Label>
                     </div>
 
                     <div className="flex justify-end space-x-2 pt-4">
                         <Button
                             type="button"
-                            variant="outline"
+                            variant="outlinePrimary"
                             onClick={handleClose}
                             disabled={isLoading}
                         >
-                            Cancel
+                            {tCommon("cancel")}
                         </Button>
                         <Button type="submit" disabled={isLoading}>
-                            {isLoading ? "Saving..." : (mode === formType.ADD ? "Add" : "Update")}
+                            {isLoading ? tCommon("saving") : (mode === formType.ADD ? tCommon("add") : tCommon("update"))}
                         </Button>
                     </div>
                 </form>

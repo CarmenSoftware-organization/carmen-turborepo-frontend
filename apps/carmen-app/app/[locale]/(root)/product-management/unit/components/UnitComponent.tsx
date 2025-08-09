@@ -3,9 +3,7 @@
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { boolFilterOptions } from "@/constants/options";
 import { useAuth } from "@/context/AuthContext";
 import { useDeleteUnit, useUnitMutation, useUnitQuery, useUpdateUnit } from "@/hooks/use-unit";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,6 +18,7 @@ import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function UnitComponent() {
   const { token, tenantId } = useAuth();
@@ -211,7 +210,6 @@ export default function UnitComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={boolFilterOptions}
           value={filter}
           onChange={setFilter}
           open={statusOpen}

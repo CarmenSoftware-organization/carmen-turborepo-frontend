@@ -4,9 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 import Link from "next/link";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { boolFilterOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Eye, PlusCircle } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -17,6 +15,7 @@ import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 import { useTranslations } from "next-intl";
 import SignInDialog from "@/components/SignInDialog";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 interface WorkflowListProps {
   id: string;
@@ -88,10 +87,6 @@ const WorkflowList = () => {
     handlePageChange,
   } = useWorkflow();
 
-  // if (error) {
-  // 	return <ErrorCard message={error} data-id="workflow-error-card" />;
-  // }
-
   const actionButtons = (
     <div className="flex items-center gap-2">
       <Button asChild size="sm" data-id="workflow-list-new-workflow-button">
@@ -113,7 +108,6 @@ const WorkflowList = () => {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={boolFilterOptions}
           value={filter}
           onChange={setFilter}
           open={statusOpen}

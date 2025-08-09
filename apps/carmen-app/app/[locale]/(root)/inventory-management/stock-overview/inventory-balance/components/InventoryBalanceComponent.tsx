@@ -2,9 +2,7 @@
 
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { boolFilterOptions } from "@/constants/options";
 import { useURL } from "@/hooks/useURL";
 import { ChevronDown, FileDown, Printer, RefreshCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -16,6 +14,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import InventoryBalanceList from "./InventoryBalanceList";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function InventoryBalanceComponent() {
     const tCommon = useTranslations('Common');
@@ -97,7 +96,6 @@ export default function InventoryBalanceComponent() {
                 </DropdownMenu>
 
                 <StatusSearchDropdown
-                    options={boolFilterOptions}
                     value={filter}
                     onChange={setFilter}
                     open={statusOpen}

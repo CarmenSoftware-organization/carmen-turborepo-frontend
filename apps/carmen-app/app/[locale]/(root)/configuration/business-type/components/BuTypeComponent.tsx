@@ -3,9 +3,7 @@
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { boolFilterOptions } from "@/constants/options";
 import { useAuth } from "@/context/AuthContext";
 import {
   BuTypeEditDto,
@@ -36,6 +34,7 @@ import { FormBuType } from "./FormBuType";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import BuTypeList from "./BuTypeList";
 import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function BusinessTypeComponent() {
   const { token, tenantId } = useAuth();
@@ -196,7 +195,6 @@ export default function BusinessTypeComponent() {
         />
         <div className="flex items-center gap-2">
           <StatusSearchDropdown
-            options={boolFilterOptions}
             value={filter}
             onChange={handleSetFilter}
             open={statusOpen}

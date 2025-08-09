@@ -15,12 +15,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useState } from "react";
 import { useURL } from "@/hooks/useURL";
-import { statusOptions } from "@/constants/options";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -48,6 +46,7 @@ import {
   useUpdateCreditTerm,
 } from "@/hooks/useCreditTerm";
 import { useQueryClient } from "@tanstack/react-query";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 const sortFields = [
   { key: "name", label: "Name" }
@@ -163,7 +162,6 @@ export default function CreditTermComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={statusOptions}
           value={status}
           onChange={setStatus}
           open={statusOpen}

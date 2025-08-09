@@ -2,9 +2,7 @@
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { statusOptions } from "@/constants/options";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import ProductList from "./ProductList";
@@ -22,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import useProduct from "@/hooks/useProduct";
 import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export function ProductComponent() {
   const tCommon = useTranslations("Common");
@@ -109,7 +108,6 @@ export function ProductComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={statusOptions}
           value={status}
           onChange={setStatus}
           open={statusOpen}

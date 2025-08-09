@@ -285,7 +285,10 @@
     "products": "สินค้า",
     "data_not_found": "ไม่พบข้อมูล",
     "filter": "ตัวกรอง",
-    "back": "กลับ"
+    "back": "กลับ",
+    "note": "หมายเหตุ",
+    "info": "ข้อมูล",
+    "dimension": "ขนาด"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -386,7 +389,15 @@
     "add_department": "เพิ่มแผนก",
     "edit_department": "แก้ไขแผนก",
     "add_department_description": "กรอกข้อมูลเพื่อสร้างแผนกใหม่",
-    "edit_department_description": "อัพเดตข้อมูลแผนกด้านล่าง"
+    "edit_department_description": "อัพเดตข้อมูลแผนกด้านล่าง",
+    "init_users": "ผู้ใช้งานที่มีอยู่",
+    "available_users": "ผู้ใช้งานที่พร้อมใช้งาน",
+    "add_success": "แผนกสร้างเรียบร้อย",
+    "add_error": "แผนกสร้างไม่สำเร็จ",
+    "edit_success": "แผนกแก้ไขเรียบร้อย",
+    "edit_error": "แผนกแก้ไขไม่สำเร็จ",
+    "delete_success": "แผนกลบเรียบร้อย",
+    "delete_error": "แผนกลบไม่สำเร็จ"
   },
   "StoreLocation": {
     "title": "สถานที่เก็บสินค้า",
@@ -486,7 +497,15 @@
     "confirm_delete_description": "คุณแน่ใจหรือไม่ที่จะลบค่าใช้จ่ายเพิ่มเติมนี้? การลบจะไม่สามารถยกเลิกได้",
     "extra_cost_created": "สร้างค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
     "extra_cost_updated": "แก้ไขค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
-    "extra_cost_deleted": "ลบค่าใช้จ่ายเพิ่มเติมเรียบร้อย"
+    "extra_cost_deleted": "ลบค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
+    "name_required": "กรุณากรอกชื่อค่าใช้จ่ายเพิ่มเติม",
+    "name_placeholder": "กรอกชื่อค่าใช้จ่ายเพิ่มเติม",
+    "create_success": "สร้างค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
+    "create_error": "สร้างค่าใช้จ่ายเพิ่มเติมไม่สำเร็จ",
+    "update_success": "แก้ไขค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
+    "update_error": "แก้ไขค่าใช้จ่ายเพิ่มเติมไม่สำเร็จ",
+    "delete_success": "ลบค่าใช้จ่ายเพิ่มเติมเรียบร้อย",
+    "delete_error": "ลบค่าใช้จ่ายเพิ่มเติมไม่สำเร็จ"
   },
   "BusinessType": {
     "title": "ประเภทธุรกิจ",
@@ -511,7 +530,17 @@
     "department_head_approval": "การอนุมัติหัวหน้ากลุ่ม",
     "finance_manager_approval": "การอนุมัติผู้ดูแลการเงิน",
     "filter": "ตัวกรอง",
-    "add_filter": "เพิ่มตัวกรอง"
+    "add_filter": "เพิ่มตัวกรอง",
+    "save": "บันทึก",
+    "saving": "กำลังบันทึก...",
+    "update": "อัพเดต",
+    "updating": "กำลังอัพเดต...",
+    "cancel": "ยกเลิก",
+    "add": "เพิ่ม",
+    "edit": "แก้ไข",
+    "delete": "ลบ",
+    "data_not_found": "ไม่พบข้อมูล",
+    "select_all": "เลือกทั้งหมด"
   },
   "PurchaseRequest": {
     "title": "ใบขอซื้อ",

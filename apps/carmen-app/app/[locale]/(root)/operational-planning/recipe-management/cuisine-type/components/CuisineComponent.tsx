@@ -4,14 +4,13 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, FileUp, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { mockCuisineTypeData } from "@/mock-data/operational-planning";
 import CuisineList from "./CuisineList";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function CuisineComponent() {
     const t = useTranslations('OperationalPlanning.CuisineType');
@@ -80,7 +79,6 @@ export default function CuisineComponent() {
                     European
                 </Button>
                 <StatusSearchDropdown
-                    options={statusOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

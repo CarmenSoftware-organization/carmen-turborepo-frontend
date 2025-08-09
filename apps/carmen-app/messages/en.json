@@ -285,7 +285,10 @@
     "products": "Products",
     "data_not_found": "No data found",
     "filter": "Filter",
-    "back": "Back"
+    "back": "Back",
+    "note": "Note",
+    "info": "Info",
+    "dimension": "Dimension"
   },
   "TableHeader": {
     "all": "All",
@@ -387,7 +390,15 @@
     "add_department": "Add Department",
     "edit_department": "Edit Department",
     "add_department_description": "Fill in the details to create a new department.",
-    "edit_department_description": "Update the department information below."
+    "edit_department_description": "Update the department information below.",
+    "init_users": "Init Users",
+    "available_users": "Available Users",
+    "add_success": "Department created successfully",
+    "add_error": "Failed to add department",
+    "edit_success": "Department updated successfully",
+    "edit_error": "Failed to update department",
+    "delete_success": "Department deleted successfully",
+    "delete_error": "Failed to delete department"
   },
   "StoreLocation": {
     "title": "Store Location",
@@ -491,7 +502,15 @@
     "confirm_delete_description": "Are you sure you want to delete this Extra Cost? This action cannot be undone.",
     "extra_cost_created": "Extra cost created successfully",
     "extra_cost_updated": "Extra cost updated successfully",
-    "extra_cost_deleted": "Extra cost deleted successfully"
+    "extra_cost_deleted": "Extra cost deleted successfully",
+    "name_required": "Name is required",
+    "name_placeholder": "Enter extra cost name",
+    "create_success": "Extra cost created successfully",
+    "create_error": "Failed to create extra cost",
+    "update_success": "Extra cost updated successfully",
+    "update_error": "Failed to update extra cost",
+    "delete_success": "Extra cost deleted successfully",
+    "delete_error": "Failed to delete extra cost"
   },
   "BusinessType": {
     "title": "Business Type",
@@ -515,7 +534,17 @@
     "department_head_approval": "Department Head Approval",
     "finance_manager_approval": "Finance Manager Approval",
     "filter": "Filter",
-    "add_filter": "Add Filter"
+    "add_filter": "Add Filter",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "add": "Add",
+    "edit": "Edit",
+    "update": "Update",
+    "updating": "Updating...",
+    "delete": "Delete",
+    "data_not_found": "No data found",
+    "select_all": "Select All"
   },
   "PurchaseRequest": {
     "title": "Purchase Request",

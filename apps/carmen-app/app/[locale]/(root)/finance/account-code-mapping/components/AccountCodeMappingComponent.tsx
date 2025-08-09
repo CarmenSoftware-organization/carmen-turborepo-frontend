@@ -4,14 +4,13 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, FileUp, Plus, Printer, Scan } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
-import { statusOptions } from "@/constants/options";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import AccountCodeMappingList from "./AccountCodeMappingList";
 import { mockAccountCodeMappingData } from "@/mock-data/finance";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function AccountCodeMappingComponent() {
     const tCommon = useTranslations('Common');
@@ -74,7 +73,6 @@ export default function AccountCodeMappingComponent() {
             />
             <div className="flex items-center gap-2">
                 <StatusSearchDropdown
-                    options={statusOptions}
                     value={status}
                     onChange={setStatus}
                     open={statusOpen}

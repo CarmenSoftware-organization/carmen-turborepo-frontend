@@ -4,9 +4,7 @@ import SignInDialog from "@/components/SignInDialog";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import StatusSearchDropdown from "@/components/ui-custom/StatusSearchDropdown";
 import { Button } from "@/components/ui/button";
-import { boolFilterOptions } from "@/constants/options";
 import { useAuth } from "@/context/AuthContext";
 import { useDepartmentsQuery } from "@/hooks/useDepartments";
 import { useURL } from "@/hooks/useURL";
@@ -16,6 +14,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import DepartmentList from "./DepartmentList";
 import { SortConfig, SortDirection } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function DepartmentComponent() {
   const { token, tenantId } = useAuth();
@@ -150,7 +149,6 @@ export default function DepartmentComponent() {
       />
       <div className="flex items-center gap-2">
         <StatusSearchDropdown
-          options={boolFilterOptions}
           value={filter}
           onChange={setFilter}
           open={statusOpen}
