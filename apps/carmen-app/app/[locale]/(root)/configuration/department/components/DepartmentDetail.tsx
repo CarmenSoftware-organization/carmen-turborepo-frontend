@@ -84,7 +84,6 @@ export default function DepartmentDetail({
     return <DetailSkeleton />
   }
 
-  // แสดง FormEdit สำหรับ mode ADD และ EDIT
   if (currentMode !== formType.VIEW) {
     return (
       <FormEdit
@@ -96,7 +95,6 @@ export default function DepartmentDetail({
     );
   }
 
-  // แสดง ViewDetail สำหรับ mode VIEW
   return (
     <ViewDetail
       data={viewData}

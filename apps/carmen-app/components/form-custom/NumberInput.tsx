@@ -61,7 +61,10 @@ export default function NumberInput({
       }
       placeholder={isHide ? placeholder : "••••••••"}
       readOnly={!showContent}
-      className={cn("text-right", classNames)}
+      className={cn(
+        "text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
+        classNames
+      )}
     />
   );
 }

@@ -144,10 +144,10 @@ export default function DepartmentList({
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem
-                className="text-destructive cursor-pointer hover:bg-transparent"
+                className="cursor-pointer"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {tCommon("delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
