@@ -18,7 +18,7 @@ export const useExtraCostTypeQuery = (
   params?: ParamsGetDto
 ) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["credit-note", tenantId, params],
+    queryKey: ["extra-cost-type", tenantId, params],
     queryFn: async () => {
       if (!token || !tenantId) {
         throw new Error("Unauthorized: Missing token or tenantId");

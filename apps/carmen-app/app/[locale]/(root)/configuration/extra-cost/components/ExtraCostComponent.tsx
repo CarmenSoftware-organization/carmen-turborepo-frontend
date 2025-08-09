@@ -108,7 +108,7 @@ export default function ExtraCostComponent() {
       deleteExtraCost(undefined, {
         onSuccess: () => {
           toastSuccess({ message: tExtraCost("delete_success") });
-          queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", tenantId] });
           setDeleteDialogOpen(false);
           setExtraCostToDelete(undefined);
         },
@@ -125,7 +125,7 @@ export default function ExtraCostComponent() {
       createExtraCost(data, {
         onSuccess: () => {
           toastSuccess({ message: tExtraCost("create_success") });
-          queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", tenantId] });
           setDialogOpen(false);
           setSelectedExtraCost(undefined);
         },
@@ -139,7 +139,7 @@ export default function ExtraCostComponent() {
       updateExtraCost(updateData, {
         onSuccess: () => {
           toastSuccess({ message: tExtraCost("update_success") });
-          queryClient.invalidateQueries({ queryKey: ["credit-note", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", tenantId] });
           setDialogOpen(false);
           setSelectedExtraCost(undefined);
         },
@@ -214,7 +214,6 @@ export default function ExtraCostComponent() {
       <SearchInput
         defaultValue={search}
         onSearch={setSearch}
-        placeholder="Search"
         data-id="extra-cost-list-search-input"
       />
       <div className="flex items-center gap-2">

@@ -111,7 +111,7 @@ export default function ListExtraCost({
             title: (
                 <SortableColumnHeader
                     columnKey="is_active"
-                    label="Status"
+                    label={t("status")}
                     sort={sort ?? { field: "is_active", direction: "asc" }}
                     onSort={onSort ?? (() => { })}
                     getSortableColumnProps={getSortableColumnProps}
@@ -148,11 +148,11 @@ export default function ListExtraCost({
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                             <DropdownMenuItem
-                                className="text-destructive cursor-pointer hover:bg-transparent"
+                                className="cursor-pointer hover:bg-transparent"
                                 onClick={() => onToggleStatus(extraCost)}
                             >
                                 <Trash2 className="h-4 w-4" />
-                                Delete
+                                {tCommon("delete")}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

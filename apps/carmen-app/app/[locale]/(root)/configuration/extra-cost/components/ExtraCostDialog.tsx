@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
@@ -60,24 +59,26 @@ export default function ExtraCostDialog({
     const watchedIsActive = watch("is_active");
 
     useEffect(() => {
-        if (mode === formType.EDIT && extraCost) {
-            setValue("name", extraCost.name);
-            setValue("description", extraCost.description || "");
-            setValue("note", extraCost.note || "");
-            setValue("is_active", extraCost.is_active);
-            setValue("info", extraCost.info || "");
-            setValue("dimension", extraCost.dimension || "");
-        } else if (mode === formType.ADD) {
-            reset({
-                name: "",
-                description: "",
-                note: "",
-                is_active: true,
-                info: "",
-                dimension: "",
-            });
+        if (open) {
+            if (mode === formType.EDIT && extraCost) {
+                setValue("name", extraCost.name);
+                setValue("description", extraCost.description || "");
+                setValue("note", extraCost.note || "");
+                setValue("is_active", extraCost.is_active);
+                setValue("info", extraCost.info || "");
+                setValue("dimension", extraCost.dimension || "");
+            } else if (mode === formType.ADD) {
+                reset({
+                    name: "",
+                    description: "",
+                    note: "",
+                    is_active: true,
+                    info: "",
+                    dimension: "",
+                });
+            }
         }
-    }, [mode, extraCost, setValue, reset]);
+    }, [open, mode, extraCost, setValue, reset]);
 
     const handleFormSubmit = (data: ExtraCostTypeDto) => {
         const submitData = {
@@ -88,7 +89,14 @@ export default function ExtraCostDialog({
     };
 
     const handleClose = () => {
-        reset();
+        reset({
+            name: "",
+            description: "",
+            note: "",
+            is_active: true,
+            info: "",
+            dimension: "",
+        });
         onOpenChange(false);
     };
 
@@ -171,7 +179,11 @@ export default function ExtraCostDialog({
                             {tCommon("cancel")}
                         </Button>
                         <Button type="submit" disabled={isLoading}>
-                            {isLoading ? tCommon("saving") : (mode === formType.ADD ? tCommon("add") : tCommon("update"))}
+                            {(() => {
+                                if (isLoading) return tCommon("saving");
+                                if (mode === formType.ADD) return tCommon("add");
+                                return tCommon("edit");
+                            })()}
                         </Button>
                     </div>
                 </form>
