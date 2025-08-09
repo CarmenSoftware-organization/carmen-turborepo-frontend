@@ -30,11 +30,11 @@ import {
   useDeleteBuType,
   useUpdateBuType,
 } from "@/hooks/useBuType";
-import { FormBuType } from "./FormBuType";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import BuTypeList from "./BuTypeList";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { FormBuTypeDialog } from "./FormBuTypeDialog";
 
 export default function BusinessTypeComponent() {
   const { token, tenantId } = useAuth();
@@ -329,7 +329,7 @@ export default function BusinessTypeComponent() {
         content={content}
       />
 
-      <FormBuType
+      <FormBuTypeDialog
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
         onSubmit={handleSubmit}

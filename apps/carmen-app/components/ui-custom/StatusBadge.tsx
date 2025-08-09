@@ -3,13 +3,41 @@ import { cn } from "@/lib/utils"
 export const StatusBadge = ({ status, children }: { status: string, children: React.ReactNode }) => {
 
     const getStatusColor = (status: string) => {
-        if (status === 'draft') {
-            return 'bg-gray-500'
-        }
         if (status === 'in_progress') {
-            return 'bg-yellow-500'
+            return 'bg-sunshinePrimary'
         }
-        return 'bg-gray-500'
+        if (status === 'pending') {
+            return 'bg-azurePrimary'
+        }
+        if (status === 'approved') {
+            return 'bg-tealPrimary'
+        }
+        if (status === 'rejected') {
+            return 'bg-crimsonPrimary'
+        }
+        if (status === 'cancelled') {
+            return 'bg-rosePrimary'
+        }
+        return 'bg-slatePrimary'
+    }
+
+    const getStatusTextColor = (status: string) => {
+        if (status === 'in_progress') {
+            return 'text-sunshinePrimary'
+        }
+        if (status === 'pending') {
+            return 'text-azurePrimary'
+        }
+        if (status === 'approved') {
+            return 'text-tealPrimary'
+        }
+        if (status === 'rejected') {
+            return 'text-crimsonPrimary'
+        }
+        if (status === 'cancelled') {
+            return 'text-rosePrimary'
+        }
+        return 'text-slatePrimary'
     }
 
     return (
@@ -20,7 +48,10 @@ export const StatusBadge = ({ status, children }: { status: string, children: Re
                     getStatusColor(status)
                 )}
             ></div>
-            <p className="font-medium">{children}</p>
+            <p className={cn(
+                "font-medium",
+                getStatusTextColor(status)
+            )}>{children}</p>
         </div>
     )
 }

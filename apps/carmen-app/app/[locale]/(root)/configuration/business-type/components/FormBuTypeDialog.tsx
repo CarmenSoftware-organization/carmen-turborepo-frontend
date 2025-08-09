@@ -12,7 +12,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/form-custom/form";
 import {
   Dialog,
   DialogContent,
@@ -32,7 +32,7 @@ interface FormBuTypeProps {
   onCancel: () => void;
 }
 
-export const FormBuType = ({
+export const FormBuTypeDialog = ({
   open,
   onOpenChange,
   onSubmit,
@@ -104,11 +104,12 @@ export const FormBuType = ({
                 <FormItem>
                   <FormLabel>{tBusinessType("name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Business Type Name" {...field} />
+                    <Input placeholder={tBusinessType("name")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
+              required
             />
 
             <FormField
@@ -118,7 +119,11 @@ export const FormBuType = ({
                 <FormItem>
                   <FormLabel>{tBusinessType("description")}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Enter description" />
+                    <Textarea
+                      {...field}
+                      placeholder={tCommon("description")}
+                      maxLength={200}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -132,7 +137,11 @@ export const FormBuType = ({
                 <FormItem>
                   <FormLabel>{tBusinessType("note")}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Enter note" />
+                    <Textarea
+                      {...field}
+                      placeholder={tCommon("note")}
+                      maxLength={200}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -149,7 +158,7 @@ export const FormBuType = ({
                       value={field.value}
                       onChange={field.onChange}
                       label={tCommon("active")}
-                      type="switch"
+                      type="checkbox"
                     />
                   </FormControl>
                 </FormItem>

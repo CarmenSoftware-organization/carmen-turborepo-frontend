@@ -123,6 +123,11 @@ export default function VendorList({
       dataIndex: "description",
       key: "description",
       align: "left",
+      render: (description: string) => (
+        <span className="truncate max-w-[300px] inline-block">
+          {description}
+        </span>
+      ),
     },
     {
       title: tTableHeader("business_type"),

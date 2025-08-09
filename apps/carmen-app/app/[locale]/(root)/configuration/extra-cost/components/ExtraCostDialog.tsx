@@ -128,6 +128,7 @@ export default function ExtraCostDialog({
                             id="description"
                             {...register("description")}
                             placeholder={tCommon("description")}
+                            maxLength={200}
                         />
                     </div>
 
@@ -137,6 +138,7 @@ export default function ExtraCostDialog({
                             id="note"
                             {...register("note")}
                             placeholder={tCommon("note")}
+                            maxLength={200}
                         />
                     </div>
 

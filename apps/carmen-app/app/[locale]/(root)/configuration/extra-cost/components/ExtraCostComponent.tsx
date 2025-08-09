@@ -31,6 +31,7 @@ export default function ExtraCostComponent() {
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
 
   // Dialog state
@@ -52,6 +53,7 @@ export default function ExtraCostComponent() {
       filter,
       sort,
       page: page ? parseInt(page) : 1,
+      perpage: perpage ? parseInt(perpage) : 10,
     }
   );
 
@@ -85,6 +87,10 @@ export default function ExtraCostComponent() {
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage.toString());
   }, [setPage]);
+
+  const handlePerpageChange = useCallback((newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  }, [setPerpage]);
 
   const handleAdd = () => {
     setDialogMode(formType.ADD);
@@ -249,6 +255,8 @@ export default function ExtraCostComponent() {
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
       selectedExtraCosts={selectedExtraCosts}
+      perpage={extraCostTypes?.paginate?.perpage ?? 10}
+      setPerpage={handlePerpageChange}
     />
   );
 

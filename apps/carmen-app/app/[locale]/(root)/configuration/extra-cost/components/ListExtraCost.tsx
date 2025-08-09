@@ -1,6 +1,6 @@
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import { Activity, DollarSign, Info, MoreHorizontal, Trash2 } from "lucide-react";
+import { Activity, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -23,6 +23,8 @@ interface ListExtraCostProps {
     readonly selectedExtraCosts: string[];
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
+    readonly perpage?: number;
+    readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function ListExtraCost({
@@ -39,6 +41,8 @@ export default function ListExtraCost({
     selectedExtraCosts,
     onSelectAll,
     onSelect,
+    perpage,
+    setPerpage,
 }: ListExtraCostProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -79,7 +83,7 @@ export default function ListExtraCost({
             ),
             dataIndex: "name",
             key: "name",
-            icon: <DollarSign className="h-4 w-4" />,
+            icon: <List className="h-4 w-4" />,
             align: "left",
             render: (_: unknown, record: TableDataSource) => {
                 const extraCost = extraCosts.find(ec => ec.id === record.key);
@@ -102,7 +106,7 @@ export default function ListExtraCost({
             align: "left",
             icon: <Info className="h-4 w-4" />,
             render: (description: string) => (
-                <span className="text-xs md:text-sm text-muted-foreground">
+                <span className="truncate max-w-[300px] inline-block">
                     {description}
                 </span>
             ),
@@ -179,6 +183,8 @@ export default function ListExtraCost({
             currentPage={currentPage}
             onPageChange={onPageChange}
             isLoading={isLoading}
+            perpage={perpage}
+            setPerpage={setPerpage}
         />
     );
 }

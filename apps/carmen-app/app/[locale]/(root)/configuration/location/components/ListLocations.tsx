@@ -124,6 +124,11 @@ export default function ListLocations({
       key: "description",
       icon: <Info className="h-4 w-4" />,
       align: "left",
+      render: (description: string) => (
+        <span className="truncate max-w-[300px] inline-block">
+          {description}
+        </span>
+      ),
     },
     {
       title: t("type"),

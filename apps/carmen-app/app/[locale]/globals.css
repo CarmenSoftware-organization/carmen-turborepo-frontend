@@ -53,9 +53,18 @@
     --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
     --tracking-normal: 0.025em;
     --spacing: 0.25rem;
+    /* color custom */
     --active: 154.9deg 100% 19.2%;
     --inactive: 9.8901 81.9820% 43.5294%;
-
+    --azure-primary: 210deg 100% 19%;
+    --sunshine-primary: 55deg 100% 27%;
+    --tangerine-primary: 25deg 100% 25%;
+    --slate-primary: 210deg 15% 20%;
+    --crimson-primary: 0deg 100% 25%;
+    --violet-primary: 270deg 100% 25%;
+    --emerald-primary: 154.9deg 100% 19.2%;
+    --rose-primary: 330deg 100% 25%;
+    --teal-primary: 180deg 100% 20%;
 
   }
 
@@ -101,8 +110,19 @@
     --shadow-lg: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 4px 6px -1px hsl(0 0% 0% / 0.17);
     --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
     --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
+    /* color custom */
     --active: 154.8980 100.0000% 19.2157%;
     --inactive: 9.8901 81.9820% 43.5294%;
+    --azure-primary: 210deg 100% 19%;
+    --sunshine-primary: 55deg 100% 40%;
+    --tangerine-primary: 25deg 100% 25%;
+    --slate-primary: 210deg 15% 40%;
+    --crimson-primary: 0deg 100% 25%;
+    --violet-primary: 270deg 100% 25%;
+    --emerald-primary: 154.9deg 100% 19.2%;
+    --rose-primary: 330deg 100% 25%;
+    --teal-primary: 180deg 100% 20%;
+
   }
 }
 

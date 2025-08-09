@@ -45,6 +45,12 @@ const config: Config = {
 				ring: 'hsl(var(--ring))',
 				active: 'hsl(var(--active))',
 				inactive: 'hsl(var(--inactive))',
+				azurePrimary: 'hsl(var(--azure-primary))',
+				sunshinePrimary: 'hsl(var(--sunshine-primary))',
+				tangerinePrimary: 'hsl(var(--tangerine-primary))',
+				slatePrimary: 'hsl(var(--slate-primary))',
+				crimsonPrimary: 'hsl(var(--crimson-primary))',
+				violetPrimary: 'hsl(var(--violet-primary))',
 				chart: {
 					'1': 'hsl(var(--chart-1))',
 					'2': 'hsl(var(--chart-2))',
@@ -61,7 +67,7 @@ const config: Config = {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

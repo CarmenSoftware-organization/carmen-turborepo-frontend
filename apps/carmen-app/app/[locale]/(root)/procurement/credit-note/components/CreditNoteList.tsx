@@ -138,7 +138,7 @@ export default function CreditNoteList({
       dataIndex: "doc_status",
       key: "doc_status",
       align: "center",
-      width: "w-32",
+      width: "w-40",
       icon: <FileText className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (

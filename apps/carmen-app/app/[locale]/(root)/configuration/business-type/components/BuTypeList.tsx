@@ -105,11 +105,11 @@ export default function BuTypeList({
             key: "description",
             icon: <Info className="h-4 w-4" />,
             align: "left",
-            render: (_: unknown, record: TableDataSource) => {
-                const buType = buTypes.find(bt => bt.id === record.key);
-                if (!buType) return null;
-                return <p className="truncate max-w-[300px] inline-block">{buType.description}</p>;
-            },
+            render: (description: string) => (
+                <span className="truncate max-w-[300px] inline-block">
+                    {description}
+                </span>
+            ),
         },
         {
             title: t("note"),
