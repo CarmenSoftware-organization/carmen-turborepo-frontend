@@ -84,6 +84,14 @@ export default function InputPage() {
                             type="checkbox"
                         />
                     </div>
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-medium text-gray-500">Label Over The Line</h3>
+                        <InputCustom
+                            label="Username"
+                            labelPlacement="overTheLine"
+                            placeholder="Enter your username"
+                        />
+                    </div>
                 </div>
             </section>
 

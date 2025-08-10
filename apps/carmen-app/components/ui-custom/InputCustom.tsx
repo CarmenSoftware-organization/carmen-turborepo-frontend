@@ -21,7 +21,7 @@ interface InputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   id?: string;
   label: string;
-  labelPlacement?: "top" | "left" | "right" | "inside";
+  labelPlacement?: "top" | "left" | "right" | "inside" | "overTheLine";
   error?: string;
   isRequired?: boolean;
   startContent?: ReactNode;
@@ -274,26 +274,28 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         );
       }
 
-      // Handle 'inside' placement with proper focus states
       if (labelPlacement === "inside") {
         return cn(
           baseClasses,
-          "absolute left-3 pointer-events-none transform-gpu",
-          // Position and size based on shrink state
+          "absolute left-3 pointer-events-none transform-gpu text-muted-foreground",
           derivedStates.shouldShrinkLabel
             ? "text-[10px] top-1 -translate-y-0"
             : "top-3 text-sm translate-y-0",
-          // Color based on state priority: error > focused > default
-          derivedStates.finalError
-            ? "text-red-500"
-            : focused
-              ? "text-blue-600"
-              : "text-gray-500"
+
+        );
+      }
+
+      if (labelPlacement === "overTheLine") {
+        return cn(
+          baseClasses,
+          "absolute left-2 pointer-events-none transform-gpu z-20 text-muted-foreground text-xs",
+          "top-0 -translate-y-1/2",
+          "bg-background px-1",
         );
       }
 
       // Default fallback
-      return cn(baseClasses, derivedStates.finalError && "text-red-500");
+      return cn(baseClasses, derivedStates.finalError && "text-destructive");
     }, [
       labelPlacement,
       derivedStates.shouldShrinkLabel,
@@ -557,6 +559,18 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       return (
         <div className="w-full">
           <div className="flex items-center">
+            {layoutComponents.input}
+            {layoutComponents.label}
+          </div>
+          {layoutComponents.error}
+        </div>
+      );
+    }
+
+    if (labelPlacement === "overTheLine") {
+      return (
+        <div className="relative w-full">
+          <div className="relative">
             {layoutComponents.input}
             {layoutComponents.label}
           </div>

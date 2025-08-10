@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
@@ -73,9 +73,11 @@ export default function ActionFields({
                         </p>
                     )}
                     {initValues?.pr_status && (
-                        <Badge variant={initValues?.pr_status}>
+                        <StatusBadge
+                            status={initValues?.pr_status}
+                        >
                             {convertPrStatus(initValues?.pr_status)}
-                        </Badge>
+                        </StatusBadge>
                     )}
                 </div>
             </div>

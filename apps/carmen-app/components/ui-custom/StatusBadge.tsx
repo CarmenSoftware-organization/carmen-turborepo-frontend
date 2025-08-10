@@ -41,7 +41,7 @@ export const StatusBadge = ({ status, children }: { status: string, children: Re
     }
 
     return (
-        <div className="inline-flex items-center gap-1 bg-muted border border-border rounded-lg px-2">
+        <div className="inline-flex items-center gap-1 bg-muted/50 dark:bg-muted border border-border rounded-lg px-2">
             <div
                 className={cn(
                     "w-2 h-2 rounded-full",

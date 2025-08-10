@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -31,38 +32,40 @@ export default function StatusPrInfo({
         <div className="space-y-3">
 
           {workflow_current_stage && (
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between ">
               <span className="text-muted-foreground">Current Stage</span>
-              <Badge variant="outline" className="text-xs">
+              <Badge variant="outline" className="">
                 {workflow_current_stage}
               </Badge>
             </div>
           )}
 
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between ">
             <span className="text-muted-foreground">Requestor</span>
             <p>{requestor_name}</p>
           </div>
 
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between ">
             <span className="text-muted-foreground">Department</span>
             <p>{department_name}</p>
           </div>
 
           {status && (
-            <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center justify-between ">
               <span className="text-muted-foreground">
                 Document Status
               </span>
-              <Badge variant={status} className="text-xs">
-                {convertPrStatus(status) ?? "-"}
-              </Badge>
+              <StatusBadge
+                status={status}
+              >
+                {convertPrStatus(status)}
+              </StatusBadge>
             </div>
           )}
           {create_date && (
             <>
               <Separator className="my-2" />
-              <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center justify-between ">
                 <span className="text-muted-foreground">Created</span>
                 <span className="font-medium">
                   {create_date
