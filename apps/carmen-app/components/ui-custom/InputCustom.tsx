@@ -254,7 +254,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         return cn(
           baseClasses,
           "block mb-2",
-          derivedStates.finalError && "text-red-500"
+          derivedStates.finalError && "text-destructive"
         );
       }
 
@@ -262,7 +262,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         return cn(
           baseClasses,
           "flex items-center mr-2",
-          derivedStates.finalError && "text-red-500"
+          derivedStates.finalError && "text-destructive"
         );
       }
 
@@ -270,7 +270,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         return cn(
           baseClasses,
           "flex items-center ml-2",
-          derivedStates.finalError && "text-red-500"
+          derivedStates.finalError && "text-destructive"
         );
       }
 
@@ -499,7 +499,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         <Label htmlFor={inputId} className={labelClassName}>
           {label}
           {inputIsRequired && (
-            <span className="text-red-500 ml-1" aria-label="required">
+            <span className="text-destructive ml-1" aria-label="required">
               *
             </span>
           )}
@@ -513,7 +513,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       return (
         <div
           id={`${inputId}-error`}
-          className="text-red-500 text-sm mt-1"
+          className="text-destructive text-sm mt-1"
           role="alert"
           aria-live="polite"
         >
