@@ -1,15 +1,136 @@
+"use client";
+
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { mockVendorComparisonData } from "@/mock-data/procurement";
 import VendorComparisonList from "./VendorComparisonList";
+import { useURL } from "@/hooks/useURL";
+import { useCallback, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import SearchInput from "@/components/ui-custom/SearchInput";
+import SortComponent from "@/components/ui-custom/SortComponent";
+import { Button } from "@/components/ui/button";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
+import { parseSortString } from "@/utils/table-sort";
 
 export default function VendorComparisonComponent() {
-    const title = "Vendor Comparison"
+    const tCommon = useTranslations('Common');
+    const tVendorComparison = useTranslations("VendorComparison");
+    const tDataControls = useTranslations("DataControls");
 
-    const content = <VendorComparisonList vendorComparisons={mockVendorComparisonData} />
+    const [page, setPage] = useURL("page");
+    const [perpage, setPerpage] = useURL("perpage");
+    const [search, setSearch] = useURL('search');
+    const [sort, setSort] = useURL('sort');
+
+    const totalItems = mockVendorComparisonData.length;
+    const totalPages = 1;
+
+    useEffect(() => {
+        if (search) {
+            setPage("");
+        }
+    }, [search, setPage]);
+
+
+    const handleSetPerpage = (newPerpage: number) => {
+        setPerpage(newPerpage.toString());
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage.toString());
+    };
+
+    const handleSort = useCallback((field: string) => {
+        if (!sort) {
+            setSort(`${field}:asc`);
+        } else {
+            const [currentField, currentDirection] = sort.split(':');
+
+            if (currentField === field) {
+                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+                setSort(`${field}:${newDirection}`);
+            } else {
+                setSort(`${field}:asc`);
+            }
+            setPage("1");
+        }
+    }, [setSort, sort, setPage]);
+
+    const title = tVendorComparison("title");
+
+    const sortFields = [
+        { key: 'name', label: tCommon("name") },
+    ];
+
+    const filters = (
+        <div className="filter-container" data-id="vc-list-filters">
+            <SearchInput
+                defaultValue={search}
+                onSearch={setSearch}
+                placeholder={tCommon("search")}
+                data-id="vc-list-search-input"
+            />
+
+            <div className="flex items-center gap-2">
+                <SortComponent
+                    fieldConfigs={sortFields}
+                    sort={sort}
+                    setSort={setSort}
+                    data-id="vc-list-sort-dropdown"
+                />
+                <Button size={"sm"}>
+                    <Filter className="h-4 w-4" />
+                    {tDataControls("filter")}
+                </Button>
+            </div>
+        </div>
+    );
+
+    const actionButtons = (
+        <div
+            className="action-btn-container"
+            data-id="po-action-buttons"
+        >
+            <Button size={"sm"}>
+                <Plus />
+                {tCommon("add")} {title}
+            </Button>
+            <Button
+                variant="outlinePrimary"
+                className="group"
+                size={"sm"}
+                data-id="po-list-export-button"
+            >
+                <FileDown />
+                {tCommon("export")}
+            </Button>
+            <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
+                <Printer />
+                {tCommon("print")}
+            </Button>
+        </div>
+    );
+
+    const content = (
+        <VendorComparisonList
+            vendorComparisons={mockVendorComparisonData}
+            currentPage={page ? parseInt(page) : 1}
+            totalPages={totalPages}
+            perpage={perpage ? parseInt(perpage) : 10}
+            onPageChange={handlePageChange}
+            isLoading={false}
+            totalItems={totalItems}
+            sort={parseSortString(sort) || { field: '', direction: 'asc' }}
+            onSort={handleSort}
+            setPerpage={handleSetPerpage}
+        />
+    )
 
     return (
         <DataDisplayTemplate
             title={title}
+            actionButtons={actionButtons}
+            filters={filters}
             content={content}
         />
     );

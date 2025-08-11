@@ -241,8 +241,6 @@ export default function PurchaseOrderList({
         status: po.status,
     }));
 
-    console.log(dataSource);
-
     return (
         <TableTemplate
             columns={columns}

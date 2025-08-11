@@ -351,7 +351,12 @@
     "product": "สินค้า",
     "requested": "ขอซื้อ",
     "approved": "อนุมัติ",
-    "price": "ราคา"
+    "price": "ราคา",
+    "rating": "คะแนน",
+    "delivery_time": "ระยะเวลาส่งสินค้า",
+    "score": "คะแนน",
+    "res_time": "ระยะเวลาตอบกลับ",
+    "quality_score": "คะแนนคุณภาพ"
   },
   "Product": {
     "title": "สินค้า"
@@ -654,5 +659,8 @@
     "add_item": "เพิ่มรายการสินค้า",
     "grns": "ใบรับสินค้า",
     "related_docs": "เอกสารที่เกี่ยวข้อง"
+  },
+  "VendorComparison": {
+    "title": "การเปรียบเทียบผู้ขาย"
   }
 }

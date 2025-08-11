@@ -1,115 +1,229 @@
-import { VendorComparisonDto } from "@/dtos/procurement.dto"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FileText, Trash2, Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-interface VendorComparisonListProps {
-    readonly vendorComparisons: VendorComparisonDto[]
-}
-export default function VendorComparisonList({ vendorComparisons }: VendorComparisonListProps) {
-    return (
-        <div className="space-y-4">
-            <div className="hidden md:block">
-                <Table className="border">
-                    <TableHeader>
-                        <TableRow className="bg-muted">
-                            <TableHead className="w-10 text-center">#</TableHead>
-                            <TableHead>Vendor</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Rating</TableHead>
-                            <TableHead>Delivery Time (days)</TableHead>
-                            <TableHead>Quality Score</TableHead>
-                            <TableHead>Response Time (hrs)</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {vendorComparisons.map((vendorComparison, index) => (
-                            <TableRow key={vendorComparison.id}>
-                                <TableCell className="text-center">{index + 1}</TableCell>
-                                <TableCell>{vendorComparison.vendor_name}</TableCell>
-                                <TableCell>
-                                    <Badge variant={vendorComparison.status ? 'active' : 'inactive'}>
-                                        {vendorComparison.status ? 'Active' : 'Inactive'}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-1">
-                                        {vendorComparison.rating}
-                                        <Star className="h-4 w-4 text-yellow-500" />
-                                    </div>
-                                </TableCell>
-                                <TableCell>{vendorComparison.delivery_time}</TableCell>
-                                <TableCell>{vendorComparison.score}%</TableCell>
-                                <TableCell>{vendorComparison.res_time}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button size={'sm'} variant={'ghost'} className="h-7 w-7">
-                                        <FileText className="h-4 w-4" />
-                                    </Button>
-                                    <Button size={'sm'} variant={'ghost'} className="h-7 w-7">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
+"use client";
 
-            <div className="grid gap-4 md:hidden">
-                {vendorComparisons.map((vendorComparison) => (
-                    <Card key={vendorComparison.id} className="transition-all duration-200 hover:shadow-lg hover:border-primary/50">
-                        <CardHeader className="p-4">
-                            <div className="flex justify-between items-start">
-                                <CardTitle className="text-base">{vendorComparison.vendor_name}</CardTitle>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size={'sm'}>
-                                        <FileText className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size={'sm'}>
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Status</p>
-                                    <p className="text-sm font-medium">{vendorComparison.status ? 'Active' : 'Inactive'}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Rating</p>
-                                    <div className="flex items-center gap-1">
-                                        <p className="text-sm font-medium">{vendorComparison.rating}</p>
-                                        <Star className="h-4 w-4 text-yellow-500" />
-                                    </div>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Delivery Time</p>
-                                    <p className="text-sm font-medium">{vendorComparison.delivery_time} days</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Quality Score</p>
-                                    <p className="text-sm font-medium">{vendorComparison.score}%</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Response Time</p>
-                                    <p className="text-sm font-medium">{vendorComparison.res_time} hrs</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        </div>
+import { VendorComparisonDto } from "@/dtos/procurement.dto"
+import { FileText, Trash2, MoreHorizontal, Printer, FileDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import { Checkbox } from "@/components/ui/checkbox";
+import ButtonLink from "@/components/ButtonLink";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+interface VendorComparisonListProps {
+    readonly vendorComparisons: VendorComparisonDto[];
+    readonly currentPage?: number;
+    readonly totalPages?: number;
+    readonly perpage?: number;
+    readonly onPageChange?: (page: number) => void;
+    readonly isLoading: boolean;
+    readonly totalItems: number;
+    readonly sort: SortConfig;
+    readonly onSort: (field: string) => void;
+    readonly setPerpage: (perpage: number) => void;
+}
+export default function VendorComparisonList({
+    vendorComparisons,
+    currentPage,
+    totalPages,
+    perpage,
+    onPageChange = () => { },
+    isLoading,
+    totalItems,
+    sort,
+    onSort,
+    setPerpage,
+}: VendorComparisonListProps) {
+    const tTableHeader = useTranslations("TableHeader");
+    const tCommon = useTranslations("Common");
+    const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+
+    const handleSelectItem = (id: string) => {
+        setSelectedItems(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
+    };
+
+    const handleSelectAll = () => {
+        if (selectedItems.length === vendorComparisons.length) {
+            // If all items are selected, unselect all
+            setSelectedItems([]);
+        } else {
+            // Otherwise, select all items
+            const allIds = vendorComparisons.map(vc => vc.id ?? '').filter(Boolean);
+            setSelectedItems(allIds);
+        }
+    };
+
+    const isAllSelected = vendorComparisons.length > 0 && selectedItems.length === vendorComparisons.length;
+
+    const columns: TableColumn[] = [
+        {
+            title: (
+                <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={handleSelectAll}
+                />
+            ),
+            dataIndex: "select",
+            key: "select",
+            width: "w-6",
+            align: "center",
+            render: (_: unknown, record: TableDataSource) => {
+                return <Checkbox checked={selectedItems.includes(record.key)} onCheckedChange={() => handleSelectItem(record.key)} />;
+            },
+        },
+        {
+            title: "#",
+            dataIndex: "no",
+            key: "no",
+            width: "w-6",
+            align: "center",
+        },
+        {
+            title: (
+                <SortableColumnHeader
+                    columnKey="vendor_name"
+                    label={tTableHeader("vendor")}
+                    sort={sort}
+                    onSort={onSort}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
+            ),
+            dataIndex: "vendor_name",
+            key: "vendor_name",
+            align: "left",
+            icon: <FileText className="h-4 w-4" />,
+            render: (_: unknown, vc: TableDataSource) => {
+                return (
+                    <ButtonLink href={`/procurement/vendor-comparison/${vc.key}`}>
+                        {vc.vendor_name}
+                    </ButtonLink>
+                )
+            },
+        },
+
+        {
+            title: tTableHeader("rating"),
+            dataIndex: "rating",
+            key: "rating",
+            align: "center",
+        },
+        {
+            title: tTableHeader("delivery_time"),
+            dataIndex: "delivery_time",
+            key: "delivery_time",
+            align: "center",
+        },
+        {
+            title: tTableHeader("score"),
+            dataIndex: "score",
+            key: "score",
+            align: "center",
+        },
+        {
+            title: tTableHeader("res_time"),
+            dataIndex: "res_time",
+            key: "res_time",
+            align: "center",
+        },
+        {
+            title: tTableHeader("quality_score"),
+            dataIndex: "score",
+            key: "score",
+            align: "center",
+        },
+        {
+            title: tTableHeader("status"),
+            dataIndex: "status",
+            key: "status",
+            align: "center",
+            render: (_: unknown, vc: TableDataSource) => {
+                return (
+                    <div className="flex justify-center">
+                        <StatusCustom is_active={vc.status}>
+                            {vc.status ? tCommon("active") : tCommon("inactive")}
+                        </StatusCustom>
+                    </div>
+                )
+            }
+        },
+        {
+            title: tTableHeader("action"),
+            dataIndex: "action",
+            key: "action",
+            align: "right",
+            render: (_: unknown, po: TableDataSource) => {
+                return <div className="text-right">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <MoreHorizontal className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log("Approve", po.id);
+                                }}
+                            >
+                                <Printer />
+                                {tCommon("print")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log("Download", po.id);
+                                }}
+                            >
+                                <FileDown />
+                                {tCommon("export")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log("Delete", po.id);
+                                }}
+                                className="text-red-500 hover:text-red-300"
+                            >
+                                <Trash2 />
+                                {tCommon("delete")}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>;
+            },
+        },
+    ];
+
+    const dataSource: TableDataSource[] = vendorComparisons?.map((vc, index) => ({
+        select: false,
+        key: vc.id ?? "",
+        no: index + 1,
+        vendor_name: vc.vendor_name,
+        rating: vc.rating,
+        delivery_time: vc.delivery_time,
+        score: vc.score,
+        res_time: vc.res_time,
+        status: vc.status,
+    }));
+    return (
+        <TableTemplate
+            columns={columns}
+            dataSource={dataSource}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            perpage={perpage}
+            setPerpage={setPerpage}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            isLoading={isLoading}
+        />
     )
 }

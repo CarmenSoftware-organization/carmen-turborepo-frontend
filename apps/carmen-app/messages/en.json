@@ -318,7 +318,7 @@
     "title_credit_note": "Credit Note",
     "title_purchase_request_template": "Purchase Request Template",
     "title_purchase_order_number": "Purchase Order Number",
-    "po_number": "Purchase Order Number",
+    "po_number": "PO Number",
     "delivery_date": "Delivery Date",
     "currency": "Currency",
     "net_amount": "Net Amount",
@@ -352,7 +352,12 @@
     "product": "Product",
     "requested": "Requested",
     "approved": "Approved",
-    "price": "Price"
+    "price": "Price",
+    "rating": "Rating",
+    "delivery_time": "Delivery Time",
+    "score": "Score",
+    "res_time": "Response Time",
+    "quality_score": "Quality Score"
   },
   "Product": {
     "title": "Product"
@@ -658,5 +663,8 @@
     "add_item": "Add Item",
     "grns": "Goods Receipt Notes",
     "related_docs": "Related Documents"
+  },
+  "VendorComparison": {
+    "title": "Vendor Comparison"
   }
 }
