@@ -10,8 +10,6 @@ export default function CommentGrn() {
     return (
         <CommentComponent
             initialComments={formattedComments}
-            title="Comments & Attachments"
-            scrollAreaHeight="h-[200px]"
             onFileDownload={(attachment) => console.log(`Downloading ${attachment.file}`)}
         />
     );

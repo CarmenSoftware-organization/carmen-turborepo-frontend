@@ -54,6 +54,7 @@ import {
   FileCheck,
   Hotel,
   Coins,
+  Warehouse,
 } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
@@ -415,7 +416,7 @@ export const moduleItems: ModuleItem[] = [
       {
         labelKey: "Modules.Configuration.department",
         href: "/configuration/department",
-        icon: Users,
+        icon: Warehouse,
       },
       {
         labelKey: "Modules.Configuration.tax_profile",

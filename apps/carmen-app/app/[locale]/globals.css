@@ -28,7 +28,7 @@
     --destructive-foreground: 0 100% 99.4118%;
     --border: 0 0% 87.4510%;
     --input: 0 0% 96.4706%;
-    --ring: 225 92% 70%;
+    --ring: 0 0% 12.5490%;
     --chart-1: 151.3274 66.8639% 66.8627%;
     --chart-2: 217.2193 91.2195% 59.8039%;
     --chart-3: 258.3117 89.5349% 66.2745%;
@@ -54,7 +54,7 @@
     --tracking-normal: 0.025em;
     --spacing: 0.25rem;
     /* color custom */
-    --active: 154.9deg 100% 19.2%;
+    --active: 154.5763 100% 23.1373%;
     --inactive: 9.8901 81.9820% 43.5294%;
     --azure-primary: 210deg 100% 19%;
     --sunshine-primary: 42deg 76% 55%;
@@ -87,7 +87,7 @@
     --destructive-foreground: 12.0000 12.1951% 91.9608%;
     --border: 0 0% 16.0784%;
     --input: 0 0% 14.1176%;
-    --ring: 225 92% 70%;
+    --ring: 0 0% 12.5490%;
     --chart-1: 141.8919 69.1589% 58.0392%;
     --chart-2: 213.1169 93.9024% 67.8431%;
     --chart-3: 255.1351 91.7355% 76.2745%;
@@ -111,7 +111,7 @@
     --shadow-xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.17), 0px 8px 10px -1px hsl(0 0% 0% / 0.17);
     --shadow-2xl: 0px 1px 3px 0px hsl(0 0% 0% / 0.43);
     /* color custom */
-    --active: 154.8980 100.0000% 19.2157%;
+    --active: 154.5763 100% 23.1373%;
     --inactive: 9.8901 81.9820% 43.5294%;
     --azure-primary: 210deg 100% 19%;
     --sunshine-primary: 55deg 100% 40%;

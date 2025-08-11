@@ -133,7 +133,7 @@ export default function ProductList({
       ),
       dataIndex: "category",
       key: "category",
-      align: "center",
+      align: "left",
       icon: <Tag className="h-4 w-4" />,
     },
     {
@@ -164,9 +164,11 @@ export default function ProductList({
       align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (status: string) => (
-        <StatusCustom is_active={status === "active"}>
-          {status === "active" ? tCommon("active") : tCommon("inactive")}
-        </StatusCustom>
+        <div className="flex items-center justify-center">
+          <StatusCustom is_active={status === "active"}>
+            {status === "active" ? tCommon("active") : tCommon("inactive")}
+          </StatusCustom>
+        </div>
       ),
     },
     {

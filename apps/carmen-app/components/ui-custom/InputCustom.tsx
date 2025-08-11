@@ -232,8 +232,9 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         derivedStates.needsTopPadding && "pt-4",
         startContent && "pl-10",
         (endContent || derivedStates.shouldShowPasswordToggle) && "pr-10",
-        derivedStates.finalError && "border-red-500 focus:ring-red-500",
-        className
+        derivedStates.finalError && "border-destructive focus:ring-destructive",
+        className,
+        "focus:outline-none"
       );
     }, [
       labelPlacement,

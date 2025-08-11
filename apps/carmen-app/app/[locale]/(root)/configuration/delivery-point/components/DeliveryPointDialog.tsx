@@ -127,6 +127,7 @@ export default function DeliveryPointDialog({
                         <FormField
                             control={form.control}
                             name="is_active"
+                            required
                             render={({ field }) => (
                                 <FormItem>
                                     <FormControl>

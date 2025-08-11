@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, SquarePen, } from "lucide-react";
+import { ChevronLeft, SquarePen, WarehouseIcon, } from "lucide-react";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useTranslations } from "next-intl";
 import { Separator } from "@/components/ui/separator";
@@ -33,6 +33,7 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
                 >
                     <ChevronLeft className="w-4 h-4" />
                 </Button>
+                <WarehouseIcon />
                 <h1 className="text-xl font-semibold">{data.name}</h1>
             </div>
 

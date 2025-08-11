@@ -114,7 +114,7 @@ export default function DetailsAndComments({ children, className, activityCompon
                         </MotionDiv>
                     </ScrollArea>
                 </MotionDiv>
-                <div className={cn("flex flex-col gap-2 border-l border-border", openLog ? "px-4" : "pl-2")}>
+                <div className={cn("flex flex-col gap-2 border-l border-border", openLog ? "px-2" : "pl-2")}>
                     <MotionDiv
                         variants={buttonVariants}
                         whileHover="hover"
@@ -125,9 +125,8 @@ export default function DetailsAndComments({ children, className, activityCompon
                             variant="outlinePrimary"
                             size="sm"
                             aria-label="Open Activity Log"
-                            className="h-10 w-10"
                         >
-                            <Activity className="h-5 w-5" />
+                            <Activity className="h-3 w-3" />
                         </Button>
                     </MotionDiv>
                     <MotionDiv
@@ -140,9 +139,8 @@ export default function DetailsAndComments({ children, className, activityCompon
                             variant="outlinePrimary"
                             size="sm"
                             aria-label="Open Comments"
-                            className="h-10 w-10"
                         >
-                            <MessageSquare className="h-5 w-5" />
+                            <MessageSquare className="h-3 w-3" />
                         </Button>
                     </MotionDiv>
                 </div>
@@ -153,7 +151,7 @@ export default function DetailsAndComments({ children, className, activityCompon
                             initial="closed"
                             animate="open"
                             exit="closed"
-                            className="h-full border-l border-border bg-background shadow-lg"
+                            className="h-full border border-border bg-background shadow-lg rounded-md"
                         >
                             <MotionDiv
                                 className="flex flex-col h-full"
@@ -161,16 +159,16 @@ export default function DetailsAndComments({ children, className, activityCompon
                                 animate={{ y: 0, opacity: 1 }}
                                 transition={{ duration: 0.3, delay: 0.2 }}
                             >
-                                <div className="flex items-center justify-between p-2 border-b border-border bg-muted/50">
+                                <div className="flex items-center justify-between p-2 bg-muted/50">
                                     <h3 className="text-lg font-semibold flex items-center gap-2">
                                         {activeTab === 'activity' ? (
                                             <>
-                                                <Activity className="w-5 h-5" />
+                                                <Activity className="w-4 h-4" />
                                                 Activity Log
                                             </>
                                         ) : (
                                             <>
-                                                <MessageSquare className="w-5 h-5" />
+                                                <MessageSquare className="w-4 h-4" />
                                                 Comments
                                             </>
                                         )}

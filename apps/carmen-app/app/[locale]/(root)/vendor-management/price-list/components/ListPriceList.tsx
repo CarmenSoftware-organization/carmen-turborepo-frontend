@@ -57,7 +57,6 @@ export default function ListPriceList({
 }: ListPriceListProps) {
     const { token, tenantId, dateFormat } = useAuth();
     const tTableHeader = useTranslations("TableHeader");
-    const tCommon = useTranslations("Common");
     const queryClient = useQueryClient();
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [deleteId, setDeleteId] = useState<string>('');
