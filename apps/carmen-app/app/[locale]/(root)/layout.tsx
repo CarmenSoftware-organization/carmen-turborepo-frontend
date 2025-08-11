@@ -10,14 +10,14 @@ export default function RootLayout({
 }>) {
     return (
         <ProtectedRoute>
-            <div className="relative h-screen overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 z-20">
+            <div className="h-screen grid grid-rows-[auto_1fr] overflow-hidden">
+                <div className="z-20">
                     <Navbar />
                 </div>
-                <div className="flex h-screen">
+                <div className="flex overflow-hidden">
                     <SidebarComponent />
                     <div className="flex-1 flex flex-col overflow-hidden">
-                        <main className="flex-1 space-y-4 overflow-y-auto px-4 py-20 pb-5">
+                        <main className="flex-1 overflow-y-auto m-4">
                             {children}
                         </main>
                     </div>

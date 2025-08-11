@@ -273,7 +273,7 @@ const SidebarContent = () => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={cn(
-                'flex flex-col border-r border-border h-screen hidden md:block mt-16 relative'
+                'flex flex-col border-r border-border h-screen hidden md:block relative'
             )}
             aria-label="Sidebar Navigation"
         >
