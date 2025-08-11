@@ -347,7 +347,12 @@
     "net": "Net",
     "discount": "Discount",
     "receiver": "Receiver",
-    "doc_type": "Document Type"
+    "doc_type": "Document Type",
+    "location": "Location",
+    "product": "Product",
+    "requested": "Requested",
+    "approved": "Approved",
+    "price": "Price"
   },
   "Product": {
     "title": "Product"
@@ -551,12 +556,33 @@
     "updating": "Updating...",
     "delete": "Delete",
     "data_not_found": "No data found",
-    "select_all": "Select All"
+    "select_all": "Select All",
+    "pr_no": "PR Number",
+    "description": "Description",
+    "date": "Date",
+    "type": "Type",
+    "amount": "Amount",
+    "status": "Status"
   },
   "PurchaseRequest": {
     "title": "Purchase Request",
+    "template": "Purchase Request Template",
     "general": "General",
-    "market_list": "Market List"
+    "market_list": "Market List",
+    "pr_no": "PR Number",
+    "pr_date": "PR Date",
+    "pr_type": "PR Type",
+    "description": "Description",
+    "note": "Note",
+    "status_info": "Status Information",
+    "requestor": "Requestor",
+    "department": "Department",
+    "current_stage": "Current Stage",
+    "doc_status": "Document Status",
+    "create_date": "Created Date",
+    "items": "Items",
+    "budget": "Budget",
+    "add_item": "Add Item"
   },
   "Procurement": {
     "title": "Procurement"

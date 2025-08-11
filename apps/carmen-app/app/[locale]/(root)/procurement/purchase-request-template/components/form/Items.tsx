@@ -10,22 +10,27 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/context/AuthContext";
+import { useCurrenciesQuery } from "@/hooks/useCurrencie";
 
-interface PoItemsProps {
+interface Props {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly items: any[];
 }
 
-export default function PoItems({ items }: PoItemsProps) {
-    const tPurchaseOrder = useTranslations("PurchaseOrder");
+export default function Items({ items }: Props) {
+    const tPurchaseRequest = useTranslations("PurchaseRequest");
     const tTableHeader = useTranslations("TableHeader");
+    const { token, tenantId, currencyBase } = useAuth();
+    const { getCurrencyCode } = useCurrenciesQuery(token, tenantId);
+
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <p className="font-medium">{tPurchaseOrder("items")}</p>
+                <p className="font-medium">{tPurchaseRequest("items")}</p>
                 <Button variant="outlinePrimary" size={'sm'}>
                     <Plus className="h-4 w-4" />
-                    {tPurchaseOrder("add_item")}
+                    {tPurchaseRequest("add_item")}
                 </Button>
             </div>
             <Table>
@@ -37,13 +42,11 @@ export default function PoItems({ items }: PoItemsProps) {
                         <TableHead className="text-center w-10">
                             <Hash className="h-3 w-3" />
                         </TableHead>
-                        <TableHead className="text-left">{tTableHeader("no")}</TableHead>
-                        <TableHead className="text-left">{tTableHeader("name")}</TableHead>
-                        <TableHead className="text-right">{tTableHeader("order")}</TableHead>
-                        <TableHead className="text-right">{tTableHeader("tax")}</TableHead>
-                        <TableHead className="text-right">{tTableHeader("net")}</TableHead>
-                        <TableHead className="text-right">{tTableHeader("discount")}</TableHead>
-                        <TableHead className="text-right">{tTableHeader("amount")}</TableHead>
+                        <TableHead className="text-left">{tTableHeader("location")}</TableHead>
+                        <TableHead className="text-left">{tTableHeader("product")}</TableHead>
+                        <TableHead className="text-right">{tTableHeader("requested")}</TableHead>
+                        <TableHead className="text-right">{tTableHeader("approved")}</TableHead>
+                        <TableHead className="text-right">{tTableHeader("price")}</TableHead>
                         <TableHead className="text-right">{tTableHeader("action")}</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -54,18 +57,35 @@ export default function PoItems({ items }: PoItemsProps) {
                                 <Checkbox />
                             </TableCell>
                             <TableCell className="text-center w-10">{index + 1}</TableCell>
-                            <TableCell className="text-left">{item.no}</TableCell>
+                            <TableCell className="text-left">{item.location_name}</TableCell>
                             <TableCell className="text-left">
                                 <div className="flex flex-col gap-1">
-                                    <p className="text-sm font-medium">{item.name}</p>
+                                    <p className="text-sm font-medium">{item.product_name}</p>
                                     <p className="text-xs text-gray-500">{item.description}</p>
                                 </div>
                             </TableCell>
-                            <TableCell className="text-right">{item.order_qty} {item.unit}</TableCell>
-                            <TableCell className="text-right">{item.tax}</TableCell>
-                            <TableCell className="text-right">{item.net}</TableCell>
-                            <TableCell className="text-right">{item.discount}</TableCell>
-                            <TableCell className="text-right">{item.amount}</TableCell>
+                            <TableCell className="text-right">
+                                <div className="flex flex-col gap-1">
+                                    <p>{item.requested_qty} {item.requested_unit_name || "-"}</p>
+                                    <p className="text-xs text-gray-500">
+                                        (≈ {item.requested_base_qty} {item.inventory_unit_name || "-"})
+                                    </p>
+                                </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <div className="flex flex-col gap-1">
+                                    <p>{item.approved_qty} {item.approved_unit_name || "-"}</p>
+                                    <p className="text-xs text-gray-500">
+                                        FOC: {item.foc_qty} {item.foc_unit_name || "-"}
+                                    </p>
+                                </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <div className="flex flex-col gap-1">
+                                    <p>{getCurrencyCode(item.currency_id)} {item.total_price}</p>
+                                    <p>{currencyBase} {item.base_total_price}</p>
+                                </div>
+                            </TableCell>
                             <TableCell className="text-right">
                                 <div className="flex items-center justify-end gap-1">
                                     <Button variant="ghost" size={'sm'}>

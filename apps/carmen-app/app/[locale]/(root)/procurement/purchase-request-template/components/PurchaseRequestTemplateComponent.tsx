@@ -9,30 +9,31 @@ import { useURL } from "@/hooks/useURL";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import PurchaseRequestTemplateList from "./PurchaseRequestTemplateList";
-
-// mock
 import { mockPurchaseRequestTemplates } from "@/mock-data/procurement";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { useRouter } from "@/lib/navigation";
+
 export default function PurchaseRequestTemplateComponent() {
     const tCommon = useTranslations('Common');
+    const tDataControls = useTranslations('DataControls');
+    const tPurchaseRequest = useTranslations('PurchaseRequest');
+    const router = useRouter();
     const [search, setSearch] = useURL('search');
     const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
 
     const sortFields = [
-        { key: 'code', label: 'Code' },
-        { key: 'name', label: 'Name' },
-        { key: 'symbol', label: 'Symbol' },
-        { key: 'is_active', label: 'Status' },
-        { key: 'exchange_rate', label: 'Exchange Rate' },
+        { key: 'no', label: tDataControls('pr_no') },
     ];
 
-    const title = "Purchase Request Template"
+    const title = tPurchaseRequest('template');
 
     const actionButtons = (
         <div className="action-btn-container" data-id="pr-template-action-buttons">
-            <Button size={'sm'}>
+            <Button size={'sm'} onClick={
+                () => router.push('/procurement/purchase-request-template/new')
+            }>
                 <Plus className="h-4 w-4" />
                 {tCommon('add')}
             </Button>
@@ -79,13 +80,23 @@ export default function PurchaseRequestTemplateComponent() {
                     data-id="pr-template-list-sort-dropdown"
                 />
                 <Button size={'sm'}>
-                    Add Filter
+                    {tCommon('filter')}
                 </Button>
             </div>
         </div>
     );
 
-    const content = <PurchaseRequestTemplateList purchaseRequestTemplates={mockPurchaseRequestTemplates} />
+    const content = <PurchaseRequestTemplateList
+        prts={mockPurchaseRequestTemplates}
+        isLoading={false}
+        totalItems={mockPurchaseRequestTemplates.length}
+        currentPage={1}
+        totalPages={1}
+        perpage={10}
+        onPageChange={() => { }}
+        sort={{ field: 'code', direction: 'asc' }}
+        onSort={() => { }}
+    />
 
     return (
         <DataDisplayTemplate

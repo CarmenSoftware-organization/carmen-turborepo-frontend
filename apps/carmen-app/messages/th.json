@@ -346,7 +346,12 @@
     "net": "สุทธิ",
     "discount": "ส่วนลด",
     "receiver": "ผู้รับสินค้า",
-    "doc_type": "ประเภทเอกสาร"
+    "doc_type": "ประเภทเอกสาร",
+    "location": "สถานที่",
+    "product": "สินค้า",
+    "requested": "ขอซื้อ",
+    "approved": "อนุมัติ",
+    "price": "ราคา"
   },
   "Product": {
     "title": "สินค้า"
@@ -547,12 +552,33 @@
     "edit": "แก้ไข",
     "delete": "ลบ",
     "data_not_found": "ไม่พบข้อมูล",
-    "select_all": "เลือกทั้งหมด"
+    "select_all": "เลือกทั้งหมด",
+    "pr_no": "เลขที่ใบขอซื้อ",
+    "description": "คำอธิบาย",
+    "date": "วันที่",
+    "type": "ประเภท",
+    "amount": "จำนวนเงิน",
+    "status": "สถานะ"
   },
   "PurchaseRequest": {
     "title": "ใบขอซื้อ",
+    "template": "แม่แบบใบขอซื้อ",
     "general": "ทั่วไป",
-    "market_list": "รายการตลาด"
+    "market_list": "รายการตลาด",
+    "pr_no": "เลขที่ใบขอซื้อ",
+    "pr_date": "วันที่ใบขอซื้อ",
+    "pr_type": "ประเภทใบขอซื้อ",
+    "description": "คำอธิบาย",
+    "note": "หมายเหตุ",
+    "status_info": "ข้อมูลสถานะ",
+    "requestor": "ผู้ขอซื้อ",
+    "department": "แผนก",
+    "current_stage": "ขั้นตอนปัจจุบัน",
+    "doc_status": "สถานะเอกสาร",
+    "create_date": "วันที่สร้าง",
+    "items": "รายการสินค้า",
+    "budget": "งบประมาณ",
+    "add_item": "เพิ่มรายการสินค้า"
   },
   "Procurement": {
     "title": "การจัดซื้อ"

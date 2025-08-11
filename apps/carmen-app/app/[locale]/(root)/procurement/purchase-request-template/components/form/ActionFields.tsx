@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function ActionFields({ currentMode, setCurrentMode, title }: Props) {
-    const tPurchaseOrder = useTranslations("PurchaseOrder");
+    const tPurchaseRequest = useTranslations("PurchaseRequest");
     const tCommon = useTranslations("Common");
 
     return (
@@ -24,7 +24,7 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
                     <p className="text-xl font-bold">{title}</p>
 
                 ) : (
-                    <p className="text-xl font-bold">{tPurchaseOrder("title")}</p>
+                    <p className="text-xl font-bold">{tPurchaseRequest("template")}</p>
                 )}
             </div>
             <div className="flex items-center gap-2">
