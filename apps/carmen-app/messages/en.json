@@ -340,7 +340,14 @@
     "last_action_by": "Last Action By",
     "last_action_date": "Last Action Date",
     "start_date": "Start Date",
-    "end_date": "End Date"
+    "end_date": "End Date",
+    "unit": "Unit",
+    "order": "Order",
+    "tax": "Tax",
+    "net": "Net",
+    "discount": "Discount",
+    "receiver": "Receiver",
+    "doc_type": "Document Type"
   },
   "Product": {
     "title": "Product"
@@ -601,5 +608,29 @@
     "no_order_units_defined": "No order units defined yet",
     "units": "Units",
     "remove": "Remove"
+  },
+  "PurchaseOrder": {
+    "title": "Purchase Order",
+    "po_number": "PO Number",
+    "po_date": "PO Date",
+    "vendor": "Vendor",
+    "status": "Status",
+    "date_created": "Date Created",
+    "delivery_date": "Delivery Date",
+    "currency": "Currency",
+    "net_amount": "Net Amount",
+    "tax_amount": "Tax Amount",
+    "amount": "Amount",
+    "exchange_rate": "Exchange Rate",
+    "credit_term": "Credit Term",
+    "requestor": "Requestor",
+    "description": "Description",
+    "note": "Note",
+    "items": "Items",
+    "grn": "Goods Receipt Note",
+    "docs": "Documents",
+    "add_item": "Add Item",
+    "grns": "Goods Receipt Notes",
+    "related_docs": "Related Documents"
   }
 }

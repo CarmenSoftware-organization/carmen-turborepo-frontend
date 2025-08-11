@@ -32,7 +32,7 @@ export default function ActivityLog() {
     return (
         <ActivityLogComponent
             initialActivities={activityLogs}
-            searchPlaceholder="Search activity..."
+            searchPlaceholder="Search activity log..."
         />
     );
 }

@@ -1,40 +1,42 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { PurchaseOrderlDto } from "@/dtos/procurement.dto";
-import { FileText, MoreVertical, SquarePen, Trash2 } from "lucide-react";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import { Building2, Calendar, DollarSign, FileDown, FileText, MoreHorizontal, Printer, TagIcon, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Link } from "@/lib/navigation";
+import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import SortableColumnHeader from "@/components/table/SortableColumnHeader";
+import ButtonLink from "@/components/ButtonLink";
+import { Badge } from "@/components/ui/badge";
 
 interface PurchaseOrderListProps {
     readonly purchaseOrders: PurchaseOrderlDto[];
+    readonly currentPage?: number;
+    readonly totalPages?: number;
+    readonly perpage?: number;
+    readonly onPageChange?: (page: number) => void;
+    readonly isLoading: boolean;
+    readonly totalItems: number;
+    readonly sort: SortConfig;
+    readonly onSort: (field: string) => void;
+    readonly setPerpage: (perpage: number) => void;
 }
 
-const poStatusColor = (status: string) => {
-    if (status === 'Pending') {
-        return 'bg-yellow-100 text-yellow-800';
-    } else if (status === 'Approved') {
-        return 'bg-green-100 text-green-800';
-    } else if (status === 'Rejected') {
-        return 'bg-red-100 text-red-800';
-    } else {
-        return 'bg-blue-100 text-blue-800';
-    }
-}
-
-export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListProps) {
-    const t = useTranslations('TableHeader');
+export default function PurchaseOrderList({
+    purchaseOrders,
+    currentPage,
+    totalPages,
+    perpage,
+    onPageChange = () => { },
+    isLoading,
+    totalItems,
+    sort,
+    onSort,
+    setPerpage,
+}: PurchaseOrderListProps) {
+    const tTableHeader = useTranslations("TableHeader");
+    const tCommon = useTranslations("Common");
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
 
@@ -59,204 +61,199 @@ export default function PurchaseOrderList({ purchaseOrders }: PurchaseOrderListP
 
     const isAllSelected = purchaseOrders.length > 0 && selectedItems.length === purchaseOrders.length;
 
-    return (
-        <div className="space-y-4">
-            <div className="hidden md:block">
-                <Table className="border">
-                    <TableHeader>
-                        <TableRow className="bg-muted">
-                            <TableHead className="w-10 text-center">
-                                <Checkbox
-                                    id="select-all"
-                                    checked={isAllSelected}
-                                    onCheckedChange={handleSelectAll}
-                                    aria-label="Select all purchase requests"
-                                />
-                            </TableHead>
-                            <TableHead>{t('po_number')}</TableHead>
-                            <TableHead>{t('vendor')}</TableHead>
-                            <TableHead>{t('date')}</TableHead>
-                            <TableHead>{t('delivery_date')}</TableHead>
-                            <TableHead>{t('currency')}</TableHead>
-                            <TableHead>{t('net_amount')}</TableHead>
-                            <TableHead>{t('tax_amount')}</TableHead>
-                            <TableHead>{t('amount')}</TableHead>
-                            <TableHead>{t('status')}</TableHead>
-                            <TableHead className="w-[100px] text-right">{t('action')}</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {purchaseOrders.map((po) => (
-                            <TableRow key={po.id}>
-                                <TableCell className="text-center w-10">
-                                    <Checkbox
-                                        id={`checkbox-${po.id}`}
-                                        checked={selectedItems.includes(po.id ?? '')}
-                                        onCheckedChange={() => handleSelectItem(po.id ?? '')}
-                                        aria-label={`Select ${po.po_number}`}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Button variant={'ghost'} asChild className="p-0">
-                                        <Link
-                                            href={`/procurement/purchase-order/${po.id}`}
-                                            className="hover:underline text-primary hover:text-primary/80 font-medium"
-                                        >
-                                            {po.po_number}
-                                        </Link>
-                                    </Button>
-                                </TableCell>
-                                <TableCell>{po.vendor}</TableCell>
-                                <TableCell>{po.date_created}</TableCell>
-                                <TableCell>{po.delivery_date}</TableCell>
-                                <TableCell>{po.currency}</TableCell>
-                                <TableCell>{po.net_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                                <TableCell>{po.tax_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                                <TableCell>{po.amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline" className={`${poStatusColor(po.status)} rounded-full`}>
-                                        {po.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    <div className="flex items-center justify-end">
-                                        <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                            <FileText className="h-4 w-4" />
-                                        </Button>
-                                        <Button variant="ghost" size={'sm'} className="h-7 w-7">
-                                            <SquarePen className="h-4 w-4" />
-                                        </Button>
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    className="h-7 w-7"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    <span className="sr-only">More options</span>
-                                                    <MoreVertical className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        console.log("Approve", po.id);
-                                                    }}
-                                                >
-                                                    Print
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        console.log("Reject", po.id);
-                                                    }}
-                                                >
-                                                    Download
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        console.log("Send Email", po.id);
-                                                    }}
-                                                    className="text-destructive"
-                                                >
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
+    const columns: TableColumn[] = [
+        {
+            title: (
+                <Checkbox
+                    checked={isAllSelected}
+                    onCheckedChange={handleSelectAll}
+                />
+            ),
+            dataIndex: "select",
+            key: "select",
+            width: "w-6",
+            align: "center",
+            render: (_: unknown, record: TableDataSource) => {
+                return <Checkbox checked={selectedItems.includes(record.key)} onCheckedChange={() => handleSelectItem(record.key)} />;
+            },
+        },
+        {
+            title: "#",
+            dataIndex: "no",
+            key: "no",
+            width: "w-6",
+            align: "center",
+        },
+        {
+            title: (
+                <SortableColumnHeader
+                    columnKey="po_number"
+                    label={tTableHeader("po_number")}
+                    sort={sort}
+                    onSort={onSort}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
+            ),
+            dataIndex: "po_number",
+            key: "po_number",
+            align: "left",
+            icon: <FileText className="h-4 w-4" />,
+            render: (_: unknown, po: TableDataSource) => {
+                return <ButtonLink href={`/procurement/purchase-order/${po.key}`}>
+                    {po.po_number}
+                </ButtonLink>;
+            },
+        },
+        {
+            title: (
+                <SortableColumnHeader
+                    columnKey="vendor"
+                    label={tTableHeader("vendor")}
+                    sort={sort}
+                    onSort={onSort}
+                    getSortableColumnProps={getSortableColumnProps}
+                    renderSortIcon={renderSortIcon}
+                />
+            ),
+            dataIndex: "vendor",
+            key: "vendor",
+            align: "left",
+            icon: <Building2 className="h-4 w-4" />,
+        },
+        {
+            title: tTableHeader("date"),
+            dataIndex: "date_created",
+            key: "date_created",
+            align: "center",
+            icon: <Calendar className="h-4 w-4" />,
+        },
+        {
+            title: tTableHeader("delivery_date"),
+            dataIndex: "delivery_date",
+            key: "delivery_date",
+            align: "center",
+            icon: <Calendar className="h-4 w-4" />,
+        },
+        {
+            title: tTableHeader("currency"),
+            dataIndex: "currency",
+            key: "currency",
+            align: "center",
+            icon: <DollarSign className="h-4 w-4" />,
+        },
+        {
+            title: tTableHeader("net_amount"),
+            dataIndex: "net_amount",
+            key: "net_amount",
+            align: "right",
+            icon: <DollarSign className="h-4 w-4" />,
+        },
+        {
+            title: tTableHeader("tax_amount"),
+            dataIndex: "tax_amount",
+            key: "tax_amount",
+            align: "right",
+            icon: <DollarSign className="h-4 w-4" />,
+        },
+        {
+            title: tTableHeader("amount"),
+            dataIndex: "amount",
+            key: "amount",
+            align: "right",
+            icon: <DollarSign className="h-4 w-4" />,
+        },
+        {
+            title: tTableHeader("status"),
+            dataIndex: "status",
+            key: "status",
+            align: "center",
+            icon: <TagIcon className="h-4 w-4" />,
+            render: (_: unknown, po: TableDataSource) => {
+                return (
+                    <Badge variant={'outline'}>
+                        {po.status}
+                    </Badge>
+                )
+            },
+        },
+        {
+            title: tTableHeader("action"),
+            dataIndex: "action",
+            key: "action",
+            align: "right",
+            render: (_: unknown, po: TableDataSource) => {
+                return <div className="text-right">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <MoreHorizontal className="h-4 w-4" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log("Approve", po.id);
+                                }}
+                            >
+                                <Printer />
+                                {tCommon("print")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log("Download", po.id);
+                                }}
+                            >
+                                <FileDown />
+                                {tCommon("export")}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    console.log("Delete", po.id);
+                                }}
+                                className="text-red-500 hover:text-red-300"
+                            >
+                                <Trash2 />
+                                {tCommon("delete")}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>;
+            },
+        },
+    ];
 
-            {/* Mobile Card View */}
-            <div className="grid gap-4 md:hidden">
-                <div className="flex items-center justify-between">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleSelectAll}
-                    >
-                        {isAllSelected ? 'Unselect All' : 'Select All'}
-                    </Button>
-                    {selectedItems.length > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                            {selectedItems.length} Items Selected
-                        </span>
-                    )}
-                </div>
-                {purchaseOrders.map((po) => (
-                    <Card key={po.id} className="transition-all duration-200 hover:shadow-lg hover:border-primary/50">
-                        <CardHeader className="p-4">
-                            <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-2">
-                                    <Checkbox
-                                        id={`mobile-checkbox-${po.id}`}
-                                        checked={selectedItems.includes(po.id ?? '')}
-                                        onCheckedChange={() => handleSelectItem(po.id ?? '')}
-                                        aria-label={`Select ${po.po_number}`}
-                                        className="mt-1"
-                                    />
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-muted-foreground">{po.po_number}</span>
-                                        <Badge variant="outline" className={`${poStatusColor(po.status)} rounded-full`}>
-                                            {po.status}
-                                        </Badge>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-accent">
-                                        <FileText className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-accent">
-                                        <SquarePen className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size={'sm'} className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('date')}</p>
-                                    <p className="text-xs font-medium">{po.date_created}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('delivery_date')}</p>
-                                    <p className="text-xs font-medium">{po.delivery_date}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('vendor')}</p>
-                                    <p className="text-xs font-medium">{po.vendor}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('currency')}</p>
-                                    <p className="text-xs font-medium">{po.currency}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('net_amount')}</p>
-                                    <p className="text-xs font-medium">{po.net_amount}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('tax_amount')}</p>
-                                    <p className="text-xs font-medium">{po.tax_amount}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-xs text-muted-foreground">{t('amount')}</p>
-                                    <p className="text-xs font-medium">{po.amount}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        </div>
+    const dataSource: TableDataSource[] = purchaseOrders?.map((po, index) => ({
+        select: false,
+        key: po.id ?? "",
+        no: index + 1,
+        po_number: po.po_number ?? "-",
+        vendor: po.vendor ?? "-",
+        date_created: po.date_created,
+        delivery_date: po.delivery_date,
+        currency: po.currency,
+        net_amount: po.net_amount,
+        tax_amount: po.tax_amount,
+        amount: po.amount,
+        status: po.status,
+    }));
+
+    console.log(dataSource);
+
+    return (
+        <TableTemplate
+            columns={columns}
+            dataSource={dataSource}
+            totalItems={totalItems}
+            totalPages={totalPages}
+            perpage={perpage}
+            setPerpage={setPerpage}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
+            isLoading={isLoading}
+        />
     )
 } 

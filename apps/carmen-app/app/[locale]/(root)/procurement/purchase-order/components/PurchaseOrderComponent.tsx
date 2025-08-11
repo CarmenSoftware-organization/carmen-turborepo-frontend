@@ -6,19 +6,22 @@ import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PurchaseOrderList from "./PurchaseOrderList";
 import { mockPurchaseOrders } from "@/mock-data/procurement";
 import DialogNewPo from "./DialogNewPo";
-import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import { parseSortString } from "@/utils/table-sort";
 
 export default function PurchaseOrderComponent() {
     const tCommon = useTranslations('Common');
+    const tDataControls = useTranslations("DataControls");
+    const tPurchaseOrder = useTranslations("PurchaseOrder");
     const [search, setSearch] = useURL('search');
-    const [status, setStatus] = useURL('status');
-    const [statusOpen, setStatusOpen] = useState(false);
     const [sort, setSort] = useURL('sort');
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [page, setPage] = useURL("page");
+    const [perpage, setPerpage] = useURL("perpage");
 
     const sortFields = [
         { key: 'code', label: 'Code' },
@@ -32,67 +35,114 @@ export default function PurchaseOrderComponent() {
         setDialogOpen(true);
     };
 
-    return (
-        <div className="space-y-4 flex w-full flex-col justify-center transition-all duration-300 ease-in-out">
-            <div className="md:flex justify-between items-start">
-                <h1 className="text-2xl font-semibold">Purchase Order</h1>
-                <div className="action-btn-container" data-id="purchase-order-action-buttons">
-                    <Button size={'sm'} onClick={handleOpenDialog}>
-                        <Plus className="h-4 w-4" />
-                        New Purchase Order
-                    </Button>
-                    <Button
-                        variant="outlinePrimary"
-                        className="group"
-                        size={'sm'}
-                        data-id="po-list-export-button"
-                    >
-                        <FileDown className="h-4 w-4" />
-                        {tCommon('export')}
-                    </Button>
-                    <Button
-                        variant="outlinePrimary"
-                        size={'sm'}
-                        data-id="po-list-print-button"
-                    >
-                        <Printer className="h-4 w-4" />
-                        {tCommon('print')}
-                    </Button>
-                </div>
-            </div>
-            <div className="filter-container" data-id="po-list-filters">
-                <SearchInput
-                    defaultValue={search}
-                    onSearch={setSearch}
-                    placeholder={tCommon('search')}
-                    data-id="po-list-search-input"
+    const totalItems = mockPurchaseOrders.length;
+    const totalPages = 1;
+
+    useEffect(() => {
+        if (search) {
+            setPage("");
+        }
+    }, [search, setPage]);
+
+    const handleSetPerpage = (newPerpage: number) => {
+        setPerpage(newPerpage.toString());
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage.toString());
+    };
+
+    const handleSort = useCallback((field: string) => {
+        if (!sort) {
+            setSort(`${field}:asc`);
+        } else {
+            const [currentField, currentDirection] = sort.split(':');
+
+            if (currentField === field) {
+                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+                setSort(`${field}:${newDirection}`);
+            } else {
+                setSort(`${field}:asc`);
+            }
+            setPage("1");
+        }
+    }, [setSort, sort, setPage]);
+
+    const title = tPurchaseOrder("title");
+
+    const filters = (
+        <div className="filter-container" data-id="po-list-filters">
+            <SearchInput
+                defaultValue={search}
+                onSearch={setSearch}
+                placeholder={tCommon("search")}
+                data-id="po-list-search-input"
+            />
+
+            <div className="flex items-center gap-2">
+                <SortComponent
+                    fieldConfigs={sortFields}
+                    sort={sort}
+                    setSort={setSort}
+                    data-id="po-list-sort-dropdown"
                 />
-                <div className="flex items-center gap-2">
-                    <StatusSearchDropdown
-                        value={status}
-                        onChange={setStatus}
-                        open={statusOpen}
-                        onOpenChange={setStatusOpen}
-                        data-id="po-list-status-search-dropdown"
-                    />
-                    <SortComponent
-                        fieldConfigs={sortFields}
-                        sort={sort}
-                        setSort={setSort}
-                        data-id="po-list-sort-dropdown"
-                    />
-                    <Button size={'sm'}>
-                        <Filter className="h-4 w-4" />
-                        Add Filter
-                    </Button>
-                </div>
+                <Button size={"sm"}>
+                    <Filter className="h-4 w-4" />
+                    {tDataControls("filter")}
+                </Button>
             </div>
-
-            <div className="flex-1 overflow-y-auto bg-background rounded-lg">
-                <PurchaseOrderList purchaseOrders={mockPurchaseOrders} />
-            </div>
-
-            <DialogNewPo open={dialogOpen} onOpenChange={setDialogOpen} />
         </div>
+    );
+
+    const actionButtons = (
+        <div
+            className="action-btn-container"
+            data-id="po-action-buttons"
+        >
+            <Button size={"sm"} onClick={handleOpenDialog}>
+                <Plus />
+                {tCommon("add")} {title}
+            </Button>
+            <Button
+                variant="outlinePrimary"
+                className="group"
+                size={"sm"}
+                data-id="po-list-export-button"
+            >
+                <FileDown />
+                {tCommon("export")}
+            </Button>
+            <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
+                <Printer />
+                {tCommon("print")}
+            </Button>
+        </div>
+    );
+
+    const content = (
+        <PurchaseOrderList
+            purchaseOrders={mockPurchaseOrders}
+            currentPage={page ? parseInt(page) : 1}
+            totalPages={totalPages}
+            perpage={perpage ? parseInt(perpage) : 10}
+            onPageChange={handlePageChange}
+            isLoading={false}
+            totalItems={totalItems}
+            sort={parseSortString(sort) || { field: '', direction: 'asc' }}
+            onSort={handleSort}
+            setPerpage={handleSetPerpage}
+        />
+    )
+
+    return (
+        <>
+            <DataDisplayTemplate
+                title={title}
+                actionButtons={actionButtons}
+                filters={filters}
+                content={content}
+            />
+            <DialogNewPo open={dialogOpen} onOpenChange={setDialogOpen} />
+        </>
     );
 }
