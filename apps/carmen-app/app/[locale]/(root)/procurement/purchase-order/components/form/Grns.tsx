@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 
 interface GrnsProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly grns: any[];
 }
 

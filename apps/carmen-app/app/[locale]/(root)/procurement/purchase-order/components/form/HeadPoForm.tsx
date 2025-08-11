@@ -5,6 +5,7 @@ import { Building2, CalendarIcon, Clock, DollarSign, FileText, Hash, MapPin, Not
 import { useTranslations } from "next-intl";
 
 interface Props {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly poData: any;
 }
 

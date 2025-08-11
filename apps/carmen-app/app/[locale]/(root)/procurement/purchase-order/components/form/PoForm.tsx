@@ -15,6 +15,7 @@ import ActivityLog from "../ActivityLog";
 import CommentPo from "../CommentPo";
 
 interface PoFormProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly poData: any;
     readonly mode: formType;
 }
