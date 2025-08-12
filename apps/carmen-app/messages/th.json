@@ -222,7 +222,10 @@
     "draft": "ร่าง",
     "in_progress": "กำลังดำเนินการ",
     "completed": "เสร็จสิ้น",
-    "cancelled": "ยกเลิก"
+    "cancelled": "ยกเลิก",
+    "pending": "รอการอนุมัติ",
+    "approved": "อนุมัติ",
+    "rejected": "ยกเลิก"
   },
   "UserManagement": {
     "title": "การจัดการผู้ใช้งาน"

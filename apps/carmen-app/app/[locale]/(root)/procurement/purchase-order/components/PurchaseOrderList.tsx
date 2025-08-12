@@ -8,7 +8,7 @@ import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/tabl
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import ButtonLink from "@/components/ButtonLink";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 
 interface PurchaseOrderListProps {
     readonly purchaseOrders: PurchaseOrderlDto[];
@@ -171,9 +171,13 @@ export default function PurchaseOrderList({
             icon: <TagIcon className="h-4 w-4" />,
             render: (_: unknown, po: TableDataSource) => {
                 return (
-                    <Badge variant={'outline'}>
-                        {po.status}
-                    </Badge>
+                    <div className="flex justify-center">
+                        {po.status && (
+                            <StatusBadge status={po.status}>
+                                {po.status}
+                            </StatusBadge>
+                        )}
+                    </div>
                 )
             },
         },

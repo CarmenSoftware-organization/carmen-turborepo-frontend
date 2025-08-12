@@ -1,57 +1,61 @@
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
+import { Ban, CircleCheck, CircleDashed, CircleX, ClipboardList, Loader, Send } from "lucide-react";
 
-export const StatusBadge = ({ status, children }: { status: string, children: React.ReactNode }) => {
+type StatusType =
+    | "sent"
+    | "in_progress"
+    | "pending"
+    | "approved"
+    | "rejected"
+    | "cancelled"
+    | "default";
 
-    const getStatusColor = (status: string) => {
-        if (status === 'in_progress') {
-            return 'bg-sunshinePrimary'
-        }
-        if (status === 'pending') {
-            return 'bg-azurePrimary'
-        }
-        if (status === 'approved') {
-            return 'bg-tealPrimary'
-        }
-        if (status === 'rejected') {
-            return 'bg-crimsonPrimary'
-        }
-        if (status === 'cancelled') {
-            return 'bg-rosePrimary'
-        }
-        return 'bg-slatePrimary'
-    }
+const STATUS_CONFIG: Record<StatusType, { color: string; icon: React.ElementType }> = {
+    sent: {
+        color: "text-sky-700",
+        icon: Send,
+    },
+    in_progress: {
+        color: "text-sunshinePrimary",
+        icon: Loader,
+    },
+    pending: {
+        color: "text-yellow-700",
+        icon: CircleDashed,
+    },
+    approved: {
+        color: "text-active",
+        icon: CircleCheck,
+    },
+    rejected: {
+        color: "text-crimsonPrimary",
+        icon: Ban,
+    },
+    cancelled: {
+        color: "text-rosePrimary",
+        icon: CircleX,
+    },
+    default: {
+        color: "text-slatePrimary",
+        icon: ClipboardList,
+    },
+};
 
-    const getStatusTextColor = (status: string) => {
-        if (status === 'in_progress') {
-            return 'text-sunshinePrimary'
-        }
-        if (status === 'pending') {
-            return 'text-azurePrimary'
-        }
-        if (status === 'approved') {
-            return 'text-tealPrimary'
-        }
-        if (status === 'rejected') {
-            return 'text-crimsonPrimary'
-        }
-        if (status === 'cancelled') {
-            return 'text-rosePrimary'
-        }
-        return 'text-slatePrimary'
-    }
+export const StatusBadge = ({
+    status,
+    children,
+}: {
+    status: string;
+    children: React.ReactNode;
+}) => {
+    const config =
+        STATUS_CONFIG[(status as StatusType) || "default"] ?? STATUS_CONFIG.default;
+    const Icon = config.icon;
 
     return (
         <div className="inline-flex items-center gap-1 bg-muted/50 dark:bg-muted border border-border rounded-lg px-2">
-            <div
-                className={cn(
-                    "w-2 h-2 rounded-full",
-                    getStatusColor(status)
-                )}
-            ></div>
-            <p className={cn(
-                "font-medium",
-                getStatusTextColor(status)
-            )}>{children}</p>
+            <Icon className={cn("w-3 h-3", config.color)} />
+            <p className={cn("font-medium text-xs", config.color)}>{children}</p>
         </div>
-    )
-}
+    );
+};

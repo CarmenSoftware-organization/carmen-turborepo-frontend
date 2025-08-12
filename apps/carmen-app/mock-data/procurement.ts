@@ -380,7 +380,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-001",
         vendor: "Microsoft Corporation",
-        status: "Sent",
+        status: "sent",
         date_created: "2024-03-25",
         delivery_date: "2024-04-01",
         po_number: "IT-20240325-001",
@@ -392,7 +392,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-002",
         vendor: "Lenovo Thailand",
-        status: "Approved",
+        status: "approved",
         date_created: "2024-03-20",
         delivery_date: "2024-03-30",
         po_number: "IT-20240320-002",
@@ -404,7 +404,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-003",
         vendor: "HP Enterprise",
-        status: "Rejected",
+        status: "rejected",
         date_created: "2024-03-18",
         delivery_date: "2024-03-28",
         po_number: "ENG-20240318-003",
@@ -416,7 +416,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-004",
         vendor: "Canon Business Solutions",
-        status: "Pending",
+        status: "pending",
         date_created: "2024-03-27",
         delivery_date: "2024-04-05",
         po_number: "ADM-20240327-004",
@@ -428,7 +428,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-005",
         vendor: "Cisco Systems",
-        status: "Approved",
+        status: "approved",
         date_created: "2024-03-22",
         delivery_date: "2024-03-29",
         po_number: "NET-20240322-005",
@@ -440,7 +440,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-006",
         vendor: "Brother International",
-        status: "Sent",
+        status: "sent",
         date_created: "2024-03-26",
         delivery_date: "2024-04-02",
         po_number: "OFC-20240326-006",
@@ -452,7 +452,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-007",
         vendor: "Oracle Corporation",
-        status: "Approved",
+        status: "approved",
         date_created: "2024-03-21",
         delivery_date: "2024-03-31",
         po_number: "IT-20240321-007",
@@ -464,7 +464,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-008",
         vendor: "3M Thailand",
-        status: "Pending",
+        status: "pending",
         date_created: "2024-03-28",
         delivery_date: "2024-04-08",
         po_number: "SUP-20240328-008",
@@ -476,7 +476,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-009",
         vendor: "Schneider Electric",
-        status: "Approved",
+        status: "approved",
         date_created: "2024-03-19",
         delivery_date: "2024-03-26",
         po_number: "FAC-20240319-009",
@@ -488,7 +488,7 @@ export const mockPurchaseOrders: PurchaseOrderlDto[] = [
     {
         id: "PO-010",
         vendor: "Xerox Thailand",
-        status: "Rejected",
+        status: "rejected",
         date_created: "2024-03-24",
         delivery_date: "2024-04-03",
         po_number: "ADM-20240324-010",

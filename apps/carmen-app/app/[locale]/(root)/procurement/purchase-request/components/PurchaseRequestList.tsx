@@ -15,6 +15,7 @@ import ButtonLink from "@/components/ButtonLink";
 import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
+import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -43,6 +44,7 @@ export default function PurchaseRequestList({
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const tStatus = useTranslations("Status");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const { dateFormat, amount, currencyBase } = useAuth();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -76,6 +78,16 @@ export default function PurchaseRequestList({
   const isAllSelected =
     purchaseRequests?.length > 0 &&
     selectedItems.length === purchaseRequests.length;
+
+  const convertStatus = (status: string) => {
+    if (status === 'pending') {
+      return tStatus("pending")
+    }
+    if (status === 'approved') {
+      return tStatus("approved")
+    }
+    return ''
+  }
 
   const columns: TableColumn[] = [
     {
@@ -137,9 +149,11 @@ export default function PurchaseRequestList({
       align: "left",
       icon: <Calendar className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
-        return <div className="text-left">
-          {formatDateFns(record.pr_date, dateFormat || 'yyyy-MM-dd')}
-        </div>;
+        return (
+          <div className="text-left">
+            {formatDateFns(record.pr_date, dateFormat || 'yyyy-MM-dd')}
+          </div>
+        )
       },
     },
     {
@@ -180,6 +194,17 @@ export default function PurchaseRequestList({
       key: "pr_status",
       align: "left",
       icon: <Activity className="h-4 w-4" />,
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <div className="flex justify-center">
+            {record.pr_status && (
+              <StatusBadge status={record.pr_status}>
+                {convertStatus(record.pr_status)}
+              </StatusBadge>
+            )}
+          </div>
+        )
+      }
     },
     {
       title: (
@@ -196,6 +221,17 @@ export default function PurchaseRequestList({
       key: "workflow_current_stage",
       align: "left",
       icon: <Workflow className="h-4 w-4" />,
+      render: (_: unknown, record: TableDataSource) => {
+        return (
+          <div className="flex justify-center">
+            {record.pr_status && (
+              <StatusBadge status={record.pr_status}>
+                {convertStatus(record.pr_status)}
+              </StatusBadge>
+            )}
+          </div>
+        )
+      }
     },
     {
       title: (
