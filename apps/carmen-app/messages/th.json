@@ -510,7 +510,9 @@
     "price_deviation_limit": "ลิมิตการยอมรับความคลาดเคลื่อนราคา",
     "qty_deviation_limit": "ลิมิตการยอมรับความคลาดเคลื่อนปริมาณ",
     "used_in_recipe": "ใช้ในสูตรอาหาร",
-    "sold_directly": "ขายตรง"
+    "sold_directly": "ขายตรง",
+    "no_search_results": "ไม่พบผลลัพธ์ที่ตรงกับคำค้นหา",
+    "try_different_keywords": "ลองคำค้นหาอื่น"
   },
   "TaxProfile": {
     "title": "ระบบภาษี",

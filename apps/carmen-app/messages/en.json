@@ -517,7 +517,9 @@
     "used_in_recipe": "Used in Recipe",
     "sold_directly": "Sold Directly",
     "confirm_edit": "Are you sure you want to edit this category?",
-    "confirm_edit_description": "You are about to change the category type. This action may affect related items. Do you want to proceed?"
+    "confirm_edit_description": "You are about to change the category type. This action may affect related items. Do you want to proceed?",
+    "no_search_results": "No search results found",
+    "try_different_keywords": "Try different keywords"
   },
   "TaxProfile": {
     "title": "Tax Profile",

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button"
-import { ChevronUp, ChevronDown, Plus } from "lucide-react"
+import { ChevronUp, ChevronDown, Plus, Search, X } from "lucide-react"
 import TreeNode from "./TreeNode"
 import { CategoryDialog } from "./CategoryDialog"
 import { useCategory } from "@/hooks/useCategory";
@@ -28,9 +28,11 @@ import { useCategoryDelete } from "@/hooks/useCategoryDelete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CategoryLoading from "@/components/loading/CategoryLoading";
 import { useTranslations } from "next-intl";
+
 export default function CategoryComponent() {
     const tCategory = useTranslations("Category");
     const tCommon = useTranslations("Common");
+    const [search, setSearch] = useState("")
     const [signInOpen, setSignInOpen] = useState(false);
     const {
         categories,
@@ -65,6 +67,72 @@ export default function CategoryComponent() {
         itemGroups,
         isLoading
     });
+
+    // Filter data based on search term
+    const filteredCategoryData = categoryData.filter((category: CategoryNode) => {
+        const searchLower = search.toLowerCase();
+
+        // Check if category matches search
+        const categoryMatches =
+            category.code.toLowerCase().includes(searchLower) ||
+            category.name.toLowerCase().includes(searchLower) ||
+            category.description?.toLowerCase().includes(searchLower);
+
+        // Check if any subcategory matches search
+        const hasMatchingSubcategory = category.children?.some((subcategory: CategoryNode) => {
+            const subcategoryMatches =
+                subcategory.code.toLowerCase().includes(searchLower) ||
+                subcategory.name.toLowerCase().includes(searchLower) ||
+                subcategory.description?.toLowerCase().includes(searchLower);
+
+            // Check if any item group matches search
+            const hasMatchingItemGroup = subcategory.children?.some((itemGroup: CategoryNode) =>
+                itemGroup.code.toLowerCase().includes(searchLower) ||
+                itemGroup.name.toLowerCase().includes(searchLower) ||
+                itemGroup.description?.toLowerCase().includes(searchLower)
+            );
+
+            return subcategoryMatches || hasMatchingItemGroup;
+        });
+
+        // Check if any item group directly under category matches search
+        const hasMatchingItemGroup = category.children?.some((itemGroup: CategoryNode) =>
+            itemGroup.type === NODE_TYPE.ITEM_GROUP && (
+                itemGroup.code.toLowerCase().includes(searchLower) ||
+                itemGroup.name.toLowerCase().includes(searchLower) ||
+                itemGroup.description?.toLowerCase().includes(searchLower)
+            )
+        );
+
+        return categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup;
+    });
+
+    // Auto-expand nodes that match search term
+    const searchExpanded: Record<string, boolean> = search ? {} : expanded;
+    if (search) {
+        filteredCategoryData.forEach((category: CategoryNode) => {
+            searchExpanded[category.id] = true;
+
+            // Expand subcategories if they or their children match
+            category.children?.forEach((subcategory: CategoryNode) => {
+                const searchLower = search.toLowerCase();
+                const subcategoryMatches =
+                    subcategory.code.toLowerCase().includes(searchLower) ||
+                    subcategory.name.toLowerCase().includes(searchLower) ||
+                    subcategory.description?.toLowerCase().includes(searchLower);
+
+                const hasMatchingItemGroup = subcategory.children?.some((itemGroup: CategoryNode) =>
+                    itemGroup.code.toLowerCase().includes(searchLower) ||
+                    itemGroup.name.toLowerCase().includes(searchLower) ||
+                    itemGroup.description?.toLowerCase().includes(searchLower)
+                );
+
+                if (subcategoryMatches || hasMatchingItemGroup) {
+                    searchExpanded[subcategory.id] = true;
+                }
+            });
+        });
+    }
 
     const {
         dialogOpen,
@@ -305,12 +373,41 @@ export default function CategoryComponent() {
             return <CategoryLoading />
         }
 
-        // Default return when not loading and authorized
         return (
             <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
-                    <div className="flex items-center gap-2">
+                <div className="fxb-c">
+                    <div className="flex flex-col md:flex-row items-center gap-2">
+                        <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
+
+                        <div className="flex flex-col gap-2">
+                            <div className="relative w-72">
+                                <Search
+                                    className="absolute inset-y-0 left-0 my-auto ml-2 text-gray-400"
+                                    size={16}
+                                />
+
+                                <input
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                    placeholder={tCommon("search")}
+                                    className="h-8 w-full border border-border rounded-md p-1 px-8 transition duration-300 ease focus:outline-none focus:border-border hover:border-slate-300 shadow-sm focus:shadow"
+                                    data-id="category-search-input"
+                                />
+
+                                {search && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setSearch("")}
+                                        className="absolute inset-y-0 right-0 my-auto mr-2 text-gray-400"
+                                    >
+                                        <X size={16} />
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                    </div>
+                    <div className="fxr-c gap-4">
                         <Button onClick={expandAll} size={'sm'} variant={'outlinePrimary'}>
                             <ChevronDown className="h-4 w-4" />
                             {tCategory("expand_all")}
@@ -328,21 +425,35 @@ export default function CategoryComponent() {
                 </div>
 
                 <ScrollArea className="h-[calc(98vh-120px)] border border-border rounded-lg">
-                    {categoryData.length > 0 ? (
-                        categoryData.map((category: CategoryNode) => (
-                            <TreeNode
-                                key={category.id}
-                                node={category}
-                                expanded={expanded}
-                                toggleExpand={toggleExpand}
-                                onEdit={handleEdit}
-                                onAdd={handleAdd}
-                                onDelete={handleDelete}
-                            />
-                        ))
+                    {filteredCategoryData.length > 0 ? (
+                        <>
+                            {filteredCategoryData.map((category: CategoryNode) => (
+                                <TreeNode
+                                    key={category.id}
+                                    node={category}
+                                    expanded={search ? searchExpanded : expanded}
+                                    toggleExpand={toggleExpand}
+                                    onEdit={handleEdit}
+                                    onAdd={handleAdd}
+                                    onDelete={handleDelete}
+                                    search={search}
+                                />
+                            ))}
+                        </>
                     ) : (
-                        <div className="flex justify-center items-center h-full">
-                            <p className="text-muted-foreground">{tCategory("no_category")}</p>
+                        <div className="flex flex-col justify-center items-center h-full p-8">
+                            {search ? (
+                                <div className="text-center">
+                                    <p className="text-muted-foreground mb-2">
+                                        {tCategory("no_search_results")}: "{search}"
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                        {tCategory("try_different_keywords")}
+                                    </p>
+                                </div>
+                            ) : (
+                                <p className="text-muted-foreground">{tCategory("no_category")}</p>
+                            )}
                         </div>
                     )}
                 </ScrollArea>

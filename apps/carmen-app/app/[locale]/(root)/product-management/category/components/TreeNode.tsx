@@ -9,12 +9,7 @@ import {
 } from "@/components/ui/tooltip"
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
-
-// const getIconColor = (type: CategoryNode["type"]) => {
-//     if (type === NODE_TYPE.CATEGORY) return "text-primary";
-//     if (type === NODE_TYPE.SUBCATEGORY) return "text-gray-500";
-//     return "text-emerald-500";
-// };
+import { cn } from "@/lib/utils";
 
 interface TreeNodeProps {
     readonly node: CategoryNode;
@@ -24,6 +19,7 @@ interface TreeNodeProps {
     readonly onEdit: (node: CategoryNode) => void;
     readonly onAdd: (parentNode: CategoryNode) => void;
     readonly onDelete: (node: CategoryNode) => void;
+    readonly search?: string;
 }
 
 export default function TreeNode({
@@ -33,12 +29,53 @@ export default function TreeNode({
     toggleExpand,
     onEdit,
     onAdd,
-    onDelete
+    onDelete,
+    search
 }: TreeNodeProps) {
 
     const tCategory = useTranslations("Category");
     const isExpanded = expanded[node.id] ?? false;
     const hasChildren = node.children && node.children.length > 0;
+
+    // Function to highlight search text
+    const highlightText = (text: string, searchTerm: string) => {
+        if (!searchTerm || !text) return text;
+
+        const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        const parts = text.split(regex);
+
+        return parts.map((part, index) =>
+            regex.test(part) ? (
+                <mark key={index} className="bg-yellow-300 px-1 rounded font-medium">
+                    {part}
+                </mark>
+            ) : part
+        );
+    };
+
+    // Function to check if node matches search term
+    const isNodeMatchingSearch = (node: CategoryNode, searchTerm: string): boolean => {
+        if (!searchTerm) return false;
+
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            node.code.toLowerCase().includes(searchLower) ||
+            node.name.toLowerCase().includes(searchLower) ||
+            (node.description ? node.description.toLowerCase().includes(searchLower) : false)
+        );
+    };
+
+    const hasSearchMatch = (node: CategoryNode, searchTerm: string): boolean => {
+        if (!searchTerm) return false;
+
+        if (isNodeMatchingSearch(node, searchTerm)) return true;
+
+        if (node.children) {
+            return node.children.some(child => hasSearchMatch(child, searchTerm));
+        }
+
+        return false;
+    };
 
     const getTypeLabel = (type: CategoryNode["type"]) => {
         if (type === NODE_TYPE.CATEGORY) return tCategory("category");
@@ -46,22 +83,22 @@ export default function TreeNode({
         return tCategory("itemGroup");
     };
 
-
-    // let Icon = Layers
-    // if (node.type === NODE_TYPE.SUBCATEGORY) Icon = FolderTree
-    // if (node.type === NODE_TYPE.ITEM_GROUP) Icon = Package
-
     return (
         <div className="tree-node">
             <div
-                className={`flex items-center p-2 hover:bg-muted/50 rounded-md group ${level > 0 ? "ml-6" : ""}`}
+                className={cn(
+                    "fxr-c p-2 hover:bg-muted/50 rounded-md group transition-colors",
+                    level > 0 ? "ml-6" : "",
+                )}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
             >
                 {hasChildren ? (
                     <button onClick={() => toggleExpand(node.id)} className="mr-1 p-1 rounded-full hover:bg-muted">
                         <ChevronRight
-                            className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-90" : ""
-                                }`}
+                            className={cn(
+                                "h-4 w-4 transition-transform",
+                                isExpanded ? "rotate-90" : ""
+                            )}
                         />
                     </button>
                 ) : (
@@ -69,21 +106,21 @@ export default function TreeNode({
                 )}
 
                 <div className="flex-1">
-                    <div className="flex gap-2 items-baseline">
-                        <p className="font-medium">{node.name}</p>
+                    <div className="fxr-c gap-2 items-baseline">
+                        <p className="font-medium">{highlightText(node.name, search || "")}</p>
                         <Badge
                             variant="outline"
                             className="text-xs bg-muted border-none">
-                            {node.code}
+                            {highlightText(node.code, search || "")}
                         </Badge>
                         <p className="text-xs text-muted-foreground">{getTypeLabel(node.type)}</p>
                     </div>
 
-                    <p className="text-muted-foreground">{node.description}</p>
+                    <p className="text-muted-foreground">{highlightText(node.description || "", search || "")}</p>
                     {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-muted-foreground">{node.itemCount}</p>}
                 </div>
 
-                <div className="flex items-center gap-1 group-hover:block hidden">
+                <div className="fxr-c gap-1 group-hover:block hidden">
                     {node.type !== NODE_TYPE.ITEM_GROUP && (
                         <TooltipProvider>
                             <Tooltip>
@@ -102,7 +139,6 @@ export default function TreeNode({
                                 </TooltipContent>
                             </Tooltip>
                         </TooltipProvider>
-
                     )}
 
                     <TooltipProvider>
@@ -147,6 +183,7 @@ export default function TreeNode({
                             onEdit={onEdit}
                             onAdd={onAdd}
                             onDelete={onDelete}
+                            search={search}
                         />
                     ))}
                 </div>
