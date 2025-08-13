@@ -194,7 +194,7 @@ export default function DialogItemGrnForm({
         onClick={(e) => e.stopPropagation()}
       >
         <DialogHeader className="border-b border-border pb-2 flex-shrink-0">
-          <DialogTitle className="text-base font-semibold fxr-c gap-3">
+          <DialogTitle className="text-base font-semibold flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
               <Box className="h-4 w-4 text-primary" />
             </div>
@@ -206,7 +206,7 @@ export default function DialogItemGrnForm({
             <ScrollArea className="h-[calc(80vh-100px)]">
               <div className="space-y-4 px-4">
                 <div>
-                  <div className="fxr-c gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                     <h3 className="text-xs font-semibold">
                       Product Information
@@ -287,7 +287,7 @@ export default function DialogItemGrnForm({
                 <Separator />
 
                 <div>
-                  <div className="fxr-c gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                     <h3 className="text-xs font-semibold">
                       Quantity Information
@@ -423,7 +423,7 @@ export default function DialogItemGrnForm({
                 <Separator />
 
                 <div>
-                  <div className="fxr-c gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                     <h3 className="text-xs font-semibold">
                       Pricing & Cost Details
@@ -526,7 +526,7 @@ export default function DialogItemGrnForm({
                 <Separator />
 
                 <div>
-                  <div className="fxr-c gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                     <h3 className="text-xs font-semibold">Tax Information</h3>
                   </div>
@@ -647,7 +647,7 @@ export default function DialogItemGrnForm({
                 <Separator />
 
                 <div>
-                  <div className="fxr-c gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                     <h3 className="text-xs font-semibold">
                       Discount Information
@@ -694,7 +694,7 @@ export default function DialogItemGrnForm({
                 </div>
                 <Separator />
                 <div>
-                  <div className="fxr-c gap-2">
+                  <div className="flex items-center gap-2">
                     <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                     <h3 className="text-xs font-semibold">
                       Additional Information

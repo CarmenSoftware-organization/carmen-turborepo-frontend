@@ -64,7 +64,7 @@ export default function BalanceReport() {
                                 onClick={() => handleToggleSection(section.id)}
                             >
                                 <TableCell className="font-medium">
-                                    <div className="fxr-c gap-2">
+                                    <div className="flex items-center gap-2">
                                         {section.sub_item?.length ? (
                                             isExpanded ? (
                                                 <ChevronDown className="h-4 w-4" />
@@ -96,7 +96,7 @@ export default function BalanceReport() {
                                             onClick={() => handleToggleSubSection(`${section.id}-${subItem.name}`)}
                                         >
                                             <TableCell className="font-medium">
-                                                <div className="fxr-c gap-2 pl-6">
+                                                <div className="flex items-center gap-2 pl-6">
                                                     {isSubExpanded ? (
                                                         <ChevronDown className="h-4 w-4" />
                                                     ) : (
@@ -118,7 +118,7 @@ export default function BalanceReport() {
                                                 className="bg-muted/10"
                                             >
                                                 <TableCell className="font-medium">
-                                                    <div className="fxr-c gap-2 pl-12">
+                                                    <div className="flex items-center gap-2 pl-12">
                                                         {item.name}
                                                     </div>
                                                 </TableCell>

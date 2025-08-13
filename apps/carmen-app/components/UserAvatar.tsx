@@ -14,6 +14,8 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { LogOut, User } from "lucide-react";
 import { Link } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
+import "@/styles/layout.css";
+
 export default function UserAvatar() {
     const { logout, user } = useAuth();
     const t = useTranslations('Common');
@@ -38,7 +40,7 @@ export default function UserAvatar() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="mx-2 relative h-8 w-8 rounded-full" aria-label="User menu">
+                <Button variant="ghost" className="mx-2 h-8 w-8 rounded-full" aria-label="User menu">
                     <Avatar className="h-8 w-8">
                         <AvatarFallback className="font-medium text-xs">
                             {getInitials()}
@@ -48,9 +50,9 @@ export default function UserAvatar() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel>
-                    <div className="flex flex-col space-y-1">
+                    <div className="fx-c">
                         <p className="text-sm font-medium">{fullName}</p>
-                        <p className="text-xs text-muted-foreground truncate">{email}</p>
+                        <p className="email-font">{email}</p>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />

@@ -39,7 +39,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
         if (this.state.hasError) {
             return (
                 <div className="error-div">
-                    <div className="fxr-c gap-2 text-destructive">
+                    <div className="flex items-center gap-2 text-destructive">
                         <AlertCircle className="h-5 w-5" />
                         <span className="text-sm">Error loading menu</span>
                     </div>
@@ -59,7 +59,7 @@ const SidebarLoading = () => (
         </div>
 
         <div className="p-4 border-b">
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 <Skeleton className="h-5 w-5 rounded" />
                 <Skeleton className="h-4 rounded w-1/2" />
             </div>
@@ -193,7 +193,7 @@ const SidebarContent = () => {
                 onKeyDown={(e) => handleKeyDown(e, item.href, true)}
                 title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
             >
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                     {item.icon && <item.icon className="h-4 w-4" />}
                     {!isActuallyCollapsed && <span className="font-medium text-muted-foreground">{t(`${section}.${subItem}`)}</span>}
                 </div>
@@ -221,7 +221,7 @@ const SidebarContent = () => {
             >
                 <div
                     className={cn(
-                        'fxr-c',
+                        'flex items-center',
                         isActuallyCollapsed ? 'justify-center' : 'gap-2'
                     )}
                 >

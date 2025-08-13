@@ -69,7 +69,7 @@ export const MobileView = ({
       >
         <CardHeader className="p-2 border-b bg-muted">
           <div className="flex justify-between items-start">
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
               <Checkbox
                 id={`mobile-checkbox-${pr.id}`}
                 checked={selectedItems.includes(pr.id ?? "")}
@@ -84,7 +84,7 @@ export const MobileView = ({
                 </p>
               </div>
             </div>
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
               <div className="mt-1">{prStatusColor(pr.pr_status ?? "")}</div>
             </div>
           </div>
@@ -128,7 +128,7 @@ export const MobileView = ({
             </div>
           </div>
         </CardContent>
-        <div className="fxr-c justify-end p-2 border-t bg-muted">
+        <div className="flex items-center justify-end p-2 border-t bg-muted">
           <ActionButtons prId={pr.id ?? ""} />
         </div>
       </Card>
@@ -137,7 +137,7 @@ export const MobileView = ({
 
   return (
     <div className="grid gap-4 md:hidden">
-      <div className="fxr-c justify-between">
+      <div className="flex items-center justify-between">
         <Button
           variant="outline"
           size="sm"

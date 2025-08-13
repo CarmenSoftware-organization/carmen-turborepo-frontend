@@ -12,7 +12,7 @@ export default function InventoryInfo({ inventoryData }: InventoryInfoProps) {
     return (
         <div className="space-y-4">
             <Card className="p-4 space-y-2">
-                <div className="fxr-c space-x-2 border-b pb-3">
+                <div className="flex items-center space-x-2 border-b pb-3">
                     <Package className="w-5 h-5 text-gray-500" />
                     <h2 className="text-sm font-medium">Total Stock Position</h2>
                 </div>
@@ -41,19 +41,19 @@ export default function InventoryInfo({ inventoryData }: InventoryInfoProps) {
                     <div>
                         <h4 className="text-sm font-medium text-gray-900">Status Indicators</h4>
                         <div className="mt-2 grid grid-cols-2 gap-4">
-                            <div className="fxr-c text-sm">
+                            <div className="flex items-center text-sm">
                                 <div className="w-2 h-2 bg-red-500 rounded-full mr-2" />
                                 <span className="text-gray-600">Below Minimum Level</span>
                             </div>
-                            <div className="fxr-c text-sm">
+                            <div className="flex items-center text-sm">
                                 <div className="w-2 h-2 bg-amber-500 rounded-full mr-2" />
                                 <span className="text-gray-600">Reorder Point Reached</span>
                             </div>
-                            <div className="fxr-c text-sm">
+                            <div className="flex items-center text-sm">
                                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-2" />
                                 <span className="text-gray-600">Exceeds Maximum Level</span>
                             </div>
-                            <div className="fxr-c text-sm">
+                            <div className="flex items-center text-sm">
                                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2" />
                                 <span className="text-gray-600">Normal Stock Level</span>
                             </div>

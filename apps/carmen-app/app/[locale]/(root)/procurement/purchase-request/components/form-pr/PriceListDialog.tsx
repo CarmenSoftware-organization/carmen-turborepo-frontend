@@ -43,7 +43,7 @@ export default function PriceListDialog() {
                     </div>
                 </Card>
                 <Card className="p-4 bg-blue-50 border-blue-500 space-y-4">
-                    <div className="fxr-c gap-2">
+                    <div className="flex items-center gap-2">
                         <TimerIcon className="w-4 h-4 text-blue-500" />
                         <p className="text-sm font-semibold">Purchase History</p>
                     </div>

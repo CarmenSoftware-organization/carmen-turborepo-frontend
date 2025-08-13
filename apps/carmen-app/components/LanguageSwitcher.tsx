@@ -55,7 +55,7 @@ export default function LanguageSwitcher({ showFlag = true }: Props) {
         >
             <SelectTrigger className="w-[80px] border-none focus:ring-ring">
                 <SelectValue>
-                    <div className="fxr-c gap-2">
+                    <div className="flex items-center gap-2">
                         <span className='text-xs'>{currentLocale.toUpperCase()}</span>
                         {localeFlags[currentLocale] && (
                             <div className="relative w-4 h-4">
@@ -77,7 +77,7 @@ export default function LanguageSwitcher({ showFlag = true }: Props) {
                         value={locale}
                         className="cursor-pointer"
                     >
-                        <div className="fxr-c">
+                        <div className="flex items-center">
                             <span>{locale.toUpperCase()}</span>
                             {showFlag && localeFlags[locale] && (
                                 <div className="relative w-5 h-4 ml-2">

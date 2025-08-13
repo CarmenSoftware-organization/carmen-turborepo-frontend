@@ -43,7 +43,7 @@ export default function HomeFooter() {
             <div className="container mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
                     <div className="lg:col-span-2">
-                        <div className="fxr-c gap-2 mb-4">
+                        <div className="flex items-center gap-2 mb-4">
                             <Hotel className="h-7 w-7 text-primary-foreground" />
                             <span className="text-xl font-medium tracking-tight">Carmen</span>
                         </div>

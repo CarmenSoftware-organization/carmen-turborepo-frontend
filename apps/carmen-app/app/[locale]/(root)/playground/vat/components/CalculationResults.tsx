@@ -26,7 +26,7 @@ export default function CalculationResults({
   return (
     <Card className="shadow-lg border-0 bg-card/80 backdrop-blur">
       <CardHeader>
-        <CardTitle className="fxr-c text-xl">
+        <CardTitle className="flex items-center text-xl">
           <Receipt className="h-5 w-5 mr-2 text-primary" />
           Calculation Results
         </CardTitle>
@@ -43,7 +43,7 @@ export default function CalculationResults({
           </div>
 
           <div className="flex justify-between items-center p-3 bg-accent rounded-lg">
-            <div className="fxr-c">
+            <div className="flex items-center">
               <TrendingUp className="h-4 w-4 mr-2 text-primary" />
               <span className="text-sm font-medium text-accent-foreground">
                 VAT Amount
@@ -55,7 +55,7 @@ export default function CalculationResults({
           </div>
 
           <div className="flex justify-between items-center p-3 bg-destructive/10 rounded-lg">
-            <div className="fxr-c">
+            <div className="flex items-center">
               <TrendingDown className="h-4 w-4 mr-2 text-destructive" />
               <span className="text-sm font-medium text-destructive">
                 Withholding Tax
@@ -68,7 +68,7 @@ export default function CalculationResults({
 
           <div className="border-t pt-3">
             <div className="flex justify-between items-center p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-              <div className="fxr-c">
+              <div className="flex items-center">
                 <DollarSign className="h-5 w-5 mr-2 text-primary" />
                 <span className="text-lg font-bold text-primary">
                   Final Amount

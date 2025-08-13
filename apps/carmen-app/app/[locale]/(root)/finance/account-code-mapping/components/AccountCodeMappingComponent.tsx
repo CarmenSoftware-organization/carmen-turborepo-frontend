@@ -71,7 +71,7 @@ export default function AccountCodeMappingComponent() {
                 placeholder={tCommon('search')}
                 data-id="account-code-mapping-search-input"
             />
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 <StatusSearchDropdown
                     value={status}
                     onChange={setStatus}

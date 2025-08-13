@@ -38,7 +38,7 @@ export default function WorkflowLookup({
     if (isLoading) {
         selectContent = (
             <SelectItem value="loading" disabled>
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Loading...</span>
                 </div>

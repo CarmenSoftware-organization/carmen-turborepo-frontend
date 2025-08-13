@@ -219,7 +219,7 @@ export default function ExchangeRateComponent() {
   if (isError) {
     return (
       <div className="w-full p-4">
-        <div className="fxr-c justify-between">
+        <div className=" justify-between">
           <p className="text-xl font-semibold">{tExchangeRate("title")}</p>
           <Button
             onClick={handleRefresh}
@@ -316,7 +316,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by code"
               >
-                <div className="fxr-c gap-1 justify-center">
+                <div className="fxr-c gap-1">
                   <Banknote className="h-4 w-4" />
                   {tTableHeader("code")} {renderSortIcon("code")}
                 </div>
@@ -327,7 +327,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by symbol"
               >
-                <div className="fxr-c gap-1 justify-center">
+                <div className="fxr-c gap-1">
                   <DollarSign className="h-4 w-4" />
                   {tTableHeader("symbol")}  {renderSortIcon("symbol")}
                 </div>
@@ -360,7 +360,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by exchange rate"
               >
-                <div className="fxr-c gap-1 justify-end">
+                <div className="fxr-e gap-1">
                   <ArrowLeftRight className="h-4 w-4" />
                   {tTableHeader("exchangeRate")}  {renderSortIcon("rate")}
                   {(isLoading || isRefetching) && (
@@ -409,7 +409,7 @@ export default function ExchangeRateComponent() {
         </Table>
 
         {totalPages > 0 && (
-          <div className="mt-4 flex justify-center">
+          <div className="mt-4 fxc-c">
             <Pagination>
               <PaginationContent>
                 <PaginationItem>

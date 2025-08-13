@@ -240,7 +240,7 @@ const PaginationComponent = ({
 					</Select>
 				</PaginationItem>
 				<PaginationItem data-id="go-to-page">
-					<div className="fxr-c gap-2 mx-1">
+					<div className="flex items-center gap-2 mx-1">
 						<p className="text-sm">{tCommon("goTo")}</p>
 						<Input
 							value={inputValue}

@@ -60,4 +60,8 @@
     .navbar-logo-subtext {
         @apply block tracking-wide text-xs text-muted-foreground;
     }
+
+    .email-font {
+        @apply text-muted-foreground truncate
+    }
 }

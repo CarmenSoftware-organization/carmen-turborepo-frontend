@@ -72,13 +72,13 @@ export default function PeriodEndList({ periodEnds }: PeriodEndListProps) {
                     <Card key={periodEnd.id}>
                         <CardHeader>
                             <div className="flex justify-between items-start">
-                                <div className="fxr-c gap-2">
+                                <div className="flex items-center gap-2">
                                     <p className="text-sm font-medium">{periodEnd.pe_no}</p>
                                     <Badge variant="outline" className="bg-secondary text-secondary-foreground">
                                         {periodEnd.status}
                                     </Badge>
                                 </div>
-                                <div className="fxr-c gap-1">
+                                <div className="flex items-center gap-1">
                                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
                                         <Eye className="h-4 w-4" />
                                     </Button>

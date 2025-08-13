@@ -87,8 +87,8 @@ export default function FormStoreRequisition({ initData, mode }: FormStoreRequis
                     <Card className="p-4">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                <div className="fxr-c justify-between">
-                                    <div className="fxr-c gap-2">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
                                         <Link href="/store-operation/store-requisition">
                                             <ChevronLeft className="h-4 w-4" />
                                         </Link>
@@ -97,7 +97,7 @@ export default function FormStoreRequisition({ initData, mode }: FormStoreRequis
                                         </p>
                                         <Badge className="rounded-full">{initData?.status}</Badge>
                                     </div>
-                                    <div className="fxr-c gap-2">
+                                    <div className="flex items-center gap-2">
                                         {currentMode === formType.VIEW ? (
                                             <>
                                                 <Button variant="outline" size={'sm'} onClick={handleCancelClick}>

@@ -21,7 +21,7 @@ export function ColorSection({ title, colors, sectionRef }: ColorSectionProps) {
 
 export function ColorSwatch({ color }: { color: ColorDto }) {
   return (
-    <div className="fxr-c gap-4">
+    <div className="flex items-center gap-4">
       <div
         className="h-16 w-16 rounded-full border"
         style={{ backgroundColor: `hsl(var(${color.cssVar}))` }}

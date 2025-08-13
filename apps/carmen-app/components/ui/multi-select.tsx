@@ -226,7 +226,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                     </Badge>
                   )}
                 </div>
-                <div className="fxr-c justify-between">
+                <div className="flex items-center justify-between">
                   <XIcon
                     className="h-4 mx-2 cursor-pointer text-muted-foreground"
                     onClick={(event) => {
@@ -239,7 +239,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
                 </div>
               </div>
             ) : (
-              <div className="fxr-c justify-between w-full mx-auto">
+              <div className="flex items-center justify-between w-full mx-auto">
                 <span className="text-xs text-muted-foreground mx-3">{placeholder}</span>
                 <ChevronDown className="h-4 cursor-pointer text-muted-foreground mx-2" />
               </div>
@@ -290,7 +290,7 @@ export const MultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>
               </CommandGroup>
               <CommandSeparator />
               <CommandGroup>
-                <div className="fxr-c justify-between">
+                <div className="flex items-center justify-between">
                   {selectedValues.length > 0 && (
                     <>
                       <CommandItem onSelect={handleClear} className="flex-1 justify-center cursor-pointer">

@@ -202,7 +202,7 @@ export default function TransferPage() {
       <h1>Transfer Component</h1>
 
       {/* Mode Selector */}
-      <div className="fxr-c gap-4 p-4 rounded-lg">
+      <div className="flex items-center gap-4 p-4 rounded-lg">
         <span className="font-semibold">Mode:</span>
         <Button
           type="button"

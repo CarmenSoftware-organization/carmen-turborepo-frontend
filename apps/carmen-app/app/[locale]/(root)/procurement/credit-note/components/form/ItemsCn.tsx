@@ -154,7 +154,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
 
   return (
     <div className="space-y-2 my-4">
-      <div className="fxr-c justify-between">
+      <div className="flex items-center justify-between">
         <p className="text-base font-medium px-2">Items Details</p>
         <div className="flex flex-row items-center gap-1">
           <SearchInput

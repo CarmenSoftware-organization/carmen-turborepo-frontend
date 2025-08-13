@@ -76,13 +76,13 @@ export default function CuisineList({ cuisineTypes }: CuisineListProps) {
                     <Card key={cuisine.id}>
                         <CardHeader>
                             <div className="flex justify-between items-start">
-                                <div className="fxr-c gap-2">
+                                <div className="flex items-center gap-2">
                                     <p className="text-sm font-medium">{cuisine.code}</p>
                                     <Badge variant={cuisine.status === "active" ? "default" : "destructive"}>
                                         {cuisine.status}
                                     </Badge>
                                 </div>
-                                <div className="fxr-c gap-1">
+                                <div className="flex items-center gap-1">
                                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
                                         <Eye className="h-4 w-4" />
                                     </Button>

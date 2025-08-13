@@ -116,7 +116,7 @@ export default function PurchaseRequestComponent() {
 
   const filters = (
     <div className="filter-container" data-id="pr-list-filters">
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <SearchInput
           defaultValue={search}
           onSearch={setSearch}
@@ -142,7 +142,7 @@ export default function PurchaseRequestComponent() {
         </Select>
       </div>
 
-      <div className="fxr-c gap-2">
+      <div className="flex items-center gap-2">
         <SortComponent
           fieldConfigs={sortFields}
           sort={sort}

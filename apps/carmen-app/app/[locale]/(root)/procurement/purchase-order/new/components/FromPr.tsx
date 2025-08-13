@@ -12,7 +12,7 @@ export default function FromPr() {
         <div className="space-y-4">
             <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
                 <h1>Create PO from Purchase Requests</h1>
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                     <Button
                         size={'sm'}
                         variant={'outline'}

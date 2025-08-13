@@ -102,7 +102,7 @@ export default function UmList() {
                                     <Badge variant={user.status ? "active" : "inactive"}>{user.status ? "Active" : "Inactive"}</Badge>
                                 </TableCell>
                                 <TableCell>{user.lastLogin}</TableCell>
-                                <TableCell className="fxr-c justify-end">
+                                <TableCell className="flex items-center justify-end">
                                     <Button variant="ghost" size={'sm'} className="w-7 h-7">
                                         <SquarePen />
                                     </Button>
@@ -121,7 +121,7 @@ export default function UmList() {
                 {mockUsers.map((user: User) => (
                     <Card key={user.id}>
                         <CardHeader>
-                            <CardTitle className="fxr-c justify-between">
+                            <CardTitle className="flex items-center justify-between">
                                 <span>{user.name}</span>
                                 <Badge variant={user.status ? "default" : "destructive"}>{user.status ? "Active" : "Inactive"}</Badge>
                             </CardTitle>
@@ -129,19 +129,19 @@ export default function UmList() {
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-2">
-                                <div className="fxr-c justify-between">
+                                <div className="flex items-center justify-between">
                                     <span className="text-sm text-muted-foreground">{t('businessUnit')}</span>
                                     <span className="text-sm font-medium">{user.businessUnit}</span>
                                 </div>
-                                <div className="fxr-c justify-between">
+                                <div className="flex items-center justify-between">
                                     <span className="text-sm text-muted-foreground">{t('department')}</span>
                                     <span className="text-sm font-medium">{user.department}</span>
                                 </div>
-                                <div className="fxr-c justify-between">
+                                <div className="flex items-center justify-between">
                                     <span className="text-sm text-muted-foreground">{t('lastLogin')}</span>
                                     <span className="text-sm font-medium">{user.lastLogin}</span>
                                 </div>
-                                <div className="fxr-c justify-end">
+                                <div className="flex items-center justify-end">
                                     <Button variant="ghost" size={'sm'}>
                                         <SquarePen />
                                     </Button>

@@ -175,8 +175,8 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
               return form.handleSubmit(onSubmit)(e);
             }}
           >
-            <div className="fxr-c justify-between mb-4">
-              <div className="fxr-c gap-2">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
                 <Link href="/procurement/goods-received-note">
                   <ChevronLeft className="h-4 w-4" />
                 </Link>
@@ -209,7 +209,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                   )}
                 </div>
               </div>
-              <div className="fxr-c gap-2">
+              <div className="flex items-center gap-2">
                 {currentMode === formType.VIEW ? (
                   <>
                     <Button

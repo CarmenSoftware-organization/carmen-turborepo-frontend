@@ -60,7 +60,7 @@ export default function InventoryAdjustmentComponent() {
                 placeholder={tCommon('search')}
                 data-id="inventory-ad-list-search-input"
             />
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 <StatusSearchDropdown
                     value={status}
                     onChange={setStatus}

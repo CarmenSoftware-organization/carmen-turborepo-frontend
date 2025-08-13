@@ -53,8 +53,8 @@ export default function ActionFields({
     };
 
     return (
-        <div className="fxr-c justify-between mb-4">
-            <div className="fxr-c gap-2">
+        <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -81,7 +81,7 @@ export default function ActionFields({
                     )}
                 </div>
             </div>
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 {currentMode === formType.VIEW ? (
                     <Button
                         variant="default"

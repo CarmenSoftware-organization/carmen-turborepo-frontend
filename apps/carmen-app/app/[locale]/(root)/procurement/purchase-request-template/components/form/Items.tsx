@@ -26,7 +26,7 @@ export default function Items({ items }: Props) {
 
     return (
         <div className="space-y-4">
-            <div className="fxr-c justify-between">
+            <div className="flex items-center justify-between">
                 <p className="font-medium">{tPurchaseRequest("items")}</p>
                 <Button variant="outlinePrimary" size={'sm'}>
                     <Plus className="h-4 w-4" />
@@ -87,7 +87,7 @@ export default function Items({ items }: Props) {
                                 </div>
                             </TableCell>
                             <TableCell className="text-right">
-                                <div className="fxr-c justify-end gap-1">
+                                <div className="flex items-center justify-end gap-1">
                                     <Button variant="ghost" size={'sm'}>
                                         <Pencil className="h-3 w-3" />
                                     </Button>

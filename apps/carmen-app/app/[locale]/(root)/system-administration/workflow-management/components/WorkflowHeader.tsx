@@ -39,7 +39,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 					<div>
 						{isEditing ? (
 							<>
-								<div className="fxr-c space-x-2">
+								<div className="flex items-center space-x-2">
 									<CardTitle className="text-2xl font-bold">
 										Edit Workflow
 									</CardTitle>
@@ -48,7 +48,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 							</>
 						) : (
 							<>
-								<div className="fxr-c space-x-2">
+								<div className="flex items-center space-x-2">
 									<CardTitle className="text-2xl font-bold">
 										{form.getValues('name')}
 									</CardTitle>
@@ -71,7 +71,7 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
 					</div>
 				) : (
 					<div>
-						<div className="fxr-c space-x-2">
+						<div className="flex items-center space-x-2">
 							<CardTitle className="text-2xl font-bold">
 								Create Workflow
 							</CardTitle>

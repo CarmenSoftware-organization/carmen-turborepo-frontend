@@ -106,7 +106,7 @@ export default function MovementHistory() {
                             className="w-[100px] cursor-pointer"
                             onClick={() => handleSort("date")}
                         >
-                            <div className="fxr-c gap-1">
+                            <div className="flex items-center gap-1">
                                 Date
                                 {getSortIcon("date")}
                             </div>
@@ -115,7 +115,7 @@ export default function MovementHistory() {
                             className="w-[80px] cursor-pointer"
                             onClick={() => handleSort("time")}
                         >
-                            <div className="fxr-c gap-1">
+                            <div className="flex items-center gap-1">
                                 Time
                                 {getSortIcon("time")}
                             </div>
@@ -125,7 +125,7 @@ export default function MovementHistory() {
                             className="cursor-pointer"
                             onClick={() => handleSort("product")}
                         >
-                            <div className="fxr-c gap-1">
+                            <div className="flex items-center gap-1">
                                 Product
                                 {getSortIcon("product")}
                             </div>
@@ -134,7 +134,7 @@ export default function MovementHistory() {
                             className="cursor-pointer"
                             onClick={() => handleSort("location")}
                         >
-                            <div className="fxr-c gap-1">
+                            <div className="flex items-center gap-1">
                                 Location
                                 {getSortIcon("location")}
                             </div>
@@ -143,7 +143,7 @@ export default function MovementHistory() {
                             className="w-[120px] cursor-pointer"
                             onClick={() => handleSort("type")}
                         >
-                            <div className="fxr-c gap-1">
+                            <div className="flex items-center gap-1">
                                 Type
                                 {getSortIcon("type")}
                             </div>
@@ -153,7 +153,7 @@ export default function MovementHistory() {
                             className="text-right cursor-pointer"
                             onClick={() => handleSort("quantity")}
                         >
-                            <div className="fxr-c gap-1 justify-end">
+                            <div className="flex items-center gap-1 justify-end">
                                 Quantity
                                 {getSortIcon("quantity")}
                             </div>
@@ -162,7 +162,7 @@ export default function MovementHistory() {
                             className="text-right cursor-pointer"
                             onClick={() => handleSort("value")}
                         >
-                            <div className="fxr-c gap-1 justify-end">
+                            <div className="flex items-center gap-1 justify-end">
                                 Value
                                 {getSortIcon("value")}
                             </div>

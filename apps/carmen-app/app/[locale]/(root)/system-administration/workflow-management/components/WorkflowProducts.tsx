@@ -468,7 +468,7 @@ const WorkflowProducts: React.FC<WorkflowProductsProps> = ({
 
 		return (
 			<div key={node.id} className={cn('py-1', level > 0 && 'ml-6')}>
-				<div className="fxr-c gap-2">
+				<div className="flex items-center gap-2">
 					{node.children && (
 						<Button
 							variant="ghost"

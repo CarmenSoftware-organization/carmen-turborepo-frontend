@@ -52,7 +52,7 @@ export default function Docs({ docs }: DocsProps) {
                             <TableCell className="text-right">{doc.amount}</TableCell>
                             <TableCell className="text-center">{doc.status}</TableCell>
                             <TableCell className="text-right">
-                                <div className="fxr-c justify-end gap-1">
+                                <div className="flex items-center justify-end gap-1">
                                     <Button variant="ghost" size={'sm'}>
                                         <Pencil className="h-3 w-3" />
                                     </Button>

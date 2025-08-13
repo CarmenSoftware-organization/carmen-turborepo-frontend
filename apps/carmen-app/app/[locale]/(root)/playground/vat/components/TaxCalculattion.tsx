@@ -53,7 +53,7 @@ export default function TaxCalculattion() {
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <div className="fxr-c justify-center mb-4">
+          <div className="flex items-center justify-center mb-4">
             <Calculator className="h-8 w-8 text-primary mr-3" />
             <h1 className="text-3xl font-bold text-foreground">
               Tax Calculator
@@ -68,7 +68,7 @@ export default function TaxCalculattion() {
           {/* Input Section */}
           <Card className="shadow-lg border-0 bg-card/80 backdrop-blur">
             <CardHeader>
-              <CardTitle className="fxr-c text-xl">
+              <CardTitle className="flex items-center text-xl">
                 <DollarSign className="h-5 w-5 mr-2 text-primary" />
                 Tax Calculator
               </CardTitle>
@@ -88,7 +88,7 @@ export default function TaxCalculattion() {
                 />
               </div>
 
-              <div className="fxr-c space-x-3 p-3 bg-muted rounded-lg">
+              <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
                 <Switch
                   checked={isVatInclusive}
                   onCheckedChange={setIsVatInclusive}
@@ -101,7 +101,7 @@ export default function TaxCalculattion() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium fxr-c">
+                  <Label className="text-sm font-medium flex items-center">
                     <Percent className="h-4 w-4 mr-1" />
                     VAT Rate
                   </Label>
@@ -119,7 +119,7 @@ export default function TaxCalculattion() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium fxr-c">
+                  <Label className="text-sm font-medium flex items-center">
                     <Percent className="h-4 w-4 mr-1" />
                     Withholding Tax
                   </Label>

@@ -61,7 +61,7 @@ export default function CategoryRecipeComponent() {
                 placeholder={tCommon('search')}
                 data-id="category-recipe-search-input"
             />
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 <StatusSearchDropdown
                     value={status}
                     onChange={setStatus}

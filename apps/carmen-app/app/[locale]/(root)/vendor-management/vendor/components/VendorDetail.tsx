@@ -66,7 +66,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
     return (
         <Card className="p-4">
             <div className="flex justify-between items-center">
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" className="h-7 w-7 p-0" asChild>
                         <Link href={`/vendor-management/vendor`}>
                             <ChevronLeft className="h-4 w-4" />
@@ -123,7 +123,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {vendor.vendor_address.map((address, index) => (
                             <div key={index} className="border border-gray-100 rounded p-3">
-                                <div className="fxr-c gap-1 mb-2">
+                                <div className="flex items-center gap-1 mb-2">
                                     <MapPin className="h-3 w-3 text-gray-500" />
                                     <p className="text-xs font-medium text-gray-700">
                                         {address.address_type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
@@ -147,7 +147,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {vendor.vendor_contact.map((contact, index) => (
                             <div key={index} className="p-2">
-                                <div className="fxr-c gap-1 mb-1">
+                                <div className="flex items-center gap-1 mb-1">
                                     {getContactIcon(contact.contact_type)}
                                     <p className="text-xs">
                                         {contact.contact_type.replace(/\b\w/g, (l) => l.toUpperCase())}

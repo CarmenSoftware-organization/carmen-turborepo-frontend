@@ -93,7 +93,7 @@ export default function AddfieldItem({
                             animate="visible"
                         >
                             <motion.span
-                                className="inline-fxr-c justify-center w-6 h-6 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full"
+                                className="inline-flex items-center justify-center w-6 h-6 text-xs font-semibold text-blue-600 bg-blue-100 rounded-full"
                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                 transition={{ duration: 0.2 }}
                             >
@@ -175,12 +175,12 @@ export default function AddfieldItem({
                             />
                         </MotionDiv>
                     </TableCell>
-                    <TableCell className="text-right fxr-c justify-end gap-2">
+                    <TableCell className="text-right flex items-center justify-end gap-2">
                         <MotionDiv
                             variants={cellContentVariants}
                             initial="hidden"
                             animate="visible"
-                            className="fxr-c justify-center gap-2"
+                            className="flex items-center justify-center gap-2"
                         >
                             <FormField
                                 control={form.control}

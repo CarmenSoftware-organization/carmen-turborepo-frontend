@@ -119,7 +119,7 @@ const ExchangeRateLookup = forwardRef<HTMLButtonElement, ExchangeRateLookupProps
                     className="flex items-start justify-between p-3 cursor-pointer hover:bg-accent data-[selected=true]:bg-accent"
                   >
                     <div className="flex flex-col gap-1 flex-1 min-w-0">
-                      <div className="fxr-c gap-2">
+                      <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{currency.code}</span>
                         <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                           {currency.symbol}

@@ -92,7 +92,7 @@ const TableTemplate = ({
                             key={column.key}
                             className={cn(getAlignClass(column.align), column.width)}
                         >
-                            <div className={cn("fxr-c gap-1 h-11", getFlexAlignClass(column.align))}>
+                            <div className={cn("flex items-center gap-1 h-11", getFlexAlignClass(column.align))}>
                                 {column.icon}
                                 {column.title}
                             </div>
@@ -138,7 +138,7 @@ const TableTemplate = ({
                 <TableFooter className="h-14">
                     <TableRow>
                         <TableCell colSpan={colSpan} className="px-4">
-                            <div className="fxr-c justify-between w-full">
+                            <div className="flex items-center justify-between w-full">
                                 <p className="text-sm">
                                     {dataSource.length > 0 ? (
                                         <>

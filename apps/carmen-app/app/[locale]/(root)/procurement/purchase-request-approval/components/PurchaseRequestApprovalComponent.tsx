@@ -62,7 +62,7 @@ export default function PurchaseRequestApprovalComponent() {
                 placeholder={tCommon('search')}
                 data-id="pr-approval-list-search-input"
             />
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 <StatusSearchDropdown
                     value={status}
                     onChange={setStatus}

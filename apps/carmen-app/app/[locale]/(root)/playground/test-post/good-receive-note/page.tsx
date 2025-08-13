@@ -51,7 +51,7 @@ export default function GoodReceiveNotePage() {
                   statusSent
                 )}`}
               >
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                   <Badge
                     variant={
                       statusSent === "Success"

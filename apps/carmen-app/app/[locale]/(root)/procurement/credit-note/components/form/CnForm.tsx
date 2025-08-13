@@ -187,8 +187,8 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
       <Card className="p-4 mb-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <div className="fxr-c justify-between mb-4">
-              <div className="fxr-c gap-2">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
                 <Link href="/procurement/credit-note">
                   <ChevronLeft className="h-4 w-4" />
                 </Link>
@@ -217,7 +217,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                   </Badge>
                 )}
               </div>
-              <div className="fxr-c gap-2">
+              <div className="flex items-center gap-2">
                 {currentMode === formType.VIEW ? (
                   <>
                     <Button

@@ -30,7 +30,7 @@ export default function DialogNewPr({ open, onOpenChange }: Props) {
                     >
                         <CardHeader>
                             <CardTitle>
-                                <div className="fxr-c gap-2">
+                                <div className="flex items-center gap-2">
                                     <Building2 className="h-4 w-4" />
                                     Blank PR
                                 </div>
@@ -49,7 +49,7 @@ export default function DialogNewPr({ open, onOpenChange }: Props) {
                     >
                         <CardHeader>
                             <CardTitle>
-                                <div className="fxr-c gap-2">
+                                <div className="flex items-center gap-2">
                                     <FileText className="h-4 w-4" />
                                     From PR Template
                                 </div>

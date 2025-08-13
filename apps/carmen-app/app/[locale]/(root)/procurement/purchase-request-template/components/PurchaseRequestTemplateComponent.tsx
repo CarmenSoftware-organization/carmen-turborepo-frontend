@@ -65,7 +65,7 @@ export default function PurchaseRequestTemplateComponent() {
                 placeholder={tCommon('search')}
                 data-id="pr-template-list-search-input"
             />
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 <StatusSearchDropdown
                     value={status}
                     onChange={setStatus}

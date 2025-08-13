@@ -192,7 +192,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                                 is_default: false
                             });
                         }}
-                        className="fxr-c gap-1.5 px-3"
+                        className="flex items-center gap-1.5 px-3"
                         disabled={!inventoryUnitId}
                     >
                         <Plus className="h-4 w-4" />

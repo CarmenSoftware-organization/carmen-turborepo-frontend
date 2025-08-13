@@ -26,7 +26,7 @@ export default function PricingCardSummary({ label, currencyCode, value, placeho
                         </div>
                         {isAmount && (
                             <div className="space-y-1">
-                                <Label className={`fxr-c gap-2 my-1 text-${color}-700 font-semibold`}>
+                                <Label className={`flex items-center gap-2 my-1 text-${color}-700 font-semibold`}>
                                     <Checkbox />
                                     Amount
                                 </Label>
@@ -38,7 +38,7 @@ export default function PricingCardSummary({ label, currencyCode, value, placeho
             ) : (
                 <>
                     <Label>{label}</Label>
-                    <div className={`bg-${color}-50 rounded-md h-20 fxr-c justify-center gap-2`}>
+                    <div className={`bg-${color}-50 rounded-md h-20 flex items-center justify-center gap-2`}>
                         <p className={`text-${color}-700 font-semibold`}>{currencyCode}</p>
                         <p className={`text-${color}-700 font-semibold`}>{value}</p>
                     </div>

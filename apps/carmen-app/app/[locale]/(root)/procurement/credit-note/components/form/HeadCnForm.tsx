@@ -62,7 +62,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
         {mode !== formType.ADD && (
           <div className="col-span-1 mt-2">
             <Label className="text-xs font-medium">
-              <div className="fxr-c gap-1">
+              <div className="flex items-center gap-1">
                 <Hash className="h-3 w-3" />
                 Credit Note
               </div>
@@ -77,7 +77,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem className="col-span-1">
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <CalendarIcon className="h-3 w-3" />
                   Date
                 </div>
@@ -97,7 +97,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem className="col-span-1">
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
                   Type
                 </div>
@@ -136,7 +136,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                   <Store className="h-4 w-4" />
                   Vendor
                 </div>
@@ -166,7 +166,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <DollarSign className="h-3 w-3" />
                   Currency
                 </div>
@@ -192,7 +192,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
 
         <div className="space-y-2">
           <Label className="text-xs font-medium">
-            <div className="fxr-c gap-1">
+            <div className="flex items-center gap-1">
               <DollarSign className="h-3 w-3" />
               Exchange Rate
             </div>
@@ -210,7 +210,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
                   GRN No.
                 </div>
@@ -241,7 +241,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem className="col-span-1">
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <CalendarIcon className="h-3 w-3" />
                   GRN Date
                 </div>
@@ -261,7 +261,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <Quote className="h-3 w-3" />
                   Reason
                 </div>
@@ -292,7 +292,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
                   Invoice No.
                 </div>
@@ -319,7 +319,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem className="col-span-1">
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <CalendarIcon className="h-3 w-3" />
                   Invoice Date
                 </div>
@@ -339,7 +339,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
                   Tax Invoice No.
                 </div>
@@ -366,7 +366,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem className="col-span-1">
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <CalendarIcon className="h-3 w-3" />
                   Tax Invoice Date
                 </div>
@@ -388,7 +388,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
                   Description
                 </div>
@@ -414,7 +414,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
           render={({ field }) => (
             <FormItem>
               <FormLabel className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                   <FileText className="h-3 w-3" />
                   Note
                 </div>

@@ -92,7 +92,7 @@ export default function EditFieldItem({
                             >
                                 {currentFormType === formType.VIEW ? (
                                     <div>
-                                        <div className="fxr-c gap-2">
+                                        <div className="flex items-center gap-2">
                                             <MotionDiv
                                                 whileHover={{ scale: 1.1, rotate: 5 }}
                                                 transition={{ duration: 0.2 }}
@@ -165,7 +165,7 @@ export default function EditFieldItem({
                                         </p>
                                     </>
                                 ) : (
-                                    <div className="fxr-c gap-1 justify-end">
+                                    <div className="flex items-center gap-1 justify-end">
                                         <NumberInput
                                             value={updatedItems[item.id]?.requested_qty ?? item.requested_qty}
                                             onChange={(value) => onFieldUpdate(item, 'requested_qty', value)}
@@ -206,7 +206,7 @@ export default function EditFieldItem({
                                     </>
                                 ) : (
                                     <div className="flex flex-col gap-1">
-                                        <div className="fxr-c gap-2 justify-end">
+                                        <div className="flex items-center gap-2 justify-end">
                                             <NumberInput
                                                 value={updatedItems[item.id]?.approved_qty ?? item.approved_qty}
                                                 onChange={(value) => onFieldUpdate(item, 'approved_qty', value)}
@@ -218,7 +218,7 @@ export default function EditFieldItem({
                                                 classNames="w-20"
                                             />
                                         </div>
-                                        <div className="fxr-c gap-2 justify-end">
+                                        <div className="flex items-center gap-2 justify-end">
                                             <p>FOC:</p>
                                             <NumberInput
                                                 value={updatedItems[item.id]?.foc_qty ?? item.foc_qty}
@@ -259,7 +259,7 @@ export default function EditFieldItem({
                                         </MotionP>
                                     </>
                                 ) : (
-                                    <div className="fxr-c gap-2 justify-end">
+                                    <div className="flex items-center gap-2 justify-end">
                                         <CurrencyLookup
                                             value={updatedItems[item.id]?.currency_id ?? item.currency_id}
                                             onValueChange={(value) => onFieldUpdate(item, 'currency_id', value)}
@@ -309,12 +309,12 @@ export default function EditFieldItem({
                         <TableCell colSpan={8}>
                             <Accordion type="single" collapsible className="w-full">
                                 <AccordionItem value={`item-${index}`} className="space-y-4">
-                                    <div className="fxr-c gap-4 w-full px-2">
+                                    <div className="flex items-center gap-4 w-full px-2">
                                         <AccordionTrigger
                                             iconPosition="left"
                                             className="p-0 h-5"
                                         />
-                                        <div className="fxr-c gap-2 bg-blue-50 p-2 w-full border-l-4 border-blue-500">
+                                        <div className="flex items-center gap-2 bg-blue-50 p-2 w-full border-l-4 border-blue-500">
                                             <p className="text-sm text-blue-500">
                                                 {item.comment ? item.comment : "No comment"}
                                             </p>
@@ -332,7 +332,7 @@ export default function EditFieldItem({
                                             </>
                                         ) : (
                                             <>
-                                                <Card className={`fxr-c rounded-md justify-center h-20 bg-green-50 border border-green-200`}>
+                                                <Card className={`flex items-center rounded-md justify-center h-20 bg-green-50 border border-green-200`}>
                                                     <div className="flex flex-col items-center justify-center gap-2">
                                                         <Label className="text-green-700">Date Requested</Label>
                                                         <DateInput
@@ -343,7 +343,7 @@ export default function EditFieldItem({
                                                         />
                                                     </div>
                                                 </Card>
-                                                <Card className={`fxr-c rounded-md justify-center h-20 bg-purple-50 border border-purple-200`}>
+                                                <Card className={`flex items-center rounded-md justify-center h-20 bg-purple-50 border border-purple-200`}>
                                                     <div className="flex flex-col items-center justify-center gap-2">
                                                         <Label className="text-purple-700">Delivery Point</Label>
                                                         <LookupDeliveryPoint

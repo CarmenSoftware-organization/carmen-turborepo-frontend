@@ -63,13 +63,13 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
 
         <div className="space-y-4 p-2">
           {/* Header */}
-          <div className="fxr-c gap-2">
+          <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild className="hover:bg-transparent">
               <Link href={`/configuration/location`}>
                 <ChevronLeft className="w-4 h-4" />
               </Link>
             </Button>
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
               <Building />
               <h1 className="text-xl font-semibold">{initialData?.name}</h1>
             </div>
@@ -148,7 +148,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
             onClick={handleEditMode}
             size="sm"
             variant="outlinePrimary"
-            className="fxr-c gap-1 text-sm"
+            className="flex items-center gap-1 text-sm"
           >
             <SquarePen className="w-4 h-4" />
             {tCommon("edit")}

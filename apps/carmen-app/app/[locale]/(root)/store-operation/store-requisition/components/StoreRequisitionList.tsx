@@ -49,7 +49,7 @@ export default function StoreRequisitionList({ storeRequisitions }: Props) {
                                     </Badge>
                                 </TableCell>
                                 <TableCell>
-                                    <div className="fxr-c justify-end">
+                                    <div className="flex items-center justify-end">
                                         <Button variant="ghost" size="sm" className="h-7 w-7" asChild>
                                             <Link href={`/store-operation/store-requisition/${prt.id}`}>
                                                 <Eye className="h-4 w-4" />
@@ -76,7 +76,7 @@ export default function StoreRequisitionList({ storeRequisitions }: Props) {
                                     </Badge>
                                     <CardTitle className="text-base">{prt.ref_no}</CardTitle>
                                 </div>
-                                <div className="fxr-c gap-1">
+                                <div className="flex items-center gap-1">
                                     <Button variant="ghost" size="sm" className="h-7 w-7" asChild>
                                         <Link href={`/store-operation/store-requisition/${prt.id}`}>
                                             <Eye className="h-4 w-4" />

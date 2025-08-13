@@ -7,7 +7,7 @@ interface ViewToggleButtonsProps {
 }
 export default function ToggleView({ view, setView }: ViewToggleButtonsProps) {
     return (
-        <div className="fxr-c gap-2">
+        <div className="flex items-center gap-2">
             <Button
                 variant={view === VIEW.LIST ? 'default' : 'outlinePrimary'}
                 size={'sm'}

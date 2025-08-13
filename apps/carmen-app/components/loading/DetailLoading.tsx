@@ -9,7 +9,7 @@ export function DetailLoading() {
             <Card className="p-4">
                 <div className="flex flex-row gap-2 justify-between border-b pb-2">
                     <div className="flex gap-6 items-start">
-                        <div className="fxr-c gap-2">
+                        <div className="flex items-center gap-2">
                             <Skeleton className="h-8 w-8 rounded-md" />
                             <div>
                                 <Skeleton className="h-4 w-20 mb-1" />

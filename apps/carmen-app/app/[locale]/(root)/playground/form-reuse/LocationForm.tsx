@@ -486,7 +486,7 @@ function LocationSummaryCard({ data, onNewForm }: LocationSummaryCardProps) {
               <p className="font-medium">{data.code}</p>
             </div>
           </div>
-          <div className="fxr-c gap-4">
+          <div className="flex items-center gap-4">
             <div>
               <span className="text-sm text-gray-600">สถานะ:</span>
               <Badge

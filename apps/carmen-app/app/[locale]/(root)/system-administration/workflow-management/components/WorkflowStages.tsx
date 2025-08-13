@@ -181,7 +181,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
 
   return (
     <div className="space-y-3">
-      <div className="fxr-c justify-between">
+      <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Workflow Stages</h2>
         <p className="text-sm text-muted-foreground">Configure workflow stages and their settings</p>
       </div>
@@ -231,7 +231,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                     if (idx !== 0 && idx !== fields.length - 1) e.preventDefault();
                   }}
                   className={`
-               p-2 rounded-md fxr-c gap-2 transition
+               p-2 rounded-md flex items-center gap-2 transition
                 ${draggedIndex === idx
                       ? "bg-primary text-primary-foreground opacity-80 shadow-lg scale-105 ring-2 ring-primary"
                       : dragOverIndex === idx
@@ -400,7 +400,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                               name={`data.stages.${index}.hide_fields.price_per_unit`}
                               render={({ field }) => (
                                 <Form.FormItem>
-                                  <div className="fxr-c justify-between">
+                                  <div className="flex items-center justify-between">
                                     <Form.FormLabel>Price Per Unit</Form.FormLabel>
                                     <Form.FormControl>
                                       <Switch
@@ -419,7 +419,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                               name={`data.stages.${index}.hide_fields.total_price`}
                               render={({ field }) => (
                                 <Form.FormItem>
-                                  <div className="fxr-c justify-between">
+                                  <div className="flex items-center justify-between">
                                     <Form.FormLabel>Total Price</Form.FormLabel>
                                     <Form.FormControl>
                                       <Switch
@@ -500,7 +500,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                             const isAssigned = selectedStage.assigned_users.some((u) => u.id === user.id);
                             return (
                               <Card key={user.id} className={`p-4 ${isAssigned ? "border-primary" : ""}`}>
-                                <div className="fxr-c space-x-4">
+                                <div className="flex items-center space-x-4">
                                   <Avatar>
                                     <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`} />
                                     <AvatarFallback>

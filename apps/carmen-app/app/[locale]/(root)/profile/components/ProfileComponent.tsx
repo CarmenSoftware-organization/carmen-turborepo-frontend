@@ -68,7 +68,7 @@ export default function ProfileComponent() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
                         <div>
                             <h1 className="text-3xl font-bold">{fullName}</h1>
-                            <div className="fxr-c text-muted-foreground mt-1">
+                            <div className="flex items-center text-muted-foreground mt-1">
                                 <Mail className="h-4 w-4 mr-2" />
                                 <span>{user?.email}</span>
                             </div>
@@ -81,7 +81,7 @@ export default function ProfileComponent() {
 
                     <div className="flex flex-wrap gap-2 mt-4">
                         {user?.business_unit.map((bu) => (
-                            <Badge key={bu.id} variant={bu.is_default ? "default" : "outline"} className="fxr-c gap-1">
+                            <Badge key={bu.id} variant={bu.is_default ? "default" : "outline"} className="flex items-center gap-1">
                                 <Building2 className="h-3 w-3" />
                                 {bu.name}
                                 {bu.is_default && " (Default)"}
@@ -138,7 +138,7 @@ export default function ProfileComponent() {
                                     <Card key={bu.id} className={bu.is_default ? "border-primary" : ""}>
                                         <CardContent className="p-4">
                                             <div className="flex items-start justify-between">
-                                                <div className="fxr-c gap-2">
+                                                <div className="flex items-center gap-2">
                                                     <Briefcase className="h-5 w-5 text-muted-foreground" />
                                                     <div>
                                                         <h3 className="font-medium">{bu.name}</h3>

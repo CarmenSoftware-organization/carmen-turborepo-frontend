@@ -26,14 +26,14 @@ export default function Navbar() {
                     {tHome('HospitalitySupplyChain')}
                 </span>
             </div>
-            <div className="fxr-c gap-2">
+            <div className="flex items-center gap-2">
                 <div className="hidden md:block">
                     <ModuleList />
                 </div>
                 <div className="block md:hidden">
                     <ModuleMobile />
                 </div>
-                <div className="hidden md:fxr-c">
+                <div className="hidden md:flex items-center">
                     <TenantList />
                     <SwitchTheme />
                     <LanguageSwitcher />

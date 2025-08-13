@@ -44,7 +44,7 @@ interface UserItemProps {
 }
 
 const UserItem = ({ item, hodStates, onHodChange }: UserItemProps) => (
-    <div className="fxr-c justify-between w-full gap-4">
+    <div className="fxb-c w-full gap-4">
         <p>{item.title}</p>
         <div className="fxr-c gap-2">
             <span className="text-muted-foreground">Hod</span>

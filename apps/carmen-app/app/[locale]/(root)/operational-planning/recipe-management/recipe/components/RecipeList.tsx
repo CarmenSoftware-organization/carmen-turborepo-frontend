@@ -26,7 +26,7 @@ export default function RecipeList({ data, isLoading }: RecipeListProps) {
             <div className="space-y-3">
                 <Skeleton className="h-12 w-full" />
                 {['skeleton-row-1', 'skeleton-row-2', 'skeleton-row-3', 'skeleton-row-4', 'skeleton-row-5'].map((id) => (
-                    <div key={id} className="fxr-c gap-4">
+                    <div key={id} className="flex items-center gap-4">
                         <Skeleton className="h-16 w-16 rounded-md" />
                         <Skeleton className="h-16 flex-1" />
                     </div>
@@ -68,7 +68,7 @@ export default function RecipeList({ data, isLoading }: RecipeListProps) {
                                 <TableCell>{recipe.difficulty}</TableCell>
                                 <TableCell>{recipe.prepTimeMinutes + recipe.cookTimeMinutes} mins</TableCell>
                                 <TableCell>
-                                    <div className="fxr-c gap-1">
+                                    <div className="flex items-center gap-1">
                                         <span className="text-yellow-500">★</span>
                                         <span>{recipe.rating}</span>
                                     </div>

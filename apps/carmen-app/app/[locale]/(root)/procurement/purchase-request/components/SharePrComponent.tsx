@@ -42,7 +42,7 @@ export const prStatusColor = (status: string) => {
 
 export const ActionButtons = ({ prId }: { prId: string }) => {
   return (
-    <div className="fxr-c justify-end">
+    <div className="flex items-center justify-end">
       <Button
         variant="ghost"
         size="sm"

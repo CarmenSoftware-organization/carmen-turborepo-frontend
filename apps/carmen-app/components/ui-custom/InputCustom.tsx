@@ -262,7 +262,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       if (labelPlacement === "left") {
         return cn(
           baseClasses,
-          "fxr-c mr-2",
+          "flex items-center mr-2",
           derivedStates.finalError && "text-destructive"
         );
       }
@@ -270,7 +270,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       if (labelPlacement === "right") {
         return cn(
           baseClasses,
-          "fxr-c ml-2",
+          "flex items-center ml-2",
           derivedStates.finalError && "text-destructive"
         );
       }
@@ -424,9 +424,9 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
 
     const renderInput = useCallback(
       () => (
-        <div className="relative fxr-c w-full">
+        <div className="relative flex items-center w-full">
           {startContent && (
-            <div className="absolute left-3 fxr-c pointer-events-none z-10">
+            <div className="absolute left-3 flex items-center pointer-events-none z-10">
               {startContent}
             </div>
           )}
@@ -457,7 +457,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
             }
             {...props}
           />
-          <div className="absolute right-3 fxr-c z-10">
+          <div className="absolute right-3 flex items-center z-10">
             {derivedStates.shouldShowPasswordToggle && renderPasswordToggle()}
             {!derivedStates.shouldShowPasswordToggle && endContent}
           </div>
@@ -547,7 +547,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
     if (labelPlacement === "left") {
       return (
         <div className="w-full">
-          <div className="fxr-c">
+          <div className="flex items-center">
             {layoutComponents.label}
             {layoutComponents.input}
           </div>
@@ -559,7 +559,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
     if (labelPlacement === "right") {
       return (
         <div className="w-full">
-          <div className="fxr-c">
+          <div className="flex items-center">
             {layoutComponents.input}
             {layoutComponents.label}
           </div>

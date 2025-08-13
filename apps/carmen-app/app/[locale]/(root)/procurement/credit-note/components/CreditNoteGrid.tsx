@@ -44,7 +44,7 @@ export default function CreditNoteGrid({
 
   return (
     <div className="space-y-4">
-      <div className="col-span-full fxr-c justify-between mb-4">
+      <div className="col-span-full flex items-center justify-between mb-4">
         <Button variant="outline" size="sm" onClick={handleSelectAll}>
           {isAllSelected ? "Unselect All" : "Select All"}
         </Button>
@@ -63,7 +63,7 @@ export default function CreditNoteGrid({
             >
               <CardHeader className="p-2 border-b bg-muted">
                 <div className="flex justify-between items-start">
-                  <div className="fxr-c gap-2">
+                  <div className="flex items-center gap-2">
                     <Checkbox
                       id={`grid-checkbox-${cn.id}`}
                       checked={selectedItems.includes(cn.id ?? "")}
@@ -134,7 +134,7 @@ export default function CreditNoteGrid({
                   </div>
                 </div>
               </CardContent>
-              <div className="fxr-c justify-end p-2 border-t bg-muted">
+              <div className="flex items-center justify-end p-2 border-t bg-muted">
                 <Button
                   variant="ghost"
                   size="sm"

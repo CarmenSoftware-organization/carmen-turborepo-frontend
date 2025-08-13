@@ -52,7 +52,7 @@ const SortComponent = <T extends Record<string, unknown>>({ fieldConfigs, sort, 
             <DropdownMenuContent>
                 {fieldConfigs.map((fieldConfig) => (
                     <DropdownMenuItem key={String(fieldConfig.key)} onClick={() => handleSort(fieldConfig.key)}>
-                        <span className="fxr-c justify-between w-full text-xs">
+                        <span className="flex items-center justify-between w-full text-xs">
                             <span>{fieldConfig.label}</span>
                             {sortField === fieldConfig.key &&
                                 (sortDirection === "asc" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />)}

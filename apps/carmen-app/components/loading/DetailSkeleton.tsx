@@ -4,7 +4,7 @@ export function DetailSkeleton() {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="fxr-c gap-3">
+            <div className="flex items-center gap-3">
                 <Skeleton className="h-8 w-8 rounded-md" /> {/* Back button */}
                 <Skeleton className="h-8 w-48" /> {/* Title */}
             </div>

@@ -197,7 +197,7 @@ export default function LocationForm({
                   ? "Edit Location"
                   : "Create New Location"}
               </CardTitle>
-              <div className="fxr-c gap-2 justify-end">
+              <div className="fxr-e gap-2">
                 <Button
                   type="submit"
                   className="fxr-c gap-2 sm:order-2"

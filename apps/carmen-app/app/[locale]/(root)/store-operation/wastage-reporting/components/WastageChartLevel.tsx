@@ -62,7 +62,7 @@ export default function WastageChartLevel() {
                         </ResponsiveContainer>
                         <div className="flex justify-center gap-4">
                             {mockWastageByReason.map((entry, index) => (
-                                <div key={entry.name} className="fxr-c">
+                                <div key={entry.name} className="flex items-center">
                                     <div
                                         className="w-3 h-3 rounded-full mr-2"
                                         style={{ backgroundColor: COLORS[index % COLORS.length] }}

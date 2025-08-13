@@ -73,13 +73,13 @@ export default function StockCardList({ stockCardData }: StockCardListProps) {
                     <Card key={stockCard.id}>
                         <CardHeader>
                             <div className="flex justify-between items-start">
-                                <div className="fxr-c gap-2">
+                                <div className="flex items-center gap-2">
                                     <p className="text-sm font-medium">{stockCard.code}</p>
                                     <Badge variant={stockCard.status ? "default" : "destructive"}>
                                         {stockCard.status ? "Active" : "Inactive"}
                                     </Badge>
                                 </div>
-                                <div className="fxr-c gap-1">
+                                <div className="flex items-center gap-1">
                                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
                                         <Eye className="h-4 w-4" />
                                     </Button>

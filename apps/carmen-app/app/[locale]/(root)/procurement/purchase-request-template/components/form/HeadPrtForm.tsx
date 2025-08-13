@@ -34,7 +34,7 @@ export default function HeadPrtForm({ prtData }: Props) {
                     />
                     <div className="col-span-2">
                         <Label className="text-xs font-medium">
-                            <div className="fxr-c gap-1">
+                            <div className="flex items-center gap-1">
                                 <FileText className="h-3 w-3" />
                                 {tPurchaseRequest("description")}
                             </div>
@@ -65,7 +65,7 @@ const RenderPrtHead = ({ label, icon, value }: RenderPrtHeadProps) => {
     return (
         <div className="col-span-1">
             <Label className="text-xs font-medium">
-                <div className="fxr-c gap-1">
+                <div className="flex items-center gap-1">
                     {icon}
                     {label}
                 </div>

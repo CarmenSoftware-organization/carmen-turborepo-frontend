@@ -159,7 +159,7 @@ export default function CnItemDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[1000px] h-[85vh] flex flex-col overflow-hidden">
         <DialogHeader className="border-b border-border pb-2 flex-shrink-0">
-          <DialogTitle className="text-base font-semibold fxr-c gap-3">
+          <DialogTitle className="text-base font-semibold flex items-center gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
               <Box className="h-4 w-4 text-primary" />
             </div>
@@ -171,7 +171,7 @@ export default function CnItemDialog({
           <ScrollArea className="h-full">
             <div className="space-y-4 px-4">
               <div>
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                   <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">
                     Location & Product Information
@@ -239,7 +239,7 @@ export default function CnItemDialog({
               </div>
               <Separator />
               <div>
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                   <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">
                     Price & Unit Information
@@ -348,7 +348,7 @@ export default function CnItemDialog({
               </div>
               <Separator />
               <div>
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                   <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">Tax Information</h3>
                 </div>
@@ -441,7 +441,7 @@ export default function CnItemDialog({
               </div>
               <Separator />
               <div>
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                   <div className="h-0.5 w-4 bg-primary rounded-full"></div>
                   <h3 className="text-xs font-semibold">
                     Discount & Extra Cost

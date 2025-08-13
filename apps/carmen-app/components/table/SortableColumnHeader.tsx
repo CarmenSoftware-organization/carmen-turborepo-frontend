@@ -29,7 +29,7 @@ const SortableColumnHeader: React.FC<SortableColumnHeaderProps> = ({
             {...getSortableColumnProps(columnKey, sort, onSort)}
             className="font-medium"
         >
-            <div className="fxr-c gap-1 hover:text-foreground transition-colors cursor-pointer">
+            <div className="flex items-center gap-1 hover:text-foreground transition-colors cursor-pointer">
                 {label}
                 {renderSortIcon(columnKey, sort)}
             </div>

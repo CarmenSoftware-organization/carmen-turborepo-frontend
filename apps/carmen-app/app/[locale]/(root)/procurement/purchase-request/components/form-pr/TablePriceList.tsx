@@ -52,7 +52,7 @@ export default function TablePriceList() {
                                 <TableCell className="w-[80px]">{item.currency}</TableCell>
                                 <TableCell className="w-[120px]">{item.price} {item.unit}</TableCell>
                                 <TableCell className="w-[120px]">
-                                    <div className="fxr-c text-xs gap-1">
+                                    <div className="flex items-center text-xs gap-1">
                                         <p>{item.min_qty}</p>
                                         <p>{item.base_unit}</p>
                                     </div>

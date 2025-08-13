@@ -9,7 +9,7 @@ export default function NotificationComponent() {
     return (
         <Card>
             <CardHeader className="border-b">
-                <CardTitle className="fxr-c gap-2">
+                <CardTitle className="flex items-center gap-2">
                     <Bell className="w-4 h-4" />
                     Notifications
                 </CardTitle>
@@ -20,12 +20,12 @@ export default function NotificationComponent() {
             <ScrollArea className="h-[220px]">
                 {mockNotiApproval.map((notification: NotificationDto) => (
                     <div key={notification.id} className="p-4 space-y-2 border-b">
-                        <div className="fxr-c justify-between gap-2">
-                            <div className="fxr-c gap-1">
+                        <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1">
                                 <UserRound className="w-3 h-3" />
                                 <p className="text-xs text-muted-foreground">{notification.user_posted}</p>
                             </div>
-                            <Badge variant="outline" className="fxr-c gap-1">
+                            <Badge variant="outline" className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}</p>
                             </Badge>

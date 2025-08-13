@@ -122,7 +122,7 @@ export default function FormBooleanComponent() {
           />
 
           <div className="space-y-4">
-            <div className="fxr-c justify-between">
+            <div className="flex items-center justify-between">
               <FormLabel>Details</FormLabel>
               <Button
                 type="button"
@@ -136,7 +136,7 @@ export default function FormBooleanComponent() {
 
             {fields.map((field, index) => (
               <div key={field.id} className="border p-4 rounded-lg space-y-4">
-                <div className="fxr-c justify-between">
+                <div className="flex items-center justify-between">
                   <span className="font-medium">Person {index + 1}</span>
                   {fields.length > 1 && (
                     <Button

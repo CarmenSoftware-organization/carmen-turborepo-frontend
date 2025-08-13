@@ -158,7 +158,7 @@ export default function CurrencyLookup({
             className="max-h-[200px] overflow-y-auto"
           >
             {isLoading && currenciesData.length === 0 ? (
-              <div className="fxr-c justify-center py-6">
+              <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               </div>
             ) : (
@@ -190,13 +190,13 @@ export default function CurrencyLookup({
                       {hasNextPage && (
                         <div
                           ref={loadMoreRef}
-                          className="h-8 w-full fxr-c justify-center text-xs text-gray-400 border-t border-gray-200"
+                          className="h-8 w-full flex items-center justify-center text-xs text-gray-400 border-t border-gray-200"
                         >
                           📄 Load more currencies...
                         </div>
                       )}
                       {isFetchingNextPage && (
-                        <div className="fxr-c justify-center py-2">
+                        <div className="flex items-center justify-center py-2">
                           <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
                           <span className="ml-2 text-sm text-gray-500">Loading more...</span>
                         </div>

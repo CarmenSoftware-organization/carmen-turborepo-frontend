@@ -91,23 +91,23 @@ export default function JsonViewer({
     <div className="space-y-2">
       <div className="flex justify-between items-center">
         <div className="flex flex-wrap gap-4 text-sm">
-          <div className="fxr-c gap-1">
+          <div className="flex items-center gap-1">
             <span className="text-primary">●</span>
             <span>Keys</span>
           </div>
-          <div className="fxr-c gap-1">
+          <div className="flex items-center gap-1">
             <span className="text-orange-500">●</span>
             <span>String</span>
           </div>
-          <div className="fxr-c gap-1">
+          <div className="flex items-center gap-1">
             <span className="text-green-500">●</span>
             <span>Number</span>
           </div>
-          <div className="fxr-c gap-1">
+          <div className="flex items-center gap-1">
             <span className="text-purple-500">●</span>
             <span>Boolean</span>
           </div>
-          <div className="fxr-c gap-1">
+          <div className="flex items-center gap-1">
             <span className="text-blue-500">●</span>
             <span>Null</span>
           </div>

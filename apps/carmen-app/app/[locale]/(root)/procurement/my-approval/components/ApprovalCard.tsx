@@ -32,15 +32,15 @@ export default function ApprovalCard({ approval, type = 'pending', onApprove }: 
                 <Badge variant={'outline'} className={statusApprovalColor(approval.status)}>{approval.status}</Badge>
             </div>
 
-            <div className="fxr-c gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span>{approval.no_unit} units,</span>
                 <span>${approval.price}</span>
                 <span>- Requested by {approval.requestor}</span>
             </div>
 
             <div className="flex justify-between items-center">
-                <div className="fxr-c gap-2">
-                    <Badge variant={'secondary'} className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
+                    <Badge variant={'secondary'} className="flex items-center gap-2">
                         <User className="w-3 h-3" />
                         {approval.department}
                     </Badge>
@@ -50,7 +50,7 @@ export default function ApprovalCard({ approval, type = 'pending', onApprove }: 
                     )}
                 </div>
 
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                     <Button
                         size="sm"
                         variant="outline"

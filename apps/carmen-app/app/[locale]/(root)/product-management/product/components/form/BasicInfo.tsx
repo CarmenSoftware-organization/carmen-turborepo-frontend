@@ -204,15 +204,15 @@ export default function BasicInfo({
     <div className="space-y-2">
       <Card>
         <CardHeader>
-          <div className="fxr-c justify-between">
-            <div className="fxr-c gap-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <ButtonLink
                 href="/product-management/product"
               >
                 <ChevronLeft className="h-4 w-4" />
               </ButtonLink>
 
-              <div className="fxr-c gap-6">
+              <div className="flex items-center gap-6">
                 <FormField
                   control={control}
                   name="code"
@@ -239,7 +239,7 @@ export default function BasicInfo({
                     </FormItem>
                   )}
                 />
-                <div className="fxr-c gap-2">
+                <div className="flex items-center gap-2">
                   <FormField
                     control={control}
                     name="name"
@@ -278,7 +278,7 @@ export default function BasicInfo({
             </div>
 
             {/* Right Section */}
-            <div className="fxr-c gap-1.5">
+            <div className="flex items-center gap-1.5">
               {currentMode === formType.VIEW ? (
                 <>
                   <Button

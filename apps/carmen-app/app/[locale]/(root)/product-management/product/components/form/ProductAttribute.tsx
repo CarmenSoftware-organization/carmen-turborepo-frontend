@@ -57,7 +57,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                     variant="outlinePrimary"
                     size="sm"
                     onClick={handleAddAttribute}
-                    className="fxr-c gap-2"
+                    className="flex items-center gap-2"
                     disabled={isViewMode}
                 >
                     <Plus className="h-4 w-4" />
@@ -195,7 +195,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                 ) : (
                     <>
                         {fields.map((field, index) => (
-                            <div key={field.id} className="fxr-c gap-2">
+                            <div key={field.id} className="flex items-center gap-2">
                                 <FormField
                                     control={control}
                                     name={`product_info.info.${index}.label`}

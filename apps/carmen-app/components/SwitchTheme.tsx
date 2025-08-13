@@ -36,7 +36,7 @@ export function SwitchTheme() {
 						animate={{ rotate: 0, opacity: 1, scale: 1 }}
 						exit={{ rotate: 90, opacity: 0, scale: 0.5 }}
 						transition={{ duration: 0.3, ease: "easeInOut" }}
-						className="absolute inset-0 fxr-c justify-center"
+						className="absolute inset-0 flex items-center justify-center"
 					>
 						<Sun size={20} />
 					</MotionDiv>
@@ -47,7 +47,7 @@ export function SwitchTheme() {
 						animate={{ rotate: 0, opacity: 1, scale: 1 }}
 						exit={{ rotate: -90, opacity: 0, scale: 0.5 }}
 						transition={{ duration: 0.3, ease: "easeInOut" }}
-						className="absolute inset-0 fxr-c justify-center"
+						className="absolute inset-0 flex items-center justify-center"
 					>
 						<Moon size={20} />
 					</MotionDiv>

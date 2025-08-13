@@ -29,7 +29,7 @@ export default function StockTable() {
                             <Input className="pl-8 w-full" placeholder="Search items..." />
                         </div>
                         <div className="flex gap-2">
-                            <Button variant="outline" className="fxr-c gap-2">
+                            <Button variant="outline" className="flex items-center gap-2">
                                 <Filter className="h-4 w-4" />
                                 Filters
                             </Button>
@@ -94,7 +94,7 @@ export default function StockTable() {
                                         </TableCell>
                                         <TableCell>
                                             <div className="space-y-1">
-                                                <div className="fxr-c gap-2">
+                                                <div className="flex items-center gap-2">
                                                     <div className="font-medium text-gray-900">{item.name}</div>
                                                     <div className="text-sm text-gray-500">({item.sku})</div>
                                                 </div>

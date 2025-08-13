@@ -59,7 +59,7 @@ export default function HomeNavbar() {
             <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
                 <Link
                     href="#home"
-                    className="fxr-c gap-2 text-foreground"
+                    className="flex items-center gap-2 text-foreground"
                     onClick={(e) => handleSmoothScroll(e, '#home')}
                 >
                     <Hotel className="h-7 w-7 text-blue-600" />
@@ -67,7 +67,7 @@ export default function HomeNavbar() {
                 </Link>
 
                 {/* Desktop Navigation */}
-                <nav className="hidden md:fxr-c gap-4">
+                <nav className="hidden md:flex items-center gap-4">
                     {navItems.map((item) => (
                         <Link
                             key={item.name}
