@@ -57,7 +57,7 @@ export default function UserAvatar() {
                 <DropdownMenuItem
                     className="cursor-pointer"
                 >
-                    <Link href="/profile" className="flex items-center gap-2">
+                    <Link href="/profile" className="fxr-c gap-2">
                         <User className="h-4 w-4" />
                         <span>{t('profile')}</span>
                     </Link>

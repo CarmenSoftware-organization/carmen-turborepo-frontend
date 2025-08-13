@@ -24,7 +24,7 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
     return (
 
         <div className="space-y-4 p-2">
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <Button
                     variant="ghost"
                     size="icon"
@@ -76,7 +76,7 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
                 onClick={onEdit}
                 size="sm"
                 variant="outlinePrimary"
-                className="flex items-center gap-1 text-sm"
+                className="fxr-c gap-1 text-sm"
             >
                 <SquarePen className="w-4 h-4" />
                 {tCommon("edit")}

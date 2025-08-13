@@ -189,7 +189,7 @@ export const Transfer: React.FC<TransferProps> = ({
         )}
 
         {showSelectAll && items.length > 0 && (
-          <div className="mb-2 flex items-center gap-2">
+          <div className="mb-2 fxr-c gap-2">
             <Checkbox
               checked={
                 selected.length === items.filter((i) => !i.disabled).length
@@ -205,7 +205,7 @@ export const Transfer: React.FC<TransferProps> = ({
 
         <div className="space-y-1">
           {paginated.map((item) => (
-            <div key={item.key} className="flex items-center space-x-2">
+            <div key={item.key} className="fxr-c space-x-2">
               <Checkbox
                 checked={selected.includes(item.key)}
                 onCheckedChange={(checked) =>

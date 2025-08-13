@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export const StatusCustom = ({ is_active, children }: { is_active: boolean, children: React.ReactNode }) => {
     return (
-        <div className="flex items-center gap-1">
+        <div className="fxr-c gap-1">
             <div className={cn(
                 "w-2 h-2 rounded-full",
                 is_active ? "bg-active" : "bg-inactive"

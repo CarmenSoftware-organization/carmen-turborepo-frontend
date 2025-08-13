@@ -88,7 +88,7 @@ const WorkflowList = () => {
   } = useWorkflow();
 
   const actionButtons = (
-    <div className="flex items-center gap-2">
+    <div className="fxr-c gap-2">
       <Button asChild size="sm" data-id="workflow-list-new-workflow-button">
         <Link href="/system-administration/workflow-management/new" data-id="workflow-list-new-workflow-button">
           <PlusCircle className="h-4 w-4" />
@@ -106,7 +106,7 @@ const WorkflowList = () => {
         placeholder={tCommon("search")}
         data-id="workflow-list-search-input"
       />
-      <div className="flex items-center gap-2">
+      <div className="fxr-c gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

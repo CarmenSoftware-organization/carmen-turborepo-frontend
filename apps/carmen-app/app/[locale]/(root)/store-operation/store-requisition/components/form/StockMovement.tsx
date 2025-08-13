@@ -20,7 +20,7 @@ export default function StockMovement({ items, mode }: StockMovementProps) {
         <Card className="p-2 space-y-2">
             <div className="flex justify-between items-center p-2">
                 <p className="text-base font-medium">Stock Movement</p>
-                <div className="flex items-center gap-2">
+                <div className="fxr-c gap-2">
                     <Button
                         type="button"
                         variant="outline"

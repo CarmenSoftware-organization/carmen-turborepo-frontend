@@ -21,7 +21,7 @@ export default function Hero() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                        <Link href="#demo" className="bg-blue-600 hover:bg-blue-600/90 text-primary-foreground px-8 py-3 rounded-md font-medium flex items-center justify-center gap-2 transition-all duration-300 shadow-sm hover:shadow-md">
+                        <Link href="#demo" className="bg-blue-600 hover:bg-blue-600/90 text-primary-foreground px-8 py-3 rounded-md font-medium fxr-c justify-center gap-2 transition-all duration-300 shadow-sm hover:shadow-md">
                             Request Demo
                             <ArrowRight className="h-4 w-4" />
                         </Link>

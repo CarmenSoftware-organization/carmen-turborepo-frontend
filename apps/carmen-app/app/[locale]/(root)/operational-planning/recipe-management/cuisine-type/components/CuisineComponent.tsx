@@ -65,7 +65,7 @@ export default function CuisineComponent() {
                 placeholder={tCommon('search')}
                 data-id="cuisine-type-list-search-input"
             />
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <Button size={'sm'} variant={'outline'}>
                     No Recipe
                 </Button>

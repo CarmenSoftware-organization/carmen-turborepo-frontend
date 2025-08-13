@@ -89,13 +89,13 @@ const EditableRow = ({
     return (
         <>
             <TableCell className="text-left w-24">
-                <div className="flex items-center gap-2">
+                <div className="fxr-c gap-2">
                     <span className="font-medium">{editForm?.from_unit_qty}</span>
                     <span>{getUnitName(editForm?.from_unit_id ?? "")}</span>
                 </div>
             </TableCell>
             <TableCell className="text-left w-24">
-                <div className="flex items-center gap-2">
+                <div className="fxr-c gap-2">
                     <Input
                         type="number"
                         className="w-16 h-7"
@@ -132,7 +132,7 @@ const EditableRow = ({
                 ) : ''}
             </TableCell>
             <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-1">
+                <div className="fxr-c justify-end gap-1">
                     <Button
                         type="button"
                         variant="ghost"
@@ -176,13 +176,13 @@ const DisplayRow = ({
 }) => (
     <>
         <TableCell className="text-left w-24">
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <span className="font-medium">{unit.from_unit_qty}</span>
                 <span>{getUnitName(unit.from_unit_id)}</span>
             </div>
         </TableCell>
         <TableCell className="text-left w-16">
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <span className="font-medium">{unit.to_unit_qty}</span>
                 <span>{getUnitName(unit.to_unit_id)}</span>
             </div>
@@ -198,7 +198,7 @@ const DisplayRow = ({
         </TableCell>
         {currentMode !== formType.VIEW && (
             <TableCell className="text-right">
-                <div className="flex items-center justify-end gap-1">
+                <div className="fxr-c justify-end gap-1">
                     <Button
                         type="button"
                         variant="ghost"
@@ -321,14 +321,14 @@ export default function TableUnit({
                         return (
                             <TableRow key={field.id}>
                                 <TableCell className="text-left w-24">
-                                    <div className="flex items-center gap-2">
+                                    <div className="fxr-c gap-2">
                                         <span className="font-medium">{field.from_unit_qty}</span>
                                         <span>{getUnitName(field.from_unit_id)}</span>
                                     </div>
                                 </TableCell>
 
                                 <TableCell className="text-left w-16">
-                                    <div className="flex items-center gap-2">
+                                    <div className="fxr-c gap-2">
                                         <FormField
                                             control={control}
                                             // eslint-disable-next-line @typescript-eslint/no-explicit-any

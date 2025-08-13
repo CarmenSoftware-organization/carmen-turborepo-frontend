@@ -50,7 +50,7 @@ export default function Grns({ grns }: GrnsProps) {
                             <TableCell className="text-center">{grn.status}</TableCell>
                             <TableCell className="text-left">{grn.receiver}</TableCell>
                             <TableCell className="text-right">
-                                <div className="flex items-center justify-end gap-1">
+                                <div className="fxr-c justify-end gap-1">
                                     <Button variant="ghost" size={'sm'}>
                                         <Pencil className="h-3 w-3" />
                                     </Button>

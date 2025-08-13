@@ -44,9 +44,9 @@ interface UserItemProps {
 }
 
 const UserItem = ({ item, hodStates, onHodChange }: UserItemProps) => (
-    <div className="flex items-center justify-between w-full gap-4">
+    <div className="fxr-c justify-between w-full gap-4">
         <p>{item.title}</p>
-        <div className="flex items-center gap-2">
+        <div className="fxr-c gap-2">
             <span className="text-muted-foreground">Hod</span>
             <Switch
                 checked={hodStates[item.key.toString()] || false}
@@ -400,7 +400,7 @@ export default function FormEdit({
 
     return (
         <div className="space-y-4 max-w-4xl mx-auto">
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <Button onClick={onBack} variant="ghost" size="sm">
                     <ChevronLeft className="h-4 w-4" />
                 </Button>

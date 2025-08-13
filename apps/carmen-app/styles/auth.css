@@ -54,7 +54,7 @@
     }
 
     .legal-links {
-        @apply flex items-center gap-4 text-center order-1 sm:order-2;
+        @apply fxr-c gap-4 text-center order-1 sm:order-2;
     }
 
     .legal-links p {

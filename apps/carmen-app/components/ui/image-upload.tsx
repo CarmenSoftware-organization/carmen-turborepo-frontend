@@ -38,7 +38,7 @@ export const ImageUpload = ({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center gap-4">
+            <div className="fxr-c gap-4">
                 <div className="relative w-24 h-24">
                     {value ? (
                         <Image
@@ -49,7 +49,7 @@ export const ImageUpload = ({
                             height={1080}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-muted rounded-lg">
+                        <div className="w-full h-full fxr-c justify-center bg-muted rounded-lg">
                             <ImageIcon className="h-8 w-8 text-muted-foreground" />
                         </div>
                     )}

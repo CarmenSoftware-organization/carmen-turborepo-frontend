@@ -18,15 +18,15 @@ export default function WastageTable() {
                             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
                             <Input className="pl-8" placeholder="Search records..." />
                         </div>
-                        <Button variant="outline" className="flex items-center gap-2">
+                        <Button variant="outline" className="fxr-c gap-2">
                             <Filter className="h-4 w-4" />
                             Filters
                         </Button>
-                        <Button variant="outline" className="flex items-center gap-2">
+                        <Button variant="outline" className="fxr-c gap-2">
                             <Download className="h-4 w-4" />
                             Export
                         </Button>
-                        <Button className="flex items-center gap-2">
+                        <Button className="fxr-c gap-2">
                             <Plus className="h-4 w-4" />
                             New Record
                         </Button>

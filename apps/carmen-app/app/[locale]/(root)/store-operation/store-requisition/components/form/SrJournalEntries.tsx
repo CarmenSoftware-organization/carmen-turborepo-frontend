@@ -15,7 +15,7 @@ export default function SrJournalEntries({ mode, jeItems }: SrJournalEntriesProp
         <Card className="p-2 space-y-2">
             <div className="flex justify-between items-center p-2">
                 <p className="text-base font-medium">Journal Entry</p>
-                <div className="flex items-center gap-2">
+                <div className="fxr-c gap-2">
                     <Button
                         type="button"
                         variant="outline"
@@ -81,7 +81,7 @@ export default function SrJournalEntries({ mode, jeItems }: SrJournalEntriesProp
             <div className="border rounded-md">
                 <div className="flex justify-between items-center p-2">
                     <p className="text-base text-muted-foreground">Total</p>
-                    <div className="flex items-center gap-4">
+                    <div className="fxr-c gap-4">
                         <p className="text-base font-medium">8,615.00</p>
                         <p className="text-base font-medium">8,615.00</p>
                     </div>

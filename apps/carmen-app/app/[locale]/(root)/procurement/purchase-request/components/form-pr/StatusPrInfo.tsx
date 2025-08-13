@@ -28,14 +28,14 @@ export default function StatusPrInfo({
   return (
     <Card className="p-4 col-span-2">
       <div className="space-y-4">
-        <div className="flex items-center">
+        <div className="fxr-c">
           <h3 className="text-lg font-semibold">{tPurchaseRequest("status_info")}</h3>
         </div>
 
         <div className="space-y-3">
 
           {workflow_current_stage && (
-            <div className="flex items-center justify-between ">
+            <div className="fxr-c justify-between ">
               <span className="text-muted-foreground">{tPurchaseRequest("current_stage")}</span>
               <Badge variant="outline" className="">
                 {workflow_current_stage}
@@ -43,18 +43,18 @@ export default function StatusPrInfo({
             </div>
           )}
 
-          <div className="flex items-center justify-between ">
+          <div className="fxr-c justify-between ">
             <span className="text-muted-foreground">{tPurchaseRequest("requestor")}</span>
             <p>{requestor_name}</p>
           </div>
 
-          <div className="flex items-center justify-between ">
+          <div className="fxr-c justify-between ">
             <span className="text-muted-foreground">{tPurchaseRequest("department")}</span>
             <p>{department_name}</p>
           </div>
 
           {status && (
-            <div className="flex items-center justify-between ">
+            <div className="fxr-c justify-between ">
               <span className="text-muted-foreground">
                 {tPurchaseRequest("doc_status")}
               </span>
@@ -68,7 +68,7 @@ export default function StatusPrInfo({
           {create_date && (
             <>
               <Separator className="my-2" />
-              <div className="flex items-center justify-between ">
+              <div className="fxr-c justify-between ">
                 <span className="text-muted-foreground">{tPurchaseRequest("create_date")}</span>
                 <span className="font-medium">
                   {create_date

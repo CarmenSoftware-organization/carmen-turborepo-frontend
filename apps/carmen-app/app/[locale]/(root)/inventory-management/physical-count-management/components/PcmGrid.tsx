@@ -28,7 +28,7 @@ export default function PcmGrid({ physicalCountData }: PcmGridProps) {
                     return (
                         <Card key={pcm.id} className="flex flex-col">
                             <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
+                                <CardTitle className="fxr-c justify-between">
                                     <span>{pcm.department}</span>
                                     <Badge>{pcm.status}</Badge>
                                 </CardTitle>

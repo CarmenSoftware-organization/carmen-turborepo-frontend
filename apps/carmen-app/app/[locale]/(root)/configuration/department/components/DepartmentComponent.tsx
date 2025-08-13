@@ -147,7 +147,7 @@ export default function DepartmentComponent() {
         placeholder={tCommon("search")}
         data-id="department-list-search-input"
       />
-      <div className="flex items-center gap-2">
+      <div className="fxr-c gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

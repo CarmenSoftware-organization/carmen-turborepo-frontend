@@ -36,7 +36,7 @@ export default function GoodsReceivedNoteDialog({
           >
             <CardHeader>
               <CardTitle>
-                <div className="flex items-center gap-2">
+                <div className="fxr-c gap-2">
                   <FileText className="h-4 w-4" />
                   From PO
                 </div>
@@ -56,7 +56,7 @@ export default function GoodsReceivedNoteDialog({
           >
             <CardHeader>
               <CardTitle>
-                <div className="flex items-center gap-3">
+                <div className="fxr-c gap-3">
                   <FileText className="h-5 w-4" />
                   From Manual
                 </div>

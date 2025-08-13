@@ -5,7 +5,7 @@ import { Building } from "lucide-react";
 export default function BusinessDimensions() {
     return (
         <Card className="p-4 space-y-2">
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <Building className="text-purple-500 w-4 h-4" />
                 <p className="text-sm font-semibold">Business Dimensions</p>
             </div>

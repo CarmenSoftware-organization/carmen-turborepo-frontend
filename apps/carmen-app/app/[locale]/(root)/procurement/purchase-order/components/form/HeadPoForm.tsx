@@ -80,7 +80,7 @@ export default function HeadPoForm({ poData }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <div>
                     <Label className="text-xs font-medium">
-                        <div className="flex items-center gap-1">
+                        <div className="fxr-c gap-1">
                             <FileText className="h-3 w-3" />
                             {tPurchaseOrder("description")}
                         </div>
@@ -89,7 +89,7 @@ export default function HeadPoForm({ poData }: Props) {
                 </div>
                 <div>
                     <Label className="text-xs font-medium">
-                        <div className="flex items-center gap-1">
+                        <div className="fxr-c gap-1">
                             <NotebookPen className="h-3 w-3" />
                             {tPurchaseOrder("note")}
                         </div>
@@ -106,7 +106,7 @@ const RenderPoHead = ({ label, icon, value }: RenderPoHeadProps) => {
     return (
         <div className="col-span-1">
             <Label className="text-xs font-medium">
-                <div className="flex items-center gap-1">
+                <div className="fxr-c gap-1">
                     {icon}
                     {label}
                 </div>

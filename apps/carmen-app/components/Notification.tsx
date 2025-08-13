@@ -80,7 +80,7 @@ export default function Notification() {
                     </Button>
 
                     {notificationCount > 0 && (
-                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 fxr-c justify-center">
                             {displayCount}
                         </div>
                     )}
@@ -92,7 +92,7 @@ export default function Notification() {
                 >
                     <Bell className="h-4 w-4" />
                     {notificationCount > 0 && (
-                        <span className="absolute top-1 end-1 inline-flex items-center py-1 px-2 rounded-full text-xs font-medium transform -translate-y-1/2 translate-x-1/2 bg-red-500 text-white">{displayCount}</span>
+                        <span className="absolute top-1 end-1 inline-fxr-c py-1 px-2 rounded-full text-xs font-medium transform -translate-y-1/2 translate-x-1/2 bg-red-500 text-white">{displayCount}</span>
                     )}
                 </Button>
             </PopoverTrigger>
@@ -113,7 +113,7 @@ export default function Notification() {
                             className={`p-4 hover:bg-muted/50 transition-colors ${!notification.read ? 'border-l-2 border-l-primary' : ''}`}
                         >
                             <div className="flex items-start gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
+                                <div className="h-10 w-10 rounded-full bg-primary/10 fxr-c justify-center text-lg">
                                     {notification.poster.charAt(0)}
                                 </div>
                                 <div className="flex-1">

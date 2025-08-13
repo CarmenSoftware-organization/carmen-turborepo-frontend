@@ -197,10 +197,10 @@ export default function LocationForm({
                   ? "Edit Location"
                   : "Create New Location"}
               </CardTitle>
-              <div className="flex items-center gap-2 justify-end">
+              <div className="fxr-c gap-2 justify-end">
                 <Button
                   type="submit"
-                  className="flex items-center gap-2 sm:order-2"
+                  className="fxr-c gap-2 sm:order-2"
                 >
                   <Save className="w-4 h-4" />
                   {mode === formType.EDIT
@@ -323,13 +323,13 @@ export default function LocationForm({
                         defaultValue={field.value}
                         className="flex"
                       >
-                        <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormItem className="fxr-c space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value={PHYSICAL_COUNT_TYPE.YES} />
                           </FormControl>
                           <FormLabel className="font-normal">Yes</FormLabel>
                         </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormItem className="fxr-c space-x-3 space-y-0">
                           <FormControl>
                             <RadioGroupItem value={PHYSICAL_COUNT_TYPE.NO} />
                           </FormControl>

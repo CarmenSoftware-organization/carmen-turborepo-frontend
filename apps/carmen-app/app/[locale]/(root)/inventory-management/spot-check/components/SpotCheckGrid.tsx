@@ -28,7 +28,7 @@ export default function SpotCheckGrid({ spotCheckData }: SpotCheckGridProps) {
                     return (
                         <Card key={spotCheck.id} className="flex flex-col">
                             <CardHeader>
-                                <CardTitle className="flex items-center justify-between">
+                                <CardTitle className="fxr-c justify-between">
                                     <span>{spotCheck.department}</span>
                                     <Badge>{spotCheck.status}</Badge>
                                 </CardTitle>

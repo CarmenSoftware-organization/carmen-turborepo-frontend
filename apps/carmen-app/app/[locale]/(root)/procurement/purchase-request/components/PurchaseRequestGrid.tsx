@@ -72,7 +72,7 @@ export default function PurchaseRequestGrid({
       >
         <CardHeader className="p-2 bg-muted">
           <div className="flex justify-between items-start">
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
               <Checkbox
                 id={`grid-checkbox-${pr.id}`}
                 checked={selectedItems.includes(pr.id ?? "")}
@@ -87,7 +87,7 @@ export default function PurchaseRequestGrid({
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
               <div className="mt-1">{prStatusColor(pr.pr_status ?? "")}</div>
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function PurchaseRequestGrid({
             </div>
           </div>
         </CardContent>
-        <div className="flex items-center justify-end p-2 border-t border-border bg-muted">
+        <div className="fxr-c justify-end p-2 border-t border-border bg-muted">
           <ActionButtons prId={pr.id ?? ""} />
         </div>
       </Card>
@@ -147,7 +147,7 @@ export default function PurchaseRequestGrid({
   return (
     <div className="space-y-4">
       <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div className="col-span-full flex items-center justify-between mb-4">
+        <div className="col-span-full fxr-c justify-between mb-4">
           <Button
             variant="outline"
             size="sm"

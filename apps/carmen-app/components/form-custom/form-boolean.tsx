@@ -70,7 +70,7 @@ export default function FormBoolean({
 
     case "right":
       return (
-        <div className="flex items-center space-x-2">
+        <div className="fxr-c space-x-2">
           {renderControl()}
           {renderLabel()}
         </div>
@@ -79,7 +79,7 @@ export default function FormBoolean({
     case "left":
     default:
       return (
-        <div className="flex items-center space-x-2">
+        <div className="fxr-c space-x-2">
           {renderLabel()}
           {renderControl()}
         </div>

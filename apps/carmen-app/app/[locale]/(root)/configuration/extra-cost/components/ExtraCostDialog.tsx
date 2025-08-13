@@ -160,7 +160,7 @@ export default function ExtraCostDialog({
                         />
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="fxr-c space-x-2">
                         <Checkbox
                             id="is_active"
                             checked={watchedIsActive}

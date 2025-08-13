@@ -178,6 +178,10 @@
     @apply flex flex-row items-center;
   }
 
+  .fxb-c {
+    @apply flex flex-row items-center justify-between;
+  }
+
   .fxr-s {
     @apply flex flex-row items-start;
   }

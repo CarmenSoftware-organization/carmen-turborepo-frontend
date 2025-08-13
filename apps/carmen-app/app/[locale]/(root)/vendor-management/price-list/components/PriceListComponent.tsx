@@ -119,7 +119,7 @@ export default function PriceListComponent() {
                 placeholder={tCommon('search')}
                 data-id="price-list-list-search-input"
             />
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <StatusSearchDropdown
                     value={filter}
                     onChange={setFilter}

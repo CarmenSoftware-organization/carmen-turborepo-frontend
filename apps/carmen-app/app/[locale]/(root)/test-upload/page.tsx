@@ -154,7 +154,7 @@ export default function TestUploadPage() {
                                 }}
                                 className="p-4 rounded-lg"
                             >
-                                <div className="flex items-center justify-between mb-3">
+                                <div className="fxr-c justify-between mb-3">
                                     <span className="text-sm text-foreground">{file.name}</span>
                                     <button
                                         onClick={() => removeFile(index)}

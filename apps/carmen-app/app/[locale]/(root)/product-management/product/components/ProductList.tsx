@@ -107,7 +107,7 @@ export default function ProductList({
         const product = products.find(p => p.id === record.key);
         if (!product) return null;
         return (
-          <div className="flex items-center gap-2">
+          <div className="fxr-c gap-2">
             <ButtonLink href={`/product-management/product/${record.key}`}>
               {record.name}
             </ButtonLink>
@@ -164,7 +164,7 @@ export default function ProductList({
       align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (status: string) => (
-        <div className="flex items-center justify-center">
+        <div className="fxr-c justify-center">
           <StatusCustom is_active={status === "active"}>
             {status === "active" ? tCommon("active") : tCommon("inactive")}
           </StatusCustom>

@@ -160,7 +160,7 @@ export default function CreditTermComponent() {
         placeholder={tCommon("search")}
         data-id="credit-term-list-search-input"
       />
-      <div className="flex items-center gap-2">
+      <div className="fxr-c gap-2">
         <StatusSearchDropdown
           value={status}
           onChange={setStatus}
@@ -190,8 +190,8 @@ export default function CreditTermComponent() {
           className="group border border-border/50 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:border-border/80"
         >
           <CardHeader className="pb-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="fxr-c justify-between">
+              <div className="fxr-c gap-3">
                 <div className="p-2 rounded-lg border border-border/50">
                   <CreditCard className="h-5 w-5 text-primary" />
                 </div>
@@ -204,7 +204,7 @@ export default function CreditTermComponent() {
               <Badge
                 variant={creditTerm.is_active ? "active" : "inactive"}
                 className={`
-                  flex items-center gap-1 text-xs px-2 py-1 rounded-full border-0
+                  fxr-c gap-1 text-xs px-2 py-1 rounded-full border-0
                   ${creditTerm.is_active
                     ? "text-green-700 ring-1 ring-green-200"
                     : "text-gray-600 ring-1 ring-gray-200"
@@ -244,7 +244,7 @@ export default function CreditTermComponent() {
               </div>
             )}
 
-            <div className="flex items-center justify-end">
+            <div className="fxr-c justify-end">
               <Button
                 variant="ghost"
                 size="sm"

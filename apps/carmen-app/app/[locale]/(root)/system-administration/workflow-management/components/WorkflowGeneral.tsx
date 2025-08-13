@@ -88,7 +88,7 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
 						render={({ field }) => (
 							<Form.FormItem>
 								<Form.FormLabel>Status</Form.FormLabel>
-								<div className="flex items-center space-x-2">
+								<div className="fxr-c space-x-2">
 									<Form.FormControl>
 										<Switch
 											checked={field.value}
@@ -104,7 +104,7 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
 							</Form.FormItem>
 						)}
 					/>
-					{/* <div className="flex items-center space-x-2"></div> */}
+					{/* <div className="fxr-c space-x-2"></div> */}
 				</div>
 				<div>
 					<Form.FormField

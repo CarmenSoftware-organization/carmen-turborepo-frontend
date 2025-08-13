@@ -27,7 +27,7 @@ export default function Testimonials() {
         <section id="testimonials" className="py-20 bg-muted relative">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="text-center max-w-3xl mx-auto mb-16 section-transition">
-                    <div className="inline-flex items-center bg-background px-4 py-1.5 rounded-full text-xs font-medium text-foreground border border-border mb-5">
+                    <div className="inline-fxr-c bg-background px-4 py-1.5 rounded-full text-xs font-medium text-foreground border border-border mb-5">
                         Testimonials
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">

@@ -219,7 +219,7 @@ export default function CurrencyComponent() {
                 placeholder={tCommon('search')}
                 data-id="unit-list-search-input"
             />
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <StatusSearchDropdown
                     value={filter}
                     onChange={setFilter}

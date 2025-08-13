@@ -8,14 +8,14 @@ export function DepartmentLoading() {
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6">
             {/* Header section */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
+            <div className="fxr-c justify-between">
+                <div className="fxr-c gap-3">
                     <Skeleton className="h-8 w-8 rounded-md" />
                     <Skeleton className="h-8 w-8 rounded-md" />
                     <Skeleton className="h-8 w-48" />
                     <Skeleton className="h-6 w-16 rounded-full" />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="fxr-c gap-2">
                     <Skeleton className="h-8 w-20 rounded-md" />
                 </div>
             </div>
@@ -25,7 +25,7 @@ export function DepartmentLoading() {
             {/* Information Card */}
             <Card>
                 <CardHeader>
-                    <div className="flex items-center gap-2">
+                    <div className="fxr-c gap-2">
                         <Skeleton className="h-5 w-5 rounded-md" />
                         <Skeleton className="h-6 w-24" />
                     </div>
@@ -39,7 +39,7 @@ export function DepartmentLoading() {
                             </div>
                             <div>
                                 <Skeleton className="h-4 w-16 mb-2" />
-                                <div className="flex items-center gap-2 mt-1">
+                                <div className="fxr-c gap-2 mt-1">
                                     <Skeleton className="w-2 h-2 rounded-full" />
                                     <Skeleton className="h-4 w-12" />
                                 </div>
@@ -56,7 +56,7 @@ export function DepartmentLoading() {
             {/* Members Card */}
             <Card>
                 <CardHeader>
-                    <div className="flex items-center gap-2">
+                    <div className="fxr-c gap-2">
                         <Skeleton className="h-5 w-5 rounded-md" />
                         <Skeleton className="h-6 w-16" />
                         <Skeleton className="h-5 w-20 rounded-full ml-2" />
@@ -73,7 +73,7 @@ export function DepartmentLoading() {
                         {Array.from({ length: 3 }).map((_, index) => (
                             <div key={index} className="grid grid-cols-2 gap-4 py-2">
                                 <Skeleton className="h-5 w-32" />
-                                <div className="flex items-center gap-2">
+                                <div className="fxr-c gap-2">
                                     <Skeleton className="h-4 w-4 rounded-md" />
                                     <Skeleton className="h-4 w-16" />
                                 </div>
@@ -88,7 +88,7 @@ export function DepartmentLoading() {
                 {Array.from({ length: 3 }).map((_, index) => (
                     <Card key={index}>
                         <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
+                            <div className="fxr-c justify-between">
                                 <div>
                                     <Skeleton className="h-4 w-24 mb-2" />
                                     <Skeleton className="h-8 w-8" />

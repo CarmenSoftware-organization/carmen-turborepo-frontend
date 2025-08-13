@@ -233,12 +233,12 @@ const renderItemContent = (item: CategoryItem) => {
     if ('isProgress' in item) {
         return (
             <div className="space-y-2 w-full">
-                <div className="flex items-center justify-between">
+                <div className="fxr-c justify-between">
                     <h3 className="text-xs font-medium">{item.title}</h3>
                     <span className="text-xs font-bold">${item.progress.amount.toFixed(2)}</span>
                 </div>
                 <Progress value={item.progress.value} className="h-1.5" />
-                <div className="flex items-center justify-between text-xs">
+                <div className="fxr-c justify-between text-xs">
                     <span className="text-muted-foreground">{item.progress.value}% of target</span>
                     <span className="text-muted-foreground">Target: ${item.progress.target.toFixed(2)}</span>
                 </div>
@@ -263,7 +263,7 @@ export default function SystemCategory() {
                 return (
                     <Card key={category.id} className="overflow-hidden transition-all hover:shadow-md">
                         <CardHeader className="pb-2">
-                            <CardTitle className="flex items-center gap-2">
+                            <CardTitle className="fxr-c gap-2">
                                 <Icon className="h-5 w-5" />
                                 <span>{category.title}</span>
                             </CardTitle>
@@ -275,7 +275,7 @@ export default function SystemCategory() {
                             <div className="space-y-3">
                                 {category.items.map((item) => (
                                     <div key={item.title}>
-                                        <div className="flex items-center justify-between">
+                                        <div className="fxr-c justify-between">
                                             <div>
                                                 <h3 className="text-sm font-medium">{item.title}</h3>
                                                 <p className={`text-xs ${getDescriptionTextColor(item)}`}>

@@ -54,7 +54,7 @@ export default function TreeNode({
     return (
         <div className="tree-node">
             <div
-                className={`flex items-center p-2 hover:bg-muted/50 rounded-md group ${level > 0 ? "ml-6" : ""}`}
+                className={`fxr-c p-2 hover:bg-muted/50 rounded-md group ${level > 0 ? "ml-6" : ""}`}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
             >
                 {hasChildren ? (
@@ -83,7 +83,7 @@ export default function TreeNode({
                     {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-muted-foreground">{node.itemCount}</p>}
                 </div>
 
-                <div className="flex items-center gap-1 group-hover:block hidden">
+                <div className="fxr-c gap-1 group-hover:block hidden">
                     {node.type !== NODE_TYPE.ITEM_GROUP && (
                         <TooltipProvider>
                             <Tooltip>

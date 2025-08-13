@@ -24,7 +24,7 @@ export default function PricingCard({ item, onFieldUpdate, mode }: PricingCardPr
         <Card>
             <CardHeader>
                 <CardTitle>
-                    <div className="flex items-center gap-1">
+                    <div className="fxr-c gap-1">
                         <DollarSign className="text-green-500" />
                         Pricing
                     </div>

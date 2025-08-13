@@ -81,7 +81,7 @@ export default function InventoryAdjustmentList({ inventoryAdjustments }: Invent
                                     </Badge>
                                     <CardTitle className="text-base">{inventoryAdjustment.adj_no}</CardTitle>
                                 </div>
-                                <div className="flex items-center gap-1">
+                                <div className="fxr-c gap-1">
                                     <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
                                         <Eye className="h-4 w-4" />
                                     </Button>

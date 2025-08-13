@@ -51,7 +51,7 @@ export default function PhysicalCountManagementComponent() {
                 placeholder={tCommon('search')}
                 data-id="physical-count-list-search-input"
             />
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <StatusSearchDropdown
                     value={status}
                     onChange={setStatus}

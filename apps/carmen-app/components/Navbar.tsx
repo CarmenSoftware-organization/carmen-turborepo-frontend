@@ -11,8 +11,8 @@ import "@/styles/layout.css";
 export default function Navbar() {
     const tHome = useTranslations('HomePage');
     return (
-        <div className="navbar-container">
-            <div className="navbar-logo-container">
+        <div className="fxb-c navbar-container">
+            <div className="px-2">
                 <span
                     className="navbar-logo-text"
                     data-id="sidebar-logo-text"
@@ -33,7 +33,7 @@ export default function Navbar() {
                 <div className="block md:hidden">
                     <ModuleMobile />
                 </div>
-                <div className="navbar-utilities">
+                <div className="hidden md:fxr-c">
                     <TenantList />
                     <SwitchTheme />
                     <LanguageSwitcher />

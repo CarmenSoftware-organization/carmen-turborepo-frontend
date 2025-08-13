@@ -66,7 +66,7 @@ export default function PriceListLookup({
           />
           <CommandList>
             {isLoading ? (
-              <div className="flex items-center justify-center py-6">
+              <div className="fxr-c justify-center py-6">
                 <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
               </div>
             ) : (

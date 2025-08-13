@@ -21,11 +21,11 @@ const Step: React.FC<StepProps> = ({ title, description, isCompleted, isActive, 
     };
 
     return (
-        <div className="flex items-center">
-            <div className="relative flex items-center justify-center">
+        <div className="fxr-c">
+            <div className="relative fxr-c justify-center">
                 <div
                     className={cn(
-                        "w-8 h-8 rounded-full border-2 flex items-center justify-center",
+                        "w-8 h-8 rounded-full border-2 fxr-c justify-center",
                         getStepClassName()
                     )}
                 >

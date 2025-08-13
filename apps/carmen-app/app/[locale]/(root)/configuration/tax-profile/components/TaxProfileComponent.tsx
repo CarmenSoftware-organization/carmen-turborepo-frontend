@@ -167,7 +167,7 @@ export function TaxProfileComponent() {
           placeholder={tCommon("search")}
           data-id="delivery-point-list-search-input"
         />
-        <div className="flex items-center gap-2">
+        <div className="fxr-c gap-2">
           <StatusSearchDropdown
             value={filter}
             onChange={handleSetFilter}

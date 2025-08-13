@@ -310,7 +310,7 @@ export default function CategoryComponent() {
             <div className="space-y-4">
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
-                    <div className="flex items-center gap-2">
+                    <div className="fxr-c gap-2">
                         <Button onClick={expandAll} size={'sm'} variant={'outlinePrimary'}>
                             <ChevronDown className="h-4 w-4" />
                             {tCategory("expand_all")}

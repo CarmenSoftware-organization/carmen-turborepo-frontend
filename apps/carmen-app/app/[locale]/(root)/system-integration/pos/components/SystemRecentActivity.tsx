@@ -98,7 +98,7 @@ const getBadgeVariant = (variant: ActivityItem["type"]["variant"] | ActivityItem
 export default function SystemRecentActivity() {
     return (
         <div className="space-y-4">
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <FileText className="h-5 w-5" />
                 <span className="text-lg font-medium">
                     System Recent Activity

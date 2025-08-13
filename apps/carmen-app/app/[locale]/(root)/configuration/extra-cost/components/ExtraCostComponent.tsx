@@ -222,7 +222,7 @@ export default function ExtraCostComponent() {
         onSearch={setSearch}
         data-id="extra-cost-list-search-input"
       />
-      <div className="flex items-center gap-2">
+      <div className="fxr-c gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

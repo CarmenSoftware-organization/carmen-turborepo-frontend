@@ -15,8 +15,8 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
     const tCommon = useTranslations("Common");
 
     return (
-        <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
+        <div className="fxr-c justify-between mb-4">
+            <div className="fxr-c gap-2">
                 <ButtonLink href="/procurement/purchase-order">
                     <ChevronLeft className="h-4 w-4" />
                 </ButtonLink>
@@ -27,7 +27,7 @@ export default function ActionFields({ currentMode, setCurrentMode, title }: Pro
                     <p className="text-xl font-bold">{tPurchaseOrder("title")}</p>
                 )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 {currentMode === formType.VIEW ? (
                     <>
                         <Button

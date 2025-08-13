@@ -95,7 +95,7 @@ export default function CommentComponent({
                     {comments.map((comment) => (
                         <Card key={comment.id} className="p-2">
                             <div className="flex items-start gap-2">
-                                <div className="h-6 w-6 bg-muted rounded-full flex items-center justify-center">
+                                <div className="h-6 w-6 bg-muted rounded-full fxr-c justify-center">
                                     {comment.poster.charAt(0)}
                                 </div>
 
@@ -111,7 +111,7 @@ export default function CommentComponent({
                                             {comment.attachments.map((attachment) => (
                                                 <button
                                                     key={attachment.id}
-                                                    className="flex items-center gap-2 text-xs text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
+                                                    className="fxr-c gap-2 text-xs text-blue-600 hover:text-blue-800 cursor-pointer hover:underline"
                                                     aria-label={`Download ${attachment.file}`}
                                                     onClick={() => onFileDownload(attachment)}
                                                     tabIndex={0}
@@ -150,8 +150,8 @@ export default function CommentComponent({
 
                 {/* Show selected file or upload button */}
                 {selectedFile ? (
-                    <div className="flex items-center justify-between bg-muted p-2 rounded-md">
-                        <div className="flex items-center gap-2 text-xs">
+                    <div className="fxr-c justify-between bg-muted p-2 rounded-md">
+                        <div className="fxr-c gap-2 text-xs">
                             <Paperclip className="h-3 w-3" />
                             <span className="truncate max-w-[200px]">{selectedFile.name}</span>
                         </div>

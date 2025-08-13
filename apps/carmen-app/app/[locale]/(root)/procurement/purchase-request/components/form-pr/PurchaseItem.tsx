@@ -139,7 +139,7 @@ export default function PurchaseItem({
                     {addFields.length === 0 && (!initValues || initValues.filter(item => !removedItems.has(item.id)).length === 0) && (
                         <TableRow>
                             <TableCell colSpan={8}>
-                                <div className="flex items-center justify-center gap-2 text-muted-foreground h-10">
+                                <div className="fxr-c justify-center gap-2 text-muted-foreground h-10">
                                     <Package className="w-4 h-4" />
                                     No product
                                 </div>

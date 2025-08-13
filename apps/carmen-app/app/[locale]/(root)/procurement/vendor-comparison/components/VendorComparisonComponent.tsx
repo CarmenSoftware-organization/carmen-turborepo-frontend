@@ -71,7 +71,7 @@ export default function VendorComparisonComponent() {
                 data-id="vc-list-search-input"
             />
 
-            <div className="flex items-center gap-2">
+            <div className="fxr-c gap-2">
                 <SortComponent
                     fieldConfigs={sortFields}
                     sort={sort}

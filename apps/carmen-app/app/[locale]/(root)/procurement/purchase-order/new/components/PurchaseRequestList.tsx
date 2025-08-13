@@ -89,7 +89,7 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
 
             {/* Mobile Card View */}
             <div className="grid gap-4 md:hidden">
-                <div className="flex items-center justify-between">
+                <div className="fxr-c justify-between">
                     <Button
                         variant="outline"
                         size="sm"
@@ -107,7 +107,7 @@ export default function PurchaseRequestList({ purchaseRequests }: PurchaseReques
                     <Card key={pr.id} className="transition-all duration-200 hover:shadow-lg hover:border-primary/50">
                         <CardHeader className="p-4">
                             <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-2">
+                                <div className="fxr-c gap-2">
                                     <Checkbox
                                         id={`mobile-checkbox-${pr.id}`}
                                         checked={selectedItems.includes(pr.id ?? '')}

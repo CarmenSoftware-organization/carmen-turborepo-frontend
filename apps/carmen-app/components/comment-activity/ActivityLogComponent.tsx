@@ -57,7 +57,7 @@ export default function ActivityLogComponent({
                     activities.map((activity) => (
                         <Card key={activity.id} className="p-2 mb-2">
                             <div className="flex items-start gap-2">
-                                <div className="h-6 w-6 bg-muted rounded-full flex items-center justify-center">
+                                <div className="h-6 w-6 bg-muted rounded-full fxr-c justify-center">
                                     {activity.user.charAt(0)}
                                 </div>
                                 <div className="w-full">

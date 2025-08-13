@@ -7,7 +7,7 @@ export default function StockReplenishmentComponent() {
         <div className="space-y-4">
             <StockCard />
             <StockLevel />
-            <Alert className="bg-rose-100 border-rose-200 flex items-center">
+            <Alert className="bg-rose-100 border-rose-200 fxr-c">
                 <AlertDescription className="text-rose-700">
                     8 items are below minimum stock levels and require immediate attention
                 </AlertDescription>

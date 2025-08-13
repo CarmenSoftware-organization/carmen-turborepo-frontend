@@ -6,11 +6,11 @@
     }
 
     .link-item {
-        @apply flex items-center justify-between p-2 rounded-md text-sm;
+        @apply fxr-c justify-between p-2 rounded-md text-sm;
     }
 
     .menu-item {
-        @apply flex items-center justify-between p-2 rounded-md text-sm w-full text-left cursor-pointer;
+        @apply fxr-c justify-between p-2 rounded-md text-sm w-full text-left cursor-pointer;
     }
 
     .motion-wrapper {
@@ -25,36 +25,16 @@
         @apply flex border-b border-border pb-4 items-center gap-2 mb-4;
     }
 
-    .sidebar-header-collapsed {
-        @apply justify-center;
-    }
-
     .sidebar-toggle-button {
         @apply absolute -right-3 top-3 z-10 border border-border p-2 hover:bg-background;
     }
 
-    .sidebar-toggle-button-expanded {
-        @apply bg-muted;
-    }
-
-    .sidebar-toggle-button-collapsed {
-        @apply bg-background;
-    }
-
-    .menu-item-active {
+    .item-active {
         @apply bg-primary text-white;
     }
 
-    .menu-item-hover {
+    .item-hover {
         @apply hover:bg-muted hover:text-muted-foreground;
-    }
-
-    .menu-item-open {
-        @apply bg-muted;
-    }
-
-    .menu-item-collapsed {
-        @apply justify-center;
     }
 
     .link-item-active {
@@ -65,28 +45,12 @@
         @apply text-muted-foreground;
     }
 
-    .link-item-hover {
-        @apply hover:bg-muted hover:text-muted-foreground;
-    }
-
-    .link-item-collapsed {
-        @apply justify-center;
-    }
-
     .module-name {
         @apply font-semibold text-muted-foreground;
     }
 
-    .menu-content {
-        @apply flex items-center;
-    }
-
     .navbar-container {
-        @apply flex items-center justify-between p-2 bg-background border-b border-border gap-2;
-    }
-
-    .navbar-logo-container {
-        @apply px-2;
+        @apply p-2 bg-background border-b border-border gap-2;
     }
 
     .navbar-logo-text {
@@ -95,21 +59,5 @@
 
     .navbar-logo-subtext {
         @apply block tracking-wide text-xs text-muted-foreground;
-    }
-
-    .navbar-actions {
-        @apply flex items-center gap-2;
-    }
-
-    .navbar-module-desktop {
-        @apply hidden md:block;
-    }
-
-    .navbar-module-mobile {
-        @apply block md:hidden;
-    }
-
-    .navbar-utilities {
-        @apply hidden md:flex items-center;
     }
 }

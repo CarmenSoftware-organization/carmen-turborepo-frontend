@@ -113,7 +113,7 @@ export default function FormBooleanComponent() {
                     value={field.value}
                     onChange={field.onChange}
                     viewStage="hidden"
-                    // showContent={false}
+                  // showContent={false}
                   />
                 </FormControl>
                 <FormMessage />
@@ -122,7 +122,7 @@ export default function FormBooleanComponent() {
           />
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="fxr-c justify-between">
               <FormLabel>Details</FormLabel>
               <Button
                 type="button"
@@ -136,7 +136,7 @@ export default function FormBooleanComponent() {
 
             {fields.map((field, index) => (
               <div key={field.id} className="border p-4 rounded-lg space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="fxr-c justify-between">
                   <span className="font-medium">Person {index + 1}</span>
                   {fields.length > 1 && (
                     <Button

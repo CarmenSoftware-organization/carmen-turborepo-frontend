@@ -213,9 +213,9 @@ const SidebarContent = () => {
                 className={cn(
                     'link-item',
                     !isActive && 'link-item-inactive',
-                    isActive ? 'link-item-active' : 'link-item-hover',
+                    isActive ? 'item-active' : 'item-hover',
                     level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
-                    isActuallyCollapsed && 'link-item-collapsed'
+                    isActuallyCollapsed && 'justify-center'
                 )}
                 title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
             >
@@ -260,10 +260,10 @@ const SidebarContent = () => {
     ) => {
         return cn(
             'menu-item',
-            isActive ? 'menu-item-active' : 'menu-item-hover',
+            isActive ? 'item-active' : 'menu-item-hover',
             level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
-            isOpen && !isActuallyCollapsed && 'menu-item-open',
-            isActuallyCollapsed && 'menu-item-collapsed'
+            isOpen && !isActuallyCollapsed && 'bg-muted',
+            isActuallyCollapsed && 'justify-center'
         );
     };
 
@@ -284,7 +284,7 @@ const SidebarContent = () => {
                     onClick={handleToggleCollapse}
                     className={cn(
                         "sidebar-toggle-button",
-                        !isActuallyCollapsed ? 'sidebar-toggle-button-expanded' : 'sidebar-toggle-button-collapsed'
+                        !isActuallyCollapsed ? 'bg-muted' : 'bg-background'
                     )}
                     aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                 >
@@ -299,7 +299,7 @@ const SidebarContent = () => {
                     transition={{ duration: 0.3 }}
                     className={cn(
                         "sidebar-header",
-                        isActuallyCollapsed && 'sidebar-header-collapsed'
+                        isActuallyCollapsed && 'justify-center'
                     )}
                 >
                     {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}

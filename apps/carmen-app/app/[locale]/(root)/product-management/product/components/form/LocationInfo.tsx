@@ -226,7 +226,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                                                                     </SelectTrigger>
                                                                     <SelectContent>
                                                                         {filteredStoreLocations.length === 0 ? (
-                                                                            <div className="flex items-center justify-center py-2 text-sm text-gray-500">
+                                                                            <div className="fxr-c justify-center py-2 text-sm text-gray-500">
                                                                                 No locations available
                                                                             </div>
                                                                         ) : (

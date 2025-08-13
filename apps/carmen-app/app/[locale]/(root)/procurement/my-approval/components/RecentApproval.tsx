@@ -33,7 +33,7 @@ export default function RecentApproval() {
     return (
         <Card>
             <CardHeader className="border-b">
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="fxr-c gap-2">
                     <CheckCircle className="w-4 h-4" />
                     Recent Approvals
                 </CardTitle>
@@ -45,23 +45,23 @@ export default function RecentApproval() {
                 {mockRecentApprovals.map((approval: RecentApprovalDto) => (
                     <div key={approval.id} className="p-4 space-y-2 border-b">
                         <div className="flex justify-between items-center">
-                            <Badge variant="outline" className={`${statusRecentApprovalColor(approval.status).className} flex items-center gap-1 py-1 px-2`}>
+                            <Badge variant="outline" className={`${statusRecentApprovalColor(approval.status).className} fxr-c gap-1 py-1 px-2`}>
                                 {statusRecentApprovalColor(approval.status).icon}
                                 <span className="text-xs font-medium">{approval.status}</span>
                             </Badge>
-                            <Badge className="flex items-center gap-1" variant="outline">
+                            <Badge className="fxr-c gap-1" variant="outline">
                                 <Clock className="w-3 h-3" />
                                 <span className="text-xs text-muted-foreground">
                                     {formatDistanceToNow(new Date(approval.date_approved), { addSuffix: true })}
                                 </span>
                             </Badge>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="fxr-c gap-2">
                             <p className="text-xs font-medium">{approval.title}</p>
                             <p className="text-xs font-medium">- {approval.no_unit} units</p>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="outline" className="flex items-center gap-1">
+                        <div className="fxr-c gap-2">
+                            <Badge variant="outline" className="fxr-c gap-1">
                                 <UserRound className="w-3 h-3" />
                                 {approval.department}
                             </Badge>

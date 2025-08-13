@@ -34,7 +34,7 @@ const WorkflowStageNotification = ({
 		disabled,
 	}: ControllerRenderProps & { label: string; disabled: boolean }) => (
 		<Form.FormItem>
-			<div className="flex items-center space-x-2">
+			<div className="fxr-c space-x-2">
 				<Form.FormControl>
 					<Switch
 						checked={value}
@@ -60,7 +60,7 @@ const WorkflowStageNotification = ({
 							<div>
 								<Label>Recipients</Label>
 								<div className="grid gap-2 mt-2">
-									<div className="flex items-center space-x-2">
+									<div className="fxr-c space-x-2">
 										<Form.FormField
 											control={control}
 											name={`data.stages.${index}.available_actions.submit.recipients.requestor`}
@@ -74,7 +74,7 @@ const WorkflowStageNotification = ({
 										/>
 									</div>
 									{selectedStage.available_actions.approve.is_active && (
-										<div className="flex items-center space-x-2">
+										<div className="fxr-c space-x-2">
 											<Form.FormField
 												control={control}
 												name={`data.stages.${index}.available_actions.submit.recipients.next_step`}
@@ -114,7 +114,7 @@ const WorkflowStageNotification = ({
 							<div>
 								<Label>Recipients</Label>
 								<div className="grid gap-2 mt-2">
-									<div className="flex items-center space-x-2">
+									<div className="fxr-c space-x-2">
 										<Form.FormField
 											control={control}
 											name={`data.stages.${index}.available_actions.approve.recipients.requestor`}
@@ -127,7 +127,7 @@ const WorkflowStageNotification = ({
 											)}
 										/>
 									</div>
-									<div className="flex items-center space-x-2">
+									<div className="fxr-c space-x-2">
 										<Form.FormField
 											control={control}
 											name={`data.stages.${index}.available_actions.approve.recipients.current_approve`}
@@ -141,7 +141,7 @@ const WorkflowStageNotification = ({
 										/>
 									</div>
 									{selectedStage.available_actions.approve.is_active && (
-										<div className="flex items-center space-x-2">
+										<div className="fxr-c space-x-2">
 											<Form.FormField
 												control={control}
 												name={`data.stages.${index}.available_actions.approve.recipients.next_step`}
@@ -181,7 +181,7 @@ const WorkflowStageNotification = ({
 							<div>
 								<Label>Recipients</Label>
 								<div className="grid gap-2 mt-2">
-									<div className="flex items-center space-x-2">
+									<div className="fxr-c space-x-2">
 										<Form.FormField
 											control={control}
 											name={`data.stages.${index}.available_actions.reject.recipients.requestor`}
@@ -194,7 +194,7 @@ const WorkflowStageNotification = ({
 											)}
 										/>
 									</div>
-									<div className="flex items-center space-x-2">
+									<div className="fxr-c space-x-2">
 										<Form.FormField
 											control={control}
 											name={`data.stages.${index}.available_actions.reject.recipients.next_step`}
@@ -233,7 +233,7 @@ const WorkflowStageNotification = ({
 							<div>
 								<Label>Recipients</Label>
 								<div className="grid gap-2 mt-2">
-									<div className="flex items-center space-x-2">
+									<div className="fxr-c space-x-2">
 										<Form.FormField
 											control={control}
 											name={`data.stages.${index}.available_actions.sendback.recipients.requestor`}
@@ -246,7 +246,7 @@ const WorkflowStageNotification = ({
 											)}
 										/>
 									</div>
-									<div className="flex items-center space-x-2">
+									<div className="fxr-c space-x-2">
 										<Form.FormField
 											control={control}
 											name={`data.stages.${index}.available_actions.sendback.recipients.next_step`}
@@ -284,13 +284,13 @@ const WorkflowStageNotification = ({
 						<div>
 							<Label>Recipients</Label>
 							<div className="grid gap-2 mt-2">
-								<div className="flex items-center space-x-2">
+								<div className="fxr-c space-x-2">
 									<Switch id="sla-requestor" disabled={!isEditing} />
 									<Label htmlFor="sla-requestor" className="cursor-pointer">
 										Requestor
 									</Label>
 								</div>
-								<div className="flex items-center space-x-2">
+								<div className="fxr-c space-x-2">
 									<Switch id="sla-current-approver" disabled={!isEditing} />
 									<Label
 										htmlFor="sla-current-approver"

@@ -15,7 +15,7 @@ export default function ContactSection() {
                 <div className="max-w-6xl mx-auto">
                     <div className="grid md:grid-cols-2 gap-10 items-center">
                         <div className="section-transition">
-                            <div className="inline-flex items-center bg-primary/10 px-4 py-1.5 rounded-full text-xs font-medium text-foreground border border-border mb-5">
+                            <div className="inline-fxr-c bg-primary/10 px-4 py-1.5 rounded-full text-xs font-medium text-foreground border border-border mb-5">
                                 Get Started Today
                             </div>
                             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">
@@ -35,13 +35,13 @@ export default function ContactSection() {
                             </ul>
 
                             <div className="space-y-4">
-                                <div className="flex items-center">
+                                <div className="fxr-c">
                                     <Mail className="h-5 w-5 text-muted-foreground mr-3" />
                                     <a href="mailto:demo@carmen.com" className="text-foreground hover:text-primary transition-colors">
                                         demo@carmen.com
                                     </a>
                                 </div>
-                                <div className="flex items-center">
+                                <div className="fxr-c">
                                     <Phone className="h-5 w-5 text-muted-foreground mr-3" />
                                     <a href="tel:+1-800-CARMEN" className="text-foreground hover:text-primary transition-colors">
                                         +1-800-CARMEN
@@ -119,7 +119,7 @@ export default function ContactSection() {
 
                                 <button
                                     type="button"
-                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-3 rounded-md font-medium flex items-center justify-center gap-2 transition-all duration-300"
+                                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-3 rounded-md font-medium fxr-c justify-center gap-2 transition-all duration-300"
                                 >
                                     Request Demo
                                     <ArrowRight className="h-4 w-4" />

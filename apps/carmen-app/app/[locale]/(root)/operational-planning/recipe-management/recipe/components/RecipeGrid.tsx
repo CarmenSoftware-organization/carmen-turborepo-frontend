@@ -51,11 +51,11 @@ export default function RecipeGrid({ data, isLoading }: Props) {
                         />
                         <h3 className="text-base font-semibold">{recipe.name}</h3>
                         <div className="space-y-2">
-                            <div className="flex items-center justify-between">
+                            <div className="fxr-c justify-between">
                                 <p className="text-xs text-muted-foreground">
                                     {recipe.cuisine} • {recipe.difficulty}
                                 </p>
-                                <div className="flex items-center gap-1">
+                                <div className="fxr-c gap-1">
                                     <span className="text-yellow-500">★</span>
                                     <span className="text-xs">{recipe.rating}</span>
                                 </div>

@@ -131,7 +131,7 @@ export default function LocationComponent() {
         placeholder={tCommon("search")}
         data-id="location-list-search-input"
       />
-      <div className="flex items-center gap-2">
+      <div className="fxr-c gap-2">
         <StatusSearchDropdown
           value={filter}
           onChange={setFilter}

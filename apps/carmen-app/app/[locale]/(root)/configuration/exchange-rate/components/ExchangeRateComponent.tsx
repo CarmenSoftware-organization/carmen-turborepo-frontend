@@ -219,12 +219,12 @@ export default function ExchangeRateComponent() {
   if (isError) {
     return (
       <div className="w-full p-4">
-        <div className="flex items-center justify-between">
+        <div className="fxr-c justify-between">
           <p className="text-xl font-semibold">{tExchangeRate("title")}</p>
           <Button
             onClick={handleRefresh}
             variant="outline"
-            className="flex items-center gap-2"
+            className="fxr-c gap-2"
           >
             <RefreshCw className="h-4 w-4" />
             Retry
@@ -249,7 +249,7 @@ export default function ExchangeRateComponent() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
         <p className="text-2xl font-semibold">{tExchangeRate("title")}</p>
         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto">
-          <div className="flex items-center gap-1.5 ml-auto">
+          <div className="fxr-c gap-1.5 ml-auto">
             <Button
               size="icon"
               variant="ghost"
@@ -272,7 +272,7 @@ export default function ExchangeRateComponent() {
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="fxr-c gap-1.5">
             <span className="text-sm font-medium">{tTableHeader("base")}:</span>
             <span className="text-sm font-medium">{currencyBase}</span>
           </div>
@@ -316,7 +316,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by code"
               >
-                <div className="flex items-center gap-1 justify-center">
+                <div className="fxr-c gap-1 justify-center">
                   <Banknote className="h-4 w-4" />
                   {tTableHeader("code")} {renderSortIcon("code")}
                 </div>
@@ -327,7 +327,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by symbol"
               >
-                <div className="flex items-center gap-1 justify-center">
+                <div className="fxr-c gap-1 justify-center">
                   <DollarSign className="h-4 w-4" />
                   {tTableHeader("symbol")}  {renderSortIcon("symbol")}
                 </div>
@@ -338,7 +338,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by name"
               >
-                <div className="flex items-center gap-1">
+                <div className="fxr-c gap-1">
                   <BadgeDollarSign className="h-4 w-4" />
                   {tTableHeader("name")} {renderSortIcon("name")}
                 </div>
@@ -349,7 +349,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by country"
               >
-                <div className="flex items-center gap-1">
+                <div className="fxr-c gap-1">
                   <Globe className="h-4 w-4" />
                   {tTableHeader("country")}  {renderSortIcon("country")}
                 </div>
@@ -360,7 +360,7 @@ export default function ExchangeRateComponent() {
                 tabIndex={0}
                 aria-label="Sort by exchange rate"
               >
-                <div className="flex items-center gap-1 justify-end">
+                <div className="fxr-c gap-1 justify-end">
                   <ArrowLeftRight className="h-4 w-4" />
                   {tTableHeader("exchangeRate")}  {renderSortIcon("rate")}
                   {(isLoading || isRefetching) && (

@@ -62,7 +62,7 @@ export default function MovementHistoryList() {
                                 onClick={() => handleToggleSection(section.id)}
                             >
                                 <TableCell className="font-medium">
-                                    <div className="flex items-center gap-2">
+                                    <div className="fxr-c gap-2">
                                         {section.sub_item?.length ? (
                                             isExpanded ? (
                                                 <ChevronDown className="h-4 w-4" />
@@ -94,7 +94,7 @@ export default function MovementHistoryList() {
                                             onClick={() => handleToggleSubSection(`${section.id}-${subItem.name}`)}
                                         >
                                             <TableCell className="font-medium">
-                                                <div className="flex items-center gap-2 pl-6">
+                                                <div className="fxr-c gap-2 pl-6">
                                                     {isSubExpanded ? (
                                                         <ChevronDown className="h-4 w-4" />
                                                     ) : (
@@ -116,7 +116,7 @@ export default function MovementHistoryList() {
                                                 className="bg-muted/10"
                                             >
                                                 <TableCell className="font-medium">
-                                                    <div className="flex items-center gap-2 pl-12">
+                                                    <div className="fxr-c gap-2 pl-12">
                                                         {item.name}
                                                     </div>
                                                 </TableCell>

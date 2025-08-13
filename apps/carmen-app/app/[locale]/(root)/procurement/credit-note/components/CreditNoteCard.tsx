@@ -30,7 +30,7 @@ export default function CreditNoteCard({
     const { dateFormat } = useAuth();
     return (
         <>
-            <div className="flex items-center justify-between">
+            <div className="fxr-c justify-between">
                 <Button variant="outline" size="sm" onClick={selectAll}>
                     {isSelected ? "Unselect All" : "Select All"}
                 </Button>
@@ -50,7 +50,7 @@ export default function CreditNoteCard({
                     >
                         <CardHeader className="p-4">
                             <div className="flex justify-between items-start">
-                                <div className="flex items-center gap-2">
+                                <div className="fxr-c gap-2">
                                     <Checkbox
                                         id={`mobile-checkbox-${cn?.id}`}
                                         checked={cn?.id ? selectedItems.includes(cn.id) : false}
@@ -67,7 +67,7 @@ export default function CreditNoteCard({
                                         {cn?.doc_status || "-"}
                                     </Badge>
                                 </div>
-                                <div className="flex items-center">
+                                <div className="fxr-c">
                                     <ButtonIcon href={`/procurement/credit-note/${cn.id}`}>
                                         <FileText />
                                     </ButtonIcon>
