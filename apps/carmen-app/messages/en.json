@@ -398,7 +398,18 @@
       "exchange_rate_required": "Please enter exchange rate"
     },
     "deactivate_currency": "Deactivate Currency",
-    "deactivate_currency_description": "Are you sure you want to deactivate this currency? This action can be reversed later."
+    "deactivate_currency_description": "Are you sure you want to deactivate this currency? This action can be reversed later.",
+    "invalid_id": "Invalid currency ID",
+    "activate_success": "Currency activated successfully",
+    "deactivate_success": "Currency deactivated successfully",
+    "activate_error": "Failed to activate currency",
+    "deactivate_error": "Failed to deactivate currency",
+    "create_success": "Currency created successfully",
+    "create_error": "Failed to create currency",
+    "update_success": "Currency updated successfully",
+    "update_error": "Failed to update currency",
+    "delete_success": "Currency deleted successfully",
+    "delete_error": "Failed to delete currency"
   },
   "DeliveryPoint": {
     "title": "Delivery Point",

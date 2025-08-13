@@ -1,4 +1,5 @@
 "use client";
+
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { FileDown, Plus, Printer } from "lucide-react";
@@ -35,6 +36,7 @@ export default function CurrencyComponent() {
     const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
+    const tHeader = useTranslations('TableHeader');
     const queryClient = useQueryClient();
 
     const { currencies: data, isLoading } = useCurrenciesQuery(token, tenantId, {
@@ -64,7 +66,7 @@ export default function CurrencyComponent() {
 
     const handleToggleStatus = useCallback(async (currency: CurrencyUpdateDto) => {
         if (!currency.id) {
-            toastError({ message: 'Invalid currency ID' });
+            toastError({ message: tCurrency("invalid_id") });
             return;
         }
 
@@ -72,8 +74,7 @@ export default function CurrencyComponent() {
             setSelectedCurrency(currency);
             setConfirmDialogOpen(true);
         } else {
-            // Activate currency logic here
-            toastSuccess({ message: 'Currency activated successfully' });
+            toastSuccess({ message: tCurrency("activate_success") });
         }
     }, []);
 
@@ -82,22 +83,20 @@ export default function CurrencyComponent() {
             deleteStatusMutation.mutate(selectedCurrency.id, {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ['currencies'] });
-                    toastSuccess({ message: 'Currency deactivated successfully' });
+                    toastSuccess({ message: tCurrency("deactivate_success") });
                     setConfirmDialogOpen(false);
                     setSelectedCurrency(undefined);
                 },
                 onError: (error: unknown) => {
                     console.error('Error deactivating currency:', error);
-                    toastError({ message: 'Error deactivating currency' });
+                    toastError({ message: tCurrency("deactivate_error") });
                 }
             });
         }
     }, [selectedCurrency, deleteStatusMutation, queryClient]);
 
-    // Create currency mutation
     const createCurrencyMutation = useCurrencyMutation(token, tenantId);
 
-    // Update currency mutation  
     const updateCurrencyMutation = useCurrencyUpdateMutation(token, tenantId, selectedCurrency?.id || '');
 
     const handleSubmit = useCallback(async (data: CurrencyCreateDto) => {
@@ -105,26 +104,26 @@ export default function CurrencyComponent() {
             updateCurrencyMutation.mutate({ ...data, id: selectedCurrency.id }, {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ['currencies'] });
-                    toastSuccess({ message: 'Currency updated successfully' });
+                    toastSuccess({ message: tCurrency("update_success") });
                     setDialogOpen(false);
                     setSelectedCurrency(undefined);
                 },
                 onError: (error: unknown) => {
                     console.error('Error updating currency:', error);
-                    toastError({ message: 'Error updating currency' });
+                    toastError({ message: tCurrency("update_error") });
                 }
             });
         } else {
             createCurrencyMutation.mutate(data, {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ['currencies'] });
-                    toastSuccess({ message: 'Currency created successfully' });
+                    toastSuccess({ message: tCurrency("create_success") });
                     setDialogOpen(false);
                     setSelectedCurrency(undefined);
                 },
                 onError: (error: unknown) => {
                     console.error('Error creating currency:', error);
-                    toastError({ message: 'Error creating currency' });
+                    toastError({ message: tCurrency("create_error") });
                 }
             });
         }
@@ -139,15 +138,21 @@ export default function CurrencyComponent() {
         deleteStatusMutation.isPending;
 
 
+    const sortFields = [
+        {
+            key: "name",
+            label: tHeader("name"),
+        },
+        {
+            key: "is_active",
+            label: tHeader("status"),
+        },
+        {
+            key: "exchange_rate",
+            label: tHeader("exchangeRate")
+        }
+    ];
 
-    // Sort fields configuration
-    const sortFields = useMemo(() => [
-        { key: "name", label: "Name" },
-        { key: "code", label: "Code" },
-        { key: "exchange_rate", label: "Exchange Rate" }
-    ], []);
-
-    // Selection handlers
     const handleSelectAll = useCallback((checked: boolean) => {
         if (checked) {
             setSelectedCurrencies(currencies.map((c: CurrencyGetDto) => c.id));
@@ -164,9 +169,6 @@ export default function CurrencyComponent() {
         );
     }, []);
 
-
-
-    // Parse the sort string into field and direction
     const parsedSort = useMemo((): SortConfig | undefined => {
         if (!sort) return undefined;
 

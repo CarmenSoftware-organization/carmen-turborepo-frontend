@@ -86,14 +86,16 @@ export default function BusinessTypeComponent() {
   );
   const title = tBusinessType("title");
 
-  const sortFields = useMemo(
-    () => [
-      { key: "name", label: tHeader("name") },
-      { key: "is_active", label: tHeader("status") },
-    ],
-    [tHeader]
-  );
-
+  const sortFields = [
+    {
+      key: "name",
+      label: tHeader("name"),
+    },
+    {
+      key: "is_active",
+      label: tHeader("status"),
+    },
+  ];
 
   useEffect(() => {
     if (search) {
@@ -118,13 +120,6 @@ export default function BusinessTypeComponent() {
       }
     });
   }, []);
-
-  const handleSetFilter = useCallback(
-    (filterValue: string) => {
-      setFilter(filterValue);
-    },
-    [setFilter]
-  );
 
   const handleSort = useCallback((field: string) => {
     if (!sort) {
@@ -152,76 +147,59 @@ export default function BusinessTypeComponent() {
     setIsDialogOpen(true);
   }, []);
 
-  const actionButtons = useMemo(
-    () => (
-      <div
-        className="action-btn-container"
-        data-id="delivery-point-list-action-buttons"
+  const actionButtons = (
+    <div
+      className="action-btn-container"
+      data-id="bu-type-list-action-buttons"
+    >
+      <Button size="sm" onClick={handleAddNew}>
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
+      <Button
+        variant="outlinePrimary"
+        className="group"
+        size="sm"
+        data-id="bu-type-export-button"
       >
-        <Button size="sm" onClick={handleAddNew}>
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Button>
-        <Button
-          variant="outlinePrimary"
-          className="group"
-          size="sm"
-          data-id="delivery-point-export-button"
-        >
-          <FileDown className="h-4 w-4" />
-          {tCommon("export")}
-        </Button>
-        <Button
-          variant="outlinePrimary"
-          size="sm"
-          data-id="delivery-point-print-button"
-        >
-          <Printer className="h-4 w-4" />
-          {tCommon("print")}
-        </Button>
-      </div>
-    ),
-    [tCommon, handleAddNew]
+        <FileDown className="h-4 w-4" />
+        {tCommon("export")}
+      </Button>
+      <Button
+        variant="outlinePrimary"
+        size="sm"
+        data-id="bu-type-print-button"
+      >
+        <Printer className="h-4 w-4" />
+        {tCommon("print")}
+      </Button>
+    </div>
   );
 
-  const filters = useMemo(
-    () => (
-      <div className="filter-container" data-id="delivery-point-list-filters">
-        <SearchInput
-          defaultValue={search}
-          onSearch={setSearch}
-          placeholder={tCommon("search")}
-          data-id="delivery-point-list-search-input"
+  const filters = (
+    <div className="filter-container" data-id="bu-type-filters">
+      <SearchInput
+        defaultValue={search}
+        onSearch={setSearch}
+        placeholder={tCommon("search")}
+        data-id="bu-type-search-input"
+      />
+      <div className="fxr-c gap-2">
+        <StatusSearchDropdown
+          value={filter}
+          onChange={setFilter}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
+          data-id="bu-type-status-search-dropdown"
         />
-        <div className="fxr-c gap-2">
-          <StatusSearchDropdown
-            value={filter}
-            onChange={handleSetFilter}
-            open={statusOpen}
-            onOpenChange={setStatusOpen}
-            data-id="delivery-point-status-search-dropdown"
-          />
-          <SortComponent
-            fieldConfigs={sortFields}
-            sort={sort}
-            setSort={handleSort}
-            data-id="delivery-point-sort-dropdown"
-          />
-        </div>
+        <SortComponent
+          fieldConfigs={sortFields}
+          sort={sort}
+          setSort={setSort}
+          data-id="bu-type-sort-dropdown"
+        />
       </div>
-    ),
-    [
-      search,
-      setSearch,
-      tCommon,
-      filter,
-      handleSetFilter,
-      statusOpen,
-      setStatusOpen,
-      sortFields,
-      sort,
-      handleSort,
-    ]
+    </div>
   );
 
   const handleEdit = useCallback((id: string) => {

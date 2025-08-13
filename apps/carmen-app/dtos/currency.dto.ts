@@ -71,7 +71,7 @@ export const currencyBaseSchema = z.object({
     name: z.string().min(1),
     description: z.string().optional(),
     is_active: z.boolean(),
-    symbol: z.string().min(1).max(3),
+    symbol: z.string().min(1).max(5),
     exchange_rate: z.number().positive()
 });
 
