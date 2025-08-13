@@ -73,16 +73,12 @@
         @apply justify-center;
     }
 
+    .module-name {
+        @apply font-semibold text-muted-foreground;
+    }
+
     .menu-content {
         @apply flex items-center;
-    }
-
-    .menu-content-expanded {
-        @apply gap-2;
-    }
-
-    .menu-content-collapsed {
-        @apply justify-center;
     }
 
     .navbar-container {
