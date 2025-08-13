@@ -208,7 +208,7 @@ export default function CurrencyList({
                 onClick={() => onToggleStatus(currency)}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {tCommon("delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

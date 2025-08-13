@@ -173,4 +173,29 @@
   .btn-dialog {
     @apply text-primary dark:text-foreground cursor-pointer hover:underline transition-colors text-left text-xs md:text-base;
   }
+
+  .fxr-c {
+    @apply flex flex-row items-center;
+  }
+
+  .fxr-s {
+    @apply flex flex-row items-start;
+  }
+
+  .fxr-e {
+    @apply flex flex-row items-end;
+  }
+
+  .fxc-c {
+    @apply flex flex-col items-center;
+  }
+
+  .fxc-s {
+    @apply flex flex-col items-start;
+  }
+
+  .fxc-e {
+    @apply flex flex-col items-end;
+  }
+
 }

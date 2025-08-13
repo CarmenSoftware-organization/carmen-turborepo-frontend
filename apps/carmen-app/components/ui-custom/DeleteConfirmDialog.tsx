@@ -25,8 +25,8 @@ export default function DeleteConfirmDialog({
     open,
     onOpenChange,
     onConfirm,
-    title = "Confirm Delete",
-    description = "Are you sure you want to delete this item?",
+    title,
+    description,
     isLoading = false
 }: DeleteConfirmDialogProps) {
     const tAction = useTranslations('Action');

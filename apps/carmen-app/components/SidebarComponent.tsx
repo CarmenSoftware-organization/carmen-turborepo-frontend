@@ -9,6 +9,8 @@ import { AlertCircle, ChevronRight, PanelLeftClose } from "lucide-react";
 import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
 import { MotionDiv, AnimatePresence } from './framer-motion/MotionWrapper';
+import { Skeleton } from './ui/skeleton';
+import "@/styles/layout.css";
 
 type MenuIcon = React.ComponentType<{ className?: string }>;
 
@@ -36,10 +38,10 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
     render() {
         if (this.state.hasError) {
             return (
-                <div className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block overflow-y-auto">
+                <div className="error-div">
                     <div className="flex items-center gap-2 text-destructive">
                         <AlertCircle className="h-5 w-5" />
-                        <span className="text-sm">เกิดข้อผิดพลาดในการโหลดเมนู</span>
+                        <span className="text-sm">Error loading menu</span>
                     </div>
                 </div>
             );
@@ -50,20 +52,22 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 }
 
 const SidebarLoading = () => (
-    <nav className="p-4 space-y-1 border-r h-screen w-[250px] hidden md:block overflow-y-auto">
-        <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+    <nav className="sidebar-wrapper">
+        <div>
+            <Skeleton className="h-8 rounded mb-2" />
+            <Skeleton className="h-4 rounded w-3/4" />
         </div>
+
         <div className="p-4 border-b">
             <div className="flex items-center gap-2">
-                <div className="h-5 w-5 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <Skeleton className="h-5 w-5 rounded" />
+                <Skeleton className="h-4 rounded w-1/2" />
             </div>
         </div>
+
         <div className="mt-4 space-y-2">
-            {Array.from({ length: 5 }, (_, i) => (
-                <div key={`loading-${i}`} className="h-8 bg-gray-200 rounded"></div>
+            {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={`loading-${i}`} className="h-8 rounded" />
             ))}
         </div>
     </nav>
@@ -189,7 +193,7 @@ const SidebarContent = () => {
                 onKeyDown={(e) => handleKeyDown(e, item.href, true)}
                 title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
             >
-                <div className="flex items-center gap-2">
+                <div className="menu-content-expanded">
                     {item.icon && <item.icon className="h-4 w-4" />}
                     {!isActuallyCollapsed && <span className="font-medium text-muted-foreground">{t(`${section}.${subItem}`)}</span>}
                 </div>
@@ -207,19 +211,18 @@ const SidebarContent = () => {
             <Link
                 href={item.href}
                 className={cn(
-                    'flex items-center justify-between p-2 rounded-md text-sm mt-1 text-muted-foreground',
-                    isActive
-                        ? 'bg-primary text-primary-foreground'
-                        : 'hover:bg-accent hover:text-accent-foreground',
+                    'link-item',
+                    !isActive && 'link-item-inactive',
+                    isActive ? 'link-item-active' : 'link-item-hover',
                     level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
-                    isActuallyCollapsed && 'justify-center'
+                    isActuallyCollapsed && 'link-item-collapsed'
                 )}
                 title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
             >
                 <div
                     className={cn(
-                        'flex items-center',
-                        isActuallyCollapsed ? 'justify-center' : 'gap-2'
+                        'menu-content',
+                        isActuallyCollapsed ? 'menu-content-collapsed' : 'menu-content-expanded'
                     )}
                 >
                     {item.icon && <item.icon className="h-4 w-4" />}
@@ -256,13 +259,11 @@ const SidebarContent = () => {
         isOpen: boolean
     ) => {
         return cn(
-            'flex items-center justify-between p-2 rounded-md text-sm w-full text-left cursor-pointer',
-            isActive
-                ? 'bg-primary text-primary-foreground'
-                : 'hover:bg-accent hover:text-accent-foreground',
+            'menu-item',
+            isActive ? 'menu-item-active' : 'menu-item-hover',
             level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
-            isOpen && !isActuallyCollapsed && 'bg-accent/50',
-            isActuallyCollapsed && 'justify-center'
+            isOpen && !isActuallyCollapsed && 'menu-item-open',
+            isActuallyCollapsed && 'menu-item-collapsed'
         );
     };
 
@@ -273,7 +274,7 @@ const SidebarContent = () => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             className={cn(
-                'flex flex-col border-r border-border h-screen hidden md:block relative'
+                'motion-wrapper'
             )}
             aria-label="Sidebar Navigation"
         >
@@ -282,8 +283,8 @@ const SidebarContent = () => {
                     variant={'ghost'}
                     onClick={handleToggleCollapse}
                     className={cn(
-                        "absolute -right-3 top-3 z-10 border border-border p-2 hover:bg-background",
-                        !isActuallyCollapsed ? 'bg-muted' : 'bg-background'
+                        "sidebar-toggle-button",
+                        !isActuallyCollapsed ? 'sidebar-toggle-button-expanded' : 'sidebar-toggle-button-collapsed'
                     )}
                     aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                 >
@@ -297,8 +298,8 @@ const SidebarContent = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                     className={cn(
-                        "flex border-b border-border pb-4 items-center gap-2 mb-4",
-                        isActuallyCollapsed ? 'justify-center' : ''
+                        "sidebar-header",
+                        isActuallyCollapsed && 'sidebar-header-collapsed'
                     )}
                 >
                     {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}

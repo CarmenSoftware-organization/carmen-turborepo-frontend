@@ -280,8 +280,8 @@ export default function CurrencyComponent() {
                 open={confirmDialogOpen}
                 onOpenChange={setConfirmDialogOpen}
                 onConfirm={handleConfirmToggle}
-                title="Deactivate Currency"
-                description="Are you sure you want to deactivate this currency? This action can be reversed later."
+                title={tCurrency('deactivate_currency')}
+                description={tCurrency('deactivate_currency_description')}
             />
             <SignInDialog
                 open={loginDialogOpen}

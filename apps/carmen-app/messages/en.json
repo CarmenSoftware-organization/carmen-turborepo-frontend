@@ -360,7 +360,10 @@
     "delivery_time": "Delivery Time",
     "score": "Score",
     "res_time": "Response Time",
-    "quality_score": "Quality Score"
+    "quality_score": "Quality Score",
+    "base": "Base",
+    "updated": "Updated",
+    "country": "Country"
   },
   "Product": {
     "title": "Product"
@@ -389,7 +392,9 @@
       "symbol_max_length": "Currency symbol must not exceed 3 characters",
       "exchange_rate_positive": "Exchange rate must be greater than 0",
       "exchange_rate_required": "Please enter exchange rate"
-    }
+    },
+    "deactivate_currency": "Deactivate Currency",
+    "deactivate_currency_description": "Are you sure you want to deactivate this currency? This action can be reversed later."
   },
   "DeliveryPoint": {
     "title": "Delivery Point",
@@ -669,5 +674,10 @@
   },
   "VendorComparison": {
     "title": "Vendor Comparison"
+  },
+  "ExchangeRate": {
+    "title": "Exchange Rate",
+    "found": "Found",
+    "no_results_found": "No results found for"
   }
 }

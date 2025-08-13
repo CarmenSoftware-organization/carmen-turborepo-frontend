@@ -39,13 +39,17 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 type SortDirection = "asc" | "desc";
 
 type SortField = "code" | "symbol" | "name" | "country" | "rate";
 
 export default function ExchangeRateComponent() {
+  const tExchangeRate = useTranslations("ExchangeRate");
   const { currencyBase } = useAuth();
+  const tTableHeader = useTranslations("TableHeader");
+  const tCommon = useTranslations("Common");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -194,7 +198,7 @@ export default function ExchangeRateComponent() {
     if (filteredCurrencies.length === 0) {
       return (
         <p className="text-sm mt-2 text-muted-foreground">
-          No results found for &quot;{searchQuery}&quot;
+          {tExchangeRate("no_results_found")} &quot;{searchQuery}&quot;
         </p>
       );
     }
@@ -203,7 +207,7 @@ export default function ExchangeRateComponent() {
       const resultText = filteredCurrencies.length === 1 ? "result" : "results";
       return (
         <p className="text-sm mt-2 text-muted-foreground">
-          Found {filteredCurrencies.length} {resultText}
+          {tExchangeRate("found")} {filteredCurrencies.length} {resultText}
         </p>
       );
     }
@@ -216,7 +220,7 @@ export default function ExchangeRateComponent() {
     return (
       <div className="w-full p-4">
         <div className="flex items-center justify-between">
-          <p className="text-xl font-semibold">Exchange Rates</p>
+          <p className="text-xl font-semibold">{tExchangeRate("title")}</p>
           <Button
             onClick={handleRefresh}
             variant="outline"
@@ -243,7 +247,7 @@ export default function ExchangeRateComponent() {
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-        <p className="text-2xl font-semibold">Exchange Rates</p>
+        <p className="text-2xl font-semibold">{tExchangeRate("title")}</p>
         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto">
           <div className="flex items-center gap-1.5 ml-auto">
             <Button
@@ -263,13 +267,13 @@ export default function ExchangeRateComponent() {
               {isLoading ? (
                 <Skeleton className="h-4 w-32" />
               ) : (
-                `Updated: ${formatDate(lastUpdated)}`
+                `${tTableHeader("updated")}: ${formatDate(lastUpdated)}`
               )}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-medium">Base:</span>
+            <span className="text-sm font-medium">{tTableHeader("base")}:</span>
             <span className="text-sm font-medium">{currencyBase}</span>
           </div>
         </div>
@@ -281,7 +285,7 @@ export default function ExchangeRateComponent() {
             <div className="relative w-full max-w-sm">
               <Search className="absolute left-3 top-3 h-3.5 w-3.5 text-muted-foreground" />
               <Input
-                placeholder="Search currency..."
+                placeholder={tCommon("search")}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-9 pr-8 h-9"
@@ -314,7 +318,7 @@ export default function ExchangeRateComponent() {
               >
                 <div className="flex items-center gap-1 justify-center">
                   <Banknote className="h-4 w-4" />
-                  Code {renderSortIcon("code")}
+                  {tTableHeader("code")} {renderSortIcon("code")}
                 </div>
               </TableHead>
               <TableHead
@@ -325,7 +329,7 @@ export default function ExchangeRateComponent() {
               >
                 <div className="flex items-center gap-1 justify-center">
                   <DollarSign className="h-4 w-4" />
-                  Symbol {renderSortIcon("symbol")}
+                  {tTableHeader("symbol")}  {renderSortIcon("symbol")}
                 </div>
               </TableHead>
               <TableHead
@@ -336,7 +340,7 @@ export default function ExchangeRateComponent() {
               >
                 <div className="flex items-center gap-1">
                   <BadgeDollarSign className="h-4 w-4" />
-                  Name {renderSortIcon("name")}
+                  {tTableHeader("name")} {renderSortIcon("name")}
                 </div>
               </TableHead>
               <TableHead
@@ -347,7 +351,7 @@ export default function ExchangeRateComponent() {
               >
                 <div className="flex items-center gap-1">
                   <Globe className="h-4 w-4" />
-                  Country {renderSortIcon("country")}
+                  {tTableHeader("country")}  {renderSortIcon("country")}
                 </div>
               </TableHead>
               <TableHead
@@ -358,7 +362,7 @@ export default function ExchangeRateComponent() {
               >
                 <div className="flex items-center gap-1 justify-end">
                   <ArrowLeftRight className="h-4 w-4" />
-                  Exchange Rate {renderSortIcon("rate")}
+                  {tTableHeader("exchangeRate")}  {renderSortIcon("rate")}
                   {(isLoading || isRefetching) && (
                     <Loader2 className="inline ml-2 h-3 w-3 animate-spin" />
                   )}
