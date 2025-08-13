@@ -64,7 +64,7 @@ export default function CurrencyComponent() {
 
     const deleteStatusMutation = useCurrencyDeleteMutation(token, tenantId);
 
-    const handleToggleStatus = useCallback(async (currency: CurrencyUpdateDto) => {
+    const handleToggleStatus = (currency: CurrencyUpdateDto) => {
         if (!currency.id) {
             toastError({ message: tCurrency("invalid_id") });
             return;
@@ -76,9 +76,9 @@ export default function CurrencyComponent() {
         } else {
             toastSuccess({ message: tCurrency("activate_success") });
         }
-    }, []);
+    }
 
-    const handleConfirmToggle = useCallback(() => {
+    const handleConfirmToggle = () => {
         if (selectedCurrency?.id) {
             deleteStatusMutation.mutate(selectedCurrency.id, {
                 onSuccess: () => {
@@ -93,7 +93,7 @@ export default function CurrencyComponent() {
                 }
             });
         }
-    }, [selectedCurrency, deleteStatusMutation, queryClient]);
+    }
 
     const createCurrencyMutation = useCurrencyMutation(token, tenantId);
 
@@ -127,7 +127,7 @@ export default function CurrencyComponent() {
                 }
             });
         }
-    }, [selectedCurrency, updateCurrencyMutation, createCurrencyMutation, queryClient]);
+    }, [selectedCurrency, updateCurrencyMutation, createCurrencyMutation, queryClient, tCurrency]);
 
     const handlePageChange = useCallback((newPage: number) => {
         setPage(newPage.toString());
@@ -136,7 +136,6 @@ export default function CurrencyComponent() {
     const isSubmitting = createCurrencyMutation.isPending ||
         updateCurrencyMutation.isPending ||
         deleteStatusMutation.isPending;
-
 
     const sortFields = [
         {

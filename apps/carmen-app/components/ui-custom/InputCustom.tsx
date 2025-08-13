@@ -301,7 +301,6 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       labelPlacement,
       derivedStates.shouldShrinkLabel,
       derivedStates.finalError,
-      focused,
     ]);
 
     const handleInputChange = useCallback(

@@ -295,7 +295,10 @@
     "init_users": "Init Users",
     "available_users": "Available Users",
     "init_products": "Init Products",
-    "available_products": "Available Products"
+    "available_products": "Available Products",
+    "select_vendor": "Select Vendor",
+    "no_vendor_found": "No vendor found",
+    "no_vendor_available": "No vendor available"
   },
   "TableHeader": {
     "all": "All",

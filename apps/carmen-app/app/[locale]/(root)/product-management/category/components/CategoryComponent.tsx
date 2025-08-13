@@ -445,7 +445,7 @@ export default function CategoryComponent() {
                             {search ? (
                                 <div className="text-center">
                                     <p className="text-muted-foreground mb-2">
-                                        {tCategory("no_search_results")}: "{search}"
+                                        {tCategory("no_search_results")}: &quot;{search}&quot;
                                     </p>
                                     <p className="text-sm text-muted-foreground">
                                         {tCategory("try_different_keywords")}

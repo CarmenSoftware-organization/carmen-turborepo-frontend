@@ -366,7 +366,10 @@
     "quality_score": "คะแนนคุณภาพ",
     "base": "ฐาน",
     "updated": "อัพเดต",
-    "country": "ประเทศ"
+    "country": "ประเทศ",
+    "select_vendor": "เลือกผู้จัดจำหน่าย",
+    "no_vendor_found": "ไม่พบผู้จัดจำหน่าย",
+    "no_vendor_available": "ไม่มีผู้จัดจำหน่าย"
   },
   "Product": {
     "title": "สินค้า"

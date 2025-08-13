@@ -13,7 +13,7 @@ import {
 import { useURL } from "@/hooks/useURL";
 import { Plus, Printer, FileDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,

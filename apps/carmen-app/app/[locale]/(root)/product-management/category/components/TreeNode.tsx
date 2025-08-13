@@ -53,30 +53,6 @@ export default function TreeNode({
         );
     };
 
-    // Function to check if node matches search term
-    const isNodeMatchingSearch = (node: CategoryNode, searchTerm: string): boolean => {
-        if (!searchTerm) return false;
-
-        const searchLower = searchTerm.toLowerCase();
-        return (
-            node.code.toLowerCase().includes(searchLower) ||
-            node.name.toLowerCase().includes(searchLower) ||
-            (node.description ? node.description.toLowerCase().includes(searchLower) : false)
-        );
-    };
-
-    const hasSearchMatch = (node: CategoryNode, searchTerm: string): boolean => {
-        if (!searchTerm) return false;
-
-        if (isNodeMatchingSearch(node, searchTerm)) return true;
-
-        if (node.children) {
-            return node.children.some(child => hasSearchMatch(child, searchTerm));
-        }
-
-        return false;
-    };
-
     const getTypeLabel = (type: CategoryNode["type"]) => {
         if (type === NODE_TYPE.CATEGORY) return tCategory("category");
         if (type === NODE_TYPE.SUBCATEGORY) return tCategory("subcategory");

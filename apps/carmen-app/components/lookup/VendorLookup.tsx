@@ -19,24 +19,26 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { VendorGetDto } from "@/dtos/vendor-management";
+import { useTranslations } from "next-intl";
 
 export default function VendorLookup({
     value,
     onValueChange,
-    placeholder = "Select vendor",
+    placeholder,
     disabled = false
 }: Readonly<PropsLookup>) {
     const { token, tenantId } = useAuth();
+    const tCommon = useTranslations("Common");
     const { vendors, isLoading } = useVendor(token, tenantId);
     const [open, setOpen] = useState(false);
 
-    const vendorsData = vendors?.data ?? [];
+    const vendorsData = useMemo(() => vendors?.data ?? [], [vendors?.data]);
 
     const selectedVendorName = useMemo(() => {
         if (!value || !vendorsData || !Array.isArray(vendorsData)) return null;
         const found = vendorsData?.find((vendor: VendorGetDto) => vendor.id === value);
         return found?.name ?? null;
-    }, [value]);
+    }, [value, vendorsData]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -57,7 +59,7 @@ export default function VendorLookup({
                     if (value.toLowerCase().includes(search.toLowerCase())) return 1;
                     return 0;
                 }}>
-                    <CommandInput placeholder="Search vendor..." className="w-full pr-10" />
+                    <CommandInput placeholder={tCommon("search")} className="w-full pr-10" />
                     <CommandList>
                         {isLoading ? (
                             <div className="flex items-center justify-center py-6">
@@ -65,7 +67,7 @@ export default function VendorLookup({
                             </div>
                         ) : (
                             <>
-                                <CommandEmpty>No vendors found.</CommandEmpty>
+                                <CommandEmpty>{tCommon("no_vendor_found")}</CommandEmpty>
                                 <CommandGroup>
                                     {vendorsData && vendorsData.length > 0 ? (
                                         vendorsData.map((vendor: VendorGetDto) => (
@@ -89,7 +91,7 @@ export default function VendorLookup({
                                             </CommandItem>
                                         ))
                                     ) : (
-                                        <CommandItem disabled>No vendors available.</CommandItem>
+                                        <CommandItem disabled>{tCommon("no_vendor_available")}</CommandItem>
                                     )}
                                 </CommandGroup>
                             </>
