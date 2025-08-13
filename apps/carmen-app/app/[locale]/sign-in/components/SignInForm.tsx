@@ -6,6 +6,7 @@ import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import "@/styles/auth.css";
 import {
   Form,
   FormControl,
@@ -44,7 +45,6 @@ export default function SignInForm() {
           if (result.access_token && result.refresh_token) {
             setSession(result.access_token, result.refresh_token);
 
-            // รอเล็กน้อยเพื่อให้ AuthContext ประมวลผล token ก่อน redirect
             setTimeout(() => {
               router.push("/procurement/dashboard");
             }, 100);
@@ -65,11 +65,11 @@ export default function SignInForm() {
     });
   };
   return (
-    <div className="flex justify-center items-center w-full min-h-screen bg-muted p-4 sm:p-0">
-      <div className="bg-background max-w-4xl w-full p-6 sm:p-10 rounded-xl">
-        <div className="flex flex-col lg:flex-row">
-          <div className="w-full lg:w-1/2 space-y-4 mb-8 lg:mb-0 text-center lg:text-left">
-            <div className="flex justify-center lg:justify-start">
+    <div className="login-page-wrapper">
+      <div className="login-container">
+        <div className="login-layout">
+          <div className="login-info">
+            <div className="avatar-wrapper">
               <Image
                 src="/images/carmen_pic.jpg"
                 alt="@shadcn"
@@ -79,15 +79,15 @@ export default function SignInForm() {
                 data-id="sidebar-logo-avatar-image"
               />
             </div>
-            <p className="text-2xl sm:text-3xl lg:text-4xl font-semibold">
+            <p className="app-name">
               {tHome("CarmenSoftware")}
             </p>
-            <p className="text-muted-foreground text-sm sm:text-base font-normal">
+            <p className="app-description">
               {tHome("HotelFinanceManagementSoftware")}
             </p>
           </div>
 
-          <div className="w-full lg:w-1/2 lg:pt-10">
+          <div className="login-form-wrapper">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(handleSubmit)}
@@ -137,14 +137,14 @@ export default function SignInForm() {
                   )}
                 />
                 {form.formState.errors.root && (
-                  <div className="text-sm font-medium text-destructive">
+                  <div className="text-error">
                     {form.formState.errors.root.message}
                   </div>
                 )}
-                <div className="flex justify-center sm:justify-end pt-2">
+                <div className="submit-container">
                   <Button
                     type="submit"
-                    className="w-full sm:w-40 h-12 sm:h-10 bg-primary hover:bg-primary/80 text-white rounded-full"
+                    className="submit-button"
                     disabled={isPending}
                     data-testid="sign-in-button"
                   >
@@ -155,15 +155,15 @@ export default function SignInForm() {
             </Form>
           </div>
         </div>
-        <div className="flex flex-col sm:flex-row justify-between items-center mt-8 lg:mt-10 gap-4 sm:gap-0">
-          <div className="order-2 sm:order-1">
+        <div className="form-footer">
+          <div>
             <LanguageSwitch data-id="language-switch" />
           </div>
-          <div className="flex items-center gap-4 text-center order-1 sm:order-2">
-            <p className="text-muted-foreground text-xs">
+          <div className="legal-links">
+            <p>
               {t("termsOfService")}
             </p>
-            <p className="text-muted-foreground text-xs">
+            <p>
               {t("privacyPolicy")}
             </p>
           </div>

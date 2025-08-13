@@ -1,0 +1,63 @@
+@tailwind components;
+
+@layer components {
+    .login-page-wrapper {
+        @apply flex justify-center items-center w-full min-h-screen bg-muted p-4 sm:p-0;
+    }
+
+    .login-container {
+        @apply bg-background max-w-4xl w-full p-6 sm:p-10 rounded-xl;
+    }
+
+    .login-layout {
+        @apply flex flex-col lg:flex-row;
+    }
+
+    .login-info {
+        @apply w-full lg:w-1/2 space-y-4 mb-8 lg:mb-0 text-center lg:text-left;
+    }
+
+    .avatar-wrapper {
+        @apply flex justify-center lg:justify-start;
+    }
+
+    .app-name {
+        @apply text-2xl sm:text-3xl lg:text-4xl font-semibold;
+    }
+
+    .app-description {
+        @apply text-muted-foreground text-sm sm:text-base font-normal;
+    }
+
+    .login-form-wrapper {
+        @apply w-full lg:w-1/2 lg:pt-10;
+    }
+
+    .submit-container {
+        @apply flex justify-center sm:justify-end pt-2
+    }
+
+    .submit-button {
+        @apply w-full sm:w-40 h-12 sm:h-10 bg-primary hover:bg-primary/80 text-white rounded-full;
+    }
+
+    .text-error {
+        @apply text-sm font-medium text-destructive
+    }
+
+    .form-footer {
+        @apply flex flex-col sm:flex-row justify-between items-center mt-8 lg:mt-10 gap-4 sm:gap-0;
+
+        div {
+            @apply order-2 sm:order-1;
+        }
+    }
+
+    .legal-links {
+        @apply flex items-center gap-4 text-center order-1 sm:order-2;
+    }
+
+    .legal-links p {
+        @apply text-muted-foreground text-xs
+    }
+}
