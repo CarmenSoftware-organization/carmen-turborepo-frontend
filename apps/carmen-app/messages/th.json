@@ -291,7 +291,11 @@
     "back": "กลับ",
     "note": "หมายเหตุ",
     "info": "ข้อมูล",
-    "dimension": "ขนาด"
+    "dimension": "ขนาด",
+    "init_users": "ผู้ใช้งานที่มีอยู่",
+    "available_users": "ผู้ใช้งานที่พร้อมใช้งาน",
+    "init_products": "สินค้าที่มีอยู่",
+    "available_products": "สินค้าที่พร้อมใช้งาน"
   },
   "TableHeader": {
     "all": "ทั้งหมด",

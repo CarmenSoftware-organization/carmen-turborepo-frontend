@@ -39,6 +39,7 @@ import { useMemo, useState } from "react";
 import useProduct from "@/hooks/useProduct";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import transferHandler from "@/components/form-custom/TransferHandler";
+import { useTranslations } from "next-intl";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -73,6 +74,8 @@ export default function LocationForm({
   const { userList } = useUserList();
   const { products } = useProduct();
   const router = useRouter();
+  const tLocation = useTranslations("StoreLocation");
+  const tCommon = useTranslations("Common");
 
   const listUser = userList?.map((user: UserItemTransfer) => ({
     key: user.user_id,
@@ -187,15 +190,15 @@ export default function LocationForm({
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 space-y-4">
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-          <Card>
-            <CardHeader className="flex flex-row justify-between items-center">
-              <CardTitle className="text-lg font-semibold">
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <Card>
+          <CardHeader>
+            <div className="fxb-c">
+              <CardTitle className="text-2xl font-semibold">
                 {mode === formType.EDIT
-                  ? "Edit Location"
-                  : "Create New Location"}
+                  ? tLocation("edit_store_location")
+                  : tLocation("add_store_location")}
               </CardTitle>
               <div className="fxr-e gap-2">
                 <Button
@@ -204,8 +207,8 @@ export default function LocationForm({
                 >
                   <Save className="w-4 h-4" />
                   {mode === formType.EDIT
-                    ? "Update Location"
-                    : "Create Location"}
+                    ? tLocation("edit_store_location")
+                    : tLocation("add_store_location")}
                 </Button>
                 <Button
                   type="button"
@@ -213,98 +216,37 @@ export default function LocationForm({
                   onClick={onCancel}
                   className="sm:order-1"
                 >
-                  Cancel
+                  {tCommon("cancel")}
                 </Button>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+            </div>
 
-                <FormField
-                  control={form.control}
-                  name="delivery_point_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Delivery Point</FormLabel>
-                      <FormControl>
-                        <LookupDeliveryPoint
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="location_type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Type</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select Location Type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value={INVENTORY_TYPE.CONSIGNMENT}>
-                              Consignment
-                            </SelectItem>
-                            <SelectItem value={INVENTORY_TYPE.DIRECT}>
-                              Direct
-                            </SelectItem>
-                            <SelectItem value={INVENTORY_TYPE.INVENTORY}>
-                              Inventory
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="col-span-2">
-                      <FormLabel>Description</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
-                name="is_active"
+                name="name"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between">
+                  <FormItem>
+                    <FormLabel>{tLocation("store_location_name")}</FormLabel>
                     <FormControl>
-                      <FormBoolean
+                      <Input {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="delivery_point_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tLocation("delivery_point")}</FormLabel>
+                    <FormControl>
+                      <LookupDeliveryPoint
                         value={field.value}
-                        onChange={field.onChange}
-                        label="Is Active"
-                        type="checkbox"
+                        onValueChange={field.onChange}
                       />
                     </FormControl>
                   </FormItem>
@@ -313,53 +255,115 @@ export default function LocationForm({
 
               <FormField
                 control={form.control}
-                name="physical_count_type"
+                name="location_type"
                 render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Physical Count Type</FormLabel>
+                  <FormItem>
+                    <FormLabel>{tLocation("location_type")}</FormLabel>
                     <FormControl>
-                      <RadioGroup
+                      <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        className="flex"
                       >
-                        <FormItem className="fxr-c space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value={PHYSICAL_COUNT_TYPE.YES} />
-                          </FormControl>
-                          <FormLabel className="font-normal">Yes</FormLabel>
-                        </FormItem>
-                        <FormItem className="fxr-c space-x-3 space-y-0">
-                          <FormControl>
-                            <RadioGroupItem value={PHYSICAL_COUNT_TYPE.NO} />
-                          </FormControl>
-                          <FormLabel className="font-normal">No</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={tLocation("location_type")} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value={INVENTORY_TYPE.CONSIGNMENT}>
+                            {tLocation("consignment")}
+                          </SelectItem>
+                          <SelectItem value={INVENTORY_TYPE.DIRECT}>
+                            {tLocation("direct")}
+                          </SelectItem>
+                          <SelectItem value={INVENTORY_TYPE.INVENTORY}>
+                            {tLocation("inventory")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                   </FormItem>
                 )}
               />
-            </CardContent>
-          </Card>
-          <Transfer
-            dataSource={listUser}
-            leftDataSource={initUsers}
-            targetKeys={selectedUsers}
-            onChange={handleUsersChange}
-            titles={["Init Users", "Available Users"]}
-            operations={["<", ">"]}
-          />
-          <Transfer
-            dataSource={listProduct}
-            leftDataSource={initProducts}
-            targetKeys={selectedProducts}
-            onChange={handleProductsChange}
-            titles={["Init Products", "Available Products"]}
-            operations={["<", ">"]}
-          />
-        </form>
-      </FormProvider>
-    </div>
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>{tCommon("description")}</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="is_active"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between">
+                  <FormControl>
+                    <FormBoolean
+                      value={field.value}
+                      onChange={field.onChange}
+                      label={tCommon("status")}
+                      type="checkbox"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="physical_count_type"
+              render={({ field }) => (
+                <FormItem className="space-y-3">
+                  <FormLabel>{tLocation("physical_count_type")}</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex"
+                    >
+                      <FormItem className="fxr-c space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value={PHYSICAL_COUNT_TYPE.YES} />
+                        </FormControl>
+                        <FormLabel className="font-normal">{tCommon("yes")}</FormLabel>
+                      </FormItem>
+                      <FormItem className="fxr-c space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value={PHYSICAL_COUNT_TYPE.NO} />
+                        </FormControl>
+                        <FormLabel className="font-normal">{tCommon("no")}</FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </CardContent>
+        </Card>
+        <Transfer
+          dataSource={listUser}
+          leftDataSource={initUsers}
+          targetKeys={selectedUsers}
+          onChange={handleUsersChange}
+          titles={[tCommon("init_users"), tCommon("available_users")]}
+          operations={["<", ">"]}
+        />
+        <Transfer
+          dataSource={listProduct}
+          leftDataSource={initProducts}
+          targetKeys={selectedProducts}
+          onChange={handleProductsChange}
+          titles={[tCommon("init_products"), tCommon("available_products")]}
+          operations={["<", ">"]}
+        />
+      </form>
+    </FormProvider>
   );
 }

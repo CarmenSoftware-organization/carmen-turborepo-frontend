@@ -291,7 +291,11 @@
     "back": "Back",
     "note": "Note",
     "info": "Info",
-    "dimension": "Dimension"
+    "dimension": "Dimension",
+    "init_users": "Init Users",
+    "available_users": "Available Users",
+    "init_products": "Init Products",
+    "available_products": "Available Products"
   },
   "TableHeader": {
     "all": "All",

@@ -191,15 +191,11 @@
   }
 
   .fxr-e {
-    @apply flex flex-row items-center justify-end;
+    @apply flex flex-row items-center;
   }
 
   .fx-c {
     @apply flex flex-col;
-  }
-
-  .fxc-c {
-    @apply flex flex-col items-center;
   }
 
   .fxc-s {
