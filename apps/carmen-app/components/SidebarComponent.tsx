@@ -211,7 +211,7 @@ const SidebarContent = () => {
             <Link
                 href={item.href}
                 className={cn(
-                    'link-item',
+                    'fxb-c link-item',
                     !isActive && 'link-item-inactive',
                     isActive ? 'item-active' : 'item-hover',
                     level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
@@ -259,7 +259,7 @@ const SidebarContent = () => {
         isOpen: boolean
     ) => {
         return cn(
-            'menu-item',
+            'fxb-c menu-item',
             isActive ? 'item-active' : 'menu-item-hover',
             level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
             isOpen && !isActuallyCollapsed && 'bg-muted',

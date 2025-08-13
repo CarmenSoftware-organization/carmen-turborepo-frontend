@@ -6,11 +6,11 @@
     }
 
     .link-item {
-        @apply fxr-c justify-between p-2 rounded-md text-sm;
+        @apply p-2 rounded-md text-sm;
     }
 
     .menu-item {
-        @apply fxr-c justify-between p-2 rounded-md text-sm w-full text-left cursor-pointer;
+        @apply p-2 rounded-md text-sm w-full text-left cursor-pointer;
     }
 
     .motion-wrapper {
