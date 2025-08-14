@@ -24,7 +24,11 @@
   },
   "ProfilePage": {
     "profileTitle": "โปรไฟล์",
-    "profileWelcome": "ยินดีต้อนรับสู่โปรไฟล์!"
+    "profileWelcome": "ยินดีต้อนรับสู่โปรไฟล์!",
+    "email": "อีเมล",
+    "name": "ชื่อ",
+    "businessUnits": "หน่วยงาน",
+    "default": "ค่าเริ่มต้น"
   },
   "TestSSGPage": {
     "title": "ตัวอย่างการสร้างเว็บไซต์แบบสถิต",

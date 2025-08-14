@@ -24,7 +24,11 @@
   },
   "ProfilePage": {
     "profileTitle": "Profile Page",
-    "profileWelcome": "Welcome to the profile page!"
+    "profileWelcome": "Welcome to the profile page!",
+    "email": "Email",
+    "name": "Name",
+    "businessUnits": "Business Units",
+    "default": "Default"
   },
   "TestSSGPage": {
     "title": "Static Site Generation Example",
