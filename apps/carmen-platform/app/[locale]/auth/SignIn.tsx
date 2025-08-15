@@ -4,22 +4,24 @@ import { useMemo } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/app/context/AuthContext";
 
 const signInSchema = z.object({
-    email: z.email().min(1, { error: "Enter your email" }),
-    password: z.string().min(6, { error: "Password must be at least 6 characters" }),
+    email: z.string().email({ message: "Enter your email" }),
+    password: z.string().min(6, { message: "Password must be at least 6 characters" }),
 });
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
 export default function SignIn() {
     const t = useTranslations();
+    const { loginMutation } = useAuth();
+
     const schema = useMemo(() => signInSchema, []);
     const methods = useForm<SignInFormValues>({
         resolver: zodResolver(schema),
@@ -28,20 +30,9 @@ export default function SignIn() {
         reValidateMode: "onChange",
     });
 
-    const { mutate, isPending } = useMutation({
-        mutationKey: ["sign-in"],
-        mutationFn: async (values: SignInFormValues) => {
-            await new Promise((r) => setTimeout(r, 400));
-            // แทนที่จะยิง API ตอนนี้ log ค่าไว้ก่อนตามคำขอ
-            console.log("LOGIN SUBMIT", values);
-            return values;
-        },
-        onError: (error) => {
-            console.error(error);
-        },
+    const handleSubmit = methods.handleSubmit((values) => {
+        loginMutation.mutate(values);
     });
-
-    const handleSubmit = methods.handleSubmit((values) => mutate(values));
 
     return (
         <div className="min-h-screen flex items-center justify-between p-8 max-w-screen-lg mx-auto">
@@ -74,7 +65,7 @@ export default function SignIn() {
                                 />
                                 {methods.formState.errors.email && (
                                     <p className="text-sm text-red-500" role="alert">
-                                        {t("errors.emailRequired")}
+                                        {methods.formState.errors.email.message}
                                     </p>
                                 )}
                             </div>
@@ -95,7 +86,7 @@ export default function SignIn() {
                                 />
                                 {methods.formState.errors.password && (
                                     <p className="text-sm text-red-500" role="alert">
-                                        {t("errors.passwordMin")}
+                                        {methods.formState.errors.password.message}
                                     </p>
                                 )}
                             </div>
@@ -104,10 +95,10 @@ export default function SignIn() {
                                 type="submit"
                                 aria-label="Sign in"
                                 tabIndex={0}
-                                disabled={isPending}
+                                disabled={loginMutation.isPending}
                                 className="w-full"
                             >
-                                {isPending ? t("app.loggingIn") : t("app.login")}
+                                {loginMutation.isPending ? t("app.loggingIn") : t("app.login")}
                             </Button>
                         </form>
                     </FormProvider>

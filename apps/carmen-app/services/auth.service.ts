@@ -1,8 +1,5 @@
 import { backendApi } from "@/lib/backend-api";
 import axios from "axios";
-import { requestHeaders } from "@/lib/config.api";
-
-
 
 export const signInService = async (email: string, password: string) => {
   const url = `${backendApi}/api/auth/login`;

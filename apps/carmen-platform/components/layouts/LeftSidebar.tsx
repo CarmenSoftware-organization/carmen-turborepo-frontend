@@ -1,9 +1,8 @@
 'use client'
 
-import { Link } from "@/i18n/routing"
+import { Link, usePathname } from "@/i18n/routing"
 import Image from 'next/image'
 import { useState } from 'react'
-import { usePathname } from 'next/navigation'
 import { cn } from "@/lib/utils"
 
 interface NavigationItem {
@@ -32,8 +31,11 @@ export default function LeftSidebar() {
         setIsHovered(false)
     }
 
-    // กำหนดขนาด sidebar ตาม state
-    const sidebarWidth = isHovered ? "w-64" : "w-16"
+    const sidebarWidth = isHovered ? "w-64" : "w-16";
+
+    const isActivePath = (href: string) => {
+        return pathname.startsWith(href) || pathname === href
+    }
 
     return (
         <nav
@@ -44,14 +46,14 @@ export default function LeftSidebar() {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <div className="flex flex-col gap-y-2 p-1">
+            <div className="flex flex-col gap-y-2 p-1 mx-2">
                 {navigationItems.map((item) => (
                     <Link
                         key={item.href}
                         href={item.href}
                         className={cn(
                             "flex items-center gap-3 p-1 rounded-lg transition-all duration-200 hover:bg-accent",
-                            pathname === item.href && "bg-accent text-accent-foreground",
+                            isActivePath(item.href) && "bg-accent text-accent-foreground",
                             !(isHovered) && "justify-center"
                         )}
                     >
