@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import { Providers } from "@/providers/providers";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { locales } from "@/i18n/routing";
 import { NextIntlClientProvider } from "next-intl";
 
@@ -34,7 +34,8 @@ export default async function RootLayout({
     throw new Error("Unknown locale");
   }
   setRequestLocale(locale);
-  const messages = await getMessages();
+  const messages = (await import(`@/messages/${locale}.json`)).default;
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <body

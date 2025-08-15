@@ -14,7 +14,36 @@
     "emailRequired": "Enter your email",
     "invalidEmail": "Invalid email address",
     "passwordMin": "Password must be at least 6 characters"
+  },
+  "home": {
+    "cta": {
+      "getStarted": "Get Started",
+      "contactSales": "Contact Sales"
+    },
+    "features": {
+      "cluster": {
+        "title": "Cluster Management",
+        "description": "Efficiently manage multiple clusters and business units with our hierarchical management system."
+      },
+      "report": {
+        "title": "Report Distribution",
+        "description": "Streamline report creation and distribution across your organization with customizable templates."
+      },
+      "access": {
+        "title": "Access Control",
+        "description": "Secure and granular access control with role-based permissions at every level."
+      }
+    },
+    "stats": {
+      "enterpriseCustomers": "Enterprise Customers",
+      "businessUnits": "Business Units",
+      "reportsGenerated": "Reports Generated",
+      "platformUptime": "Platform Uptime"
+    },
+    "footer": {
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "copyright": "© 2024 Carmen Platform. All rights reserved."
+    }
   }
 }
-
-
