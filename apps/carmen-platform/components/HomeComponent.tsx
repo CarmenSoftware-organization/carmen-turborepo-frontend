@@ -1,27 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect } from "react";
+import { Link } from "@/i18n/routing";
 import { Button } from "./ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 export default function HomeComponent() {
     const t = useTranslations();
-    const locale = useLocale();
 
-    useEffect(() => {
-        // Debug i18n on client
-        // ตรวจสอบ locale ปัจจุบัน, ค่า <html lang>, และค่าที่แปลของ app.title
-        // เปิด DevTools Console เพื่อดูข้อความนี้
-        // ตัวอย่าง: { locale: "th", htmlLang: "th", appTitle: "คาร์เมน แพลตฟอร์ม" }
-        // eslint-disable-next-line no-console
-        console.log("[i18n] client debug", {
-            locale,
-            htmlLang: typeof document !== "undefined" ? document.documentElement.lang : undefined,
-            appTitle: t("app.title"),
-        });
-    }, [locale]);
     return (
         <div className="flex min-h-screen flex-col">
             <div className="flex flex-1 flex-col items-center justify-center bg-gradient-to-b from-background to-muted px-4 pb-16 pt-24 text-center md:pb-24 md:pt-32">
@@ -34,13 +20,13 @@ export default function HomeComponent() {
                 <div className="mt-8 flex animate-fade-up items-center justify-center gap-4">
 
                     <Button size="lg" asChild>
-                        <Link href={`/${locale}/auth`}>
+                        <Link href="/auth">
                             {t("home.cta.getStarted")}
                             <ArrowRight />
                         </Link>
                     </Button>
                     <Button size="lg" asChild variant={'secondary'}>
-                        <Link href={`/${locale}/admin/dashboard`}>
+                        <Link href="/admin/dashboard">
                             {t("home.cta.contactSales")}
                             <ArrowRight />
                         </Link>
@@ -98,10 +84,10 @@ export default function HomeComponent() {
                     <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">{t("home.footer.copyright")}</div>
                         <div className="flex gap-4">
-                            <Link href={`/${locale}/privacy`} className="text-sm text-muted-foreground hover:text-foreground">
+                            <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground">
                                 {t("home.footer.privacyPolicy")}
                             </Link>
-                            <Link href={`/${locale}/terms`} className="text-sm text-muted-foreground hover:text-foreground">
+                            <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">
                                 {t("home.footer.termsOfService")}
                             </Link>
                         </div>

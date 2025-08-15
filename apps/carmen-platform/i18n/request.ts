@@ -11,12 +11,6 @@ export default getRequestConfig(async ({ locale }) => {
         : defaultLocale;
 
     const messages = (await import(`../messages/${resolvedLocale}.json`)).default;
-    // eslint-disable-next-line no-console
-    console.log("[i18n] request debug", {
-        inputLocale: resolvedParam,
-        resolvedLocale,
-        appTitle: (messages as any)?.app?.title
-    } as Record<string, unknown>);
 
     return {
         locale: resolvedLocale,
