@@ -2,6 +2,7 @@ import { SwitchTheme } from "../SwitchTheme"
 import LangSwitch from "../LangSwitch"
 import { useTranslations } from "next-intl";
 import Profile from "./Profile";
+import { AnimatedThemeToggler } from "../magicui/animated-theme-toggler";
 
 export default function Navbar() {
     const t = useTranslations();
@@ -16,7 +17,8 @@ export default function Navbar() {
             </div>
             <div className="flex items-center gap-2">
                 <LangSwitch />
-                <SwitchTheme />
+                {/* <SwitchTheme /> */}
+                <AnimatedThemeToggler />
                 <Profile />
             </div>
         </nav>

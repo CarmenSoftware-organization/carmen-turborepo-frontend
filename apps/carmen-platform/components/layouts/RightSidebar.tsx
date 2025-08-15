@@ -11,7 +11,7 @@ import Image from 'next/image'
 
 export default function RightSidebar() {
     return (
-        <div className="w-[4%] flex flex-col space-y-2 border-l p-1">
+        <div className="w-14 flex flex-col space-y-2 border-l p-1">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button size={'sm'} variant={'ghost'} className="hover:bg-transparent">

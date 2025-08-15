@@ -6,10 +6,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/app/context/AuthContext";
+import { RippleButton } from "@/components/magicui/ripple-button";
+import { Card } from "@/components/ui/card";
 
 const signInSchema = z.object({
     email: z.string().email({ message: "Enter your email" }),
@@ -43,7 +44,7 @@ export default function SignIn() {
             <div className="space-y-4">
                 <h1 className="text-5xl font-bold">{t("app.title")}</h1>
             </div>
-            <div className="backdrop-blur-sm rounded-3xl p-8 w-[480px]">
+            <Card className="w-[480px] p-8 rounded-md">
                 <div className="space-y-6">
                     <div className="space-y-2">
                         <h2 className="text-3xl font-semibold">{t("app.login")}</h2>
@@ -95,7 +96,7 @@ export default function SignIn() {
                                 )}
                             </div>
 
-                            <Button
+                            <RippleButton
                                 type="submit"
                                 aria-label="Sign in"
                                 tabIndex={0}
@@ -103,11 +104,11 @@ export default function SignIn() {
                                 className="w-full"
                             >
                                 {loginMutation.isPending ? t("app.loggingIn") : t("app.login")}
-                            </Button>
+                            </RippleButton>
                         </form>
                     </FormProvider>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 }
