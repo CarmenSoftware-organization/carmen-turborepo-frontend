@@ -8,7 +8,11 @@ export default createMiddleware({
 });
 
 export const config = {
-    matcher: ['/((?!_next|_vercel|.*\\..*).*)']
+    matcher: [
+        '/',
+        '/(th|en)/:path*',
+        '/((?!_next|_vercel|.*\\..*).*)'
+    ]
 };
 
 

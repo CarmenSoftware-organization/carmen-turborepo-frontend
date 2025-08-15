@@ -25,7 +25,7 @@ export function SwitchTheme() {
 			variant={'ghost'}
 			onClick={handleClick}
 			data-id="switch-theme-button"
-			className="cursor-pointer"
+			className="cursor-pointer hover:text-gray-500 dark:hover:text-amber-600 hover:bg-transparent"
 		>
 			{theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
 		</Button>
