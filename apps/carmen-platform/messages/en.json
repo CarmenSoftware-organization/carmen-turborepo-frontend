@@ -1,0 +1,20 @@
+{
+  "app": {
+    "title": "Carmen Platform",
+    "welcome": "Welcome to Carmen Platform",
+    "login": "Login",
+    "loggingIn": "Logging in..."
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@example.com"
+  },
+  "errors": {
+    "emailRequired": "Enter your email",
+    "invalidEmail": "Invalid email address",
+    "passwordMin": "Password must be at least 6 characters"
+  }
+}
+
+

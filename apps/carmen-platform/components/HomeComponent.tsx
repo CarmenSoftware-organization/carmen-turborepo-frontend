@@ -1,20 +1,18 @@
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function HomeComponent() {
+    const t = useTranslations();
     return (
         <div className="flex min-h-screen flex-col">
             <div className="flex flex-1 flex-col items-center justify-center bg-gradient-to-b from-background to-muted px-4 pb-16 pt-24 text-center md:pb-24 md:pt-32">
                 <h1 className="animate-fade-up bg-gradient-to-br from-foreground to-muted-foreground bg-clip-text text-center text-4xl font-bold tracking-tight text-transparent md:text-6xl">
-                    Enterprise Supply Chain
-                    <br />
-                    Platform Management
+                    {t("app.title")}
                 </h1>
                 <p className="mt-6 animate-fade-up text-center text-muted-foreground/80 md:text-xl">
-                    Streamline your supply chain operations with our powerful platform.
-                    <br className="hidden md:block" />
-                    Manage clusters, business units, and reports in one place.
+                    {t("app.welcome")}
                 </p>
                 <div className="mt-8 flex animate-fade-up items-center justify-center gap-4">
 
