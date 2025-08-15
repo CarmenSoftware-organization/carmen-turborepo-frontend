@@ -14,8 +14,8 @@ import { useAuth } from "@/app/context/AuthContext";
 
 export default function Profile() {
     const { handleLogout, user } = useAuth();
-    const userEmail = user.email;
-    const userFullName = user.user_info.firstname + ' ' + user.user_info.lastname;
+    const userEmail = user?.email;
+    const userFullName = user?.user_info.firstname + ' ' + user?.user_info.lastname;
 
     const userInitials = userFullName.split(' ').map(name => name[0]).join('').toUpperCase();
 

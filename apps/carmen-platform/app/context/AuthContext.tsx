@@ -209,7 +209,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return !!accessToken;
   };
 
-  console.log('user', user);
+  const clearValue = () => {
+    setUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
+      localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
+      localStorage.removeItem(LOCAL_STORAGE.USER);
+    }
+    queryClient.clear();
+  }
 
   const value = useMemo(() => ({
     user,
@@ -223,6 +233,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated,
     loginMutation,
     handleLogout,
+    clearValue
   }), [
     user,
     accessToken,
@@ -235,6 +246,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isAuthenticated,
     loginMutation,
     handleLogout,
+    clearValue
   ]);
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,7 +20,11 @@ type SignInFormValues = z.infer<typeof signInSchema>;
 
 export default function SignIn() {
     const t = useTranslations();
-    const { loginMutation } = useAuth();
+    const { loginMutation, clearValue } = useAuth();
+
+    useEffect(() => {
+        clearValue();
+    }, []);
 
     const schema = useMemo(() => signInSchema, []);
     const methods = useForm<SignInFormValues>({
@@ -60,11 +64,11 @@ export default function SignIn() {
                                     tabIndex={0}
                                     {...methods.register("email")}
                                     className={cn("", {
-                                        "border-red-500": !!methods.formState.errors.email,
+                                        "border-destructive": !!methods.formState.errors.email,
                                     })}
                                 />
                                 {methods.formState.errors.email && (
-                                    <p className="text-sm text-red-500" role="alert">
+                                    <p className="text-sm text-destructive" role="alert">
                                         {methods.formState.errors.email.message}
                                     </p>
                                 )}
