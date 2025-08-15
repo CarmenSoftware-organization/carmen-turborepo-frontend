@@ -13,7 +13,6 @@ export default function Navbar() {
                     <p className="text-xl font-semibold">C</p>
                 </div>
                 <p className="text-base font-bold">{t("app.title")}</p>
-
             </div>
             <div className="flex items-center gap-2">
                 <LangSwitch />

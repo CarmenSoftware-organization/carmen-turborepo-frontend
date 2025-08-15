@@ -1,4 +1,3 @@
-import { FileText, MessageCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import {
     Sheet,
@@ -8,14 +7,15 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
+import Image from 'next/image'
 
 export default function RightSidebar() {
     return (
-        <div className="flex flex-col gap-2">
+        <div className="w-[4%] flex flex-col space-y-2 border-l p-1">
             <Sheet>
                 <SheetTrigger asChild>
                     <Button size={'sm'} variant={'ghost'} className="hover:bg-transparent">
-                        <FileText />
+                        <Image src={'/icons/file-text.svg'} alt="logo" width={24} height={24} />
                     </Button>
                 </SheetTrigger>
                 <SheetContent>
@@ -32,7 +32,7 @@ export default function RightSidebar() {
             <Sheet>
                 <SheetTrigger asChild>
                     <Button size={'sm'} variant={'ghost'} className="hover:bg-transparent">
-                        <MessageCircle />
+                        <Image src={'/icons/message.svg'} alt="logo" width={24} height={24} />
                     </Button>
                 </SheetTrigger>
                 <SheetContent>
