@@ -12,6 +12,8 @@ import Image from "next/image";
 import { useState } from "react";
 import FormClusterDialog from "./FormClusterDialog";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export default function Cluster() {
     const { data, isLoading, error } = useCluster();
@@ -19,6 +21,11 @@ export default function Cluster() {
     const [search, setSearch] = useURL("search");
     const [clusterToDelete, setClusterToDelete] = useState<GetClusterDto | null>(null);
     const clusterData = data?.data;
+
+    const page = data?.paginate?.page;
+    const pages = data?.paginate?.pages;
+    const perpage = data?.paginate?.perpage;
+    const total = data?.paginate?.total;
 
     if (error instanceof Error) return <div>Error: {error.message}</div>;
 
@@ -40,8 +47,7 @@ export default function Cluster() {
         </div>
     )
 
-    // Action buttons section
-    const renderActionButtons = (
+    const actionButtons = (
         <div className="flex items-center gap-2">
             <FormClusterDialog mode="add" />
             <Button variant="outline" size="sm">
@@ -53,19 +59,14 @@ export default function Cluster() {
         </div>
     );
 
-    // Filters section
-    const renderFilters = (
-        <div className="flex items-center justify-between">
-            <SearchInput
-                defaultValue={search}
-                onSearch={setSearch}
-                placeholder="Search clusters..."
-                containerClassName="max-w-sm"
-            />
-        </div>
+    const filters = (
+        <SearchInput
+            defaultValue={search}
+            onSearch={setSearch}
+            placeholder="Search clusters..."
+        />
     );
 
-    // Table content
     const renderTableContent = (
         <Table>
             <TableHeader>
@@ -104,12 +105,13 @@ export default function Cluster() {
                         </TableCell>
                         <TableCell>{cluster.code}</TableCell>
                         <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${cluster.is_active
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                }`}>
+                            <Badge variant="outline" className="gap-1.5">
+                                <span
+                                    className={cn(cluster.is_active ? "bg-green-500" : "bg-red-500", "size-1.5 rounded-full")}
+                                    aria-hidden="true"
+                                ></span>
                                 {cluster.is_active ? 'Active' : 'Inactive'}
-                            </span>
+                            </Badge>
                         </TableCell>
                         <TableCell className="text-right">
                             <Button
@@ -128,12 +130,11 @@ export default function Cluster() {
     );
 
     return (
-        <div className="space-y-6">
-
+        <>
             <DataDisplayTemplate
                 title={title}
-                actionButtons={renderActionButtons}
-                filters={renderFilters}
+                actionButtons={actionButtons}
+                filters={filters}
                 content={renderTableContent}
                 isLoading={isLoading}
             />
@@ -164,6 +165,6 @@ export default function Cluster() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </>
     );
 }
