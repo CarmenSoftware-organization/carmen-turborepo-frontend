@@ -15,9 +15,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { clusterMutation, updateClusterMutation } from "@/app/hooks/useCluster";
 import { Checkbox } from "@/components/ui/checkbox";
 import { GetClusterDto } from "@/dto/cluster.dto";
+import { useCreateCluster, useUpdateCluster } from "@/app/hooks/useCluster";
 
 const clusterSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -39,8 +39,8 @@ export default function FormClusterDialog({
     trigger
 }: FormClusterDialogProps) {
     const [open, setOpen] = useState(false);
-    const mutation = clusterMutation();
-    const updateMutation = updateClusterMutation();
+    const mutation = useCreateCluster();
+    const updateMutation = useUpdateCluster();
 
     const {
         register,

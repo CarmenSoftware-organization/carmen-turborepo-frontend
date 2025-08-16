@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteClusterMutation, useCluster } from "@/app/hooks/useCluster";
+import { useCluster, useDeleteCluster } from "@/app/hooks/useCluster";
 import { useURL } from "@/app/hooks/useURL";
 import SearchInput from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 
 export default function Cluster() {
     const { data, isLoading, error } = useCluster();
-    const deleteMutation = deleteClusterMutation();
+    const deleteMutation = useDeleteCluster();
     const [search, setSearch] = useURL("search");
     const [clusterToDelete, setClusterToDelete] = useState<GetClusterDto | null>(null);
     const clusterData = data?.data;

@@ -3,36 +3,56 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { backendApi } from "@/lib/backend-api";
-import { ClusterDto } from "@/dto/cluster.dto";
+import { ClusterDto, GetClusterDto, } from "@/dto/cluster.dto";
+import { useCallback } from "react";
 
 const apiUrl = `${backendApi}/api-system/cluster`;
 
 export const useCluster = () => {
     const { accessToken } = useAuth();
 
-    return useQuery({
-        queryKey: ['cluster', accessToken],
+    const query = useQuery({
+        queryKey: ["cluster", accessToken],
         queryFn: async () => {
-            const response = await fetch(apiUrl, {
+            const res = await fetch(apiUrl, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
 
-            if (!response.ok) {
-                const text = await response.text();
-                throw new Error(`Failed to fetch cluster data: ${text}`);
+            if (!res.ok) {
+                let errorMessage: string;
+                try {
+                    const errorData = await res.json();
+                    errorMessage = errorData.message || res.statusText;
+                } catch {
+                    errorMessage = await res.text();
+                }
+                throw new Error(`Failed to fetch cluster data: ${errorMessage}`);
             }
 
-            return response.json();
+            return res.json();
         },
-        enabled: !!accessToken,
+        enabled: Boolean(accessToken),
         staleTime: 5 * 60 * 1000,
+        retry: 1,
     });
 
+    const getClusterName = useCallback(
+        (clusterId: string) => {
+            const cluster = query.data?.data?.find((c: GetClusterDto) => c.id === clusterId);
+            return cluster?.name ?? "";
+        },
+        [query.data]
+    );
+
+    return {
+        ...query,
+        getClusterName,
+    };
 };
 
-export const clusterMutation = () => {
+export const useCreateCluster = () => {
     const { accessToken } = useAuth();
     const queryClient = useQueryClient();
 
@@ -48,7 +68,7 @@ export const clusterMutation = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to fetch user profile');
+                throw new Error('Failed to create cluster');
             }
 
             return response.json();
@@ -59,7 +79,7 @@ export const clusterMutation = () => {
     });
 };
 
-export const updateClusterMutation = () => {
+export const useUpdateCluster = () => {
     const { accessToken } = useAuth();
     const queryClient = useQueryClient();
 
@@ -86,7 +106,7 @@ export const updateClusterMutation = () => {
     });
 };
 
-export const deleteClusterMutation = () => {
+export const useDeleteCluster = () => {
     const { accessToken } = useAuth();
     const queryClient = useQueryClient();
 
@@ -108,5 +128,29 @@ export const deleteClusterMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cluster'] });
         },
+    });
+};
+
+export const useClusterById = (id: string) => {
+    const { accessToken } = useAuth();
+
+    return useQuery({
+        queryKey: ['cluster', id, accessToken],
+        queryFn: async () => {
+            const response = await fetch(`${apiUrl}/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`Failed to fetch cluster by id: ${text}`);
+            }
+
+            return response.json() as Promise<GetClusterDto>;
+        },
+        enabled: !!accessToken && !!id,
+        staleTime: 5 * 60 * 1000,
     });
 };
