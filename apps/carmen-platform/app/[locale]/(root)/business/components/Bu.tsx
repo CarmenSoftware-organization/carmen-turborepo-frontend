@@ -1,7 +1,7 @@
 "use client";
 
 import { useBu } from "@/app/hooks/useBu";
-import { Code, CrownIcon, Info, List, Printer, Share, Trash2 } from "lucide-react";
+import { Code, CrownIcon, Info, List, Printer, Share, Share2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import SearchInput from "@/components/SearchInput";
@@ -9,6 +9,7 @@ import { useURL } from "@/app/hooks/useURL";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useCluster } from "@/app/hooks/useCluster";
+import { Link } from "@/i18n/routing";
 
 export default function Bu() {
     const { data, isLoading, error } = useBu();
@@ -53,7 +54,7 @@ export default function Bu() {
                     <TableHead>
                         <div className="flex items-center gap-2">
                             <List className="w-4 h-4" />
-                            <span>Cluster</span>
+                            <span>Name</span>
                         </div>
                     </TableHead>
                     <TableHead>
@@ -62,10 +63,11 @@ export default function Bu() {
                             <span>Code</span>
                         </div>
                     </TableHead>
+
                     <TableHead>
                         <div className="flex items-center gap-2">
-                            <List className="w-4 h-4" />
-                            <span>Name</span>
+                            <Share2 className="w-4 h-4" />
+                            <span>Cluster</span>
                         </div>
                     </TableHead>
                     <TableHead>
@@ -94,38 +96,27 @@ export default function Bu() {
                     <TableRow key={bu.id}>
                         <TableCell className="text-center">{index + 1}</TableCell>
                         <TableCell>
-                            <span className="cursor-pointer hover:text-primary hover:underline">
-                                {getClusterName(bu.cluster_id)}
-                            </span>
-                        </TableCell>
-                        <TableCell>
-                            <span className="cursor-pointer hover:text-primary hover:underline">
-                                {bu.code}
-                            </span>
-                        </TableCell>
-
-                        <TableCell>
-                            <span className="cursor-pointer hover:text-primary hover:underline">
+                            <Link href={`/business/${bu.id}`} className="cursor-pointer hover:text-primary hover:underline">
                                 {bu.name}
-                            </span>
+                            </Link >
+                        </TableCell>
+                        <TableCell>
+                            {bu.code}
                         </TableCell>
 
                         <TableCell>
-                            <span className="cursor-pointer hover:text-primary hover:underline">
-                                {bu.description}
-                            </span>
+                            {getClusterName(bu.cluster_id)}
+                        </TableCell>
+                        <TableCell>
+                            {bu.description}
                         </TableCell>
 
                         <TableCell className="text-center">
-                            <span className="cursor-pointer hover:text-primary hover:underline">
-                                {bu.is_hq ? "HQ" : "Branch"}
-                            </span>
+                            {bu.is_hq ? "HQ" : "Branch"}
                         </TableCell>
 
                         <TableCell className="text-center">
-                            <span className="cursor-pointer hover:text-primary hover:underline">
-                                {bu.is_active ? "Active" : "Inactive"}
-                            </span>
+                            {bu.is_active ? "Active" : "Inactive"}
                         </TableCell>
                         <TableCell className="text-right">
                             <Button
