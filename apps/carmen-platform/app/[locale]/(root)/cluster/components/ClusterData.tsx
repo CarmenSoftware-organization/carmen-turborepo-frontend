@@ -52,7 +52,7 @@ export default function ClusterData({
                                 </div>
                             </TableHead>
                             <TableHead className="text-center">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center justify-center gap-2">
                                     <ActivityIcon className="w-4 h-4" />
                                     <span>Status</span>
                                 </div>
@@ -124,18 +124,21 @@ export default function ClusterData({
                                     {cluster.name}
                                 </p>
                             </div>
-                            <div className="flex items-center gap-2 rounded-lg">
-                                <Building2 className="w-4 h-4  text-orange-500" />
-                                <p className="font-bold text-lg leading-none">
-                                    {cluster._count.tb_business_unit}
-                                </p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="flex items-center gap-2 rounded-lg">
+                                    <Building2 className="w-4 h-4  text-orange-700" />
+                                    <p className="font-bold text-lg leading-none">
+                                        {cluster._count.tb_business_unit}
+                                    </p>
+                                </div>
+                                <div className="flex items-center gap-2 rounded-lg">
+                                    <Users className="w-4 h-4 text-purple-700" />
+                                    <p className="font-bold text-lg leading-none">
+                                        {cluster._count.tb_cluster_user}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2 rounded-lg">
-                                <Users className="w-4 h-4 text-purple-500" />
-                                <p className="font-bold text-lg leading-none">
-                                    {cluster._count.tb_cluster_user}
-                                </p>
-                            </div>
+
                         </CardContent>
                     </Card>
                 ))}
