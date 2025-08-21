@@ -35,7 +35,7 @@ export default function LeftSidebar() {
     const sidebarWidth = isHovered ? "w-64" : "w-16";
 
     const isActivePath = (href: string) => {
-        return pathname.startsWith(href) || pathname === href
+        return pathname === href || pathname.startsWith(href + '/')
     }
 
     return (

@@ -6,15 +6,15 @@ import SearchInput from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { GetClusterDto } from "@/dto/cluster.dto";
-import { Grid, List, Printer, Share } from "lucide-react";
+import { Grid, List, Plus, Printer, Share } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import FormClusterDialog from "./FormClusterDialog";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
 import ClusterData from "./ClusterData";
-import { cn } from "@/lib/utils";
+import { useRouter } from "@/i18n/routing";
 
 export default function Cluster() {
+    const router = useRouter();
     const { data, isLoading, error } = useCluster();
     const deleteMutation = useDeleteCluster();
     const [search, setSearch] = useURL("search");
@@ -53,7 +53,13 @@ export default function Cluster() {
 
     const actionButtons = (
         <div className="flex items-center gap-2">
-            <FormClusterDialog mode="add" />
+            <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/cluster/new")}
+            >
+                <Plus className="w-4 h-4" />
+            </Button>
             <Button variant="outline" size="sm">
                 <Share className="w-4 h-4" />
             </Button>

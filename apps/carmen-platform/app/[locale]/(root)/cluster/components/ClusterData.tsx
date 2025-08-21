@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/i18n/routing";
 
 interface Props {
     readonly clusterData: GetClusterDto[];
@@ -64,15 +65,9 @@ export default function ClusterData({
                             <TableRow key={cluster.id}>
                                 <TableCell className="text-center">{index + 1}</TableCell>
                                 <TableCell>
-                                    <FormClusterDialog
-                                        mode="edit"
-                                        clusterData={cluster}
-                                        trigger={
-                                            <span className="cursor-pointer hover:text-primary hover:underline">
-                                                {cluster.name}
-                                            </span>
-                                        }
-                                    />
+                                    <Link href={`/cluster/${cluster.id}`}>
+                                        {cluster.name}
+                                    </Link>
                                 </TableCell>
                                 <TableCell>{cluster.code}</TableCell>
 
