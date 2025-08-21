@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { backendApi } from "@/lib/backend-api";
-import { ClusterDto, GetClusterDto, } from "@/dto/cluster.dto";
+import { ClusterDto, ClusterDtoId, GetClusterDto, } from "@/dto/cluster.dto";
 import { useCallback } from "react";
 
 const apiUrl = `${backendApi}/api-system/cluster`;
@@ -148,7 +148,7 @@ export const useClusterById = (id: string) => {
                 throw new Error(`Failed to fetch cluster by id: ${text}`);
             }
 
-            return response.json() as Promise<GetClusterDto>;
+            return response.json() as Promise<ClusterDtoId>;
         },
         enabled: !!accessToken && !!id,
         staleTime: 5 * 60 * 1000,
