@@ -40,7 +40,7 @@ const DataDisplayTemplate: React.FC<Props> = ({
 			className={`space-y-4 flex w-full flex-col justify-center transition-all duration-300 ease-in-out`}
 		>
 			<MotionDiv
-				className="sticky top-0 bg-background z-10 space-y-4"
+				className="sticky top-0 bg-background z-10 space-y-2"
 				initial={{ opacity: 0, y: -20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.3 }}

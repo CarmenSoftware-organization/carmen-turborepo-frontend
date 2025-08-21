@@ -14,13 +14,17 @@ export default function RootLayout({
                 <Navbar />
             </div>
             <div className="flex overflow-hidden">
-                <LeftSidebar />
+                <div className="hidden md:block border-r">
+                    <LeftSidebar />
+                </div>
                 <div className="flex-1 flex flex-col overflow-hidden min-w-0">
                     <main className="flex-1 overflow-y-auto m-2">
                         {children}
                     </main>
                 </div>
-                <RightSidebar />
+                <div className="hidden md:block border-l">
+                    <RightSidebar />
+                </div>
             </div>
         </div>
     );
