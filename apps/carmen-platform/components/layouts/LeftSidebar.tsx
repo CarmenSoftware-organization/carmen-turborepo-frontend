@@ -15,7 +15,6 @@ const navigationItems: NavigationItem[] = [
     { icon: '/icons/dashboard.svg', label: 'Dashboard', href: '/dashboard' },
     { icon: '/icons/cluster.svg', label: 'Cluster', href: '/cluster' },
     { icon: '/icons/business.svg', label: 'Business', href: '/business' },
-    { icon: '/icons/department.svg', label: 'Department', href: '/department' },
     { icon: '/icons/user-group.svg', label: 'User', href: '/user' },
 ]
 
