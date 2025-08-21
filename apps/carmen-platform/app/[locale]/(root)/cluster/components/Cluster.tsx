@@ -4,21 +4,21 @@ import { useCluster, useDeleteCluster } from "@/app/hooks/useCluster";
 import { useURL } from "@/app/hooks/useURL";
 import SearchInput from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { GetClusterDto } from "@/dto/cluster.dto";
-import { Code, List, Printer, Share, Trash2 } from "lucide-react";
+import { Grid, List, Printer, Share } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import FormClusterDialog from "./FormClusterDialog";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
-import { Badge } from "@/components/ui/badge";
+import ClusterData from "./ClusterData";
 import { cn } from "@/lib/utils";
 
 export default function Cluster() {
     const { data, isLoading, error } = useCluster();
     const deleteMutation = useDeleteCluster();
     const [search, setSearch] = useURL("search");
+    const [view, setView] = useState<"list" | "grid">("list");
     const [clusterToDelete, setClusterToDelete] = useState<GetClusterDto | null>(null);
     const clusterData = data?.data;
 
@@ -38,6 +38,10 @@ export default function Cluster() {
             await deleteMutation.mutateAsync(clusterToDelete.id);
             setClusterToDelete(null);
         }
+    };
+
+    const handleView = (view: "list" | "grid") => {
+        setView(view);
     };
 
     const title = (
@@ -60,73 +64,37 @@ export default function Cluster() {
     );
 
     const filters = (
-        <SearchInput
-            defaultValue={search}
-            onSearch={setSearch}
-            placeholder="Search clusters..."
-        />
+        <div className="flex items-center justify-between">
+            <SearchInput
+                defaultValue={search}
+                onSearch={setSearch}
+                placeholder="Search clusters..."
+            />
+            <div className="flex gap-2">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleView("list")}
+                >
+                    <List className="w-4 h-4" />
+                </Button>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleView("grid")}
+                >
+                    <Grid className="w-4 h-4" />
+                </Button>
+            </div>
+        </div>
     );
 
     const renderTableContent = (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead className="text-center w-14">#</TableHead>
-                    <TableHead>
-                        <div className="flex items-center gap-2">
-                            <List className="w-4 h-4" />
-                            <span>Name</span>
-                        </div>
-                    </TableHead>
-                    <TableHead>
-                        <div className="flex items-center gap-2">
-                            <Code className="w-4 h-4" />
-                            <span>Code</span>
-                        </div>
-                    </TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {clusterData?.map((cluster: GetClusterDto, index: number) => (
-                    <TableRow key={cluster.id}>
-                        <TableCell className="text-center">{index + 1}</TableCell>
-                        <TableCell>
-                            <FormClusterDialog
-                                mode="edit"
-                                clusterData={cluster}
-                                trigger={
-                                    <span className="cursor-pointer hover:text-primary hover:underline">
-                                        {cluster.name}
-                                    </span>
-                                }
-                            />
-                        </TableCell>
-                        <TableCell>{cluster.code}</TableCell>
-                        <TableCell>
-                            <Badge variant="outline" className="gap-1.5">
-                                <span
-                                    className={cn(cluster.is_active ? "bg-green-500" : "bg-red-500", "size-1.5 rounded-full")}
-                                    aria-hidden="true"
-                                ></span>
-                                {cluster.is_active ? 'Active' : 'Inactive'}
-                            </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="hover:bg-transparent hover:text-destructive"
-                                onClick={() => handleDelete(cluster)}
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </Button>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
+        <ClusterData
+            clusterData={clusterData}
+            handleDelete={handleDelete}
+            view={view}
+        />
     );
 
     return (
