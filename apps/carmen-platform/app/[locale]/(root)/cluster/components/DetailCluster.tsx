@@ -55,32 +55,18 @@ export default function DetailCluster({ cluster, mode }: DetailClusterProps) {
                             <Kbd className="cursor-pointer hover:bg-accent transition-colors" onClick={() => router.push('/cluster')}>
                                 <ArrowLeftIcon className="h-4 w-4" />
                             </Kbd>
-                            <div>
-                                <h1 className="text-2xl font-bold text-foreground">{cluster?.code} - {cluster?.name}</h1>
-                                <div className="flex items-center">
-                                    <Badge variant="outline" className="border-none text-base bg-card/50">
-                                        <span
-                                            className={cn(
-                                                cluster?.is_active ? "bg-chart-2" : "bg-destructive",
-                                                "size-3 rounded-full"
-                                            )}
-                                            aria-hidden="true"
-                                        />
-                                        {cluster?.is_active ? 'Active' : 'Inactive'}
-                                    </Badge>
-                                    <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-card/50">
-                                        <Building className="w-4 h-4 text-chart-3" />
-                                        <span className="text-sm font-medium">{countBu}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1 px-2 py-1 rounded-md bg-card/50">
-                                        <User className="w-4 h-4 text-chart-4" />
-                                        <span className="text-sm font-medium">{countUser}</span>
-                                    </div>
-                                </div>
-                            </div>
-
+                            <h1 className="text-2xl font-bold text-foreground">{cluster?.code} - {cluster?.name}</h1>
+                            <Badge variant="outline" className="border-none text-base bg-card/50">
+                                <span
+                                    className={cn(
+                                        cluster?.is_active ? "bg-chart-2" : "bg-destructive",
+                                        "size-3 rounded-full"
+                                    )}
+                                    aria-hidden="true"
+                                />
+                                {cluster?.is_active ? 'Active' : 'Inactive'}
+                            </Badge>
                         </div>
-
                     </div>
                 </CardContent>
             </Card>
@@ -91,7 +77,7 @@ export default function DetailCluster({ cluster, mode }: DetailClusterProps) {
                     <CardHeader>
                         <CardTitle className="text-lg">Info</CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-2">
                         <p className="text-muted-foreground">{cluster?.info ?? "No information available"}</p>
                     </CardContent>
                 </Card>
@@ -100,8 +86,8 @@ export default function DetailCluster({ cluster, mode }: DetailClusterProps) {
                 <Card className="lg:col-span-2 rounded-md">
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
-                            <Building2 className="h-5 w-5 text-chart-3" />
-                            Business Units
+                            <Building2 className="h-5 w-5 text-primary" />
+                            Business Units ({countBu})
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -124,14 +110,14 @@ export default function DetailCluster({ cluster, mode }: DetailClusterProps) {
                                         <TableRow key={unit.id} className="hover:bg-accent/50 transition-colors">
                                             <TableCell>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-chart-3/10 text-chart-3">
+                                                    <div className="flex h-8 w-8 items-center justify-center rounded-lg text-primary">
                                                         <Building2 className="h-4 w-4" />
                                                     </div>
                                                     <div className="font-medium">{unit.name}</div>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className="bg-chart-3/10 text-chart-3 border-chart-3/20">{unit.code}</Badge>
+                                                <Badge variant="outline">{unit.code}</Badge>
                                             </TableCell>
                                         </TableRow>
                                     ))
@@ -145,7 +131,7 @@ export default function DetailCluster({ cluster, mode }: DetailClusterProps) {
                     <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
                             <User className="h-5 w-5 text-chart-4" />
-                            Users
+                            Users ({countUser})
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -180,8 +166,8 @@ export default function DetailCluster({ cluster, mode }: DetailClusterProps) {
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-1">
-                                                    <Mail className="h-3 w-3 text-muted-foreground" />
+                                                <div className="flex items-center gap-2">
+                                                    <Mail className="h-4 w-4 text-muted-foreground" />
                                                     <span className="text-sm">{clusterUser.user.email}</span>
                                                 </div>
                                             </TableCell>
