@@ -85,7 +85,7 @@ export default function Cluster() {
         </div>
     );
 
-    const renderTableContent = (
+    const content = (
         <ClusterData
             clusterData={clusterData}
             view={view}
@@ -97,7 +97,7 @@ export default function Cluster() {
             title={title}
             actionButtons={actionButtons}
             filters={filters}
-            content={renderTableContent}
+            content={content}
             isLoading={isLoading}
         />
     );

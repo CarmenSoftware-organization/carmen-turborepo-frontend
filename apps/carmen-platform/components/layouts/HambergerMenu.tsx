@@ -1,7 +1,7 @@
 "use client"
 
 import { Menu } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "./menuItems";
@@ -14,9 +14,11 @@ import {
     SheetClose
 } from "../ui/sheet";
 import { Button } from "../ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function HambergerMenu() {
     const [isOpen, setIsOpen] = useState(false);
+    const isMobile = useIsMobile();
     const pathname = usePathname();
 
     const handleClose = () => {
@@ -26,6 +28,13 @@ export default function HambergerMenu() {
     const isActivePath = (href: string) => {
         return pathname === href || pathname.startsWith(href + '/');
     };
+
+    useEffect(() => {
+        if (!isMobile) {
+            setIsOpen(false);
+        }
+    }, [isMobile]);
+
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>

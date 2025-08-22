@@ -13,7 +13,6 @@ export interface GetClusterDto extends ClusterDto {
     id: string;
 }
 
-
 export interface ClusterDtoId {
     id: string;
     name: string;
@@ -47,6 +46,11 @@ export enum PLATFORM_ROLE {
     USER = "user",
 }
 
+enum CLUSTER_USER_ROLE {
+    ADMIN = "admin",
+    USER = "user",
+}
+
 export interface UserDto {
     id: string;
     email: string;
@@ -59,3 +63,25 @@ export interface UserProfileDto {
     lastname: string;
     middlename: string;
 }
+
+
+export interface IUserClusterDTO {
+    id: string;
+    email: string;
+    platform_role: PLATFORM_ROLE;
+    role: CLUSTER_USER_ROLE;
+    cluster: {
+        id: string;
+        name: string
+    };
+    user_info: {
+        firstname: string;
+        lastname: string;
+        middlename: string
+    };
+    business_unit: {
+        id: string;
+        name: string;
+        code: string
+    };
+};
