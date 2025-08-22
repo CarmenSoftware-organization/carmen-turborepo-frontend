@@ -12,5 +12,5 @@ export default function ClusterDetail() {
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
 
-    return <DetailCluster mode="edit" cluster={data} />;
+    return <DetailCluster mode="view" cluster={data} />;
 }
