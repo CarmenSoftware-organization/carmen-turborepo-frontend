@@ -1,6 +1,6 @@
 import { IUserClusterDTO, PLATFORM_ROLE } from "@/dto/cluster.dto";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ActivityIcon, Building2, List, Users, Mail, User, Shield, Settings, UserCog, Headphones, Lock, Code } from "lucide-react";
+import { Building2, Users, Mail, User, Shield, Settings, UserCog, Headphones, Lock, Code, Network, IdCardLanyard } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn, getPlatformName } from "@/lib/utils";
@@ -64,7 +64,7 @@ export default function UserClusterData({ userClusters, view }: Props) {
                             </TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-2">
-                                    <List className="w-4 h-4" />
+                                    <Network className="w-4 h-4" />
                                     <span>Cluster</span>
                                 </div>
                             </TableHead>
@@ -76,13 +76,13 @@ export default function UserClusterData({ userClusters, view }: Props) {
                             </TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4" />
+                                    <IdCardLanyard className="w-4 h-4" />
                                     <span>Cluster Role</span>
                                 </div>
                             </TableHead>
                             <TableHead>
                                 <div className="flex items-center gap-2">
-                                    <ActivityIcon className="w-4 h-4" />
+                                    <IdCardLanyard className="w-4 h-4" />
                                     <span>Platform Role</span>
                                 </div>
                             </TableHead>
@@ -142,7 +142,7 @@ export default function UserClusterData({ userClusters, view }: Props) {
                                 </p>
                             </div>
                             <div className="flex items-center gap-2">
-                                <List className="w-4 h-4" />
+                                <Network className="w-4 h-4" />
                                 <p className="text-sm truncate">
                                     {userCluster.cluster.name}
                                 </p>
