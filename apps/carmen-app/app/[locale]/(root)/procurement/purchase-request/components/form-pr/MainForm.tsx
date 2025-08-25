@@ -25,6 +25,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { mockActivityPr, mockCommentsPr } from "./mock-budget";
 import ActivityLogComponent from "@/components/comment-activity/ActivityLogComponent";
 import CommentComponent from "@/components/comment-activity/CommentComponent";
+import WorkflowHistory from "./WorkflowHistory";
 
 interface Props {
     mode: formType;
@@ -48,6 +49,9 @@ export default function MainForm({ mode, initValues }: Props) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
     const router = useRouter();
+
+    console.log('initValues', initValues);
+
 
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
         resolver: (data, context, options) => {
@@ -298,23 +302,16 @@ export default function MainForm({ mode, initValues }: Props) {
                                     hasFormChanges={hasFormChanges}
                                     isCreatingPr={isCreatingPr}
                                 />
-                                <div className="grid grid-cols-5 gap-2 mb-4">
-                                    <HeadForm
-                                        form={form}
-                                        mode={currentFormType}
-                                        pr_no={initValues?.pr_no}
-                                        workflow_id={initValues?.workflow_id}
-                                    />
-                                    <StatusPrInfo
-                                        create_date={initValues?.created_at}
-                                        status={initValues?.pr_status}
-                                        requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
-                                        department_name={initValues?.department_name ? initValues.department_name : departments?.name}
-                                        workflow_current_stage={initValues?.workflow_current_stage}
-                                    />
-                                </div>
+                                <HeadForm
+                                    form={form}
+                                    mode={currentFormType}
+                                    pr_no={initValues?.pr_no}
+                                    workflow_id={initValues?.workflow_id}
+                                    requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
+                                    department_name={initValues?.department_name ? initValues.department_name : departments?.name}
+                                />
                                 <Tabs defaultValue="items">
-                                    <TabsList className="w-full h-8">
+                                    <TabsList className="w-full h-8 mt-4">
                                         <TabsTrigger className="w-full" value="items">
                                             Items
                                         </TabsTrigger>
@@ -363,7 +360,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                         Budget Pr
                                     </TabsContent>
                                     <TabsContent value="workflow" className="mt-2">
-                                        Workflow Pr
+                                        <WorkflowHistory workflow_history={initValues?.workflow_history} />
                                     </TabsContent>
                                 </Tabs>
                             </form>

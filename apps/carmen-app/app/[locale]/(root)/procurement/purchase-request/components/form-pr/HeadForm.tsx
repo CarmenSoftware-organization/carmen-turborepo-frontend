@@ -15,28 +15,20 @@ interface HeadFormProps {
     readonly mode: formType;
     readonly pr_no?: string;
     readonly workflow_id?: string;
+    readonly requestor_name?: string;
+    readonly department_name?: string;
 }
 
 export default function HeadForm({
     form,
     mode,
     pr_no,
-    workflow_id
+    workflow_id,
+    requestor_name,
+    department_name
 }: HeadFormProps) {
     return (
-        <div className="col-span-3 grid grid-cols-4 gap-2">
-            {mode !== formType.ADD && (
-                <div className="space-y-2">
-                    <Label>PR Number</Label>
-                    <Input
-                        placeholder="PR-XXXX"
-                        disabled
-                        className="bg-muted"
-                        value={pr_no}
-                    />
-                </div>
-            )}
-
+        <div className="grid grid-cols-4 gap-2">
             <FormField
                 control={form.control}
                 name="pr_date"
@@ -53,7 +45,7 @@ export default function HeadForm({
                 control={form.control}
                 name="workflow_id"
                 render={({ field }) => (
-                    <FormItem className={cn(mode === formType.ADD ? "col-span-3" : "col-span-2")}>
+                    <FormItem>
                         <FormLabel>PR Type</FormLabel>
                         <FormControl>
                             <WorkflowLookup
@@ -67,6 +59,24 @@ export default function HeadForm({
                     </FormItem>
                 )}
             />
+            <div className="space-y-2">
+                <Label>Requestor</Label>
+                <Input
+                    placeholder="Requestor"
+                    disabled
+                    className="bg-muted"
+                    value={requestor_name}
+                />
+            </div>
+            <div className="space-y-2">
+                <Label>Department</Label>
+                <Input
+                    placeholder="PR-XXXX"
+                    disabled
+                    className="bg-muted"
+                    value={department_name}
+                />
+            </div>
 
             <FormField
                 control={form.control}
