@@ -15,13 +15,11 @@ export const STORE_LOCATION_TYPE_COLOR = (type: INVENTORY_TYPE) => {
     }
 };
 
-
-
 export const convertPrStatus = (status: string) => {
     if (status === "pending") {
         return "Pending";
-    } else if (status === "approve") {
-        return "Approve";
+    } else if (status === "approved") {
+        return "Approved";
     } else if (status === "reject") {
         return "Reject";
     } else if (status === "review") {

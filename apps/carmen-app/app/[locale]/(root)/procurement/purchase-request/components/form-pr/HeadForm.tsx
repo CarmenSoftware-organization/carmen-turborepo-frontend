@@ -8,25 +8,31 @@ import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { cn } from "@/lib/utils";
+import { CircleCheck, Clock4 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
 interface HeadFormProps {
     readonly form: UseFormReturn<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>;
     readonly mode: formType;
-    readonly pr_no?: string;
     readonly workflow_id?: string;
     readonly requestor_name?: string;
     readonly department_name?: string;
+    readonly workflowStages?: {
+        title: string;
+    }[];
 }
 
 export default function HeadForm({
     form,
     mode,
-    pr_no,
     workflow_id,
     requestor_name,
-    department_name
+    department_name,
+    workflowStages
 }: HeadFormProps) {
+
+    const lastThreeSteps = workflowStages?.slice(-3);
+
     return (
         <div className="grid grid-cols-4 gap-2">
             <FormField
@@ -82,7 +88,7 @@ export default function HeadForm({
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                    <FormItem className="col-span-4">
+                    <FormItem className="col-span-2">
                         <FormLabel>Description</FormLabel>
                         <FormControl>
                             <Textarea
@@ -96,6 +102,37 @@ export default function HeadForm({
                     </FormItem>
                 )}
             />
+
+            <div className="col-span-2 pt-8">
+                <div className={`bg-muted/80 p-2 rounded-md grid grid-cols-${lastThreeSteps?.length} gap-0`}>
+                    {lastThreeSteps?.map((step, index) => {
+                        const isLast = index === lastThreeSteps.length - 1;
+                        return (
+                            <div key={index} className="flex flex-col items-center relative">
+                                <div
+                                    className={cn(
+                                        "w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium mb-1 z-10",
+                                        isLast ? "bg-primary" : "bg-active"
+                                    )}
+                                >
+                                    {isLast ? <Clock4 className="size-4 text-white" /> : <CircleCheck className="size-4 text-white" />}
+                                </div>
+                                <span
+                                    className={cn(
+                                        "text-xs text-center",
+                                        isLast ? "font-semibold text-primary" : "text-active"
+                                    )}
+                                >
+                                    {step.title}
+                                </span>
+                                {index < lastThreeSteps.length - 1 && (
+                                    <div className="absolute top-4 left-1/2 w-full h-0.5 bg-muted-foreground -translate-y-1/2"></div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
         </div>
     )
 }

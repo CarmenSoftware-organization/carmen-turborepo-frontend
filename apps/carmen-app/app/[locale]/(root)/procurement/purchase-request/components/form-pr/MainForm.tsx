@@ -50,8 +50,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
     const router = useRouter();
 
-    console.log('initValues', initValues);
-
+    // console.log('initValues', initValues);
 
     const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
         resolver: (data, context, options) => {
@@ -282,6 +281,12 @@ export default function MainForm({ mode, initValues }: Props) {
 
     const requestorName = user?.user_info.firstname + ' ' + user?.user_info.lastname;
 
+    const workflowStages = initValues?.workflow_history?.map((item: any) => {
+        return {
+            title: item.current_stage,
+        }
+    });
+
     return (
         <>
             <DetailsAndComments
@@ -305,10 +310,10 @@ export default function MainForm({ mode, initValues }: Props) {
                                 <HeadForm
                                     form={form}
                                     mode={currentFormType}
-                                    pr_no={initValues?.pr_no}
                                     workflow_id={initValues?.workflow_id}
                                     requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
                                     department_name={initValues?.department_name ? initValues.department_name : departments?.name}
+                                    workflowStages={workflowStages}
                                 />
                                 <Tabs defaultValue="items">
                                     <TabsList className="w-full h-8 mt-4">

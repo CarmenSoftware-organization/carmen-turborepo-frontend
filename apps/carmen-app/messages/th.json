@@ -229,7 +229,8 @@
     "cancelled": "ยกเลิก",
     "pending": "รอการอนุมัติ",
     "approved": "อนุมัติ",
-    "rejected": "ยกเลิก"
+    "rejected": "ยกเลิก",
+    "submit": "ส่งข้อมูล"
   },
   "UserManagement": {
     "title": "การจัดการผู้ใช้งาน"

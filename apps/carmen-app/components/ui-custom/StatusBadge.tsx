@@ -2,6 +2,8 @@ import { cn } from "@/lib/utils";
 import { Ban, CircleCheck, CircleDashed, CircleX, ClipboardList, Loader, Send } from "lucide-react";
 
 type StatusType =
+    | "submit"
+    | "Completed"
     | "sent"
     | "in_progress"
     | "pending"
@@ -38,6 +40,14 @@ const STATUS_CONFIG: Record<StatusType, { color: string; icon: React.ElementType
     default: {
         color: "text-slatePrimary",
         icon: ClipboardList,
+    },
+    submit: {
+        color: "text-muted-foreground",
+        icon: Send,
+    },
+    Completed: {
+        color: "text-green-700 dark:text-green-500",
+        icon: CircleCheck,
     },
 };
 

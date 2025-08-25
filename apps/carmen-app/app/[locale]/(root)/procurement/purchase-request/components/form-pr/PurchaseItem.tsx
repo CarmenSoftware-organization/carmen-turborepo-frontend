@@ -83,16 +83,19 @@ export default function PurchaseItem({
 
     return (
         <div className="mt-4">
-            <div className="flex justify-end mb-4">
-                <Button
-                    onClick={handleAddItem}
-                    disabled={currentFormType === formType.VIEW}
-                    size={"sm"}
-                >
-                    <Plus />
-                    Add Item
-                </Button>
-            </div>
+
+            {currentFormType !== formType.VIEW && (
+                <div className="flex justify-end mb-4">
+                    <Button
+                        onClick={handleAddItem}
+                        size={"sm"}
+                    >
+                        <Plus />
+                        Add Item
+                    </Button>
+                </div>
+
+            )}
 
             <Table>
                 <TableHeader className="bg-muted">

@@ -1,6 +1,8 @@
 import { Timeline, TimelineDescription, TimelineHeader, TimelineItem, TimelineTime, TimelineTitle } from "@/components/ui-custom/Timeline";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns } from "@/utils/config-system";
+import { ArrowRightIcon } from "lucide-react";
 
 interface WorkflowHistoryItem {
     action: string;
@@ -33,7 +35,7 @@ export default function WorkflowHistory({ workflow_history }: Props) {
 
     return (
         <Timeline className="p-4">
-            {workflow_history.map((item) => (
+            {workflow_history?.map((item) => (
                 <TimelineItem key={`${item.datetime}-${item.user.id}-${item.action}`}>
                     <TimelineHeader>
                         <TimelineTime variant="outline" className="bg-transparent">
@@ -44,19 +46,21 @@ export default function WorkflowHistory({ workflow_history }: Props) {
                         </TimelineTitle>
                     </TimelineHeader>
                     <TimelineDescription>
-                        <div className="mb-3 text-sm">
+                        <div className="mb-2 text-sm">
                             By: <span className="font-medium">{item.user.name}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-sm">
-                            <span className="px-3 py-1 rounded-full border font-medium">
+                        <div className="flex items-center gap-2 text-sm">
+                            <Badge variant="outline">
                                 {item.current_stage}
-                            </span>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                            <span className="px-3 py-1 rounded-full border font-medium">
-                                {item.next_stage}
-                            </span>
+                            </Badge>
+                            {item.next_stage !== "-" && (
+                                <>
+                                    <ArrowRightIcon className="w-4 h-4" />
+                                    <Badge variant="outline">
+                                        {item.next_stage}
+                                    </Badge>
+                                </>
+                            )}
                         </div>
                     </TimelineDescription>
                 </TimelineItem>

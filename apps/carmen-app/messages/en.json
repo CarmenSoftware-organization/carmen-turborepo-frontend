@@ -53,7 +53,8 @@
     "cancelled": "Cancelled",
     "pending": "Pending",
     "approved": "Approved",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "submit": "Submit"
   },
   "Action": {
     "title": "Action",

@@ -80,6 +80,16 @@ export default function PurchaseRequestList({
     selectedItems.length === purchaseRequests.length;
 
   const convertStatus = (status: string) => {
+    if (status === 'submit') {
+      return tStatus("submit")
+    }
+    if (status === 'approved') {
+      return tStatus("approved")
+    }
+    if (status === 'Completed') {
+      return tStatus("completed")
+    }
+
     if (status === 'pending') {
       return tStatus("pending")
     }
