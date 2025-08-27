@@ -19,7 +19,6 @@ export default function BusinessDimensions() {
     );
 }
 
-
 const BusinessDimensionItem = ({ label, value }: { label: string, value: string }) => {
     return (
         <div className="space-y-1">

@@ -281,11 +281,11 @@ export default function MainForm({ mode, initValues }: Props) {
 
     const requestorName = user?.user_info.firstname + ' ' + user?.user_info.lastname;
 
-    const workflowStages = initValues?.workflow_history?.map((item: any) => {
-        return {
+    const workflowStages = Array.isArray(initValues?.workflow_history)
+        ? initValues.workflow_history.map((item: any) => ({
             title: item.current_stage,
-        }
-    });
+        }))
+        : [];
 
     return (
         <>
