@@ -33,8 +33,14 @@ export const formatPriceConf = (
     }).format(price);
 }
 
-export const formatDateFns = (date: string, conf: string) => {
-    return format(new Date(date), conf);
+export const formatDateFns = (date: string | null | undefined, conf: string) => {
+    if (!date) return "-";
+    try {
+        return format(new Date(date), conf);
+    } catch (error) {
+        console.warn('Invalid date format:', date, error);
+        return "-";
+    }
 }
 
 

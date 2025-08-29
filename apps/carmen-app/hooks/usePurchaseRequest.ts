@@ -66,8 +66,9 @@ export const usePrMutation = (token: string, tenantId: string) => {
     });
 };
 
-export const useUpdateUPr = (token: string, tenantId: string, id: string, action?: ActionPr) => {
-    const API_URL_BY_ID = `${API_URL}/${id}/save`;
+export const useUpdateUPr = (token: string, tenantId: string, id: string, action: ActionPr) => {
+    const API_URL_BY_ID = `${API_URL}/${id}/${action}`;
+
     return useMutation({
         mutationFn: async (data: PurchaseRequestUpdateFormDto) => {
             return await updateApiRequest(

@@ -239,6 +239,37 @@ export const CreatePurchaseRequestDetailSchema = z.object({
     .merge(EmbeddedCurrencySchema)
     .merge(InfoSchema);
 
+export enum STAGE_ROLE {
+    CREATE = "create",
+    APPROVE = "approve",
+    PURCHASE = "purchase",
+    REJECT = "reject",
+    SEND_BACK = "send_back",
+};
+
+export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
+
+export const CreatePrSchema = z.object({
+    state_role: StageRoleSchema,
+    body: z.object({
+        pr_date: z.string(),
+        requestor_id: z.string().uuid(),
+        department_id: z.string().uuid(),
+        workflow_id: z.string().uuid(),
+        description: z.string().optional().nullable(),
+        note: z.string().optional().nullable(),
+    })
+        .extend({
+            purchase_request_detail: z.object({
+                add: z.array(CreatePurchaseRequestDetailSchema).optional(),
+                update: z.array(CreatePurchaseRequestDetailSchema).optional(),
+                remove: z.array(z.object({ id: z.string().uuid() })).optional(),
+            }).optional()
+        })
+})
+
+export type CreatePrDto = z.infer<typeof CreatePrSchema>;
+
 export const CreatePurchaseRequestSchema = z.object({
     description: z.string().optional().nullable(), // Fixed typo: desceiption -> description
     requestor_id: z.string().uuid().optional(),

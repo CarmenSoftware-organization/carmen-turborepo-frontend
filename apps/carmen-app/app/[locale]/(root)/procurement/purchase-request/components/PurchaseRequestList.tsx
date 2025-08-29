@@ -83,18 +83,21 @@ export default function PurchaseRequestList({
     if (status === 'submit') {
       return tStatus("submit")
     }
-    if (status === 'approved') {
-      return tStatus("approved")
+    if (status === 'draft') {
+      return tStatus("draft")
     }
     if (status === 'Completed') {
       return tStatus("completed")
     }
 
-    if (status === 'pending') {
-      return tStatus("pending")
+    if (status === 'in_progress') {
+      return tStatus("in_progress")
     }
     if (status === 'approved') {
       return tStatus("approved")
+    }
+    if (status === 'rejected') {
+      return tStatus("rejected")
     }
     return ''
   }

@@ -32,6 +32,9 @@ export const useProductLocation = (
     const productLocation = data;
     const inventoryUnit = productLocation?.data?.data.inventory_unit;
 
+    console.log('productLocation', productLocation);
+
+
     return {
         productLocation,
         inventoryUnit,

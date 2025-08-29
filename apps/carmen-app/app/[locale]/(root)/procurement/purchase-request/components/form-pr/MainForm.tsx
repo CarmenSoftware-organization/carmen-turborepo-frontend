@@ -1,10 +1,11 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { CreatePurchaseRequestSchema, PurchaseRequestByIdDto, PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto, UpdatePurchaseRequestSchema } from "@/dtos/purchase-request.dto";
+import { CreatePrDto, CreatePrSchema, PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { usePurchaseItemManagement } from "@/hooks/usePurchaseItemManagement";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -14,10 +15,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
 import { Card } from "@/components/ui/card";
-import { ArrowLeftRightIcon, CheckCircleIcon, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon } from "lucide-react";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
-import StatusPrInfo from "./StatusPrInfo";
+
 import { useRouter } from "@/lib/navigation";
 import DetailsAndComments from "@/components/DetailsAndComments";
 import { usePrMutation, useUpdateUPr } from "@/hooks/usePurchaseRequest";
@@ -26,6 +27,7 @@ import { mockActivityPr, mockCommentsPr } from "./mock-budget";
 import ActivityLogComponent from "@/components/comment-activity/ActivityLogComponent";
 import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
     mode: formType;
@@ -40,9 +42,6 @@ interface CancelAction {
 export default function MainForm({ mode, initValues }: Props) {
     const { token, tenantId, user, departments, dateFormat } = useAuth();
     const [currentFormType, setCurrentFormType] = useState<formType>(mode);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [updatedItems, setUpdatedItems] = useState<Record<string, any>>({});
-    const [removedItems, setRemovedItems] = useState<Set<string>>(new Set());
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -50,121 +49,72 @@ export default function MainForm({ mode, initValues }: Props) {
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
     const router = useRouter();
 
-    // console.log('initValues', initValues);
 
-    const form = useForm<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>({
-        resolver: (data, context, options) => {
-            const schema =
-                currentFormType === formType.ADD
-                    ? CreatePurchaseRequestSchema
-                    : UpdatePurchaseRequestSchema;
-            return zodResolver(schema)(data, context, options);
-        },
+
+    const form = useForm<CreatePrDto>({
+        resolver: zodResolver(CreatePrSchema),
         defaultValues: {
-            pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
-            description: initValues?.description ? initValues.description : "",
-            requestor_id: user?.id,
-            department_id: departments?.id,
-            workflow_id: initValues?.workflow_id ? initValues.workflow_id : "",
-            note: initValues?.note ? initValues.note : "",
-            purchase_request_detail: {
-                add: [],
-                update: [],
-                remove: [],
-            },
+            state_role: STAGE_ROLE.CREATE,
+            body: {
+                pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
+                requestor_id: user?.id || "",
+                department_id: departments?.id || "",
+                workflow_id: initValues?.workflow_id || "",
+                description: initValues?.description || "",
+                note: initValues?.note || "",
+                purchase_request_detail: {
+                    add: [],
+                    update: [],
+                    remove: []
+                },
+            }
         },
         mode: "onBlur",
     });
 
     const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, tenantId);
-    const { mutate: updatePr } = useUpdateUPr(token, tenantId, initValues?.id ?? "");
-
-    const { append: appendRemove } = useFieldArray({
-        control: form.control,
-        name: "purchase_request_detail.remove",
+    const { mutate: updatePr, isPending: isUpdatingPr } = useUpdateUPr(
+        token, tenantId, initValues?.id || "", 'save');
+    const { mutate: submitPr, isPending: isSubmittingPr } = useUpdateUPr(
+        token, tenantId, initValues?.id || "", 'submit');
+    // ใช้ custom hook สำหรับจัดการ purchase items
+    const purchaseItemManager = usePurchaseItemManagement({
+        form,
+        initValues: initValues?.purchase_request_detail
     });
+
 
     // ฟังก์ชันตรวจสอบว่ามีการเปลี่ยนแปลงข้อมูลหรือไม่
     const hasFormChanges = (): boolean => {
         const currentValues = form.getValues();
+        const bodyValues = currentValues.body;
 
         // ตรวจสอบการเปลี่ยนแปลงในฟิลด์หลัก
         const hasMainFieldChanges =
-            currentValues.pr_date !== (initValues?.pr_date || format(new Date(), dateFormat || "dd/MM/yyyy")) ||
-            currentValues.description !== (initValues?.description || "") ||
-            currentValues.workflow_id !== (initValues?.workflow_id || "") ||
-            currentValues.note !== (initValues?.note || "");
+            bodyValues.pr_date !== (initValues?.pr_date || format(new Date(), dateFormat || "dd/MM/yyyy")) ||
+            bodyValues.description !== (initValues?.description || "") ||
+            bodyValues.workflow_id !== (initValues?.workflow_id || "") ||
+            bodyValues.note !== (initValues?.note || "");
 
-        // ตรวจสอบการเปลี่ยนแปลงใน items
-        const hasItemChanges =
-            Object.keys(updatedItems).length > 0 ||
-            removedItems.size > 0 ||
-            (currentValues.purchase_request_detail?.add?.length ?? 0) > 0;
+        // ตรวจสอบการเปลี่ยนแปลงใน items (เฉพาะ CREATE mode)
+        const hasItemChanges = (bodyValues.purchase_request_detail?.add?.length ?? 0) > 0;
         return hasMainFieldChanges || hasItemChanges;
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleFieldUpdate = (item: any, fieldName: string, value: any, selectedProduct?: any) => {
-        // Update local state สำหรับ UI
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const updateData: Record<string, any> = { [fieldName]: value };
 
-        // ถ้าเป็น product_id และมี selectedProduct ให้ set inventory_unit_id ด้วย
-        if (fieldName === 'product_id' && selectedProduct?.inventory_unit?.id) {
-            updateData.inventory_unit_id = selectedProduct.inventory_unit.id;
-        }
 
-        setUpdatedItems(prev => ({
-            ...prev,
-            [item.id]: {
-                ...prev[item.id],
-                ...updateData
-            }
-        }));
+    const handleSubmit = (data: CreatePrDto) => {
 
-        // ใช้ type assertion เพื่อหลีกเลี่ยง type inference ที่ซับซ้อน
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const existingIndex = currentUpdateArray.findIndex((field: any) => field.id === item.id);
-
-        const updatedItem = {
-            id: item.id,
-            location_id: updatedItems[item.id]?.location_id ?? item.location_id,
-            product_id: updatedItems[item.id]?.product_id ?? item.product_id,
-            inventory_unit_id: updatedItems[item.id]?.inventory_unit_id ?? item.inventory_unit_id,
-            description: updatedItems[item.id]?.description ?? item.description,
-            requested_qty: updatedItems[item.id]?.requested_qty ?? item.requested_qty,
-            requested_unit_id: updatedItems[item.id]?.requested_unit_id ?? item.requested_unit_id,
-            delivery_date: updatedItems[item.id]?.delivery_date ?? item.delivery_date,
-            approved_qty: updatedItems[item.id]?.approved_qty ?? item.approved_qty,
-            approved_unit_id: updatedItems[item.id]?.approved_unit_id ?? item.approved_unit_id,
-            foc_qty: updatedItems[item.id]?.foc_qty ?? item.foc_qty,
-            foc_unit_id: updatedItems[item.id]?.foc_unit_id ?? item.foc_unit_id,
-            pricelist_price: updatedItems[item.id]?.pricelist_price ?? item.pricelist_price,
-            ...updateData
+        if (data.body.purchase_request_detail?.add?.length && data.body.purchase_request_detail.add.length > 0) {
+            data.body.purchase_request_detail.add.forEach((item) => {
+                delete item.id;
+            });
         };
 
-        if (existingIndex >= 0) {
-            // อัพเดทค่าเดิม - ใช้ type assertion
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            form.setValue(`purchase_request_detail.update.${existingIndex}` as any, updatedItem);
-        } else {
-            // เพิ่มใหม่ - ใช้ type assertion เพื่อหลีกเลี่ยง deep type inference
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const currentUpdateFields = (form.getValues('purchase_request_detail.update') || []) as any[];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            form.setValue('purchase_request_detail.update' as any, [...currentUpdateFields, updatedItem] as any);
-        }
-    };
-
-    const handleSubmit = (data: PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto) => {
-        if (mode === formType.ADD) {
-            createPr(data, {
+        if (currentFormType === formType.ADD) {
+            createPr(data as any, {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onSuccess: (responseData: any) => {
-                    console.log('responseData', responseData.data.id);
-
                     if (responseData?.data?.id) {
                         router.replace(`/procurement/purchase-request/${responseData.data.id}`);
                         toastSuccess({
@@ -179,11 +129,15 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            updatePr(data, {
+            updatePr({
+                ...data,
+                action: 'save'
+            } as any, {
                 onSuccess: () => {
                     toastSuccess({
                         message: "Purchase Request updated successfully",
                     })
+                    // window.location.reload();
                     setCurrentFormType(formType.VIEW);
                 },
                 onError: () => {
@@ -196,33 +150,18 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     const handleConfirmDelete = () => {
+        // ใช้ purchaseItemManager แทน
         if (itemToDelete) {
-            // เพิ่มรายการลงใน removedItems
-            setRemovedItems(prev => new Set(Array.from(prev).concat(itemToDelete)));
-
-            // เพิ่มรายการลงใน purchase_request_detail.remove
-            appendRemove({ id: itemToDelete });
-
-            // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== itemToDelete);
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
-
-            // ลบออกจาก updatedItems state
-            setUpdatedItems(prev => {
-                const newState = { ...prev };
-                delete newState[itemToDelete];
-                return newState;
-            });
+            const index = parseInt(itemToDelete);
+            if (index >= 0) {
+                purchaseItemManager.removeField(index);
+            }
         }
         setDeleteDialogOpen(false);
         setItemToDelete(null);
     };
 
-    const handleCancel = (e: React.MouseEvent<HTMLButtonElement>, type: 'back' | 'cancel' = 'cancel') => {
+    const handleCancel = (e: React.MouseEvent<HTMLButtonElement>, type: 'back' | 'cancel') => {
         e.preventDefault();
         e.stopPropagation();
 
@@ -231,7 +170,6 @@ export default function MainForm({ mode, initValues }: Props) {
             setCancelDialogOpen(true);
             return;
         }
-
         if (type === 'back') {
             router.push("/procurement/purchase-request");
             return;
@@ -246,24 +184,7 @@ export default function MainForm({ mode, initValues }: Props) {
             router.push("/procurement/purchase-request");
         } else {
             setCurrentFormType(formType.VIEW);
-            setUpdatedItems({});
-            setRemovedItems(new Set());
-
-            form.reset({
-                pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
-                description: initValues?.description ? initValues.description : "",
-                requestor_id: user?.id,
-                department_id: departments?.id,
-                workflow_id: initValues?.workflow_id ? initValues.workflow_id : "",
-                note: initValues?.note ? initValues.note : "",
-                purchase_request_detail: {
-                    add: [],
-                    update: [],
-                    remove: [],
-                },
-            });
         }
-
     };
 
     const handleConfirmCancel = () => {
@@ -287,6 +208,23 @@ export default function MainForm({ mode, initValues }: Props) {
         }))
         : [];
 
+    const watchForm = form.watch();
+
+    const onSubmitPr = () => {
+        submitPr({} as any, {
+            onSuccess: () => {
+                toastSuccess({
+                    message: "Purchase Request submitted successfully",
+                })
+            },
+            onError: () => {
+                toastError({
+                    message: "Purchase Request submitted failed",
+                })
+            }
+        })
+    }
+
     return (
         <>
             <DetailsAndComments
@@ -308,7 +246,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     isCreatingPr={isCreatingPr}
                                 />
                                 <HeadForm
-                                    form={form}
+                                    form={form as any}
                                     mode={currentFormType}
                                     workflow_id={initValues?.workflow_id}
                                     requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}
@@ -329,36 +267,14 @@ export default function MainForm({ mode, initValues }: Props) {
                                     </TabsList>
                                     <TabsContent value="items" className="mt-2">
                                         <PurchaseItem
-                                            form={form}
                                             currentFormType={currentFormType}
+                                            items={purchaseItemManager.items}
                                             initValues={initValues?.purchase_request_detail}
-                                            updatedItems={updatedItems}
-                                            removedItems={removedItems}
-                                            onFieldUpdate={handleFieldUpdate}
-                                            onRemoveItem={(id, isAddItem) => {
-                                                if (!isAddItem) {
-                                                    // เพิ่มรายการลงใน removedItems
-                                                    setRemovedItems(prev => new Set(Array.from(prev).concat(id)));
-
-                                                    // เพิ่มรายการลงใน purchase_request_detail.remove
-                                                    appendRemove({ id });
-
-                                                    // ลบออกจาก purchase_request_detail.update ถ้ามีอยู่
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    const currentUpdateArray = (form.getValues('purchase_request_detail.update') || []) as any[];
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    const filteredUpdateArray = currentUpdateArray.filter((item: any) => item.id !== id);
-                                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                                    form.setValue('purchase_request_detail.update' as any, filteredUpdateArray);
-
-                                                    // ลบออกจาก updatedItems state
-                                                    setUpdatedItems(prev => {
-                                                        const newState = { ...prev };
-                                                        delete newState[id];
-                                                        return newState;
-                                                    });
-                                                }
-                                            }}
+                                            addFields={purchaseItemManager.addFields}
+                                            onItemUpdate={purchaseItemManager.updateItem}
+                                            onItemRemove={purchaseItemManager.removeItem}
+                                            onAddItem={purchaseItemManager.addItem}
+                                            getItemValue={purchaseItemManager.getItemValue}
                                         />
                                     </TabsContent>
                                     <TabsContent value="budget" className="mt-2">
@@ -370,29 +286,20 @@ export default function MainForm({ mode, initValues }: Props) {
                                 </Tabs>
                             </form>
                         </Form>
+                        <JsonViewer data={watchForm} title="Form Data" />
                     </Card>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-2 justify-end">
-                        <Button size={"sm"} className="h-8 px-3 text-xs">
-                            <CheckCircleIcon className="w-4 h-4 mr-1" />
-                            Approve
-                        </Button>
+                    <div className="fixed bottom-10 right-20">
                         <Button
-                            variant={"destructive"}
-                            size={"sm"}
-                            className="h-8 px-3 text-xs"
-                        >
-                            <XCircleIcon className="w-4 h-4 mr-1" />
-                            Reject
-                        </Button>
-                        <Button
-                            variant={"outline"}
-                            size={"sm"}
-                            className="h-8 px-3 text-xs"
-                        >
-                            <ArrowLeftRightIcon className="w-4 h-4 mr-1" />
-                            Send Back
+                            className="bg-active hover:bg-active/80"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onSubmitPr();
+                            }}
+                            disabled={isSubmittingPr}>
+                            <CheckCircleIcon className="w-4 h-4" />
+                            Submit & Approve
                         </Button>
                     </div>
                 </div>

@@ -25,7 +25,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function UnitLookup({
     value,
     onValueChange,
-    placeholder = "Select unit",
+    placeholder = "",
     disabled = false,
     classNames
 }: Readonly<PropsLookup>) {

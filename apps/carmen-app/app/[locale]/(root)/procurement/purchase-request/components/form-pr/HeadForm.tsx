@@ -5,14 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
+import { CreatePrDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { cn } from "@/lib/utils";
 import { CircleCheck, Clock4 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 
 interface HeadFormProps {
-    readonly form: UseFormReturn<PurchaseRequestCreateFormDto | PurchaseRequestUpdateFormDto>;
+    readonly form: UseFormReturn<CreatePrDto | PurchaseRequestUpdateFormDto>;
     readonly mode: formType;
     readonly workflow_id?: string;
     readonly requestor_name?: string;
@@ -37,7 +37,7 @@ export default function HeadForm({
         <div className="grid grid-cols-4 gap-2">
             <FormField
                 control={form.control}
-                name="pr_date"
+                name="body.pr_date"
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>PR Date</FormLabel>
@@ -49,7 +49,7 @@ export default function HeadForm({
             />
             <FormField
                 control={form.control}
-                name="workflow_id"
+                name="body.workflow_id"
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>PR Type</FormLabel>
@@ -86,7 +86,7 @@ export default function HeadForm({
 
             <FormField
                 control={form.control}
-                name="description"
+                name="body.description"
                 render={({ field }) => (
                     <FormItem className="col-span-2">
                         <FormLabel>Description</FormLabel>

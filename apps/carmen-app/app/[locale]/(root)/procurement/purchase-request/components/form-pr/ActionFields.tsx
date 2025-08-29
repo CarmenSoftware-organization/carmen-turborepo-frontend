@@ -106,7 +106,7 @@ export default function ActionFields({
                             size={"sm"}
                             className="px-2 text-xs"
                             type="submit"
-                            disabled={isError || isCreatingPr}
+                            disabled={isCreatingPr}
                         >
                             {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
                             {tCommon("save")}

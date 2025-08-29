@@ -48,7 +48,7 @@ export default function NumberInput({
   return (
     <Input
       type="number"
-      value={showContent ? value.toString() : ""}
+      value={showContent ? (value?.toString() ?? "") : ""}
       onChange={handleChange}
       min={min}
       max={max}
@@ -62,7 +62,7 @@ export default function NumberInput({
       placeholder={isHide ? placeholder : "••••••••"}
       readOnly={!showContent}
       className={cn(
-        "text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
+        "bg-background text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
         classNames
       )}
     />

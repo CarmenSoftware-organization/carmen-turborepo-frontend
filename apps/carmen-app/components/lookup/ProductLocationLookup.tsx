@@ -35,7 +35,7 @@ export default function ProductLocationLookup({
     onValueChange,
     placeholder = "Select product location",
     disabled = false,
-    classNames
+    classNames = "max-w-40"
 }: ProductLocationLookupProps) {
     const { token, tenantId } = useAuth();
 
@@ -103,7 +103,12 @@ export default function ProductLocationLookup({
                 {productLocationItem.name}
             </SelectItem>
         ));
-    }
+    };
+
+    // console.log('🔍 value', value);
+
+    // console.log('selectConproductLocationDatatent', productLocationData);
+
 
     return (
         <Select

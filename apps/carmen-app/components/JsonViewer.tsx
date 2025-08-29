@@ -88,7 +88,7 @@ export default function JsonViewer({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 max-w-[1000px] overflow-x-auto">
       <div className="flex justify-between items-center">
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-1">
