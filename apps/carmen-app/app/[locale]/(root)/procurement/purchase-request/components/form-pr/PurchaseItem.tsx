@@ -374,8 +374,10 @@ export default function PurchaseItem({
                                                                     <h4 className="font-semibold text-sm">Vendor & Pricing Information</h4>
                                                                 </AccordionTrigger>
                                                                 <VendorComparison
-                                                                    req_qry={item.requested_qty}
-                                                                    apv_qry={item.approved_qty}
+                                                                    req_qty={item.requested_qty}
+                                                                    req_unit={item.requested_unit_name ?? '-'}
+                                                                    apv_qty={item.approved_qty}
+                                                                    apv_unit={item.approved_unit_name ?? '-'}
                                                                     pricelist_detail_id={item.pricelist_detail_id ?? ''}
                                                                     itemId={item.id}
                                                                     onItemUpdate={handleLocalItemUpdate}

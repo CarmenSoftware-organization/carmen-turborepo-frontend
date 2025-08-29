@@ -60,7 +60,6 @@ export interface PriceListDto {
     }[];
 };
 
-
 export type ProductPriceListCompareDto = {
     pricelist_detail_id: string;
     vendor_id: string;

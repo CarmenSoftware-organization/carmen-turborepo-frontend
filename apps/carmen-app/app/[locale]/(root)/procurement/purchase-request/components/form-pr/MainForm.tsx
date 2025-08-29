@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
 import { Card } from "@/components/ui/card";
-import { CheckCircleIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckCircleIcon, CircleX, SendIcon } from "lucide-react";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
 
@@ -71,13 +71,27 @@ export default function MainForm({ mode, initValues }: Props) {
     });
 
     const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, tenantId);
+
     const { mutate: updatePr, isPending: isUpdatingPr } = useUpdateUPr(
         token, tenantId, initValues?.id || "", 'save');
+
     const { mutate: submitPr, isPending: isSubmittingPr } = useUpdateUPr(
         token, tenantId, initValues?.id || "", 'submit');
 
     const { mutate: approvePr, isPending: isApprovingPr } = useUpdateUPr(
         token, tenantId, initValues?.id || "", 'approve');
+
+    const { mutate: purchaseApprovePr, isPending: isPurchasingApprovePr } = useUpdateUPr(
+        token, tenantId, initValues?.id || "", 'purchase');
+
+    const { mutate: reviewPr, isPending: isReviewingPr } = useUpdateUPr(
+        token, tenantId, initValues?.id || "", 'review');
+
+    const { mutate: rejectPr, isPending: isRejectingPr } = useUpdateUPr(
+        token, tenantId, initValues?.id || "", 'reject');
+
+    const { mutate: sendBackPr, isPending: isSendingBackPr } = useUpdateUPr(
+        token, tenantId, initValues?.id || "", 'send_back');
 
     // ใช้ custom hook สำหรับจัดการ purchase items
     const purchaseItemManager = usePurchaseItemManagement({
@@ -227,6 +241,67 @@ export default function MainForm({ mode, initValues }: Props) {
         })
     };
 
+    const onApprovePr = () => {
+        approvePr({} as any, {
+            onSuccess: () => {
+                toastSuccess({
+                    message: "Purchase Request approved successfully",
+                })
+            },
+            onError: () => {
+                toastError({
+                    message: "Purchase Request approved failed",
+                })
+            }
+        })
+    };
+
+    const onRejectPr = () => {
+        rejectPr({} as any, {
+            onSuccess: () => {
+                toastSuccess({
+                    message: "Purchase Request rejected successfully",
+                })
+            },
+            onError: () => {
+                toastError({
+                    message: "Purchase Request rejected failed",
+                })
+            }
+        })
+    }
+
+    const onSendBackPr = () => {
+        sendBackPr({} as any, {
+            onSuccess: () => {
+                toastSuccess({
+                    message: "Purchase Request sent back successfully",
+                })
+            },
+            onError: () => {
+                toastError({
+                    message: "Purchase Request sent back failed",
+                })
+            }
+        })
+    };
+
+    const onApprovePurchasePr = () => {
+        purchaseApprovePr({} as any, {
+            onSuccess: () => {
+                toastSuccess({
+                    message: "Purchase Request approved successfully",
+                })
+            },
+            onError: () => {
+                toastError({
+                    message: "Purchase Request approved failed",
+                })
+            }
+        })
+    };
+
+
     return (
         <>
             <DetailsAndComments
@@ -288,20 +363,73 @@ export default function MainForm({ mode, initValues }: Props) {
                                 </Tabs>
                             </form>
                         </Form>
-                        <JsonViewer data={watchForm} title="Form Data" />
+                        {/* <JsonViewer data={watchForm} title="Form Data" /> */}
                     </Card>
 
-                    <div className="fixed bottom-10 right-20">
+                    <div className="fixed bottom-10 right-20 flex items-center gap-2 bg-background shadow-lg border border-border rounded-md p-2">
                         <Button
+                            size={'sm'}
+                            className="bg-destructive hover:bg-destructive/80"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onRejectPr();
+                            }}
+                        >
+                            <CircleX />
+                            Reject
+                        </Button>
+                        <Button
+                            size={'sm'}
+                            className="bg-destructive hover:bg-destructive/80"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onSendBackPr();
+                            }}
+                        >
+                            <ArrowLeftIcon className="w-4 h-4" />
+                            Send Back
+                        </Button>
+                        <Button
+                            size={'sm'}
                             className="bg-active hover:bg-active/80"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 onSubmitPr();
                             }}
-                            disabled={isSubmittingPr || isApprovingPr}>
+                            disabled={isSubmittingPr}
+                        >
+                            <SendIcon className="w-4 h-4" />
+                            Submit
+                        </Button>
+                        <Button
+                            size={'sm'}
+                            className="bg-active hover:bg-active/80"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                // onApprovePr();
+                                alert('"state_role": "approve"')
+                            }}
+                            disabled={isApprovingPr}
+                        >
                             <CheckCircleIcon className="w-4 h-4" />
-                            Submit & Approve
+                            Approve
+                        </Button>
+                        <Button
+                            size={'sm'}
+                            className="bg-active hover:bg-active/80"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                alert('"state_role": "purchase"')
+                                onApprovePurchasePr();
+                            }}
+                        >
+                            <CheckCircleIcon className="w-4 h-4" />
+                            Approve Purchase
                         </Button>
                     </div>
                 </div>
