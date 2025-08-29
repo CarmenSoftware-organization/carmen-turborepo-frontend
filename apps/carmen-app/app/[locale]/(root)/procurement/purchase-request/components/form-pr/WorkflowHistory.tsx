@@ -1,4 +1,4 @@
-import { Timeline, TimelineDescription, TimelineHeader, TimelineItem, TimelineTime, TimelineTitle } from "@/components/ui-custom/Timeline";
+import { Timeline, TimelineDescription, TimelineHeader, TimelineItem, TimelineTime, TimelineTitle } from "@/components/ui-custom/timeline";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns } from "@/utils/config-system";
