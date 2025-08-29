@@ -1,7 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { cn } from "@/lib/utils";
-import PriceListDialog from "./PriceListDialog";
 import { useCurrenciesQuery } from "@/hooks/useCurrencie";
 import { useAuth } from "@/context/AuthContext";
 
@@ -40,7 +39,6 @@ export default function VendorRow({
             <FieldsVendor label="Total" value={total.toString()} color="green" />
             <div className="space-y-1 pb-2">
                 <Label className="text-xs font-semibold">Compare</Label>
-                <PriceListDialog />
             </div>
         </div>
     );
