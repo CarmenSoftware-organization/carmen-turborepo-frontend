@@ -205,7 +205,7 @@ export default function PurchaseRequestList({
       ),
       dataIndex: "pr_status",
       key: "pr_status",
-      align: "left",
+      align: "center",
       icon: <Activity className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (
@@ -232,7 +232,7 @@ export default function PurchaseRequestList({
       ),
       dataIndex: "workflow_current_stage",
       key: "workflow_current_stage",
-      align: "left",
+      align: "center",
       icon: <Workflow className="h-4 w-4" />,
       render: (_: unknown, record: TableDataSource) => {
         return (

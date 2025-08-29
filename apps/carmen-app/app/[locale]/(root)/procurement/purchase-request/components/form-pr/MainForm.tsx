@@ -15,7 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
 import { Card } from "@/components/ui/card";
-import { ArrowLeftIcon, CheckCircleIcon, CircleX, SendIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckCircleIcon, X, SendIcon, Eye, ShoppingCart } from "lucide-react";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
 
@@ -28,6 +28,7 @@ import ActivityLogComponent from "@/components/comment-activity/ActivityLogCompo
 import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
 import JsonViewer from "@/components/JsonViewer";
+import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 
 interface Props {
     mode: formType;
@@ -117,8 +118,6 @@ export default function MainForm({ mode, initValues }: Props) {
         return hasMainFieldChanges || hasItemChanges;
     };
 
-
-
     const handleSubmit = (data: CreatePrDto) => {
 
         if (data.body.purchase_request_detail?.add?.length && data.body.purchase_request_detail.add.length > 0) {
@@ -153,7 +152,6 @@ export default function MainForm({ mode, initValues }: Props) {
                     toastSuccess({
                         message: "Purchase Request updated successfully",
                     })
-                    // window.location.reload();
                     setCurrentFormType(formType.VIEW);
                 },
                 onError: () => {
@@ -241,7 +239,7 @@ export default function MainForm({ mode, initValues }: Props) {
         })
     };
 
-    const onApprovePr = () => {
+    const onApprove = () => {
         approvePr({} as any, {
             onSuccess: () => {
                 toastSuccess({
@@ -256,7 +254,7 @@ export default function MainForm({ mode, initValues }: Props) {
         })
     };
 
-    const onRejectPr = () => {
+    const onReject = () => {
         rejectPr({} as any, {
             onSuccess: () => {
                 toastSuccess({
@@ -271,7 +269,7 @@ export default function MainForm({ mode, initValues }: Props) {
         })
     }
 
-    const onSendBackPr = () => {
+    const onSendBack = () => {
         sendBackPr({} as any, {
             onSuccess: () => {
                 toastSuccess({
@@ -286,7 +284,7 @@ export default function MainForm({ mode, initValues }: Props) {
         })
     };
 
-    const onApprovePurchasePr = () => {
+    const onPurchaseApprove = () => {
         purchaseApprovePr({} as any, {
             onSuccess: () => {
                 toastSuccess({
@@ -296,6 +294,21 @@ export default function MainForm({ mode, initValues }: Props) {
             onError: () => {
                 toastError({
                     message: "Purchase Request approved failed",
+                })
+            }
+        })
+    };
+
+    const onReview = () => {
+        reviewPr({} as any, {
+            onSuccess: () => {
+                toastSuccess({
+                    message: "Purchase Request reviewed successfully",
+                })
+            },
+            onError: () => {
+                toastError({
+                    message: "Purchase Request reviewed failed",
                 })
             }
         })
@@ -366,34 +379,41 @@ export default function MainForm({ mode, initValues }: Props) {
                         {/* <JsonViewer data={watchForm} title="Form Data" /> */}
                     </Card>
 
-                    <div className="fixed bottom-10 right-20 flex items-center gap-2 bg-background shadow-lg border border-border rounded-md p-2">
-                        <Button
-                            size={'sm'}
-                            className="bg-destructive hover:bg-destructive/80"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onRejectPr();
-                            }}
-                        >
-                            <CircleX />
+                    <MotionDiv
+                        className="fixed bottom-10 right-20 flex items-center gap-2 bg-background shadow-lg border border-border rounded-md p-2"
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.2 }}
+                    > <Button
+                        size={'sm'}
+                        className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)]"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onReject();
+                        }}
+                        disabled={isRejectingPr}
+                    >
+                            <X className="w-4 h-4" />
                             Reject
                         </Button>
                         <Button
                             size={'sm'}
-                            className="bg-destructive hover:bg-destructive/80"
+                            className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)]"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                onSendBackPr();
+                                onSendBack();
                             }}
+                            disabled={isSendingBackPr}
                         >
                             <ArrowLeftIcon className="w-4 h-4" />
                             Send Back
                         </Button>
                         <Button
                             size={'sm'}
-                            className="bg-active hover:bg-active/80"
+                            className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)]"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -404,14 +424,27 @@ export default function MainForm({ mode, initValues }: Props) {
                             <SendIcon className="w-4 h-4" />
                             Submit
                         </Button>
+
                         <Button
                             size={'sm'}
-                            className="bg-active hover:bg-active/80"
+                            className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)]"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                // onApprovePr();
-                                alert('"state_role": "approve"')
+                                onReview();
+                            }}
+                            disabled={isReviewingPr}
+                        >
+                            <Eye className="w-4 h-4" />
+                            Review
+                        </Button>
+                        <Button
+                            size={'sm'}
+                            className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)]"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onApprove();
                             }}
                             disabled={isApprovingPr}
                         >
@@ -420,18 +453,18 @@ export default function MainForm({ mode, initValues }: Props) {
                         </Button>
                         <Button
                             size={'sm'}
-                            className="bg-active hover:bg-active/80"
+                            className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)]"
                             onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                alert('"state_role": "purchase"')
-                                onApprovePurchasePr();
+                                onPurchaseApprove();
                             }}
+                            disabled={isPurchasingApprovePr}
                         >
-                            <CheckCircleIcon className="w-4 h-4" />
+                            <ShoppingCart className="w-4 h-4" />
                             Approve Purchase
                         </Button>
-                    </div>
+                    </MotionDiv>
                 </div>
             </DetailsAndComments>
 

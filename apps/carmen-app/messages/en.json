@@ -47,14 +47,14 @@
     "backToHome": "Go to Home"
   },
   "Status": {
-    "draft": "Draft",
-    "in_progress": "In Progress",
-    "completed": "Completed",
-    "cancelled": "Cancelled",
-    "pending": "Pending",
-    "approved": "Approved",
-    "rejected": "Rejected",
-    "submit": "Submit"
+    "draft": "DRAFT",
+    "in_progress": "IN PROGRESS",
+    "completed": "COMPLETED",
+    "cancelled": "CANCELLED",
+    "pending": "PENDING",
+    "approved": "APPROVED",
+    "rejected": "REJECTED",
+    "submit": "SUBMIT"
   },
   "Action": {
     "title": "Action",
