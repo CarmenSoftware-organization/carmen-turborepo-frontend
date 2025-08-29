@@ -20,9 +20,10 @@ interface DateInputProps {
     readonly field: DateField;
     readonly wrapWithFormControl?: boolean;
     readonly disabled?: boolean;
+    readonly classNames?: string;
 }
 
-export default function DateInput({ field, wrapWithFormControl = true, disabled = false }: DateInputProps) {
+export default function DateInput({ field, wrapWithFormControl = true, disabled = false, classNames = "" }: DateInputProps) {
     const [internalValue, setInternalValue] = useState<DateValue>(field.value);
 
     // Sync internal value with field value
@@ -60,7 +61,8 @@ export default function DateInput({ field, wrapWithFormControl = true, disabled 
             className={cn(
                 "w-full pl-2 text-left font-normal bg-background",
                 !internalValue && "text-muted-foreground",
-                disabled && "bg-muted"
+                disabled && "bg-muted",
+                classNames
             )}
             disabled={disabled}
             aria-label={formattedDate ? `Selected date: ${formattedDate}` : "Select date"}

@@ -66,13 +66,16 @@ export default function UnitLookup({
                     <Button
                         variant="outline"
                         aria-expanded={open}
-                        className={cn(classNames)}
+                        className={cn("flex justify-between items-center pl-1 pr-1", classNames)}
                         disabled={disabled}
                     >
-                        {value && selectedUnitName ? selectedUnitName : placeholder}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        <p className="pl-2">
+                            {value && selectedUnitName ? selectedUnitName : placeholder}
+                        </p>
+                        <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
+
                 <PopoverContent className="w-full p-0">
                     <Command filter={(value, search) => {
                         if (!search) return 1;
@@ -80,7 +83,7 @@ export default function UnitLookup({
                         return 0;
                     }}>
                         <div className="relative w-full">
-                            <CommandInput placeholder="Search unit..." className="w-full pr-10" />
+                            <CommandInput placeholder="Search unit..." className="w-full pr-2" />
                             <Button
                                 variant="ghost"
                                 size="sm"

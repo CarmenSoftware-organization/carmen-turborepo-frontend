@@ -49,8 +49,6 @@ export default function MainForm({ mode, initValues }: Props) {
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
     const router = useRouter();
 
-
-
     const form = useForm<CreatePrDto>({
         resolver: zodResolver(CreatePrSchema),
         defaultValues: {
@@ -77,6 +75,10 @@ export default function MainForm({ mode, initValues }: Props) {
         token, tenantId, initValues?.id || "", 'save');
     const { mutate: submitPr, isPending: isSubmittingPr } = useUpdateUPr(
         token, tenantId, initValues?.id || "", 'submit');
+
+    const { mutate: approvePr, isPending: isApprovingPr } = useUpdateUPr(
+        token, tenantId, initValues?.id || "", 'approve');
+
     // ใช้ custom hook สำหรับจัดการ purchase items
     const purchaseItemManager = usePurchaseItemManagement({
         form,
@@ -223,7 +225,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 })
             }
         })
-    }
+    };
 
     return (
         <>
@@ -243,7 +245,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     onCancel={handleCancel}
                                     isError={!canSave}
                                     hasFormChanges={hasFormChanges}
-                                    isCreatingPr={isCreatingPr}
+                                    isCreatingPr={isCreatingPr || isUpdatingPr}
                                 />
                                 <HeadForm
                                     form={form as any}
@@ -297,7 +299,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                 e.stopPropagation();
                                 onSubmitPr();
                             }}
-                            disabled={isSubmittingPr}>
+                            disabled={isSubmittingPr || isApprovingPr}>
                             <CheckCircleIcon className="w-4 h-4" />
                             Submit & Approve
                         </Button>

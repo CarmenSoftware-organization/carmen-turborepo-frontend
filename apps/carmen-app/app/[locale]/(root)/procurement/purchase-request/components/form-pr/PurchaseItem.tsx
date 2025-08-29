@@ -5,14 +5,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
-
-import { Fragment, useState } from "react";
-
+import { Fragment, useState, useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDown, ChevronRight, MapPin, Plus, Trash2Icon } from "lucide-react";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import { useAuth } from "@/context/AuthContext";
-
 import {
     Accordion,
     AccordionContent,
@@ -21,8 +18,6 @@ import {
 } from "@/components/ui/accordion"
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-
 import VendorComparison from "./VendorComparison";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
@@ -33,10 +28,9 @@ import { cellContentVariants } from "@/utils/framer-variants";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Separator } from "@/components/ui/separator";
 import DateInput from "@/components/form-custom/DateInput";
-import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-
-
+import InventoryInfo from "./InventoryInfo";
+import InventoryProgress from "./InventoryProgress";
 
 interface Props {
     currentFormType: formType;
@@ -59,14 +53,16 @@ export default function PurchaseItem({
     onAddItem,
     getItemValue
 }: Props) {
-    const { dateFormat, currencyBase } = useAuth();
+    const { dateFormat, currencyBase, token, tenantId } = useAuth();
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; isAddItem: boolean; addIndex?: number } | null>(null);
     const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>({});
     const [hoveredRow] = useState<string | null>(null);
 
-    const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
+    // Local state สำหรับจัดการ UI แบบ realtime
+    const [localItems, setLocalItems] = useState<PurchaseRequestDetail[]>(items);
 
+    const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
 
     const handleRemoveItemClick = (id: string, isNewItem: boolean = false, itemIndex?: number) => {
         setItemToDelete({ id, isAddItem: isNewItem, addIndex: itemIndex });
@@ -89,15 +85,27 @@ export default function PurchaseItem({
         }));
     };
 
+    // Update localItems เมื่อ items prop เปลี่ยน
+    useEffect(() => {
+        setLocalItems(items);
+    }, [items]);
 
-    const calculateStockLevel = (onHandQty: number, onOrderQty: number, reOrderQty: number, reStockQty: number) => {
-        const totalQty = onHandQty + onOrderQty + reOrderQty + reStockQty;
-        const stockLevel = (onHandQty / totalQty) * 100;
-        return Number(stockLevel.toFixed(2));
+    // Local function สำหรับ update item แบบ realtime
+    const handleLocalItemUpdate = (itemId: string, fieldName: string, value: any) => {
+        setLocalItems(prev => {
+            const updated = prev.map(item =>
+                item.id === itemId
+                    ? { ...item, [fieldName]: value }
+                    : item
+            );
+            console.log('Updated localItems:', updated);
+            return updated;
+        });
+
+        // เรียก onItemUpdate ของ parent component ด้วย
+        onItemUpdate(itemId, fieldName, value);
     };
 
-
-    console.log('items', items);
 
     return (
         <div className="mt-4">
@@ -115,9 +123,9 @@ export default function PurchaseItem({
             <Table>
                 <TableHeader className="bg-muted">
                     <TableRow>
-                        <TableHead className="w-10"></TableHead>
+                        <TableHead className="w-6"></TableHead>
                         <TableHead className="w-10">
-                            <Checkbox />
+                            <Checkbox className="w-3.5 h-3.5" />
                         </TableHead>
                         <TableHead className="text-center w-10">#</TableHead>
                         <TableHead className="w-80 text-left">Location</TableHead>
@@ -131,21 +139,21 @@ export default function PurchaseItem({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {items?.length === 0 ? (
+                    {localItems?.length === 0 ? (
                         <TableRow>
                             <TableCell colSpan={11} className="text-center">
                                 <p className="text-muted-foreground">No items found</p>
                             </TableCell>
                         </TableRow>
                     ) : (
-                        items?.map((item, index) => {
+                        localItems?.map((item, index) => {
                             // Check if this is a new item
                             const isNewItem = !initValues.some(initItem => initItem.id === item.id);
 
                             return (
                                 <Fragment key={item.id}>
                                     <TableRow
-                                        className={cn("border border-b-0 border-l-0 border-r-0",
+                                        className={cn("border border-b-0 border-l-0 border-r-0 py-10",
                                             isNewItem ? 'bg-muted-foreground/10' : '')
                                         }
                                     // onMouseEnter={() => handleMouseEnterRow(item.id)}
@@ -169,7 +177,7 @@ export default function PurchaseItem({
                                             </Button>
                                         </TableCell>
                                         <TableCell className="w-10">
-                                            <Checkbox />
+                                            <Checkbox className="w-3.5 h-3.5" />
                                         </TableCell>
                                         <TableCell className="text-center w-10">
                                             {index + 1}
@@ -184,6 +192,7 @@ export default function PurchaseItem({
                                                 <LocationLookup
                                                     value={getItemValue(item, 'location_id')}
                                                     onValueChange={(value) => onItemUpdate(item.id, 'location_id', value)}
+                                                    classNames="text-xs h-7"
                                                 />
                                             )}
                                         </TableCell>
@@ -194,7 +203,7 @@ export default function PurchaseItem({
                                                     <p className="text-xs text-muted-foreground">{item.description || "-"}</p>
                                                 </div>
                                             ) : (
-                                                <div className="space-y-2">
+                                                <div className="space-y-1">
                                                     <ProductLocationLookup
                                                         location_id={getItemValue(item, 'location_id')}
                                                         value={getItemValue(item, 'product_id')}
@@ -203,6 +212,7 @@ export default function PurchaseItem({
                                                             onItemUpdate(item.id, 'inventory_unit_id', selectedProduct?.inventory_unit?.id);
                                                             onItemUpdate(item.id, 'inventory_unit_name', selectedProduct?.inventory_unit?.name);
                                                         }}
+                                                        classNames="text-xs h-7"
                                                         disabled={!getItemValue(item, 'location_id')}
                                                     />
                                                     <p className="text-xs text-muted-foreground">{item.description || "-"}</p>
@@ -220,13 +230,13 @@ export default function PurchaseItem({
                                                         key={`requested_qty_${item.id}`}
                                                         value={getItemValue(item, 'requested_qty')}
                                                         onChange={(value) => onItemUpdate(item.id, 'requested_qty', value)}
-                                                        classNames="w-12"
+                                                        classNames="w-10 h-7 text-xs"
                                                         disabled={!getItemValue(item, 'product_id')}
                                                     />
                                                     <UnitLookup
                                                         value={getItemValue(item, 'requested_unit_id')}
                                                         onValueChange={(value) => onItemUpdate(item.id, 'requested_unit_id', value)}
-                                                        classNames="w-20"
+                                                        classNames="h-7 text-xs"
                                                         disabled={!getItemValue(item, 'product_id')}
                                                     />
                                                 </div>
@@ -245,7 +255,7 @@ export default function PurchaseItem({
                                                             {item.approved_qty} {item.approved_unit_name || "-"}
                                                         </p>
                                                         <Separator />
-                                                        <p className="text-xs font-semibold text-active">
+                                                        <p className="text-xs font-semibold text-active text-xs">
                                                             FOC: {item.foc_qty} {item.foc_unit_name || "-"}
                                                         </p>
                                                     </>
@@ -253,31 +263,31 @@ export default function PurchaseItem({
                                                     <p>-</p>
                                                 ) : (
                                                     <div className="flex flex-col gap-1">
-                                                        <div className="flex items-center gap-2 justify-end">
+                                                        <div className="flex items-center gap-1 justify-end">
                                                             <NumberInput
                                                                 key={`approved_qty_${item.id}`}
                                                                 value={getItemValue(item, 'approved_qty')}
                                                                 onChange={(value) => onItemUpdate(item.id, 'approved_qty', value)}
-                                                                classNames="w-12"
+                                                                classNames="w-12 h-7 text-xs"
                                                             />
                                                             <UnitLookup
                                                                 value={getItemValue(item, 'approved_unit_id')}
                                                                 onValueChange={(value) => onItemUpdate(item.id, 'approved_unit_id', value)}
-                                                                classNames="w-20"
+                                                                classNames="h-7 text-xs"
                                                             />
                                                         </div>
-                                                        <div className="flex items-center gap-2 justify-end">
-                                                            <p>FOC:</p>
+                                                        <div className="flex items-center gap-1 justify-end">
+                                                            {/* <p className="text-xs">FOC:</p> */}
                                                             <NumberInput
                                                                 key={`foc_qty_${item.id}`}
                                                                 value={getItemValue(item, 'foc_qty')}
                                                                 onChange={(value) => onItemUpdate(item.id, 'foc_qty', value)}
-                                                                classNames="w-12"
+                                                                classNames="w-12 h-7 text-xs"
                                                             />
                                                             <UnitLookup
                                                                 value={getItemValue(item, 'foc_unit_id')}
                                                                 onValueChange={(value) => onItemUpdate(item.id, 'foc_unit_id', value)}
-                                                                classNames="w-20"
+                                                                classNames="h-7 text-xs"
                                                             />
                                                         </div>
                                                     </div>
@@ -293,6 +303,7 @@ export default function PurchaseItem({
                                                         value: getItemValue(item, 'delivery_date'),
                                                         onChange: (value) => onItemUpdate(item.id, 'delivery_date', value)
                                                     }}
+                                                    classNames="text-xs h-7"
                                                 />
                                             )}
                                         </TableCell>
@@ -303,16 +314,16 @@ export default function PurchaseItem({
                                                 <LookupDeliveryPoint
                                                     value={getItemValue(item, 'delivery_point_id')}
                                                     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
-                                                    className="w-32"
+                                                    className="h-7 text-xs w-40"
                                                 />
                                             )}
                                         </TableCell>
-                                        <TableCell className="w-40 text-right">
+                                        <TableCell className="w-40 text-right text-xs text-active font-bold">
                                             <div className="flex items-center justify-end gap-1">
                                                 {isNewItem ? (
-                                                    <p className="font-bold text-active">-</p>
+                                                    <p>-</p>
                                                 ) : (
-                                                    <p className="font-bold text-active">
+                                                    <p>
                                                         {formatPriceConf(item.total_price, defaultAmount, currencyBase ?? 'THB')}
                                                     </p>
                                                 )}
@@ -320,9 +331,7 @@ export default function PurchaseItem({
                                         </TableCell>
                                         {currentFormType !== formType.VIEW && (
                                             <TableCell className="text-right">
-                                                <Button
-                                                    variant={"ghost"}
-                                                    size={"sm"}
+                                                <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         e.preventDefault();
@@ -332,10 +341,10 @@ export default function PurchaseItem({
                                                             undefined;
                                                         handleRemoveItemClick(item.id, isNewItem, addIndex);
                                                     }}
-                                                    className="hover:text-destructive/80 hover:bg-transparent"
+                                                    className="hover:text-destructive/80 hover:bg-transparent mr-1 text-muted-foreground/80"
                                                 >
                                                     <Trash2Icon className="w-4 h-4" />
-                                                </Button>
+                                                </button>
                                             </TableCell>
                                         )}
 
@@ -364,21 +373,27 @@ export default function PurchaseItem({
                                                                 <AccordionTrigger iconPosition="left" className="px-2">
                                                                     <h4 className="font-semibold text-sm">Vendor & Pricing Information</h4>
                                                                 </AccordionTrigger>
-                                                                <VendorComparison />
+                                                                <VendorComparison
+                                                                    req_qry={item.requested_qty}
+                                                                    apv_qry={item.approved_qty}
+                                                                    pricelist_detail_id={item.pricelist_detail_id ?? ''}
+                                                                    itemId={item.id}
+                                                                    onItemUpdate={handleLocalItemUpdate}
+                                                                />
                                                             </div>
 
                                                             <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-sky-100 mx-3 my-1">
                                                                 <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border mx-4 pb-2">
-                                                                    <PrLabelItem label="Vendor" value={item.vendor_name} />
+                                                                    <PrLabelItem label="Vendor" value={item.vendor_name ?? "-"} />
                                                                     <PrLabelItem label="Pricelist" value={item.pricelist_no ?? "-"} />
                                                                 </div>
 
                                                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 px-2">
-                                                                    <PrLabelItem label="Unit Price" value={formatPriceConf(item.base_price ?? 0, defaultAmount, currencyBase ?? 'THB')} position="text-right" />
+                                                                    <PrLabelItem label="Unit Price" value={formatPriceConf(Number(item.pricelist_price) || item.base_price || 0, defaultAmount, currencyBase ?? 'THB')} position="text-right" />
                                                                     <PrLabelItem label="Sub Total" value={Number(item.base_sub_total_price).toFixed(2)} position="text-right" />
-                                                                    <PrLabelItem label="Discount" value={Number(item.discount_amount).toFixed(2)} position="text-right" />
+                                                                    <PrLabelItem label="Discount" value={Number(item.discount_amount ?? 0).toFixed(2)} position="text-right" />
                                                                     <PrLabelItem label="Net Amount" value={Number(item.net_amount).toFixed(2)} position="text-right" />
-                                                                    <PrLabelItem label="Tax (VAT)" value={Number(item.tax_amount).toFixed(2)} position="text-right" />
+                                                                    <PrLabelItem label="Tax (VAT)" value={Number(item.tax_amount ?? 0).toFixed(2)} position="text-right" />
                                                                     <div className="space-y-1 text-right">
                                                                         <Label className="text-muted-foreground/80 text-xs">Total</Label>
                                                                         <p className="font-bold text-sm text-active">{Number(item.total_price).toFixed(2)}</p>
@@ -398,35 +413,8 @@ export default function PurchaseItem({
                                                             </AccordionTrigger>
 
                                                             <AccordionContent className="space-y-1 flex flex-col gap-2 border-l border-l-4 border-green-100 mx-3 my-1">
-                                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2">
-                                                                    <div className="text-right">
-                                                                        <Label className="text-primary text-xs">On Hand</Label>
-                                                                        <p className="text-sm font-semibold">{item.on_hand_qty}</p>
-                                                                        <p className="text-xs text-muted-foreground/80">{item.inventory_unit_name}</p>
-                                                                    </div>
-                                                                    <div className="text-right">
-                                                                        <Label className="text-primary text-xs">On Order</Label>
-                                                                        <p className="text-sm font-semibold">{item.on_order_qty}</p>
-                                                                        <p className="text-xs text-muted-foreground/80">{item.inventory_unit_name}</p>
-                                                                    </div>
-                                                                    <div className="text-right">
-                                                                        <Label className="text-muted-foreground/80 text-xs">Reorder</Label>
-                                                                        <p className="text-sm font-semibold">{item.re_order_qty}</p>
-                                                                        <p className="text-xs text-muted-foreground/80">{item.inventory_unit_name}</p>
-                                                                    </div>
-                                                                    <div className="text-right">
-                                                                        <Label className="text-muted-foreground/80 text-xs">Restock</Label>
-                                                                        <p className="text-sm font-semibold">{item.re_stock_qty}</p>
-                                                                        <p className="text-xs text-muted-foreground/80">{item.inventory_unit_name}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="px-2">
-                                                                    <Progress value={calculateStockLevel(item.on_hand_qty, item.on_order_qty, item.re_order_qty, item.re_stock_qty)} />
-                                                                    <div className="flex items-center justify-between">
-                                                                        <p className="text-xs text-muted-foreground/80">Needs Reorder</p>
-                                                                        <p className="text-xs text-muted-foreground/80">Stock Level: {calculateStockLevel(item.on_hand_qty, item.on_order_qty, item.re_order_qty, item.re_stock_qty)}%</p>
-                                                                    </div>
-                                                                </div>
+                                                                <InventoryInfo item={item} token={token} tenantId={tenantId} />
+                                                                <InventoryProgress item={item} token={token} tenantId={tenantId} />
                                                             </AccordionContent>
                                                         </AccordionItem>
                                                     </Accordion>
@@ -471,6 +459,8 @@ export default function PurchaseItem({
         </div>
     );
 }
+
+
 
 const PrLabelItem = ({
     label,

@@ -33,7 +33,7 @@ export default function ProductLocationLookup({
     location_id,
     value,
     onValueChange,
-    placeholder = "Select product location",
+    placeholder = "Select Product",
     disabled = false,
     classNames = "max-w-40"
 }: ProductLocationLookupProps) {
@@ -104,11 +104,6 @@ export default function ProductLocationLookup({
             </SelectItem>
         ));
     };
-
-    // console.log('🔍 value', value);
-
-    // console.log('selectConproductLocationDatatent', productLocationData);
-
 
     return (
         <Select

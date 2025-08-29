@@ -21,7 +21,8 @@ export default function LocationLookup({
     value,
     onValueChange,
     placeholder = "Select location",
-    disabled = false
+    disabled = false,
+    classNames = ""
 }: Readonly<PropsLookup>) {
     const [open, setOpen] = useState(false);
     const { storeLocations, isLoading } = useStoreLocation();
@@ -34,7 +35,7 @@ export default function LocationLookup({
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
+            <PopoverTrigger asChild className={classNames}>
                 <Button
                     variant="outline"
                     aria-expanded={open}

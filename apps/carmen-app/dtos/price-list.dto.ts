@@ -60,3 +60,24 @@ export interface PriceListDto {
     }[];
 };
 
+
+export type ProductPriceListCompareDto = {
+    pricelist_detail_id: string;
+    vendor_id: string;
+    vendor_name: string;
+    pricelist_name: string;
+    pricelist_description?: string;
+    pricelist_price: number;
+    pricelist_unit: string;
+    discount_amount: number;
+    tax_rate: number;
+    is_prefer: boolean;
+    currency_id: string;
+    currency_name: string;
+    currency_code: string;
+    pricelist_no: string;
+    rating: number;
+    valid_from: string;
+    valid_to: string;
+    selected: boolean;
+};

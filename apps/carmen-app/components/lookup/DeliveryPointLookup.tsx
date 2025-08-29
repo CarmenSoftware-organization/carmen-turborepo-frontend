@@ -8,6 +8,7 @@ import { ChevronsUpDown } from "lucide-react";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
 import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
+import { cn } from "@/lib/utils";
 
 interface Props {
   readonly value?: string;
@@ -19,7 +20,7 @@ interface Props {
 export function LookupDeliveryPoint({
   value = "",
   onValueChange,
-  placeholder = "Search delivery point...",
+  placeholder = "Search...",
   className = "",
 }: Props) {
 
@@ -129,19 +130,19 @@ export function LookupDeliveryPoint({
           value={searchTerm}
           onChange={(e) => handleInputChange(e.target.value)}
           onClick={handleInputClick}
-          className="pr-10"
+          className={cn("bg-background", className)}
         />
         <ChevronsUpDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
       </div>
 
       {isDropdownOpen && filteredData?.data?.length > 0 && (
-        <Card className="absolute top-full left-0 right-0 mt-1 z-10 max-h-60 overflow-y-auto">
+        <Card className="absolute top-full left-0 right-0 mt-1 z-50 max-h-60 overflow-y-auto">
           <CardContent className="p-0">
             <div className="py-1">
               {filteredData?.data?.map((item: DeliveryPointGetDto) => (
                 <button
                   key={`${item.id}-${item.name}`}
-                  className="w-full text-left p-2 hover:bg-gray-100 cursor-pointer text-xs"
+                  className="w-full text-left p-2 cursor-pointer text-xs"
                   onClick={() => handleSelectItem(item)}
                   type="button"
                 >
@@ -156,7 +157,7 @@ export function LookupDeliveryPoint({
       )}
 
       {isDropdownOpen && searchTerm.trim() && filteredData.data.length === 0 && (
-        <Card className="absolute top-full left-0 right-0 mt-1 z-10">
+        <Card className="absolute top-full left-0 right-0 mt-1 z-50">
           <CardContent className="p-3">
             <div className="text-gray-500 text-center">No data found</div>
           </CardContent>
