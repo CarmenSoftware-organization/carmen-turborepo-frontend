@@ -38,6 +38,10 @@ const itemsPlayground = [
     title: "Transfer Component",
     href: "/playground/transfer",
   },
+  {
+    title: "ABAC",
+    href: "/playground/abac",
+  },
 ];
 
 export default function Playground() {
