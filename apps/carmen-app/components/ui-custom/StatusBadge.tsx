@@ -6,6 +6,7 @@ type StatusType =
     | "Completed"
     | "sent"
     | "in_progress"
+    | "voided"
     | "pending"
     | "approved"
     | "rejected"
@@ -35,6 +36,10 @@ const STATUS_CONFIG: Record<StatusType, { color: string; icon: React.ElementType
     },
     cancelled: {
         color: "text-rosePrimary",
+        icon: CircleX,
+    },
+    voided: {
+        color: "text-destructive",
         icon: CircleX,
     },
     default: {

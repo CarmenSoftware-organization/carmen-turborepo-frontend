@@ -26,8 +26,8 @@ export const convertPrStatus = (status: string) => {
         return "Review";
     } else if (status === "in_progress") {
         return "In Progress";
-    } else if (status === "work_in_process") {
-        return "Work in Process";
+    } else if (status === "voided") {
+        return "Voided";
     } else if (status === "draft") {
         return "Draft";
     } else if (status === "inactive") {

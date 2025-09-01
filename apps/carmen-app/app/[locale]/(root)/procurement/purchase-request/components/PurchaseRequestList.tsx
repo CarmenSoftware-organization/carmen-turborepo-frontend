@@ -99,6 +99,9 @@ export default function PurchaseRequestList({
     if (status === 'rejected') {
       return tStatus("rejected")
     }
+    if (status === 'voided') {
+      return tStatus("voided")
+    }
     return ''
   }
 

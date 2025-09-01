@@ -262,7 +262,14 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReject = () => {
-        rejectPr({} as any, {
+        rejectPr({
+            state_role: 'create',
+            body: initValues?.purchase_request_detail.map((item) => ({
+                id: item.id,
+                stage_status: 'reject',
+                stage_message: 'ไม่ต้องซื้อ',
+            }))
+        } as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: "Purchase Request rejected successfully",
@@ -277,7 +284,14 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     const onSendBack = () => {
-        sendBackPr({} as any, {
+        sendBackPr({
+            state_role: 'create',
+            body: initValues?.purchase_request_detail.map((item) => ({
+                id: item.id,
+                stage_status: 'send_back',
+                stage_message: 'ส่งกลับ',
+            }))
+        } as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: "Purchase Request sent back successfully",
