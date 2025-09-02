@@ -343,7 +343,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 commentComponent={<CommentComponent initialComments={mockCommentsPr} />}
             >
                 <div className="space-y-4">
-                    <Card className="p-4">
+                    <Card className="p-4 h-[calc(100vh-200px)]">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleSubmit)}>
                                 <ActionFields

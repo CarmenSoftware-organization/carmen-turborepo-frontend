@@ -31,6 +31,16 @@ import DateInput from "@/components/form-custom/DateInput";
 import { cn } from "@/lib/utils";
 import InventoryInfo from "./InventoryInfo";
 import InventoryProgress from "./InventoryProgress";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { DeliveryPointSelectLookup } from "@/components/lookup/DeliveryPointSelectLookup";
 
 interface Props {
     currentFormType: formType;
@@ -108,7 +118,7 @@ export default function PurchaseItem({
 
 
     return (
-        <div className="mt-4">
+        <div className="mt-4 border min-h-56">
             {currentFormType !== formType.VIEW && (
                 <div className="flex justify-end mb-4">
                     <Button
@@ -311,11 +321,31 @@ export default function PurchaseItem({
                                             {currentFormType === formType.VIEW ? (
                                                 <p className="text-sm font-medium">{item.delivery_point_name || "-"}</p>
                                             ) : (
-                                                <LookupDeliveryPoint
+                                                <DeliveryPointSelectLookup
                                                     value={getItemValue(item, 'delivery_point_id')}
                                                     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
                                                     className="h-7 text-xs w-40"
                                                 />
+                                                // <LookupDeliveryPoint
+                                                //     value={getItemValue(item, 'delivery_point_id')}
+                                                //     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
+                                                //     className="h-7 text-xs w-40"
+                                                // />
+                                                // <Select>
+                                                //     <SelectTrigger className="w-[180px]">
+                                                //         <SelectValue placeholder="Select a fruit" />
+                                                //     </SelectTrigger>
+                                                //     <SelectContent>
+                                                //         <SelectGroup>
+                                                //             <SelectLabel>Fruits</SelectLabel>
+                                                //             <SelectItem value="apple">Apple</SelectItem>
+                                                //             <SelectItem value="banana">Banana</SelectItem>
+                                                //             <SelectItem value="blueberry">Blueberry</SelectItem>
+                                                //             <SelectItem value="grapes">Grapes</SelectItem>
+                                                //             <SelectItem value="pineapple">Pineapple</SelectItem>
+                                                //         </SelectGroup>
+                                                //     </SelectContent>
+                                                // </Select>
                                             )}
                                         </TableCell>
                                         <TableCell className="w-40 text-right text-xs text-active font-bold">
