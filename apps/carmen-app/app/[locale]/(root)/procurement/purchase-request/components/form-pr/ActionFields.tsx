@@ -28,6 +28,7 @@ export default function ActionFields({
     prStatus
 }: ActionFieldsProps) {
     const tCommon = useTranslations("Common");
+    const tPr = useTranslations("PurchaseRequest");
     const router = useRouter();
     const tStatus = useTranslations("Status");
     const convertStatus = (status: string) => {
@@ -91,7 +92,7 @@ export default function ActionFields({
 
                 <div className="flex items-start gap-2">
                     {mode === formType.ADD ? (
-                        <p className="text-xl font-bold">Purchase Request</p>
+                        <p className="text-xl font-bold">{tPr("title")}</p>
                     ) : (
                         <p className="text-xl font-bold">
                             {initValues?.pr_no}

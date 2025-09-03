@@ -31,6 +31,7 @@ import ActionButtons from "./ActionButtons";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { usePrActions } from "@/hooks/usePrActions";
+import { useTranslations } from "next-intl";
 
 interface Props {
     mode: formType;
@@ -43,14 +44,17 @@ interface CancelAction {
 }
 
 export default function MainForm({ mode, initValues }: Props) {
+    const router = useRouter();
     const { token, tenantId, user, departments, dateFormat } = useAuth();
+    const tPR = useTranslations("PurchaseRequest");
+    const tAction = useTranslations("Action");
     const [currentFormType, setCurrentFormType] = useState<formType>(mode);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
-    const router = useRouter();
+
 
     const form = useForm<CreatePrDto>({
         resolver: zodResolver(CreatePrSchema),
@@ -379,15 +383,15 @@ export default function MainForm({ mode, initValues }: Props) {
                                             )}
                                             value="items"
                                         >
-                                            Items
+                                            {tPR("items")}
                                         </TabsTrigger>
                                         {!isNewPr && (
                                             <>
                                                 <TabsTrigger className="w-full h-6" value="budget">
-                                                    Budget
+                                                    {tPR("budget")}
                                                 </TabsTrigger>
                                                 <TabsTrigger className="w-full h-6" value="workflow">
-                                                    Workflow
+                                                    {tPR("workflow")}
                                                 </TabsTrigger>
                                             </>
                                         )}
@@ -443,15 +447,15 @@ export default function MainForm({ mode, initValues }: Props) {
             <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Confirm Cancel</AlertDialogTitle>
+                        <AlertDialogTitle>{tPR("confirm_cancel")}</AlertDialogTitle>
                         <AlertDialogDescription>
-                            You have unsaved changes. If you cancel, all changes will be lost. Do you want to cancel?
+                            {tPR("confirm_cancel_description")}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>{tAction("cancel")}</AlertDialogCancel>
                         <AlertDialogAction onClick={handleConfirmCancel} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                            Confirm
+                            {tAction("confirm")}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

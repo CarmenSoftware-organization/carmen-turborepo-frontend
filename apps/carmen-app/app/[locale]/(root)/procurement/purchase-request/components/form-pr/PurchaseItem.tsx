@@ -41,6 +41,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { DeliveryPointSelectLookup } from "@/components/lookup/DeliveryPointSelectLookup";
+import { useTranslations } from "next-intl";
 
 interface Props {
     currentFormType: formType;
@@ -64,6 +65,8 @@ export default function PurchaseItem({
     getItemValue
 }: Props) {
     const { dateFormat, currencyBase, token, tenantId } = useAuth();
+    const tPr = useTranslations("PurchaseRequest");
+    const tHeader = useTranslations("TableHeader");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; isAddItem: boolean; addIndex?: number } | null>(null);
     const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>({});
@@ -126,7 +129,7 @@ export default function PurchaseItem({
                         size={"sm"}
                     >
                         <Plus />
-                        Add Item
+                        {tPr("add_item")}
                     </Button>
                 </div>
             )}
@@ -138,13 +141,13 @@ export default function PurchaseItem({
                             <Checkbox className="w-3.5 h-3.5" />
                         </TableHead>
                         <TableHead className="text-center w-10">#</TableHead>
-                        <TableHead className="w-80 text-left">Location</TableHead>
-                        <TableHead className="w-80 text-left">Product</TableHead>
-                        <TableHead className="w-40 text-right">Requested</TableHead>
-                        <TableHead className="w-40 text-right">Approved</TableHead>
-                        <TableHead className="w-56 text-center">Date Required</TableHead>
-                        <TableHead className="w-56 text-left">Delivery Point</TableHead>
-                        <TableHead className="w-40 text-right">Pricing</TableHead>
+                        <TableHead className="w-80 text-left">{tHeader("location")}</TableHead>
+                        <TableHead className="w-80 text-left">{tHeader("product")}</TableHead>
+                        <TableHead className="w-40 text-right">{tHeader("requested")}</TableHead>
+                        <TableHead className="w-40 text-right">{tHeader("approved")}</TableHead>
+                        <TableHead className="w-56 text-center">{tHeader("date_required")}</TableHead>
+                        <TableHead className="w-56 text-left">{tHeader("delivery_point")}</TableHead>
+                        <TableHead className="w-40 text-right">{tHeader("pricing")}</TableHead>
                         <TableHead className="text-right"></TableHead>
                     </TableRow>
                 </TableHeader>
@@ -326,26 +329,6 @@ export default function PurchaseItem({
                                                     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
                                                     className="h-7 text-xs w-40"
                                                 />
-                                                // <LookupDeliveryPoint
-                                                //     value={getItemValue(item, 'delivery_point_id')}
-                                                //     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
-                                                //     className="h-7 text-xs w-40"
-                                                // />
-                                                // <Select>
-                                                //     <SelectTrigger className="w-[180px]">
-                                                //         <SelectValue placeholder="Select a fruit" />
-                                                //     </SelectTrigger>
-                                                //     <SelectContent>
-                                                //         <SelectGroup>
-                                                //             <SelectLabel>Fruits</SelectLabel>
-                                                //             <SelectItem value="apple">Apple</SelectItem>
-                                                //             <SelectItem value="banana">Banana</SelectItem>
-                                                //             <SelectItem value="blueberry">Blueberry</SelectItem>
-                                                //             <SelectItem value="grapes">Grapes</SelectItem>
-                                                //             <SelectItem value="pineapple">Pineapple</SelectItem>
-                                                //         </SelectGroup>
-                                                //     </SelectContent>
-                                                // </Select>
                                             )}
                                         </TableCell>
                                         <TableCell className="w-40 text-right text-xs text-active font-bold">
@@ -401,7 +384,7 @@ export default function PurchaseItem({
                                                         <AccordionItem value="item-1">
                                                             <div className="flex items-center justify-between border-b border-border">
                                                                 <AccordionTrigger iconPosition="left" className="px-2">
-                                                                    <h4 className="font-semibold text-sm">Vendor & Pricing Information</h4>
+                                                                    <h4 className="font-semibold text-sm">{tPr("vendor_and_price_info")}</h4>
                                                                 </AccordionTrigger>
                                                                 <VendorComparison
                                                                     req_qty={item.requested_qty}
@@ -416,18 +399,18 @@ export default function PurchaseItem({
 
                                                             <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-sky-100 mx-3 my-1">
                                                                 <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border mx-4 pb-2">
-                                                                    <PrLabelItem label="Vendor" value={item.vendor_name ?? "-"} />
-                                                                    <PrLabelItem label="Pricelist" value={item.pricelist_no ?? "-"} />
+                                                                    <PrLabelItem label={tPr("vendor")} value={item.vendor_name ?? "-"} />
+                                                                    <PrLabelItem label={tPr("pricelist")} value={item.pricelist_no ?? "-"} />
                                                                 </div>
 
                                                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 px-2">
-                                                                    <PrLabelItem label="Unit Price" value={formatPriceConf(Number(item.pricelist_price) || item.base_price || 0, defaultAmount, currencyBase ?? 'THB')} position="text-right" />
-                                                                    <PrLabelItem label="Sub Total" value={Number(item.base_sub_total_price).toFixed(2)} position="text-right" />
-                                                                    <PrLabelItem label="Discount" value={Number(item.discount_amount ?? 0).toFixed(2)} position="text-right" />
-                                                                    <PrLabelItem label="Net Amount" value={Number(item.net_amount).toFixed(2)} position="text-right" />
-                                                                    <PrLabelItem label="Tax (VAT)" value={Number(item.tax_amount ?? 0).toFixed(2)} position="text-right" />
+                                                                    <PrLabelItem label={tPr("unit_price")} value={formatPriceConf(Number(item.pricelist_price) || item.base_price || 0, defaultAmount, currencyBase ?? 'THB')} position="text-right" />
+                                                                    <PrLabelItem label={tPr("sub_total")} value={Number(item.base_sub_total_price).toFixed(2)} position="text-right" />
+                                                                    <PrLabelItem label={tPr("discount")} value={Number(item.discount_amount ?? 0).toFixed(2)} position="text-right" />
+                                                                    <PrLabelItem label={tPr("net_amount")} value={Number(item.net_amount).toFixed(2)} position="text-right" />
+                                                                    <PrLabelItem label={tPr("tax")} value={Number(item.tax_amount ?? 0).toFixed(2)} position="text-right" />
                                                                     <div className="space-y-1 text-right">
-                                                                        <Label className="text-muted-foreground/80 text-xs">Total</Label>
+                                                                        <Label className="text-muted-foreground/80 text-xs">{tPr("total")}</Label>
                                                                         <p className="font-bold text-sm text-active">{Number(item.total_price).toFixed(2)}</p>
                                                                     </div>
                                                                 </div>
@@ -441,7 +424,7 @@ export default function PurchaseItem({
                                                     >
                                                         <AccordionItem value="item-2">
                                                             <AccordionTrigger iconPosition="left" className="px-2 border-b border-border">
-                                                                <h4 className="font-bold text-sm">Inventory Information</h4>
+                                                                <h4 className="font-bold text-sm">{tPr("inventory_info")}</h4>
                                                             </AccordionTrigger>
 
                                                             <AccordionContent className="space-y-1 flex flex-col gap-2 border-l border-l-4 border-green-100 mx-3 my-1">
@@ -450,28 +433,31 @@ export default function PurchaseItem({
                                                             </AccordionContent>
                                                         </AccordionItem>
                                                     </Accordion>
-                                                    <Accordion
-                                                        type="single"
-                                                        collapsible
-                                                    >
-                                                        <AccordionItem value="item-3">
-                                                            <AccordionTrigger iconPosition="left" className="px-2 border-b border-border">
-                                                                <h4 className="font-bold text-sm">Business Dimensions</h4>
-                                                            </AccordionTrigger>
-                                                            <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-purple-100 mx-3 my-1">
-                                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2">
-                                                                    {item.dimension?.map((dimension: any) => (
-                                                                        <div key={dimension.key}>
-                                                                            <div className="space-y-1 text-right">
-                                                                                <Label className="text-muted-foreground/80 text-xs">{dimension.label}</Label>
-                                                                                <p className="text-sm font-semibold">{dimension.value}</p>
+
+                                                    {item.dimension?.length > 0 && (
+                                                        <Accordion
+                                                            type="single"
+                                                            collapsible
+                                                        >
+                                                            <AccordionItem value="item-3">
+                                                                <AccordionTrigger iconPosition="left" className="px-2 border-b border-border">
+                                                                    <h4 className="font-bold text-sm">{tPr("business_dimensions")}</h4>
+                                                                </AccordionTrigger>
+                                                                <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-purple-100 mx-3 my-1">
+                                                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2">
+                                                                        {item.dimension?.map((dimension: any) => (
+                                                                            <div key={dimension.key}>
+                                                                                <div className="space-y-1 text-right">
+                                                                                    <Label className="text-muted-foreground/80 text-xs">{dimension.label}</Label>
+                                                                                    <p className="text-sm font-semibold">{dimension.value}</p>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </AccordionContent>
-                                                        </AccordionItem>
-                                                    </Accordion>
+                                                                        ))}
+                                                                    </div>
+                                                                </AccordionContent>
+                                                            </AccordionItem>
+                                                        </Accordion>
+                                                    )}
                                                 </Card>
                                             </TableCell>
                                         </TableRow>

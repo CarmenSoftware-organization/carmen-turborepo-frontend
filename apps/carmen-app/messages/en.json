@@ -67,7 +67,8 @@
     "save": "Save",
     "filter": "Filter",
     "continue": "Continue",
-    "confirmDelete": "Are you sure you want to delete this item?"
+    "confirmDelete": "Are you sure you want to delete this item?",
+    "confirm": "Confirm"
   },
   "Vendor": {
     "title": "Vendor",
@@ -376,7 +377,9 @@
     "quality_score": "Quality Score",
     "base": "Base",
     "updated": "Updated",
-    "country": "Country"
+    "country": "Country",
+    "date_required": "Date Required",
+    "pricing": "Pricing"
   },
   "Product": {
     "title": "Product"
@@ -621,7 +624,28 @@
     "create_date": "Created Date",
     "items": "Items",
     "budget": "Budget",
-    "add_item": "Add Item"
+    "add_item": "Add Item",
+    "workflow": "Workflow",
+    "confirm_cancel": "Confirm Cancel",
+    "confirm_cancel_description": "Are you sure you want to cancel the purchase request? This action cannot be undone.",
+    "vendor_and_price_info": "Vendor & Pricing Information",
+    "inventory_info": "Inventory Information",
+    "business_dimensions": "Business Dimensions",
+    "compare": "Compare",
+    "vendor": "Vendor",
+    "pricelist": "Pricelist",
+    "unit_price": "Unit Price",
+    "sub_total": "Sub Total",
+    "discount": "Discount",
+    "net_amount": "Net Amount",
+    "tax": "Tax",
+    "total": "Total",
+    "on_hand": "On Hand",
+    "on_order": "On Order",
+    "reorder": "Reorder",
+    "restock": "Restock",
+    "need_reorder": "Need Reorder",
+    "stock_level": "Stock Level"
   },
   "Procurement": {
     "title": "Procurement"

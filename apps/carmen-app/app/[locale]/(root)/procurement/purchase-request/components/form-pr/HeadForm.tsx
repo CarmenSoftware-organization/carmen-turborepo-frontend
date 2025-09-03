@@ -9,6 +9,7 @@ import { CreatePrDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-reque
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { cn } from "@/lib/utils";
 import { CircleCheck, Clock4 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { UseFormReturn } from "react-hook-form";
 
 interface HeadFormProps {
@@ -30,7 +31,7 @@ export default function HeadForm({
     department_name,
     workflowStages
 }: HeadFormProps) {
-
+    const tPr = useTranslations("PurchaseRequest");
     const lastThreeSteps = workflowStages && workflowStages.length > 0 ? workflowStages.slice(-3) : [];
 
     return (
@@ -40,7 +41,7 @@ export default function HeadForm({
                 name="body.pr_date"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>PR Date</FormLabel>
+                        <FormLabel>{tPr("pr_date")}</FormLabel>
                         <FormControl>
                             <DateInput field={field} disabled={true} />
                         </FormControl>
@@ -52,7 +53,7 @@ export default function HeadForm({
                 name="body.workflow_id"
                 render={({ field }) => (
                     <FormItem>
-                        <FormLabel>PR Type</FormLabel>
+                        <FormLabel>{tPr("pr_type")}</FormLabel>
                         <FormControl>
                             <WorkflowLookup
                                 value={field.value ? field.value : workflow_id}
@@ -66,7 +67,7 @@ export default function HeadForm({
                 )}
             />
             <div className="space-y-2">
-                <Label>Requestor</Label>
+                <Label>{tPr("requestor")}</Label>
                 <Input
                     placeholder="Requestor"
                     disabled
@@ -75,7 +76,7 @@ export default function HeadForm({
                 />
             </div>
             <div className="space-y-2">
-                <Label>Department</Label>
+                <Label>{tPr("department")}</Label>
                 <Input
                     placeholder="PR-XXXX"
                     disabled
@@ -89,7 +90,7 @@ export default function HeadForm({
                 name="body.description"
                 render={({ field }) => (
                     <FormItem className="col-span-2">
-                        <FormLabel>Description</FormLabel>
+                        <FormLabel>{tPr("description")}</FormLabel>
                         <FormControl>
                             <Textarea
                                 value={field.value ?? ""}

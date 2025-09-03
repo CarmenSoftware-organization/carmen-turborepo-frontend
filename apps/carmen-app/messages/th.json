@@ -51,7 +51,8 @@
     "save": "บันทึก",
     "continue": "ดำเนินการต่อ",
     "filter": "ตัวกรอง",
-    "confirmDelete": "คุณแน่ใจหรือไม่ที่จะลบรายการนี้?"
+    "confirmDelete": "คุณแน่ใจหรือไม่ที่จะลบรายการนี้?",
+    "confirm": "ยืนยัน"
   },
   "Vendor": {
     "title": "ผู้จัดจำหน่าย",
@@ -375,7 +376,9 @@
     "country": "ประเทศ",
     "select_vendor": "เลือกผู้จัดจำหน่าย",
     "no_vendor_found": "ไม่พบผู้จัดจำหน่าย",
-    "no_vendor_available": "ไม่มีผู้จัดจำหน่าย"
+    "no_vendor_available": "ไม่มีผู้จัดจำหน่าย",
+    "date_required": "วันที่ต้องการ",
+    "pricing": "ราคา"
   },
   "Product": {
     "title": "สินค้า"
@@ -617,7 +620,28 @@
     "create_date": "วันที่สร้าง",
     "items": "รายการสินค้า",
     "budget": "งบประมาณ",
-    "add_item": "เพิ่มรายการสินค้า"
+    "add_item": "เพิ่มรายการสินค้า",
+    "workflow": "ประเภทการทำงาน",
+    "confirm_cancel": "ยืนยันการยกเลิก",
+    "confirm_cancel_description": "คุณแน่ใจหรือไม่ที่จะยกเลิกการสร้างใบขอซื้อนี้? การยกเลิกจะไม่สามารถยกเลิกได้",
+    "vendor_and_price_info": "ผู้จัดจำหน่ายและราคา",
+    "inventory_info": "ข้อมูลสินค้า",
+    "business_dimensions": "ขนาดธุรกิจ",
+    "compare": "เปรียบเทียบ",
+    "vendor": "ผู้จัดจำหน่าย",
+    "pricelist": "ราคาขาย",
+    "unit_price": "ราคาต่อหน่วย",
+    "sub_total": "ราคารวม",
+    "discount": "ส่วนลด",
+    "net_amount": "จำนวนเงินสุทธิ",
+    "tax": "ภาษี",
+    "total": "รวม",
+    "on_hand": "สินค้าในคลัง",
+    "on_order": "สินค้าที่สั่งซื้อ",
+    "reorder": "ต้องการซื้ออีก",
+    "restock": "ต้องการซื้ออีก",
+    "need_reorder": "ต้องการซื้ออีก",
+    "stock_level": "ระดับสินค้า"
   },
   "Procurement": {
     "title": "การจัดซื้อ"

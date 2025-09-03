@@ -23,12 +23,12 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "date-fns";
 import { formatDateFns } from "@/utils/config-system";
 import { useAuth } from "@/context/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Clock10 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
 
 interface Props {
     req_qty: number;
@@ -52,6 +52,7 @@ export default function VendorComparison(
     }: Props
 ) {
     const { dateFormat } = useAuth();
+    const tPr = useTranslations("PurchaseRequest");
     const [selectedVendorId, setSelectedVendorId] = useState<string | null>(null);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -61,7 +62,7 @@ export default function VendorComparison(
                 className="hover:bg-transparent text-primary hover:text-primary/70 text-sm font-semibold pr-4"
                 onClick={() => setIsOpen(true)}
             >
-                Compare
+                {tPr("compare")}
             </DialogTrigger>
             <DialogContent className="max-w-6xl">
                 <DialogHeader>
