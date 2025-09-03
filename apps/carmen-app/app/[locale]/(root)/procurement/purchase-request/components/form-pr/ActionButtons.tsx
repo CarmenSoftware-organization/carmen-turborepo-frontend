@@ -3,20 +3,12 @@ import { Button } from "@/components/ui/button";
 import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 
 interface ActionButtonsProps {
-    // State flags
     readonly prStatus: string;
     readonly isNewPr: boolean;
     readonly isDraft: boolean;
 
-    // Loading states
-    readonly isRejectingPr: boolean;
-    readonly isSendingBackPr: boolean;
-    readonly isReviewingPr: boolean;
-    readonly isApprovingPr: boolean;
-    readonly isPurchasingApprovePr: boolean;
-    readonly isSubmittingPr: boolean;
+    readonly isPending: boolean;
 
-    // Action handlers
     readonly onReject: () => void;
     readonly onSendBack: () => void;
     readonly onReview: () => void;
@@ -31,12 +23,7 @@ export default function ActionButtons({
     prStatus,
     isNewPr,
     isDraft,
-    isRejectingPr,
-    isSendingBackPr,
-    isReviewingPr,
-    isApprovingPr,
-    isPurchasingApprovePr,
-    isSubmittingPr,
+    isPending,
     onReject,
     onSendBack,
     onReview,
@@ -70,7 +57,7 @@ export default function ActionButtons({
                                     e.stopPropagation();
                                     onReject();
                                 }}
-                                disabled={isRejectingPr}
+                                disabled={isPending}
                             >
                                 <X className="w-4 h-4" />
                                 Reject
@@ -83,7 +70,7 @@ export default function ActionButtons({
                                     e.stopPropagation();
                                     onSendBack();
                                 }}
-                                disabled={isSendingBackPr}
+                                disabled={isPending}
                             >
                                 <ArrowLeftIcon className="w-4 h-4" />
                                 Send Back
@@ -96,7 +83,7 @@ export default function ActionButtons({
                                     e.stopPropagation();
                                     onReview();
                                 }}
-                                disabled={isReviewingPr}
+                                disabled={isPending}
                             >
                                 <Eye className="w-4 h-4" />
                                 Review
@@ -109,7 +96,7 @@ export default function ActionButtons({
                                     e.stopPropagation();
                                     onApprove();
                                 }}
-                                disabled={isApprovingPr}
+                                disabled={isPending}
                             >
                                 <CheckCircleIcon className="w-4 h-4" />
                                 Approve
@@ -122,7 +109,7 @@ export default function ActionButtons({
                                     e.stopPropagation();
                                     onPurchaseApprove();
                                 }}
-                                disabled={isPurchasingApprovePr}
+                                disabled={isPending}
                             >
                                 <ShoppingCart className="w-4 h-4" />
                                 Approve Purchase
@@ -139,7 +126,7 @@ export default function ActionButtons({
                                 e.stopPropagation();
                                 onSubmitPr();
                             }}
-                            disabled={isSubmittingPr}
+                            disabled={isPending}
                         >
                             <SendIcon className="w-4 h-4" />
                             Submit

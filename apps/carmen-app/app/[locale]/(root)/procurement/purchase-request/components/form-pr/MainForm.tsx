@@ -30,6 +30,7 @@ import { DOC_STATUS } from "@/constants/enum";
 import ActionButtons from "./ActionButtons";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { usePrActions } from "@/hooks/usePrActions";
 
 interface Props {
     mode: formType;
@@ -74,26 +75,16 @@ export default function MainForm({ mode, initValues }: Props) {
 
     const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, tenantId);
 
-    const { mutate: updatePr, isPending: isUpdatingPr } = useUpdateUPr(
-        token, tenantId, initValues?.id || "", 'save');
-
-    const { mutate: submitPr, isPending: isSubmittingPr } = useUpdateUPr(
-        token, tenantId, initValues?.id || "", 'submit');
-
-    const { mutate: approvePr, isPending: isApprovingPr } = useUpdateUPr(
-        token, tenantId, initValues?.id || "", 'approve');
-
-    const { mutate: purchaseApprovePr, isPending: isPurchasingApprovePr } = useUpdateUPr(
-        token, tenantId, initValues?.id || "", 'purchase');
-
-    const { mutate: reviewPr, isPending: isReviewingPr } = useUpdateUPr(
-        token, tenantId, initValues?.id || "", 'review');
-
-    const { mutate: rejectPr, isPending: isRejectingPr } = useUpdateUPr(
-        token, tenantId, initValues?.id || "", 'reject');
-
-    const { mutate: sendBackPr, isPending: isSendingBackPr } = useUpdateUPr(
-        token, tenantId, initValues?.id || "", 'send_back');
+    const {
+        save,
+        submit,
+        approve,
+        purchase,
+        review,
+        reject,
+        sendBack,
+        isPending,
+    } = usePrActions(token, tenantId, initValues?.id || "");
 
     // ใช้ custom hook สำหรับจัดการ purchase items
     const purchaseItemManager = usePurchaseItemManagement({
@@ -146,14 +137,12 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            updatePr({
-                ...data,
-                action: 'save'
-            } as any, {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            save(data as any, {
                 onSuccess: () => {
                     toastSuccess({
                         message: "Purchase Request updated successfully",
-                    })
+                    });
                     queryClient.invalidateQueries({
                         queryKey: ['purchaseRequest', initValues?.id]
                     });
@@ -162,7 +151,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 onError: () => {
                     toastError({
                         message: "Purchase Request updated failed",
-                    })
+                    });
                 }
             });
         }
@@ -236,7 +225,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const isProgress = initValues?.pr_status === "in_progress";
 
     const onSubmitPr = () => {
-        submitPr({} as any, {
+        submit({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: "Purchase Request submitted successfully",
@@ -254,7 +243,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onApprove = () => {
-        approvePr({} as any, {
+        approve({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: "Purchase Request approved successfully",
@@ -269,7 +258,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReject = () => {
-        rejectPr({
+        reject({
             state_role: 'create',
             body: initValues?.purchase_request_detail.map((item) => ({
                 id: item.id,
@@ -294,7 +283,7 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     const onSendBack = () => {
-        sendBackPr({
+        sendBack({
             state_role: 'create',
             body: initValues?.purchase_request_detail.map((item) => ({
                 id: item.id,
@@ -316,7 +305,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onPurchaseApprove = () => {
-        purchaseApprovePr({} as any, {
+        purchase({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: "Purchase Request approved successfully",
@@ -331,7 +320,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReview = () => {
-        reviewPr({} as any, {
+        review({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: "Purchase Request reviewed successfully",
@@ -350,7 +339,6 @@ export default function MainForm({ mode, initValues }: Props) {
 
     console.log('prStatus', prStatus);
 
-
     return (
         <>
             <DetailsAndComments
@@ -368,7 +356,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     onModeChange={setCurrentFormType}
                                     onCancel={handleCancel}
                                     hasFormChanges={hasFormChanges}
-                                    isCreatingPr={isCreatingPr || isUpdatingPr}
+                                    isCreatingPr={isCreatingPr || isPending}
                                     prStatus={prStatus ?? ""}
                                 />
                                 <HeadForm
@@ -433,12 +421,7 @@ export default function MainForm({ mode, initValues }: Props) {
                             prStatus={prStatus || ''}
                             isNewPr={isNewPr}
                             isDraft={isDraft}
-                            isRejectingPr={isRejectingPr}
-                            isSendingBackPr={isSendingBackPr}
-                            isReviewingPr={isReviewingPr}
-                            isApprovingPr={isApprovingPr}
-                            isPurchasingApprovePr={isPurchasingApprovePr}
-                            isSubmittingPr={isSubmittingPr}
+                            isPending={isPending}
                             onReject={onReject}
                             onSendBack={onSendBack}
                             onReview={onReview}
