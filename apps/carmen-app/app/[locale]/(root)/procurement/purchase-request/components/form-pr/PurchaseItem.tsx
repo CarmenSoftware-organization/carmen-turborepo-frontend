@@ -118,7 +118,7 @@ export default function PurchaseItem({
 
 
     return (
-        <div className="mt-4 border min-h-56">
+        <div className="mt-4 min-h-56">
             {currentFormType !== formType.VIEW && (
                 <div className="flex justify-end mb-4">
                     <Button

@@ -30,6 +30,8 @@ import WorkflowHistory from "./WorkflowHistory";
 import JsonViewer from "@/components/JsonViewer";
 import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import { DOC_STATUS } from "@/constants/enum";
+import ActionButtons from "./ActionButtons";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
     mode: formType;
@@ -101,6 +103,7 @@ export default function MainForm({ mode, initValues }: Props) {
         initValues: initValues?.purchase_request_detail
     });
 
+    const queryClient = useQueryClient();
 
     // ฟังก์ชันตรวจสอบว่ามีการเปลี่ยนแปลงข้อมูลหรือไม่
     const hasFormChanges = (): boolean => {
@@ -237,6 +240,9 @@ export default function MainForm({ mode, initValues }: Props) {
                 toastSuccess({
                     message: "Purchase Request submitted successfully",
                 })
+                queryClient.invalidateQueries({
+                    queryKey: ['purchaseRequest', initValues?.id]
+                });
             },
             onError: () => {
                 toastError({
@@ -335,6 +341,8 @@ export default function MainForm({ mode, initValues }: Props) {
         })
     };
 
+    const isNewPr = currentFormType === formType.ADD
+
 
     return (
         <>
@@ -400,99 +408,23 @@ export default function MainForm({ mode, initValues }: Props) {
                         {/* <JsonViewer data={watchForm} title="Form Data" /> */}
                     </Card>
 
-                    <MotionDiv
-                        className="fixed bottom-10 right-20 flex items-center gap-2 bg-background shadow-lg border border-border rounded-md p-2"
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                    >
-                        {!isDraft && (
-                            <>
-                                <Button
-                                    size={'sm'}
-                                    className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)]"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        onReject();
-                                    }}
-                                    disabled={isRejectingPr}
-                                >
-                                    <X className="w-4 h-4" />
-                                    Reject
-                                </Button>
-                                <Button
-                                    size={'sm'}
-                                    className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)]"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        onSendBack();
-                                    }}
-                                    disabled={isSendingBackPr}
-                                >
-                                    <ArrowLeftIcon className="w-4 h-4" />
-                                    Send Back
-                                </Button>
-
-
-                                <Button
-                                    size={'sm'}
-                                    className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)]"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        onReview();
-                                    }}
-                                    disabled={isReviewingPr}
-                                >
-                                    <Eye className="w-4 h-4" />
-                                    Review
-                                </Button>
-                                <Button
-                                    size={'sm'}
-                                    className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)]"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        onApprove();
-                                    }}
-                                    disabled={isApprovingPr}
-                                >
-                                    <CheckCircleIcon className="w-4 h-4" />
-                                    Approve
-                                </Button>
-                                <Button
-                                    size={'sm'}
-                                    className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)]"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        onPurchaseApprove();
-                                    }}
-                                    disabled={isPurchasingApprovePr}
-                                >
-                                    <ShoppingCart className="w-4 h-4" />
-                                    Approve Purchase
-                                </Button>
-                            </>
-                        )}
-
-                        <Button
-                            size={'sm'}
-                            className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)]"
-                            onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                onSubmitPr();
-                            }}
-                            disabled={isSubmittingPr}
-                        >
-                            <SendIcon className="w-4 h-4" />
-                            Submit
-                        </Button>
-                    </MotionDiv>
+                    <ActionButtons
+                        isNewPr={isNewPr}
+                        isDraft={isDraft}
+                        isRejectingPr={isRejectingPr}
+                        isSendingBackPr={isSendingBackPr}
+                        isReviewingPr={isReviewingPr}
+                        isApprovingPr={isApprovingPr}
+                        isPurchasingApprovePr={isPurchasingApprovePr}
+                        isSubmittingPr={isSubmittingPr}
+                        onReject={onReject}
+                        onSendBack={onSendBack}
+                        onReview={onReview}
+                        onApprove={onApprove}
+                        onPurchaseApprove={onPurchaseApprove}
+                        onSubmitPr={onSubmitPr}
+                        onSave={form.handleSubmit(handleSubmit)}
+                    />
                 </div>
             </DetailsAndComments>
 
