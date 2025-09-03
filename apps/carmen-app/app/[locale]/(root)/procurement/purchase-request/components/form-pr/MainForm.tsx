@@ -130,13 +130,13 @@ export default function MainForm({ mode, initValues }: Props) {
                     if (responseData?.data?.id) {
                         router.replace(`/procurement/purchase-request/${responseData.data.id}`);
                         toastSuccess({
-                            message: "Purchase Request created successfully",
+                            message: tPR("purchase_request_created"),
                         })
                     }
                 },
                 onError: () => {
                     toastError({
-                        message: "Purchase Request created failed",
+                        message: tPR("purchase_request_created_failed"),
                     })
                 }
             });
@@ -145,7 +145,7 @@ export default function MainForm({ mode, initValues }: Props) {
             save(data as any, {
                 onSuccess: () => {
                     toastSuccess({
-                        message: "Purchase Request updated successfully",
+                        message: tPR("purchase_request_updated"),
                     });
                     queryClient.invalidateQueries({
                         queryKey: ['purchaseRequest', initValues?.id]
@@ -154,7 +154,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 },
                 onError: () => {
                     toastError({
-                        message: "Purchase Request updated failed",
+                        message: tPR("purchase_request_updated_failed"),
                     });
                 }
             });
@@ -223,16 +223,17 @@ export default function MainForm({ mode, initValues }: Props) {
     // const watchForm = form.watch();
 
 
-    console.log(initValues);
+    // console.log(initValues);
 
     const isDraft = initValues?.pr_status === "draft";
     const isProgress = initValues?.pr_status === "in_progress";
 
     const onSubmitPr = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         submit({} as any, {
             onSuccess: () => {
                 toastSuccess({
-                    message: "Purchase Request submitted successfully",
+                    message: tPR("purchase_request_submitted"),
                 })
                 queryClient.invalidateQueries({
                     queryKey: ['purchaseRequest', initValues?.id]
@@ -240,22 +241,23 @@ export default function MainForm({ mode, initValues }: Props) {
             },
             onError: () => {
                 toastError({
-                    message: "Purchase Request submitted failed",
+                    message: tPR("purchase_request_submitted_failed"),
                 })
             }
         })
     };
 
     const onApprove = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         approve({} as any, {
             onSuccess: () => {
                 toastSuccess({
-                    message: "Purchase Request approved successfully",
+                    message: tPR("purchase_request_approved"),
                 })
             },
             onError: () => {
                 toastError({
-                    message: "Purchase Request approved failed",
+                    message: tPR("purchase_request_approved_failed"),
                 })
             }
         })
@@ -269,10 +271,11 @@ export default function MainForm({ mode, initValues }: Props) {
                 stage_status: 'reject',
                 stage_message: 'ไม่ต้องซื้อ',
             }))
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any, {
             onSuccess: () => {
                 toastSuccess({
-                    message: "Purchase Request rejected successfully",
+                    message: tPR("purchase_request_rejected"),
                 })
                 queryClient.invalidateQueries({
                     queryKey: ['purchaseRequest', initValues?.id]
@@ -280,7 +283,7 @@ export default function MainForm({ mode, initValues }: Props) {
             },
             onError: () => {
                 toastError({
-                    message: "Purchase Request rejected failed",
+                    message: tPR("purchase_request_rejected_failed"),
                 })
             }
         })
@@ -294,45 +297,48 @@ export default function MainForm({ mode, initValues }: Props) {
                 stage_status: 'send_back',
                 stage_message: 'ส่งกลับ',
             }))
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any, {
             onSuccess: () => {
                 toastSuccess({
-                    message: "Purchase Request sent back successfully",
+                    message: tPR("purchase_request_sent_back"),
                 })
             },
             onError: () => {
                 toastError({
-                    message: "Purchase Request sent back failed",
+                    message: tPR("purchase_request_sent_back_failed"),
                 })
             }
         })
     };
 
     const onPurchaseApprove = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         purchase({} as any, {
             onSuccess: () => {
                 toastSuccess({
-                    message: "Purchase Request approved successfully",
+                    message: tPR("purchase_request_approved_purchase"),
                 })
             },
             onError: () => {
                 toastError({
-                    message: "Purchase Request approved failed",
+                    message: tPR("purchase_request_approved_purchase_failed"),
                 })
             }
         })
     };
 
     const onReview = () => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         review({} as any, {
             onSuccess: () => {
                 toastSuccess({
-                    message: "Purchase Request reviewed successfully",
+                    message: tPR("purchase_request_reviewed"),
                 })
             },
             onError: () => {
                 toastError({
-                    message: "Purchase Request reviewed failed",
+                    message: tPR("purchase_request_reviewed_failed"),
                 })
             }
         })

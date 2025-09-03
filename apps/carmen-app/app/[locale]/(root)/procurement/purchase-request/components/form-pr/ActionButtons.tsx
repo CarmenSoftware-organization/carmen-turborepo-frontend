@@ -1,6 +1,7 @@
 import { X, ArrowLeftIcon, Eye, CheckCircleIcon, ShoppingCart, SendIcon, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
+import { useTranslations } from "next-intl";
 
 interface ActionButtonsProps {
     readonly prStatus: string;
@@ -32,9 +33,10 @@ export default function ActionButtons({
     onSubmitPr,
     onSave,
 }: ActionButtonsProps) {
+    const tAction = useTranslations("Action");
     return (
         <MotionDiv
-            className={`flex items-center justify-end gap-2 bg-background shadow-lg border border-border rounded-md p-2`}
+            className={`fixed bottom-8 right-20 w-fit flex items-center justify-end gap-2 bg-background shadow-lg border border-border rounded-md p-2`}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
@@ -43,7 +45,7 @@ export default function ActionButtons({
             {isNewPr ? (
                 <Button onClick={onSave} size="sm">
                     <Save />
-                    Save
+                    {tAction("save")}
                 </Button>
             ) : (
                 <>
@@ -60,7 +62,7 @@ export default function ActionButtons({
                                 disabled={isPending}
                             >
                                 <X className="w-4 h-4" />
-                                Reject
+                                {tAction("reject")}
                             </Button>
                             <Button
                                 size="sm"
@@ -73,7 +75,7 @@ export default function ActionButtons({
                                 disabled={isPending}
                             >
                                 <ArrowLeftIcon className="w-4 h-4" />
-                                Send Back
+                                {tAction("send_back")}
                             </Button>
                             <Button
                                 size="sm"
@@ -86,7 +88,7 @@ export default function ActionButtons({
                                 disabled={isPending}
                             >
                                 <Eye className="w-4 h-4" />
-                                Review
+                                {tAction("review")}
                             </Button>
                             <Button
                                 size="sm"
@@ -99,7 +101,7 @@ export default function ActionButtons({
                                 disabled={isPending}
                             >
                                 <CheckCircleIcon className="w-4 h-4" />
-                                Approve
+                                {tAction("approve")}
                             </Button>
                             <Button
                                 size="sm"
@@ -112,7 +114,7 @@ export default function ActionButtons({
                                 disabled={isPending}
                             >
                                 <ShoppingCart className="w-4 h-4" />
-                                Approve Purchase
+                                {tAction("purchase_approve")}
                             </Button>
                         </>
                     )}
@@ -129,7 +131,7 @@ export default function ActionButtons({
                             disabled={isPending}
                         >
                             <SendIcon className="w-4 h-4" />
-                            Submit
+                            {tAction("submit")}
                         </Button>
                     )}
                 </>

@@ -63,13 +63,20 @@ const usePrActions = (
 
     // Action functions
     const actions = {
-        save: (data: PurchaseRequestUpdateFormDto) => saveMutation.mutate(data),
-        submit: (data: PurchaseRequestUpdateFormDto) => submitMutation.mutate(data),
-        approve: (data: PurchaseRequestUpdateFormDto) => approveMutation.mutate(data),
-        purchase: (data: PurchaseRequestUpdateFormDto) => purchaseMutation.mutate(data),
-        review: (data: PurchaseRequestUpdateFormDto) => reviewMutation.mutate(data),
-        reject: (data: PurchaseRequestUpdateFormDto) => rejectMutation.mutate(data),
-        sendBack: (data: PurchaseRequestUpdateFormDto) => sendBackMutation.mutate(data),
+        save: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
+            saveMutation.mutate(data, options),
+        submit: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
+            submitMutation.mutate(data, options),
+        approve: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
+            approveMutation.mutate(data, options),
+        purchase: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
+            purchaseMutation.mutate(data, options),
+        review: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
+            reviewMutation.mutate(data, options),
+        reject: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
+            rejectMutation.mutate(data, options),
+        sendBack: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
+            sendBackMutation.mutate(data, options),
     };
 
     // Aggregate loading states

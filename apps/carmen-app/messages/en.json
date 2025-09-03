@@ -68,7 +68,13 @@
     "filter": "Filter",
     "continue": "Continue",
     "confirmDelete": "Are you sure you want to delete this item?",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "reject": "Reject",
+    "send_back": "Send Back",
+    "review": "Review",
+    "approve": "Approve",
+    "purchase_approve": "Purchase Approve",
+    "submit": "Submit"
   },
   "Vendor": {
     "title": "Vendor",
@@ -645,7 +651,23 @@
     "reorder": "Reorder",
     "restock": "Restock",
     "need_reorder": "Need Reorder",
-    "stock_level": "Stock Level"
+    "stock_level": "Stock Level",
+    "purchase_request_created": "Purchase Request created successfully",
+    "purchase_request_created_failed": "Purchase Request created failed",
+    "purchase_request_updated": "Purchase Request updated successfully",
+    "purchase_request_updated_failed": "Purchase Request updated failed",
+    "purchase_request_submitted": "Purchase Request submitted successfully",
+    "purchase_request_submitted_failed": "Purchase Request submitted failed",
+    "purchase_request_approved": "Purchase Request approved successfully",
+    "purchase_request_approved_failed": "Purchase Request approved failed",
+    "purchase_request_rejected": "Purchase Request rejected successfully",
+    "purchase_request_rejected_failed": "Purchase Request rejected failed",
+    "purchase_request_sent_back": "Purchase Request sent back successfully",
+    "purchase_request_sent_back_failed": "Purchase Request sent back failed",
+    "purchase_request_approved_purchase": "Purchase Request approved purchase successfully",
+    "purchase_request_approved_purchase_failed": "Purchase Request approved purchase failed",
+    "purchase_request_reviewed": "Purchase Request reviewed successfully",
+    "purchase_request_reviewed_failed": "Purchase Request reviewed failed"
   },
   "Procurement": {
     "title": "Procurement"

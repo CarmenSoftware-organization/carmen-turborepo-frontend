@@ -52,7 +52,13 @@
     "continue": "ดำเนินการต่อ",
     "filter": "ตัวกรอง",
     "confirmDelete": "คุณแน่ใจหรือไม่ที่จะลบรายการนี้?",
-    "confirm": "ยืนยัน"
+    "confirm": "ยืนยัน",
+    "reject": "ยกเลิก",
+    "send_back": "ส่งกลับ",
+    "review": "ตรวจสอบ",
+    "approve": "อนุมัติ",
+    "purchase_approve": "อนุมัติซื้อ",
+    "submit": "ส่งอนุมัติ"
   },
   "Vendor": {
     "title": "ผู้จัดจำหน่าย",
@@ -641,7 +647,23 @@
     "reorder": "ต้องการซื้ออีก",
     "restock": "ต้องการซื้ออีก",
     "need_reorder": "ต้องการซื้ออีก",
-    "stock_level": "ระดับสินค้า"
+    "stock_level": "ระดับสินค้า",
+    "purchase_request_created": "ใบขอซื้อสร้างเรียบร้อย",
+    "purchase_request_created_failed": "ใบขอซื้อสร้างไม่สำเร็จ",
+    "purchase_request_updated": "ใบขอซื้ออัพเดตเรียบร้อย",
+    "purchase_request_updated_failed": "ใบขอซื้ออัพเดตไม่สำเร็จ",
+    "purchase_request_submitted": "ใบขอซื้อส่งอนุมัติเรียบร้อย",
+    "purchase_request_submitted_failed": "ใบขอซื้อส่งอนุมัติไม่สำเร็จ",
+    "purchase_request_approved": "ใบขอซื้ออนุมัติเรียบร้อย",
+    "purchase_request_approved_failed": "ใบขอซื้ออนุมัติไม่สำเร็จ",
+    "purchase_request_rejected": "ใบขอซื้อยกเลิกเรียบร้อย",
+    "purchase_request_rejected_failed": "ใบขอซื้อยกเลิกไม่สำเร็จ",
+    "purchase_request_sent_back": "ใบขอซื้อส่งกลับเรียบร้อย",
+    "purchase_request_sent_back_failed": "ใบขอซื้อส่งกลับไม่สำเร็จ",
+    "purchase_request_approved_purchase": "ใบขอซื้ออนุมัติซื้อเรียบร้อย",
+    "purchase_request_approved_purchase_failed": "ใบขอซื้ออนุมัติซื้อไม่สำเร็จ",
+    "purchase_request_reviewed": "ใบขอซื้อทำการตรวจสอบเรียบร้อย",
+    "purchase_request_reviewed_failed": "ใบขอซื้อทำการตรวจสอบไม่สำเร็จ"
   },
   "Procurement": {
     "title": "การจัดซื้อ"
