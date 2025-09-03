@@ -397,8 +397,8 @@ export default function PurchaseItem({
                                                                 />
                                                             </div>
 
-                                                            <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-sky-100 mx-3 my-1">
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 border-b border-border mx-4 pb-2">
+                                                            <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-sky-100 mx-3 my-1 -mt-px">
+                                                                <div className="grid grid-cols-1 md:grid-cols-2 border-t border-border mx-4 pt-2 -mt-px">
                                                                     <PrLabelItem label={tPr("vendor")} value={item.vendor_name ?? "-"} />
                                                                     <PrLabelItem label={tPr("pricelist")} value={item.pricelist_no ?? "-"} />
                                                                 </div>
@@ -423,11 +423,11 @@ export default function PurchaseItem({
                                                         collapsible
                                                     >
                                                         <AccordionItem value="item-2">
-                                                            <AccordionTrigger iconPosition="left" className="px-2 border-b border-border">
+                                                            <AccordionTrigger iconPosition="left" className="px-2">
                                                                 <h4 className="font-bold text-sm">{tPr("inventory_info")}</h4>
                                                             </AccordionTrigger>
 
-                                                            <AccordionContent className="space-y-1 flex flex-col gap-2 border-l border-l-4 border-green-100 mx-3 my-1">
+                                                            <AccordionContent className="space-y-1 flex flex-col gap-2 border-l border-l-4 border-green-100 mx-3 my-1 -mt-px">
                                                                 <InventoryInfo item={item} token={token} tenantId={tenantId} />
                                                                 <InventoryProgress item={item} token={token} tenantId={tenantId} />
                                                             </AccordionContent>
@@ -440,10 +440,10 @@ export default function PurchaseItem({
                                                             collapsible
                                                         >
                                                             <AccordionItem value="item-3">
-                                                                <AccordionTrigger iconPosition="left" className="px-2 border-b border-border">
+                                                                <AccordionTrigger iconPosition="left" className="px-2">
                                                                     <h4 className="font-bold text-sm">{tPr("business_dimensions")}</h4>
                                                                 </AccordionTrigger>
-                                                                <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-purple-100 mx-3 my-1">
+                                                                <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-purple-100 mx-3 my-1 -mt-px">
                                                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2">
                                                                         {item.dimension?.map((dimension: any) => (
                                                                             <div key={dimension.key}>

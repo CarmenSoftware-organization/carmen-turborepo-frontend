@@ -58,7 +58,7 @@ export default function ListUnit({
             ),
             dataIndex: "select",
             key: "select",
-            width: "w-6",
+            width: "w-10",
             align: "center",
             render: (_: unknown, record: TableDataSource) => {
                 return <Checkbox checked={selectedUnits.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
@@ -68,7 +68,7 @@ export default function ListUnit({
             title: "#",
             dataIndex: "no",
             key: "no",
-            width: "w-6",
+            width: "w-10",
             align: "center",
         },
         {
@@ -130,9 +130,11 @@ export default function ListUnit({
             width: "w-36",
             align: "center",
             render: (is_active: boolean) => (
-                <StatusCustom is_active={is_active}>
-                    {is_active ? tCommon("active") : tCommon("inactive")}
-                </StatusCustom>
+                <div className="flex justify-center">
+                    <StatusCustom is_active={is_active}>
+                        {is_active ? tCommon("active") : tCommon("inactive")}
+                    </StatusCustom>
+                </div>
             ),
         },
         {

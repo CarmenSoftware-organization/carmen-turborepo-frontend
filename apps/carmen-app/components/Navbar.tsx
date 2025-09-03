@@ -7,12 +7,14 @@ import UserAvatar from "./UserAvatar";
 import Notification from "./Notification";
 import { useTranslations } from "next-intl";
 import "@/styles/layout.css";
+import { Link } from "@/lib/navigation";
 
 export default function Navbar() {
     const tHome = useTranslations('HomePage');
+
     return (
         <div className="fxb-c navbar-container">
-            <div className="px-2">
+            <Link href="/dashboard" className="px-2">
                 <span
                     className="navbar-logo-text"
                     data-id="sidebar-logo-text"
@@ -25,7 +27,7 @@ export default function Navbar() {
                 >
                     {tHome('HospitalitySupplyChain')}
                 </span>
-            </div>
+            </Link>
             <div className="flex items-center gap-2">
                 <div className="hidden md:block">
                     <ModuleList />
