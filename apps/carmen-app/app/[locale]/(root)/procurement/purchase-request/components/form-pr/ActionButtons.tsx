@@ -4,6 +4,7 @@ import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 
 interface ActionButtonsProps {
     // State flags
+    readonly prStatus: string;
     readonly isNewPr: boolean;
     readonly isDraft: boolean;
 
@@ -27,6 +28,7 @@ interface ActionButtonsProps {
 }
 
 export default function ActionButtons({
+    prStatus,
     isNewPr,
     isDraft,
     isRejectingPr,
@@ -128,19 +130,21 @@ export default function ActionButtons({
                         </>
                     )}
 
-                    <Button
-                        size="sm"
-                        className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)]"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onSubmitPr();
-                        }}
-                        disabled={isSubmittingPr}
-                    >
-                        <SendIcon className="w-4 h-4" />
-                        Submit
-                    </Button>
+                    {prStatus !== 'in_progress' && (
+                        <Button
+                            size="sm"
+                            className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)]"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onSubmitPr();
+                            }}
+                            disabled={isSubmittingPr}
+                        >
+                            <SendIcon className="w-4 h-4" />
+                            Submit
+                        </Button>
+                    )}
                 </>
             )}
         </MotionDiv>

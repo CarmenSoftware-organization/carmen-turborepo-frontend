@@ -31,6 +31,9 @@ export function DeliveryPointSelectLookup({
     const { deliveryPoints, isLoading } = useDeliveryPointQuery({
         token: token,
         tenantId: tenantId,
+        params: {
+            perpage: "-1"
+        }
     });
 
     return (

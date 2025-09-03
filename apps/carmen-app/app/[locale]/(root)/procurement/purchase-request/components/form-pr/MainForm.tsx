@@ -8,14 +8,12 @@ import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "@/hooks/usePurchaseItemManagement";
 import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItem from "./PurchaseItem";
 import { Card } from "@/components/ui/card";
-import { ArrowLeftIcon, CheckCircleIcon, X, SendIcon, Eye, ShoppingCart } from "lucide-react";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
 
@@ -28,10 +26,10 @@ import ActivityLogComponent from "@/components/comment-activity/ActivityLogCompo
 import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
 import JsonViewer from "@/components/JsonViewer";
-import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import { DOC_STATUS } from "@/constants/enum";
 import ActionButtons from "./ActionButtons";
 import { useQueryClient } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 
 interface Props {
     mode: formType;
@@ -156,6 +154,9 @@ export default function MainForm({ mode, initValues }: Props) {
                     toastSuccess({
                         message: "Purchase Request updated successfully",
                     })
+                    queryClient.invalidateQueries({
+                        queryKey: ['purchaseRequest', initValues?.id]
+                    });
                     setCurrentFormType(formType.VIEW);
                 },
                 onError: () => {
@@ -280,6 +281,9 @@ export default function MainForm({ mode, initValues }: Props) {
                 toastSuccess({
                     message: "Purchase Request rejected successfully",
                 })
+                queryClient.invalidateQueries({
+                    queryKey: ['purchaseRequest', initValues?.id]
+                });
             },
             onError: () => {
                 toastError({
@@ -342,6 +346,9 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const isNewPr = currentFormType === formType.ADD
+    const prStatus = initValues?.pr_status
+
+    console.log('prStatus', prStatus);
 
 
     return (
@@ -351,7 +358,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 commentComponent={<CommentComponent initialComments={mockCommentsPr} />}
             >
                 <div className="space-y-4">
-                    <Card className="p-4 h-[calc(100vh-200px)]">
+                    <Card className="p-4">
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit(handleSubmit)}>
                                 <ActionFields
@@ -360,9 +367,9 @@ export default function MainForm({ mode, initValues }: Props) {
                                     initValues={initValues}
                                     onModeChange={setCurrentFormType}
                                     onCancel={handleCancel}
-                                    isError={!canSave}
                                     hasFormChanges={hasFormChanges}
                                     isCreatingPr={isCreatingPr || isUpdatingPr}
+                                    prStatus={prStatus ?? ""}
                                 />
                                 <HeadForm
                                     form={form as any}
@@ -373,16 +380,29 @@ export default function MainForm({ mode, initValues }: Props) {
                                     workflowStages={workflowStages}
                                 />
                                 <Tabs defaultValue="items">
-                                    <TabsList className="w-full h-8 mt-4">
-                                        <TabsTrigger className="w-full" value="items">
+                                    <TabsList className={cn(
+                                        "mt-4",
+                                        isNewPr ? "" : "w-full"
+                                    )}>
+                                        <TabsTrigger
+                                            className={cn(
+                                                "h-6",
+                                                isNewPr ? "" : "w-full"
+                                            )}
+                                            value="items"
+                                        >
                                             Items
                                         </TabsTrigger>
-                                        <TabsTrigger className="w-full" value="budget">
-                                            Budget
-                                        </TabsTrigger>
-                                        <TabsTrigger className="w-full" value="workflow">
-                                            Workflow
-                                        </TabsTrigger>
+                                        {!isNewPr && (
+                                            <>
+                                                <TabsTrigger className="w-full h-6" value="budget">
+                                                    Budget
+                                                </TabsTrigger>
+                                                <TabsTrigger className="w-full h-6" value="workflow">
+                                                    Workflow
+                                                </TabsTrigger>
+                                            </>
+                                        )}
                                     </TabsList>
                                     <TabsContent value="items" className="mt-2">
                                         <PurchaseItem
@@ -408,23 +428,26 @@ export default function MainForm({ mode, initValues }: Props) {
                         {/* <JsonViewer data={watchForm} title="Form Data" /> */}
                     </Card>
 
-                    <ActionButtons
-                        isNewPr={isNewPr}
-                        isDraft={isDraft}
-                        isRejectingPr={isRejectingPr}
-                        isSendingBackPr={isSendingBackPr}
-                        isReviewingPr={isReviewingPr}
-                        isApprovingPr={isApprovingPr}
-                        isPurchasingApprovePr={isPurchasingApprovePr}
-                        isSubmittingPr={isSubmittingPr}
-                        onReject={onReject}
-                        onSendBack={onSendBack}
-                        onReview={onReview}
-                        onApprove={onApprove}
-                        onPurchaseApprove={onPurchaseApprove}
-                        onSubmitPr={onSubmitPr}
-                        onSave={form.handleSubmit(handleSubmit)}
-                    />
+                    {prStatus !== 'voided' && (
+                        <ActionButtons
+                            prStatus={prStatus || ''}
+                            isNewPr={isNewPr}
+                            isDraft={isDraft}
+                            isRejectingPr={isRejectingPr}
+                            isSendingBackPr={isSendingBackPr}
+                            isReviewingPr={isReviewingPr}
+                            isApprovingPr={isApprovingPr}
+                            isPurchasingApprovePr={isPurchasingApprovePr}
+                            isSubmittingPr={isSubmittingPr}
+                            onReject={onReject}
+                            onSendBack={onSendBack}
+                            onReview={onReview}
+                            onApprove={onApprove}
+                            onPurchaseApprove={onPurchaseApprove}
+                            onSubmitPr={onSubmitPr}
+                            onSave={form.handleSubmit(handleSubmit)}
+                        />
+                    )}
                 </div>
             </DetailsAndComments>
 
