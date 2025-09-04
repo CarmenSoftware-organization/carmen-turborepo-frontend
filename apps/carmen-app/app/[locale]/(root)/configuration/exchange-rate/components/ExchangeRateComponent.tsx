@@ -1,39 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import currenciesIso from "@/constants/currency";
 import { format } from "date-fns";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  ColumnDef,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridTableDnd } from "@/components/ui/data-grid-table-dnd";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
 import {
-  Loader2,
   RefreshCw,
   Search,
   X,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Banknote,
-  DollarSign,
-  BadgeDollarSign,
-  Globe,
-  ArrowLeftRight,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
@@ -41,20 +32,91 @@ import { useExchangeRate } from "@/hooks/useExchangeRate";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 
-type SortDirection = "asc" | "desc";
+interface Currency {
+  code: string;
+  symbol: string;
+  name: string;
+  country: string;
+}
 
-type SortField = "code" | "symbol" | "name" | "country" | "rate";
+// Cell components
+const CodeCell = ({ value }: { value: string }) => (
+  <div className="font-medium text-center">{value}</div>
+);
+
+const SymbolCell = ({ value }: { value: string }) => (
+  <div className="text-center">{value}</div>
+);
+
+const NameCell = ({ value }: { value: string }) => value;
+
+const CountryCell = ({ value }: { value: string }) => value;
+
+const RateCell = ({
+  code,
+  rate,
+  isLoading,
+  currencyBase
+}: {
+  code: string;
+  rate: number | undefined;
+  isLoading: boolean;
+  currencyBase: string | null | undefined;
+}) => (
+  <div className="text-right">
+    {isLoading ? (
+      <Skeleton className="h-4 w-16" />
+    ) : (
+      <span
+        className={`font-mono ${code === currencyBase ? "font-semibold" : ""
+          }`}
+      >
+        {rate ? rate.toFixed(4) : "-"}
+      </span>
+    )}
+  </div>
+);
+
+// Cell renderer functions
+const renderCodeCell = (value: string) => <CodeCell value={value} />;
+const renderSymbolCell = (value: string) => <SymbolCell value={value} />;
+const renderNameCell = (value: string) => <NameCell value={value} />;
+const renderCountryCell = (value: string) => <CountryCell value={value} />;
+const renderRateCell = (
+  code: string,
+  rate: number | undefined,
+  isLoading: boolean,
+  currencyBase: string | null | undefined
+) => <RateCell code={code} rate={rate} isLoading={isLoading} currencyBase={currencyBase} />;
+
+// Header renderer functions
+const renderCodeHeader = (title: string, column: any) => (
+  <DataGridColumnHeader title={title} column={column} />
+);
+const renderSymbolHeader = (title: string, column: any) => (
+  <DataGridColumnHeader title={title} column={column} />
+);
+const renderNameHeader = (title: string, column: any) => (
+  <DataGridColumnHeader title={title} column={column} />
+);
+const renderCountryHeader = (title: string, column: any) => (
+  <DataGridColumnHeader title={title} column={column} />
+);
+const renderRateHeader = (title: string, column: any) => (
+  <DataGridColumnHeader title={title} column={column} />
+);
 
 export default function ExchangeRateComponent() {
   const tExchangeRate = useTranslations("ExchangeRate");
   const { currencyBase } = useAuth();
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sortField, setSortField] = useState<SortField>("code");
-  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   const {
     exchangeRates,
@@ -66,54 +128,123 @@ export default function ExchangeRateComponent() {
     isRefetching,
   } = useExchangeRate({ baseCurrency: currencyBase ?? "USD" });
 
-  const filteredCurrencies = currenciesIso.filter((currency) => {
-    if (!searchQuery.trim()) return true;
+  // Filter and prepare data
+  const filteredData = useMemo(() => {
+    return currenciesIso.filter((currency) => {
+      if (!searchQuery.trim()) return true;
+      const query = searchQuery.toLowerCase();
+      return (
+        currency.code.toLowerCase().includes(query) ||
+        currency.name.toLowerCase().includes(query) ||
+        currency.country.toLowerCase().includes(query)
+      );
+    });
+  }, [searchQuery]);
 
-    const query = searchQuery.toLowerCase();
-    return (
-      currency.code.toLowerCase().includes(query) ||
-      currency.name.toLowerCase().includes(query) ||
-      currency.country.toLowerCase().includes(query)
-    );
-  });
+  // Create column definitions
+  const columns = useMemo<ColumnDef<Currency>[]>(() => [
+    {
+      accessorKey: "index",
+      id: "index",
+      header: "#",
+      cell: ({ row }) => {
+        const pageIndex = pagination.pageIndex;
+        const pageSize = pagination.pageSize;
+        return pageIndex * pageSize + row.index + 1;
+      },
+      enableSorting: false,
+      size: 50,
+    },
+    {
+      accessorKey: "code",
+      id: "code",
+      header: ({ column }) => renderCodeHeader(tTableHeader("code"), column),
+      cell: ({ row }) => {
+        const value = row.getValue("code") as string;
+        return renderCodeCell(value);
+      },
+      size: 100,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "symbol",
+      id: "symbol",
+      header: ({ column }) => renderSymbolHeader(tTableHeader("symbol"), column),
+      cell: ({ row }) => {
+        const value = row.getValue("symbol") as string;
+        return renderSymbolCell(value);
+      },
+      size: 100,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "name",
+      id: "name",
+      header: ({ column }) => renderNameHeader(tTableHeader("name"), column),
+      cell: ({ row }) => {
+        const value = row.getValue("name") as string;
+        return renderNameCell(value);
+      },
+      size: 200,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "country",
+      id: "country",
+      header: ({ column }) => renderCountryHeader(tTableHeader("country"), column),
+      cell: ({ row }) => {
+        const value = row.getValue("country") as string;
+        return renderCountryCell(value);
+      },
+      size: 150,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "rate",
+      id: "rate",
+      header: ({ column }) => renderRateHeader(tTableHeader("exchangeRate"), column),
+      cell: ({ row }) => {
+        const code = row.original.code;
+        const rate = exchangeRates[code];
+        return renderRateCell(code, rate, isLoading, currencyBase);
+      },
+      enableSorting: false,
+      size: 120,
+    },
+  ], [tTableHeader, exchangeRates, isLoading, isRefetching, currencyBase, pagination]);
 
-  const sortedCurrencies = [...filteredCurrencies].sort((a, b) => {
-    let compareA: string | number;
-    let compareB: string | number;
+  const [columnOrder, setColumnOrder] = useState<string[]>(columns.map((column) => column.id as string));
 
-    if (sortField === "rate") {
-      compareA = exchangeRates[a.code] || 0;
-      compareB = exchangeRates[b.code] || 0;
-    } else {
-      compareA = a[sortField].toLowerCase();
-      compareB = b[sortField].toLowerCase();
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (active && over && active.id !== over.id) {
+      setColumnOrder((columnOrder) => {
+        const oldIndex = columnOrder.indexOf(active.id as string);
+        const newIndex = columnOrder.indexOf(over.id as string);
+        return arrayMove(columnOrder, oldIndex, newIndex);
+      });
     }
-
-    if (sortDirection === "asc") {
-      return compareA > compareB ? 1 : -1;
-    } else {
-      return compareA < compareB ? 1 : -1;
-    }
-  });
-
-  const totalItems = sortedCurrencies.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedCurrencies.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, sortField, sortDirection]);
-
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
   };
 
-
+  // Create table instance
+  const table = useReactTable({
+    data: filteredData,
+    columns,
+    pageCount: Math.ceil(filteredData.length / pagination.pageSize),
+    state: {
+      sorting,
+      pagination,
+      columnOrder
+    },
+    onColumnOrderChange: setColumnOrder,
+    onSortingChange: setSorting,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    manualPagination: false,
+  });
 
   const handleRefresh = () => {
     refetch();
@@ -127,51 +258,6 @@ export default function ExchangeRateComponent() {
     setSearchQuery("");
   };
 
-  const handleSort = (field: SortField) => {
-    if (field === sortField) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortDirection("asc");
-    }
-  };
-
-  const getPageNumbers = () => {
-    const pageNumbers = [];
-    const maxVisiblePages = 5;
-
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-    } else {
-      pageNumbers.push(1);
-
-      if (currentPage > 3) {
-        pageNumbers.push("ellipsis-start");
-      }
-
-      const startPage = Math.max(2, currentPage - 1);
-      const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-      for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
-      }
-
-      if (currentPage < totalPages - 2) {
-        pageNumbers.push("ellipsis-end");
-      }
-
-      pageNumbers.push(totalPages);
-    }
-
-    return pageNumbers;
-  };
-
-  const formatExchangeRate = (rate: number) => {
-    return rate ? rate.toFixed(4) : "-";
-  };
-
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -182,20 +268,8 @@ export default function ExchangeRateComponent() {
     }
   };
 
-  const renderSortIcon = (field: SortField) => {
-    if (sortField !== field) {
-      return <ArrowUpDown className="ml-1 h-3 w-3 inline" />;
-    }
-
-    return sortDirection === "asc" ? (
-      <ArrowUp className="ml-1 h-3 w-3 inline" />
-    ) : (
-      <ArrowDown className="ml-1 h-3 w-3 inline" />
-    );
-  };
-
   const renderSearchResultsMessage = () => {
-    if (filteredCurrencies.length === 0) {
+    if (filteredData.length === 0) {
       return (
         <p className="text-sm mt-2 text-muted-foreground">
           {tExchangeRate("no_results_found")} &quot;{searchQuery}&quot;
@@ -203,11 +277,11 @@ export default function ExchangeRateComponent() {
       );
     }
 
-    if (filteredCurrencies.length !== currenciesIso.length) {
-      const resultText = filteredCurrencies.length === 1 ? "result" : "results";
+    if (filteredData.length !== currenciesIso.length) {
+      const resultText = filteredData.length === 1 ? "result" : "results";
       return (
         <p className="text-sm mt-2 text-muted-foreground">
-          {tExchangeRate("found")} {filteredCurrencies.length} {resultText}
+          {tExchangeRate("found")} {filteredData.length} {resultText}
         </p>
       );
     }
@@ -306,165 +380,28 @@ export default function ExchangeRateComponent() {
           {renderSearchResultsMessage()}
         </div>
 
-        <Table className="border border-border">
-          <TableHeader>
-            <TableRow className="bg-muted/50">
-              <TableHead className="font-semibold">#</TableHead>
-              <TableHead
-                className="font-semibold cursor-pointer"
-                onClick={() => handleSort("code")}
-                tabIndex={0}
-                aria-label="Sort by code"
-              >
-                <div className="fxr-c gap-1">
-                  <Banknote className="h-4 w-4" />
-                  {tTableHeader("code")} {renderSortIcon("code")}
-                </div>
-              </TableHead>
-              <TableHead
-                className="hidden sm:table-cell font-semibold cursor-pointer"
-                onClick={() => handleSort("symbol")}
-                tabIndex={0}
-                aria-label="Sort by symbol"
-              >
-                <div className="fxr-c gap-1">
-                  <DollarSign className="h-4 w-4" />
-                  {tTableHeader("symbol")}  {renderSortIcon("symbol")}
-                </div>
-              </TableHead>
-              <TableHead
-                className="hidden md:table-cell font-semibold cursor-pointer"
-                onClick={() => handleSort("name")}
-                tabIndex={0}
-                aria-label="Sort by name"
-              >
-                <div className="fxr-c gap-1">
-                  <BadgeDollarSign className="h-4 w-4" />
-                  {tTableHeader("name")} {renderSortIcon("name")}
-                </div>
-              </TableHead>
-              <TableHead
-                className="hidden lg:table-cell font-semibold cursor-pointer"
-                onClick={() => handleSort("country")}
-                tabIndex={0}
-                aria-label="Sort by country"
-              >
-                <div className="fxr-c gap-1">
-                  <Globe className="h-4 w-4" />
-                  {tTableHeader("country")}  {renderSortIcon("country")}
-                </div>
-              </TableHead>
-              <TableHead
-                className="font-semibold cursor-pointer"
-                onClick={() => handleSort("rate")}
-                tabIndex={0}
-                aria-label="Sort by exchange rate"
-              >
-                <div className="fxr-e gap-1">
-                  <ArrowLeftRight className="h-4 w-4" />
-                  {tTableHeader("exchangeRate")}  {renderSortIcon("rate")}
-                  {(isLoading || isRefetching) && (
-                    <Loader2 className="inline ml-2 h-3 w-3 animate-spin" />
-                  )}
-                </div>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {currentItems.length > 0 ? (
-              currentItems.map((currency, index) => (
-                <TableRow key={currency.code} className="hover:bg-muted/30">
-                  <TableCell className="font-medium">{index + 1}</TableCell>
-                  <TableCell className="font-medium text-center">{currency.code}</TableCell>
-                  <TableCell className="hidden sm:table-cell text-center">
-                    {currency.symbol}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {currency.name}
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell">
-                    {currency.country}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {isLoading ? (
-                      <Skeleton className="h-4 w-16" />
-                    ) : (
-                      <span
-                        className={`font-mono ${currency.code === currencyBase ? "font-semibold" : ""}`}
-                      >
-                        {formatExchangeRate(exchangeRates[currency.code])}
-                      </span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
-                  {searchQuery ? "No results found" : "No data available"}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-
-        {totalPages > 0 && (
-          <div className="mt-4 fxc-c">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() =>
-                      currentPage > 1 && handlePageChange(currentPage - 1)
-                    }
-                    tabIndex={0}
-                    aria-disabled={currentPage === 1}
-                    className={`${currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"} font-medium`}
-                  />
-                </PaginationItem>
-
-                {getPageNumbers().map((pageNumber, index) => {
-                  if (
-                    pageNumber === "ellipsis-start" ||
-                    pageNumber === "ellipsis-end"
-                  ) {
-                    return (
-                      <PaginationItem key={`${pageNumber}-${index}`}>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-                    );
-                  }
-
-                  return (
-                    <PaginationItem key={pageNumber}>
-                      <PaginationLink
-                        isActive={currentPage === pageNumber}
-                        onClick={() => handlePageChange(Number(pageNumber))}
-                        tabIndex={0}
-                        className={`cursor-pointer ${currentPage === pageNumber ? "font-semibold" : ""}`}
-                        aria-label={`Go to page ${pageNumber}`}
-                      >
-                        {pageNumber}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                })}
-
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() =>
-                      currentPage < totalPages &&
-                      handlePageChange(currentPage + 1)
-                    }
-                    tabIndex={0}
-                    aria-disabled={currentPage === totalPages}
-                    className={`${currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"} font-medium`}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+        <DataGrid
+          table={table}
+          recordCount={filteredData.length}
+          isLoading={isLoading}
+          tableLayout={{
+            columnsResizable: true,
+            rowBorder: true,
+            headerBackground: true,
+            headerBorder: true,
+            columnsDraggable: true,
+          }}
+        >
+          <div className="w-full space-y-2.5">
+            <DataGridContainer>
+              <ScrollArea>
+                <DataGridTableDnd handleDragEnd={handleDragEnd} />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </DataGridContainer>
+            <DataGridPagination />
           </div>
-        )}
+        </DataGrid>
       </div>
     </div>
   );
