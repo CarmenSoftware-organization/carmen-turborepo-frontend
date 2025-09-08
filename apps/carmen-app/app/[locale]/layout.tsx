@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Providers } from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
+import '@/instrumentation-client';
 
 export const metadata: Metadata = {
   title: 'Carmen',

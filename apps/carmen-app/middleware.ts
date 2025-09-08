@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { match as matchLocale } from '@formatjs/intl-localematcher';
+import * as Sentry from '@sentry/nextjs';
+import { sentryDsn } from './lib/backend-api';
 
 const locales = ['en', 'th'];
 const defaultLocale = 'en';
@@ -23,6 +25,17 @@ function getLocale(request: NextRequest): string {
 }
 
 export function middleware(request: NextRequest) {
+    // Initialize Sentry for edge runtime
+    console.log('🔧 Initializing Sentry in Middleware...');
+    console.log('📡 Sentry DSN:', sentryDsn ? '✅ Configured' : '❌ Missing');
+
+    Sentry.init({
+        dsn: sentryDsn,
+        tracesSampleRate: 1,
+        debug: false,
+    });
+
+    console.log('✅ Sentry Middleware initialized successfully');
 
     const pathname = request.nextUrl.pathname;
 
@@ -66,7 +79,12 @@ export function middleware(request: NextRequest) {
 
     // Skip auth check in middleware since we can't access sessionStorage
     // Auth will be handled by client-side components using AuthContext
-    return NextResponse.next();
+    try {
+        return NextResponse.next();
+    } catch (error) {
+        Sentry.captureException(error);
+        throw error;
+    }
 }
 
 export const config = {
