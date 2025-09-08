@@ -163,7 +163,6 @@ export default function ListLocations({
       dataIndex: "delivery_point",
       key: "delivery_point",
       icon: <MapPin className="h-4 w-4" />,
-      align: "center",
     },
     {
       title: t("status"),
