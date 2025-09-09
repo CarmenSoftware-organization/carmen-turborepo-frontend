@@ -22,7 +22,7 @@ import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function CurrencyComponent() {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [search, setSearch] = useURL('search');
     const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
@@ -39,7 +39,7 @@ export default function CurrencyComponent() {
     const tHeader = useTranslations('TableHeader');
     const queryClient = useQueryClient();
 
-    const { currencies: data, isLoading } = useCurrenciesQuery(token, tenantId, {
+    const { currencies: data, isLoading } = useCurrenciesQuery(token, buCode, {
         search: search || undefined,
         page: page || 1,
         filter: filter || undefined,
@@ -62,7 +62,7 @@ export default function CurrencyComponent() {
         setDialogOpen(true);
     }, []);
 
-    const deleteStatusMutation = useCurrencyDeleteMutation(token, tenantId);
+    const deleteStatusMutation = useCurrencyDeleteMutation(token, buCode, selectedCurrency?.id || '');
 
     const handleToggleStatus = (currency: CurrencyUpdateDto) => {
         if (!currency.id) {
@@ -80,7 +80,7 @@ export default function CurrencyComponent() {
 
     const handleConfirmToggle = () => {
         if (selectedCurrency?.id) {
-            deleteStatusMutation.mutate(selectedCurrency.id, {
+            deleteStatusMutation.mutate(undefined, {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ['currencies'] });
                     toastSuccess({ message: tCurrency("deactivate_success") });
@@ -95,9 +95,9 @@ export default function CurrencyComponent() {
         }
     }
 
-    const createCurrencyMutation = useCurrencyMutation(token, tenantId);
+    const createCurrencyMutation = useCurrencyMutation(token, buCode);
 
-    const updateCurrencyMutation = useCurrencyUpdateMutation(token, tenantId, selectedCurrency?.id || '');
+    const updateCurrencyMutation = useCurrencyUpdateMutation(token, buCode, selectedCurrency?.id || '');
 
     const handleSubmit = useCallback(async (data: CurrencyCreateDto) => {
         if (selectedCurrency) {

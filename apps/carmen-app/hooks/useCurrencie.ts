@@ -11,27 +11,33 @@ import { CurrencyCreateDto, CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/cur
 
 const API_URL = `${backendApi}/api/config/currencies`;
 
+const currencyApiUrl = (buCode: string, id?: string) => {
+    const baseUrl = `${backendApi}/api/config/${buCode}/currencies`;
+    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
+
 export const useCurrenciesQuery = (
     token: string,
-    tenantId: string,
+    buCode: string,
     params?: ParamsGetDto
 ) => {
 
+    const API_URL = currencyApiUrl(buCode);
+
     const { data, isLoading, error } = useQuery({
-        queryKey: ["currencies", tenantId, params],
+        queryKey: ["currencies", params],
         queryFn: async () => {
-            if (!token || !tenantId) {
+            if (!token || !buCode) {
                 throw new Error("Unauthorized: Missing token or tenantId");
             }
             return await getAllApiRequest(
                 API_URL,
                 token,
-                tenantId,
                 "Error fetching currency",
                 params ?? {}
             );
         },
-        enabled: !!token && !!tenantId,
+        enabled: !!token && !!buCode,
     });
 
     const currencies = data;
@@ -78,13 +84,13 @@ export const useCurrenciesQuery = (
     };
 };
 
-export const useCurrencyMutation = (token: string, tenantId: string) => {
+export const useCurrencyMutation = (token: string, buCode: string) => {
+    const API_URL = currencyApiUrl(buCode);
     return useMutation({
         mutationFn: async (data: CurrencyCreateDto) => {
             return await postApiRequest(
                 API_URL,
                 token,
-                tenantId,
                 data,
                 "Error creating currency"
             );
@@ -92,13 +98,13 @@ export const useCurrencyMutation = (token: string, tenantId: string) => {
     });
 };
 
-export const useCurrencyUpdateMutation = (token: string, tenantId: string, id: string) => {
+export const useCurrencyUpdateMutation = (token: string, buCode: string, id: string) => {
+    const API_URL_BY_ID = currencyApiUrl(buCode, id);
     return useMutation({
         mutationFn: async (data: CurrencyUpdateDto) => {
             return await updateApiRequest(
-                `${API_URL}/${id}`,
+                API_URL_BY_ID,
                 token,
-                tenantId,
                 data,
                 "Error updating currency",
                 "PATCH"
@@ -107,14 +113,14 @@ export const useCurrencyUpdateMutation = (token: string, tenantId: string, id: s
     });
 };
 
-export const useCurrencyDeleteMutation = (token: string, tenantId: string) => {
+export const useCurrencyDeleteMutation = (token: string, buCode: string, id: string) => {
+    const API_URL_BY_ID = currencyApiUrl(buCode, id);
     return useMutation({
-        mutationFn: async (id: string) => {
+        mutationFn: async () => {
             return await updateApiRequest(
-                `${API_URL}/${id}`,
+                API_URL_BY_ID,
                 token,
-                tenantId,
-                { is_active: false },
+                id,
                 "Error deleting currency",
                 "PATCH"
             );
