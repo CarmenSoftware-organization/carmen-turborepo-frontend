@@ -1,65 +1,43 @@
 "use client";
-import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { useProductQuery } from "@/hooks/useProductQuery";
+import { useURL } from "@/hooks/useURL";
+import { Link } from "@/lib/navigation";
+import { parseSortString } from "@/utils/table-sort";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import ProductList from "./ProductList";
-import { Link } from "@/lib/navigation";
-import SignInDialog from "@/components/SignInDialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import useProduct from "@/hooks/useProduct";
-import { parseSortString } from "@/utils/table-sort";
-import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 
-export function ProductComponent() {
+export default function ProductComponent() {
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tProduct = useTranslations("Product");
 
-  const {
-    // Data states
-    products,
-    isLoading,
-    totalPages,
-    currentPage,
-    totalItems,
-    // Filter states
-    search,
-    status,
-    statusOpen,
-    sort,
-    perpage,
+  const [search, setSearch] = useURL("search");
+  const [status, setStatus] = useURL("status");
+  const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
+  const [statusOpen, setStatusOpen] = useState(false);
 
-    // Delete states
-    deleteDialogOpen,
-    isDeleting,
-
-    // Auth state
-    loginRequired,
-
-    // Setters and handlers
-    handleSetPerpage,
-    setSearch,
-    setStatus,
-    setStatusOpen,
-    setSort,
-    handlePageChange,
-    handleDelete,
-    confirmDelete,
-    closeDeleteDialog,
-    handleSort
-  } = useProduct();
+  const { products, isLoading } = useProductQuery({
+    token,
+    buCode,
+    params: {
+      search,
+      sort,
+      page: page ? parseInt(page) : 1,
+      perpage: perpage ? parseInt(perpage) : 10,
+    }
+  });
 
   const sortFields = [
     { key: "name", label: tHeader("name") },
@@ -69,6 +47,30 @@ export function ProductComponent() {
   ];
 
   const title = tProduct("title");
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage.toString());
+  }, [setPage]);
+
+  const handleSort = useCallback((field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(':') as [string, string];
+
+      if (currentField === field) {
+        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
+      }
+      setPage("1");
+    }
+  }, [setSort, sort, setPage]);
+
+  const handlePerpageChange = useCallback((newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  }, [setPerpage]);
 
   const actionButtons = (
     <div className="action-btn-container" data-id="product-list-action-buttons">
@@ -126,53 +128,26 @@ export function ProductComponent() {
 
   const content = (
     <ProductList
-      products={products}
+      products={products?.data}
       isLoading={isLoading}
-      currentPage={currentPage}
+      currentPage={products?.paginate.page}
       onPageChange={handlePageChange}
-      totalPages={totalPages}
+      totalPages={products?.paginate.total}
       data-id="product-list-template"
-      onDelete={handleDelete}
-      totalItems={totalItems}
+      totalItems={products?.paginate.total}
       sort={parseSortString(sort) ?? { field: "name", direction: "asc" }}
       onSort={handleSort}
-      perpage={perpage}
-      setPerpage={handleSetPerpage}
+      perpage={products?.paginate.perpage}
+      setPerpage={handlePerpageChange}
     />
-  );
+  )
 
   return (
-    <div>
-      <DataDisplayTemplate
-        title={title}
-        actionButtons={actionButtons}
-        filters={filters}
-        content={content}
-      />
-      <SignInDialog
-        open={loginRequired}
-        onOpenChange={(open) => !open && window.location.reload()}
-      />
-      <AlertDialog open={deleteDialogOpen} onOpenChange={closeDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this product?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
+    <DataDisplayTemplate
+      title={title}
+      actionButtons={actionButtons}
+      filters={filters}
+      content={content}
+    />
+  )
 }

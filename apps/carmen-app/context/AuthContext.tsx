@@ -457,8 +457,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     ]
   );
 
-  console.log('AuthContext value:', value);
-
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

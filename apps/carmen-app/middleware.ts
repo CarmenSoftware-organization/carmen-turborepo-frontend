@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { match as matchLocale } from '@formatjs/intl-localematcher';
-import * as Sentry from '@sentry/nextjs';
-import { sentryDsn } from './lib/backend-api';
+// import * as Sentry from '@sentry/nextjs';
+// import { sentryDsn } from './lib/backend-api';
 
 const locales = ['en', 'th'];
 const defaultLocale = 'en';
@@ -25,17 +25,14 @@ function getLocale(request: NextRequest): string {
 }
 
 export function middleware(request: NextRequest) {
-    // Initialize Sentry for edge runtime
-    console.log('🔧 Initializing Sentry in Middleware...');
-    console.log('📡 Sentry DSN:', sentryDsn ? '✅ Configured' : '❌ Missing');
+    // console.log('🔧 Initializing Sentry in Middleware...');
+    // console.log('📡 Sentry DSN:', sentryDsn ? '✅ Configured' : '❌ Missing');
 
-    Sentry.init({
-        dsn: sentryDsn,
-        tracesSampleRate: 1,
-        debug: false,
-    });
-
-    console.log('✅ Sentry Middleware initialized successfully');
+    // Sentry.init({
+    //     dsn: sentryDsn,
+    //     tracesSampleRate: 1,
+    //     debug: false,
+    // });
 
     const pathname = request.nextUrl.pathname;
 
@@ -60,9 +57,6 @@ export function middleware(request: NextRequest) {
         // body: body || undefined,
     };
 
-    console.log('Logging request:', logData);
-
-
     // Check if the request is for a locale route
     const pathnameIsMissingLocale = locales.every(
         locale => !pathname.startsWith(`/${locale}/`) && pathname !== `/${locale}`
@@ -82,7 +76,8 @@ export function middleware(request: NextRequest) {
     try {
         return NextResponse.next();
     } catch (error) {
-        Sentry.captureException(error);
+        // Sentry.captureException(error);
+        console.error('Error in middleware:', error);
         throw error;
     }
 }

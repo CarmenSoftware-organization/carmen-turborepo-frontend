@@ -21,7 +21,6 @@ interface ProductListProps {
   readonly currentPage: number;
   readonly onPageChange: (page: number) => void;
   readonly totalPages: number | undefined;
-  readonly onDelete: (id: string) => void;
   readonly totalItems: number;
   readonly sort: SortConfig;
   readonly onSort: (field: string) => void;
@@ -35,12 +34,11 @@ export default function ProductList({
   currentPage,
   onPageChange,
   totalPages = 1,
-  onDelete,
   totalItems,
   sort,
   onSort,
   perpage,
-  setPerpage
+  setPerpage,
 }: ProductListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -103,20 +101,22 @@ export default function ProductList({
       key: "name",
       icon: <List className="h-4 w-4" />,
       align: "left",
+      width: "w-[200px]",
       render: (_: unknown, record: TableDataSource) => {
         const product = products.find(p => p.id === record.key);
         if (!product) return null;
         return (
           <div className="flex items-center gap-2">
-            <ButtonLink href={`/product-management/product/${record.key}`}>
+            <ButtonLink
+              href={`/product-management/product/${record.key}`}
+            >
               {record.name}
             </ButtonLink>
-            <Badge
-              variant="secondary"
-            >
+            <Badge variant="secondary">
               {record.code}
             </Badge>
           </div>
+
         );
       },
     },
@@ -185,7 +185,7 @@ export default function ProductList({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-transparent" onClick={() => onDelete(record.key)}>
+              <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-transparent" onClick={() => console.log(record.key)}>
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

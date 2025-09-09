@@ -1,12 +1,11 @@
 import { SubCategoryDto } from "@/dtos/category.dto";
 import { backendApi } from "@/lib/backend-api";
 
-export const getSubCategoryService = async (token: string, tenantId: string) => {
-    const response = await fetch(`${backendApi}/api/config/products/sub-category?perpage=999`, {
+export const getSubCategoryService = async (token: string, buCode: string) => {
+    const response = await fetch(`${backendApi}/api/config/${buCode}/products/sub-category?perpage=999`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
     });
@@ -14,12 +13,11 @@ export const getSubCategoryService = async (token: string, tenantId: string) => 
     return data;
 }
 
-export const createSubCategoryService = async (token: string, tenantId: string, data: SubCategoryDto) => {
-    const response = await fetch(`${backendApi}/api/config/products/sub-category`, {
+export const createSubCategoryService = async (token: string, buCode: string, data: SubCategoryDto) => {
+    const response = await fetch(`${backendApi}/api/config/${buCode}/products/sub-category`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -28,12 +26,11 @@ export const createSubCategoryService = async (token: string, tenantId: string, 
     return result;
 }
 
-export const updateSubCategoryService = async (token: string, tenantId: string, data: SubCategoryDto) => {
-    const response = await fetch(`${backendApi}/api/config/products/sub-category/${data.id}`, {
+export const updateSubCategoryService = async (token: string, buCode: string, data: SubCategoryDto) => {
+    const response = await fetch(`${backendApi}/api/config/${buCode}/products/sub-category/${data.id}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -42,12 +39,11 @@ export const updateSubCategoryService = async (token: string, tenantId: string, 
     return result;
 }
 
-export const deleteSubCategoryService = async (token: string, tenantId: string, id: string) => {
-    const response = await fetch(`${backendApi}/api/config/products/sub-category/${id}`, {
+export const deleteSubCategoryService = async (token: string, buCode: string, id: string) => {
+    const response = await fetch(`${backendApi}/api/config/${buCode}/products/sub-category/${id}`, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
             'Content-Type': 'application/json',
         },
     });

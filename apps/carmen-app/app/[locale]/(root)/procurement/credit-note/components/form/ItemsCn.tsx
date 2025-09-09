@@ -24,10 +24,10 @@ import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
-import useProduct from "@/hooks/useProduct";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
+import { useProductQuery } from "@/hooks/useProductQuery";
 
 interface ItemsCnProps {
   readonly control: Control<CreditNoteFormDto>;
@@ -35,16 +35,19 @@ interface ItemsCnProps {
 }
 
 export default function ItemsCn({ control, mode }: ItemsCnProps) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
 
   const { getLocationName } = useStoreLocation();
   const { getUnitName } = useUnitQuery({
     token,
-    tenantId,
+    buCode,
   });
-  const { getProductName } = useProduct();
+  const { getProductName } = useProductQuery({
+    token,
+    buCode,
+  });
 
   const itemsDetail =
     useWatch({ control, name: "credit_note_detail.data" }) || [];

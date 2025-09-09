@@ -8,7 +8,7 @@ import { toastError } from "@/components/ui-custom/Toast";
 import { formType } from "@/dtos/form.dto";
 
 export const useCategory = () => {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [categories, setCategories] = useState<CategoryDto[]>([]);
     const [isPending, startTransition] = useTransition();
     const [isUnauthorized, setIsUnauthorized] = useState(false);
@@ -18,7 +18,7 @@ export const useCategory = () => {
         const fetchData = async () => {
             try {
                 setIsUnauthorized(false);
-                const data = await getCategoryService(token, tenantId, {
+                const data = await getCategoryService(token, buCode, {
                     sort: 'code',
                 });
                 if (data.statusCode === 401) {
@@ -33,7 +33,7 @@ export const useCategory = () => {
         };
 
         startTransition(fetchData);
-    }, [token, tenantId]);
+    }, [token, buCode]);
 
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export const useCategory = () => {
 
         const submitAdd = async () => {
             try {
-                const result = await createCategoryService(token, tenantId, data);
+                const result = await createCategoryService(token, buCode, data);
 
                 const newCategory: CategoryDto = {
                     ...data,
@@ -67,7 +67,7 @@ export const useCategory = () => {
                     id: selectedCategory!.id,
                 };
 
-                const result = await updateCategoryService(token, tenantId, updatedCategory);
+                const result = await updateCategoryService(token, buCode, updatedCategory);
 
                 const id = updatedCategory.id;
                 const updatedCategories = categories.map(c =>
@@ -87,13 +87,13 @@ export const useCategory = () => {
         } else {
             return submitEdit();
         }
-    }, [token, tenantId, categories]);
+    }, [token, buCode, categories]);
 
     const handleDelete = useCallback((category: CategoryDto) => {
         if (!token) return Promise.reject(new Error('No token available'));
         const submitDelete = async () => {
             try {
-                const result = await deleteCategoryService(token, tenantId, category.id ?? '');
+                const result = await deleteCategoryService(token, buCode, category.id ?? '');
                 const updatedCategories = categories.filter(c => c.id !== category.id);
                 setCategories(updatedCategories);
                 return result;
@@ -104,7 +104,7 @@ export const useCategory = () => {
         };
 
         return submitDelete();
-    }, [token, tenantId, categories]);
+    }, [token, buCode, categories]);
 
     return {
         categories,

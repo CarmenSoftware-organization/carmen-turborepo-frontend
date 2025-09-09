@@ -9,27 +9,26 @@ const API_URL = `${backendApi}/api/config/units`;
 
 export const useUnitQuery = ({
     token,
-    tenantId,
+    buCode,
     params
 }: {
     token: string;
-    tenantId: string;
+    buCode: string;
     params?: ParamsGetDto;
 }) => {
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["units", tenantId, params],
+        queryKey: ["units", buCode, params],
         queryFn: async () => {
-            if (!token || !tenantId) throw new Error("Unauthorized");
+            if (!token || !buCode) throw new Error("Unauthorized");
             return await getAllApiRequest(
                 API_URL,
                 token,
-                tenantId,
                 "Error fetching units",
                 params
             );
         },
-        enabled: !!token && !!tenantId,
+        enabled: !!token && !!buCode,
     });
 
     const getUnitName = useCallback((unitId: string) => {
@@ -41,13 +40,12 @@ export const useUnitQuery = ({
     return { units, isLoading, error, getUnitName };
 };
 
-export const useUnitMutation = (token: string, tenantId: string) => {
+export const useUnitMutation = (token: string, buCode: string) => {
     return useMutation({
         mutationFn: async (data: UnitDto) => {
             return await postApiRequest(
                 API_URL,
                 token,
-                tenantId,
                 data,
                 "Error creating unit"
             );
@@ -55,14 +53,13 @@ export const useUnitMutation = (token: string, tenantId: string) => {
     });
 };
 
-export const useUpdateUnit = (token: string, tenantId: string, id: string) => {
+export const useUpdateUnit = (token: string, buCode: string, id: string) => {
     const API_URL_BY_ID = `${API_URL}/${id}`;
     return useMutation({
         mutationFn: async (data: UnitDto) => {
             return await updateApiRequest(
                 API_URL_BY_ID,
                 token,
-                tenantId,
                 data,
                 "Error updating unit",
                 "PUT"
@@ -72,11 +69,11 @@ export const useUpdateUnit = (token: string, tenantId: string, id: string) => {
 };
 
 
-export const useDeleteUnit = (token: string, tenantId: string, id: string) => {
+export const useDeleteUnit = (token: string, buCode: string, id: string) => {
     const API_URL_BY_ID = `${API_URL}/${id}`;
     return useMutation({
         mutationFn: async () => {
-            return await deleteApiRequest(API_URL_BY_ID, token, tenantId, id, "Error deleting unit");
+            return await deleteApiRequest(API_URL_BY_ID, token, id, "Error deleting unit");
         },
     });
 };

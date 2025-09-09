@@ -36,10 +36,10 @@ import { useUserList } from "@/hooks/useUserList";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Transfer } from "@/components/ui-custom/Transfer";
 import { useMemo, useState } from "react";
-import useProduct from "@/hooks/useProduct";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import transferHandler from "@/components/form-custom/TransferHandler";
 import { useTranslations } from "next-intl";
+import { useProductQuery } from "@/hooks/useProductQuery";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -72,7 +72,10 @@ export default function LocationForm({
   buCode,
 }: LocationFormProps) {
   const { userList } = useUserList();
-  const { products } = useProduct();
+  const { products } = useProductQuery({
+    token,
+    buCode,
+  });
   const router = useRouter();
   const tLocation = useTranslations("StoreLocation");
   const tCommon = useTranslations("Common");
@@ -82,7 +85,7 @@ export default function LocationForm({
     title: user.firstname + " " + user.lastname,
   }));
 
-  const listProduct = products?.map((product: ProductItemTransfer) => ({
+  const listProduct = products?.data.map((product: ProductItemTransfer) => ({
     key: product.id,
     title: product.name,
   }));

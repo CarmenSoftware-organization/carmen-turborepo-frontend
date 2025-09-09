@@ -8,7 +8,7 @@ import { createSubCategoryService, deleteSubCategoryService, getSubCategoryServi
 import { formType } from "@/dtos/form.dto";
 
 export const useSubCategory = () => {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [subCategories, setSubCategories] = useState<SubCategoryDto[]>([]);
     const [isPending, startTransition] = useTransition();
     const [isUnauthorized, setIsUnauthorized] = useState(false);
@@ -19,7 +19,7 @@ export const useSubCategory = () => {
         const fetchData = async () => {
             try {
                 setIsUnauthorized(false);
-                const data = await getSubCategoryService(token, tenantId);
+                const data = await getSubCategoryService(token, buCode);
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
                     return;
@@ -32,7 +32,7 @@ export const useSubCategory = () => {
         };
 
         startTransition(fetchData);
-    }, [token, tenantId]);
+    }, [token, buCode]);
 
     useEffect(() => {
         fetchSubCategories();
@@ -43,7 +43,7 @@ export const useSubCategory = () => {
 
         const submitAdd = async () => {
             try {
-                const result = await createSubCategoryService(token, tenantId, data);
+                const result = await createSubCategoryService(token, buCode, data);
                 const newSubCategory: SubCategoryDto = {
                     ...data,
                     id: result.id,
@@ -62,7 +62,7 @@ export const useSubCategory = () => {
                     ...data,
                     id: selectedSubCategory!.id,
                 };
-                const result = await updateSubCategoryService(token, tenantId, updatedSubCategory);
+                const result = await updateSubCategoryService(token, buCode, updatedSubCategory);
                 const id = updatedSubCategory.id;
                 const updatedSubCategories = subCategories.map(c =>
                     c.id === id ? updatedSubCategory : c
@@ -80,7 +80,7 @@ export const useSubCategory = () => {
         } else {
             return submitEdit();
         }
-    }, [token, tenantId, subCategories]);
+    }, [token, buCode, subCategories]);
 
 
     const handleDelete = useCallback((subCategory: SubCategoryDto) => {
@@ -88,7 +88,7 @@ export const useSubCategory = () => {
 
         const submitDelete = async () => {
             try {
-                const result = await deleteSubCategoryService(token, tenantId, subCategory.id ?? '');
+                const result = await deleteSubCategoryService(token, buCode, subCategory.id ?? '');
                 const updatedSubCategories = subCategories.filter(c => c.id !== subCategory.id);
                 setSubCategories(updatedSubCategories);
                 return result;
@@ -99,7 +99,7 @@ export const useSubCategory = () => {
         };
 
         return submitDelete();
-    }, [token, tenantId, subCategories]);
+    }, [token, buCode, subCategories]);
 
     return {
         subCategories,

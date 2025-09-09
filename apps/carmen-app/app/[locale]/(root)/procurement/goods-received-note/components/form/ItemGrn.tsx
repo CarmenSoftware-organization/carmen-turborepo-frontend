@@ -31,13 +31,13 @@ import { useEffect, useState, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import DialogItemGrnForm from "./DialogItemGrnForm";
 import { useStoreLocation } from "@/hooks/useStoreLocation";
-import { useProduct } from "@/hooks/useProduct";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { formatCurrency } from "@/lib/utils";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { useAuth } from "@/context/AuthContext";
+import { useProductQuery } from "@/hooks/useProductQuery";
 
 type ExtendedGoodReceivedNoteDetailItemDto = GoodReceivedNoteDetailItemDto & {
   id?: string;
@@ -50,7 +50,7 @@ interface ItemGrnProps {
 }
 
 export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useState("");
   const isDisabled = mode === formType.VIEW;
@@ -66,11 +66,14 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
 
   const { getUnitName } = useUnitQuery({
     token,
-    tenantId,
+    buCode,
   });
 
   const { getLocationName } = useStoreLocation();
-  const { getProductName } = useProduct();
+  const { getProductName } = useProductQuery({
+    token,
+    buCode,
+  });
 
   const watchedInitData = useWatch({
     control,

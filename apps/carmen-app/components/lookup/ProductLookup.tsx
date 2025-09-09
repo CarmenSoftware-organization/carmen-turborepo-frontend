@@ -16,8 +16,9 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
-import useProduct from "@/hooks/useProduct";
 import { ProductGetDto } from "@/dtos/product.dto";
+import { useProductQuery } from "@/hooks/useProductQuery";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function ProductLookup({
@@ -26,7 +27,11 @@ export default function ProductLookup({
     placeholder = "Select Product",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { products, isLoading } = useProduct();
+    const { token, buCode } = useAuth();
+    const { products, isLoading } = useProductQuery({
+        token,
+        buCode,
+    });
     const [open, setOpen] = useState(false);
 
     const selectedProductName = useMemo(() => {

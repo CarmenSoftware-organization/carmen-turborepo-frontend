@@ -42,6 +42,7 @@ export default function CategoryComponent() {
         isUnauthorized
     } = useCategory();
 
+
     // Set dialog to open when unauthorized
     useEffect(() => {
         if (isUnauthorized) {

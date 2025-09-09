@@ -5,21 +5,6 @@
 import * as Sentry from "@sentry/nextjs";
 import { sentryDsn } from "./lib/backend-api";
 
-console.log('🔧 Initializing Sentry Client...');
-console.log('📡 Sentry DSN:', sentryDsn ? '✅ Configured' : '❌ Missing');
-console.log('🚇 Using Sentry Tunnel Route: /monitoring');
-
-// Validate DSN format
-if (sentryDsn) {
-  const dsnParts = sentryDsn.split('@');
-  if (dsnParts.length !== 2) {
-    console.error('❌ Invalid DSN format:', sentryDsn);
-  } else {
-    console.log('🔍 DSN Host:', dsnParts[1]);
-  }
-} else {
-  console.warn('⚠️ No DSN provided, using fallback DSN');
-}
 
 Sentry.init({
   dsn: sentryDsn || "http://0fc6ab901b20d778eefd550dfbe077b4@dev.blueledgers.com:3997/3",
@@ -60,20 +45,5 @@ Sentry.init({
     return event;
   },
 });
-
-// Log Sentry initialization status
-console.log('✅ Sentry Client initialized successfully');
-
-// Test Sentry connectivity (simplified version)
-// Note: diagnoseSdkConnectivity is not available in @sentry/nextjs
-// We'll test by sending a test event instead
-setTimeout(() => {
-  try {
-    Sentry.captureMessage('Sentry connectivity test', 'info');
-    console.log('✅ Sentry test message sent successfully');
-  } catch (error) {
-    console.error('❌ Sentry connectivity test failed:', error);
-  }
-}, 1000); // Delay to ensure Sentry is fully initialized
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

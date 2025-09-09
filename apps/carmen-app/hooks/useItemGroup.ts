@@ -7,14 +7,14 @@ import { toastError } from "@/components/ui-custom/Toast";
 import { formType } from "@/dtos/form.dto";
 
 export const useItemGroup = () => {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [itemGroups, setItemGroups] = useState<ItemGroupDto[]>([]);
     const [isPending, startTransition] = useTransition();
     const [isUnauthorized, setIsUnauthorized] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     const fetchItemGroups = useCallback(() => {
-        if (!token || !tenantId) {
+        if (!token || !buCode) {
             setIsUnauthorized(true);
             setIsLoading(false);
             return;
@@ -25,7 +25,7 @@ export const useItemGroup = () => {
                 setIsLoading(true);
                 setIsUnauthorized(false);
 
-                const data = await getItemGroupService(token, tenantId);
+                const data = await getItemGroupService(token, buCode);
 
                 if (data.statusCode === 401) {
                     setIsUnauthorized(true);
@@ -50,21 +50,21 @@ export const useItemGroup = () => {
         };
 
         startTransition(fetchData);
-    }, [token, tenantId]);
+    }, [token, buCode]);
 
     useEffect(() => {
         fetchItemGroups();
     }, [fetchItemGroups]);
 
     const handleSubmit = useCallback((data: ItemGroupDto, mode: formType, selectedItemGroup?: ItemGroupDto) => {
-        if (!token || !tenantId) {
+        if (!token || !buCode) {
             toastError({ message: 'Authentication required' });
             return Promise.reject(new Error('No token or tenant ID available'));
         }
 
         const submitAdd = async () => {
             try {
-                const result = await createItemGroupService(token, tenantId, data);
+                const result = await createItemGroupService(token, buCode, data);
 
                 if (!result?.id) {
                     toastError({ message: 'Failed to create item group' });
@@ -95,7 +95,7 @@ export const useItemGroup = () => {
                     ...data,
                     id: selectedItemGroup.id,
                 };
-                const result = await updateItemGroupService(token, tenantId, updatedItemGroup);
+                const result = await updateItemGroupService(token, buCode, updatedItemGroup);
 
                 if (!result) {
                     toastError({ message: 'Failed to update item group' });
@@ -117,10 +117,10 @@ export const useItemGroup = () => {
         } else {
             return submitEdit();
         }
-    }, [token, tenantId]);
+    }, [token, buCode]);
 
     const handleDelete = useCallback((itemGroup: ItemGroupDto) => {
-        if (!token || !tenantId) {
+        if (!token || !buCode) {
             toastError({ message: 'Authentication required' });
             return Promise.reject(new Error('No token or tenant ID available'));
         }
@@ -132,7 +132,7 @@ export const useItemGroup = () => {
 
         const submitDelete = async () => {
             try {
-                const result = await deleteItemGroupService(token, tenantId, itemGroup.id);
+                const result = await deleteItemGroupService(token, buCode, itemGroup.id);
 
                 if (!result) {
                     toastError({ message: 'Failed to delete item group' });
@@ -149,7 +149,7 @@ export const useItemGroup = () => {
         };
 
         return submitDelete();
-    }, [token, tenantId]);
+    }, [token, buCode]);
 
 
     return {

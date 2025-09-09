@@ -1,19 +1,18 @@
 import { ItemGroupDto } from "@/dtos/category.dto";
 import { backendApi } from "@/lib/backend-api";
 
-export const getItemGroupService = async (token: string, tenantId: string) => {
-    // Ensure token and tenantId are present
-    if (!token || !tenantId) {
+export const getItemGroupService = async (token: string, buCode: string) => {
+
+    if (!token || !buCode) {
         console.error("Authorization token and tenant ID are required");
         return { data: [] };
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/products/item-group?perpage=999`, {
+        const response = await fetch(`${backendApi}/api/config/${buCode}/products/item-group?perpage=999`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
                 'Content-Type': 'application/json',
             },
         });
@@ -34,18 +33,17 @@ export const getItemGroupService = async (token: string, tenantId: string) => {
     }
 }
 
-export const createItemGroupService = async (token: string, tenantId: string, data: ItemGroupDto) => {
-    if (!token || !tenantId) {
+export const createItemGroupService = async (token: string, buCode: string, data: ItemGroupDto) => {
+    if (!token || !buCode) {
         console.error("Authorization token and tenant ID are required");
         return null;
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/products/item-group`, {
+        const response = await fetch(`${backendApi}/api/config/${buCode}/products/item-group`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
@@ -63,18 +61,17 @@ export const createItemGroupService = async (token: string, tenantId: string, da
     }
 }
 
-export const updateItemGroupService = async (token: string, tenantId: string, data: ItemGroupDto) => {
-    if (!token || !tenantId || !data.id) {
+export const updateItemGroupService = async (token: string, buCode: string, data: ItemGroupDto) => {
+    if (!token || !buCode || !data.id) {
         console.error("Authorization token, tenant ID, and item group ID are required");
         return null;
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/products/item-group/${data.id}`, {
+        const response = await fetch(`${backendApi}/api/config/${buCode}/products/item-group/${data.id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
@@ -92,18 +89,17 @@ export const updateItemGroupService = async (token: string, tenantId: string, da
     }
 }
 
-export const deleteItemGroupService = async (token: string, tenantId: string, id: string) => {
-    if (!token || !tenantId || !id) {
+export const deleteItemGroupService = async (token: string, buCode: string, id: string) => {
+    if (!token || !buCode || !id) {
         console.error("Authorization token, tenant ID, and item group ID are required");
         return null;
     }
 
     try {
-        const response = await fetch(`${backendApi}/api/config/products/item-group/${id}`, {
+        const response = await fetch(`${backendApi}/api/config/${buCode}/products/item-group/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
                 'Content-Type': 'application/json',
             },
         });
