@@ -11,28 +11,32 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 
-const API_URL = `${backendApi}/api/config/departments`;
+const departmentApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/departments`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useDepartmentsQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
+  const API_URL = departmentApiUrl(buCode);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["departments", tenantId, params],
+    queryKey: ["departments", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
         "Error fetching department",
         params ?? {}
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
   });
 
   const departments = data;
@@ -60,35 +64,34 @@ export const useDepartmentsQuery = (
 
 export const useDepartmentByIdQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = departmentApiUrl(buCode, id);
   return useQuery({
     queryKey: ["department-id", id],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getByIdApiRequest(
         API_ID,
         token,
-        tenantId,
         "Error fetching department"
       );
     },
-    enabled: !!token && !!tenantId && !!id,
+    enabled: !!token && !!buCode && !!id,
   });
 
 };
 
-export const useDepartmentMutation = (token: string, tenantId: string) => {
+export const useDepartmentMutation = (token: string, buCode: string) => {
+  const API_URL = departmentApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: DepartmentCreateDto) => {
       return await postApiRequest(
         API_URL,
         token,
-        tenantId,
         data,
         "Error creating department"
       );
@@ -98,16 +101,15 @@ export const useDepartmentMutation = (token: string, tenantId: string) => {
 
 export const useDepartmentUpdateMutation = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = departmentApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: DepartmentUpdateDto) => {
       return await updateApiRequest(
         API_ID,
         token,
-        tenantId,
         id,
         "Error updating department",
         "PATCH"
@@ -118,14 +120,14 @@ export const useDepartmentUpdateMutation = (
 
 export const useDepartmentDeleteMutation = (
   token: string,
-  tenantId: string
+  buCode: string
 ) => {
+  const API_URL = departmentApiUrl(buCode);
   return useMutation({
     mutationFn: async (id: string) => {
       return await deleteApiRequest(
         API_URL,
         token,
-        tenantId,
         id,
         "Error to delete department"
       );

@@ -17,7 +17,7 @@ import { SortConfig, SortDirection } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function DepartmentComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tDepartment = useTranslations("Department");
   const tCommon = useTranslations("Common");
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function DepartmentComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
 
-  const { departments, isLoading, isUnauthorized } = useDepartmentsQuery(token, tenantId, {
+  const { departments, isLoading, isUnauthorized } = useDepartmentsQuery(token, buCode, {
     search,
     page,
     sort,
