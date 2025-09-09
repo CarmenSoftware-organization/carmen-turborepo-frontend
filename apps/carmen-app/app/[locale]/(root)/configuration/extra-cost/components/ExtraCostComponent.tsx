@@ -21,7 +21,7 @@ import { useTranslations } from "next-intl";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function ExtraCostComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const queryClient = useQueryClient();
   const tCommon = useTranslations("Common");
   const tConfig = useTranslations("Modules.Configuration");
@@ -47,7 +47,7 @@ export default function ExtraCostComponent() {
 
   const { extraCostTypes, isLoading } = useExtraCostTypeQuery(
     token,
-    tenantId,
+    buCode,
     {
       search,
       filter,
@@ -57,9 +57,9 @@ export default function ExtraCostComponent() {
     }
   );
 
-  const { mutate: createExtraCost } = useCreateExtraCostType(token, tenantId);
-  const { mutate: updateExtraCost } = useUpdateExtraCostType(token, tenantId, selectedExtraCost?.id ?? "");
-  const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, tenantId, extraCostToDelete?.id ?? "");
+  const { mutate: createExtraCost } = useCreateExtraCostType(token, buCode);
+  const { mutate: updateExtraCost } = useUpdateExtraCostType(token, buCode, selectedExtraCost?.id ?? "");
+  const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, buCode, extraCostToDelete?.id ?? "");
 
   const extraCostData = Array.isArray(extraCostTypes) ? extraCostTypes : extraCostTypes?.data || [];
   const currentPage = extraCostTypes?.paginate?.page ?? 1;
@@ -114,7 +114,7 @@ export default function ExtraCostComponent() {
       deleteExtraCost(undefined, {
         onSuccess: () => {
           toastSuccess({ message: tExtraCost("delete_success") });
-          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", buCode] });
           setDeleteDialogOpen(false);
           setExtraCostToDelete(undefined);
         },
@@ -131,7 +131,7 @@ export default function ExtraCostComponent() {
       createExtraCost(data, {
         onSuccess: () => {
           toastSuccess({ message: tExtraCost("create_success") });
-          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", buCode] });
           setDialogOpen(false);
           setSelectedExtraCost(undefined);
         },
@@ -145,7 +145,7 @@ export default function ExtraCostComponent() {
       updateExtraCost(updateData, {
         onSuccess: () => {
           toastSuccess({ message: tExtraCost("update_success") });
-          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["extra-cost-type", buCode] });
           setDialogOpen(false);
           setSelectedExtraCost(undefined);
         },
