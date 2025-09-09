@@ -19,6 +19,7 @@ import { toastSuccess } from "@/components/ui-custom/Toast";
 
 enum LOCAL_STORAGE {
   ACCESS_TOKEN = "access_token",
+  BU_CODE = "bu_code",
   REFRESH_TOKEN = "refresh_token",
   TENANT_ID = "tenant_id",
   USER = "user",
@@ -33,6 +34,7 @@ interface UserInfo {
 interface BusinessUnit {
   id: string;
   name: string;
+  code: string;
   is_default?: boolean;
   department?: {
     id: string;
@@ -89,6 +91,7 @@ interface AuthContextType {
   amount: NonNullable<BusinessUnit["config"]>["amount"] | null;
   quantity: NonNullable<BusinessUnit["config"]>["quantity"] | null;
   recipe: NonNullable<BusinessUnit["config"]>["recipe"] | null;
+  buCode: string;
 }
 
 // Create context with a default value
@@ -112,6 +115,7 @@ export const AuthContext = createContext<AuthContextType>({
   amount: null,
   quantity: null,
   recipe: null,
+  buCode: "",
 });
 
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
@@ -128,6 +132,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
   const [tenantId, setTenantId] = useState<string>("");
   const [token, setToken] = useState<string>("");
+  const [buCode, setBuCode] = useState<string>("");
   const [isFromStorageEvent, setIsFromStorageEvent] = useState(false);
 
   const router = useRouter();
@@ -138,9 +143,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     if (typeof window !== "undefined") {
       const storedTenantId = localStorage.getItem(LOCAL_STORAGE.TENANT_ID) ?? "";
       const storedToken = localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
-
+      const storedBuCode = localStorage.getItem(LOCAL_STORAGE.BU_CODE) ?? "";
       setTenantId(storedTenantId);
       setToken(storedToken);
+      setBuCode(storedBuCode);
       setIsHydrated(true);
     }
   }, []);
@@ -215,13 +221,23 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       );
       const firstBu = user.business_unit[0];
       const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
+      const newBuCode = defaultBu?.code ?? firstBu?.code ?? "";
 
-      if (newTenantId && newTenantId !== tenantId) {
-        setTenantId(newTenantId);
+      // Set tenantId และ buCode แม้ว่าจะเหมือนเดิมก็ตาม (สำหรับ initial load)
+      if (newTenantId && newBuCode) {
+        if (newTenantId !== tenantId) {
+          setTenantId(newTenantId);
+        }
+        if (newBuCode !== buCode) {
+          setBuCode(newBuCode);
+        }
+
+        // อัปเดต localStorage เสมอ
         localStorage.setItem(LOCAL_STORAGE.TENANT_ID, newTenantId);
+        localStorage.setItem(LOCAL_STORAGE.BU_CODE, newBuCode);
       }
     }
-  }, [user, tenantId, isHydrated]);
+  }, [user, isHydrated]);
 
   // จัดการการเข้าสู่ระบบ
   const setSession = useCallback(
@@ -251,13 +267,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
       localStorage.removeItem(LOCAL_STORAGE.USER);
+      localStorage.removeItem(LOCAL_STORAGE.BU_CODE);
     }
 
     // ล้าง cache และ reset state
     clearAuthCache();
     setTenantId("");
     setToken("");
-
+    setBuCode("");
     // เปลี่ยนเส้นทางไปหน้า sign-in
     router.push(signInPage);
   }, [router, signInPage, clearAuthCache, isFromStorageEvent]);
@@ -273,10 +290,20 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // ฟังก์ชันจัดการการเปลี่ยน tenant
   const handleChangeTenant = useCallback(
     async (id: string) => {
-      if (!id || !token) return;
+      if (!id || !token || !user?.business_unit?.length) return;
 
       // ป้องกันการ trigger ซ้ำเมื่อมาจาก cross-tab sync
       if (isFromStorageEvent) {
+        return;
+      }
+
+      // หา business unit ที่เลือกเพื่อดึง bu_code
+      const selectedBu = user.business_unit.find(
+        (bu: BusinessUnit) => bu.id === id
+      );
+
+      if (!selectedBu) {
+        console.error('Business unit not found for id:', id);
         return;
       }
 
@@ -285,9 +312,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         {
           onSuccess: () => {
             setTenantId(id);
+            setBuCode(selectedBu.code);
+
             // อัปเดต localStorage เพื่อ sync กับ tabs อื่น
             if (typeof window !== "undefined") {
               localStorage.setItem(LOCAL_STORAGE.TENANT_ID, id);
+              localStorage.setItem(LOCAL_STORAGE.BU_CODE, selectedBu.code);
             }
             router.push(dashboardPage);
             toastSuccess({ message: "Changed Business Unit Success" });
@@ -295,7 +325,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         }
       );
     },
-    [token, updateBusinessUnitMutation, isFromStorageEvent]
+    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.business_unit]
   );
 
   // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
@@ -307,10 +337,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
         localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
         localStorage.removeItem(LOCAL_STORAGE.USER);
+        localStorage.removeItem(LOCAL_STORAGE.BU_CODE);
       }
       clearAuthCache();
       setTenantId("");
       setToken("");
+      setBuCode("");
     }
   }, [isSignInPage, clearAuthCache, isHydrated, token]);
 
@@ -331,6 +363,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
           if (event.newValue === null) {
             setToken("");
             setTenantId("");
+            setBuCode("");
             clearAuthCache();
 
             // Redirect ไป sign-in เฉพาะเมื่อไม่อยู่ในหน้า sign-in อยู่แล้ว
@@ -368,7 +401,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [isHydrated, token, tenantId, isSignInPage, signInPage, router, clearAuthCache]);
+  }, [isHydrated, token, tenantId, isSignInPage, signInPage, router, clearAuthCache, buCode]);
 
   // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่
   const hasToken = isHydrated && !!token;
@@ -398,6 +431,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       amount,
       quantity,
       recipe,
+      buCode,
     }),
     [
       hasToken,
@@ -419,8 +453,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       amount,
       quantity,
       recipe,
+      buCode,
     ]
   );
+
+  console.log('AuthContext value:', value);
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

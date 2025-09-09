@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getAllLocations, getLocationByIdService } from '@/services/location.service';
 import { ParamsGetDto } from '@/dtos/param.dto';
 
+
 export const useLocationsQuery = ({
     token,
     tenantId,
@@ -19,6 +20,22 @@ export const useLocationsQuery = ({
         enabled: enabled && !!token && !!tenantId,
         staleTime: 5 * 60 * 1000, // 5 minutes
         gcTime: 10 * 60 * 1000, // 10 minutes
+    });
+};
+
+export const useLocationsQueryV2 = ({
+    token,
+    buCode,
+    params,
+}: {
+    token: string;
+    buCode: string;
+    params?: ParamsGetDto;
+}) => {
+    return useQuery({
+        queryKey: ['locations', buCode, params],
+        queryFn: () => getAllLocations(token, buCode, params || {}),
+        enabled: !!token && !!buCode,
     });
 };
 

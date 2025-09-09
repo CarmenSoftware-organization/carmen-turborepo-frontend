@@ -5,25 +5,30 @@ import { deleteApiRequest, getAllApiRequest, postApiRequest, updateApiRequest } 
 import { useCallback } from "react";
 import { DeliveryPointCreateDto, DeliveryPointGetDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
 
-const API_URL = `${backendApi}/api/config/delivery-point`;
+const deliveryPointApiUrl = (buCode: string, id?: string) => {
+    const baseUrl = `${backendApi}/api/config/${buCode}/delivery-point`;
+    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useDeliveryPointQuery = ({
     token,
-    tenantId,
+    buCode,
     params
 }: {
     token: string;
-    tenantId: string;
+    buCode: string;
     params?: ParamsGetDto;
 }) => {
+
+    const API_URL = deliveryPointApiUrl(buCode);
+
     const { data, isLoading, error } = useQuery({
-        queryKey: ["delivery-point", tenantId, params],
+        queryKey: ["delivery-point", params],
         queryFn: async () => {
             try {
                 const result = await getAllApiRequest(
                     API_URL,
                     token,
-                    tenantId,
                     "Error fetching delivery point",
                     params
                 );
@@ -33,7 +38,7 @@ export const useDeliveryPointQuery = ({
                 throw error;
             }
         },
-        enabled: !!token && !!tenantId,
+        enabled: !!token && !!buCode,
     });
     const getDeliveryPointName = useCallback((deliveryPointId: string) => {
         const deliveryPoint = data?.data.find((dp: DeliveryPointGetDto) => dp.id === deliveryPointId);
@@ -45,15 +50,15 @@ export const useDeliveryPointQuery = ({
 
 export const useDeliveryPointMutation = (
     token: string,
-    tenantId: string,
+    buCode: string,
 ) => {
+    const API_URL = deliveryPointApiUrl(buCode);
     return useMutation({
         mutationFn: async (data: DeliveryPointCreateDto) => {
-            if (!token || !tenantId) throw new Error("Unauthorized");
+            if (!token || !buCode) throw new Error("Unauthorized");
             return await postApiRequest(
                 API_URL,
                 token,
-                tenantId,
                 data,
                 "Error creating delivery point"
             );
@@ -63,17 +68,17 @@ export const useDeliveryPointMutation = (
 
 export const useUpdateDeliveryPoint = (
     token: string,
-    tenantId: string,
+    buCode: string,
     id: string,
 ) => {
-    const API_URL_BY_ID = `${API_URL}/${id}`;
+    const API_URL_BY_ID = deliveryPointApiUrl(buCode, id);
+
     return useMutation({
         mutationFn: async (data: DeliveryPointUpdateDto) => {
-            if (!token || !tenantId || !id) throw new Error("Unauthorized");
+            if (!token || !buCode || !id) throw new Error("Unauthorized");
             return await updateApiRequest(
                 API_URL_BY_ID,
                 token,
-                tenantId,
                 data,
                 "Error updating delivery point",
                 "PATCH"
@@ -84,17 +89,16 @@ export const useUpdateDeliveryPoint = (
 
 export const useDeleteDeliveryPoint = (
     token: string,
-    tenantId: string,
+    buCode: string,
     id: string,
 ) => {
-    const API_URL_BY_ID = `${API_URL}/${id}`;
+    const API_URL_BY_ID = deliveryPointApiUrl(buCode, id);
     return useMutation({
         mutationFn: async () => {
-            if (!token || !tenantId || !id) throw new Error("Unauthorized");
+            if (!token || !buCode || !id) throw new Error("Unauthorized");
             return await deleteApiRequest(
                 API_URL_BY_ID,
                 token,
-                tenantId,
                 id,
                 "Error deleting delivery point"
             );

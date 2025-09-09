@@ -21,7 +21,7 @@ import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function DeliveryPointComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, tenantId, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tDeliveryPoint = useTranslations("DeliveryPoint");
@@ -47,7 +47,7 @@ export default function DeliveryPointComponent() {
 
   const { deliveryPoints, isLoading } = useDeliveryPointQuery({
     token,
-    tenantId,
+    buCode,
     params: {
       search,
       filter,

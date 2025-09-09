@@ -1,16 +1,14 @@
 import { ParamsGetDto } from "@/dtos/param.dto";
 import axios from "axios";
 
-export const requestHeaders = (token: string, tenantId: string) => ({
+export const requestHeaders = (token: string) => ({
   Authorization: `Bearer ${token}`,
-  "x-tenant-id": tenantId,
   "Content-Type": "application/json",
 });
 
 export const getAllApiRequest = async (
   API_URL: string,
   token: string,
-  tenantId: string,
   errorContext: string,
   params?: ParamsGetDto
 ) => {
@@ -27,7 +25,7 @@ export const getAllApiRequest = async (
     const URL = queryString ? `${API_URL}?${queryString}` : API_URL;
 
     const response = await axios.get(URL, {
-      headers: requestHeaders(token, tenantId),
+      headers: requestHeaders(token),
     });
 
     return response.data;
@@ -40,12 +38,11 @@ export const getAllApiRequest = async (
 export const getByIdApiRequest = async (
   API_URL: string,
   token: string,
-  tenantId: string,
   errorContext: string
 ) => {
   try {
     const response = await axios.get(API_URL, {
-      headers: requestHeaders(token, tenantId),
+      headers: requestHeaders(token),
     });
 
     return response.data;
@@ -58,13 +55,12 @@ export const getByIdApiRequest = async (
 export const postApiRequest = async <T = unknown, R = unknown>(
   API_URL: string,
   token: string,
-  tenantId: string,
   data: T,
   errorContext: string
 ) => {
   try {
     const response = await axios.post<R>(API_URL, data, {
-      headers: requestHeaders(token, tenantId),
+      headers: requestHeaders(token),
     });
 
     return response.data;
@@ -77,7 +73,6 @@ export const postApiRequest = async <T = unknown, R = unknown>(
 export const updateApiRequest = async <T = unknown, R = unknown>(
   API_URL: string,
   token: string,
-  tenantId: string,
   data: T,
   errorContext: string,
   method: "PUT" | "PATCH"
@@ -86,10 +81,10 @@ export const updateApiRequest = async <T = unknown, R = unknown>(
     const response =
       method === "PUT"
         ? await axios.put<R>(API_URL, data, {
-          headers: requestHeaders(token, tenantId),
+          headers: requestHeaders(token),
         })
         : await axios.patch<R>(API_URL, data, {
-          headers: requestHeaders(token, tenantId),
+          headers: requestHeaders(token),
         });
 
     return response.data;
@@ -102,13 +97,12 @@ export const updateApiRequest = async <T = unknown, R = unknown>(
 export const deleteApiRequest = async (
   API_URL: string,
   token: string,
-  tenantId: string,
   id: string,
   errorContext: string
 ) => {
   try {
     const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: requestHeaders(token, tenantId),
+      headers: requestHeaders(token),
     });
 
     return response.data;
@@ -117,3 +111,4 @@ export const deleteApiRequest = async (
     throw error;
   }
 };
+

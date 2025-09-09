@@ -12,7 +12,6 @@ export const getAllLocations = async (
     return getAllApiRequest(
         API_URL,
         token,
-        tenantId,
         'Failed to fetch locations',
         params
     );
@@ -26,7 +25,6 @@ export const getLocationByIdService = async (
     return getByIdApiRequest(
         `${API_URL}/${id}`,
         token,
-        tenantId,
         'Failed to fetch location'
     );
 };
