@@ -27,9 +27,9 @@ export default function VendorLookup({
     placeholder,
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const tCommon = useTranslations("Common");
-    const { vendors, isLoading } = useVendor(token, tenantId);
+    const { vendors, isLoading } = useVendor(token, buCode);
     const [open, setOpen] = useState(false);
 
     const vendorsData = useMemo(() => vendors?.data ?? [], [vendors?.data]);

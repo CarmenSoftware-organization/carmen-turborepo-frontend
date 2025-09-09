@@ -21,8 +21,8 @@ interface Props {
 export default function Items({ items }: Props) {
     const tPurchaseRequest = useTranslations("PurchaseRequest");
     const tTableHeader = useTranslations("TableHeader");
-    const { token, tenantId, currencyBase } = useAuth();
-    const { getCurrencyCode } = useCurrenciesQuery(token, tenantId);
+    const { token, buCode, currencyBase } = useAuth();
+    const { getCurrencyCode } = useCurrenciesQuery(token, buCode);
 
     return (
         <div className="space-y-4">

@@ -29,10 +29,10 @@ export default function UnitLookup({
     disabled = false,
     classNames
 }: Readonly<PropsLookup>) {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const { units, isLoading } = useUnitQuery({
         token,
-        tenantId,
+        buCode,
         params: {
             perpage: -1,
         }

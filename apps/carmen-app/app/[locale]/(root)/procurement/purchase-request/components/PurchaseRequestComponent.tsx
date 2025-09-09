@@ -22,7 +22,7 @@ import { parseSortString } from "@/utils/table-sort";
 
 
 export default function PurchaseRequestComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tTableHeader = useTranslations("TableHeader");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
@@ -47,7 +47,7 @@ export default function PurchaseRequestComponent() {
     { key: "total_amount", label: tTableHeader("amount") },
   ];
 
-  const { data: prs, isLoading } = usePurchaseRequest(token, tenantId, {
+  const { data: prs, isLoading } = usePurchaseRequest(token, buCode, {
     page: page ? parseInt(page) : 1,
     sort,
     search,

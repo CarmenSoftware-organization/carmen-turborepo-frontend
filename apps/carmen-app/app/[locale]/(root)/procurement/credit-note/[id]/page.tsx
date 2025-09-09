@@ -9,15 +9,15 @@ import { formType } from "@/dtos/form.dto";
 
 
 export default function CreditNoteDetailPage() {
-    const { token, tenantId } = useAuth();
-    const params = useParams();
-    const id = params.id as string;
+  const { token, buCode } = useAuth();
+  const params = useParams();
+  const id = params.id as string;
 
-    const { data, isLoading, error } = useCreditNoteByIdQuery(token, tenantId, id);
+  const { data, isLoading, error } = useCreditNoteByIdQuery(token, buCode, id);
 
-    if (isLoading) return <DetailLoading />;
+  if (isLoading) return <DetailLoading />;
 
-    if (error) return <div>Error loading data</div>;
+  if (error) return <div>Error loading data</div>;
 
   return <CnForm mode={formType.VIEW} initialValues={data?.data} />;
 }

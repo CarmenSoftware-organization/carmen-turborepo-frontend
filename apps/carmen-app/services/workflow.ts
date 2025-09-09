@@ -4,7 +4,7 @@ import { backendApi } from "@/lib/backend-api";
 
 export const getWorkflowList = async (
   accessToken: string,
-  tenantId: string,
+  buCode: string,
   params: {
     search?: string;
     page?: number | string;
@@ -29,7 +29,7 @@ export const getWorkflowList = async (
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
-      "x-tenant-id": tenantId,
+      "x-tenant-id": buCode,
     },
   };
   const response = await fetch(url, options);
@@ -37,14 +37,14 @@ export const getWorkflowList = async (
   return data;
 };
 
-export const getWorkflowId = async (accessToken: string, tenantId: string, id: string) => {
+export const getWorkflowId = async (accessToken: string, buCode: string, id: string) => {
   const url = `${backendApi}/api/config/workflows/${id}`;
   const options = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
-      "x-tenant-id": tenantId,
+      "x-tenant-id": buCode,
     },
   };
   const response = await fetch(url, options);
@@ -55,14 +55,14 @@ export const getWorkflowId = async (accessToken: string, tenantId: string, id: s
 export const createWorkflow = async (
   values: WorkflowCreateModel,
   token: string,
-  tenantId: string
+  buCode: string
 ): Promise<WorkflowCreateModel | null> => {
   try {
     const response = await fetch(`${backendApi}/api/config/workflows`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-tenant-id": tenantId,
+        "x-tenant-id": buCode,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
@@ -86,7 +86,7 @@ export const createWorkflow = async (
 export const handleSubmit = async (
   values: WorkflowCreateModel,
   token: string,
-  tenantId: string,
+  buCode: string,
   mode: formType
 ): Promise<WorkflowCreateModel | null> => {
   try {
@@ -97,7 +97,7 @@ export const handleSubmit = async (
       method,
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-tenant-id": tenantId,
+        "x-tenant-id": buCode,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
@@ -119,12 +119,12 @@ export const handleSubmit = async (
   }
 };
 
-export const deleteWorkflow = async (token: string, tenantId: string, id: string) => {
+export const deleteWorkflow = async (token: string, buCode: string, id: string) => {
   const response = await fetch(`${backendApi}/api/config/workflows/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "x-tenant-id": tenantId,
+      "x-tenant-id": buCode,
     },
   });
 

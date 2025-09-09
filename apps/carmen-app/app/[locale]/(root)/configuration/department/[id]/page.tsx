@@ -7,11 +7,11 @@ import { formType } from "@/dtos/form.dto";
 import { useDepartmentByIdQuery } from "@/hooks/useDepartments";
 
 export default function DepartmentIdPage() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const params = useParams();
   const id = params.id as string;
 
-  const { data: department, isLoading } = useDepartmentByIdQuery(token, tenantId, id);
+  const { data: department, isLoading } = useDepartmentByIdQuery(token, buCode, id);
 
   return (
     <DepartmentDetail

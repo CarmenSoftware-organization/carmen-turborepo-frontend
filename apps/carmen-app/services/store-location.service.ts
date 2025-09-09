@@ -5,7 +5,7 @@ import { requestHeaders } from "@/lib/config.api";
 
 const API_URL = `${backendApi}/api/config/locations`;
 
-export const getAllStoreLocations = async (token: string, tenantId: string,
+export const getAllStoreLocations = async (token: string, buCode: string,
     params: {
         search?: string;
         page?: number | string;
@@ -28,7 +28,7 @@ export const getAllStoreLocations = async (token: string, tenantId: string,
         const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
         const response = await axios.get(url, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -37,10 +37,10 @@ export const getAllStoreLocations = async (token: string, tenantId: string,
     }
 }
 
-export const createStoreLocation = async (token: string, tenantId: string, storeLocation: CreateStoreLocationDto) => {
+export const createStoreLocation = async (token: string, buCode: string, storeLocation: CreateStoreLocationDto) => {
     try {
         const response = await axios.post(API_URL, storeLocation, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -49,10 +49,10 @@ export const createStoreLocation = async (token: string, tenantId: string, store
     }
 }
 
-export const updateStoreLocation = async (token: string, tenantId: string, storeLocation: CreateStoreLocationDto & { id: string }) => {
+export const updateStoreLocation = async (token: string, buCode: string, storeLocation: CreateStoreLocationDto & { id: string }) => {
     try {
         const response = await axios.patch(`${API_URL}/${storeLocation.id}`, storeLocation, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -61,13 +61,13 @@ export const updateStoreLocation = async (token: string, tenantId: string, store
     }
 }
 
-export const deleteStoreLocation = async (token: string, tenantId: string, id: string) => {
+export const deleteStoreLocation = async (token: string, buCode: string, id: string) => {
     const url = `${backendApi}/api/config/locations/${id}`;
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
+            'x-tenant-id': buCode,
             'Content-Type': 'application/json',
         },
     });

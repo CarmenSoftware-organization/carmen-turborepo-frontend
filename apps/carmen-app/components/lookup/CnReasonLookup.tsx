@@ -16,11 +16,11 @@ export default function CnReasonLookup({
   placeholder = "Select cn reason",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
   const { cnReasons, isLoading } = useCnReasonQuery({
     token,
-    tenantId,
+    buCode,
   });
 
   return (

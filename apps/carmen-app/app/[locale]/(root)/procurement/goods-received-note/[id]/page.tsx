@@ -9,14 +9,14 @@ import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 
 export default function GoodsReceivedNoteIdPage() {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const params = useParams();
     const id = params.id as string;
 
     const { data, isLoading, error } = useQuery({
         queryKey: ["grn", id],
         queryFn: async () => {
-            return getGrnById(token, tenantId, id);
+            return getGrnById(token, buCode, id);
         },
     });
 

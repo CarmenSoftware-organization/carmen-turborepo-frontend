@@ -40,10 +40,10 @@ interface GrnFormHeaderProps {
 }
 
 export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
-  const { token, tenantId } = useAuth();
-  const { getVendorName } = useVendor(token, tenantId);
-  const { getCreditTermName } = useCreditTermQuery(token, tenantId);
-  const { getCurrencyCode, getCurrencyExchangeRate } = useCurrenciesQuery(token, tenantId);
+  const { token, buCode } = useAuth();
+  const { getVendorName } = useVendor(token, buCode);
+  const { getCreditTermName } = useCreditTermQuery(token, buCode);
+  const { getCurrencyCode, getCurrencyExchangeRate } = useCurrenciesQuery(token, buCode);
 
   const currencyId = useWatch({
     control,

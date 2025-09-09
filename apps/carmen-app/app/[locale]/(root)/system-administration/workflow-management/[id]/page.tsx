@@ -9,7 +9,7 @@ import { useParams } from "next/navigation";
 import SignInDialog from "@/components/SignInDialog";
 
 const WorkflowDetailPage = () => {
-  const { token, tenantId, isLoading: authLoading } = useAuth();
+  const { token, buCode, isLoading: authLoading } = useAuth();
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : params.id[0];
   const [wfData, setWfdata] = useState<WorkflowCreateModel | null>(null);
@@ -17,13 +17,13 @@ const WorkflowDetailPage = () => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   useEffect(() => {
-    // Only fetch product when token and tenantId are available and auth is not loading
-    if (!token || !tenantId || authLoading) {
+    // Only fetch product when token and buCode are available and auth is not loading
+    if (!token || !buCode || authLoading) {
       return;
     }
     const fetchById = async () => {
       try {
-        const data = await getWorkflowId(token, tenantId, id);
+        const data = await getWorkflowId(token, buCode, id);
         if (data.statusCode === 401) {
           setLoginDialogOpen(true);
           return;
@@ -36,15 +36,15 @@ const WorkflowDetailPage = () => {
       }
     };
     fetchById();
-  }, [token, tenantId, id, authLoading]);
+  }, [token, buCode, id, authLoading]);
 
   // Show loading state if auth is still loading or we're fetching product data
-  if (authLoading || (loading && token && tenantId)) {
+  if (authLoading || (loading && token && buCode)) {
     return <div>Loading product information...</div>;
   }
 
   // Show loading state if auth is still loading or we're fetching product data
-  if (authLoading || (loading && token && tenantId)) {
+  if (authLoading || (loading && token && buCode)) {
     return <div>Loading product information...</div>;
   }
 

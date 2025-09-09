@@ -6,27 +6,27 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useProductLocation = (
     token: string,
-    tenantId: string,
+    buCode: string,
     id: string,
     params?: ParamsGetDto
 ) => {
     const API_URL = `${backendApi}/api/products/locations/${id}`;
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["product-location", tenantId, id],
+        queryKey: ["product-location", buCode, id],
         queryFn: async () => {
-            if (!token || !tenantId) {
-                throw new Error("Unauthorized: Missing token or tenantId");
+            if (!token || !buCode) {
+                throw new Error("Unauthorized: Missing token or buCode");
             }
             return await getAllApiRequest(
                 API_URL,
                 token,
-                tenantId,
+                buCode,
                 "Error fetching product location",
                 params
             );
         },
-        enabled: !!token && !!tenantId && !!id,
+        enabled: !!token && !!buCode && !!id,
     });
 
     const productLocation = data;

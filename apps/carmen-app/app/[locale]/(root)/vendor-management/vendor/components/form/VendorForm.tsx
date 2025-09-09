@@ -56,7 +56,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     const tVendor = useTranslations('Vendor');
     const tCommon = useTranslations('Common');
 
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<VendorFormValues>({
@@ -77,9 +77,9 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
         try {
             let response;
             if (mode === formType.ADD) {
-                response = await createVendorService(token, tenantId, data)
+                response = await createVendorService(token, buCode, data)
             } else {
-                response = await updateVendorService(token, tenantId, { ...data, id: initData?.id })
+                response = await updateVendorService(token, buCode, { ...data, id: initData?.id })
             }
 
             if (response) {

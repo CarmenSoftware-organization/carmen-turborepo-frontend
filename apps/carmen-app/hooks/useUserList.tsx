@@ -8,23 +8,23 @@ import { getAllApiRequest } from "@/lib/config.api";
 const API_URL = `${backendApi}/api/user`;
 
 export const useUserList = () => {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["users", tenantId],
+    queryKey: ["users", buCode],
     queryFn: async () => {
-      if (!token || !tenantId) {
+      if (!token || !buCode) {
         console.log("❌ Missing credentials");
-        throw new Error("Unauthorized: Missing token or tenantId");
+        throw new Error("Unauthorized: Missing token or buCode");
       }
 
       try {
         const result = await getAllApiRequest(
           API_URL,
           token,
-          tenantId,
+          buCode,
           "Failed to fetch user list",
-          
+
         );
 
         return result;
@@ -33,7 +33,7 @@ export const useUserList = () => {
         throw err;
       }
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 1, // เพิ่ม retry
     retryDelay: 1000, // delay 1 วินาที

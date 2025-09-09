@@ -28,7 +28,7 @@ export const useCurrenciesQuery = (
         queryKey: ["currencies", params],
         queryFn: async () => {
             if (!token || !buCode) {
-                throw new Error("Unauthorized: Missing token or tenantId");
+                throw new Error("Unauthorized: Missing token or buCode");
             }
             return await getAllApiRequest(
                 API_URL,

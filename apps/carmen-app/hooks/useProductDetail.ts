@@ -4,7 +4,7 @@ import { ProductFormValues } from "@/app/[locale]/(root)/product-management/prod
 
 type UseProductDetailProps = {
   token: string | null;
-  tenantId: string | null;
+  buCode: string | null;
   id: string;
   authLoading: boolean;
 };
@@ -20,7 +20,7 @@ type UseProductDetailReturn = {
 
 export const useProductDetail = ({
   token,
-  tenantId,
+  buCode,
   id,
   authLoading,
 }: UseProductDetailProps): UseProductDetailReturn => {
@@ -32,14 +32,14 @@ export const useProductDetail = ({
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const fetchProduct = useCallback(async () => {
-    if (!token || !tenantId) {
+    if (!token || !buCode) {
       return;
     }
 
     try {
       setLoading(true);
       setError(null);
-      const data = await getProductIdService(token, tenantId, id);
+      const data = await getProductIdService(token, buCode, id);
 
       if (data.statusCode === 401) {
         setLoginDialogOpen(true);
@@ -53,15 +53,15 @@ export const useProductDetail = ({
     } finally {
       setLoading(false);
     }
-  }, [token, tenantId, id]);
+  }, [token, buCode, id]);
 
   useEffect(() => {
-    if (!token || !tenantId || authLoading) {
+    if (!token || !buCode || authLoading) {
       return;
     }
 
     fetchProduct();
-  }, [token, tenantId, id, authLoading, fetchProduct]);
+  }, [token, buCode, id, authLoading, fetchProduct]);
 
   return {
     product,

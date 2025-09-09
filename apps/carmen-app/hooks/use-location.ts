@@ -14,22 +14,22 @@ const API_URL = `${backendApi}/api/config/locations`;
 
 export const useLocationQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["locations", tenantId, params],
+    queryKey: ["locations", buCode, params],
     queryFn: () => {
-      if (!token || !tenantId) throw new Error("Unauthorized");
+      if (!token || !buCode) throw new Error("Unauthorized");
       return getAllApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         "Error fetching locations",
         params
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
   });
 
   const getLocationName = useCallback((locationId: string) => {
@@ -40,14 +40,14 @@ export const useLocationQuery = (
   return { data, isLoading, error, getLocationName };
 };
 
-export const useLocationMutation = (token: string, tenantId: string) => {
+export const useLocationMutation = (token: string, buCode: string) => {
   return useMutation({
     mutationFn: (data: FormLocationValues) => {
-      if (!token || !tenantId) throw new Error("Unauthorized");
+      if (!token || !buCode) throw new Error("Unauthorized");
       return postApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         data,
         "Error creating location"
       );
@@ -57,17 +57,17 @@ export const useLocationMutation = (token: string, tenantId: string) => {
 
 export const useUpdateLocation = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
   const API_URL_BY_ID = `${API_URL}/${id}`;
-  
+
   return useMutation({
     mutationFn: (data: FormLocationValues) => {
       return updateApiRequest(
         API_URL_BY_ID,
         token,
-        tenantId,
+        buCode,
         data,
         "Error updating location",
         "PATCH"
@@ -78,17 +78,17 @@ export const useUpdateLocation = (
 
 export const useDeleteLocation = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
   const API_URL_BY_ID = `${API_URL}/${id}`;
   return useMutation({
     mutationFn: () => {
-      if (!token || !tenantId || !id) throw new Error("Unauthorized");
+      if (!token || !buCode || !id) throw new Error("Unauthorized");
       return deleteApiRequest(
         API_URL_BY_ID,
         token,
-        tenantId,
+        buCode,
         id,
         "Error deleting location"
       );

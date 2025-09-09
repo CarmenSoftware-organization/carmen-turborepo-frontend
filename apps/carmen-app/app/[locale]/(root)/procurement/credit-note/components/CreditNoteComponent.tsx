@@ -25,7 +25,7 @@ export default function CreditNoteComponent() {
   const tDataControls = useTranslations("DataControls");
   const tCreditNote = useTranslations("CreditNote");
   const router = useRouter();
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
   const [page, setPage] = useURL("page");
@@ -33,7 +33,7 @@ export default function CreditNoteComponent() {
   const [sort, setSort] = useURL("sort");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { creditNotes, isLoading } = useCreditNoteQuery(token, tenantId, {
+  const { creditNotes, isLoading } = useCreditNoteQuery(token, buCode, {
     search,
     sort,
     page: page ? parseInt(page) : 1,

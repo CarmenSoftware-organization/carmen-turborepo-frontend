@@ -5,13 +5,13 @@ import { UserListDto } from "@/dtos/user.dto";
 
 const API_URL = `${backendApi}/api/user`;
 
-export const getUserList = async (token: string, tenantId: string) => {
+export const getUserList = async (token: string, buCode: string) => {
     const url = `${API_URL}`;
     const response = await axios.get<UserListDto[]>(url, {
-        headers: requestHeaders(token, tenantId)
+        headers: requestHeaders(token, buCode)
     });
 
     console.log('response', response.data);
-    
+
     return response.data;
 }

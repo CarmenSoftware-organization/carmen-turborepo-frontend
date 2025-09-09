@@ -24,7 +24,7 @@ interface WorkflowDetailProps {
 }
 
 const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) => {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const router = useRouter();
 
   const [isEditing, setIsEditing] = useState(mode === formType.EDIT ? false : true);
@@ -35,110 +35,110 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
       mode === formType.EDIT && initialValues
         ? { ...initialValues }
         : {
-            name: "",
-            workflow_type: enum_workflow_type.purchase_request,
-            data: {
-              document_reference_pattern: "",
-              stages: [
-                {
-                  name: "Request Creation",
-                  description: "",
-                  sla: "24",
-                  sla_unit: enum_sla_unit.hours,
-                  available_actions: {
-                    submit: {
-                      is_active: true,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
-                    },
-                    approve: {
-                      is_active: false,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
-                    },
-                    reject: {
-                      is_active: false,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
-                    },
-                    sendback: {
-                      is_active: false,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
+          name: "",
+          workflow_type: enum_workflow_type.purchase_request,
+          data: {
+            document_reference_pattern: "",
+            stages: [
+              {
+                name: "Request Creation",
+                description: "",
+                sla: "24",
+                sla_unit: enum_sla_unit.hours,
+                available_actions: {
+                  submit: {
+                    is_active: true,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
                     },
                   },
-                  hide_fields: {
-                    price_per_unit: false,
-                    total_price: false,
+                  approve: {
+                    is_active: false,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
+                    },
                   },
-                  assigned_users: [],
+                  reject: {
+                    is_active: false,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
+                    },
+                  },
+                  sendback: {
+                    is_active: false,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
+                    },
+                  },
                 },
-                {
-                  name: "Completed",
-                  description: "",
-                  sla: "0",
-                  sla_unit: enum_sla_unit.hours,
-                  available_actions: {
-                    submit: {
-                      is_active: false,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
-                    },
-                    approve: {
-                      is_active: false,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
-                    },
-                    reject: {
-                      is_active: false,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
-                    },
-                    sendback: {
-                      is_active: false,
-                      recipients: {
-                        requestor: false,
-                        current_approve: false,
-                        next_step: false,
-                      },
-                    },
-                  },
-                  hide_fields: {
-                    price_per_unit: false,
-                    total_price: false,
-                  },
-                  assigned_users: [],
+                hide_fields: {
+                  price_per_unit: false,
+                  total_price: false,
                 },
-              ],
-              routing_rules: [],
-              notifications: [],
-              notification_templates: [],
-              products: [],
-            },
-            description: "",
-            is_active: true,
+                assigned_users: [],
+              },
+              {
+                name: "Completed",
+                description: "",
+                sla: "0",
+                sla_unit: enum_sla_unit.hours,
+                available_actions: {
+                  submit: {
+                    is_active: false,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
+                    },
+                  },
+                  approve: {
+                    is_active: false,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
+                    },
+                  },
+                  reject: {
+                    is_active: false,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
+                    },
+                  },
+                  sendback: {
+                    is_active: false,
+                    recipients: {
+                      requestor: false,
+                      current_approve: false,
+                      next_step: false,
+                    },
+                  },
+                },
+                hide_fields: {
+                  price_per_unit: false,
+                  total_price: false,
+                },
+                assigned_users: [],
+              },
+            ],
+            routing_rules: [],
+            notifications: [],
+            notification_templates: [],
+            products: [],
           },
+          description: "",
+          is_active: true,
+        },
     mode: "onSubmit",
   });
 
@@ -174,7 +174,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
     e.preventDefault();
     try {
-      const response = await deleteWorkflow(token, tenantId, id);
+      const response = await deleteWorkflow(token, buCode, id);
       if (response.ok) {
         console.log("Successfully deleted");
         router.back();
@@ -190,7 +190,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
 
   const onSubmit = async (values: WorkflowCreateModel) => {
     try {
-      const result = await handleSubmit(values, token, tenantId, mode);
+      const result = await handleSubmit(values, token, buCode, mode);
       if (result) {
         form.reset();
         console.log(mode === formType.ADD ? "Workflow created successfully" : "Workflow updated successfully");

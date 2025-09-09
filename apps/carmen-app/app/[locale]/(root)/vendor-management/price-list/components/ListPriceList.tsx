@@ -55,7 +55,7 @@ export default function ListPriceList({
     onSort,
     setPerpage
 }: ListPriceListProps) {
-    const { token, tenantId, dateFormat } = useAuth();
+    const { token, buCode, dateFormat } = useAuth();
     const tTableHeader = useTranslations("TableHeader");
     const queryClient = useQueryClient();
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
@@ -63,7 +63,7 @@ export default function ListPriceList({
     const [alertOpen, setAlertOpen] = useState(false);
     const [selectedPriceList, setSelectedPriceList] = useState<PriceListDto | null>(null);
 
-    const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, tenantId, deleteId);
+    const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode, deleteId);
 
     const handleSelectItem = (id: string) => {
         setSelectedItems(prev =>
@@ -99,7 +99,7 @@ export default function ListPriceList({
                 setAlertOpen(false);
                 setSelectedPriceList(null);
                 // Invalidate and refetch price list data
-                queryClient.invalidateQueries({ queryKey: ["price-list", tenantId] });
+                queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
             },
             onError: () => {
                 toastError({ message: 'Failed to delete price list' });

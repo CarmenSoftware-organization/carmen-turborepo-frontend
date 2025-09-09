@@ -14,7 +14,7 @@ interface WorkflowListProps {
 }
 
 export const useWorkflow = () => {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [workflows, setWorkflows] = useState<WorkflowListProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useURL("search");
@@ -33,10 +33,10 @@ export const useWorkflow = () => {
   }, [search, setPage, setSort]);
 
   const fetchData = useCallback(async () => {
-    if (!tenantId) return;
+    if (!buCode) return;
     try {
       setIsLoading(true);
-      const data = await getWorkflowList(token, tenantId, {
+      const data = await getWorkflowList(token, buCode, {
         search,
         page,
         sort,
@@ -54,7 +54,7 @@ export const useWorkflow = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [token, tenantId, search, page, sort, filter]);
+  }, [token, buCode, search, page, sort, filter]);
 
   useEffect(() => {
     fetchData();

@@ -26,9 +26,9 @@ export default function PriceListLookup({
   placeholder = "Select price range",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
-  const { data, isLoading } = usePriceList(token, tenantId);
+  const { data, isLoading } = usePriceList(token, buCode);
   const priceLists = data?.data;
 
   const [open, setOpen] = useState(false);

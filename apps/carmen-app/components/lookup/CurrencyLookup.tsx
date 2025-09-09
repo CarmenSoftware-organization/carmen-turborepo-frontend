@@ -28,7 +28,7 @@ export default function CurrencyLookup({
   placeholder = "Select currency",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -41,16 +41,16 @@ export default function CurrencyLookup({
     isFetchingNextPage,
     isLoading
   } = useInfiniteQuery({
-    queryKey: ["currencies", tenantId, searchTerm],
+    queryKey: ["currencies", buCode, searchTerm],
     queryFn: async ({ pageParam = 1 }) => {
       console.log('🌐 Fetching currencies:', { pageParam, searchTerm });
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       const result = await getAllApiRequest(
         `${backendApi}/api/config/currencies`,
         token,
-        tenantId,
+        buCode,
         "Error fetching currency",
         {
           page: pageParam,
@@ -71,7 +71,7 @@ export default function CurrencyLookup({
       }
       return allPages.length + 1;
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
     initialPageParam: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

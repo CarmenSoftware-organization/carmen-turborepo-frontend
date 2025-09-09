@@ -17,9 +17,9 @@ export default function CreditTermLookup({
   placeholder = "Select credit term",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
-  const { creditTerms, isLoading } = useCreditTermQuery(token, tenantId);
+  const { creditTerms, isLoading } = useCreditTermQuery(token, buCode);
   const creditTermsData = creditTerms;
 
   if (isLoading) {

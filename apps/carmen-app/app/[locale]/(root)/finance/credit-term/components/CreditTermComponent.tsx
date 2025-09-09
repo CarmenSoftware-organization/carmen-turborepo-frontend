@@ -53,17 +53,17 @@ const sortFields = [
 ];
 
 export default function CreditTermComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const queryClient = useQueryClient();
-  const { creditTerms } = useCreditTermQuery(token, tenantId);
+  const { creditTerms } = useCreditTermQuery(token, buCode);
   const [selectedCreditTerm, setSelectedCreditTerm] =
     useState<CreditTermGetAllDto | null>(null);
   const { mutate: createCreditTerm, isPending: isCreating } =
-    useCreateCreditTerm(token, tenantId);
+    useCreateCreditTerm(token, buCode);
   const { mutate: updateCreditTerm, isPending: isUpdating } =
-    useUpdateCreditTerm(token, tenantId, selectedCreditTerm?.id || "");
+    useUpdateCreditTerm(token, buCode, selectedCreditTerm?.id || "");
   const { mutate: deleteCreditTerm, isPending: isDeleting } =
-    useDeleteCreditTerm(token, tenantId, selectedCreditTerm?.id || "");
+    useDeleteCreditTerm(token, buCode, selectedCreditTerm?.id || "");
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
@@ -79,7 +79,7 @@ export default function CreditTermComponent() {
     createCreditTerm(data, {
       onSuccess: () => {
         setDialogOpen(false);
-        queryClient.invalidateQueries({ queryKey: ["credit-term", tenantId] });
+        queryClient.invalidateQueries({ queryKey: ["credit-term", buCode] });
         toastSuccess({ message: "Credit term created successfully" });
       },
     });
@@ -91,7 +91,7 @@ export default function CreditTermComponent() {
       onSuccess: () => {
         setDialogOpen(false);
         setSelectedCreditTerm(null);
-        queryClient.invalidateQueries({ queryKey: ["credit-term", tenantId] });
+        queryClient.invalidateQueries({ queryKey: ["credit-term", buCode] });
         toastSuccess({ message: "Credit term updated successfully" });
       },
     });
@@ -103,7 +103,7 @@ export default function CreditTermComponent() {
       onSuccess: () => {
         setDeleteDialogOpen(false);
         setSelectedCreditTerm(null);
-        queryClient.invalidateQueries({ queryKey: ["credit-term", tenantId] });
+        queryClient.invalidateQueries({ queryKey: ["credit-term", buCode] });
         toastSuccess({ message: "Credit term deleted successfully" });
       },
     });

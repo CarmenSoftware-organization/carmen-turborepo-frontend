@@ -37,11 +37,11 @@ export default function ProductLocationLookup({
     disabled = false,
     classNames = "max-w-40"
 }: ProductLocationLookupProps) {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
 
     const { productLocation, isLoading, error } = useProductLocation(
         token,
-        tenantId,
+        buCode,
         location_id
     );
 

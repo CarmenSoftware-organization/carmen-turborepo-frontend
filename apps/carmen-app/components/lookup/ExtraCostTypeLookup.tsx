@@ -17,9 +17,9 @@ export default function ExtraCostTypeLookup({
   placeholder = "Select extra cost type",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
-  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(token, tenantId);
+  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(token, buCode);
   const extraCostTypesData = extraCostTypes?.data;
 
   if (isLoading) {

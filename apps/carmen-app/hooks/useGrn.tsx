@@ -14,7 +14,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 const API_URL = `${backendApi}/api/good-received-note`;
 
 export const useGrn = () => {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [search, setSearch] = useURL("search");
   const [page, setPage] = useURL("page");
   const [sort, setSort] = useURL("sort");
@@ -36,10 +36,10 @@ export const useGrn = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["grns", tenantId, search, page, sort],
+    queryKey: ["grns", buCode, search, page, sort],
     queryFn: () =>
-      getAllGrn(token || "", tenantId || "", { search, page: page ? parseInt(page) : 1, sort }),
-    enabled: !!token && !!tenantId,
+      getAllGrn(token || "", buCode || "", { search, page: page ? parseInt(page) : 1, sort }),
+    enabled: !!token && !!buCode,
   });
 
 
@@ -104,16 +104,16 @@ export const useGrn = () => {
   };
 };
 
-export const useGrnMutation = (token: string, tenantId: string) => {
+export const useGrnMutation = (token: string, buCode: string) => {
   return useMutation({
     mutationFn: async (data: CreateGRNDto) => {
-      if (!token || !tenantId) {
+      if (!token || !buCode) {
         throw new Error("Unauthorized: Missing authentication credentials");
       }
       return await postApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         data,
         "Error creating credit note"
       );
@@ -133,19 +133,19 @@ export const useGrnMutation = (token: string, tenantId: string) => {
 
 export const useUpdateCreditNote = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
   const API_ID = `${API_URL}/${id}`;
   return useMutation({
     mutationFn: async (data: CreateGRNDto) => {
-      if (!token || !tenantId || !id) {
+      if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
       return updateApiRequest(
         API_ID,
         token,
-        tenantId,
+        buCode,
         data,
         "Failed to update credit note",
         "PATCH"

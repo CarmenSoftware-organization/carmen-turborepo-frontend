@@ -79,8 +79,8 @@ interface AuthContextType {
   logout: () => void;
   token: string;
   getServerSideToken: () => string;
-  tenantId: string;
-  handleChangeTenant: (tenantId: string) => void;
+  buCode: string;
+  handleChangeTenant: (buCode: string) => void;
   departments: BusinessUnit["department"] | null;
   currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
   dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
@@ -103,7 +103,7 @@ export const AuthContext = createContext<AuthContextType>({
   logout: () => { },
   token: "",
   getServerSideToken: () => "",
-  tenantId: "",
+  buCode: "",
   handleChangeTenant: () => { },
   departments: null,
   currencyBase: null,
@@ -130,7 +130,7 @@ export function getServerSideToken(): string {
 export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // State สำหรับ track hydration
   const [isHydrated, setIsHydrated] = useState(false);
-  const [tenantId, setTenantId] = useState<string>("");
+  const [buCode, setTenantId] = useState<string>("");
   const [token, setToken] = useState<string>("");
   const [buCode, setBuCode] = useState<string>("");
   const [isFromStorageEvent, setIsFromStorageEvent] = useState(false);
@@ -223,9 +223,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
       const newBuCode = defaultBu?.code ?? firstBu?.code ?? "";
 
-      // Set tenantId และ buCode แม้ว่าจะเหมือนเดิมก็ตาม (สำหรับ initial load)
+      // Set buCode และ buCode แม้ว่าจะเหมือนเดิมก็ตาม (สำหรับ initial load)
       if (newTenantId && newBuCode) {
-        if (newTenantId !== tenantId) {
+        if (newTenantId !== buCode) {
           setTenantId(newTenantId);
         }
         if (newBuCode !== buCode) {
@@ -308,7 +308,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       }
 
       updateBusinessUnitMutation.mutate(
-        { token, tenantId: id },
+        { token, buCode: id },
         {
           onSuccess: () => {
             setTenantId(id);
@@ -376,7 +376,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
           break;
 
         case 'tenant_id':
-          if (event.newValue && event.newValue !== tenantId) {
+          if (event.newValue && event.newValue !== buCode) {
             setTenantId(event.newValue);
             // Auto refresh page เพื่อโหลดข้อมูลใหม่ตาม tenant ที่เปลี่ยน
             setTimeout(() => {
@@ -401,7 +401,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [isHydrated, token, tenantId, isSignInPage, signInPage, router, clearAuthCache, buCode]);
+  }, [isHydrated, token, buCode, isSignInPage, signInPage, router, clearAuthCache, buCode]);
 
   // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่
   const hasToken = isHydrated && !!token;
@@ -419,7 +419,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       logout,
       token,
       getServerSideToken,
-      tenantId,
+      buCode,
       handleChangeTenant,
       departments,
       currencyBase,
@@ -441,7 +441,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       logout,
       token,
       getServerSideToken,
-      tenantId,
+      buCode,
       handleChangeTenant,
       departments,
       currencyBase,

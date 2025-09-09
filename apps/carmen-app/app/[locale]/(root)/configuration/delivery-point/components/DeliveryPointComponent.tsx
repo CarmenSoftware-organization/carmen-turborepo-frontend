@@ -21,7 +21,7 @@ import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function DeliveryPointComponent() {
-  const { token, tenantId, buCode } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tDeliveryPoint = useTranslations("DeliveryPoint");
@@ -57,9 +57,9 @@ export default function DeliveryPointComponent() {
     },
   });
 
-  const { mutate: createDeliveryPoint } = useDeliveryPointMutation(token, tenantId);
-  const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
-  const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, tenantId, selectedDeliveryPoint?.id ?? "");
+  const { mutate: createDeliveryPoint } = useDeliveryPointMutation(token, buCode);
+  const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, buCode, selectedDeliveryPoint?.id ?? "");
+  const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, buCode, selectedDeliveryPoint?.id ?? "");
 
   const deliveryPointsData = deliveryPoints?.data ?? [];
   const currentPage = deliveryPoints?.paginate.page ?? 1;
@@ -111,7 +111,7 @@ export default function DeliveryPointComponent() {
       deleteDeliveryPoint(undefined, {
         onSuccess: () => {
           toastSuccess({ message: 'Delete delivery point successfully' });
-          queryClient.invalidateQueries({ queryKey: ["delivery-point", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["delivery-point", buCode] });
           setDeleteDialogOpen(false);
           setDeliveryPointToDelete(undefined);
         },
@@ -128,7 +128,7 @@ export default function DeliveryPointComponent() {
       createDeliveryPoint(data, {
         onSuccess: () => {
           toastSuccess({ message: 'Create delivery point successfully' });
-          queryClient.invalidateQueries({ queryKey: ["delivery-point", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["delivery-point", buCode] });
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
@@ -142,7 +142,7 @@ export default function DeliveryPointComponent() {
       updateDeliveryPoint(updateData, {
         onSuccess: () => {
           toastSuccess({ message: 'Update delivery point successfully' });
-          queryClient.invalidateQueries({ queryKey: ["delivery-point", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["delivery-point", buCode] });
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },

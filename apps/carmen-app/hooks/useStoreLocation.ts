@@ -17,10 +17,10 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 const handleAddStoreLocation = async (
   token: string,
-  tenantId: string,
+  buCode: string,
   data: CreateStoreLocationDto
 ) => {
-  const result = await createStoreLocation(token, tenantId, data);
+  const result = await createStoreLocation(token, buCode, data);
   if (!result?.id || typeof result.id !== "string") {
     throw new Error("Invalid response: missing or invalid id");
   }
@@ -42,7 +42,7 @@ const handleAddStoreLocation = async (
 
 const handleUpdateStoreLocation = async (
   token: string,
-  tenantId: string,
+  buCode: string,
   data: CreateStoreLocationDto,
   selectedId: string
 ) => {
@@ -52,7 +52,7 @@ const handleUpdateStoreLocation = async (
     physical_count_type: PHYSICAL_COUNT_TYPE.NO,
   };
 
-  const result = await updateStoreLocation(token, tenantId, updateData);
+  const result = await updateStoreLocation(token, buCode, updateData);
   if (!result) {
     throw new Error("Failed to update store location");
   }
@@ -74,7 +74,7 @@ const handleUpdateStoreLocation = async (
 
 const handleUpdateStoreLocationStatus = async (
   token: string,
-  tenantId: string,
+  buCode: string,
   storeLocation: StoreLocationDto
 ) => {
   if (!storeLocation.id) return;
@@ -88,7 +88,7 @@ const handleUpdateStoreLocationStatus = async (
     physical_count_type: PHYSICAL_COUNT_TYPE.NO,
   };
 
-  const result = await updateStoreLocation(token, tenantId, updateData);
+  const result = await updateStoreLocation(token, buCode, updateData);
 
   if (!result) {
     throw new Error("Failed to update store location status");
@@ -101,7 +101,7 @@ const handleUpdateStoreLocationStatus = async (
 };
 
 export const useStoreLocation = () => {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tHeader = useTranslations("TableHeader");
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
@@ -121,12 +121,12 @@ export const useStoreLocation = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchStoreLocations = useCallback(async () => {
-    if (!token || !tenantId) return;
+    if (!token || !buCode) return;
 
     try {
       setIsLoading(true);
       setIsUnauthorized(false);
-      const data = await getAllStoreLocations(token, tenantId, {
+      const data = await getAllStoreLocations(token, buCode, {
         search,
         sort,
         page,
@@ -145,7 +145,7 @@ export const useStoreLocation = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [token, tenantId, search, sort, page, filter]);
+  }, [token, buCode, search, sort, page, filter]);
 
   useEffect(() => {
     if (search) {
@@ -155,11 +155,11 @@ export const useStoreLocation = () => {
   }, [search, setPage, setFilter]);
 
   const handleSubmitAdd = useCallback(
-    async (token: string, tenantId: string, data: CreateStoreLocationDto) => {
+    async (token: string, buCode: string, data: CreateStoreLocationDto) => {
       console.log("data", data);
       const newStoreLocation = await handleAddStoreLocation(
         token,
-        tenantId,
+        buCode,
         data
       );
       setStoreLocations((prev) => [...prev, newStoreLocation]);
@@ -173,13 +173,13 @@ export const useStoreLocation = () => {
   const handleSubmitEdit = useCallback(
     async (
       token: string,
-      tenantId: string,
+      buCode: string,
       data: CreateStoreLocationDto,
       selectedId: string
     ) => {
       const newStoreLocation = await handleUpdateStoreLocation(
         token,
-        tenantId,
+        buCode,
         data,
         selectedId
       );
@@ -197,16 +197,16 @@ export const useStoreLocation = () => {
 
   const handleSubmit = useCallback(
     async (data: CreateStoreLocationDto) => {
-      if (!token || !tenantId) return;
+      if (!token || !buCode) return;
 
       try {
         setIsSubmitting(true);
         if (dialogMode === formType.ADD) {
-          await handleSubmitAdd(token, tenantId, data);
+          await handleSubmitAdd(token, buCode, data);
         } else if (selectedStoreLocation?.id) {
           await handleSubmitEdit(
             token,
-            tenantId,
+            buCode,
             data,
             selectedStoreLocation.id
           );
@@ -225,7 +225,7 @@ export const useStoreLocation = () => {
     },
     [
       token,
-      tenantId,
+      buCode,
       dialogMode,
       selectedStoreLocation,
       handleSubmitAdd,
@@ -264,13 +264,13 @@ export const useStoreLocation = () => {
   }, []);
 
   const handleConfirmStatusChange = useCallback(async () => {
-    if (!selectedStoreLocation?.id || !token || !tenantId) return;
+    if (!selectedStoreLocation?.id || !token || !buCode) return;
 
     try {
       setIsSubmitting(true);
       const updatedStoreLocation = await handleUpdateStoreLocationStatus(
         token,
-        tenantId,
+        buCode,
         selectedStoreLocation
       );
       if (!updatedStoreLocation) return;
@@ -295,7 +295,7 @@ export const useStoreLocation = () => {
       setIsSubmitting(false);
       setStatusDialogOpen(false);
     }
-  }, [selectedStoreLocation, token, tenantId]);
+  }, [selectedStoreLocation, token, buCode]);
 
   const getLocationName = useCallback(
     (id: string) => {

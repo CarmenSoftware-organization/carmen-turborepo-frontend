@@ -39,8 +39,8 @@ const ExchangeRateLookup = forwardRef<HTMLButtonElement, ExchangeRateLookupProps
 }, ref) => {
   const { exchangeRates, isLoading } = useExchangeRate({ baseCurrency });
 
-  const { token, tenantId } = useAuth();
-  const { currencies } = useCurrenciesQuery(token, tenantId, {
+  const { token, buCode } = useAuth();
+  const { currencies } = useCurrenciesQuery(token, buCode, {
     page: -1,
   });
 

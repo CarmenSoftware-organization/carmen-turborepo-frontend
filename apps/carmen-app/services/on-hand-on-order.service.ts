@@ -1,7 +1,7 @@
 import { backendApi } from "@/lib/backend-api";
 
-export const getOnHandOnOrderService = async (token: string, tenantId: string, locationId: string, productId: string) => {
-    if (!token || !tenantId || !locationId || !productId) {
+export const getOnHandOnOrderService = async (token: string, buCode: string, locationId: string, productId: string) => {
+    if (!token || !buCode || !locationId || !productId) {
         console.error("Authorization token, tenant ID, location ID, and product ID are required");
         return null;
     }
@@ -12,7 +12,7 @@ export const getOnHandOnOrderService = async (token: string, tenantId: string, l
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
+                'x-tenant-id': buCode,
                 'Content-Type': 'application/json',
             },
         });

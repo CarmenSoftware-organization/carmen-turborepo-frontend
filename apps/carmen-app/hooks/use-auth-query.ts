@@ -7,7 +7,7 @@ import {
 // Query keys for better cache management
 export const authQueryKeys = {
     userProfile: ["userProfile"] as const,
-    businessUnit: (tenantId: string) => ["businessUnit", tenantId] as const,
+    businessUnit: (buCode: string) => ["businessUnit", buCode] as const,
 };
 
 // Hook สำหรับ query user profile
@@ -27,8 +27,8 @@ export const useUpdateBusinessUnitMutation = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: ({ token, tenantId }: { token: string; tenantId: string }) =>
-            updateUserBusinessUnitService(token, tenantId),
+        mutationFn: ({ token, buCode }: { token: string; buCode: string }) =>
+            updateUserBusinessUnitService(token, buCode),
         onSuccess: (data, variables) => {
             // Invalidate และ refetch user profile หลังจากเปลี่ยน business unit
             queryClient.invalidateQueries({
@@ -37,7 +37,7 @@ export const useUpdateBusinessUnitMutation = () => {
 
             // อัปเดต tenant ID ใน sessionStorage
             if (typeof window !== "undefined") {
-                sessionStorage.setItem("tenant_id", variables.tenantId);
+                sessionStorage.setItem("tenant_id", variables.buCode);
             }
         },
         onError: (error) => {

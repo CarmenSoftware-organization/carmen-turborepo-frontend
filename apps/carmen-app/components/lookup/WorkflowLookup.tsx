@@ -30,8 +30,8 @@ export default function WorkflowLookup({
     disabled = false,
     type
 }: Readonly<PropsWorkflowLookup>) {
-    const { token, tenantId } = useAuth();
-    const { workflows, isLoading } = useWorkflowQuery(token, tenantId, type);
+    const { token, buCode } = useAuth();
+    const { workflows, isLoading } = useWorkflowQuery(token, buCode, type);
 
     let selectContent;
 

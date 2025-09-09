@@ -4,18 +4,18 @@ import { ParamsGetDto } from "@/dtos/param.dto";
 
 export const useTaxTypeInventoryQuery = (
     token: string,
-    tenantId: string,
+    buCode: string,
     params?: ParamsGetDto
 ) => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["tax-type-inventory", tenantId, params],
+        queryKey: ["tax-type-inventory", buCode, params],
         queryFn: async () => {
-            if (!token || !tenantId) {
-                throw new Error('Unauthorized: Missing token or tenantId');
+            if (!token || !buCode) {
+                throw new Error('Unauthorized: Missing token or buCode');
             }
-            return await getAllTaxTypeInventory(token, tenantId, params ?? {});
+            return await getAllTaxTypeInventory(token, buCode, params ?? {});
         },
-        enabled: !!token && !!tenantId,
+        enabled: !!token && !!buCode,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 

@@ -24,7 +24,7 @@ export interface PurchaseRequestResponse {
 }
 
 export const usePr = () => {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [purchaseRequests, setPurchaseRequests] = useState<GetAllPrDto[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUnauthorized, setIsUnauthorized] = useState(false);
@@ -48,7 +48,7 @@ export const usePr = () => {
       if (!token) return;
       try {
         setIsLoading(true);
-        const result = await getAllPrService(token, tenantId, {
+        const result = await getAllPrService(token, buCode, {
           page,
           sort,
           search,
@@ -74,7 +74,7 @@ export const usePr = () => {
     };
 
     fetchData();
-  }, [token, tenantId, page, sort, search]);
+  }, [token, buCode, page, sort, search]);
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -109,7 +109,7 @@ export const usePr = () => {
 
 export const usePrMutation = (
   token: string,
-  tenantId: string,
+  buCode: string,
   options?: {
     onSuccess?: (data: unknown) => void;
     onError?: (error: unknown) => void;
@@ -119,7 +119,7 @@ export const usePrMutation = (
 
   return useMutation({
     mutationFn: (prData: PurchaseRequestCreateFormDto) =>
-      createPrService(token, tenantId, prData),
+      createPrService(token, buCode, prData),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["prs"] });
       if (options?.onSuccess) {
@@ -136,7 +136,7 @@ export const usePrMutation = (
 
 export const useUpdatePrMutation = (
   token: string,
-  tenantId: string,
+  buCode: string,
   options?: {
     onSuccess?: (data: unknown) => void;
     onError?: (error: unknown) => void;
@@ -146,7 +146,7 @@ export const useUpdatePrMutation = (
 
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: PurchaseRequestUpdateFormDto }) =>
-      updatePrService(token, tenantId, id, data),
+      updatePrService(token, buCode, id, data),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["prs"] });
       if (options?.onSuccess) {

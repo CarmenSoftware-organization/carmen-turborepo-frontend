@@ -11,7 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function TenantList() {
     const { user,
-        tenantId,
+        buCode,
         handleChangeTenant,
         isLoading,
     } = useAuth();
@@ -24,7 +24,7 @@ export default function TenantList() {
 
     return (
         <Select
-            value={tenantId || undefined}
+            value={buCode || undefined}
             onValueChange={handleChangeTenant}
         >
             <SelectTrigger className="w-40 bg-muted border border-border focus:ring-ring text-xs h-8">

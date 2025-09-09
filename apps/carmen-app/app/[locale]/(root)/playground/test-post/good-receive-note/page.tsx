@@ -11,10 +11,10 @@ import { useState } from "react";
 import { useGrnMutation } from "@/hooks/useGrn";
 
 export default function GoodReceiveNotePage() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [statusSent, setStatusSent] = useState<string>("Waiting...");
 
-  const { mutate: createGoodReceiveNote } = useGrnMutation(token, tenantId);
+  const { mutate: createGoodReceiveNote } = useGrnMutation(token, buCode);
 
   const handleCreateGoodReceiveNote = () => {
     setStatusSent("กำลังส่งข้อมูล...");

@@ -45,7 +45,7 @@ interface CancelAction {
 
 export default function MainForm({ mode, initValues }: Props) {
     const router = useRouter();
-    const { token, tenantId, user, departments, dateFormat } = useAuth();
+    const { token, buCode, user, departments, dateFormat } = useAuth();
     const tPR = useTranslations("PurchaseRequest");
     const tAction = useTranslations("Action");
     const [currentFormType, setCurrentFormType] = useState<formType>(mode);
@@ -77,7 +77,7 @@ export default function MainForm({ mode, initValues }: Props) {
         mode: "onBlur",
     });
 
-    const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, tenantId);
+    const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
 
     const {
         save,
@@ -88,7 +88,7 @@ export default function MainForm({ mode, initValues }: Props) {
         reject,
         sendBack,
         isPending,
-    } = usePrActions(token, tenantId, initValues?.id || "");
+    } = usePrActions(token, buCode, initValues?.id || "");
 
     // ใช้ custom hook สำหรับจัดการ purchase items
     const purchaseItemManager = usePurchaseItemManagement({

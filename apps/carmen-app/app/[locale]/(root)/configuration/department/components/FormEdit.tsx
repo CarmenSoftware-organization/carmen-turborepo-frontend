@@ -69,7 +69,7 @@ export default function FormEdit({
     onSuccess,
     onBack,
 }: FormEditProps) {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const router = useRouter();
     const { userList } = useUserList();
     const tDepartment = useTranslations("Department");
@@ -83,10 +83,10 @@ export default function FormEdit({
         }));
     }, [userList]);
 
-    const { mutate: createDepartment, isPending: isCreating } = useDepartmentMutation(token, tenantId);
+    const { mutate: createDepartment, isPending: isCreating } = useDepartmentMutation(token, buCode);
     const { mutate: updateDepartment, isPending: isUpdating } = useDepartmentUpdateMutation(
         token,
-        tenantId,
+        buCode,
         defaultValues?.id ?? ""
     );
 

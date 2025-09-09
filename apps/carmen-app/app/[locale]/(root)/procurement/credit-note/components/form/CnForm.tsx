@@ -44,17 +44,17 @@ interface CnFormProps {
 }
 
 export default function CnForm({ initialValues, mode }: CnFormProps) {
-  const { token, tenantId } = useAuth();
-  const { getVendorName } = useVendor(token, tenantId);
-  const createMutation = useCreateCreditNote(token, tenantId);
+  const { token, buCode } = useAuth();
+  const { getVendorName } = useVendor(token, buCode);
+  const createMutation = useCreateCreditNote(token, buCode);
   const updateMutation = useUpdateCreditNote(
     token,
-    tenantId,
+    buCode,
     initialValues?.id ?? ""
   );
   const { getCnReasonName } = useCnReasonQuery({
     token: token || "",
-    tenantId: tenantId || "",
+    buCode: buCode || "",
   });
 
   const [currentMode, setCurrentMode] = useState<formType>(mode);

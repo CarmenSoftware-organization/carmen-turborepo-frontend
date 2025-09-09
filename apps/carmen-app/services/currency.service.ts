@@ -8,7 +8,7 @@ const API_URL = `${backendApi}/api/config/currencies`;
 
 export const getCurrenciesService = async (
     token: string,
-    tenantId: string,
+    buCode: string,
     params?: ParamsGetDto
 ) => {
     try {
@@ -25,7 +25,7 @@ export const getCurrenciesService = async (
         const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
         const response = await axios.get(url, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
 
         return response.data;
@@ -35,10 +35,10 @@ export const getCurrenciesService = async (
     }
 };
 
-export const createCurrency = async (token: string, tenantId: string, currency: CurrencyCreateDto) => {
+export const createCurrency = async (token: string, buCode: string, currency: CurrencyCreateDto) => {
     try {
         const response = await axios.post(API_URL, currency, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -47,10 +47,10 @@ export const createCurrency = async (token: string, tenantId: string, currency: 
     }
 }
 
-export const updateCurrency = async (token: string, tenantId: string, currency: CurrencyUpdateDto) => {
+export const updateCurrency = async (token: string, buCode: string, currency: CurrencyUpdateDto) => {
     try {
         const response = await axios.patch(`${API_URL}/${currency.id}`, currency, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -60,13 +60,13 @@ export const updateCurrency = async (token: string, tenantId: string, currency: 
 }
 
 
-export const deleteCurrency = async (token: string, tenantId: string, id: string) => {
+export const deleteCurrency = async (token: string, buCode: string, id: string) => {
     const url = `${backendApi}/api/config/currencies/${id}`;
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
+            'x-tenant-id': buCode,
             'Content-Type': 'application/json',
         },
     });
@@ -74,13 +74,13 @@ export const deleteCurrency = async (token: string, tenantId: string, id: string
     return data;
 }
 
-export const toggleCurrencyStatus = async (token: string, tenantId: string, id: string, isActive: boolean) => {
+export const toggleCurrencyStatus = async (token: string, buCode: string, id: string, isActive: boolean) => {
     const url = `${backendApi}/api/config/currencies/${id}`;
     const response = await fetch(url, {
         method: 'PATCH',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': tenantId,
+            'x-tenant-id': buCode,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({

@@ -26,8 +26,8 @@ export default function DepartmentLookup({
     placeholder = "Select department",
     disabled = false
 }: Readonly<PropsLookup>) {
-    const { token, tenantId } = useAuth();
-    const { departments, isLoading } = useDepartmentsQuery(token, tenantId);
+    const { token, buCode } = useAuth();
+    const { departments, isLoading } = useDepartmentsQuery(token, buCode);
     const [open, setOpen] = useState(false);
 
     const selectedDepartmentName = useMemo(() => {

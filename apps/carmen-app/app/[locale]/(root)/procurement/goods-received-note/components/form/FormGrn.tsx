@@ -49,19 +49,19 @@ interface FormGrnProps {
 }
 
 export default function FormGrn({ mode, initialValues }: FormGrnProps) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
 
-  // ตรวจสอบว่า token และ tenantId มีค่าก่อนส่งไปยัง hooks
+  // ตรวจสอบว่า token และ buCode มีค่าก่อนส่งไปยัง hooks
   const { mutate: createGrn, isPending: isCreatePending } = useGrnMutation(
     token || "",
-    tenantId || ""
+    buCode || ""
   );
 
   const { mutate: updateGrn, isPending: isUpdatePending } = useUpdateCreditNote(
     token || "",
-    tenantId || "",
+    buCode || "",
     initialValues?.id ?? ""
   );
 
@@ -134,8 +134,8 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
       e.stopPropagation();
     }
 
-    // ตรวจสอบว่าต้องมี token และ tenantId ก่อนส่งข้อมูล
-    if (!token || !tenantId) {
+    // ตรวจสอบว่าต้องมี token และ buCode ก่อนส่งข้อมูล
+    if (!token || !buCode) {
       console.error("Missing authentication credentials");
       return;
     }

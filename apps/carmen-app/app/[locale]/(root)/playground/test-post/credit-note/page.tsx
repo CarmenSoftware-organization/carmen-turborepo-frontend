@@ -10,10 +10,10 @@ import JsonViewer from "@/components/JsonViewer";
 import { getStatusColorTestPost, postCreditNote } from "../payload";
 
 export default function CreditNotePage() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [statusSent, setStatusSent] = useState<string>("Waiting...");
 
-  const { mutate: createCreditNote } = useCreateCreditNote(token, tenantId);
+  const { mutate: createCreditNote } = useCreateCreditNote(token, buCode);
 
   const handleCreateCreditNote = () => {
     setStatusSent("กำลังส่งข้อมูล...");

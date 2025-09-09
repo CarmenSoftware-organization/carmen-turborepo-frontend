@@ -9,7 +9,7 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useAuth } from "@/context/AuthContext";
 
 export const useVendor = () => {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [search, setSearch] = useURL("search");
     const [filter, setFilter] = useURL("filter");
     const [statusOpen, setStatusOpen] = useState(false);
@@ -36,7 +36,7 @@ export const useVendor = () => {
     const fetchVendors = useCallback(async () => {
         setIsLoading(true);
         try {
-            const data = await getAllVendorService(token, tenantId, {
+            const data = await getAllVendorService(token, buCode, {
                 search,
                 sort,
                 page,
@@ -70,7 +70,7 @@ export const useVendor = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [token, tenantId, search, sort, page, filter]);
+    }, [token, buCode, search, sort, page, filter]);
 
     useEffect(() => {
         fetchVendors();
@@ -96,7 +96,7 @@ export const useVendor = () => {
             // Pass only the id to deleteVendorService
             const response = await deleteVendorService(
                 token,
-                tenantId,
+                buCode,
                 vendorToDelete.id
             );
 
@@ -116,7 +116,7 @@ export const useVendor = () => {
             setDeleteDialogOpen(false);
             setVendorToDelete(undefined);
         }
-    }, [fetchVendors, token, tenantId, vendorToDelete]);
+    }, [fetchVendors, token, buCode, vendorToDelete]);
 
     const handleFormSuccess = useCallback(() => {
         fetchVendors();

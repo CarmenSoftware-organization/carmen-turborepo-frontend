@@ -17,24 +17,24 @@ const API_URL = `${backendApi}/api/config/credit-term`;
 
 export const useCreditTermQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["credit-term", tenantId, params],
+    queryKey: ["credit-term", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         "Error fetching credit term",
         params ?? {}
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -63,16 +63,16 @@ export const useCreditTermQuery = (
   };
 };
 
-export const useCreateCreditTerm = (token: string, tenantId: string) => {
+export const useCreateCreditTerm = (token: string, buCode: string) => {
   return useMutation({
     mutationFn: async (data: CreateCreditTermFormValues) => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return postApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         data,
         "Failed to create credit term"
       );
@@ -82,20 +82,20 @@ export const useCreateCreditTerm = (token: string, tenantId: string) => {
 
 export const useUpdateCreditTerm = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
   const API_URL_BY_ID = `${API_URL}/${id}`;
 
   return useMutation({
     mutationFn: async (data: CreateCreditTermFormValues) => {
-      if (!token || !tenantId || !id) {
+      if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
       return updateApiRequest(
         API_URL_BY_ID,
         token,
-        tenantId,
+        buCode,
         data,
         "Failed to update credit term",
         "PATCH"
@@ -106,20 +106,20 @@ export const useUpdateCreditTerm = (
 
 export const useDeleteCreditTerm = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
   const API_URL_BY_ID = `${API_URL}/${id}`;
 
   return useMutation({
     mutationFn: async () => {
-      if (!token || !tenantId || !id) {
+      if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
       return deleteApiRequest(
         API_URL_BY_ID,
         token,
-        tenantId,
+        buCode,
         id,
         "Failed to delete credit term"
       );

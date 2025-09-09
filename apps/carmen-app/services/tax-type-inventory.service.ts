@@ -14,13 +14,13 @@ export interface TaxTypeInventoryDto {
 
 export const getAllTaxTypeInventory = async (
     token: string,
-    tenantId: string,
+    buCode: string,
     params?: ParamsGetDto
 ) => {
     return getAllApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         'Failed to fetch tax type inventory',
         params
     );

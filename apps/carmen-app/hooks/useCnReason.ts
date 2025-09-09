@@ -7,26 +7,26 @@ const API_URL = `${backendApi}/api/credit-note-reason`;
 
 export const useCnReasonQuery = ({
   token,
-  tenantId,
+  buCode,
   params,
 }: {
   token: string;
-  tenantId: string;
+  buCode: string;
   params?: ParamsGetDto;
 }) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["cn-reason", tenantId, params],
+    queryKey: ["cn-reason", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) throw new Error("Unauthorized");
+      if (!token || !buCode) throw new Error("Unauthorized");
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         "Error fetching cn reason",
         params
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
   });
 
   const cnReasons = data?.data ?? [];

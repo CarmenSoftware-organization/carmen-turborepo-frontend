@@ -48,18 +48,18 @@ interface PrActionsReturn {
 
 const usePrActions = (
     token: string,
-    tenantId: string,
+    buCode: string,
     prId: string
 ): PrActionsReturn => {
 
     // Initialize all mutations
-    const saveMutation = useUpdateUPr(token, tenantId, prId, 'save' as ActionPr);
-    const submitMutation = useUpdateUPr(token, tenantId, prId, 'submit' as ActionPr);
-    const approveMutation = useUpdateUPr(token, tenantId, prId, 'approve' as ActionPr);
-    const purchaseMutation = useUpdateUPr(token, tenantId, prId, 'purchase' as ActionPr);
-    const reviewMutation = useUpdateUPr(token, tenantId, prId, 'review' as ActionPr);
-    const rejectMutation = useUpdateUPr(token, tenantId, prId, 'reject' as ActionPr);
-    const sendBackMutation = useUpdateUPr(token, tenantId, prId, 'send_back' as ActionPr);
+    const saveMutation = useUpdateUPr(token, buCode, prId, 'save' as ActionPr);
+    const submitMutation = useUpdateUPr(token, buCode, prId, 'submit' as ActionPr);
+    const approveMutation = useUpdateUPr(token, buCode, prId, 'approve' as ActionPr);
+    const purchaseMutation = useUpdateUPr(token, buCode, prId, 'purchase' as ActionPr);
+    const reviewMutation = useUpdateUPr(token, buCode, prId, 'review' as ActionPr);
+    const rejectMutation = useUpdateUPr(token, buCode, prId, 'reject' as ActionPr);
+    const sendBackMutation = useUpdateUPr(token, buCode, prId, 'send_back' as ActionPr);
 
     // Action functions
     const actions = {

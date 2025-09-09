@@ -10,26 +10,26 @@ const API_URL = `${backendApi}/api/config/currencies`;
 
 export const useCurrencyQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
   const { data, isLoading, error } = useQuery<
     PaginatedResponseDto<CurrencyGetDto>
   >({
-    queryKey: ["currency", tenantId, params],
+    queryKey: ["currency", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         "Error fetching currency",
         params ?? {}
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000,
   });
 

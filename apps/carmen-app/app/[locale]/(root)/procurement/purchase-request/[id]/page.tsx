@@ -2,22 +2,19 @@
 
 import { useParams } from "next/navigation";
 import { formType } from "@/dtos/form.dto";
-import { getPrByIdService } from "@/services/pr.service";
 import { getOnHandOnOrderService } from "@/services/on-hand-on-order.service";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 import MainForm from "../components/form-pr/MainForm";
+import { usePurchaseRequestById } from "@/hooks/usePurchaseRequest";
 
 export default function PurchaseRequestIdPage() {
     const { id } = useParams();
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
 
-    const { data: purchaseRequest, isLoading: isPrLoading } = useQuery({
-        queryKey: ['purchaseRequest', id],
-        queryFn: () => getPrByIdService(token, tenantId, id as string)
-    });
+    const { purchaseRequest, isLoading: isPrLoading } = usePurchaseRequestById(token, buCode, id as string);
 
     const { data: prDataWithInventory, isLoading: isInventoryLoading } = useQuery({
         queryKey: ['purchaseRequestWithInventory', id, purchaseRequest?.data],
@@ -31,7 +28,7 @@ export default function PurchaseRequestIdPage() {
                 purchaseRequest.data.purchase_request_detail.map(async (detail: any) => {
                     const inventoryData = await getOnHandOnOrderService(
                         token,
-                        tenantId,
+                        buCode,
                         detail.location_id,
                         detail.product_id
                     );
@@ -46,7 +43,7 @@ export default function PurchaseRequestIdPage() {
                 purchase_request_detail: detailsWithInventory
             };
         },
-        enabled: !!purchaseRequest?.data?.purchase_request_detail && !!token && !!tenantId,
+        enabled: !!purchaseRequest?.data?.purchase_request_detail && !!token && !!buCode,
     });
 
     if (isPrLoading || isInventoryLoading) return <DetailLoading />

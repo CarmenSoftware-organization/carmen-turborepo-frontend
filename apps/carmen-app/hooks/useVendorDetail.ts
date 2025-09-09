@@ -12,7 +12,7 @@ interface UseVendorDetailReturn {
 }
 
 export const useVendorDetail = (id: string): UseVendorDetailReturn => {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [vendor, setVendor] = useState<VendorFormValues>();
     const [loading, setLoading] = useState(true);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -29,7 +29,7 @@ export const useVendorDetail = (id: string): UseVendorDetailReturn => {
             setError(null);
 
             try {
-                const response = await getVendorIdService(token, tenantId, id);
+                const response = await getVendorIdService(token, buCode, id);
 
                 if (response && (response.status === 401 || response.statusCode === 401)) {
                     setLoginDialogOpen(true);
@@ -55,7 +55,7 @@ export const useVendorDetail = (id: string): UseVendorDetailReturn => {
         };
 
         fetchVendor();
-    }, [token, tenantId, id]);
+    }, [token, buCode, id]);
 
     return {
         vendor,

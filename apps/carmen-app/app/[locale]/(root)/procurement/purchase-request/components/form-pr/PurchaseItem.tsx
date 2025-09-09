@@ -64,7 +64,7 @@ export default function PurchaseItem({
     onAddItem,
     getItemValue
 }: Props) {
-    const { dateFormat, currencyBase, token, tenantId } = useAuth();
+    const { dateFormat, currencyBase, token, buCode } = useAuth();
     const tPr = useTranslations("PurchaseRequest");
     const tHeader = useTranslations("TableHeader");
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -428,8 +428,8 @@ export default function PurchaseItem({
                                                             </AccordionTrigger>
 
                                                             <AccordionContent className="space-y-1 flex flex-col gap-2 border-l border-l-4 border-green-100 mx-3 my-1 -mt-px">
-                                                                <InventoryInfo item={item} token={token} tenantId={tenantId} />
-                                                                <InventoryProgress item={item} token={token} tenantId={tenantId} />
+                                                                <InventoryInfo item={item} token={token} buCode={buCode} />
+                                                                <InventoryProgress item={item} token={token} buCode={buCode} />
                                                             </AccordionContent>
                                                         </AccordionItem>
                                                     </Accordion>

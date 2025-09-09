@@ -32,7 +32,7 @@ interface Props {
 }
 
 export default function FormProduct({ mode, initialValues }: Props) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tProducts = useTranslations("Products");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const router = useRouter();
@@ -199,7 +199,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
       };
 
       if (mode === formType.ADD) {
-        const result = await createProductService(token, tenantId, submitData);
+        const result = await createProductService(token, buCode, submitData);
         toastSuccess({ message: "Product created successfully" });
         setCurrentMode(formType.VIEW);
 
@@ -221,7 +221,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
         }
         const result = await updateProductService(
           token,
-          tenantId,
+          buCode,
           submitData.id,
           submitData
         );

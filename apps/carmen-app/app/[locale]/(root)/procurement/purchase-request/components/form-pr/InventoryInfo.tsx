@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 interface Props {
     item: PurchaseRequestDetail;
     token: string;
-    tenantId: string;
+    buCode: string;
 }
 
 interface InventoryData {
@@ -17,14 +17,14 @@ interface InventoryData {
     re_stock_qty: number;
 }
 
-export default function InventoryInfo({ item, token, tenantId }: Props) {
+export default function InventoryInfo({ item, token, buCode }: Props) {
     const tPr = useTranslations("PurchaseRequest");
     const locationId = item.location_id;
     const productId = item.product_id;
 
     const { data: onHandData, isLoading } = useOnHandOrder(
         token,
-        tenantId,
+        buCode,
         locationId || "",
         productId || ""
     );

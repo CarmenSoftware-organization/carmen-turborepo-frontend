@@ -28,14 +28,14 @@ export const getUserProfileService = async (accessToken: string) => {
 
 export const updateUserBusinessUnitService = async (
   accessToken: string,
-  tenantId: string
+  buCode: string
 ) => {
   const url = `${backendApi}/api/business-unit/default`;
   try {
     const response = await axios.post(
       url,
       {
-        tenant_id: tenantId
+        tenant_id: buCode
       },
       {
         headers: {

@@ -8,22 +8,22 @@ const API_URL = `${backendApi}/api/config/delivery-point`;
 
 export const getAllDeliveryPoints = async (
     token: string,
-    tenantId: string,
+    buCode: string,
     params: ParamsGetDto
 ) => {
     return getAllApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         'Failed to fetch delivery points',
         params
     );
 };
 
-export const createDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointCreateDto) => {
+export const createDeliveryPoint = async (token: string, buCode: string, deliveryPoint: DeliveryPointCreateDto) => {
     try {
         const response = await axios.post(API_URL, deliveryPoint, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -32,10 +32,10 @@ export const createDeliveryPoint = async (token: string, tenantId: string, deliv
     }
 }
 
-export const updateDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointUpdateDto) => {
+export const updateDeliveryPoint = async (token: string, buCode: string, deliveryPoint: DeliveryPointUpdateDto) => {
     try {
         const response = await axios.patch(`${API_URL}/${deliveryPoint.id}`, deliveryPoint, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -44,11 +44,11 @@ export const updateDeliveryPoint = async (token: string, tenantId: string, deliv
     }
 }
 
-export const inactiveDeliveryPoint = async (token: string, tenantId: string, deliveryPoint: DeliveryPointUpdateDto) => {
+export const inactiveDeliveryPoint = async (token: string, buCode: string, deliveryPoint: DeliveryPointUpdateDto) => {
     try {
         const response = await axios.put(`${API_URL}/${deliveryPoint.id}`,
             { ...deliveryPoint, is_active: !deliveryPoint.is_active },
-            { headers: requestHeaders(token, tenantId) }
+            { headers: requestHeaders(token, buCode) }
         );
         return response.data;
     } catch (error) {

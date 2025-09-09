@@ -47,8 +47,8 @@ interface HeadCnFormProps {
 }
 
 export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVendorName }: HeadCnFormProps) {
-  const { token, tenantId } = useAuth();
-  const { getCurrencyCode, getCurrencyExchangeRate } = useCurrenciesQuery(token, tenantId);
+  const { token, buCode } = useAuth();
+  const { getCurrencyCode, getCurrencyExchangeRate } = useCurrenciesQuery(token, buCode);
   const currencyId = useWatch({
     control,
     name: "currency_id",

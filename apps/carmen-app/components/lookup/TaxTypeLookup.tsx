@@ -16,11 +16,11 @@ export default function TaxTypeLookup({
   placeholder = "Select tax type",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
   const { data: taxTypeData, isLoading } = useTaxTypeInventoryQuery(
     token,
-    tenantId
+    buCode
   );
 
   if (isLoading) {

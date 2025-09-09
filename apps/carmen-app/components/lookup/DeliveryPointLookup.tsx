@@ -22,11 +22,11 @@ export function LookupDeliveryPoint({
   placeholder = "Search...",
   className = "",
 }: Props) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
   const { deliveryPoints, isLoading } = useDeliveryPointQuery({
     token: token,
-    tenantId: tenantId,
+    buCode: buCode,
   });
 
   const [searchTerm, setSearchTerm] = useState<string>("");

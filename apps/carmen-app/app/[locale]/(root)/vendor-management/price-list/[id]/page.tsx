@@ -6,10 +6,10 @@ import { useParams } from "next/navigation";
 import DetailPriceList from "../components/DetailPriceList";
 
 export default function PriceListDetailPage() {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const { id } = useParams();
 
-    const { data: priceListDetail, isLoading, error, isUnauthorized } = usePriceListById(token, tenantId, id as string);
+    const { data: priceListDetail, isLoading, error, isUnauthorized } = usePriceListById(token, buCode, id as string);
 
     if (error) {
         return <div>Error: {error.message}</div>;

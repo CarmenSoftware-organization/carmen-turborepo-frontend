@@ -14,7 +14,7 @@ import { VendorGetDto } from "@/dtos/vendor-management";
 import { useAuth } from "@/context/AuthContext";
 
 export default function GoodsReceivedNoteNewPage() {
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [currentStep, setCurrentStep] = useState(0);
     const [grnData, setGrnData] = useState<InitGrnDto>({});
     const [selectedVendors, setSelectedVendors] = useState<VendorGetDto[]>([]);
@@ -24,7 +24,7 @@ export default function GoodsReceivedNoteNewPage() {
     const [items, setItems] = useState<NewItemDto[]>(mockItem);
     const [showForm, setShowForm] = useState(false);
     const searchParams = useSearchParams();
-    const { vendors } = useVendor(token, tenantId);
+    const { vendors } = useVendor(token, buCode);
     const type = searchParams.get('type');
 
     useEffect(() => {

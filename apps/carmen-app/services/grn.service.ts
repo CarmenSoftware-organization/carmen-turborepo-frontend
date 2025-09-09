@@ -8,7 +8,7 @@ const API_URL = `${backendApi}/api/good-received-note`;
 
 export const getAllGrn = async (
     token: string,
-    tenantId: string,
+    buCode: string,
     params: ParamsGetDto
 ) => {
 
@@ -24,7 +24,7 @@ export const getAllGrn = async (
 
     try {
         const response = await axios.get(url, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
 
         return response.data;
@@ -33,11 +33,11 @@ export const getAllGrn = async (
     }
 };
 
-export const getGrnById = async (token: string, tenantId: string, id: string) => {
+export const getGrnById = async (token: string, buCode: string, id: string) => {
     const url = `${API_URL}/${id}`;
     try {
         const response = await axios.get(url, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
         return response.data;
     } catch (error) {
@@ -46,13 +46,13 @@ export const getGrnById = async (token: string, tenantId: string, id: string) =>
 };
 
 
-export const postGrnService = async (token: string, tenantId: string, data: CreateGRNDto) => {
+export const postGrnService = async (token: string, buCode: string, data: CreateGRNDto) => {
     const url = `${API_URL}`;
     try {
         const response = await axios.post(url, data, {
-            headers: requestHeaders(token, tenantId)
+            headers: requestHeaders(token, buCode)
         });
-        
+
         if (response.status !== 201) {
             throw new Error(response.data.message);
         }

@@ -1,64 +1,66 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { getAllPrService, getPrByIdService } from "@/services/pr.service";
 import { ActionPr, PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { backendApi } from "@/lib/backend-api";
-import { postApiRequest, updateApiRequest } from "@/lib/config.api";
+import { getAllApiRequest, postApiRequest, updateApiRequest, getByIdApiRequest } from "@/lib/config.api";
 
-const API_URL = `${backendApi}/api/purchase-request`;
-
+const purchaseRequestApiUrl = (buCode: string, id?: string, action?: string) => {
+    const baseUrl = `${backendApi}/api/config/${buCode}/purchase-request`;
+    return id ? `${baseUrl}/${id}/${action}` : `${baseUrl}`;
+};
 
 export const usePurchaseRequest = (
     token: string,
-    tenantId: string,
+    buCode: string,
     params?: ParamsGetDto
 ) => {
+
+    const API_URL = purchaseRequestApiUrl(buCode);
     const { data, isLoading, error } = useQuery({
-        queryKey: ["purchase-request", tenantId, params],
+        queryKey: ["purchase-request", buCode, params],
         queryFn: async () => {
-            if (!token || !tenantId) {
-                throw new Error('Unauthorized: Missing token or tenantId');
+            try {
+                const result = await getAllApiRequest(
+                    API_URL,
+                    token,
+                    "Error fetching products",
+                    params
+                );
+                return result;
+            } catch (error) {
+                console.log('error', error);
+                throw error;
             }
-            return await getAllPrService(token, tenantId, params ?? {});
         },
-        enabled: !!token && !!tenantId,
+        enabled: !!token && !!buCode,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
-    const isUnauthorized = error instanceof Error && error.message.includes('Unauthorized');
-    return { data, isLoading, error, isUnauthorized };
+    return { data, isLoading, error };
 };
 
-export const usePriceListById = (
-    token: string,
-    tenantId: string,
-    id: string
-) => {
-
+export const usePurchaseRequestById = (token: string, buCode: string, id: string) => {
+    const API_URL = purchaseRequestApiUrl(buCode, id);
     const { data, isLoading, error } = useQuery({
-        queryKey: ["price-list", tenantId, id],
+        queryKey: ["purchase-request", buCode, id],
         queryFn: async () => {
-            if (!token || !tenantId) {
-                throw new Error('Unauthorized: Missing token or tenantId');
-            }
-            return await getPrByIdService(token, tenantId, id);
+            return await getByIdApiRequest(API_URL, token, "Error fetching purchase request");
         },
-        enabled: !!token && !!tenantId,
-        staleTime: 5 * 60 * 1000, // 5 minutes
+        enabled: !!token && !!buCode && !!id,
     });
+    const purchaseRequest = data;
+    return { purchaseRequest, isLoading, error };
+};
 
-    const isUnauthorized = error instanceof Error && error.message.includes('Unauthorized');
 
-    return { data, isLoading, error, isUnauthorized };
-}
+export const usePrMutation = (token: string, buCode: string) => {
+    const API_URL = purchaseRequestApiUrl(buCode);
 
-export const usePrMutation = (token: string, tenantId: string) => {
     return useMutation({
         mutationFn: async (data: PurchaseRequestCreateFormDto) => {
             return await postApiRequest(
                 API_URL,
                 token,
-                tenantId,
                 data,
                 "Error creating PR"
             );
@@ -66,15 +68,14 @@ export const usePrMutation = (token: string, tenantId: string) => {
     });
 };
 
-export const useUpdateUPr = (token: string, tenantId: string, id: string, action: ActionPr) => {
-    const API_URL_BY_ID = `${API_URL}/${id}/${action}`;
+export const useUpdateUPr = (token: string, buCode: string, id: string, action: ActionPr) => {
+    const API_URL_BY_ID = purchaseRequestApiUrl(buCode, id, action);
 
     return useMutation({
         mutationFn: async (data: PurchaseRequestUpdateFormDto) => {
             return await updateApiRequest(
                 API_URL_BY_ID,
                 token,
-                tenantId,
                 data,
                 "Error updating PR",
                 "PATCH"

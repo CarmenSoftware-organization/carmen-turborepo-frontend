@@ -52,7 +52,7 @@ export function middleware(request: NextRequest) {
         method: request.method,
         path: pathname,
         // language: lang,
-        // tenantId: tenantId,
+        // buCode: buCode,
         // headers: headers,
         // body: body || undefined,
     };

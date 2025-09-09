@@ -47,7 +47,7 @@ interface FormDialogPriceListProps {
 
 export default function FormDialogPriceList({ open, onOpenChange }: FormDialogPriceListProps) {
     const tCommon = useTranslations('Common');
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const queryClient = useQueryClient();
     const form = useForm<CreatePriceListDto>({
         resolver: zodResolver(priceListSchema),
@@ -70,7 +70,7 @@ export default function FormDialogPriceList({ open, onOpenChange }: FormDialogPr
         },
     });
 
-    const { mutate: createPriceList, isPending } = useCreatePriceList(token, tenantId);
+    const { mutate: createPriceList, isPending } = useCreatePriceList(token, buCode);
 
     const onSubmit = (data: CreatePriceListDto) => {
         createPriceList(data, {
@@ -79,7 +79,7 @@ export default function FormDialogPriceList({ open, onOpenChange }: FormDialogPr
                 form.reset();
                 toastSuccess({ message: 'Price list created successfully' });
                 // Invalidate and refetch price list data
-                queryClient.invalidateQueries({ queryKey: ["price-list", tenantId] });
+                queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
             },
             onError: (error: unknown) => {
                 toastError({ message: 'Failed to create price list' + error });

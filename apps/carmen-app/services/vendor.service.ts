@@ -6,13 +6,13 @@ const API_URL = `${backendApi}/api/config/vendors`;
 
 export const getAllVendorService = async (
     token: string,
-    tenantId: string,
+    buCode: string,
     params: ParamsGetDto
 ) => {
     return getAllApiRequest(
         API_URL,
         token,
-        tenantId,
+        buCode,
         'Failed to fetch vendors',
         params
     );
@@ -21,17 +21,17 @@ export const getAllVendorService = async (
 
 export const getVendorIdService = async (
     token: string,
-    tenantId: string,
+    buCode: string,
     id: string
 ) => {
     return getByIdApiRequest(
         `${API_URL}/${id}`,
         token,
-        tenantId,
+        buCode,
         'Failed to fetch vendor'
     );
 }
-export const createVendorService = async (token: string, tenantId: string, vendor: VendorFormValues) => {
+export const createVendorService = async (token: string, buCode: string, vendor: VendorFormValues) => {
 
     try {
         const url = `${backendApi}/api/config/vendors`;
@@ -39,7 +39,7 @@ export const createVendorService = async (token: string, tenantId: string, vendo
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
+                'x-tenant-id': buCode,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(vendor),
@@ -54,14 +54,14 @@ export const createVendorService = async (token: string, tenantId: string, vendo
 };
 
 
-export const updateVendorService = async (token: string, tenantId: string, vendor: VendorFormValues) => {
+export const updateVendorService = async (token: string, buCode: string, vendor: VendorFormValues) => {
     try {
         const url = `${backendApi}/api/config/vendors/${vendor.id}`;
         const options = {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
+                'x-tenant-id': buCode,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(vendor),
@@ -75,14 +75,14 @@ export const updateVendorService = async (token: string, tenantId: string, vendo
     }
 };
 
-export const deleteVendorService = async (token: string, tenantId: string, id: string) => {
+export const deleteVendorService = async (token: string, buCode: string, id: string) => {
     try {
         const url = `${backendApi}/api/config/vendors/${id}`;
         const options = {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': tenantId,
+                'x-tenant-id': buCode,
                 'Content-Type': 'application/json',
             },
         };
