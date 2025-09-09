@@ -5,7 +5,10 @@ import { UnitDto } from "@/dtos/unit.dto";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 
-const API_URL = `${backendApi}/api/config/units`;
+const unitApiUrl = (buCode: string, id?: string) => {
+    const baseUrl = `${backendApi}/api/config/${buCode}/units`;
+    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useUnitQuery = ({
     token,
@@ -16,9 +19,9 @@ export const useUnitQuery = ({
     buCode: string;
     params?: ParamsGetDto;
 }) => {
-
+    const API_URL = unitApiUrl(buCode);
     const { data, isLoading, error } = useQuery({
-        queryKey: ["units", buCode, params],
+        queryKey: ["units", params],
         queryFn: async () => {
             if (!token || !buCode) throw new Error("Unauthorized");
             return await getAllApiRequest(
@@ -41,6 +44,7 @@ export const useUnitQuery = ({
 };
 
 export const useUnitMutation = (token: string, buCode: string) => {
+    const API_URL = unitApiUrl(buCode);
     return useMutation({
         mutationFn: async (data: UnitDto) => {
             return await postApiRequest(
@@ -54,7 +58,7 @@ export const useUnitMutation = (token: string, buCode: string) => {
 };
 
 export const useUpdateUnit = (token: string, buCode: string, id: string) => {
-    const API_URL_BY_ID = `${API_URL}/${id}`;
+    const API_URL_BY_ID = unitApiUrl(buCode, id);
     return useMutation({
         mutationFn: async (data: UnitDto) => {
             return await updateApiRequest(
@@ -70,10 +74,14 @@ export const useUpdateUnit = (token: string, buCode: string, id: string) => {
 
 
 export const useDeleteUnit = (token: string, buCode: string, id: string) => {
-    const API_URL_BY_ID = `${API_URL}/${id}`;
+    const API_URL_BY_ID = unitApiUrl(buCode, id);
     return useMutation({
         mutationFn: async () => {
-            return await deleteApiRequest(API_URL_BY_ID, token, id, "Error deleting unit");
+            return await deleteApiRequest(
+                API_URL_BY_ID,
+                token,
+                id,
+                "Error deleting unit");
         },
     });
 };

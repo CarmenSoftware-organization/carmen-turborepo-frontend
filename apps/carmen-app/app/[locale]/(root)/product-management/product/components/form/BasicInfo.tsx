@@ -44,12 +44,12 @@ export default function BasicInfo({
   handleEditClick,
   handleCancelClick,
 }: BasicInfoProps) {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tProducts = useTranslations("Products");
   const { getUnitName } = useUnitQuery({
     token,
-    tenantId,
+    buCode,
     params: {
       perpage: -1,
     }
@@ -83,7 +83,7 @@ export default function BasicInfo({
 
         const response = await getCategoryListByItemGroup(
           token,
-          tenantId,
+          buCode,
           selectedItemGroup
         );
 
@@ -112,7 +112,7 @@ export default function BasicInfo({
     };
 
     fetchCategoryData();
-  }, [selectedItemGroup, token, tenantId, setValue]);
+  }, [selectedItemGroup, token, buCode, setValue]);
 
   // Initial data fetch on view mode
   const initialLoadRef = useRef(false);
@@ -131,7 +131,7 @@ export default function BasicInfo({
         try {
           const response = await getCategoryListByItemGroup(
             token,
-            tenantId,
+            buCode,
             productItemGroupId
           );
 
@@ -155,7 +155,7 @@ export default function BasicInfo({
 
       fetchInitialData();
     }
-  }, [productItemGroupId, currentMode, token, tenantId]);
+  }, [productItemGroupId, currentMode, token, buCode]);
 
   const handleItemGroupChange = (value: string) => {
     setSelectedItemGroup(value);

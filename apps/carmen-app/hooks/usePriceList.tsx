@@ -10,29 +10,34 @@ import {
   updateApiRequest,
 } from "@/lib/config.api";
 
-const API_URL = `${backendApi}/api/config/price-list`;
 const queryKey = "price-list";
+
+const priceListApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/price-list`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
+
 
 export const usePriceList = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
+  const API_URL = priceListApiUrl(buCode);
   const { data, isLoading, error } = useQuery({
-    queryKey: [queryKey, tenantId, params],
+    queryKey: ["price-list", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return getAllApiRequest(
         API_URL,
         token,
-        tenantId,
         "Failed to fetch price list",
         params
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -43,25 +48,24 @@ export const usePriceList = (
 
 export const usePriceListById = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_URL_BY_ID = `${API_URL}/${id}`;
+  const API_URL_BY_ID = priceListApiUrl(buCode, id);
 
   const { data, isLoading, error } = useQuery({
-    queryKey: [queryKey, tenantId, id],
+    queryKey: [queryKey, buCode, id],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return getByIdApiRequest(
         API_URL_BY_ID,
         token,
-        tenantId,
         "Failed to fetch price list"
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -71,13 +75,13 @@ export const usePriceListById = (
   return { data, isLoading, error, isUnauthorized };
 };
 
-export const useCreatePriceList = (token: string, tenantId: string) => {
+export const useCreatePriceList = (token: string, buCode: string) => {
+  const API_URL = priceListApiUrl(buCode);
   return useMutation({
     mutationFn: async (dataPriceList: CreatePriceListDto) => {
       return postApiRequest(
         API_URL,
         token,
-        tenantId,
         dataPriceList,
         "Failed to create price list"
       );
@@ -87,17 +91,16 @@ export const useCreatePriceList = (token: string, tenantId: string) => {
 
 export const useUpdatePriceList = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string,
   dataPriceList: UpdatePriceListDto
 ) => {
-  const API_URL_BY_ID = `${API_URL}/${id}`;
+  const API_URL_BY_ID = priceListApiUrl(buCode, id);
   const { data, error, isPending } = useMutation({
     mutationFn: async () => {
       return updateApiRequest(
         API_URL_BY_ID,
         token,
-        tenantId,
         dataPriceList,
         "Failed to update price list",
         "PUT"
@@ -110,16 +113,15 @@ export const useUpdatePriceList = (
 
 export const useDeletePriceList = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_URL_BY_ID = `${API_URL}/${id}`;
+  const API_URL_BY_ID = priceListApiUrl(buCode, id);
   return useMutation({
     mutationFn: async () => {
       return deleteApiRequest(
         API_URL_BY_ID,
         token,
-        tenantId,
         id,
         "Failed to delete price list"
       );

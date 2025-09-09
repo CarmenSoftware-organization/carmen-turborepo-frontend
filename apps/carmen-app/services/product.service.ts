@@ -1,6 +1,6 @@
 import { backendApi } from "@/lib/backend-api";
 
-export const getProductService = async (accessToken: string, tenantId: string, params: {
+export const getProductService = async (accessToken: string, buCode: string, params: {
     search?: string;
     page?: number | string;
     perpage?: number | string;
@@ -8,7 +8,7 @@ export const getProductService = async (accessToken: string, tenantId: string, p
     filter?: string;
 }) => {
 
-    if (!accessToken || !tenantId) {
+    if (!accessToken || !buCode) {
         throw new Error("Authorization token and tenant ID are required");
     }
 
@@ -22,15 +22,14 @@ export const getProductService = async (accessToken: string, tenantId: string, p
     const queryString = query.toString();
 
     const url = queryString
-        ? `${backendApi}/api/config/products?${queryString}`
-        : `${backendApi}/api/config/products`;
+        ? `${backendApi}/api/config/${buCode}/products?${queryString}`
+        : `${backendApi}/api/config/${buCode}/products`;
 
     const options = {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${accessToken}`,
-            "x-tenant-id": tenantId
         },
     };
 
@@ -39,14 +38,13 @@ export const getProductService = async (accessToken: string, tenantId: string, p
     return data;
 }
 
-export const getProductIdService = async (accessToken: string, tenantId: string, id: string) => {
-    const url = `${backendApi}/api/config/products/${id}`;
+export const getProductIdService = async (accessToken: string, buCode: string, id: string) => {
+    const url = `${backendApi}/api/config/${buCode}/products/${id}`;
     const options = {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${accessToken}`,
-            "x-tenant-id": tenantId
         },
     };
     const response = await fetch(url, options);
@@ -55,21 +53,19 @@ export const getProductIdService = async (accessToken: string, tenantId: string,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const createProductService = async (accessToken: string, tenantId: string, product: any) => {
-    const url = `${backendApi}/api/config/products`;
+export const createProductService = async (accessToken: string, buCode: string, product: any) => {
+    const url = `${backendApi}/api/config/${buCode}/products`;
     const options = {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${accessToken}`,
-            "x-tenant-id": tenantId
         },
         body: JSON.stringify(product)
     };
     const response = await fetch(url, options);
     const data = await response.json();
 
-    // Check if response was not successful
     if (!response.ok) {
         return {
             error: true,
@@ -83,14 +79,13 @@ export const createProductService = async (accessToken: string, tenantId: string
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const updateProductService = async (accessToken: string, tenantId: string, id: string, product: any) => {
-    const url = `${backendApi}/api/config/products/${id}`;
+export const updateProductService = async (accessToken: string, buCode: string, id: string, product: any) => {
+    const url = `${backendApi}/api/config/${buCode}/products/${id}`;
     const options = {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${accessToken}`,
-            "x-tenant-id": tenantId
         },
         body: JSON.stringify(product)
     };
@@ -108,18 +103,17 @@ export const updateProductService = async (accessToken: string, tenantId: string
     return data;
 }
 
-export const deleteProductService = async (token: string, tenantId: string, id: string) => {
-    if (!token || !tenantId || !id) {
+export const deleteProductService = async (token: string, buCode: string, id: string) => {
+    if (!token || !buCode || !id) {
         throw new Error("Authorization token, tenant ID, and product ID are required");
     }
 
-    const url = `${backendApi}/api/config/products/${id}`;
+    const url = `${backendApi}/api/config/${buCode}/products/${id}`;
     const options = {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
-            "x-tenant-id": tenantId
         },
     };
 
@@ -148,14 +142,13 @@ export const deleteProductService = async (token: string, tenantId: string, id: 
     }
 }
 
-export const getCategoryListByItemGroup = async (accessToken: string, tenantId: string, id: string) => {
-    const url = `${backendApi}/api/config/products/item-group/${id}`;
+export const getCategoryListByItemGroup = async (accessToken: string, buCode: string, id: string) => {
+    const url = `${backendApi}/api/config/${buCode}/products/item-group/${id}`;
     const options = {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${accessToken}`,
-            "x-tenant-id": tenantId
         },
     };
     const response = await fetch(url, options);

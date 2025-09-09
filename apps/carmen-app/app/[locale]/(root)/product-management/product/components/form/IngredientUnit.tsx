@@ -23,10 +23,10 @@ interface IngredientUnitProps {
 export default function IngredientUnit({ control, currentMode }: IngredientUnitProps) {
 
     const tProducts = useTranslations("Products");
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const { units } = useUnitQuery({
         token,
-        tenantId,
+        buCode,
     });
     const { watch, setValue } = useFormContext<ProductFormValues>();
     const [editingId, setEditingId] = useState<string | null>(null);

@@ -8,28 +8,31 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllApiRequest, getByIdApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
 import { VendorFormValues } from "@/dtos/vendor.dto";
 
-const API_URL = `${backendApi}/api/config/vendors`;
+const vendorApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/vendors`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useVendor = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
+  const API_URL = vendorApiUrl(buCode);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["vendor", tenantId, params],
+    queryKey: ["vendor", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
         "Error fetching vendors",
         params ?? {}
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
   });
 
   const vendors = data;
@@ -55,23 +58,23 @@ export const useVendor = (
 
 export const useVendorById = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
+  const API_ID = vendorApiUrl(buCode, id);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["vendor", tenantId, id],
+    queryKey: ["vendor", buCode, id],
     queryFn: async () => {
-      if (!token || !tenantId || !id) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getByIdApiRequest(
-        `${API_URL}/${id}`,
+        API_ID,
         token,
-        tenantId,
         "Error fetching vendor"
       );
     },
-    enabled: !!token && !!tenantId && !!id,
+    enabled: !!token && !!buCode && !!id,
   });
 
   const vendor = data;
@@ -87,14 +90,14 @@ export const useVendorById = (
 
 export const useVendorMutation = (
   token: string,
-  tenantId: string
+  buCode: string
 ) => {
+  const API_URL = vendorApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: VendorFormValues) => {
       return await postApiRequest(
         API_URL,
         token,
-        tenantId,
         data,
         "Error creating vendor"
       );
@@ -104,19 +107,18 @@ export const useVendorMutation = (
 
 export const useUpdateVendor = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = vendorApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: VendorFormValues) => {
-      if (!token || !tenantId || !id) {
+      if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
       return updateApiRequest(
         API_ID,
         token,
-        tenantId,
         data,
         "Failed to update vendor",
         "PATCH"

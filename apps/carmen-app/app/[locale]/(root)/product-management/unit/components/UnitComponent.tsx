@@ -21,7 +21,7 @@ import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function UnitComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tUnit = useTranslations("Unit");
   const queryClient = useQueryClient();
@@ -44,7 +44,7 @@ export default function UnitComponent() {
 
   const { units, isLoading } = useUnitQuery({
     token,
-    tenantId,
+    buCode,
     params: {
       search,
       filter,
@@ -54,9 +54,9 @@ export default function UnitComponent() {
     }
   });
 
-  const { mutate: createUnit } = useUnitMutation(token, tenantId);
-  const { mutate: updateUnit } = useUpdateUnit(token, tenantId, selectedUnit?.id ?? "");
-  const { mutate: deleteUnit } = useDeleteUnit(token, tenantId, selectedUnit?.id ?? "");
+  const { mutate: createUnit } = useUnitMutation(token, buCode);
+  const { mutate: updateUnit } = useUpdateUnit(token, buCode, selectedUnit?.id ?? "");
+  const { mutate: deleteUnit } = useDeleteUnit(token, buCode, selectedUnit?.id ?? "");
 
   const currentPage = units?.paginate.page ?? 1;
   const totalPages = units?.paginate.pages ?? 1;
@@ -128,7 +128,7 @@ export default function UnitComponent() {
       deleteUnit(undefined, {
         onSuccess: () => {
           toastSuccess({ message: 'Delete unit successfully' });
-          queryClient.invalidateQueries({ queryKey: ["units", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["units", buCode] });
           setDeleteDialogOpen(false);
           setUnitToDelete(undefined);
         },
@@ -146,7 +146,7 @@ export default function UnitComponent() {
       createUnit(data, {
         onSuccess: () => {
           toastSuccess({ message: 'Create unit successfully' });
-          queryClient.invalidateQueries({ queryKey: ["units", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["units", buCode] });
         },
         onError: (error) => {
           console.error("Failed to create unit:", error);
@@ -157,7 +157,7 @@ export default function UnitComponent() {
       updateUnit(updateData, {
         onSuccess: () => {
           toastSuccess({ message: 'Update unit successfully' });
-          queryClient.invalidateQueries({ queryKey: ["units", tenantId] });
+          queryClient.invalidateQueries({ queryKey: ["units", buCode] });
         },
         onError: (error) => {
           toastError({ message: 'Failed to create unit' });

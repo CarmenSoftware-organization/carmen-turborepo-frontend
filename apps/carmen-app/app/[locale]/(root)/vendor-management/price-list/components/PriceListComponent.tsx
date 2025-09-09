@@ -34,12 +34,13 @@ export default function PriceListComponent() {
     const [filter, setFilter] = useURL('filter');
     const [sort, setSort] = useURL('sort');
     const [statusOpen, setStatusOpen] = useState(false);
-    const { token, tenantId } = useAuth();
+    const { token, buCode } = useAuth();
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [addDialogOpen, setAddDialogOpen] = useState(false);
     const [page, setPage] = useURL('page');
     const [perpage, setPerpage] = useURL('perpage');
-    const { data: response, isLoading, isUnauthorized } = usePriceList(token, tenantId, {
+
+    const { data: response, isLoading, isUnauthorized } = usePriceList(token, buCode, {
         page,
         search,
         filter,

@@ -18,12 +18,12 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 
 const sortFields = [{ key: "name", label: "Name" }];
 
-
 export default function VendorComponent() {
+    const { token, buCode } = useAuth();
+
     const tCommon = useTranslations('Common');
     const tVendor = useTranslations('Vendor');
     const tAction = useTranslations('Action');
-    const { token, tenantId } = useAuth();
     const [search, setSearch] = useURL("search");
     const [status, setStatus] = useURL("status");
     const [statusOpen, setStatusOpen] = useState(false);
@@ -31,7 +31,8 @@ export default function VendorComponent() {
     const [sort, setSort] = useURL("sort");
     const [page, setPage] = useURL("page");
     const [perpage, setPerpage] = useURL("perpage");
-    const { vendors, isLoading, isUnauthorized } = useVendor(token, tenantId, {
+
+    const { vendors, isLoading, isUnauthorized } = useVendor(token, buCode, {
         search,
         sort,
         page: page ? parseInt(page) : 1,
