@@ -10,28 +10,31 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 
-const API_URL = `${backendApi}/api/credit-note`;
+const creditNoteApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/credit-note`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useCreditNoteQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
+  const API_URL = creditNoteApiUrl(buCode);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["credit-note", tenantId, params],
+    queryKey: ["credit-note", params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
-        "Error fetching credit term",
+        "Error fetching credit note",
         params ?? {}
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
   });
 
   const creditNotes = data;
@@ -59,33 +62,32 @@ export const useCreditNoteQuery = (
 
 export const useCreditNoteByIdQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = creditNoteApiUrl(buCode, id);
   return useQuery({
     queryKey: ["credit-note-id", id],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getByIdApiRequest(
         API_ID,
         token,
-        tenantId,
         "Error fetching credit note"
       );
     },
   });
 };
 
-export const useCreditNoteMutation = (token: string, tenantId: string) => {
+export const useCreditNoteMutation = (token: string, buCode: string) => {
+  const API_URL = creditNoteApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: CreditNoteFormDto) => {
       return await postApiRequest(
         API_URL,
         token,
-        tenantId,
         data,
         "Error creating credit note"
       );
@@ -93,16 +95,16 @@ export const useCreditNoteMutation = (token: string, tenantId: string) => {
   });
 };
 
-export const useCreateCreditNote = (token: string, tenantId: string) => {
+export const useCreateCreditNote = (token: string, buCode: string) => {
+  const API_URL = creditNoteApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: CreditNoteFormDto) => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return postApiRequest(
         API_URL,
         token,
-        tenantId,
         data,
         "Failed to create credit note"
       );
@@ -112,19 +114,18 @@ export const useCreateCreditNote = (token: string, tenantId: string) => {
 
 export const useUpdateCreditNote = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = creditNoteApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: CreditNoteFormDto) => {
-      if (!token || !tenantId || !id) {
+      if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
       return updateApiRequest(
         API_ID,
         token,
-        tenantId,
         data,
         "Failed to update credit note",
         "PATCH"
