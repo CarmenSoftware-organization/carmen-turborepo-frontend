@@ -4,7 +4,7 @@ import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
   getAllApiRequest,
-//   getByIdApiRequest,
+  //   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
   deleteApiRequest,
@@ -15,28 +15,31 @@ import {
   BuTypeGetAllDto,
 } from "@/dtos/bu-type.dto";
 
-const API_URL = `${backendApi}/api/config/vendor-business-type`;
+const buTypeApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/vendor-business-type`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useBuTypeQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
+  const API_URL = buTypeApiUrl(buCode);
   const { data, isLoading, error } = useQuery({
-    queryKey: ["bu-type", tenantId, params],
+    queryKey: ["bu-type", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
         "Error fetching bu type",
         params ?? {}
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
   });
 
   const buTypes = data;
@@ -60,13 +63,13 @@ export const useBuTypeQuery = (
   };
 };
 
-export const useBuTypeMutation = (token: string, tenantId: string) => {
+export const useBuTypeMutation = (token: string, buCode: string) => {
+  const API_URL = buTypeApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: BuTypeFormDto) => {
       return await postApiRequest(
         API_URL,
         token,
-        tenantId,
         data,
         "Error creating bu type"
       );
@@ -76,16 +79,15 @@ export const useBuTypeMutation = (token: string, tenantId: string) => {
 
 export const useUpdateBuType = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = buTypeApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: BuTypeEditDto) => {
       return await updateApiRequest(
         API_ID,
         token,
-        tenantId,
         data,
         "Error updating bu type",
         "PATCH"
@@ -96,16 +98,15 @@ export const useUpdateBuType = (
 
 export const useDeleteBuType = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = buTypeApiUrl(buCode, id);
   return useMutation({
     mutationFn: async () => {
       return await deleteApiRequest(
         API_ID,
         token,
-        tenantId,
         id,
         "Error deleting bu type"
       );

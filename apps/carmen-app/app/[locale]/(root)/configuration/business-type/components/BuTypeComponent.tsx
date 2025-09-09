@@ -37,7 +37,7 @@ import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown"
 import { FormBuTypeDialog } from "./FormBuTypeDialog";
 
 export default function BusinessTypeComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tBusinessType = useTranslations("BusinessType");
@@ -54,7 +54,7 @@ export default function BusinessTypeComponent() {
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
 
-  const { buTypes, isLoading } = useBuTypeQuery(token, tenantId, {
+  const { buTypes, isLoading } = useBuTypeQuery(token, buCode, {
     page: page ? parseInt(page) : 1,
     perpage: perpage,
     search,
@@ -71,17 +71,17 @@ export default function BusinessTypeComponent() {
     }
   }, [buTypes]);
 
-  const { mutate: createBuType } = useBuTypeMutation(token, tenantId);
+  const { mutate: createBuType } = useBuTypeMutation(token, buCode);
 
   const { mutate: updateBuType } = useUpdateBuType(
     token,
-    tenantId,
+    buCode,
     editingProfileId ?? ""
   );
 
   const { mutate: deleteBuType } = useDeleteBuType(
     token,
-    tenantId,
+    buCode,
     deleteProfileId ?? ""
   );
   const title = tBusinessType("title");
