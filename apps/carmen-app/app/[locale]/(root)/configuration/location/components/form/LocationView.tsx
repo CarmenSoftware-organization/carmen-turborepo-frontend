@@ -25,7 +25,7 @@ interface LocationViewProps {
 
 export default function LocationView({ initialData, mode }: LocationViewProps) {
   const [currentMode, setCurrentMode] = useState<formType>(mode);
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
   const tStoreLocation = useTranslations("StoreLocation");
   const tCommon = useTranslations("Common");
@@ -47,7 +47,8 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
   const handleEditMode = () => {
     setCurrentMode(formType.EDIT);
   };
-  const { getDeliveryPointName } = useDeliveryPointQuery({ token, tenantId });
+
+  const { getDeliveryPointName } = useDeliveryPointQuery({ token, buCode });
 
   return (
     <>
@@ -57,7 +58,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
           mode={currentMode}
           onViewMode={handleViewMode}
           token={token}
-          tenantId={tenantId}
+          buCode={buCode}
         />
       ) : (
 
@@ -111,7 +112,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
               <ul className="space-y-1 max-h-[150px] overflow-y-auto text-sm pl-4 list-disc">
                 {initialData?.user_location.map((user) => (
                   <li key={user.id}>
-                    {user.firstname} {user.lastname}
+                    {user.firstname ?? '-'} {user.lastname ?? '-'}
                   </li>
                 ))}
               </ul>

@@ -9,11 +9,11 @@ import { DetailSkeleton } from "@/components/loading/DetailSkeleton";
 
 export default function StoreLocationByIdPage() {
   const { id } = useParams();
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
 
   const { data, isLoading } = useLocationByIdQuery({
     token: token,
-    tenantId: tenantId,
+    buCode: buCode,
     id: id as string,
   });
 

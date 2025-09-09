@@ -1,29 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { getAllLocations, getLocationByIdService } from '@/services/location.service';
 import { ParamsGetDto } from '@/dtos/param.dto';
+import { backendApi } from '@/lib/backend-api';
+import { getAllApiRequest, getByIdApiRequest } from '@/lib/config.api';
 
-
-export const useLocationsQuery = ({
-    token,
-    tenantId,
-    params,
-    enabled = true
-}: {
-    token: string;
-    tenantId: string;
-    params?: ParamsGetDto;
-    enabled?: boolean;
-}) => {
-    return useQuery({
-        queryKey: ['locations', tenantId, params],
-        queryFn: () => getAllLocations(token, tenantId, params || {}),
-        enabled: enabled && !!token && !!tenantId,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
-    });
+const locationApiUrl = (buCode: string, id?: string) => {
+    const baseUrl = `${backendApi}/api/config/${buCode}/locations`;
+    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
 };
 
-export const useLocationsQueryV2 = ({
+export const useLocationsQuery = ({
     token,
     buCode,
     params,
@@ -32,32 +17,59 @@ export const useLocationsQueryV2 = ({
     buCode: string;
     params?: ParamsGetDto;
 }) => {
-    return useQuery({
+    const API_URL = locationApiUrl(buCode);
+    const { data, isLoading, error } = useQuery({
         queryKey: ['locations', buCode, params],
-        queryFn: () => getAllLocations(token, buCode, params || {}),
-        enabled: !!token && !!buCode,
+        queryFn: async () => {
+            try {
+                const result = await getAllApiRequest(
+                    API_URL,
+                    token,
+                    "Error fetching locations",
+                    params
+                );
+                return result;
+            } catch (error) {
+                console.log('error', error);
+                throw error;
+            }
+        }, enabled: !!token && !!buCode,
     });
+    return { data, isLoading, error };
 };
-
 
 export const useLocationByIdQuery = ({
     token,
-    tenantId,
+    buCode,
     id,
     enabled = true
 }: {
     token: string;
-    tenantId: string;
+    buCode: string;
     id: string;
     enabled?: boolean;
 }) => {
-    return useQuery({
-        queryKey: ['location', tenantId, id],
-        queryFn: () => getLocationByIdService(token, tenantId, id),
-        enabled: enabled && !!token && !!tenantId,
+    const API_URL = locationApiUrl(buCode, id);
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['location', buCode, id],
+        queryFn: async () => {
+            try {
+                const result = await getByIdApiRequest(
+                    API_URL,
+                    token,
+                    "Error fetching location",
+                );
+                return result;
+            } catch (error) {
+                console.log('error', error);
+                throw error;
+            }
+        },
+        enabled: enabled && !!token && !!buCode,
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
         retry: 2,
         retryDelay: 500,
     });
+    return { data, isLoading, error };
 };

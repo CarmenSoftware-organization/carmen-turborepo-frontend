@@ -46,7 +46,7 @@ interface LocationFormProps {
   readonly mode: formType;
   readonly onViewMode: () => void;
   readonly token: string;
-  readonly tenantId: string;
+  readonly buCode: string;
 }
 
 interface LocationResponse {
@@ -69,7 +69,7 @@ export default function LocationForm({
   mode,
   onViewMode,
   token,
-  tenantId,
+  buCode,
 }: LocationFormProps) {
   const { userList } = useUserList();
   const { products } = useProduct();
@@ -87,10 +87,10 @@ export default function LocationForm({
     title: product.name,
   }));
 
-  const createMutation = useLocationMutation(token, tenantId);
+  const createMutation = useLocationMutation(token, buCode);
   const updateMutation = useUpdateLocation(
     token,
-    tenantId,
+    buCode,
     initialData?.id || ""
   );
 

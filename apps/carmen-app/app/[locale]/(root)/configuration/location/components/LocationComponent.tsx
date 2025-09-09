@@ -20,7 +20,7 @@ export default function LocationComponent() {
   const tCommon = useTranslations("Common");
   const tStoreLocation = useTranslations("StoreLocation");
   const tHeader = useTranslations("TableHeader");
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
@@ -36,7 +36,7 @@ export default function LocationComponent() {
     error,
   } = useLocationsQuery({
     token,
-    tenantId,
+    buCode,
     params: {
       search,
       filter,
