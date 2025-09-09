@@ -11,28 +11,33 @@ import {
 } from "@/lib/config.api";
 import { TaxProfileEditDto, TaxProfileFormData, TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
 
-const API_URL = `${backendApi}/api/config/tax-profile`;
+const taxProfileApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/tax-profile`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useTaxProfileQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   params?: ParamsGetDto
 ) => {
+
+  const API_URL = taxProfileApiUrl(buCode);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["tax-profile", tenantId, params],
+    queryKey: ["tax-profile", buCode, params],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getAllApiRequest(
         API_URL,
         token,
-        tenantId,
         "Error fetching tax profile",
         params ?? {}
       );
     },
-    enabled: !!token && !!tenantId,
+    enabled: !!token && !!buCode,
   });
 
   const taxProfiles = data;
@@ -60,34 +65,34 @@ export const useTaxProfileQuery = (
 
 export const useTaxProfileByIdQuery = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = taxProfileApiUrl(buCode, id);
   return useQuery({
     queryKey: ["tax-profile-id", id],
     queryFn: async () => {
-      if (!token || !tenantId) {
-        throw new Error("Unauthorized: Missing token or tenantId");
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
       return await getByIdApiRequest(
         API_ID,
         token,
-        tenantId,
         "Error fetching tax profile"
       );
     },
-    enabled: !!token && !!tenantId && !!id,
+    enabled: !!token && !!buCode && !!id,
   });
 };
 
-export const useTaxProfileMutation = (token: string, tenantId: string) => {
+export const useTaxProfileMutation = (token: string, buCode: string) => {
+  const API_URL = taxProfileApiUrl(buCode);
+
   return useMutation({
     mutationFn: async (data: TaxProfileFormData) => {
       return await postApiRequest(
         API_URL,
         token,
-        tenantId,
         data,
         "Error creating tax profile"
       );
@@ -97,16 +102,15 @@ export const useTaxProfileMutation = (token: string, tenantId: string) => {
 
 export const useUpdateTaxProfile = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = taxProfileApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: TaxProfileEditDto) => {
       return await updateApiRequest(
         API_ID,
         token,
-        tenantId,
         data,
         "Error updating tax profile",
         "PATCH"
@@ -117,16 +121,15 @@ export const useUpdateTaxProfile = (
 
 export const useDeleteTaxProfile = (
   token: string,
-  tenantId: string,
+  buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = taxProfileApiUrl(buCode, id);
   return useMutation({
     mutationFn: async () => {
       return await deleteApiRequest(
         API_ID,
         token,
-        tenantId,
         id,
         "Error deleting tax profile"
       );

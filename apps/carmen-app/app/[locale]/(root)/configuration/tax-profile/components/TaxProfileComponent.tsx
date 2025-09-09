@@ -37,7 +37,7 @@ import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export function TaxProfileComponent() {
-  const { token, tenantId } = useAuth();
+  const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tTaxProfile = useTranslations("TaxProfile");
@@ -49,7 +49,7 @@ export function TaxProfileComponent() {
 
   const { taxProfiles: taxProfileData, isLoading } = useTaxProfileQuery(
     token,
-    tenantId,
+    buCode,
     {
       search,
       filter,
@@ -66,20 +66,20 @@ export function TaxProfileComponent() {
     }
   }, [taxProfileData?.data]);
 
-  const { mutate: createTaxProfile } = useTaxProfileMutation(token, tenantId);
+  const { mutate: createTaxProfile } = useTaxProfileMutation(token, buCode);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<string | null>(null);
   const { mutate: updateTaxProfile } = useUpdateTaxProfile(
     token,
-    tenantId,
+    buCode,
     editingProfile ?? ""
   );
 
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
   const { mutate: deleteTaxProfile } = useDeleteTaxProfile(
     token,
-    tenantId,
+    buCode,
     deleteProfileId ?? ""
   );
 
