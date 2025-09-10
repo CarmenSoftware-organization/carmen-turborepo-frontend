@@ -24,7 +24,7 @@ export const getAllGrn = async (
 
     try {
         const response = await axios.get(url, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
 
         return response.data;
@@ -37,7 +37,7 @@ export const getGrnById = async (token: string, buCode: string, id: string) => {
     const url = `${API_URL}/${id}`;
     try {
         const response = await axios.get(url, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
         return response.data;
     } catch (error) {
@@ -50,7 +50,7 @@ export const postGrnService = async (token: string, buCode: string, data: Create
     const url = `${API_URL}`;
     try {
         const response = await axios.post(url, data, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
 
         if (response.status !== 201) {

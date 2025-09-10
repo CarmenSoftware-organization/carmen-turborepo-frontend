@@ -10,13 +10,17 @@ import {
 import { useCallback } from "react";
 import { FormLocationValues, StoreLocationDto } from "@/dtos/config.dto";
 
-const API_URL = `${backendApi}/api/config/locations`;
+const locationApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/location`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useLocationQuery = (
   token: string,
   buCode: string,
   params?: ParamsGetDto
 ) => {
+  const API_URL = locationApiUrl(buCode);
   const { data, isLoading, error } = useQuery({
     queryKey: ["locations", buCode, params],
     queryFn: () => {
@@ -24,7 +28,6 @@ export const useLocationQuery = (
       return getAllApiRequest(
         API_URL,
         token,
-        buCode,
         "Error fetching locations",
         params
       );
@@ -41,13 +44,13 @@ export const useLocationQuery = (
 };
 
 export const useLocationMutation = (token: string, buCode: string) => {
+  const API_URL = locationApiUrl(buCode);
   return useMutation({
     mutationFn: (data: FormLocationValues) => {
       if (!token || !buCode) throw new Error("Unauthorized");
       return postApiRequest(
         API_URL,
         token,
-        buCode,
         data,
         "Error creating location"
       );
@@ -60,14 +63,12 @@ export const useUpdateLocation = (
   buCode: string,
   id: string
 ) => {
-  const API_URL_BY_ID = `${API_URL}/${id}`;
-
+  const API_URL_BY_ID = locationApiUrl(buCode, id);
   return useMutation({
     mutationFn: (data: FormLocationValues) => {
       return updateApiRequest(
         API_URL_BY_ID,
         token,
-        buCode,
         data,
         "Error updating location",
         "PATCH"
@@ -81,14 +82,13 @@ export const useDeleteLocation = (
   buCode: string,
   id: string
 ) => {
-  const API_URL_BY_ID = `${API_URL}/${id}`;
+  const API_URL_BY_ID = locationApiUrl(buCode, id);
   return useMutation({
     mutationFn: () => {
       if (!token || !buCode || !id) throw new Error("Unauthorized");
       return deleteApiRequest(
         API_URL_BY_ID,
         token,
-        buCode,
         id,
         "Error deleting location"
       );

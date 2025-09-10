@@ -21,9 +21,10 @@ const InputSanitizeText = React.forwardRef<
     target: HTMLInputElement,
     newValue: string
   ): React.ChangeEvent<HTMLInputElement> => {
-    const event = new Event('change', { bubbles: true }) as any;
-    event.target = target;
-    event.currentTarget = target;
+    const event = new Event('change', { bubbles: true }) as unknown as React.ChangeEvent<HTMLInputElement>;
+    // Type assertion needed for synthetic event creation
+    (event as { target: HTMLInputElement; currentTarget: HTMLInputElement }).target = target;
+    (event as { target: HTMLInputElement; currentTarget: HTMLInputElement }).currentTarget = target;
 
     Object.defineProperty(target, 'value', {
       writable: true,

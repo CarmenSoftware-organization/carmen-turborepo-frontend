@@ -18,8 +18,6 @@ interface IngredientUnitProps {
     readonly currentMode: formType;
 }
 
-
-
 export default function IngredientUnit({ control, currentMode }: IngredientUnitProps) {
 
     const tProducts = useTranslations("Products");

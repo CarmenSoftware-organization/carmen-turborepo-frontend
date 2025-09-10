@@ -19,14 +19,12 @@ import HeadForm from "./HeadForm";
 
 import { useRouter } from "@/lib/navigation";
 import DetailsAndComments from "@/components/DetailsAndComments";
-import { usePrMutation, useUpdateUPr } from "@/hooks/usePurchaseRequest";
+import { usePrMutation } from "@/hooks/usePurchaseRequest";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { mockActivityPr, mockCommentsPr } from "./mock-budget";
 import ActivityLogComponent from "@/components/comment-activity/ActivityLogComponent";
 import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
-import JsonViewer from "@/components/JsonViewer";
-import { DOC_STATUS } from "@/constants/enum";
 import ActionButtons from "./ActionButtons";
 import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
@@ -40,7 +38,7 @@ interface Props {
 
 interface CancelAction {
     type: 'back' | 'cancel';
-    event: React.MouseEvent<HTMLButtonElement>;
+    event: React.MouseEvent<HTMLButtonElement> | null;
 }
 
 export default function MainForm({ mode, initValues }: Props) {
@@ -52,8 +50,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<string | null>(null);
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null as any });
+    const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null });
 
 
     const form = useForm<CreatePrDto>({
@@ -124,11 +121,11 @@ export default function MainForm({ mode, initValues }: Props) {
         };
 
         if (currentFormType === formType.ADD) {
-            createPr(data as any, {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onSuccess: (responseData: any) => {
-                    if (responseData?.data?.id) {
-                        router.replace(`/procurement/purchase-request/${responseData.data.id}`);
+            createPr(data.body, {
+                onSuccess: (responseData: unknown) => {
+                    const response = responseData as { data?: { id?: string } };
+                    if (response?.data?.id) {
+                        router.replace(`/procurement/purchase-request/${response.data.id}`);
                         toastSuccess({
                             message: tPR("purchase_request_created"),
                         })
@@ -141,7 +138,6 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             save(data as any, {
                 onSuccess: () => {
                     toastSuccess({
@@ -208,29 +204,21 @@ export default function MainForm({ mode, initValues }: Props) {
         setCancelDialogOpen(false);
     };
 
-    const watchError = form.formState.errors;
-    const hasError = Object.keys(watchError).length > 0;
-    const canSave = !hasError && hasFormChanges();
 
     const requestorName = user?.user_info.firstname + ' ' + user?.user_info.lastname;
 
     const workflowStages = Array.isArray(initValues?.workflow_history)
-        ? initValues.workflow_history.map((item: any) => ({
+        ? initValues.workflow_history.map((item: { current_stage: string }) => ({
             title: item.current_stage,
         }))
         : [];
 
-    // const watchForm = form.watch();
-
-
-    // console.log(initValues);
 
     const isDraft = initValues?.pr_status === "draft";
-    const isProgress = initValues?.pr_status === "in_progress";
 
     const onSubmitPr = () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        submit({} as any, {
+        const formData = form.getValues();
+        submit(formData.body as unknown, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_submitted"),
@@ -248,8 +236,8 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onApprove = () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        approve({} as any, {
+        const formData = form.getValues();
+        approve(formData.body as unknown, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_approved"),
@@ -264,15 +252,13 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReject = () => {
-        reject({
-            state_role: 'create',
-            body: initValues?.purchase_request_detail.map((item) => ({
-                id: item.id,
-                stage_status: 'reject',
-                stage_message: 'ไม่ต้องซื้อ',
-            }))
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any, {
+        const rejectData = initValues?.purchase_request_detail?.map((item) => ({
+            id: item.id,
+            stage_status: 'reject',
+            stage_message: 'ไม่ต้องซื้อ',
+        })) || [];
+
+        reject(rejectData as unknown, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_rejected"),
@@ -290,15 +276,13 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     const onSendBack = () => {
-        sendBack({
-            state_role: 'create',
-            body: initValues?.purchase_request_detail.map((item) => ({
-                id: item.id,
-                stage_status: 'send_back',
-                stage_message: 'ส่งกลับ',
-            }))
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any, {
+        const sendBackData = initValues?.purchase_request_detail?.map((item) => ({
+            id: item.id,
+            stage_status: 'send_back',
+            stage_message: 'ส่งกลับ',
+        })) || [];
+
+        sendBack(sendBackData as unknown, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_sent_back"),
@@ -313,8 +297,8 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onPurchaseApprove = () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        purchase({} as any, {
+        const formData = form.getValues();
+        purchase(formData.body as unknown, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_approved_purchase"),
@@ -329,8 +313,8 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReview = () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        review({} as any, {
+        const formData = form.getValues();
+        review(formData.body as unknown, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_reviewed"),

@@ -27,7 +27,6 @@ export default function ActionFields({
     isCreatingPr,
     prStatus
 }: ActionFieldsProps) {
-    const tCommon = useTranslations("Common");
     const tPr = useTranslations("PurchaseRequest");
     const router = useRouter();
     const tStatus = useTranslations("Status");

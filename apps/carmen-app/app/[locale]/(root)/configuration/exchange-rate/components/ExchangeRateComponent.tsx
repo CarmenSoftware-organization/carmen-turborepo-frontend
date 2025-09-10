@@ -5,6 +5,7 @@ import currenciesIso from "@/constants/currency";
 import { format } from "date-fns";
 import {
   ColumnDef,
+  Column,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
@@ -90,19 +91,19 @@ const renderRateCell = (
 ) => <RateCell code={code} rate={rate} isLoading={isLoading} currencyBase={currencyBase} />;
 
 // Header renderer functions
-const renderCodeHeader = (title: string, column: any) => (
+const renderCodeHeader = (title: string, column: Column<Currency, unknown>) => (
   <DataGridColumnHeader title={title} column={column} />
 );
-const renderSymbolHeader = (title: string, column: any) => (
+const renderSymbolHeader = (title: string, column: Column<Currency, unknown>) => (
   <DataGridColumnHeader title={title} column={column} />
 );
-const renderNameHeader = (title: string, column: any) => (
+const renderNameHeader = (title: string, column: Column<Currency, unknown>) => (
   <DataGridColumnHeader title={title} column={column} />
 );
-const renderCountryHeader = (title: string, column: any) => (
+const renderCountryHeader = (title: string, column: Column<Currency, unknown>) => (
   <DataGridColumnHeader title={title} column={column} />
 );
-const renderRateHeader = (title: string, column: any) => (
+const renderRateHeader = (title: string, column: Column<Currency, unknown>) => (
   <DataGridColumnHeader title={title} column={column} />
 );
 
@@ -211,7 +212,7 @@ export default function ExchangeRateComponent() {
       enableSorting: false,
       size: 120,
     },
-  ], [tTableHeader, exchangeRates, isLoading, isRefetching, currencyBase, pagination]);
+  ], [tTableHeader, exchangeRates, isLoading, currencyBase, pagination]);
 
   const [columnOrder, setColumnOrder] = useState<string[]>(columns.map((column) => column.id as string));
 

@@ -11,8 +11,6 @@ import { postApiRequest, updateApiRequest } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
-const API_URL = `${backendApi}/api/good-received-note`;
-
 export const useGrn = () => {
   const { token, buCode } = useAuth();
   const [search, setSearch] = useURL("search");
@@ -41,7 +39,6 @@ export const useGrn = () => {
       getAllGrn(token || "", buCode || "", { search, page: page ? parseInt(page) : 1, sort }),
     enabled: !!token && !!buCode,
   });
-
 
   const handlePageChange = useCallback(
     (newPage: number) => {
@@ -104,7 +101,13 @@ export const useGrn = () => {
   };
 };
 
+const grnApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/good-received-note`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
+
 export const useGrnMutation = (token: string, buCode: string) => {
+  const API_URL = grnApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: CreateGRNDto) => {
       if (!token || !buCode) {
@@ -113,7 +116,6 @@ export const useGrnMutation = (token: string, buCode: string) => {
       return await postApiRequest(
         API_URL,
         token,
-        buCode,
         data,
         "Error creating credit note"
       );
@@ -136,7 +138,7 @@ export const useUpdateCreditNote = (
   buCode: string,
   id: string
 ) => {
-  const API_ID = `${API_URL}/${id}`;
+  const API_ID = grnApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: CreateGRNDto) => {
       if (!token || !buCode || !id) {
@@ -145,7 +147,6 @@ export const useUpdateCreditNote = (
       return updateApiRequest(
         API_ID,
         token,
-        buCode,
         data,
         "Failed to update credit note",
         "PATCH"

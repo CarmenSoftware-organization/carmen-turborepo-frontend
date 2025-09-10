@@ -22,9 +22,7 @@ export const useUserList = () => {
         const result = await getAllApiRequest(
           API_URL,
           token,
-          buCode,
           "Failed to fetch user list",
-
         );
 
         return result;
@@ -34,9 +32,9 @@ export const useUserList = () => {
       }
     },
     enabled: !!token && !!buCode,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    retry: 1, // เพิ่ม retry
-    retryDelay: 1000, // delay 1 วินาที
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+    retryDelay: 1000,
   });
 
   const isUnauthorized =

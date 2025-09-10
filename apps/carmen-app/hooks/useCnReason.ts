@@ -3,7 +3,10 @@ import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { getAllApiRequest } from "@/lib/config.api";
 
-const API_URL = `${backendApi}/api/credit-note-reason`;
+const cnReasonApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/credit-note-reason`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useCnReasonQuery = ({
   token,
@@ -14,6 +17,9 @@ export const useCnReasonQuery = ({
   buCode: string;
   params?: ParamsGetDto;
 }) => {
+
+  const API_URL = cnReasonApiUrl(buCode);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["cn-reason", buCode, params],
     queryFn: async () => {
@@ -21,7 +27,6 @@ export const useCnReasonQuery = ({
       return await getAllApiRequest(
         API_URL,
         token,
-        buCode,
         "Error fetching cn reason",
         params
       );

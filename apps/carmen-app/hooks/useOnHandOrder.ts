@@ -16,7 +16,6 @@ export const useOnHandOrder = (
             const response = await axios.get(API_URL, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "X-Tenant-Id": buCode,
                 },
             });
 

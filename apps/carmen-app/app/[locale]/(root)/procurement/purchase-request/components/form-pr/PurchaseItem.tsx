@@ -25,21 +25,11 @@ import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import NumberInput from "@/components/form-custom/NumberInput";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import { cellContentVariants } from "@/utils/framer-variants";
-import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Separator } from "@/components/ui/separator";
 import DateInput from "@/components/form-custom/DateInput";
 import { cn } from "@/lib/utils";
 import InventoryInfo from "./InventoryInfo";
 import InventoryProgress from "./InventoryProgress";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { DeliveryPointSelectLookup } from "@/components/lookup/DeliveryPointSelectLookup";
 import { useTranslations } from "next-intl";
 
@@ -47,11 +37,11 @@ interface Props {
     currentFormType: formType;
     items: PurchaseRequestDetail[];
     initValues?: PurchaseRequestDetail[];
-    addFields: any[];
-    onItemUpdate: (itemId: string, fieldName: string, value: any, selectedProduct?: any) => void;
+    addFields: unknown[];
+    onItemUpdate: (itemId: string, fieldName: string, value: unknown, selectedProduct?: unknown) => void;
     onItemRemove: (itemId: string, isNewItem?: boolean, itemIndex?: number) => void;
     onAddItem: () => void;
-    getItemValue: (item: PurchaseRequestDetail, fieldName: string) => any;
+    getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
 }
 
 export default function PurchaseItem({
@@ -104,7 +94,7 @@ export default function PurchaseItem({
     }, [items]);
 
     // Local function สำหรับ update item แบบ realtime
-    const handleLocalItemUpdate = (itemId: string, fieldName: string, value: any) => {
+    const handleLocalItemUpdate = (itemId: string, fieldName: string, value: unknown) => {
         setLocalItems(prev => {
             const updated = prev.map(item =>
                 item.id === itemId
@@ -350,7 +340,7 @@ export default function PurchaseItem({
                                                         e.preventDefault();
                                                         // For new items, we need to find the correct index in add array
                                                         const addIndex = isNewItem ?
-                                                            addFields.findIndex((field: any) => field.id === item.id) :
+                                                            addFields.findIndex((field: unknown) => (field as { id: string }).id === item.id) :
                                                             undefined;
                                                         handleRemoveItemClick(item.id, isNewItem, addIndex);
                                                     }}
@@ -445,7 +435,7 @@ export default function PurchaseItem({
                                                                 </AccordionTrigger>
                                                                 <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-purple-100 mx-3 my-1 -mt-px">
                                                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2">
-                                                                        {item.dimension?.map((dimension: any) => (
+                                                                        {item.dimension?.map((dimension: unknown) => (
                                                                             <div key={dimension.key}>
                                                                                 <div className="space-y-1 text-right">
                                                                                     <Label className="text-muted-foreground/80 text-xs">{dimension.label}</Label>

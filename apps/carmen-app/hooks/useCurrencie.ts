@@ -9,8 +9,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { CurrencyCreateDto, CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 
-const API_URL = `${backendApi}/api/config/currencies`;
-
 const currencyApiUrl = (buCode: string, id?: string) => {
     const baseUrl = `${backendApi}/api/config/${buCode}/currencies`;
     return id ? `${baseUrl}/${id}` : `${baseUrl}/`;

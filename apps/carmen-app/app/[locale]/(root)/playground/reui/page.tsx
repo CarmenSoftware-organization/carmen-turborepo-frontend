@@ -5,9 +5,6 @@ import {
     Avatar,
     AvatarFallback,
     AvatarImage,
-    AvatarIndicator,
-    AvatarStatus,
-    avatarStatusVariants,
 } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';

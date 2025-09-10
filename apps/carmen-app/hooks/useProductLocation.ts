@@ -4,14 +4,18 @@ import { getAllApiRequest } from "@/lib/config.api";
 import { useQuery } from "@tanstack/react-query";
 
 
+const productLocationApiUrl = (buCode: string, id?: string) => {
+    const baseUrl = `${backendApi}/api/${buCode}/products/locations/${id}`;
+    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
+
 export const useProductLocation = (
     token: string,
     buCode: string,
     id: string,
     params?: ParamsGetDto
 ) => {
-    const API_URL = `${backendApi}/api/products/locations/${id}`;
-
+    const API_URL = productLocationApiUrl(buCode, id);
     const { data, isLoading, error } = useQuery({
         queryKey: ["product-location", buCode, id],
         queryFn: async () => {
@@ -21,7 +25,6 @@ export const useProductLocation = (
             return await getAllApiRequest(
                 API_URL,
                 token,
-                buCode,
                 "Error fetching product location",
                 params
             );
@@ -31,9 +34,6 @@ export const useProductLocation = (
 
     const productLocation = data;
     const inventoryUnit = productLocation?.data?.data.inventory_unit;
-
-    console.log('productLocation', productLocation);
-
 
     return {
         productLocation,

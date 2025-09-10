@@ -13,13 +13,18 @@ import { backendApi } from "@/lib/backend-api";
 import { useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
-const API_URL = `${backendApi}/api/config/credit-term`;
+const creditTermApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/credit-term`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
 export const useCreditTermQuery = (
   token: string,
   buCode: string,
   params?: ParamsGetDto
 ) => {
+  const API_URL = creditTermApiUrl(buCode);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["credit-term", buCode, params],
     queryFn: async () => {
@@ -29,7 +34,6 @@ export const useCreditTermQuery = (
       return await getAllApiRequest(
         API_URL,
         token,
-        buCode,
         "Error fetching credit term",
         params ?? {}
       );
@@ -64,6 +68,7 @@ export const useCreditTermQuery = (
 };
 
 export const useCreateCreditTerm = (token: string, buCode: string) => {
+  const API_URL = creditTermApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: CreateCreditTermFormValues) => {
       if (!token || !buCode) {
@@ -72,7 +77,6 @@ export const useCreateCreditTerm = (token: string, buCode: string) => {
       return postApiRequest(
         API_URL,
         token,
-        buCode,
         data,
         "Failed to create credit term"
       );
@@ -85,8 +89,7 @@ export const useUpdateCreditTerm = (
   buCode: string,
   id: string
 ) => {
-  const API_URL_BY_ID = `${API_URL}/${id}`;
-
+  const API_URL_BY_ID = creditTermApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: CreateCreditTermFormValues) => {
       if (!token || !buCode || !id) {
@@ -95,7 +98,6 @@ export const useUpdateCreditTerm = (
       return updateApiRequest(
         API_URL_BY_ID,
         token,
-        buCode,
         data,
         "Failed to update credit term",
         "PATCH"
@@ -109,7 +111,7 @@ export const useDeleteCreditTerm = (
   buCode: string,
   id: string
 ) => {
-  const API_URL_BY_ID = `${API_URL}/${id}`;
+  const API_URL_BY_ID = creditTermApiUrl(buCode, id);
 
   return useMutation({
     mutationFn: async () => {
@@ -119,7 +121,6 @@ export const useDeleteCreditTerm = (
       return deleteApiRequest(
         API_URL_BY_ID,
         token,
-        buCode,
         id,
         "Failed to delete credit term"
       );
