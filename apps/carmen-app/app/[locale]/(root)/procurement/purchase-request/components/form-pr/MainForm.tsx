@@ -138,7 +138,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            save(data as any, {
+            save(data as unknown, {
                 onSuccess: () => {
                     toastSuccess({
                         message: tPR("purchase_request_updated"),
