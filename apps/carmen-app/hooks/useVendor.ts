@@ -78,8 +78,6 @@ export const useVendorById = (token: string, buCode: string, id: string) => {
   const isUnauthorized =
     error instanceof Error && error.message.includes("Unauthorized");
 
-  console.log("vendor", vendor);
-
   return {
     vendor,
     isLoading,

@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formType } from "@/dtos/form.dto"
-import { createVendorService, updateVendorService } from "@/services/vendor.service"
 import { useAuth } from "@/context/AuthContext"
+import { useVendorMutation, useUpdateVendor } from "@/hooks/useVendor"
+import { useQueryClient } from "@tanstack/react-query"
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast"
 import { vendorFormSchema, VendorFormValues } from "@/dtos/vendor.dto"
 import { Link } from "@/lib/navigation"
@@ -57,46 +58,65 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     const tCommon = useTranslations('Common');
 
     const { token, buCode } = useAuth();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const queryClient = useQueryClient();
+
+    const { mutate: createVendor, isPending: isCreating } = useVendorMutation(token, buCode);
+    const { mutate: updateVendor, isPending: isUpdating } = useUpdateVendor(token, buCode, initData?.id ?? "");
+
+    const isSubmitting = isCreating || isUpdating;
 
     const form = useForm<VendorFormValues>({
         resolver: zodResolver(vendorFormSchema),
         defaultValues: mode === formType.ADD ? defaultValues : initData
     })
 
-    // Add useEffect to reset form with initData when it changes
     useEffect(() => {
         if (initData && mode === formType.EDIT) {
             form.reset(initData);
         }
     }, [form, initData, mode]);
 
-    const onSubmit = async (data: VendorFormValues) => {
-        setIsSubmitting(true)
-
-        try {
-            let response;
-            if (mode === formType.ADD) {
-                response = await createVendorService(token, buCode, data)
-            } else {
-                response = await updateVendorService(token, buCode, { ...data, id: initData?.id })
-            }
-
-            if (response) {
-                toastSuccess({ message: "Vendor created successfully" })
-            }
-        } catch (error) {
-            console.error("Error submitting form:", error)
-            toastError({ message: "An error occurred while submitting the form." })
-        } finally {
-            setIsSubmitting(false)
+    const onSubmit = (data: VendorFormValues) => {
+        console.log("Form submitted with data:", data);
+        console.log("Mode:", mode);
+        console.log("InitData:", initData);
+        
+        if (mode === formType.ADD) {
+            createVendor(data, {
+                onSuccess: () => {
+                    toastSuccess({ message: tVendor("add_success") });
+                    queryClient.invalidateQueries({ queryKey: ["vendor", buCode] });
+                    // Optional: redirect back to vendor list
+                    // router.push("/vendor-management/vendor");
+                },
+                onError: (error) => {
+                    console.error("Error creating vendor:", error);
+                    toastError({ message: tVendor("add_error") });
+                }
+            });
+        } else if (initData?.id) {
+            const updateData = { ...data, id: initData.id };
+            updateVendor(updateData, {
+                onSuccess: () => {
+                    toastSuccess({ message: tVendor("update_success") });
+                    queryClient.invalidateQueries({ queryKey: ["vendor", buCode, initData.id] });
+                    // Optional: redirect back to vendor list
+                    // router.push("/vendor-management/vendor");
+                },
+                onError: (error) => {
+                    console.error("Error updating vendor:", error);
+                    toastError({ message: tVendor("update_error") });
+                }
+            });
         }
     }
 
     return (
         <Card className="p-4">
             <h1 className="text-lg font-medium text-foreground">{mode === formType.ADD ? tVendor("add_vendor") : tVendor("edit_vendor")}</h1>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+                console.log("Form validation errors:", errors);
+            })} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div className="space-y-1">
                         <Label htmlFor="name" className="text-xs font-medium text-foreground">
@@ -115,8 +135,8 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                     </div>
                 </div>
 
-                <Tabs defaultValue="info" className="w-full border rounded-sm">
-                    <TabsList className="w-full grid grid-cols-3 h-9  rounded-none border-b">
+                <Tabs defaultValue="info" className="w-full">
+                    <TabsList className="w-full grid grid-cols-3 h-9 rounded-none">
                         <TabsTrigger value="info" className="text-xs">
                             {tVendor("info")}
                         </TabsTrigger>
@@ -149,7 +169,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                     </Button>
                     <Button type="submit" disabled={isSubmitting} className="h-8 text-xs px-4 bg-primary text-primary-foreground hover:bg-primary/90">
                         <Save className="h-3 w-3" />
-                        {isSubmitting ? "Submitting..." : "Save Vendor"}
+                        {isSubmitting ? tCommon("submitting") : tCommon("save")}
                     </Button>
                 </div>
             </form>

@@ -28,9 +28,9 @@ export const vendorFormSchema = z.object({
     id: z.string().optional(),
     name: z.string().min(1, "Vendor name is required"),
     description: z.string().optional(),
-    info: z.array(infoItemSchema),
-    vendor_address: z.array(addressSchema),
-    vendor_contact: z.array(contactSchema),
+    info: z.array(infoItemSchema).optional(),
+    vendor_address: z.array(addressSchema).optional(),
+    vendor_contact: z.array(contactSchema).optional(),
 })
 
 export type VendorFormValues = z.infer<typeof vendorFormSchema>;

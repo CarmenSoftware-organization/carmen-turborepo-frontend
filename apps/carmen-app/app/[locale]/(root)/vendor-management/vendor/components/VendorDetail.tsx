@@ -106,7 +106,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
 
                 <TabsContent value="info" className="p-4 space-y-3">
                     <h3 className="text-xs font-medium">{tVendor("additional_info")}</h3>
-                    {vendor.info && (
+                    {vendor?.info && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {vendor.info?.map((item, index) => (
                                 <div key={index} className="space-y-1 mt-1">
@@ -121,7 +121,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                 <TabsContent value="address" className="p-4 space-y-3">
                     <h3 className="text-xs font-medium text-gray-700 mb-3">{tVendor("address")}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {vendor.vendor_address.map((address, index) => (
+                        {vendor?.vendor_address?.map((address, index) => (
                             <div key={index} className="border border-gray-100 rounded p-3">
                                 <div className="flex items-center gap-1 mb-2">
                                     <MapPin className="h-3 w-3 text-gray-500" />
@@ -145,7 +145,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                 <TabsContent value="contact" className="p-2 space-y-3">
                     <h3 className="text-xs">{tVendor("contact_info")}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {vendor.vendor_contact.map((contact, index) => (
+                        {vendor?.vendor_contact?.map((contact, index) => (
                             <div key={index} className="p-2">
                                 <div className="flex items-center gap-1 mb-1">
                                     {getContactIcon(contact.contact_type)}
