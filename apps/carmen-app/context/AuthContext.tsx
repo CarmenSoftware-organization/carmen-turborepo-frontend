@@ -84,9 +84,13 @@ interface AuthContextType {
   departments: BusinessUnit["department"] | null;
   currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
   dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
-  longTimeFormat: NonNullable<BusinessUnit["config"]>["long_time_format"] | null;
+  longTimeFormat:
+    | NonNullable<BusinessUnit["config"]>["long_time_format"]
+    | null;
   perpage: NonNullable<BusinessUnit["config"]>["perpage"] | null;
-  shortTimeFormat: NonNullable<BusinessUnit["config"]>["short_time_format"] | null;
+  shortTimeFormat:
+    | NonNullable<BusinessUnit["config"]>["short_time_format"]
+    | null;
   timezone: NonNullable<BusinessUnit["config"]>["timezone"] | null;
   amount: NonNullable<BusinessUnit["config"]>["amount"] | null;
   quantity: NonNullable<BusinessUnit["config"]>["quantity"] | null;
@@ -99,12 +103,12 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isLoading: true,
   user: null,
-  setSession: () => { },
-  logout: () => { },
+  setSession: () => {},
+  logout: () => {},
   token: "",
   getServerSideToken: () => "",
   tenantId: "",
-  handleChangeTenant: () => { },
+  handleChangeTenant: () => {},
   departments: null,
   currencyBase: null,
   dateFormat: null,
@@ -141,8 +145,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // Hydration effect - รันครั้งเดียวหลัง mount
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedTenantId = localStorage.getItem(LOCAL_STORAGE.TENANT_ID) ?? "";
-      const storedToken = localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
+      const storedTenantId =
+        localStorage.getItem(LOCAL_STORAGE.TENANT_ID) ?? "";
+      const storedToken =
+        localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
       const storedBuCode = localStorage.getItem(LOCAL_STORAGE.BU_CODE) ?? "";
       setTenantId(storedTenantId);
       setToken(storedToken);
@@ -158,10 +164,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const isSignInPage = pathname === signInPage;
 
   // ใช้ TanStack Query สำหรับ user profile - รอให้ hydrated ก่อน
-  const {
-    data: user,
-    isLoading: isUserLoading,
-  } = useUserProfileQuery(token, isHydrated && !isSignInPage && !!token);
+  const { data: user, isLoading: isUserLoading } = useUserProfileQuery(
+    token,
+    isHydrated && !isSignInPage && !!token,
+  );
 
   const updateBusinessUnitMutation = useUpdateBusinessUnitMutation();
   const { clearAuthCache } = useAuthCache();
@@ -177,7 +183,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     timezone,
     amount,
     quantity,
-    recipe
+    recipe,
   } = useMemo(() => {
     if (!user?.business_unit?.length) {
       return {
@@ -190,12 +196,12 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         timezone: null,
         amount: null,
         quantity: null,
-        recipe: null
+        recipe: null,
       };
     }
 
     const defaultBu = user.business_unit.find(
-      (bu: BusinessUnit) => bu.is_default === true
+      (bu: BusinessUnit) => bu.is_default === true,
     );
     const firstBu = user.business_unit[0];
     const selectedBu = defaultBu || firstBu;
@@ -210,14 +216,14 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       timezone: selectedBu?.config?.timezone || null,
       amount: selectedBu?.config?.amount || null,
       quantity: selectedBu?.config?.quantity || null,
-      recipe: selectedBu?.config?.recipe || null
+      recipe: selectedBu?.config?.recipe || null,
     };
   }, [user]);
 
   useEffect(() => {
     if (user?.business_unit?.length && isHydrated) {
       const defaultBu = user.business_unit.find(
-        (bu: BusinessUnit) => bu.is_default === true
+        (bu: BusinessUnit) => bu.is_default === true,
       );
       const firstBu = user.business_unit[0];
       const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
@@ -251,7 +257,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         localStorage.setItem(LOCAL_STORAGE.REFRESH_TOKEN, refreshToken);
       }
     },
-    []
+    [],
   );
 
   // จัดการการออกจากระบบ
@@ -299,11 +305,11 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
       // หา business unit ที่เลือกเพื่อดึง bu_code
       const selectedBu = user.business_unit.find(
-        (bu: BusinessUnit) => bu.id === id
+        (bu: BusinessUnit) => bu.id === id,
       );
 
       if (!selectedBu) {
-        console.error('Business unit not found for id:', id);
+        console.error("Business unit not found for id:", id);
         return;
       }
 
@@ -322,10 +328,15 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             router.push(dashboardPage);
             toastSuccess({ message: "Changed Business Unit Success" });
           },
-        }
+        },
       );
     },
-    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.business_unit]
+    [
+      token,
+      updateBusinessUnitMutation,
+      isFromStorageEvent,
+      user?.business_unit,
+    ],
   );
 
   // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
@@ -352,14 +363,17 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     const handleStorageChange = (event: StorageEvent) => {
       // ตรวจสอบเฉพาะ keys ที่เกี่ยวข้องกับ auth
-      if (!event.key || !['access_token', 'refresh_token', 'tenant_id'].includes(event.key)) {
+      if (
+        !event.key ||
+        !["access_token", "refresh_token", "tenant_id"].includes(event.key)
+      ) {
         return;
       }
 
       setIsFromStorageEvent(true);
 
       switch (event.key) {
-        case 'access_token':
+        case "access_token":
           if (event.newValue === null) {
             setToken("");
             setTenantId("");
@@ -375,7 +389,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
           }
           break;
 
-        case 'tenant_id':
+        case "tenant_id":
           if (event.newValue && event.newValue !== tenantId) {
             setTenantId(event.newValue);
             // Auto refresh page เพื่อโหลดข้อมูลใหม่ตาม tenant ที่เปลี่ยน
@@ -385,7 +399,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
           }
           break;
 
-        case 'refresh_token':
+        case "refresh_token":
           // อาจจะต้องการ handle refresh token ถ้ามี logic พิเศษ
           break;
       }
@@ -395,19 +409,29 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     };
 
     // เพิ่ม event listener
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     // Cleanup
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
-  }, [isHydrated, token, tenantId, isSignInPage, signInPage, router, clearAuthCache, buCode]);
+  }, [
+    isHydrated,
+    token,
+    tenantId,
+    isSignInPage,
+    signInPage,
+    router,
+    clearAuthCache,
+    buCode,
+  ]);
 
   // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่
   const hasToken = isHydrated && !!token;
 
   // รวม loading states - แสดง loading ขณะ hydrating หรือ query loading
-  const isLoading = !isHydrated || isUserLoading || updateBusinessUnitMutation.isPending;
+  const isLoading =
+    !isHydrated || isUserLoading || updateBusinessUnitMutation.isPending;
 
   // Context value
   const value = useMemo(
@@ -454,7 +478,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       quantity,
       recipe,
       buCode,
-    ]
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

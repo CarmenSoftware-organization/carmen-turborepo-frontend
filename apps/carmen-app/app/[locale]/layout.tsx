@@ -1,24 +1,23 @@
 import type { Metadata } from "next";
-import '@/styles/globals.css'
+import "@/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Providers } from "@/providers/providers";
 import { Toaster } from "@/components/ui/sonner";
-import '@/instrumentation-client';
 
 export const metadata: Metadata = {
-  title: 'Carmen',
-  description: 'Carmen Inventory Description',
+  title: "Carmen",
+  description: "Carmen Inventory Description",
   icons: {
-    icon: '/fav.ico',
-    shortcut: '/fav-16x16.png',
-    apple: '/apple-touch-icon.png',
+    icon: "/fav.ico",
+    shortcut: "/fav-16x16.png",
+    apple: "/apple-touch-icon.png",
   },
-}
+};
 
 export default async function RootLayout({
   children,
-  params: { locale }
+  params: { locale },
 }: Readonly<{
   children: React.ReactNode;
   params: { locale: string };
@@ -28,9 +27,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body className="antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers>
-            {children}
-          </Providers>
+          <Providers>{children}</Providers>
           <Toaster />
         </NextIntlClientProvider>
       </body>
