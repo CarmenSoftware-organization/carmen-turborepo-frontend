@@ -138,7 +138,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            save(data as unknown, {
+            save(data as any, {
                 onSuccess: () => {
                     toastSuccess({
                         message: tPR("purchase_request_updated"),
@@ -217,8 +217,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const isDraft = initValues?.pr_status === "draft";
 
     const onSubmitPr = () => {
-        const formData = form.getValues();
-        submit(formData.body as unknown, {
+        submit({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_submitted"),
@@ -236,8 +235,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onApprove = () => {
-        const formData = form.getValues();
-        approve(formData.body as unknown, {
+        approve({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_approved"),
@@ -258,7 +256,7 @@ export default function MainForm({ mode, initValues }: Props) {
             stage_message: 'ไม่ต้องซื้อ',
         })) || [];
 
-        reject(rejectData as unknown, {
+        reject(rejectData as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_rejected"),
@@ -282,7 +280,7 @@ export default function MainForm({ mode, initValues }: Props) {
             stage_message: 'ส่งกลับ',
         })) || [];
 
-        sendBack(sendBackData as unknown, {
+        sendBack(sendBackData as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_sent_back"),
@@ -297,8 +295,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onPurchaseApprove = () => {
-        const formData = form.getValues();
-        purchase(formData.body as unknown, {
+        purchase({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_approved_purchase"),
@@ -313,8 +310,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReview = () => {
-        const formData = form.getValues();
-        review(formData.body as unknown, {
+        review({} as any, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_reviewed"),
