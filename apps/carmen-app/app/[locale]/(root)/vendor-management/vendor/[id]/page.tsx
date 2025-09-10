@@ -5,27 +5,23 @@ import SignInDialog from "@/components/SignInDialog";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useVendorDetail } from "@/hooks/useVendorDetail";
 import VendorDetail from "../components/VendorDetail";
+import { useAuth } from "@/context/AuthContext";
+import { useVendorById } from "@/hooks/useVendor";
+import { useState } from "react";
 
 export default function VendorPage() {
-    const params = useParams();
-    const id = params.id as string;
+  const { token, buCode } = useAuth();
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const params = useParams();
+  const id = params.id as string;
+  const { vendor, isLoading } = useVendorById(token, buCode, id);
 
-    const {
-        vendor,
-        loading,
-        loginDialogOpen,
-        setLoginDialogOpen
-    } = useVendorDetail(id);
+  if (isLoading) return <DetailLoading />;
 
-    if (loading) return <DetailLoading />
-
-    return (
-        <>
-            {vendor && <VendorDetail vendor={vendor} />}
-            <SignInDialog
-                open={loginDialogOpen}
-                onOpenChange={setLoginDialogOpen}
-            />
-        </>
-    );
+  return (
+    <>
+      {vendor && <VendorDetail vendor={vendor} />}
+      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
+    </>
+  );
 }

@@ -1,11 +1,14 @@
 import { useCallback } from "react";
-import {
-  VendorGetDto
-} from "@/dtos/vendor-management";
+import { VendorGetDto } from "@/dtos/vendor-management";
 import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAllApiRequest, getByIdApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
+import {
+  getAllApiRequest,
+  getByIdApiRequest,
+  postApiRequest,
+  updateApiRequest,
+} from "@/lib/config.api";
 import { VendorFormValues } from "@/dtos/vendor.dto";
 
 const vendorApiUrl = (buCode: string, id?: string) => {
@@ -16,7 +19,7 @@ const vendorApiUrl = (buCode: string, id?: string) => {
 export const useVendor = (
   token: string,
   buCode: string,
-  params?: ParamsGetDto
+  params?: ParamsGetDto,
 ) => {
   const API_URL = vendorApiUrl(buCode);
   const { data, isLoading, error } = useQuery({
@@ -29,7 +32,7 @@ export const useVendor = (
         API_URL,
         token,
         "Error fetching vendors",
-        params ?? {}
+        params ?? {},
       );
     },
     enabled: !!token && !!buCode,
@@ -39,10 +42,12 @@ export const useVendor = (
 
   const getVendorName = useCallback(
     (vendorId: string) => {
-      const vendor = vendors?.data?.find((v: VendorGetDto) => v.id === vendorId);
+      const vendor = vendors?.data?.find(
+        (v: VendorGetDto) => v.id === vendorId,
+      );
       return vendor?.name ?? "";
     },
-    [vendors]
+    [vendors],
   );
 
   const isUnauthorized =
@@ -54,13 +59,9 @@ export const useVendor = (
     isLoading,
     isUnauthorized,
   };
-}
+};
 
-export const useVendorById = (
-  token: string,
-  buCode: string,
-  id: string
-) => {
+export const useVendorById = (token: string, buCode: string, id: string) => {
   const API_ID = vendorApiUrl(buCode, id);
   const { data, isLoading, error } = useQuery({
     queryKey: ["vendor", buCode, id],
@@ -68,11 +69,7 @@ export const useVendorById = (
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
-      return await getByIdApiRequest(
-        API_ID,
-        token,
-        "Error fetching vendor"
-      );
+      return await getByIdApiRequest(API_ID, token, "Error fetching vendor");
     },
     enabled: !!token && !!buCode && !!id,
   });
@@ -81,17 +78,16 @@ export const useVendorById = (
   const isUnauthorized =
     error instanceof Error && error.message.includes("Unauthorized");
 
+  console.log("vendor", vendor);
+
   return {
     vendor,
     isLoading,
     isUnauthorized,
   };
-}
+};
 
-export const useVendorMutation = (
-  token: string,
-  buCode: string
-) => {
+export const useVendorMutation = (token: string, buCode: string) => {
   const API_URL = vendorApiUrl(buCode);
   return useMutation({
     mutationFn: async (data: VendorFormValues) => {
@@ -99,17 +95,13 @@ export const useVendorMutation = (
         API_URL,
         token,
         data,
-        "Error creating vendor"
+        "Error creating vendor",
       );
     },
   });
 };
 
-export const useUpdateVendor = (
-  token: string,
-  buCode: string,
-  id: string
-) => {
+export const useUpdateVendor = (token: string, buCode: string, id: string) => {
   const API_ID = vendorApiUrl(buCode, id);
   return useMutation({
     mutationFn: async (data: VendorFormValues) => {
@@ -121,7 +113,7 @@ export const useUpdateVendor = (
         token,
         data,
         "Failed to update vendor",
-        "PATCH"
+        "PATCH",
       );
     },
   });
