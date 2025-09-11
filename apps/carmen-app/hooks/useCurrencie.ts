@@ -38,7 +38,8 @@ export const useCurrenciesQuery = (
         enabled: !!token && !!buCode,
     });
 
-    const currencies = data;
+    const currencies = data?.data;
+
     const isUnauthorized =
         error instanceof Error && error.message.includes("Unauthorized");
 

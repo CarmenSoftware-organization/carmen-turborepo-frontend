@@ -4,14 +4,12 @@ import { requestHeaders } from "@/lib/config.api";
 import { CreateGRNDto } from "@/dtos/grn.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 
-const API_URL = `${backendApi}/api/good-received-note`;
-
 export const getAllGrn = async (
     token: string,
     buCode: string,
     params: ParamsGetDto
 ) => {
-
+    const API_URL = `${backendApi}/api/${buCode}/good-received-note`;
     const query = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {
@@ -34,6 +32,7 @@ export const getAllGrn = async (
 };
 
 export const getGrnById = async (token: string, buCode: string, id: string) => {
+    const API_URL = `${backendApi}/api/${buCode}/good-received-note`;
     const url = `${API_URL}/${id}`;
     try {
         const response = await axios.get(url, {
@@ -47,9 +46,9 @@ export const getGrnById = async (token: string, buCode: string, id: string) => {
 
 
 export const postGrnService = async (token: string, buCode: string, data: CreateGRNDto) => {
-    const url = `${API_URL}`;
+    const API_URL = `${backendApi}/api/${buCode}/good-received-note`;
     try {
-        const response = await axios.post(url, data, {
+        const response = await axios.post(API_URL, data, {
             headers: requestHeaders(token)
         });
 

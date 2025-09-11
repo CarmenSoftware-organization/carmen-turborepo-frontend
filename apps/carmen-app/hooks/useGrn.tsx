@@ -6,7 +6,7 @@ import { useURL } from "./useURL";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllGrn } from "@/services/grn.service";
 import { CreateGRNDto } from "@/dtos/grn.dto";
-import { GrnDto } from "@/app/[locale]/(root)/procurement/goods-received-note/type.dto";
+import { GrnDto } from "@/app/[locale]/(root)/procurement/temp/type.dto";
 import { postApiRequest, updateApiRequest } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";

@@ -17,7 +17,7 @@ import {
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useGrn } from "@/hooks/useGrn";
-import { GrnDto } from "@/app/[locale]/(root)/procurement/goods-received-note/type.dto";
+import { GrnDto } from "@/app/[locale]/(root)/procurement/temp/type.dto";
 
 export default function GrnLookup({
   value,

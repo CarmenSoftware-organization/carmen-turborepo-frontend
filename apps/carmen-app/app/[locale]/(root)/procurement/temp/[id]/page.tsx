@@ -1,11 +1,13 @@
 "use client";
 
-import { DetailLoading } from "@/components/loading/DetailLoading";
-import { useAuth } from "@/context/AuthContext";
-import { useGrnByIdQuery } from "@/hooks/use-grn";
-import { useParams } from "next/navigation";
-import FormGrn from "../components/form/FormGrn";
 import { formType } from "@/dtos/form.dto";
+import FormGrn from "../components/form/FormGrn";
+import { getGrnById } from "@/services/grn.service";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { DetailLoading } from "@/components/loading/DetailLoading";
+import { useGrnByIdQuery } from "@/hooks/use-grn";
 
 export default function GoodsReceivedNoteIdPage() {
     const { token, buCode } = useAuth();
@@ -23,5 +25,7 @@ export default function GoodsReceivedNoteIdPage() {
     if (error) {
         return <div>Error loading data</div>;
     }
+
     return <FormGrn mode={formType.VIEW} initialValues={grnData} />
 }
+

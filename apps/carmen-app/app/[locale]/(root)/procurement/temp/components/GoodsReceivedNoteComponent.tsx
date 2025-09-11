@@ -1,67 +1,48 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { useGrnQuery } from "@/hooks/use-grn";
-import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { FileDown, Filter, Plus, Printer } from "lucide-react";
-import { useCallback, useState } from "react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
-import { parseSortString } from "@/utils/table-sort";
+import { useURL } from "@/hooks/useURL";
+import { useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
+import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
 import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
+import { useGrn } from "@/hooks/useGrn";
 import SignInDialog from "@/components/SignInDialog";
+import { parseSortString } from "@/utils/table-sort";
+import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 export default function GoodsReceivedNoteComponent() {
-    const { token, buCode } = useAuth();
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
-    const [search, setSearch] = useURL('search');
-    const [sort, setSort] = useURL('sort');
-    const [page, setPage] = useURL('page');
-    const [perpage, setPerpage] = useURL('perpage');
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [status, setStatus] = useState('');
+    const [status, setStatus] = useURL('status');
     const [statusOpen, setStatusOpen] = useState(false);
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const {
+        grns,
+        isLoading,
+        search, setSearch,
+        sort, setSort,
+        loginDialogOpen, setLoginDialogOpen,
+        dialogOpen, setDialogOpen,
+        handlePageChange,
+        handleSort
+    } = useGrn();
 
-    const { data, isLoading } = useGrnQuery(token, buCode, { page: page ? parseInt(page) : 1, sort, search });
-
-    console.log(data);
-
-
-    const handlePageChange = useCallback(
-        (newPage: number) => {
-            setPage(newPage.toString());
-        },
-        [setPage]
-    );
-
-    const handleSort = useCallback((field: string) => {
-        if (!sort) {
-            setSort(`${field}:asc`);
-        } else {
-            const [currentField, currentDirection] = sort.split(':') as [string, string];
-
-            if (currentField === field) {
-                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-                setSort(`${field}:${newDirection}`);
-            } else {
-                setSort(`${field}:asc`);
-            }
-            setPage("1");
-        }
-    }, [setSort, sort, setPage]);
+    const totalItems = grns?.paginate?.total;
+    const perpage = grns?.paginate?.perpage;
 
     const sortFields = [
+        { key: 'code', label: 'Code' },
         { key: 'name', label: 'Name' },
+        { key: 'symbol', label: 'Symbol' },
+        { key: 'is_active', label: 'Status' },
+        { key: 'exchange_rate', label: 'Exchange Rate' },
     ];
 
-    const title = tHeader("title_goods_received_note");
+    const title = tHeader("title_goods_received_note")
 
     const actionButtons = (
         <div className="action-btn-container" data-id="grn-action-buttons">
@@ -123,20 +104,17 @@ export default function GoodsReceivedNoteComponent() {
         </div>
     );
 
-    const content = (
-        <GoodsReceivedNoteList
-            goodsReceivedNotes={data?.data.data}
-            currentPage={data?.data.paginate?.page}
-            totalPages={data?.data.paginate?.pages}
-            onPageChange={handlePageChange}
-            isLoading={isLoading}
-            totalItems={data?.data.paginate?.total}
-            sort={parseSortString(sort) ?? { field: '', direction: 'asc' }}
-            onSort={handleSort}
-            perpage={perpage ? parseInt(perpage) : 10}
-        />
-    )
-
+    const content = <GoodsReceivedNoteList
+        goodsReceivedNotes={grns.data}
+        currentPage={grns.currentPage}
+        totalPages={grns.totalPages}
+        onPageChange={handlePageChange}
+        isLoading={isLoading}
+        totalItems={totalItems}
+        sort={parseSortString(sort) || { field: '', direction: 'asc' }}
+        onSort={handleSort}
+        perpage={perpage}
+    />
 
     return (
         <>
@@ -156,4 +134,4 @@ export default function GoodsReceivedNoteComponent() {
             />
         </>
     )
-}   
+} 

@@ -43,14 +43,12 @@ export default function CurrencyLookup({
   } = useInfiniteQuery({
     queryKey: ["currencies", buCode, searchTerm],
     queryFn: async ({ pageParam = 1 }) => {
-      console.log('🌐 Fetching currencies:', { pageParam, searchTerm });
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
       const result = await getAllApiRequest(
-        `${backendApi}/api/config/currencies`,
+        `${backendApi}/api/config/${buCode}/currencies`,
         token,
-        buCode,
         "Error fetching currency",
         {
           page: pageParam,
@@ -58,11 +56,6 @@ export default function CurrencyLookup({
           search: searchTerm,
         }
       );
-      console.log('✅ API Response:', {
-        pageParam,
-        dataLength: result?.data?.length || 0,
-        hasData: !!result?.data
-      });
       return result;
     },
     getNextPageParam: (lastPage, allPages) => {
@@ -78,12 +71,6 @@ export default function CurrencyLookup({
 
   const currenciesData = useMemo(() => {
     const result = data?.pages?.flatMap(page => page?.data || []) ?? [];
-    console.log('📊 Currencies data:', {
-      totalPages: data?.pages?.length || 0,
-      totalItems: result.length,
-      hasNextPage,
-      isFetchingNextPage
-    });
     return result;
   }, [data, hasNextPage, isFetchingNextPage]);
 

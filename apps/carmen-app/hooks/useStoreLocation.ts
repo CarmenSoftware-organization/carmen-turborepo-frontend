@@ -299,7 +299,7 @@ export const useStoreLocation = () => {
 
   const getLocationName = useCallback(
     (id: string) => {
-      const location = storeLocations.find((loc) => loc.id === id);
+      const location = storeLocations?.find((loc) => loc.id === id);
       return location?.name ?? "";
     },
     [storeLocations]
