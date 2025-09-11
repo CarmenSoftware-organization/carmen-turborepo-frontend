@@ -64,19 +64,47 @@ const usePrActions = (
     // Action functions
     const actions = {
         save: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-            saveMutation.mutate(data, options),
+            saveMutation.mutate(data, {
+                onSuccess: options?.onSuccess,
+                onError: options?.onError,
+                onSettled: options?.onSettled,
+            }),
         submit: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-            submitMutation.mutate(data, options),
+            submitMutation.mutate(data, {
+                onSuccess: options?.onSuccess,
+                onError: options?.onError,
+                onSettled: options?.onSettled,
+            }),
         approve: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-            approveMutation.mutate(data, options),
+            approveMutation.mutate(data, {
+                onSuccess: options?.onSuccess,
+                onError: options?.onError,
+                onSettled: options?.onSettled,
+            }),
         purchase: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-            purchaseMutation.mutate(data, options),
+            purchaseMutation.mutate(data, {
+                onSuccess: options?.onSuccess,
+                onError: options?.onError,
+                onSettled: options?.onSettled,
+            }),
         review: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-            reviewMutation.mutate(data, options),
+            reviewMutation.mutate(data, {
+                onSuccess: options?.onSuccess,
+                onError: options?.onError,
+                onSettled: options?.onSettled,
+            }),
         reject: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-            rejectMutation.mutate(data, options),
+            rejectMutation.mutate(data, {
+                onSuccess: options?.onSuccess,
+                onError: options?.onError,
+                onSettled: options?.onSettled,
+            }),
         sendBack: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-            sendBackMutation.mutate(data, options),
+            sendBackMutation.mutate(data, {
+                onSuccess: options?.onSuccess,
+                onError: options?.onError,
+                onSettled: options?.onSettled,
+            }),
     };
 
     // Aggregate loading states
