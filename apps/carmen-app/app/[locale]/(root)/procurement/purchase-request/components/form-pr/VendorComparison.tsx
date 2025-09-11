@@ -34,7 +34,8 @@ interface Props {
     apv_unit: string;
     pricelist_detail_id?: string;
     itemId: string; // เพิ่ม itemId เพื่อระบุ purchase item ที่ต้องการ update
-    onItemUpdate: (itemId: unknown, fieldName: string, value: unknown, selectedProduct?: unknown) => void;
+    onItemUpdate: (itemId: string, fieldName: string, value: unknown, selectedProduct?: unknown) => void;
+
 }
 
 export default function VendorComparison(
@@ -43,7 +44,7 @@ export default function VendorComparison(
         req_unit,
         apv_qty,
         apv_unit,
-            itemId,
+        itemId,
         onItemUpdate
     }: Props
 ) {

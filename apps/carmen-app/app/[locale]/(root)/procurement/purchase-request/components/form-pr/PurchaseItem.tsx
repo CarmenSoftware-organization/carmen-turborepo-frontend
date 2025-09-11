@@ -94,7 +94,7 @@ export default function PurchaseItem({
     }, [items]);
 
     // Local function สำหรับ update item แบบ realtime
-    const handleLocalItemUpdate = (itemId: string, fieldName: string, value: unknown) => {
+    const handleLocalItemUpdate = (itemId: string, fieldName: string, value: unknown, selectedProduct?: unknown) => {
         setLocalItems(prev => {
             const updated = prev.map(item =>
                 item.id === itemId
@@ -106,7 +106,7 @@ export default function PurchaseItem({
         });
 
         // เรียก onItemUpdate ของ parent component ด้วย
-        onItemUpdate(itemId, fieldName, value);
+        onItemUpdate(itemId, fieldName, value, selectedProduct);
     };
 
 
@@ -193,7 +193,7 @@ export default function PurchaseItem({
                                                 </div>
                                             ) : (
                                                 <LocationLookup
-                                                    value={getItemValue(item, 'location_id')}
+                                                    value={getItemValue(item, 'location_id') as string | undefined}
                                                     onValueChange={(value) => onItemUpdate(item.id, 'location_id', value)}
                                                     classNames="text-xs h-7"
                                                 />
@@ -208,8 +208,8 @@ export default function PurchaseItem({
                                             ) : (
                                                 <div className="space-y-1">
                                                     <ProductLocationLookup
-                                                        location_id={getItemValue(item, 'location_id')}
-                                                        value={getItemValue(item, 'product_id')}
+                                                        location_id={getItemValue(item, 'location_id') as string || ''}
+                                                        value={getItemValue(item, 'product_id') as string || ''}
                                                         onValueChange={(value, selectedProduct) => {
                                                             onItemUpdate(item.id, 'product_id', value, selectedProduct);
                                                             onItemUpdate(item.id, 'inventory_unit_id', selectedProduct?.inventory_unit?.id);
@@ -231,13 +231,13 @@ export default function PurchaseItem({
                                                 <div className="flex items-center gap-1 justify-end">
                                                     <NumberInput
                                                         key={`requested_qty_${item.id}`}
-                                                        value={getItemValue(item, 'requested_qty')}
+                                                        value={getItemValue(item, 'requested_qty') as number}
                                                         onChange={(value) => onItemUpdate(item.id, 'requested_qty', value)}
                                                         classNames="w-10 h-7 text-xs"
                                                         disabled={!getItemValue(item, 'product_id')}
                                                     />
                                                     <UnitLookup
-                                                        value={getItemValue(item, 'requested_unit_id')}
+                                                        value={getItemValue(item, 'requested_unit_id') as string}
                                                         onValueChange={(value) => onItemUpdate(item.id, 'requested_unit_id', value)}
                                                         classNames="h-7 text-xs"
                                                         disabled={!getItemValue(item, 'product_id')}
@@ -269,12 +269,12 @@ export default function PurchaseItem({
                                                         <div className="flex items-center gap-1 justify-end">
                                                             <NumberInput
                                                                 key={`approved_qty_${item.id}`}
-                                                                value={getItemValue(item, 'approved_qty')}
+                                                                value={getItemValue(item, 'approved_qty') as number}
                                                                 onChange={(value) => onItemUpdate(item.id, 'approved_qty', value)}
                                                                 classNames="w-12 h-7 text-xs"
                                                             />
                                                             <UnitLookup
-                                                                value={getItemValue(item, 'approved_unit_id')}
+                                                                value={getItemValue(item, 'approved_unit_id') as string || ''}
                                                                 onValueChange={(value) => onItemUpdate(item.id, 'approved_unit_id', value)}
                                                                 classNames="h-7 text-xs"
                                                             />
@@ -283,12 +283,12 @@ export default function PurchaseItem({
                                                             {/* <p className="text-xs">FOC:</p> */}
                                                             <NumberInput
                                                                 key={`foc_qty_${item.id}`}
-                                                                value={getItemValue(item, 'foc_qty')}
+                                                                value={getItemValue(item, 'foc_qty') as number}
                                                                 onChange={(value) => onItemUpdate(item.id, 'foc_qty', value)}
                                                                 classNames="w-12 h-7 text-xs"
                                                             />
                                                             <UnitLookup
-                                                                value={getItemValue(item, 'foc_unit_id')}
+                                                                value={getItemValue(item, 'foc_unit_id') as string || ''}
                                                                 onValueChange={(value) => onItemUpdate(item.id, 'foc_unit_id', value)}
                                                                 classNames="h-7 text-xs"
                                                             />
@@ -303,7 +303,7 @@ export default function PurchaseItem({
                                             ) : (
                                                 <DateInput
                                                     field={{
-                                                        value: getItemValue(item, 'delivery_date'),
+                                                        value: getItemValue(item, 'delivery_date') as any,
                                                         onChange: (value) => onItemUpdate(item.id, 'delivery_date', value)
                                                     }}
                                                     classNames="text-xs h-7"
@@ -315,7 +315,7 @@ export default function PurchaseItem({
                                                 <p className="text-sm font-medium">{item.delivery_point_name || "-"}</p>
                                             ) : (
                                                 <DeliveryPointSelectLookup
-                                                    value={getItemValue(item, 'delivery_point_id')}
+                                                    value={getItemValue(item, 'delivery_point_id') as string || ''}
                                                     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
                                                     className="h-7 text-xs w-40"
                                                 />
@@ -435,14 +435,26 @@ export default function PurchaseItem({
                                                                 </AccordionTrigger>
                                                                 <AccordionContent className="flex flex-col gap-2 border-l border-l-4 border-purple-100 mx-3 my-1 -mt-px">
                                                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 px-2">
-                                                                        {item.dimension?.map((dimension: unknown) => (
-                                                                            <div key={dimension.key}>
-                                                                                <div className="space-y-1 text-right">
-                                                                                    <Label className="text-muted-foreground/80 text-xs">{dimension.label}</Label>
-                                                                                    <p className="text-sm font-semibold">{dimension.value}</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        ))}
+                                                                        {item.dimension?.map((dimension: unknown) => {
+                                                                            if (
+                                                                                typeof dimension === "object" &&
+                                                                                dimension !== null &&
+                                                                                "key" in dimension &&
+                                                                                "label" in dimension &&
+                                                                                "value" in dimension
+                                                                            ) {
+                                                                                const dim = dimension as { key: string | number, label: string, value: string | number };
+                                                                                return (
+                                                                                    <div key={dim.key}>
+                                                                                        <div className="space-y-1 text-right">
+                                                                                            <Label className="text-muted-foreground/80 text-xs">{dim.label}</Label>
+                                                                                            <p className="text-sm font-semibold">{dim.value}</p>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                );
+                                                                            }
+                                                                            return null;
+                                                                        })}
                                                                     </div>
                                                                 </AccordionContent>
                                                             </AccordionItem>

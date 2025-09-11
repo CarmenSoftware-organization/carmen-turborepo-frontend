@@ -1,4 +1,5 @@
 import { backendApi } from "@/lib/backend-api";
+import axios from "axios";
 
 export const getOnHandOnOrderService = async (token: string, buCode: string, locationId: string, productId: string) => {
     if (!token || !buCode || !locationId || !productId) {
@@ -7,17 +8,14 @@ export const getOnHandOnOrderService = async (token: string, buCode: string, loc
     }
 
     try {
-        const API_URL = `${backendApi}/api/locations/${locationId}/product/${productId}/inventory`;
-        const response = await fetch(API_URL, {
-            method: 'GET',
+        const API_URL = `${backendApi}/api/${buCode}/locations/${locationId}/product/${productId}/inventory`;
+        const res = await axios.get(API_URL, {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'x-tenant-id': buCode,
                 'Content-Type': 'application/json',
-            },
+            }
         });
-        const data = await response.json();
-        return data;
+        return res.data;
     } catch (error) {
         console.error('Error fetching on-hand-on-order:', error);
         throw error;

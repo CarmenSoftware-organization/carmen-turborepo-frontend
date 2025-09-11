@@ -11,8 +11,8 @@ import { useCallback } from "react";
 import { FormLocationValues, StoreLocationDto } from "@/dtos/config.dto";
 
 const locationApiUrl = (buCode: string, id?: string) => {
-  const baseUrl = `${backendApi}/api/config/${buCode}/location`;
-  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+  const baseUrl = `${backendApi}/api/config/${buCode}/locations`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}`;
 };
 
 export const useLocationQuery = (
@@ -21,6 +21,7 @@ export const useLocationQuery = (
   params?: ParamsGetDto
 ) => {
   const API_URL = locationApiUrl(buCode);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["locations", buCode, params],
     queryFn: () => {

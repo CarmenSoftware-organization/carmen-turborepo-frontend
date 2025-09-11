@@ -16,7 +16,10 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
-import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useAuth } from "@/context/AuthContext";
+import { useLocationQuery } from "@/hooks/use-location";
+import { StoreLocationDto } from "@/dtos/config.dto";
+
 export default function LocationLookup({
     value,
     onValueChange,
@@ -25,7 +28,11 @@ export default function LocationLookup({
     classNames = ""
 }: Readonly<PropsLookup>) {
     const [open, setOpen] = useState(false);
-    const { storeLocations, isLoading } = useStoreLocation();
+    const { token, buCode } = useAuth();
+
+    const { data, isLoading } = useLocationQuery(token, buCode);
+
+    const storeLocations = data?.data;
 
     const selectedLocationName = useMemo(() => {
         if (!value || !storeLocations || !Array.isArray(storeLocations)) return null;
@@ -63,7 +70,7 @@ export default function LocationLookup({
                                 <CommandEmpty>No locations found.</CommandEmpty>
                                 <CommandGroup>
                                     {storeLocations && storeLocations.length > 0 ? (
-                                        storeLocations.map((storeLocation) => (
+                                        storeLocations.map((storeLocation: StoreLocationDto) => (
                                             <CommandItem
                                                 key={storeLocation.id}
                                                 value={storeLocation.name}

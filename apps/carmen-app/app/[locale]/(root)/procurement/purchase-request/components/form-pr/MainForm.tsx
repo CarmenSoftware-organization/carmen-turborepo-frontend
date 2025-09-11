@@ -52,7 +52,6 @@ export default function MainForm({ mode, initValues }: Props) {
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
     const [cancelAction, setCancelAction] = useState<CancelAction>({ type: 'cancel', event: null });
 
-
     const form = useForm<CreatePrDto>({
         resolver: zodResolver(CreatePrSchema),
         defaultValues: {
@@ -121,7 +120,7 @@ export default function MainForm({ mode, initValues }: Props) {
         };
 
         if (currentFormType === formType.ADD) {
-            createPr(data.body, {
+            createPr(data as any, {
                 onSuccess: (responseData: unknown) => {
                     const response = responseData as { data?: { id?: string } };
                     if (response?.data?.id) {

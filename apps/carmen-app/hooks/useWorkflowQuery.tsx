@@ -8,7 +8,7 @@ export const useWorkflowQuery = (
     buCode: string,
     type: enum_workflow_type,
 ) => {
-    const API_URL = `${backendApi}/api/workflow/type/${type}`;
+    const API_URL = `${backendApi}/api/${buCode}/workflow/type/${type}`;
 
     const { data, isLoading, error } = useQuery({
         queryKey: ["workflow", buCode, type],
@@ -20,7 +20,6 @@ export const useWorkflowQuery = (
             const { data } = await axios.get(API_URL, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'X-Tenant-Id': buCode,
                 },
             });
 

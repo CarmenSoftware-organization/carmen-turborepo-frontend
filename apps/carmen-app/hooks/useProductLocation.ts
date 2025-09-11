@@ -3,19 +3,13 @@ import { backendApi } from "@/lib/backend-api";
 import { getAllApiRequest } from "@/lib/config.api";
 import { useQuery } from "@tanstack/react-query";
 
-
-const productLocationApiUrl = (buCode: string, id?: string) => {
-    const baseUrl = `${backendApi}/api/${buCode}/products/locations/${id}`;
-    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
-};
-
 export const useProductLocation = (
     token: string,
     buCode: string,
     id: string,
     params?: ParamsGetDto
 ) => {
-    const API_URL = productLocationApiUrl(buCode, id);
+    const API_URL = `${backendApi}/api/${buCode}/products/locations/${id}`
     const { data, isLoading, error } = useQuery({
         queryKey: ["product-location", buCode, id],
         queryFn: async () => {
