@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
@@ -5,6 +6,7 @@ import { formType } from "@/dtos/form.dto";
 import { Link, useRouter } from "@/lib/navigation";
 import { formatDateFns } from "@/utils/config-system";
 import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ActionFieldsProps {
     readonly currentMode: formType;
@@ -28,6 +30,33 @@ export default function ActionFields({
 
     const router = useRouter();
     const { dateFormat } = useAuth();
+    const tStatus = useTranslations("Status");
+
+    const convertStatus = (status: string) => {
+        if (status === 'submit') {
+            return tStatus("submit")
+        }
+        if (status === 'draft') {
+            return tStatus("draft")
+        }
+        if (status === 'Completed') {
+            return tStatus("completed")
+        }
+
+        if (status === 'in_progress') {
+            return tStatus("in_progress")
+        }
+        if (status === 'approved') {
+            return tStatus("approved")
+        }
+        if (status === 'rejected') {
+            return tStatus("rejected")
+        }
+        if (status === 'voided') {
+            return tStatus("voided")
+        }
+        return ''
+    }
 
     return (
         <div className="flex items-center justify-between mb-2">
@@ -37,24 +66,23 @@ export default function ActionFields({
                 </Link>
                 <div className="flex items-start gap-2">
                     {currentMode === formType.ADD ? (
-                        <p className="text-base  font-bold">
+                        <p className="text-xl font-bold">
                             Goods Received Note
                         </p>
                     ) : (
                         <div className="flex flex-col gap-1">
-                            <p className="text-base font-bold">
+                            <p className="text-xl font-bold">
                                 {grnNo}
                             </p>
-                            <p className="text-sm font-medium">{formatDateFns(createdAt, dateFormat || 'yyyy/MM/dd')}</p>
+                            <p className="text-sm font-medium text-muted-foreground">Created at: {formatDateFns(createdAt, dateFormat || 'yyyy/MM/dd')}</p>
                         </div>
                     )}
                     {docStatus && (
-                        <Badge
-                            variant={docStatus}
-                            className="rounded-full text-xs"
+                        <StatusBadge
+                            status={docStatus}
                         >
-                            {docStatus}
-                        </Badge>
+                            {convertStatus(docStatus)}
+                        </StatusBadge>
                     )}
                 </div>
             </div>

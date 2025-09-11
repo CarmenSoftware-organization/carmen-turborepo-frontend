@@ -21,6 +21,7 @@ interface ExtraCostProps {
 }
 
 export default function ExtraCost({ control, mode, extraCostData, extraCostDetailData }: ExtraCostProps) {
+    console.log(extraCostData);
     return (
         <div className="space-y-2">
             <div className="flex justify-between items-center">
@@ -39,16 +40,25 @@ export default function ExtraCost({ control, mode, extraCostData, extraCostDetai
                     </Button>
                 )}
             </div>
+            <div>
+                {extraCostData?.map((data) => (
+                    <div key={data.id} className="text-sm text-muted-foreground">
+                        <p>Name: {data.name || 'N/A'}</p>
+                        <p>Allocate Extra Cost Type: {data.allocate_extra_cost_type || 'N/A'}</p>
+                        <p>Note: {data.note || 'N/A'}</p>
+                    </div>
+                ))}
+            </div>
             <Table>
                 <TableHeader>
                     <TableRow>
                         <TableHead>Extra Cost Type</TableHead>
-                        <TableHead>Amount</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
                         <TableHead>Tax Type Inventory</TableHead>
-                        <TableHead>Tax Type</TableHead>
-                        <TableHead>Tax Rate</TableHead>
-                        <TableHead>Tax Amount</TableHead>
-                        <TableHead>Tax Adjustment</TableHead>
+                        <TableHead className="text-center">Tax Type</TableHead>
+                        <TableHead className="text-right">Tax Rate</TableHead>
+                        <TableHead className="text-right">Tax Amount</TableHead>
+                        <TableHead className="text-center">Tax Adjustment</TableHead>
                         <TableHead>Note</TableHead>
                         {mode !== formType.VIEW && <TableHead>Action</TableHead>}
                     </TableRow>
@@ -66,13 +76,13 @@ export default function ExtraCost({ control, mode, extraCostData, extraCostDetai
                                 <TableCell>{detail.name || 'N/A'}</TableCell>
                                 <TableCell className="text-right">{detail.amount || '0'}</TableCell>
                                 <TableCell>{detail.tax_profile_name || 'N/A'}</TableCell>
-                                <TableCell>Tax Type</TableCell>
+                                <TableCell className="text-center">{detail.tax_profile_name || 'N/A'}</TableCell>
                                 <TableCell className="text-right">{detail.tax_rate || '0'}%</TableCell>
                                 <TableCell className="text-right">{detail.tax_amount || '0'}</TableCell>
                                 <TableCell className="text-center">
                                     {detail.is_tax_adjustment ? 'Yes' : 'No'}
                                 </TableCell>
-                                <TableCell>{detail.note || 'N/A'}</TableCell>
+                                <TableCell className="text-left">{detail.note || 'N/A'}</TableCell>
                                 {mode !== formType.VIEW && (
                                     <TableCell>
                                         <div className="flex gap-1">

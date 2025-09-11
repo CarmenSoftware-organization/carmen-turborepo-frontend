@@ -43,16 +43,16 @@ export default function ItemGrn({ control, mode, grnItems }: ItemGrnProps) {
     const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [search, setSearch] = useState("");
 
-    const { getProductName } = useProductQuery({
-        token,
-        buCode,
-    });
+    // const { getProductName } = useProductQuery({
+    //     token,
+    //     buCode,
+    // });
 
-    const { getLocationName } = useLocationQuery(token, buCode);
-    const { getUnitName } = useUnitQuery({
-        token,
-        buCode,
-    });
+    // const { getLocationName } = useLocationQuery(token, buCode);
+    // const { getUnitName } = useUnitQuery({
+    //     token,
+    //     buCode,
+    // });
 
     const handleSelectItem = (id: string) => {
         setSelectedItems((prev) =>
