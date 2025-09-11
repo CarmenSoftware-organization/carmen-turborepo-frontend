@@ -6,7 +6,8 @@ import DetailsAndComments from "@/components/DetailsAndComments";
 import { Card } from "@/components/ui/card";
 import { DOC_TYPE } from "@/constants/enum";
 import { formType } from "@/dtos/form.dto";
-import { CreateGRNDto, GetGrnByIdDto, grnPostSchema } from "@/dtos/grn.dto";
+import { CreateGRNDto, grnPostSchema } from "@/dtos/grn.dto";
+import { GrnApiResponse } from "@/types/grn-api.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -23,10 +24,11 @@ import GrnFormHeader from "./GrnFormHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ItemGrn from "./ItemGrn";
 import JsonViewer from "@/components/JsonViewer";
+import ExtraCost from "./ExtraCost";
 
 interface FormGrnProps {
     readonly mode: formType;
-    readonly initialValues?: GetGrnByIdDto;
+    readonly initialValues?: GrnApiResponse;
 }
 
 export default function FormGrn({ mode, initialValues }: FormGrnProps) {
@@ -51,14 +53,14 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         invoice_date: initialValues?.invoice_date ?? new Date().toISOString(),
         description: initialValues?.description ?? "",
         doc_status: initialValues?.doc_status ?? "draft",
-        doc_type: initialValues?.doc_type ?? DOC_TYPE.MANUAL,
+        doc_type: (initialValues?.doc_type as DOC_TYPE) ?? DOC_TYPE.MANUAL,
         vendor_id: initialValues?.vendor_id ?? "",
         currency_id: initialValues?.currency_id ?? "",
-        currency_rate: initialValues?.currency_rate ?? 0,
+        currency_rate: initialValues?.currency_rate ? parseFloat(initialValues.currency_rate) : 0,
         workflow_id:
             initialValues?.workflow_id ?? "ac710822-d422-4e29-8439-87327e960a0e",
         current_workflow_status:
-            initialValues?.current_workflow_status ?? "pending",
+            initialValues?.workflow_current_stage ?? "pending",
         signature_image_url: initialValues?.signature_image_url ?? "",
         received_by_id:
             initialValues?.received_by_id ?? "1bfdb891-58ee-499c-8115-34a964de8122",
@@ -72,10 +74,9 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
             delete: [],
         },
         extra_cost: {
-            name: initialValues?.extra_cost?.name ?? "",
-            allocate_extra_cost_type:
-                initialValues?.extra_cost?.allocate_extra_cost_type,
-            note: initialValues?.extra_cost?.note ?? "",
+            name: "",
+            allocate_extra_cost_type: undefined,
+            note: "",
             extra_cost_detail: {
                 add: [],
                 update: [],
@@ -147,7 +148,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                     />
                                 </TabsContent>
                                 <TabsContent value="extra_cost" className="mt-2">
-                                    Extra Cost
+                                    <ExtraCost
+                                        control={form.control}
+                                        mode={currentMode}
+                                        extraCostData={initialValues?.extra_cost}
+                                        extraCostDetailData={initialValues?.extra_cost_detail}
+                                    />
                                 </TabsContent>
                                 <TabsContent value="budget" className="mt-2">
                                     Budget

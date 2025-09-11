@@ -1,5 +1,6 @@
 import { formType } from "@/dtos/form.dto";
-import { CreateGRNDto, GoodReceivedNoteDetailItemDto } from "@/dtos/grn.dto";
+import { CreateGRNDto } from "@/dtos/grn.dto";
+import { GrnDetailItem } from "@/types/grn-api.types";
 import { Control } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +33,7 @@ import { useUnitQuery } from "@/hooks/use-unit";
 interface ItemGrnProps {
     readonly control: Control<CreateGRNDto>;
     readonly mode: formType;
-    readonly grnItems: GoodReceivedNoteDetailItemDto[];
+    readonly grnItems: GrnDetailItem[];
 }
 
 export default function ItemGrn({ control, mode, grnItems }: ItemGrnProps) {
@@ -158,7 +159,7 @@ export default function ItemGrn({ control, mode, grnItems }: ItemGrnProps) {
                             <TableCell colSpan={isDisabled ? 9 : 10} className="text-center">No items found</TableCell>
                         </TableRow>
                     ) : (
-                        grnItems.map((item) => (
+                        grnItems.map((item: GrnDetailItem) => (
                             <TableRow key={item.id}>
                                 {!isDisabled && (
                                     <TableCell
@@ -169,25 +170,25 @@ export default function ItemGrn({ control, mode, grnItems }: ItemGrnProps) {
                                             id={`checkbox-${item.id}`}
                                             checked={selectedItems.includes(item.id ?? "")}
                                             onClick={() => item.id && handleSelectItem(item.id)}
-                                            aria-label={`Select ${getProductName(item.product_id)}`}
+                                            aria-label={`Select ${item.product_name}`}
                                         />
                                     </TableCell>
                                 )}
-                                <TableCell>{getLocationName(item.location_id)}</TableCell>
+                                <TableCell>{item.location_name}</TableCell>
                                 <TableCell>
-                                    {getProductName(item.product_id)}
+                                    {item.product_name}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {item.order_qty || 0} {getUnitName(item.order_unit_id ?? "")}
+                                    {item.order_qty || 0} {item.order_unit_name}
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    <p>{item.received_qty || 0} {getUnitName(item.received_unit_id ?? "")}</p>
+                                    <p>{item.received_qty || 0} {item.received_unit_name}</p>
                                     <p className="text-[12px] text-muted-foreground">
                                         Base: {item.base_qty}
                                     </p>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                    {item.foc_qty} {getUnitName(item.foc_unit_id ?? "")}
+                                    {item.foc_qty} {item.foc_unit_name}
                                 </TableCell>
                                 <TableCell className="text-right">{item.price || 0}</TableCell>
                                 <TableCell className="text-right">{item.discount_amount || 0}</TableCell>
