@@ -143,7 +143,7 @@ export default function MainForm({ mode, initValues }: Props) {
                         message: tPR("purchase_request_updated"),
                     });
                     queryClient.invalidateQueries({
-                        queryKey: ['purchaseRequest', initValues?.id]
+                        queryKey: ['purchase-request', buCode, initValues?.id]
                     });
                     setCurrentFormType(formType.VIEW);
                 },
@@ -222,7 +222,7 @@ export default function MainForm({ mode, initValues }: Props) {
                     message: tPR("purchase_request_submitted"),
                 })
                 queryClient.invalidateQueries({
-                    queryKey: ['purchaseRequest', initValues?.id]
+                    queryKey: ['purchase-request', buCode, initValues?.id]
                 });
             },
             onError: () => {
@@ -261,7 +261,7 @@ export default function MainForm({ mode, initValues }: Props) {
                     message: tPR("purchase_request_rejected"),
                 })
                 queryClient.invalidateQueries({
-                    queryKey: ['purchaseRequest', initValues?.id]
+                    queryKey: ['purchase-request', buCode, initValues?.id]
                 });
             },
             onError: () => {
