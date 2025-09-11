@@ -31,6 +31,7 @@ export default function CurrencyLookup({
   const { token, buCode } = useAuth();
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -39,9 +40,10 @@ export default function CurrencyLookup({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    isLoading
+    isLoading,
+    error
   } = useInfiniteQuery({
-    queryKey: ["currencies", buCode, searchTerm],
+    queryKey: ["currencies", buCode, debouncedSearchTerm],
     queryFn: async ({ pageParam = 1 }) => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
@@ -53,7 +55,7 @@ export default function CurrencyLookup({
         {
           page: pageParam,
           perpage: 5,
-          search: searchTerm,
+          search: debouncedSearchTerm,
         }
       );
       return result;
@@ -69,10 +71,10 @@ export default function CurrencyLookup({
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  const currenciesData = useMemo(() => {
+  const currenciesData: CurrencyGetDto[] = useMemo(() => {
     const result = data?.pages?.flatMap(page => page?.data || []) ?? [];
     return result;
-  }, [data, hasNextPage, isFetchingNextPage]);
+  }, [data]);
 
   const selectedCurrencyName = useMemo(() => {
     if (!value || !currenciesData || !Array.isArray(currenciesData)) return null;
@@ -92,6 +94,14 @@ export default function CurrencyLookup({
   const handleSearchChange = useCallback((search: string) => {
     setSearchTerm(search);
   }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     if (!loadMoreRef.current || !hasNextPage || isFetchingNextPage || !open) {
@@ -116,7 +126,7 @@ export default function CurrencyLookup({
     return () => {
       observer.disconnect();
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, open, searchTerm]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, open, debouncedSearchTerm]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -144,57 +154,71 @@ export default function CurrencyLookup({
             onScroll={handleScroll}
             className="max-h-[200px] overflow-y-auto"
           >
-            {isLoading && currenciesData.length === 0 ? (
-              <div className="flex items-center justify-center py-6">
-                <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-              </div>
-            ) : (
-              <>
-                <CommandEmpty>No currencies found.</CommandEmpty>
-                <CommandGroup>
-                  {currenciesData && currenciesData.length > 0 ? (
-                    <>
-                      {currenciesData.map((currency: CurrencyGetDto) => (
-                        <CommandItem
-                          key={currency.id}
-                          value={`${currency.code}-${currency.id}`}
-                          onSelect={() => {
-                            if (currency.id) {
-                              onValueChange(currency.id);
-                            }
-                            setOpen(false);
-                          }}
-                        >
-                          {currency.code}
-                          <Check
-                            className={cn(
-                              "ml-auto h-4 w-4",
-                              value === currency.id ? "opacity-100" : "opacity-0"
-                            )}
-                          />
-                        </CommandItem>
-                      ))}
-                      {hasNextPage && (
-                        <div
-                          ref={loadMoreRef}
-                          className="h-8 w-full flex items-center justify-center text-xs text-gray-400 border-t border-gray-200"
-                        >
-                          📄 Load more currencies...
-                        </div>
-                      )}
-                      {isFetchingNextPage && (
-                        <div className="flex items-center justify-center py-2">
-                          <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-                          <span className="ml-2 text-sm text-gray-500">Loading more...</span>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <CommandItem disabled>No currencies available.</CommandItem>
-                  )}
-                </CommandGroup>
-              </>
-            )}
+            {(() => {
+              if (error) {
+                return (
+                  <div className="flex items-center justify-center py-6 text-red-500">
+                    <span>Error loading currencies. Please try again.</span>
+                  </div>
+                );
+              }
+
+              if (isLoading && currenciesData.length === 0) {
+                return (
+                  <div className="flex items-center justify-center py-6">
+                    <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+                  </div>
+                );
+              }
+
+              return (
+                <>
+                  <CommandEmpty>No currencies found.</CommandEmpty>
+                  <CommandGroup>
+                    {currenciesData && currenciesData.length > 0 ? (
+                      <>
+                        {currenciesData.map((currency: CurrencyGetDto) => (
+                          <CommandItem
+                            key={currency.id}
+                            value={`${currency.code}-${currency.id}`}
+                            onSelect={() => {
+                              if (currency.id) {
+                                onValueChange(currency.id);
+                              }
+                              setOpen(false);
+                            }}
+                          >
+                            {currency.code}
+                            <Check
+                              className={cn(
+                                "ml-auto h-4 w-4",
+                                value === currency.id ? "opacity-100" : "opacity-0"
+                              )}
+                            />
+                          </CommandItem>
+                        ))}
+                        {hasNextPage && (
+                          <div
+                            ref={loadMoreRef}
+                            className="h-8 w-full flex items-center justify-center text-xs text-gray-400 border-t border-border"
+                          >
+                            📄 Load more currencies...
+                          </div>
+                        )}
+                        {isFetchingNextPage && (
+                          <div className="flex items-center justify-center py-2">
+                            <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+                            <span className="ml-2 text-sm text-gray-500">Loading more...</span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <CommandItem disabled>No currencies available.</CommandItem>
+                    )}
+                  </CommandGroup>
+                </>
+              );
+            })()}
           </CommandList>
         </Command>
       </PopoverContent>
