@@ -1,8 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import { Link, useRouter } from "@/lib/navigation";
-import { format } from "date-fns";
+import { formatDateFns } from "@/utils/config-system";
 import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
 
 interface ActionFieldsProps {
@@ -24,7 +25,10 @@ export default function ActionFields({
     createdAt,
     docStatus
 }: ActionFieldsProps) {
+
     const router = useRouter();
+    const { dateFormat } = useAuth();
+
     return (
         <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -41,12 +45,7 @@ export default function ActionFields({
                             <p className="text-base font-bold">
                                 {grnNo}
                             </p>
-                            <p className="text-xs text-muted-foreground">
-                                {format(
-                                    new Date(createdAt ?? ""),
-                                    "PPP"
-                                )}
-                            </p>
+                            <p className="text-sm font-medium">{formatDateFns(createdAt, dateFormat || 'yyyy/MM/dd')}</p>
                         </div>
                     )}
                     {docStatus && (
@@ -99,9 +98,6 @@ export default function ActionFields({
                             disabled={isCreatePending || isUpdatePending}
                         >
                             <Save />
-                            {isCreatePending || isUpdatePending
-                                ? "Saving..."
-                                : "Save"}
                         </Button>
                     </>
                 )}

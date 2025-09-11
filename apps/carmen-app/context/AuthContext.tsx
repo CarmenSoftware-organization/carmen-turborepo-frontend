@@ -85,12 +85,12 @@ interface AuthContextType {
   currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
   dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
   longTimeFormat:
-    | NonNullable<BusinessUnit["config"]>["long_time_format"]
-    | null;
+  | NonNullable<BusinessUnit["config"]>["long_time_format"]
+  | null;
   perpage: NonNullable<BusinessUnit["config"]>["perpage"] | null;
   shortTimeFormat:
-    | NonNullable<BusinessUnit["config"]>["short_time_format"]
-    | null;
+  | NonNullable<BusinessUnit["config"]>["short_time_format"]
+  | null;
   timezone: NonNullable<BusinessUnit["config"]>["timezone"] | null;
   amount: NonNullable<BusinessUnit["config"]>["amount"] | null;
   quantity: NonNullable<BusinessUnit["config"]>["quantity"] | null;
@@ -103,12 +103,12 @@ export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isLoading: true,
   user: null,
-  setSession: () => {},
-  logout: () => {},
+  setSession: () => { },
+  logout: () => { },
   token: "",
   getServerSideToken: () => "",
   tenantId: "",
-  handleChangeTenant: () => {},
+  handleChangeTenant: () => { },
   departments: null,
   currencyBase: null,
   dateFormat: null,
@@ -172,7 +172,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   const updateBusinessUnitMutation = useUpdateBusinessUnitMutation();
   const { clearAuthCache } = useAuthCache();
 
-  // คำนวณ departments และ system properties จาก user data
   const {
     departments,
     currencyBase,
@@ -185,26 +184,16 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     quantity,
     recipe,
   } = useMemo(() => {
-    if (!user?.business_unit?.length) {
-      return {
-        departments: null,
-        currencyBase: null,
-        dateFormat: null,
-        longTimeFormat: null,
-        perpage: null,
-        shortTimeFormat: null,
-        timezone: null,
-        amount: null,
-        quantity: null,
-        recipe: null,
-      };
-    }
 
-    const defaultBu = user.business_unit.find(
+    // console.log('user', user);
+
+    const defaultBu = user?.business_unit?.find(
       (bu: BusinessUnit) => bu.is_default === true,
     );
-    const firstBu = user.business_unit[0];
+
+    const firstBu = user?.business_unit?.[0];
     const selectedBu = defaultBu || firstBu;
+
 
     return {
       departments: defaultBu?.department || null,
@@ -480,6 +469,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       buCode,
     ],
   );
+
+  console.log('value', value);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

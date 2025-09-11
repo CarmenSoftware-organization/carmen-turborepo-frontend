@@ -58,9 +58,6 @@ export const useCreditTermQuery = (
     [creditTerms]
   );
 
-  console.log('creditTerms', creditTerms);
-
-
   return {
     creditTerms,
     isLoading,

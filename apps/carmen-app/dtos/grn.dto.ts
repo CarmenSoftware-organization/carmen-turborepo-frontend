@@ -102,6 +102,7 @@ export const grnPostSchema = baseGrnSchema.extend({
     })
     .optional(),
 });
+
 export type CreateGRNDto = z.infer<typeof grnPostSchema>;
 
 // get grn by id

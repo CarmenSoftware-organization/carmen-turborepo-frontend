@@ -20,6 +20,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useGrnMutation, useGrnUpdate } from "@/hooks/use-grn";
 import ActionFields from "./ActionFields";
 import GrnFormHeader from "./GrnFormHeader";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ItemGrn from "./ItemGrn";
+import JsonViewer from "@/components/JsonViewer";
 
 interface FormGrnProps {
     readonly mode: formType;
@@ -100,6 +103,8 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         }
     };
 
+    const watchGrnForm = form.watch();
+
     return (
         <DetailsAndComments
             activityComponent={<ActivityLog />}
@@ -119,11 +124,44 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                                 docStatus={initialValues?.doc_status ?? ""}
                             />
                             <GrnFormHeader control={form.control} mode={currentMode} />
+                            <Tabs defaultValue="items">
+                                <TabsList className="w-full mt-4">
+                                    <TabsTrigger className="w-full" value="items">
+                                        Items
+                                    </TabsTrigger>
+                                    <TabsTrigger className="w-full" value="extra_cost">
+                                        Extra Cost
+                                    </TabsTrigger>
+                                    <TabsTrigger className="w-full" value="budget">
+                                        Budget
+                                    </TabsTrigger>
+                                    <TabsTrigger className="w-full" value="workflow">
+                                        Workflow
+                                    </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="items" className="mt-2">
+                                    <ItemGrn
+                                        control={form.control}
+                                        mode={currentMode}
+                                        grnItems={initialValues?.good_received_note_detail ?? []}
+                                    />
+                                </TabsContent>
+                                <TabsContent value="extra_cost" className="mt-2">
+                                    Extra Cost
+                                </TabsContent>
+                                <TabsContent value="budget" className="mt-2">
+                                    Budget
+                                </TabsContent>
+                                <TabsContent value="workflow" className="mt-2">
+                                    Workflow
+                                </TabsContent>
+                            </Tabs>
+
                         </form>
                     </Form>
                 </Card>
             </div>
-            <pre>{JSON.stringify(initialValues, null, 2)}</pre>
+            <JsonViewer data={watchGrnForm ?? {}} title="Watch GRN Data" />
 
         </DetailsAndComments>
     )

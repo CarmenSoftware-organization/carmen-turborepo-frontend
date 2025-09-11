@@ -32,17 +32,14 @@ export const updateUserBusinessUnitService = async (
 ) => {
   const url = `${backendApi}/api/business-unit/default`;
   try {
-    const response = await axios.post(
-      url,
-      {
-        tenant_id: buCode
+    const response = await axios.post(url, {
+      tenant_id: buCode
+    }, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
       },
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
+    }
     );
     return response.data;
   } catch (error) {
