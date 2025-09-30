@@ -12,11 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
-import { Link, useRouter } from "@/lib/navigation";
-import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useGrnMutation, useGrnUpdate } from "@/hooks/use-grn";
 import ActionFields from "./ActionFields";
@@ -34,7 +29,6 @@ interface FormGrnProps {
 export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     const { token, buCode } = useAuth();
     const [currentMode, setCurrentMode] = useState<formType>(mode);
-    const router = useRouter();
 
     // ตรวจสอบว่า token และ buCode มีค่าก่อนส่งไปยัง hooks
     const { mutate: createGrn, isPending: isCreatePending } = useGrnMutation(
@@ -58,12 +52,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
         currency_id: initialValues?.currency_id ?? "",
         currency_rate: initialValues?.currency_rate ? parseFloat(initialValues.currency_rate) : 0,
         workflow_id:
-            initialValues?.workflow_id ?? "ac710822-d422-4e29-8439-87327e960a0e",
+            initialValues?.workflow_id ?? "",
         current_workflow_status:
             initialValues?.workflow_current_stage ?? "pending",
         signature_image_url: initialValues?.signature_image_url ?? "",
         received_by_id:
-            initialValues?.received_by_id ?? "1bfdb891-58ee-499c-8115-34a964de8122",
+            initialValues?.received_by_id ?? "",
         received_at: initialValues?.received_at ?? new Date().toISOString(),
         credit_term_id: initialValues?.credit_term_id ?? "",
         payment_due_date:
@@ -128,7 +122,7 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
                             <Tabs defaultValue="items">
                                 <TabsList className="w-full mt-4">
                                     <TabsTrigger className="w-full" value="items">
-                                        Items
+                                        Items GRN
                                     </TabsTrigger>
                                     <TabsTrigger className="w-full" value="extra_cost">
                                         Extra Cost
