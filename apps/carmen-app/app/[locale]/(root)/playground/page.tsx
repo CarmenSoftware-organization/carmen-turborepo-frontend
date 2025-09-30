@@ -39,8 +39,8 @@ const itemsPlayground = [
     href: "/playground/transfer",
   },
   {
-    title: "ABAC",
-    href: "/playground/abac",
+    title: "Permission",
+    href: "/playground/permission",
   },
 ];
 
