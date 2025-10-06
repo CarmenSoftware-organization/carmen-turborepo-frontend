@@ -1,12 +1,10 @@
 export const permissions = {
-    // dashboard
     dashboard: ["view_all", "view", "create", "update", "delete"],
 
-    // procurement
     procurement: {
         dashboard: ["view_all", "view", "create", "update", "delete"],
         my_approval: ["view_all", "view", "create", "update", "delete"],
-        purchase_request: ["view_all", "view", "create", "update", "delete"],
+        purchase_request: ["view_all", "view", "create", "update", "delete", "approve", "reject", "send_back", "submit"],
         purchase_order: ["view_all", "view", "create", "update", "delete"],
         goods_received_note: ["view_all", "view", "create", "update", "delete"],
         credit_note: ["view_all", "view", "create", "update", "delete"],
@@ -14,7 +12,6 @@ export const permissions = {
         purchase_request_template: ["view_all", "view", "create", "update", "delete"],
     },
 
-    // product_management
     product_management: {
         product: ["view_all", "view", "create", "update", "delete"],
         category: ["view_all", "view", "create", "update", "delete"],
