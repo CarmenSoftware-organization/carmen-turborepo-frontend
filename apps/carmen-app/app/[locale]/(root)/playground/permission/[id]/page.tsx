@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { usersPermissionTest, DocData, DocumentDto } from "../permissionData";
-import { hasPermission, getUserPermissions, canPerformAction } from "../permissionUtils";
+import { getUserPermissions, canPerformAction } from "../permissionUtils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -48,8 +48,7 @@ export default function UserPermissionDetailPage() {
     const canView = permissions?.canView || false;
     const canViewAll = permissions?.canViewAll || false;
     const canCreate = permissions?.canCreate || false;
-    const canEdit = permissions?.canEdit || false;
-    const canDelete = permissions?.canDelete || false;
+
 
     // Document access checks using reusable functions
     const canViewDocument = (doc: DocumentDto) => {
@@ -81,7 +80,7 @@ export default function UserPermissionDetailPage() {
                 ownerId: user.id
             };
             setDocuments([...documents, newDoc]);
-            toast.success(` Created: ${newDoc.title}`);
+            toast.success(`Created: ${newDoc.title}`);
         } else {
             toast.error("ไม่มีสิทธิ์เข้าถึง: ไม่สามารถสร้างเอกสารได้");
         }
@@ -89,7 +88,7 @@ export default function UserPermissionDetailPage() {
 
     const handleEdit = (doc: DocumentDto) => {
         if (canEditDocument(doc)) {
-            toast.success(` Edited: ${doc.title}`);
+            toast.success(`Edited: ${doc.title}`);
         } else {
             toast.error(`ไม่มีสิทธิ์เข้าถึง: ไม่สามารถแก้ไข ${doc.title} ได้`);
         }
@@ -98,7 +97,7 @@ export default function UserPermissionDetailPage() {
     const handleDelete = (doc: DocumentDto) => {
         if (canDeleteDocument(doc)) {
             setDocuments(documents.filter(d => d.id !== doc.id));
-            toast.success(` Deleted: ${doc.title}`);
+            toast.success(`Deleted: ${doc.title}`);
         } else {
             toast.error(`ไม่มีสิทธิ์เข้าถึง: ไม่สามารถลบ ${doc.title} ได้`);
         }
@@ -122,20 +121,9 @@ export default function UserPermissionDetailPage() {
                 </Button>
 
                 <div className="flex items-start justify-between">
-                    <div>
-                        <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-                            {user.role === "admin" ? (
-                                <Crown className="w-8 h-8 text-yellow-500" />
-                            ) : (
-                                <UserIcon className="w-8 h-8 text-blue-500" />
-                            )}
-                            Testing as: {user.name}
-                        </h1>
-                        <p className="text-muted-foreground capitalize">
-                            Role: {user.role}
-                        </p>
-                    </div>
-
+                    <p className="text-muted-foreground capitalize">
+                        Role: {user.role}
+                    </p>
                     <Button
                         onClick={handleCreate}
                         disabled={!canCreate}
@@ -151,7 +139,6 @@ export default function UserPermissionDetailPage() {
             <Card className="mb-6">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Shield className="w-5 h-5" />
                         User Permissions
                     </CardTitle>
                 </CardHeader>
