@@ -13,9 +13,6 @@ import {
     Trash2,
     Plus,
     FileText,
-    Shield,
-    Crown,
-    User as UserIcon,
     AlertCircle
 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";

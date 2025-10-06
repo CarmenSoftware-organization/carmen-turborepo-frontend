@@ -20,7 +20,7 @@ const handleAddStoreLocation = async (
   buCode: string,
   data: CreateStoreLocationDto
 ) => {
-  const result = await createStoreLocation(token, buCode, data);
+  const result = await createStoreLocation(token, data);
   if (!result?.id || typeof result.id !== "string") {
     throw new Error("Invalid response: missing or invalid id");
   }
@@ -52,7 +52,7 @@ const handleUpdateStoreLocation = async (
     physical_count_type: PHYSICAL_COUNT_TYPE.NO,
   };
 
-  const result = await updateStoreLocation(token, buCode, updateData);
+  const result = await updateStoreLocation(token, updateData);
   if (!result) {
     throw new Error("Failed to update store location");
   }
@@ -88,7 +88,7 @@ const handleUpdateStoreLocationStatus = async (
     physical_count_type: PHYSICAL_COUNT_TYPE.NO,
   };
 
-  const result = await updateStoreLocation(token, buCode, updateData);
+  const result = await updateStoreLocation(token, updateData);
 
   if (!result) {
     throw new Error("Failed to update store location status");
@@ -126,7 +126,7 @@ export const useStoreLocation = () => {
     try {
       setIsLoading(true);
       setIsUnauthorized(false);
-      const data = await getAllStoreLocations(token, buCode, {
+      const data = await getAllStoreLocations(token, {
         search,
         sort,
         page,

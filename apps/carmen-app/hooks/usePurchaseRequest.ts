@@ -65,11 +65,12 @@ export const usePurchaseRequestById = (token: string, buCode: string, id: string
 export const usePrMutation = (token: string, buCode: string) => {
     const API_URL = `${backendApi}/api/${buCode}/purchase-request`;
     return useMutation({
-        mutationFn: async (data: PurchaseRequestCreateFormDto) => {
+        mutationFn: async (data: PurchaseRequestCreateFormDto | { state_role: string; body: PurchaseRequestCreateFormDto }) => {
+            const requestData = 'body' in data ? data.body : data;
             return await postApiRequest(
                 API_URL,
                 token,
-                data,
+                requestData,
                 "Error creating PR"
             );
         },

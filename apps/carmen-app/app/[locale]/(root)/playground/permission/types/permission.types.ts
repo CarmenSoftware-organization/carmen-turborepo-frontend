@@ -17,7 +17,7 @@ export interface BaseDocument {
   title: string;
   status: DocumentStatus;
   ownerId?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface ProcurementDocument extends BaseDocument {

@@ -34,7 +34,7 @@ export function hasPermission(
  * @param userId - Current user ID for ownership check
  * @returns Filtered array of documents
  */
-export function filterDocumentsByPermission<T extends { id: string; ownerId?: string; [key: string]: any }>(
+export function filterDocumentsByPermission<T extends { id: string; ownerId?: string; [key: string]: unknown }>(
   documents: T[],
   user: UserPermissions | undefined,
   module: string,

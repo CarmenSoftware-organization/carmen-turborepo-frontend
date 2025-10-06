@@ -8,13 +8,11 @@ const API_URL = `${backendApi}/api/config/units`;
 
 export const getAllUnits = async (
     token: string,
-    buCode: string,
     params?: ParamsGetDto
 ) => {
     return getAllApiRequest(
         API_URL,
         token,
-        buCode,
         'Failed to fetch units',
         params
     );
@@ -22,22 +20,20 @@ export const getAllUnits = async (
 
 export const createUnit = async (
     token: string,
-    buCode: string,
     value: UnitDto,
 ) => {
     return postApiRequest(
         API_URL,
         token,
-        buCode,
         value,
         'Failed to create unit'
     );
 }
 
-export const updateUnit = async (token: string, buCode: string, unit: UnitDto) => {
+export const updateUnit = async (token: string, unit: UnitDto) => {
     try {
         const response = await axios.put(`${API_URL}/${unit.id}`, unit, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
         return response.data;
     } catch (error) {
@@ -46,13 +42,12 @@ export const updateUnit = async (token: string, buCode: string, unit: UnitDto) =
     }
 }
 
-export const deleteUnit = async (token: string, buCode: string, unit: UnitDto) => {
+export const deleteUnit = async (token: string, unit: UnitDto) => {
     const url = `${backendApi}/api/config/units/${unit.id}`;
     const response = await fetch(url, {
         method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${token}`,
-            'x-tenant-id': buCode,
             'Content-Type': 'application/json',
         },
     });

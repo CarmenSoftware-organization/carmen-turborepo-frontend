@@ -23,7 +23,7 @@ export default function GoodsReceivedNoteComponent() {
     const [search, setSearch] = useURL('search');
     const [sort, setSort] = useURL('sort');
     const [page, setPage] = useURL('page');
-    const [perpage, setPerpage] = useURL('perpage');
+    const [perpage] = useURL('perpage');
     const [dialogOpen, setDialogOpen] = useState(false);
     const [status, setStatus] = useState('');
     const [statusOpen, setStatusOpen] = useState(false);

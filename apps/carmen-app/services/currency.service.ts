@@ -25,7 +25,7 @@ export const getCurrenciesService = async (
         const url = queryString ? `${API_URL}?${queryString}` : API_URL;
 
         const response = await axios.get(url, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
 
         return response.data;
@@ -38,7 +38,7 @@ export const getCurrenciesService = async (
 export const createCurrency = async (token: string, buCode: string, currency: CurrencyCreateDto) => {
     try {
         const response = await axios.post(API_URL, currency, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
         return response.data;
     } catch (error) {
@@ -50,7 +50,7 @@ export const createCurrency = async (token: string, buCode: string, currency: Cu
 export const updateCurrency = async (token: string, buCode: string, currency: CurrencyUpdateDto) => {
     try {
         const response = await axios.patch(`${API_URL}/${currency.id}`, currency, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
         return response.data;
     } catch (error) {

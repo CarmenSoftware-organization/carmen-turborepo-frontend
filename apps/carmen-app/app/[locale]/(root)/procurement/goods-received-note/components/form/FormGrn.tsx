@@ -31,12 +31,12 @@ export default function FormGrn({ mode, initialValues }: FormGrnProps) {
     const [currentMode, setCurrentMode] = useState<formType>(mode);
 
     // ตรวจสอบว่า token และ buCode มีค่าก่อนส่งไปยัง hooks
-    const { mutate: createGrn, isPending: isCreatePending } = useGrnMutation(
+    const { isPending: isCreatePending } = useGrnMutation(
         token || "",
         buCode || ""
     );
 
-    const { mutate: updateGrn, isPending: isUpdatePending } = useGrnUpdate(
+    const { isPending: isUpdatePending } = useGrnUpdate(
         token || "",
         buCode || "",
         initialValues?.id ?? ""

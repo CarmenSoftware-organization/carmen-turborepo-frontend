@@ -66,7 +66,6 @@ function DataGridPagination(props: DataGridPaginationProps) {
         <Button
           key={i}
           size="sm"
-          mode="icon"
           variant="ghost"
           className={cn(btnBaseClasses, 'text-muted-foreground', {
             'bg-accent text-accent-foreground': pageIndex === i,
@@ -90,7 +89,6 @@ function DataGridPagination(props: DataGridPaginationProps) {
       return (
         <Button
           size="sm"
-          mode="icon"
           className={btnBaseClasses}
           variant="ghost"
           onClick={() => table.setPageIndex(currentGroupStart - 1)}
@@ -110,7 +108,6 @@ function DataGridPagination(props: DataGridPaginationProps) {
           className={btnBaseClasses}
           variant="ghost"
           size="sm"
-          mode="icon"
           onClick={() => table.setPageIndex(currentGroupEnd)}
         >
           ...
@@ -136,13 +133,12 @@ function DataGridPagination(props: DataGridPaginationProps) {
             <div className="text-sm text-muted-foreground">Rows per page</div>
             <Select
               value={`${pageSize}`}
-              indicatorPosition="right"
               onValueChange={(value) => {
                 const newPageSize = Number(value);
                 table.setPageSize(newPageSize);
               }}
             >
-              <SelectTrigger className="w-fit" size="sm">
+              <SelectTrigger className="w-fit">
                 <SelectValue placeholder={`${pageSize}`} />
               </SelectTrigger>
               <SelectContent side="top" className="min-w-[50px]">
@@ -166,7 +162,6 @@ function DataGridPagination(props: DataGridPaginationProps) {
               <div className="flex items-center space-x-1 order-1 sm:order-2">
                 <Button
                   size="sm"
-                  mode="icon"
                   variant="ghost"
                   className={btnArrowClasses}
                   onClick={() => table.previousPage()}
@@ -184,7 +179,6 @@ function DataGridPagination(props: DataGridPaginationProps) {
 
                 <Button
                   size="sm"
-                  mode="icon"
                   variant="ghost"
                   className={btnArrowClasses}
                   onClick={() => table.nextPage()}

@@ -13,13 +13,20 @@ interface MutationOptions {
 
 interface PrActionsReturn {
     // Action functions
-    save: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) => void;
-    submit: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) => void;
-    approve: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) => void;
-    purchase: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) => void;
-    review: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) => void;
-    reject: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) => void;
-    sendBack: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    save: (data: any, options?: MutationOptions) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    submit: (data: any, options?: MutationOptions) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    approve: (data: any, options?: MutationOptions) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    purchase: (data: any, options?: MutationOptions) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    review: (data: any, options?: MutationOptions) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    reject: (data: any, options?: MutationOptions) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    sendBack: (data: any, options?: MutationOptions) => void;
 
     // Loading states
     isPending: boolean;

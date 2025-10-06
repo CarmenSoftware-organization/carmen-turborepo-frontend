@@ -19,7 +19,7 @@ export const useModulePermissions = (
     return hasPermission(user, module, submodule, action);
   };
 
-  const filterDocuments = <T extends { id: string; ownerId?: string; [key: string]: any }>(documents: T[]): T[] => {
+  const filterDocuments = <T extends { id: string; ownerId?: string; [key: string]: unknown }>(documents: T[]): T[] => {
     return filterDocumentsByPermission(documents, user, module, submodule, userId);
   };
 

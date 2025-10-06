@@ -20,7 +20,7 @@ interface ExtraCostProps {
     readonly extraCostDetailData?: ExtraCostDetailItem[];
 }
 
-export default function ExtraCost({ control, mode, extraCostData, extraCostDetailData }: ExtraCostProps) {
+export default function ExtraCost({ mode, extraCostData, extraCostDetailData }: ExtraCostProps) {
     console.log(extraCostData);
     return (
         <div className="space-y-2">

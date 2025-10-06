@@ -303,7 +303,7 @@ export default function PurchaseItem({
                                             ) : (
                                                 <DateInput
                                                     field={{
-                                                        value: getItemValue(item, 'delivery_date') as any,
+                                                        value: getItemValue(item, 'delivery_date') as Date | undefined,
                                                         onChange: (value) => onItemUpdate(item.id, 'delivery_date', value)
                                                     }}
                                                     classNames="text-xs h-7"

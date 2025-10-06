@@ -2,8 +2,6 @@
 
 import { formType } from "@/dtos/form.dto";
 import FormGrn from "../components/form/FormGrn";
-import { getGrnById } from "@/services/grn.service";
-import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";

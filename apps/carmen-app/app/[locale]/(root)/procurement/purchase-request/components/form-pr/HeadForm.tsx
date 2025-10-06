@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formType } from "@/dtos/form.dto";
-import { CreatePrDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { cn } from "@/lib/utils";
 import { CircleCheck, Clock4 } from "lucide-react";
@@ -13,7 +12,8 @@ import { useTranslations } from "next-intl";
 import { UseFormReturn } from "react-hook-form";
 
 interface HeadFormProps {
-    readonly form: UseFormReturn<CreatePrDto | PurchaseRequestUpdateFormDto>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    readonly form: UseFormReturn<any>;
     readonly mode: formType;
     readonly workflow_id?: string;
     readonly requestor_name?: string;

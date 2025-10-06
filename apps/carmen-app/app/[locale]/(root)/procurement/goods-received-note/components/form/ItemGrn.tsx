@@ -25,10 +25,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useProductQuery } from "@/hooks/useProductQuery";
-import { useAuth } from "@/context/AuthContext";
-import { useLocationQuery } from "@/hooks/use-location";
-import { useUnitQuery } from "@/hooks/use-unit";
 
 interface ItemGrnProps {
     readonly control: Control<CreateGRNDto>;
@@ -36,8 +32,7 @@ interface ItemGrnProps {
     readonly grnItems: GrnDetailItem[];
 }
 
-export default function ItemGrn({ control, mode, grnItems }: ItemGrnProps) {
-    const { token, buCode } = useAuth();
+export default function ItemGrn({ mode, grnItems }: ItemGrnProps) {
     const tCommon = useTranslations("Common");
     const [bulkAction, setBulkAction] = useState(false);
     const [selectedItems, setSelectedItems] = useState<string[]>([]);

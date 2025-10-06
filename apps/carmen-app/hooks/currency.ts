@@ -24,7 +24,6 @@ export const useCurrencyQuery = (
       return await getAllApiRequest(
         API_URL,
         token,
-        buCode,
         "Error fetching currency",
         params ?? {}
       );

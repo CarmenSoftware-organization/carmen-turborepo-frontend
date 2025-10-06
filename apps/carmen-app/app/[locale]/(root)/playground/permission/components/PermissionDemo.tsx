@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { hasPermission, filterDocumentsByPermission, getModulePermissions } from "../utils/permission-checker";
 import { usersPermissionTest } from "../permission-module";
-import type { BaseDocument, UserPermissions, PermissionAction } from "../types/permission.types";
+import type { BaseDocument, PermissionAction } from "../types/permission.types";
 
 interface ActionButton {
     label: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { CreatePrDto, CreatePrSchema, PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
+import { CreatePrDto, CreatePrSchema, PurchaseRequestByIdDto, PurchaseRequestUpdateFormDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -120,7 +120,7 @@ export default function MainForm({ mode, initValues }: Props) {
         };
 
         if (currentFormType === formType.ADD) {
-            createPr(data as any, {
+            createPr(data, {
                 onSuccess: (responseData: unknown) => {
                     const response = responseData as { data?: { id?: string } };
                     if (response?.data?.id) {
@@ -137,7 +137,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            save(data as any, {
+            save(data.body as PurchaseRequestUpdateFormDto, {
                 onSuccess: () => {
                     toastSuccess({
                         message: tPR("purchase_request_updated"),
@@ -207,8 +207,8 @@ export default function MainForm({ mode, initValues }: Props) {
     const requestorName = user?.user_info.firstname + ' ' + user?.user_info.lastname;
 
     const workflowStages = Array.isArray(initValues?.workflow_history)
-        ? initValues.workflow_history.map((item: { current_stage: string }) => ({
-            title: item.current_stage,
+        ? initValues.workflow_history.map((item: { current_stage?: string }) => ({
+            title: item.current_stage ?? "",
         }))
         : [];
 
@@ -216,7 +216,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const isDraft = initValues?.pr_status === "draft";
 
     const onSubmitPr = () => {
-        submit({} as any, {
+        submit({}, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_submitted"),
@@ -234,7 +234,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onApprove = () => {
-        approve({} as any, {
+        approve({}, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_approved"),
@@ -255,7 +255,7 @@ export default function MainForm({ mode, initValues }: Props) {
             stage_message: 'ไม่ต้องซื้อ',
         })) || [];
 
-        reject(rejectData as any, {
+        reject(rejectData, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_rejected"),
@@ -279,7 +279,7 @@ export default function MainForm({ mode, initValues }: Props) {
             stage_message: 'ส่งกลับ',
         })) || [];
 
-        sendBack(sendBackData as any, {
+        sendBack(sendBackData, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_sent_back"),
@@ -294,7 +294,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onPurchaseApprove = () => {
-        purchase({} as any, {
+        purchase({}, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_approved_purchase"),
@@ -309,7 +309,7 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReview = () => {
-        review({} as any, {
+        review({}, {
             onSuccess: () => {
                 toastSuccess({
                     message: tPR("purchase_request_reviewed"),
@@ -349,7 +349,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     prStatus={prStatus ?? ""}
                                 />
                                 <HeadForm
-                                    form={form as any}
+                                    form={form}
                                     mode={currentFormType}
                                     workflow_id={initValues?.workflow_id}
                                     requestor_name={initValues?.requestor_name ? initValues.requestor_name : requestorName}

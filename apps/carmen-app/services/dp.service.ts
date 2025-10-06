@@ -14,16 +14,15 @@ export const getAllDeliveryPoints = async (
     return getAllApiRequest(
         API_URL,
         token,
-        buCode,
         'Failed to fetch delivery points',
         params
     );
 };
 
-export const createDeliveryPoint = async (token: string, buCode: string, deliveryPoint: DeliveryPointCreateDto) => {
+export const createDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointCreateDto) => {
     try {
         const response = await axios.post(API_URL, deliveryPoint, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
         return response.data;
     } catch (error) {
@@ -32,10 +31,10 @@ export const createDeliveryPoint = async (token: string, buCode: string, deliver
     }
 }
 
-export const updateDeliveryPoint = async (token: string, buCode: string, deliveryPoint: DeliveryPointUpdateDto) => {
+export const updateDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointUpdateDto) => {
     try {
         const response = await axios.patch(`${API_URL}/${deliveryPoint.id}`, deliveryPoint, {
-            headers: requestHeaders(token, buCode)
+            headers: requestHeaders(token)
         });
         return response.data;
     } catch (error) {
@@ -44,11 +43,11 @@ export const updateDeliveryPoint = async (token: string, buCode: string, deliver
     }
 }
 
-export const inactiveDeliveryPoint = async (token: string, buCode: string, deliveryPoint: DeliveryPointUpdateDto) => {
+export const inactiveDeliveryPoint = async (token: string, deliveryPoint: DeliveryPointUpdateDto) => {
     try {
         const response = await axios.put(`${API_URL}/${deliveryPoint.id}`,
             { ...deliveryPoint, is_active: !deliveryPoint.is_active },
-            { headers: requestHeaders(token, buCode) }
+            { headers: requestHeaders(token) }
         );
         return response.data;
     } catch (error) {
