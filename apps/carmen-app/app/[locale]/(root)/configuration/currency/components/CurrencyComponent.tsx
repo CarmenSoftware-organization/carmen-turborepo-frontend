@@ -11,8 +11,8 @@ import CurrencyList from "./CurrencyList";
 import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import SignInDialog from "@/components/SignInDialog";
-import { useCallback, useMemo, useState } from "react";
-import { SortConfig, SortDirection } from "@/utils/table-sort";
+import { useState } from "react";
+import { parseSortString } from "@/utils/table-sort";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrenciesQuery, useCurrencyMutation, useCurrencyUpdateMutation, useCurrencyDeleteMutation } from "@/hooks/useCurrencie";
 import { useURL } from "@/hooks/useURL";
@@ -20,9 +20,14 @@ import { CurrencyGetDto, CurrencyCreateDto, CurrencyUpdateDto } from "@/dtos/cur
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { configurationPermission } from "@/lib/permission";
 
 export default function CurrencyComponent() {
-    const { token, buCode } = useAuth();
+    const { token, buCode, permissions } = useAuth();
+
+    // Get permissions for currency resource
+    const currencyPerms = configurationPermission.get(permissions, "currency");
+
     const [search, setSearch] = useURL('search');
     const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
@@ -52,16 +57,26 @@ export default function CurrencyComponent() {
     const totalPages = data?.paginate?.pages ?? 1;
     const totalItems = data?.paginate?.total ?? 0;
 
-    const handleAdd = useCallback(() => {
+    // Refetch currencies after mutation
+    const refetchCurrencies = () => {
+        queryClient.invalidateQueries({
+            queryKey: ['currencies'],
+            exact: false,
+        });
+    };
+
+    const handleAdd = () => {
         setSelectedCurrency(undefined);
         setDialogOpen(true);
-    }, []);
+    };
 
-    const handleEdit = useCallback((currency: CurrencyGetDto) => {
+    const handleEdit = (currency: CurrencyGetDto) => {
         setSelectedCurrency(currency);
         setDialogOpen(true);
-    }, []);
+    };
 
+    const createCurrencyMutation = useCurrencyMutation(token, buCode);
+    const updateCurrencyMutation = useCurrencyUpdateMutation(token, buCode, selectedCurrency?.id || '');
     const deleteStatusMutation = useCurrencyDeleteMutation(token, buCode, selectedCurrency?.id || '');
 
     const handleToggleStatus = (currency: CurrencyUpdateDto) => {
@@ -76,13 +91,13 @@ export default function CurrencyComponent() {
         } else {
             toastSuccess({ message: tCurrency("activate_success") });
         }
-    }
+    };
 
     const handleConfirmToggle = () => {
         if (selectedCurrency?.id) {
             deleteStatusMutation.mutate(undefined, {
                 onSuccess: () => {
-                    queryClient.invalidateQueries({ queryKey: ['currencies'] });
+                    refetchCurrencies();
                     toastSuccess({ message: tCurrency("deactivate_success") });
                     setConfirmDialogOpen(false);
                     setSelectedCurrency(undefined);
@@ -93,17 +108,13 @@ export default function CurrencyComponent() {
                 }
             });
         }
-    }
+    };
 
-    const createCurrencyMutation = useCurrencyMutation(token, buCode);
-
-    const updateCurrencyMutation = useCurrencyUpdateMutation(token, buCode, selectedCurrency?.id || '');
-
-    const handleSubmit = useCallback(async (data: CurrencyCreateDto) => {
+    const handleSubmit = (data: CurrencyCreateDto) => {
         if (selectedCurrency) {
             updateCurrencyMutation.mutate({ ...data, id: selectedCurrency.id }, {
                 onSuccess: () => {
-                    queryClient.invalidateQueries({ queryKey: ['currencies'] });
+                    refetchCurrencies();
                     toastSuccess({ message: tCurrency("update_success") });
                     setDialogOpen(false);
                     setSelectedCurrency(undefined);
@@ -116,7 +127,7 @@ export default function CurrencyComponent() {
         } else {
             createCurrencyMutation.mutate(data, {
                 onSuccess: () => {
-                    queryClient.invalidateQueries({ queryKey: ['currencies'] });
+                    refetchCurrencies();
                     toastSuccess({ message: tCurrency("create_success") });
                     setDialogOpen(false);
                     setSelectedCurrency(undefined);
@@ -127,11 +138,11 @@ export default function CurrencyComponent() {
                 }
             });
         }
-    }, [selectedCurrency, updateCurrencyMutation, createCurrencyMutation, queryClient, tCurrency]);
+    };
 
-    const handlePageChange = useCallback((newPage: number) => {
+    const handlePageChange = (newPage: number) => {
         setPage(newPage.toString());
-    }, [setPage]);
+    };
 
     const isSubmitting = createCurrencyMutation.isPending ||
         updateCurrencyMutation.isPending ||
@@ -152,46 +163,42 @@ export default function CurrencyComponent() {
         }
     ];
 
-    const handleSelectAll = useCallback((checked: boolean) => {
+    const handleSelectAll = (checked: boolean) => {
         if (checked) {
             setSelectedCurrencies(currencies.map((c: CurrencyGetDto) => c.id));
         } else {
             setSelectedCurrencies([]);
         }
-    }, [currencies]);
+    };
 
-    const handleSelect = useCallback((currencyId: string) => {
+    const handleSelect = (currencyId: string) => {
         setSelectedCurrencies(prev =>
             prev.includes(currencyId)
                 ? prev.filter(id => id !== currencyId)
                 : [...prev, currencyId]
         );
-    }, []);
-
-    const parsedSort = useMemo((): SortConfig | undefined => {
-        if (!sort) return undefined;
-
-        const parts = sort.split(':');
-        if (parts.length !== 2) return undefined;
-
-        return {
-            field: parts[0],
-            direction: parts[1] as SortDirection
-        };
-    }, [sort]);
+    };
 
     const handleSetPerpage = (newPerpage: number) => {
         setPerpage(newPerpage.toString());
+    };
+
+    const handleSort = (field: string) => {
+        const currentSort = parseSortString(sort);
+        const direction = currentSort?.field === field && currentSort.direction === 'asc' ? 'desc' : 'asc';
+        setSort(`${field}:${direction}`);
     };
 
     const title = tCurrency('title');
 
     const actionButtons = (
         <div className="action-btn-container" data-id="currency-list-action-buttons">
-            <Button size={'sm'} onClick={handleAdd}>
-                <Plus className="h-4 w-4" />
-                {tCommon('add')}
-            </Button>
+            {currencyPerms.canCreate && (
+                <Button size={'sm'} onClick={handleAdd}>
+                    <Plus className="h-4 w-4" />
+                    {tCommon('add')}
+                </Button>
+            )}
             <Button
                 variant="outlinePrimary"
                 className="group"
@@ -248,16 +255,15 @@ export default function CurrencyComponent() {
             totalPages={totalPages}
             totalItems={totalItems}
             onPageChange={handlePageChange}
-            sort={parsedSort}
-            onSort={(field) => {
-                const direction = parsedSort?.field === field && parsedSort.direction === 'asc' ? 'desc' : 'asc';
-                setSort(`${field}:${direction}`);
-            }}
+            sort={parseSortString(sort)}
+            onSort={handleSort}
             selectedCurrencies={selectedCurrencies}
             onSelectAll={handleSelectAll}
             onSelect={handleSelect}
             perpage={data?.paginate?.perpage}
             setPerpage={handleSetPerpage}
+            canUpdate={currencyPerms.canUpdate}
+            canDelete={currencyPerms.canDelete}
         />
     );
 
@@ -291,4 +297,3 @@ export default function CurrencyComponent() {
         </div>
     );
 }
-

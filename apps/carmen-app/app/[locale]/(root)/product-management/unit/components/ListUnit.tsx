@@ -25,6 +25,8 @@ interface ListUnitProps {
     readonly onSelect: (id: string) => void;
     readonly perpage?: number;
     readonly setPerpage?: (perpage: number) => void;
+    readonly canUpdate?: boolean;
+    readonly canDelete?: boolean;
 }
 
 export default function ListUnit({
@@ -42,7 +44,9 @@ export default function ListUnit({
     totalItems,
     onSelect,
     perpage,
-    setPerpage
+    setPerpage,
+    canUpdate = true,
+    canDelete = true,
 }: ListUnitProps) {
 
     const t = useTranslations("TableHeader");
@@ -90,15 +94,20 @@ export default function ListUnit({
             render: (_: unknown, record: TableDataSource) => {
                 const unit = units.find(u => u.id === record.key);
                 if (!unit) return null;
-                return (
-                    <button
-                        type="button"
-                        className="btn-dialog"
-                        onClick={() => onEdit(unit)}
-                    >
-                        {unit.name}
-                    </button>
-                );
+
+                if (canUpdate) {
+                    return (
+                        <button
+                            type="button"
+                            className="btn-dialog"
+                            onClick={() => onEdit(unit)}
+                        >
+                            {unit.name}
+                        </button>
+                    );
+                }
+
+                return <span>{unit.name}</span>;
             },
         },
         {
@@ -146,6 +155,10 @@ export default function ListUnit({
             render: (_: unknown, record: TableDataSource) => {
                 const unit = units.find(u => u.id === record.key);
                 if (!unit) return null;
+
+                // Hide action menu if no permissions
+                if (!canDelete) return null;
+
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -154,13 +167,15 @@ export default function ListUnit({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem
-                                className="text-destructive cursor-pointer hover:bg-transparent"
-                                onClick={() => onDelete(unit)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
+                            {canDelete && (
+                                <DropdownMenuItem
+                                    className="text-destructive cursor-pointer hover:bg-transparent"
+                                    onClick={() => onDelete(unit)}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );

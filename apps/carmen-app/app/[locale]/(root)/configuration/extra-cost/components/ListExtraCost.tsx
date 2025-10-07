@@ -25,6 +25,8 @@ interface ListExtraCostProps {
     readonly onSelect: (id: string) => void;
     readonly perpage?: number;
     readonly setPerpage?: (perpage: number) => void;
+    readonly canUpdate?: boolean;
+    readonly canDelete?: boolean;
 }
 
 export default function ListExtraCost({
@@ -43,6 +45,8 @@ export default function ListExtraCost({
     onSelect,
     perpage,
     setPerpage,
+    canUpdate = true,
+    canDelete = true,
 }: ListExtraCostProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -88,15 +92,20 @@ export default function ListExtraCost({
             render: (_: unknown, record: TableDataSource) => {
                 const extraCost = extraCosts.find(ec => ec.id === record.key);
                 if (!extraCost) return null;
-                return (
-                    <button
-                        type="button"
-                        className="btn-dialog"
-                        onClick={() => onEdit(extraCost)}
-                    >
-                        {extraCost.name}
-                    </button>
-                );
+
+                if (canUpdate) {
+                    return (
+                        <button
+                            type="button"
+                            className="btn-dialog"
+                            onClick={() => onEdit(extraCost)}
+                        >
+                            {extraCost.name}
+                        </button>
+                    );
+                }
+
+                return <span>{extraCost.name}</span>;
             },
         },
         {
@@ -143,6 +152,10 @@ export default function ListExtraCost({
             render: (_: unknown, record: TableDataSource) => {
                 const extraCost = extraCosts.find(ec => ec.id === record.key);
                 if (!extraCost) return null;
+
+                // Hide action menu if no permissions
+                if (!canDelete) return null;
+
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -151,13 +164,15 @@ export default function ListExtraCost({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem
-                                className="cursor-pointer hover:bg-transparent"
-                                onClick={() => onToggleStatus(extraCost)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                                {tCommon("delete")}
-                            </DropdownMenuItem>
+                            {canDelete && (
+                                <DropdownMenuItem
+                                    className="text-destructive cursor-pointer hover:bg-transparent"
+                                    onClick={() => onToggleStatus(extraCost)}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    {tCommon("delete")}
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );

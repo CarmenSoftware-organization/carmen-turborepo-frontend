@@ -7,12 +7,13 @@ import { useAuth } from "@/context/AuthContext";
 import {
   useDeliveryPointMutation,
   useDeliveryPointQuery,
+  useUpdateDeliveryPoint,
+  useDeleteDeliveryPoint,
 } from "@/hooks/use-delivery-point";
-import { backendApi } from "@/lib/backend-api";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import ListDeliveryPoint from "./ListDeliveryPoint";
 import { parseSortString } from "@/utils/table-sort";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -30,11 +31,6 @@ import { configurationPermission } from "@/lib/permission";
 
 export default function DeliveryPointComponent() {
   const { token, buCode, permissions } = useAuth();
-
-  const permission_dp = configurationPermission.get(permissions, "delivery_point");
-
-  console.log('permissions for delivery_point:', permission_dp);
-
 
   // Get permissions for delivery_point resource
   const deliveryPointPerms = configurationPermission.get(permissions, "delivery_point");
@@ -79,10 +75,9 @@ export default function DeliveryPointComponent() {
     },
   });
 
-  const { mutate: createDeliveryPoint } = useDeliveryPointMutation(
-    token,
-    buCode,
-  );
+  const { mutate: createDeliveryPoint } = useDeliveryPointMutation(token, buCode);
+  const { mutate: updateDeliveryPoint } = useUpdateDeliveryPoint(token, buCode);
+  const { mutate: deleteDeliveryPoint } = useDeleteDeliveryPoint(token, buCode);
 
   const deliveryPointsData = deliveryPoints?.data ?? [];
   const currentPage = deliveryPoints?.paginate.page ?? 1;
@@ -110,12 +105,9 @@ export default function DeliveryPointComponent() {
     });
   };
 
-  const handlePageChange = useCallback(
-    (newPage: number) => {
-      setPage(newPage.toString());
-    },
-    [setPage],
-  );
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage.toString());
+  };
 
   const handleAdd = () => {
     setDialogMode(formType.ADD);
@@ -134,66 +126,40 @@ export default function DeliveryPointComponent() {
     setDeleteDialogOpen(true);
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (deliveryPointToDelete?.id) {
-      try {
-        const API_URL = `${backendApi}/api/config/${buCode}/delivery-point/${deliveryPointToDelete.id}`;
-        const response = await fetch(API_URL, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            "bu-code": buCode,
-          },
-        });
-
-        if (response.ok) {
+      deleteDeliveryPoint(deliveryPointToDelete.id, {
+        onSuccess: () => {
           toastSuccess({ message: "Delete delivery point successfully" });
-          const currentParams = {
-            search,
-            filter,
-            sort,
-            page: page ? parseInt(page) : 1,
-            perpage: perpage ? parseInt(perpage) : 10,
-          };
-          queryClient.invalidateQueries({
-            queryKey: ["delivery-point", currentParams],
-          });
-          queryClient.refetchQueries({
-            queryKey: ["delivery-point", currentParams],
-          });
+          refetchDeliveryPoints();
           setDeleteDialogOpen(false);
           setDeliveryPointToDelete(undefined);
-        } else {
-          throw new Error("Failed to delete");
-        }
-      } catch (error) {
-        toastError({ message: "Failed to delete delivery point" });
-        console.error("Failed to delete delivery point:", error);
-      }
+        },
+        onError: (error: Error) => {
+          toastError({ message: "Failed to delete delivery point" });
+          console.error("Failed to delete delivery point:", error);
+        },
+      });
     }
+  };
+
+  // Refetch delivery points after mutation
+  const refetchDeliveryPoints = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["delivery-point"],
+      exact: false,
+    });
   };
 
   const handleDialogSubmit = (
     data: DeliveryPointUpdateDto | DeliveryPointCreateDto,
   ) => {
     if (dialogMode === formType.ADD) {
+      // Create new delivery point
       createDeliveryPoint(data, {
         onSuccess: () => {
           toastSuccess({ message: "Create delivery point successfully" });
-          const currentParams = {
-            search,
-            filter,
-            sort,
-            page: page ? parseInt(page) : 1,
-            perpage: perpage ? parseInt(perpage) : 10,
-          };
-          queryClient.invalidateQueries({
-            queryKey: ["delivery-point", currentParams],
-          });
-          queryClient.refetchQueries({
-            queryKey: ["delivery-point", currentParams],
-          });
+          refetchDeliveryPoints();
           setDialogOpen(false);
           setSelectedDeliveryPoint(undefined);
         },
@@ -203,73 +169,21 @@ export default function DeliveryPointComponent() {
         },
       });
     } else if (dialogMode === formType.EDIT && selectedDeliveryPoint) {
-      const updateData = { ...data, id: selectedDeliveryPoint.id };
+      // Update existing delivery point
+      const updateData = { ...data, id: selectedDeliveryPoint.id } as DeliveryPointUpdateDto;
 
-      // Use direct API call instead of hook
-      const updateDeliveryPoint = async () => {
-        try {
-          const API_URL = `${backendApi}/api/config/${buCode}/delivery-point/${selectedDeliveryPoint.id}`;
-          const response = await fetch(API_URL, {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-              "bu-code": buCode,
-            },
-            body: JSON.stringify(updateData),
-          });
-
-          if (response.ok) {
-            const updatedData = await response.json();
-            toastSuccess({ message: "Update delivery point successfully" });
-
-            // Get current query params for proper cache key
-            const currentParams = {
-              search,
-              filter,
-              sort,
-              page: page ? parseInt(page) : 1,
-              perpage: perpage ? parseInt(perpage) : 10,
-            };
-
-            // Update cache with exact query key used by the query
-            queryClient.setQueryData(
-              ["delivery-point", currentParams],
-              (oldData: unknown) => {
-                const data = oldData as { data?: DeliveryPointUpdateDto[] };
-                if (data?.data) {
-                  const updatedList = data.data.map((item: DeliveryPointUpdateDto) => {
-                    if (item.id === selectedDeliveryPoint.id) {
-                      return { ...item, ...updatedData };
-                    }
-                    return item;
-                  });
-                  const newData = { ...data, data: updatedList };
-                  console.log("New cache data:", newData);
-                  return newData;
-                }
-                return oldData;
-              },
-            );
-
-            // Force refetch to ensure consistency
-            await queryClient.refetchQueries({
-              queryKey: ["delivery-point"],
-              exact: false,
-            });
-
-            setDialogOpen(false);
-            setSelectedDeliveryPoint(undefined);
-          } else {
-            throw new Error("Failed to update");
-          }
-        } catch (error) {
+      updateDeliveryPoint(updateData, {
+        onSuccess: () => {
+          toastSuccess({ message: "Update delivery point successfully" });
+          refetchDeliveryPoints();
+          setDialogOpen(false);
+          setSelectedDeliveryPoint(undefined);
+        },
+        onError: (error: Error) => {
           toastError({ message: "Failed to update delivery point" });
           console.error("Failed to update delivery point:", error);
-        }
-      };
-
-      updateDeliveryPoint();
+        },
+      });
     }
   };
 
@@ -320,24 +234,21 @@ export default function DeliveryPointComponent() {
     </div>
   );
 
-  const handleSort = useCallback(
-    (field: string) => {
-      if (!sort) {
-        setSort(`${field}:asc`);
-      } else {
-        const [currentField, currentDirection] = sort.split(":");
+  const handleSort = (field: string) => {
+    if (!sort) {
+      setSort(`${field}:asc`);
+    } else {
+      const [currentField, currentDirection] = sort.split(":");
 
-        if (currentField === field) {
-          const newDirection = currentDirection === "asc" ? "desc" : "asc";
-          setSort(`${field}:${newDirection}`);
-        } else {
-          setSort(`${field}:asc`);
-        }
-        setPage("1");
+      if (currentField === field) {
+        const newDirection = currentDirection === "asc" ? "desc" : "asc";
+        setSort(`${field}:${newDirection}`);
+      } else {
+        setSort(`${field}:asc`);
       }
-    },
-    [setSort, sort, setPage],
-  );
+      setPage("1");
+    }
+  };
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());

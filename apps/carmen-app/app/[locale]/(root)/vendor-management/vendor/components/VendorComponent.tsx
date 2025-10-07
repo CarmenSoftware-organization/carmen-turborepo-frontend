@@ -12,14 +12,18 @@ import { useVendor } from "@/hooks/useVendor";
 import { Link } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { vendorManagementPermission } from "@/lib/permission";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
 export default function VendorComponent() {
-    const { token, buCode } = useAuth();
+    const { token, buCode, permissions } = useAuth();
+
+    // Get permissions for vendor resource
+    const vendorPerms = vendorManagementPermission.get(permissions, "vendor");
 
     const tCommon = useTranslations('Common');
     const tVendor = useTranslations('Vendor');
@@ -39,12 +43,9 @@ export default function VendorComponent() {
         perpage: perpage ? parseInt(perpage) : 10,
     });
 
-    const handlePageChange = useCallback(
-        (newPage: number) => {
-            setPage(newPage.toString());
-        },
-        [setPage]
-    );
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage.toString());
+    };
 
     useEffect(() => {
         if (isUnauthorized) {
@@ -52,7 +53,7 @@ export default function VendorComponent() {
         }
     }, [isUnauthorized]);
 
-    const handleSort = useCallback((field: string) => {
+    const handleSort = (field: string) => {
         if (!sort) {
             setSort(`${field}:asc`);
         } else {
@@ -66,7 +67,7 @@ export default function VendorComponent() {
             }
             setPage("1");
         }
-    }, [setSort, sort, setPage]);
+    };
 
     const handleSetPerpage = (newPerpage: number) => {
         setPerpage(newPerpage.toString());
@@ -76,12 +77,14 @@ export default function VendorComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="vendor-action-buttons">
-            <Button size={'sm'} asChild>
-                <Link href={'/vendor-management/vendor/new'}>
-                    <Plus className="h-4 w-4" />
-                    {tVendor('add_vendor')}
-                </Link>
-            </Button>
+            {vendorPerms.canCreate && (
+                <Button size={'sm'} asChild>
+                    <Link href={'/vendor-management/vendor/new'}>
+                        <Plus className="h-4 w-4" />
+                        {tVendor('add_vendor')}
+                    </Link>
+                </Button>
+            )}
             <Button
                 variant="outlinePrimary"
                 className="group"
@@ -143,6 +146,8 @@ export default function VendorComponent() {
             totalItems={vendors?.paginate.total ?? 0}
             perpage={vendors?.paginate.perpage ?? 10}
             setPerpage={handleSetPerpage}
+            canUpdate={vendorPerms.canUpdate}
+            canDelete={vendorPerms.canDelete}
         />
     );
 

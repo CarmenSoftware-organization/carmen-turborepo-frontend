@@ -69,13 +69,11 @@ export const useDeliveryPointMutation = (
 export const useUpdateDeliveryPoint = (
     token: string,
     buCode: string,
-    id: string,
 ) => {
-    const API_URL_BY_ID = deliveryPointApiUrl(buCode, id);
-
     return useMutation({
         mutationFn: async (data: DeliveryPointUpdateDto) => {
-            if (!token || !buCode || !id) throw new Error("Unauthorized");
+            if (!token || !buCode || !data.id) throw new Error("Unauthorized");
+            const API_URL_BY_ID = deliveryPointApiUrl(buCode, data.id);
             return await updateApiRequest(
                 API_URL_BY_ID,
                 token,
@@ -90,12 +88,11 @@ export const useUpdateDeliveryPoint = (
 export const useDeleteDeliveryPoint = (
     token: string,
     buCode: string,
-    id: string,
 ) => {
-    const API_URL_BY_ID = deliveryPointApiUrl(buCode, id);
     return useMutation({
-        mutationFn: async () => {
+        mutationFn: async (id: string) => {
             if (!token || !buCode || !id) throw new Error("Unauthorized");
+            const API_URL_BY_ID = deliveryPointApiUrl(buCode, id);
             return await deleteApiRequest(
                 API_URL_BY_ID,
                 token,

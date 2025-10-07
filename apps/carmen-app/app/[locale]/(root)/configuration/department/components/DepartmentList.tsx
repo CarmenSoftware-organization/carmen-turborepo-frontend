@@ -24,6 +24,8 @@ interface DepartmentListProps {
   readonly totalItems: number;
   readonly perpage?: number;
   readonly setPerpage?: (perpage: number) => void;
+  readonly canUpdate?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export default function DepartmentList({
@@ -39,7 +41,9 @@ export default function DepartmentList({
   onSelect,
   totalItems,
   perpage,
-  setPerpage
+  setPerpage,
+  canUpdate = true,
+  canDelete = true,
 }: DepartmentListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -85,11 +89,16 @@ export default function DepartmentList({
       render: (_: unknown, record: TableDataSource) => {
         const department = departments.find(d => d.id === record.key);
         if (!department) return null;
-        return (
-          <ButtonLink href={`/configuration/department/${department.id}`}>
-            {department.name}
-          </ButtonLink>
-        );
+
+        if (canUpdate) {
+          return (
+            <ButtonLink href={`/configuration/department/${department.id}`}>
+              {department.name}
+            </ButtonLink>
+          );
+        }
+
+        return <span>{department.name}</span>;
       },
     },
     {
@@ -135,6 +144,10 @@ export default function DepartmentList({
       render: (_: unknown, record: TableDataSource) => {
         const department = departments.find(d => d.id === record.key);
         if (!department) return null;
+
+        // Hide action menu if no permissions
+        if (!canDelete) return null;
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -143,12 +156,14 @@ export default function DepartmentList({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                className="cursor-pointer"
-              >
-                <Trash2 className="h-4 w-4" />
-                {tCommon("delete")}
-              </DropdownMenuItem>
+              {canDelete && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {tCommon("delete")}
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

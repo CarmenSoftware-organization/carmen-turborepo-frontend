@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import ListUnit from "./ListUnit";
 import { UnitDto } from "@/dtos/unit.dto";
 import UnitDialog from "@/components/shared/UnitDialog";
@@ -19,9 +19,13 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { productManagementPermission } from "@/lib/permission";
 
 export default function UnitComponent() {
-  const { token, buCode } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+
+  // Get permissions for unit resource
+  const unitPerms = productManagementPermission.get(permissions, "unit");
   const tCommon = useTranslations("Common");
   const tUnit = useTranslations("Unit");
   const queryClient = useQueryClient();
@@ -82,11 +86,11 @@ export default function UnitComponent() {
   };
 
 
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
-  }, [setPage]);
+  };
 
-  const handleSort = useCallback((field: string) => {
+  const handleSort = (field: string) => {
     if (!sort) {
       setSort(`${field}:asc`);
     } else {
@@ -100,7 +104,7 @@ export default function UnitComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort, setPage]);
+  };
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
@@ -176,10 +180,12 @@ export default function UnitComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="unit-list-action-buttons">
-      <Button size={"sm"} onClick={handleAdd}>
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
+      {unitPerms.canCreate && (
+        <Button size={"sm"} onClick={handleAdd}>
+          <Plus className="h-4 w-4" />
+          {tCommon("add")}
+        </Button>
+      )}
       <Button
         variant="outlinePrimary"
         className="group"
@@ -243,6 +249,8 @@ export default function UnitComponent() {
       onSort={handleSort}
       perpage={units?.paginate.perpage}
       setPerpage={handleSetPerpage}
+      canUpdate={unitPerms.canUpdate}
+      canDelete={unitPerms.canDelete}
     />
   )
 

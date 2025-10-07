@@ -8,19 +8,23 @@ import { useTranslations } from "next-intl";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SortComponent from "@/components/ui-custom/SortComponent";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListLocations from "./ListLocations";
 import { Link } from "@/lib/navigation";
 import SignInDialog from "@/components/SignInDialog";
-import { SortConfig, SortDirection } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { configurationPermission } from "@/lib/permission";
 
 export default function LocationComponent() {
   const tCommon = useTranslations("Common");
   const tStoreLocation = useTranslations("StoreLocation");
   const tHeader = useTranslations("TableHeader");
-  const { token, buCode } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+
+  // Get permissions for store_location resource
+  const locationPerms = configurationPermission.get(permissions, "store_location");
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
@@ -76,7 +80,7 @@ export default function LocationComponent() {
   const sortFields = [{ key: "name", label: tHeader("name") }];
 
 
-  const handleSort = useCallback((field: string) => {
+  const handleSort = (field: string) => {
     if (!sort) {
       setSort(`${field}:asc`);
     } else {
@@ -90,23 +94,25 @@ export default function LocationComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort, setPage]);
+  };
 
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
-  }, [setPage]);
+  };
 
   const actionButtons = (
     <div
       className="action-btn-container"
       data-id="store-location-list-action-buttons"
     >
-      <Button size="sm" asChild>
-        <Link href="/configuration/location/new">
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Link>
-      </Button>
+      {locationPerms.canCreate && (
+        <Button size="sm" asChild>
+          <Link href="/configuration/location/new">
+            <Plus className="h-4 w-4" />
+            {tCommon("add")}
+          </Link>
+        </Button>
+      )}
       <Button
         variant="outlinePrimary"
         className="group"
@@ -149,18 +155,6 @@ export default function LocationComponent() {
     </div>
   );
 
-  const parsedSort = useMemo((): SortConfig | undefined => {
-    if (!sort) return undefined;
-
-    const parts = sort.split(':');
-    if (parts.length !== 2) return undefined;
-
-    return {
-      field: parts[0],
-      direction: parts[1] as SortDirection
-    };
-  }, [sort]);
-
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
   };
@@ -169,13 +163,15 @@ export default function LocationComponent() {
     <ListLocations
       locations={locations?.data ?? []}
       isLoading={isLoading}
-      sort={parsedSort}
+      sort={parseSortString(sort)}
       onSort={handleSort}
       onPageChange={handlePageChange}
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
       selectedLocations={selectedLocations}
       perpage={locations?.paginate.perpage}
+      canUpdate={locationPerms.canUpdate}
+      canDelete={locationPerms.canDelete}
       setPerpage={handleSetPerpage}
     />
   );

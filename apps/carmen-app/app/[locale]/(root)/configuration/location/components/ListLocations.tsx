@@ -37,6 +37,8 @@ interface ListLocationsProps {
   readonly selectedLocations?: string[];
   readonly perpage?: number;
   readonly setPerpage?: (perpage: number) => void;
+  readonly canUpdate?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export default function ListLocations({
@@ -48,6 +50,8 @@ export default function ListLocations({
   onSelectAll,
   onSelect,
   selectedLocations,
+  canUpdate = true,
+  canDelete = true,
   perpage,
   setPerpage
 }: ListLocationsProps) {
@@ -111,11 +115,16 @@ export default function ListLocations({
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
-        return (
-          <ButtonLink href={`/configuration/location/${location.id}`}>
-            {location.name}
-          </ButtonLink>
-        );
+
+        if (canUpdate) {
+          return (
+            <ButtonLink href={`/configuration/location/${location.id}`}>
+              {location.name}
+            </ButtonLink>
+          );
+        }
+
+        return <span>{location.name}</span>;
       },
     },
     {
@@ -190,6 +199,10 @@ export default function ListLocations({
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
+
+        // Hide action menu if no permissions
+        if (!canDelete) return null;
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -198,12 +211,14 @@ export default function ListLocations({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                className="text-destructive cursor-pointer hover:bg-transparent"
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
+              {canDelete && (
+                <DropdownMenuItem
+                  className="text-destructive cursor-pointer hover:bg-transparent"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

@@ -25,6 +25,8 @@ interface TaxProfileListProps {
     readonly onSelect: (id: string) => void;
     readonly perpage?: number;
     readonly setPerpage?: (perpage: number) => void;
+    readonly canUpdate?: boolean;
+    readonly canDelete?: boolean;
 }
 
 export default function TaxProfileList({
@@ -42,7 +44,9 @@ export default function TaxProfileList({
     onSelectAll,
     onSelect,
     perpage,
-    setPerpage
+    setPerpage,
+    canUpdate = true,
+    canDelete = true,
 }: TaxProfileListProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -88,15 +92,20 @@ export default function TaxProfileList({
             render: (_: unknown, record: TableDataSource) => {
                 const taxProfile = taxProfiles.find(tp => tp.id === record.key);
                 if (!taxProfile) return null;
-                return (
-                    <button
-                        type="button"
-                        className="btn-dialog"
-                        onClick={() => onEdit(taxProfile.id)}
-                    >
-                        {taxProfile.name}
-                    </button>
-                );
+
+                if (canUpdate) {
+                    return (
+                        <button
+                            type="button"
+                            className="btn-dialog"
+                            onClick={() => onEdit(taxProfile.id)}
+                        >
+                            {taxProfile.name}
+                        </button>
+                    );
+                }
+
+                return <span>{taxProfile.name}</span>;
             },
         },
         {
@@ -132,6 +141,10 @@ export default function TaxProfileList({
             render: (_: unknown, record: TableDataSource) => {
                 const taxProfile = taxProfiles.find(tp => tp.id === record.key);
                 if (!taxProfile) return null;
+
+                // Hide action menu if no permissions
+                if (!canDelete) return null;
+
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -140,13 +153,15 @@ export default function TaxProfileList({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem
-                                className="text-destructive cursor-pointer hover:bg-transparent"
-                                onClick={() => onDelete(taxProfile.id)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
+                            {canDelete && (
+                                <DropdownMenuItem
+                                    className="text-destructive cursor-pointer hover:bg-transparent"
+                                    onClick={() => onDelete(taxProfile.id)}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );

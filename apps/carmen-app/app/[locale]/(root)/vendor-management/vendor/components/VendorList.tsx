@@ -27,6 +27,8 @@ interface VendorListProps {
   readonly totalItems: number;
   readonly perpage: number;
   readonly setPerpage: (perpage: number) => void;
+  readonly canUpdate?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export default function VendorList({
@@ -39,7 +41,9 @@ export default function VendorList({
   onSort,
   totalItems,
   perpage,
-  setPerpage
+  setPerpage,
+  canUpdate = true,
+  canDelete = true,
 }: VendorListProps) {
   const tCommon = useTranslations("Common");
   const tTableHeader = useTranslations("TableHeader");
@@ -110,11 +114,14 @@ export default function VendorList({
       icon: <List className="h-4 w-4" />,
       align: "left",
       render: (_: unknown, record: TableDataSource) => {
-        return (
-          <ButtonLink href={`/vendor-management/vendor/${record.key}`}>
-            {record.name}
-          </ButtonLink>
-        );
+        if (canUpdate) {
+          return (
+            <ButtonLink href={`/vendor-management/vendor/${record.key}`}>
+              {record.name}
+            </ButtonLink>
+          );
+        }
+        return <span>{record.name}</span>;
       },
     },
     {
@@ -157,6 +164,9 @@ export default function VendorList({
       key: "action",
       align: "right",
       render: (_: unknown, record: TableDataSource) => {
+        // Hide action menu if no permissions
+        if (!canDelete) return null;
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -165,12 +175,15 @@ export default function VendorList({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem className="text-destructive"
-                onClick={() => console.log(record.id)}
-              >
-                <Trash2 className="h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
+              {canDelete && (
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => console.log(record.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

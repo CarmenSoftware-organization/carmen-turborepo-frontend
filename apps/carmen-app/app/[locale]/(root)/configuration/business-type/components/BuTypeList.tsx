@@ -25,6 +25,8 @@ interface BuTypeListProps {
     readonly onSelect: (id: string) => void;
     readonly perpage?: number;
     readonly setPerpage?: (perpage: number) => void;
+    readonly canUpdate?: boolean;
+    readonly canDelete?: boolean;
 }
 
 export default function BuTypeList({
@@ -42,7 +44,9 @@ export default function BuTypeList({
     onSelectAll,
     onSelect,
     perpage,
-    setPerpage
+    setPerpage,
+    canUpdate = true,
+    canDelete = true,
 }: BuTypeListProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -88,15 +92,20 @@ export default function BuTypeList({
             render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
-                return (
-                    <button
-                        type="button"
-                        className="btn-dialog"
-                        onClick={() => onEdit(buType.id)}
-                    >
-                        {buType.name}
-                    </button>
-                );
+
+                if (canUpdate) {
+                    return (
+                        <button
+                            type="button"
+                            className="btn-dialog"
+                            onClick={() => onEdit(buType.id)}
+                        >
+                            {buType.name}
+                        </button>
+                    );
+                }
+
+                return <span>{buType.name}</span>;
             },
         },
         {
@@ -154,6 +163,10 @@ export default function BuTypeList({
             render: (_: unknown, record: TableDataSource) => {
                 const buType = buTypes.find(bt => bt.id === record.key);
                 if (!buType) return null;
+
+                // Hide action menu if no permissions
+                if (!canDelete) return null;
+
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -162,13 +175,15 @@ export default function BuTypeList({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem
-                                className="text-destructive cursor-pointer hover:bg-transparent"
-                                onClick={() => onDelete(buType.id)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
+                            {canDelete && (
+                                <DropdownMenuItem
+                                    className="text-destructive cursor-pointer hover:bg-transparent"
+                                    onClick={() => onDelete(buType.id)}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );

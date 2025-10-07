@@ -31,6 +31,8 @@ interface CurrencyListProps {
   readonly onSelect: (id: string) => void;
   readonly perpage: number;
   readonly setPerpage: (perpage: number) => void;
+  readonly canUpdate?: boolean;
+  readonly canDelete?: boolean;
 }
 
 
@@ -49,7 +51,9 @@ export default function CurrencyList({
   onSelectAll,
   onSelect,
   perpage,
-  setPerpage
+  setPerpage,
+  canUpdate = true,
+  canDelete = true,
 }: CurrencyListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -96,15 +100,20 @@ export default function CurrencyList({
       render: (_: unknown, record: TableDataSource) => {
         const currency = currencies.find(c => c.id === record.key);
         if (!currency) return null;
-        return (
-          <button
-            type="button"
-            className="btn-dialog"
-            onClick={() => onEdit(currency)}
-          >
-            {currency.name}
-          </button>
-        );
+
+        if (canUpdate) {
+          return (
+            <button
+              type="button"
+              className="btn-dialog"
+              onClick={() => onEdit(currency)}
+            >
+              {currency.name}
+            </button>
+          );
+        }
+
+        return <span>{currency.name}</span>;
       },
     },
     {
@@ -195,6 +204,10 @@ export default function CurrencyList({
       render: (_: unknown, record: TableDataSource) => {
         const currency = currencies.find(c => c.id === record.key);
         if (!currency) return null;
+
+        // Hide action menu if no permissions
+        if (!canDelete) return null;
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -203,13 +216,15 @@ export default function CurrencyList({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem
-                className="text-destructive cursor-pointer hover:bg-transparent"
-                onClick={() => onToggleStatus(currency)}
-              >
-                <Trash2 className="h-4 w-4" />
-                {tCommon("delete")}
-              </DropdownMenuItem>
+              {canDelete && (
+                <DropdownMenuItem
+                  className="text-destructive cursor-pointer hover:bg-transparent"
+                  onClick={() => onToggleStatus(currency)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  {tCommon("delete")}
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

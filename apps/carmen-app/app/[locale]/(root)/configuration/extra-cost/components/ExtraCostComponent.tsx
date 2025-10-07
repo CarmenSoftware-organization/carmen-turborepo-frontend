@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useExtraCostTypeQuery, useCreateExtraCostType, useUpdateExtraCostType, useDeleteExtraCostType } from "@/hooks/useExtraCostType";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import ListExtraCost from "./ListExtraCost";
 import { parseSortString } from "@/utils/table-sort";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -19,9 +19,13 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import ExtraCostDialog from "./ExtraCostDialog";
 import { useTranslations } from "next-intl";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { configurationPermission } from "@/lib/permission";
 
 export default function ExtraCostComponent() {
-  const { token, buCode } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+
+  // Get permissions for extra_cost resource
+  const extraCostPerms = configurationPermission.get(permissions, "extra_cost");
   const queryClient = useQueryClient();
   const tCommon = useTranslations("Common");
   const tConfig = useTranslations("Modules.Configuration");
@@ -84,13 +88,13 @@ export default function ExtraCostComponent() {
     });
   };
 
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
-  }, [setPage]);
+  };
 
-  const handlePerpageChange = useCallback((newPerpage: number) => {
+  const handlePerpageChange = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
-  }, [setPerpage]);
+  };
 
   const handleAdd = () => {
     setDialogMode(formType.ADD);
@@ -175,10 +179,12 @@ export default function ExtraCostComponent() {
       className="action-btn-container"
       data-id="extra-cost-list-action-buttons"
     >
-      <Button size="sm" onClick={handleAdd}>
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
+      {extraCostPerms.canCreate && (
+        <Button size="sm" onClick={handleAdd}>
+          <Plus className="h-4 w-4" />
+          {tCommon("add")}
+        </Button>
+      )}
       <Button
         variant="outlinePrimary"
         className="group"
@@ -199,7 +205,7 @@ export default function ExtraCostComponent() {
     </div>
   );
 
-  const handleSort = useCallback((field: string) => {
+  const handleSort = (field: string) => {
     if (!sort) {
       setSort(`${field}:asc`);
     } else {
@@ -213,7 +219,7 @@ export default function ExtraCostComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort, setPage]);
+  };
 
   const filters = (
     <div className="filter-container" data-id="extra-cost-list-filters">
@@ -257,6 +263,8 @@ export default function ExtraCostComponent() {
       selectedExtraCosts={selectedExtraCosts}
       perpage={extraCostTypes?.paginate?.perpage ?? 10}
       setPerpage={handlePerpageChange}
+      canUpdate={extraCostPerms.canUpdate}
+      canDelete={extraCostPerms.canDelete}
     />
   );
 

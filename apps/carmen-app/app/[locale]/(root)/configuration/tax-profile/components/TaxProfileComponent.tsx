@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, FileDown, Printer } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -35,9 +35,13 @@ import {
 import TaxProfileList from "./TaxProfileList";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { configurationPermission } from "@/lib/permission";
 
 export function TaxProfileComponent() {
-  const { token, buCode } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+
+  // Get permissions for tax_profile resource
+  const taxProfilePerms = configurationPermission.get(permissions, "tax_profile");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tTaxProfile = useTranslations("TaxProfile");
@@ -111,20 +115,22 @@ export function TaxProfileComponent() {
     }
   }, [search, setSort]);
 
-  const handleAddNew = useCallback(() => {
+  const handleAddNew = () => {
     setEditingProfile(null);
     setIsDialogOpen(true);
-  }, []);
+  };
 
   const actionButtons = (
     <div
       className="action-btn-container"
       data-id="tax-profile-action-buttons"
     >
-      <Button size="sm" onClick={handleAddNew}>
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
+      {taxProfilePerms.canCreate && (
+        <Button size="sm" onClick={handleAddNew}>
+          <Plus className="h-4 w-4" />
+          {tCommon("add")}
+        </Button>
+      )}
       <Button
         variant="outlinePrimary"
         className="group"
@@ -171,12 +177,12 @@ export function TaxProfileComponent() {
     </div>
   );
 
-  const handleEdit = useCallback((profileId: string) => {
+  const handleEdit = (profileId: string) => {
     setEditingProfile(profileId);
     setIsDialogOpen(true);
-  }, []);
+  };
 
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = (id: string) => {
     deleteTaxProfile(undefined, {
       onSuccess: () => {
         setTaxProfiles((prev) => prev.filter((profile) => profile.id !== id));
@@ -184,11 +190,11 @@ export function TaxProfileComponent() {
         setDeleteProfileId(null);
       },
     });
-  }, [deleteTaxProfile, tTaxProfile]);
+  };
 
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
-  }, [setPage]);
+  };
 
   const handleSelectAll = (isChecked: boolean) => {
     if (isChecked) {
@@ -203,7 +209,7 @@ export function TaxProfileComponent() {
     setPerpage(newPerpage.toString());
   };
 
-  const handleSort = useCallback((field: string) => {
+  const handleSort = (field: string) => {
     if (!sort) {
       setSort(`${field}:asc`);
     } else {
@@ -217,7 +223,7 @@ export function TaxProfileComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort, setPage]);
+  };
 
   const handleSelect = (id: string) => {
     setSelectedTaxProfiles((prev) => {
@@ -241,6 +247,8 @@ export function TaxProfileComponent() {
       totalItems={totalItems}
       sort={parseSortString(sort)}
       onSort={handleSort}
+      canUpdate={taxProfilePerms.canUpdate}
+      canDelete={taxProfilePerms.canDelete}
       selectedTaxProfiles={selectedTaxProfiles}
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}

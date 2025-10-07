@@ -13,7 +13,7 @@ import {
 import { useURL } from "@/hooks/useURL";
 import { Plus, Printer, FileDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,9 +35,13 @@ import BuTypeList from "./BuTypeList";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { FormBuTypeDialog } from "./FormBuTypeDialog";
+import { configurationPermission } from "@/lib/permission";
 
 export default function BusinessTypeComponent() {
-  const { token, buCode } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+
+  // Get permissions for business_type resource
+  const businessTypePerms = configurationPermission.get(permissions, "business_type");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tBusinessType = useTranslations("BusinessType");
@@ -103,15 +107,15 @@ export default function BusinessTypeComponent() {
     }
   }, [search, setSort]);
 
-  const handleSelectAll = useCallback((isChecked: boolean) => {
+  const handleSelectAll = (isChecked: boolean) => {
     if (isChecked) {
       setSelectedBuTypes(buTypesData.map((bu) => bu.id));
     } else {
       setSelectedBuTypes([]);
     }
-  }, [buTypesData]);
+  };
 
-  const handleSelect = useCallback((id: string) => {
+  const handleSelect = (id: string) => {
     setSelectedBuTypes((prev) => {
       if (prev.includes(id)) {
         return prev.filter(buId => buId !== id);
@@ -119,9 +123,9 @@ export default function BusinessTypeComponent() {
         return [...prev, id];
       }
     });
-  }, []);
+  };
 
-  const handleSort = useCallback((field: string) => {
+  const handleSort = (field: string) => {
     if (!sort) {
       setSort(`${field}:asc`);
     } else {
@@ -135,27 +139,29 @@ export default function BusinessTypeComponent() {
       }
       setPage("1");
     }
-  }, [setSort, sort, setPage]);
+  };
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
   };
 
-  const handleAddNew = useCallback(() => {
+  const handleAddNew = () => {
     setEditingProfile(null);
     setEditingProfileId(null);
     setIsDialogOpen(true);
-  }, []);
+  };
 
   const actionButtons = (
     <div
       className="action-btn-container"
       data-id="bu-type-list-action-buttons"
     >
-      <Button size="sm" onClick={handleAddNew}>
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
+      {businessTypePerms.canCreate && (
+        <Button size="sm" onClick={handleAddNew}>
+          <Plus className="h-4 w-4" />
+          {tCommon("add")}
+        </Button>
+      )}
       <Button
         variant="outlinePrimary"
         className="group"
@@ -202,7 +208,7 @@ export default function BusinessTypeComponent() {
     </div>
   );
 
-  const handleEdit = useCallback((id: string) => {
+  const handleEdit = (id: string) => {
     const buType = buTypesData.find((bt) => bt.id === id);
     if (buType) {
       const formData: BuTypeFormDto = {
@@ -215,11 +221,11 @@ export default function BusinessTypeComponent() {
       setEditingProfileId(id);
       setIsDialogOpen(true);
     }
-  }, [buTypesData]);
+  };
 
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
-  }, [setPage]);
+  };
 
   const handleCreate = (data: BuTypeFormDto) => {
     createBuType(data, {
@@ -244,9 +250,9 @@ export default function BusinessTypeComponent() {
     });
   };
 
-  const handleDelete = useCallback((id: string) => {
+  const handleDelete = (id: string) => {
     setDeleteProfileId(id);
-  }, []);
+  };
 
   const confirmDelete = () => {
     if (deleteProfileId) {
@@ -277,6 +283,8 @@ export default function BusinessTypeComponent() {
       onSelect={handleSelect}
       perpage={buTypes?.paginate.perpage}
       setPerpage={handleSetPerpage}
+      canUpdate={businessTypePerms.canUpdate}
+      canDelete={businessTypePerms.canDelete}
     />
   )
 

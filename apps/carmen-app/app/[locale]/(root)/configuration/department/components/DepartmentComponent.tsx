@@ -11,15 +11,21 @@ import { useURL } from "@/hooks/useURL";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import DepartmentList from "./DepartmentList";
-import { SortConfig, SortDirection } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { configurationPermission } from "@/lib/permission";
 
 export default function DepartmentComponent() {
-  const { token, buCode } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+
+  // Get permissions for department resource
+  const departmentPerms = configurationPermission.get(permissions, "department");
+
   const tDepartment = useTranslations("Department");
   const tCommon = useTranslations("Common");
+  const tHeader = useTranslations("TableHeader");
   const router = useRouter();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
@@ -37,6 +43,12 @@ export default function DepartmentComponent() {
     perpage
   });
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (isUnauthorized) {
+      setLoginDialogOpen(true);
+    }
+  }, [isUnauthorized]);
 
   const handleSelectAll = (isChecked: boolean) => {
     if (isChecked) {
@@ -61,78 +73,70 @@ export default function DepartmentComponent() {
   const totalPages = departments?.paginate.pages ?? 1;
   const totalItems = departments?.paginate.total ?? 0;
 
-  const parsedSort = useMemo((): SortConfig | undefined => {
-    if (!sort) return undefined;
-
-    const parts = sort.split(":");
-
-    if (parts.length === 1) {
-      return {
-        field: parts[0],
-        direction: 'asc',
-      };
-    }
-    if (parts.length === 2) {
-      return {
-        field: parts[0],
-        direction: parts[1] as SortDirection,
-      };
-    }
-
-    return undefined;
-  }, [sort]);
-
-  const handlePageChange = useCallback((newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
-  }, [setPage]);
+  };
 
-  const handleSort = useCallback((field: string) => {
+  const handleAdd = () => {
+    router.push("/configuration/department/new");
+  };
+
+  const handleSort = (field: string) => {
     if (!sort) {
       setSort(`${field}:asc`);
     } else {
-      const [currentField, currentDirection] = sort.split(':');
+      const [currentField, currentDirection] = sort.split(":");
 
       if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+        const newDirection = currentDirection === "asc" ? "desc" : "asc";
         setSort(`${field}:${newDirection}`);
       } else {
         setSort(`${field}:asc`);
       }
+      setPage("1");
     }
-  }, [setSort, sort]);
+  };
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
   };
 
-  if (isUnauthorized) {
-    return <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />;
-  }
-
   const sortFields = [
-    { key: "name", label: tCommon("name") },
-    { key: "description", label: tCommon("description") },
-    { key: "is_active", label: tCommon("status") },
+    {
+      key: "name",
+      label: tHeader("name"),
+    },
+    {
+      key: "is_active",
+      label: tHeader("status"),
+    },
   ];
-
-  const title = tDepartment("title");
 
   const actionButtons = (
     <div
       className="action-btn-container"
       data-id="department-list-action-buttons"
     >
-      <Button size={"sm"} onClick={() => {
-        router.push("/configuration/department/new");
-      }}>
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
-      <Button variant="outlinePrimary" size={"sm"} data-id="department-export-button">
+      {departmentPerms.canCreate && (
+        <Button size="sm" onClick={handleAdd}>
+          <Plus className="h-4 w-4" />
+          {tCommon("add")}
+        </Button>
+      )}
+      <Button
+        variant="outlinePrimary"
+        className="group"
+        size="sm"
+        data-id="department-export-button"
+      >
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button variant="outlinePrimary" size={"sm"} data-id="department-print-button">
+      <Button
+        variant="outlinePrimary"
+        size="sm"
+        data-id="department-print-button"
+      >
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>
@@ -171,24 +175,29 @@ export default function DepartmentComponent() {
       isLoading={isLoading}
       currentPage={currentPage}
       totalPages={totalPages}
+      totalItems={totalItems}
       onPageChange={handlePageChange}
-      sort={parsedSort}
+      sort={parseSortString(sort)}
       onSort={handleSort}
       selectedDepartments={selectedDepartments}
       onSelectAll={handleSelectAll}
       onSelect={handleSelect}
-      totalItems={totalItems}
       perpage={departments?.paginate.perpage}
       setPerpage={handleSetPerpage}
+      canUpdate={departmentPerms.canUpdate}
+      canDelete={departmentPerms.canDelete}
     />
-  )
+  );
 
   return (
-    <DataDisplayTemplate
-      content={content}
-      title={title}
-      actionButtons={actionButtons}
-      filters={filters}
-    />
+    <>
+      <DataDisplayTemplate
+        title={tDepartment("title")}
+        actionButtons={actionButtons}
+        filters={filters}
+        content={content}
+      />
+      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
+    </>
   );
 }
