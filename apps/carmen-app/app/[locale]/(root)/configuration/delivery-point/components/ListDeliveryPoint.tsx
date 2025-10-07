@@ -25,6 +25,8 @@ interface ListDeliveryPointProps {
     readonly onSelectAll: (isChecked: boolean) => void;
     readonly onSelect: (id: string) => void;
     readonly setPerpage: (perpage: number) => void;
+    readonly canUpdate?: boolean;
+    readonly canDelete?: boolean;
 }
 
 export default function ListDeliveryPoint({
@@ -42,7 +44,9 @@ export default function ListDeliveryPoint({
     selectedDeliveryPoints,
     onSelectAll,
     onSelect,
-    setPerpage
+    setPerpage,
+    canUpdate = true,
+    canDelete = true,
 }: ListDeliveryPointProps) {
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
@@ -88,15 +92,21 @@ export default function ListDeliveryPoint({
             render: (_: unknown, record: TableDataSource) => {
                 const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
                 if (!deliveryPoint) return null;
-                return (
-                    <button
-                        type="button"
-                        className="btn-dialog"
-                        onClick={() => onEdit(deliveryPoint)}
-                    >
-                        {deliveryPoint.name}
-                    </button>
-                );
+
+                if (canUpdate) {
+                    return (
+                        <button
+                            type="button"
+                            className="btn-dialog"
+                            onClick={() => onEdit(deliveryPoint)}
+                            disabled={!canUpdate}
+                        >
+                            {deliveryPoint.name}
+                        </button>
+                    );
+                }
+
+                return <span>{deliveryPoint.name}</span>;
             },
         },
         {
@@ -132,6 +142,10 @@ export default function ListDeliveryPoint({
             render: (_: unknown, record: TableDataSource) => {
                 const deliveryPoint = deliveryPoints.find(dp => dp.id === record.key);
                 if (!deliveryPoint) return null;
+
+                // Hide action menu if no permissions
+                if (!canDelete) return null;
+
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -140,13 +154,15 @@ export default function ListDeliveryPoint({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem
-                                className="text-destructive cursor-pointer hover:bg-transparent"
-                                onClick={() => onToggleStatus(deliveryPoint)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
+                            {canDelete && (
+                                <DropdownMenuItem
+                                    className="text-destructive cursor-pointer hover:bg-transparent"
+                                    onClick={() => onToggleStatus(deliveryPoint)}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );

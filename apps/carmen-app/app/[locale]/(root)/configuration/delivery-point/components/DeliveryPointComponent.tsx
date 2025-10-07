@@ -26,9 +26,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DeliveryPointDialog from "@/components/shared/DeliveryPointDialog";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { configurationPermission } from "@/lib/permission";
 
 export default function DeliveryPointComponent() {
-  const { token, buCode } = useAuth();
+  const { token, buCode, permissions } = useAuth();
+
+  const permission_dp = configurationPermission.get(permissions, "delivery_point");
+
+  console.log('permissions for delivery_point:', permission_dp);
+
+
+  // Get permissions for delivery_point resource
+  const deliveryPointPerms = configurationPermission.get(permissions, "delivery_point");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tDeliveryPoint = useTranslations("DeliveryPoint");
@@ -282,7 +291,12 @@ export default function DeliveryPointComponent() {
       className="action-btn-container"
       data-id="delivery-point-list-action-buttons"
     >
-      <Button size="sm" onClick={handleAdd}>
+      <Button
+        size="sm"
+        onClick={handleAdd}
+        disabled={!deliveryPointPerms.canCreate}
+        data-id="delivery-point-add-button"
+      >
         <Plus className="h-4 w-4" />
         {tCommon("add")}
       </Button>
@@ -372,6 +386,8 @@ export default function DeliveryPointComponent() {
       selectedDeliveryPoints={selectedDeliveryPoints}
       setPerpage={handleSetPerpage}
       perpage={deliveryPoints?.paginate.perpage}
+      canUpdate={deliveryPointPerms.canUpdate}
+      canDelete={deliveryPointPerms.canDelete}
     />
   );
 
