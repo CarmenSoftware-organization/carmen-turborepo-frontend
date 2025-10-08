@@ -1,69 +1,103 @@
+'use client';
+
 import { Bell } from 'lucide-react';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from 'react';
+import { wsUrl, backendApi } from '@/lib/backend-api';
 
 interface Notification {
     id: string;
     title: string;
     message: string;
-    time: string;
-    read: boolean;
-    poster: string;
+    type: 'info' | 'error' | 'warning' | 'success';
+    created_at: string;
 }
 
-const mockNotifications: Notification[] = [
-    {
-        id: 'noti-1',
-        title: 'New Message',
-        message: 'You have received a new message from John Doe',
-        time: '5 minutes ago',
-        read: false,
-        poster: 'John Doe'
-    },
-    {
-        id: 'noti-2',
-        title: 'System Alert',
-        message: 'Your storage is almost full. Please free up some space.',
-        time: '1 hour ago',
-        read: false,
-        poster: 'ระบบอัตโนมัติ'
-    },
-    {
-        id: 'noti-3',
-        title: 'Update Available',
-        message: 'A new version of the application is available.',
-        time: '3 hours ago',
-        read: false,
-        poster: 'システム通知'
-    },
-    {
-        id: 'noti-4',
-        title: 'Meeting Reminder',
-        message: 'You have a meeting with the team in 30 minutes.',
-        time: '30 minutes ago',
-        read: false,
-        poster: 'François Dupont'
-    },
-    {
-        id: 'noti-5',
-        title: 'New Message',
-        message: 'You have received a new message from Jane Smith',
-        time: '2 hours ago',
-        read: false,
-        poster: 'Jane Smith'
-    },
-    {
-        id: 'noti-6',
-        title: 'Task Completed',
-        message: 'Your assigned task has been marked as completed.',
-        time: '4 hours ago',
-        read: false,
-        poster: 'Pedro Martínez'
-    }
-];
-
 export default function Notification() {
-    const notificationCount = mockNotifications.length;
+    const { user } = useAuth();
+    const [isConnected, setIsConnected] = useState(false);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [socket, setSocket] = useState<WebSocket | null>(null);
+
+    useEffect(() => {
+        const handleNotificationSent = (event: Event) => {
+            const customEvent = event as CustomEvent;
+            if (customEvent.detail) {
+                setNotifications(prev => [customEvent.detail, ...prev]);
+            }
+        };
+
+        window.addEventListener('notification-sent', handleNotificationSent);
+
+        return () => {
+            window.removeEventListener('notification-sent', handleNotificationSent);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!user?.id || !wsUrl) return;
+
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+            setIsConnected(true);
+            setSocket(ws);
+            ws.send(JSON.stringify({ type: 'register', user_id: user.id }));
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                if (message.type === 'notification') {
+                    setNotifications(prev => [message.data, ...prev]);
+                }
+            } catch (error) {
+                console.error('Failed to parse notification message:', error);
+            }
+        };
+
+        ws.onclose = () => {
+            setIsConnected(false);
+            setSocket(null);
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        return () => {
+            if (ws.readyState === WebSocket.OPEN) {
+                ws.close();
+            }
+        };
+    }, [user?.id]);
+
+    const markAsRead = (notificationId: string) => {
+        if (socket) {
+            socket.send(JSON.stringify({ type: 'markAsRead', notificationId }));
+            setNotifications(prev => prev.filter(n => n.id !== notificationId));
+        }
+    };
+
+    const markAllAsRead = async () => {
+        if (!user?.id) return;
+
+        try {
+            const response = await fetch(`${backendApi}/api/notifications/mark-all-read/${user.id}`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                setNotifications([]);
+            }
+        } catch (error) {
+            console.error('Failed to mark all notifications as read:', error);
+        }
+    };
+
+    const notificationCount = notifications.length;
     const displayCount = notificationCount > 10 ? '9+' : notificationCount.toString();
 
     return (
@@ -91,40 +125,59 @@ export default function Notification() {
                 </div>
 
                 <div className="divide-y">
-                    {mockNotifications.map((notification) => (
-                        <div
-                            key={notification.id}
-                            className={`p-4 hover:bg-muted/50 transition-colors ${!notification.read ? 'border-l-2 border-l-primary' : ''}`}
-                        >
-                            <div className="flex items-start gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
-                                    {notification.poster.charAt(0)}
-                                </div>
-                                <div className="flex-1">
-                                    <div className="flex justify-between items-start">
-                                        <h5 className="font-medium text-sm">{notification.title}</h5>
-                                        <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">{notification.time}</span>
+                    {notifications.length === 0 ? (
+                        <div className="p-8 text-center text-muted-foreground">
+                            <p>No notifications yet</p>
+                            {!isConnected && (
+                                <p className="text-xs mt-2">Connecting to notification server...</p>
+                            )}
+                        </div>
+                    ) : (
+                        notifications.map((notification) => (
+                            <div
+                                key={notification.id}
+                                className="p-4 hover:bg-muted/50 transition-colors border-l-2 border-l-primary"
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
+                                        {notification.type === 'error' ? '❌' : notification.type === 'warning' ? '⚠️' : notification.type === 'success' ? '✅' : '📘'}
                                     </div>
-                                    <p className="text-xs text-muted-foreground mt-1 mb-2">
-                                        {notification.message}
-                                    </p>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-xs font-medium">
-                                            {notification.poster}
-                                        </span>
-                                        {!notification.read && (
-                                            <span className="h-2 w-2 rounded-full bg-primary"></span>
-                                        )}
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start">
+                                            <h5 className="font-medium text-sm">{notification.title}</h5>
+                                            <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+                                                {new Date(notification.created_at).toLocaleTimeString()}
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground mt-1 mb-2">
+                                            {notification.message}
+                                        </p>
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-xs font-medium capitalize">
+                                                {notification.type}
+                                            </span>
+                                            <button
+                                                onClick={() => markAsRead(notification.id)}
+                                                className="text-xs px-2 py-1 border rounded hover:bg-muted"
+                                            >
+                                                Mark Read
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
 
                 {notificationCount > 0 && (
                     <div className="p-3 border-t bg-muted/30 flex justify-between">
-                        <Button variant="ghost" className="text-xs" size="sm">
+                        <Button
+                            variant="ghost"
+                            className="text-xs"
+                            size="sm"
+                            onClick={markAllAsRead}
+                        >
                             Mark all as read
                         </Button>
                         <Button variant="outline" className="text-xs" size="sm">

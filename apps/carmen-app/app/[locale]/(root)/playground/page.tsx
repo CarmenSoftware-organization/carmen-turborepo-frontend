@@ -42,6 +42,10 @@ const itemsPlayground = [
     title: "Permission",
     href: "/playground/permission",
   },
+  {
+    title: "Notification Component",
+    href: "/playground/noti",
+  },
 ];
 
 export default function Playground() {
