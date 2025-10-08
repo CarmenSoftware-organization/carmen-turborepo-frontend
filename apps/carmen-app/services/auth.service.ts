@@ -25,7 +25,7 @@ export const getUserProfileService = async (accessToken: string) => {
     // Mock permissions for testing
     const mockPermissions = {
       configuration: {
-        delivery_point: ["view_all", "create", "delete"],
+        delivery_point: ["view_all", "create", "update", "delete"],
         currency: ["view_all", "create", "update"],
         exchange_rates: ["view"],
         store_location: ["view_all", "create"],

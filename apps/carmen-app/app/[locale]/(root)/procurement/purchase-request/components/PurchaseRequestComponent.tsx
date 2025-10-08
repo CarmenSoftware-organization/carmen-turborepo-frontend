@@ -54,8 +54,8 @@ export default function PurchaseRequestComponent() {
     perpage: perpage,
   });
 
-  const totalItems = prs?.paginate.total;
-  const totalPages = prs?.paginate.pages;
+  const totalItems = prs?.paginate?.total;
+  const totalPages = prs?.paginate?.pages;
 
   useEffect(() => {
     if (search) {
@@ -181,10 +181,10 @@ export default function PurchaseRequestComponent() {
       <div className="hidden lg:block">
         {view === VIEW.LIST ? (
           <PurchaseRequestList
-            purchaseRequests={prs?.data}
+            purchaseRequests={prs?.data || []}
             currentPage={currentPageNumber}
             totalPages={totalPages}
-            perpage={prs?.paginate.perpage}
+            perpage={prs?.paginate?.perpage}
             onPageChange={handlePageChange}
             isLoading={isLoading}
             totalItems={totalItems}

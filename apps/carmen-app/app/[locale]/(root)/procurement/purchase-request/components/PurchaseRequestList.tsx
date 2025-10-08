@@ -49,6 +49,9 @@ export default function PurchaseRequestList({
   const { dateFormat, amount, currencyBase } = useAuth();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
+  console.log('purchaseRequests', purchaseRequests);
+
+
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]

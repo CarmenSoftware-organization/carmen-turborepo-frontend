@@ -34,7 +34,9 @@ export const usePurchaseRequest = (
                         "Content-Type": "application/json",
                     },
                 });
-                return res.data;
+                // API returns array of BU data, find the one matching current buCode
+                const buData = res.data.find((item: { bu_code: string }) => item.bu_code === buCode);
+                return buData || { data: [], paginate: { total: 0, page: 1, perpage: 10, pages: 0 } };
             } catch (error) {
                 console.log('error', error);
                 throw error;
