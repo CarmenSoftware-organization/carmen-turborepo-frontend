@@ -42,6 +42,7 @@ export function TaxProfileComponent() {
 
   // Get permissions for tax_profile resource
   const taxProfilePerms = configurationPermission.get(permissions, "tax_profile");
+
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const tTaxProfile = useTranslations("TaxProfile");

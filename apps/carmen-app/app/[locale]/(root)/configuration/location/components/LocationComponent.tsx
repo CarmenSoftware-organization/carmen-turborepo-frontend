@@ -11,7 +11,7 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { useState, useEffect } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListLocations from "./ListLocations";
-import { Link } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 import SignInDialog from "@/components/SignInDialog";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
@@ -22,7 +22,7 @@ export default function LocationComponent() {
   const tStoreLocation = useTranslations("StoreLocation");
   const tHeader = useTranslations("TableHeader");
   const { token, buCode, permissions } = useAuth();
-
+  const router = useRouter();
   // Get permissions for store_location resource
   const locationPerms = configurationPermission.get(permissions, "store_location");
   const [search, setSearch] = useURL("search");
@@ -105,14 +105,15 @@ export default function LocationComponent() {
       className="action-btn-container"
       data-id="store-location-list-action-buttons"
     >
-      {locationPerms.canCreate && (
-        <Button size="sm" asChild>
-          <Link href="/configuration/location/new">
-            <Plus className="h-4 w-4" />
-            {tCommon("add")}
-          </Link>
-        </Button>
-      )}
+      <Button
+        size="sm"
+        data-id="store-location-add-button"
+        onClick={() => router.push("/configuration/location/new")}
+        disabled={!locationPerms.canCreate}
+      >
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
       <Button
         variant="outlinePrimary"
         className="group"

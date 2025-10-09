@@ -117,12 +117,15 @@ export default function DepartmentComponent() {
       className="action-btn-container"
       data-id="department-list-action-buttons"
     >
-      {departmentPerms.canCreate && (
-        <Button size="sm" onClick={handleAdd}>
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Button>
-      )}
+      <Button
+        size="sm"
+        onClick={handleAdd}
+        data-id="department-add-button"
+        disabled={!departmentPerms.canCreate}
+      >
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
       <Button
         variant="outlinePrimary"
         className="group"

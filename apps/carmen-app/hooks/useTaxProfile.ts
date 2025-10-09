@@ -24,6 +24,9 @@ export const useTaxProfileQuery = (
 
   const API_URL = taxProfileApiUrl(buCode);
 
+  console.log('API_URL', API_URL);
+
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["tax-profile", buCode, params],
     queryFn: async () => {

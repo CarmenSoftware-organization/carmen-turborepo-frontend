@@ -39,8 +39,8 @@ const itemsPlayground = [
     href: "/playground/transfer",
   },
   {
-    title: "Permission",
-    href: "/playground/permission",
+    title: "Configuration Page",
+    href: "/playground/config",
   },
   {
     title: "Notification Component",

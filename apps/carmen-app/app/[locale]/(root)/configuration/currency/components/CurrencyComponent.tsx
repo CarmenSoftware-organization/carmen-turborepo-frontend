@@ -53,7 +53,6 @@ export default function CurrencyComponent() {
     });
 
     const currenciesData = data?.data ?? [];
-    const currencies = Array.isArray(data) ? data : currenciesData;
     const totalPages = data?.paginate?.pages ?? 1;
     const totalItems = data?.paginate?.total ?? 0;
 
@@ -165,7 +164,7 @@ export default function CurrencyComponent() {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            setSelectedCurrencies(currencies.map((c: CurrencyGetDto) => c.id));
+            setSelectedCurrencies(currenciesData.map((c: CurrencyGetDto) => c.id));
         } else {
             setSelectedCurrencies([]);
         }
@@ -248,7 +247,7 @@ export default function CurrencyComponent() {
     const content = (
         <CurrencyList
             isLoading={isLoading}
-            currencies={currencies}
+            currencies={currenciesData}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
             currentPage={parseInt(page || '1')}
