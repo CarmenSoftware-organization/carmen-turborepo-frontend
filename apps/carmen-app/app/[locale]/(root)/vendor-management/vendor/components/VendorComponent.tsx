@@ -9,7 +9,7 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
 import SignInDialog from "@/components/SignInDialog";
 import { useVendor } from "@/hooks/useVendor";
-import { Link } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ const sortFields = [{ key: "name", label: "Name" }];
 
 export default function VendorComponent() {
     const { token, buCode, permissions } = useAuth();
-
+    const router = useRouter();
     // Get permissions for vendor resource
     const vendorPerms = vendorManagementPermission.get(permissions, "vendor");
 
@@ -77,14 +77,15 @@ export default function VendorComponent() {
 
     const actionButtons = (
         <div className="action-btn-container" data-id="vendor-action-buttons">
-            {vendorPerms.canCreate && (
-                <Button size={'sm'} asChild>
-                    <Link href={'/vendor-management/vendor/new'}>
-                        <Plus className="h-4 w-4" />
-                        {tVendor('add_vendor')}
-                    </Link>
-                </Button>
-            )}
+            <Button size={'sm'}
+                disabled={!vendorPerms.canCreate}
+                onClick={() => {
+                    router.push('/vendor-management/vendor/new')
+                }}
+            >
+                <Plus className="h-4 w-4" />
+                {tVendor('add_vendor')}
+            </Button>
             <Button
                 variant="outlinePrimary"
                 className="group"

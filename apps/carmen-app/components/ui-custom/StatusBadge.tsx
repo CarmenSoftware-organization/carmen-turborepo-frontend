@@ -70,7 +70,7 @@ export const StatusBadge = ({
     return (
         <div className="inline-flex items-center gap-1 bg-muted/50 dark:bg-muted border border-border rounded-md px-2 py-0.5">
             <Icon className={cn("w-3 h-3", config.color)} />
-            <p className={cn("font-bold text-xs", config.color)}>{children}</p>
+            <p className={cn("font-bold text-[10px]", config.color)}>{children}</p>
         </div>
     );
 };

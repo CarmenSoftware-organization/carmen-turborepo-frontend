@@ -8,18 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
-import { backendApi } from '@/lib/backend-api';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-
-interface NotificationPayload {
-    title: string;
-    message: string;
-    type: 'info' | 'error' | 'warning' | 'success';
-    category: 'system' | 'user-to-user';
-    to_user_id: string;
-    from_user_id: string;
-}
+import { useSendNotification } from '@/hooks/useNoti';
 
 export default function NotificationPlayground() {
     const { user, token } = useAuth();
@@ -27,49 +16,46 @@ export default function NotificationPlayground() {
     const [message, setMessage] = useState('');
     const [type, setType] = useState<'info' | 'error' | 'warning' | 'success'>('info');
 
-    const { mutate: sendNotification, isPending, isSuccess, isError, error } = useMutation({
-        mutationFn: async (payload: NotificationPayload) => {
-            const response = await axios.post(
-                `${backendApi}/api/notifications`,
-                payload,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            );
+    const { mutate: sendNotification, isPending, isSuccess, isError, error } = useSendNotification(token);
 
-            return response.data;
-        },
-        onSuccess: (data) => {
-            window.dispatchEvent(new CustomEvent('notification-sent', {
-                detail: {
-                    id: data.id,
-                    title: data.title,
-                    message: data.message,
-                    type: data.type,
-                    created_at: data.created_at || new Date().toISOString()
-                }
-            }));
+    const handleSuccess = (data: {
+        id: string;
+        title: string;
+        message: string;
+        type: 'info' | 'error' | 'warning' | 'success';
+        created_at?: string;
+    }) => {
+        window.dispatchEvent(new CustomEvent('notification-sent', {
+            detail: {
+                id: data.id,
+                title: data.title,
+                message: data.message,
+                type: data.type,
+                created_at: data.created_at || new Date().toISOString()
+            }
+        }));
 
-            setTitle('');
-            setMessage('');
-            setType('info');
-        }
-    });
+        setTitle('');
+        setMessage('');
+        setType('info');
+    };
 
     const handleSendNotification = () => {
         if (!title || !message || !user?.id) return;
 
-        sendNotification({
-            title,
-            message,
-            type,
-            category: 'user-to-user',
-            to_user_id: user.id,
-            from_user_id: user.id
-        });
+        sendNotification(
+            {
+                title,
+                message,
+                type,
+                category: 'user-to-user',
+                to_user_id: user.id,
+                from_user_id: user.id
+            },
+            {
+                onSuccess: handleSuccess
+            }
+        );
     };
 
     const sendQuickTest = () => {
