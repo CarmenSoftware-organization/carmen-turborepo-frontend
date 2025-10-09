@@ -21,7 +21,6 @@ import {
 } from "../../pd-schema";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useTranslations } from "next-intl";
@@ -254,48 +253,46 @@ export default function FormProduct({ mode, initialValues }: Props) {
   };
 
   return (
-    <div className="container mx-auto">
+    <div className="mx-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <ScrollArea className="h-[calc(100vh-160px)]">
-            <BasicInfo
-              control={form.control}
-              currentMode={currentMode}
-              handleEditClick={handleEditClick}
-              handleCancelClick={handleCancelClick}
-            />
-            <Tabs defaultValue="general" className="mt-2">
-              <TabsList>
-                <TabsTrigger value="general">{tProducts("general")}</TabsTrigger>
-                <TabsTrigger value="location">{tProducts("location")}</TabsTrigger>
-                <TabsTrigger value="orderUnit">{tProducts("order_unit")}</TabsTrigger>
-                <TabsTrigger value="ingredientUnit">
-                  {tProducts("ingredient_unit")}
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="general">
-                <ProductAttribute
-                  control={form.control}
-                  currentMode={currentMode}
-                />
-              </TabsContent>
-              <TabsContent value="location">
-                <LocationInfo
-                  control={form.control}
-                  currentMode={currentMode}
-                />
-              </TabsContent>
-              <TabsContent value="orderUnit">
-                <OrderUnit control={form.control} currentMode={currentMode} />
-              </TabsContent>
-              <TabsContent value="ingredientUnit">
-                <IngredientUnit
-                  control={form.control}
-                  currentMode={currentMode}
-                />
-              </TabsContent>
-            </Tabs>
-          </ScrollArea>
+          <BasicInfo
+            control={form.control}
+            currentMode={currentMode}
+            handleEditClick={handleEditClick}
+            handleCancelClick={handleCancelClick}
+          />
+          <Tabs defaultValue="general" className="mt-2">
+            <TabsList>
+              <TabsTrigger value="general">{tProducts("general")}</TabsTrigger>
+              <TabsTrigger value="location">{tProducts("location")}</TabsTrigger>
+              <TabsTrigger value="orderUnit">{tProducts("order_unit")}</TabsTrigger>
+              <TabsTrigger value="ingredientUnit">
+                {tProducts("ingredient_unit")}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="general">
+              <ProductAttribute
+                control={form.control}
+                currentMode={currentMode}
+              />
+            </TabsContent>
+            <TabsContent value="location">
+              <LocationInfo
+                control={form.control}
+                currentMode={currentMode}
+              />
+            </TabsContent>
+            <TabsContent value="orderUnit">
+              <OrderUnit control={form.control} currentMode={currentMode} />
+            </TabsContent>
+            <TabsContent value="ingredientUnit">
+              <IngredientUnit
+                control={form.control}
+                currentMode={currentMode}
+              />
+            </TabsContent>
+          </Tabs>
         </form>
       </Form>
       {/* <JsonViewer data={formValues} title="Form Values" /> */}

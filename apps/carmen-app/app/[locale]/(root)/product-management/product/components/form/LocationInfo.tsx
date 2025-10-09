@@ -5,8 +5,9 @@ import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useLocationsQuery } from "@/hooks/useLocation";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
+import { useAuth } from "@/context/AuthContext";
 import {
     Table,
     TableBody,
@@ -100,7 +101,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const tProducts = useTranslations("Products");
     const tStoreLocation = useTranslations("StoreLocation");
     const tCommon = useTranslations("Common");
-    const { storeLocations, isLoading } = useStoreLocation();
+    const { token, buCode } = useAuth();
+    const { data: locationsData, isLoading } = useLocationsQuery({ token, buCode });
+    const storeLocations = locationsData?.data || [];
     const { watch } = useFormContext<ProductFormValues>();
     const locations = watch("locations") as LocationsFormData;
     const existingLocations = locations?.data || [];
@@ -120,7 +123,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const getFilteredStoreLocationsByProduct = () => {
         if (!productData) return storeLocations;
 
-        return storeLocations.filter(location => {
+        return storeLocations.filter((location: StoreLocation) => {
             if (productData.category.name === "Fixed Assets") {
                 return location.location_type.toLowerCase() === 'inventory';
             }
@@ -135,13 +138,14 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     };
 
     const displayLocations = existingLocations.filter(
-        location => !removedLocations.some(removed => removed.id === location.id)
+        (location: LocationData) => !removedLocations.some((removed: { id: string }) => removed.id === location.id)
     );
 
     const hasLocations = displayLocations.length > 0 || newLocations.length > 0;
 
+
     const filteredStoreLocations = getFilteredStoreLocationsByProduct().filter(
-        location => !existingLocations.some(existing => existing.location_id === location.id)
+        (location: StoreLocation) => !existingLocations.some((existing: LocationData) => existing.location_id === location.id)
     );
 
     const getLocationType = (location_type?: INVENTORY_TYPE) => {
@@ -155,7 +159,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
 
     // Merge into one list for display only
     const allLocations: LocationDisplayData[] = [
-        ...displayLocations.map(loc => ({ ...loc, isNew: false })),
+        ...displayLocations.map((loc: LocationData) => ({ ...loc, isNew: false })),
         ...locationFields.map((field, index) => ({
             ...newLocations[index],
             id: field.id,
@@ -183,155 +187,157 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             </div>
 
             {(hasLocations || isLoading) && (
-                <Table>
-                    <TableHeader className="sticky top-0 bg-background z-10">
-                        <TableRow>
-                            <TableHead>{tProducts("location_name")}</TableHead>
-                            <TableHead>{tProducts("type")}</TableHead>
-                            <TableHead>{tProducts("description")}</TableHead>
-                            <TableHead>{tProducts("delivery_point")}</TableHead>
-                            <TableHead className="text-center">{tProducts("status")}</TableHead>
-                            {currentMode !== formType.VIEW && (
-                                <TableHead className="text-right">{tProducts("action")}</TableHead>
-                            )}
-                        </TableRow>
-                    </TableHeader>
+                <div className="max-h-96 overflow-auto rounded-md">
+                    <Table>
+                        <TableHeader className="sticky top-0 bg-background z-10">
+                            <TableRow>
+                                <TableHead>{tProducts("location_name")}</TableHead>
+                                <TableHead>{tProducts("type")}</TableHead>
+                                <TableHead>{tProducts("description")}</TableHead>
+                                <TableHead>{tProducts("delivery_point")}</TableHead>
+                                <TableHead className="text-center">{tProducts("status")}</TableHead>
+                                {currentMode !== formType.VIEW && (
+                                    <TableHead className="text-right">{tProducts("action")}</TableHead>
+                                )}
+                            </TableRow>
+                        </TableHeader>
 
-                    {isLoading ? (
-                        <TableBodySkeleton rows={currentMode !== formType.VIEW ? 6 : 5} />
-                    ) : (
-                        <TableBody>
-                            {allLocations.map((location, idx) => {
-                                const storeLocation = storeLocations.find(
-                                    loc => loc.id === location.location_id
-                                ) as StoreLocation | undefined;
+                        {isLoading ? (
+                            <TableBodySkeleton rows={currentMode !== formType.VIEW ? 6 : 5} />
+                        ) : (
+                            <TableBody>
+                                {allLocations.map((location, idx) => {
+                                    const storeLocation = storeLocations.find(
+                                        (loc: StoreLocation) => loc.id === location.location_id
+                                    ) as StoreLocation | undefined;
 
-                                return (
-                                    <TableRow key={location.id || `new-${idx}`}>
-                                        {/* Location name */}
-                                        <TableCell className="font-medium">
-                                            {location.isNew && currentMode !== formType.VIEW ? (
-                                                <FormField
-                                                    control={control}
-                                                    name={`locations.add.${location.fieldIndex!}.location_id`}
-                                                    render={({ field }) => (
-                                                        <FormItem className="flex-1 space-y-0">
-                                                            <FormControl>
-                                                                <Select
-                                                                    onValueChange={field.onChange}
-                                                                    value={field.value}
-                                                                >
-                                                                    <SelectTrigger>
-                                                                        <SelectValue placeholder="Select location" />
-                                                                    </SelectTrigger>
-                                                                    <SelectContent>
-                                                                        {filteredStoreLocations.length === 0 ? (
-                                                                            <div className="flex items-center justify-center py-2 text-sm text-gray-500">
-                                                                                No locations available
-                                                                            </div>
-                                                                        ) : (
-                                                                            filteredStoreLocations.map((loc) => (
-                                                                                <SelectItem
-                                                                                    key={loc.id}
-                                                                                    value={loc.id?.toString() ?? ""}
-                                                                                >
-                                                                                    {loc.name}
-                                                                                </SelectItem>
-                                                                            ))
-                                                                        )}
-                                                                    </SelectContent>
-                                                                </Select>
-                                                            </FormControl>
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            ) : (
-                                                storeLocation?.name ?? "Unknown Location"
-                                            )}
-                                        </TableCell>
-
-                                        {/* Type */}
-                                        <TableCell>
-                                            <p className="text-xs md:text-base">
-                                                {getLocationType(storeLocation?.location_type as INVENTORY_TYPE)}
-                                            </p>
-                                        </TableCell>
-
-                                        {/* Description */}
-                                        <TableCell className="text-gray-500">
-                                            {storeLocation?.description || "-"}
-                                        </TableCell>
-
-                                        {/* Delivery Point */}
-                                        <TableCell className="text-gray-500">
-                                            {storeLocation?.delivery_point?.name || "-"}
-                                        </TableCell>
-
-                                        {/* Status */}
-                                        <TableCell>
-                                            <div className="flex justify-center">
-                                                <StatusCustom is_active={!!storeLocation?.is_active}>
-                                                    {storeLocation?.is_active ? tCommon("active") : tCommon("inactive")}
-                                                </StatusCustom>
-                                            </div>
-                                        </TableCell>
-
-                                        {/* Actions */}
-                                        {currentMode !== formType.VIEW && (
-                                            <TableCell className="text-right">
-                                                {location.isNew ? (
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => removeLocation(location.fieldIndex!)}
-                                                        className="hover:text-destructive hover:bg-transparent"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
+                                    return (
+                                        <TableRow key={location.id || `new-${idx}`}>
+                                            {/* Location name */}
+                                            <TableCell className="font-medium">
+                                                {location.isNew && currentMode !== formType.VIEW ? (
+                                                    <FormField
+                                                        control={control}
+                                                        name={`locations.add.${location.fieldIndex!}.location_id`}
+                                                        render={({ field }) => (
+                                                            <FormItem className="flex-1 space-y-0">
+                                                                <FormControl>
+                                                                    <Select
+                                                                        onValueChange={field.onChange}
+                                                                        value={field.value}
+                                                                    >
+                                                                        <SelectTrigger>
+                                                                            <SelectValue placeholder="Select location" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            {filteredStoreLocations.length === 0 ? (
+                                                                                <div className="flex items-center justify-center py-2 text-sm text-gray-500">
+                                                                                    No locations available
+                                                                                </div>
+                                                                            ) : (
+                                                                                filteredStoreLocations.map((loc: StoreLocation) => (
+                                                                                    <SelectItem
+                                                                                        key={loc.id}
+                                                                                        value={loc.id?.toString() ?? ""}
+                                                                                    >
+                                                                                        {loc.name}
+                                                                                    </SelectItem>
+                                                                                ))
+                                                                            )}
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </FormControl>
+                                                            </FormItem>
+                                                        )}
+                                                    />
                                                 ) : (
-                                                    <AlertDialog>
-                                                        <AlertDialogTrigger asChild>
-                                                            <Button
-                                                                type="button"
-                                                                variant="ghost"
-                                                                size="sm"
-                                                                className="hover:text-destructive hover:bg-transparent"
-                                                            >
-                                                                <Trash2 className="h-4 w-4" />
-                                                            </Button>
-                                                        </AlertDialogTrigger>
-                                                        <AlertDialogContent>
-                                                            <AlertDialogHeader>
-                                                                <AlertDialogTitle>Remove Location</AlertDialogTitle>
-                                                                <AlertDialogDescription className="space-y-2">
-                                                                    <p>Are you sure you want to remove this location?</p>
-                                                                    <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
-                                                                        <p><span className="font-semibold">Location ID:</span> {location.id}</p>
-                                                                        <p><span className="font-semibold">Name:</span> {storeLocation?.name}</p>
-                                                                        <p><span className="font-semibold">Type:</span> {storeLocation?.location_type}</p>
-                                                                    </div>
-                                                                </AlertDialogDescription>
-                                                            </AlertDialogHeader>
-                                                            <AlertDialogFooter>
-                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                                <AlertDialogAction
-                                                                    onClick={() => appendLocationRemove({ id: location.id })}
-                                                                >
-                                                                    Remove
-                                                                </AlertDialogAction>
-                                                            </AlertDialogFooter>
-                                                        </AlertDialogContent>
-                                                    </AlertDialog>
+                                                    storeLocation?.name ?? "Unknown Location"
                                                 )}
                                             </TableCell>
-                                        )}
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    )}
-                </Table>
+
+                                            {/* Type */}
+                                            <TableCell>
+                                                <p className="text-xs md:text-base">
+                                                    {getLocationType(storeLocation?.location_type as INVENTORY_TYPE)}
+                                                </p>
+                                            </TableCell>
+
+                                            {/* Description */}
+                                            <TableCell className="text-gray-500">
+                                                {storeLocation?.description || "-"}
+                                            </TableCell>
+
+                                            {/* Delivery Point */}
+                                            <TableCell className="text-gray-500">
+                                                {storeLocation?.delivery_point?.name || "-"}
+                                            </TableCell>
+
+                                            {/* Status */}
+                                            <TableCell>
+                                                <div className="flex justify-center">
+                                                    <StatusCustom is_active={!!storeLocation?.is_active}>
+                                                        {storeLocation?.is_active ? tCommon("active") : tCommon("inactive")}
+                                                    </StatusCustom>
+                                                </div>
+                                            </TableCell>
+
+                                            {/* Actions */}
+                                            {currentMode !== formType.VIEW && (
+                                                <TableCell className="text-right">
+                                                    {location.isNew ? (
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => removeLocation(location.fieldIndex!)}
+                                                            className="hover:text-destructive hover:bg-transparent"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    ) : (
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    className="hover:text-destructive hover:bg-transparent"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Remove Location</AlertDialogTitle>
+                                                                    <AlertDialogDescription className="space-y-2">
+                                                                        <p>Are you sure you want to remove this location?</p>
+                                                                        <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
+                                                                            <p><span className="font-semibold">Location ID:</span> {location.id}</p>
+                                                                            <p><span className="font-semibold">Name:</span> {storeLocation?.name}</p>
+                                                                            <p><span className="font-semibold">Type:</span> {storeLocation?.location_type}</p>
+                                                                        </div>
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction
+                                                                        onClick={() => appendLocationRemove({ id: location.id })}
+                                                                    >
+                                                                        Remove
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    )}
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        )}
+                    </Table>
+                </div>
             )}
         </Card>
     );

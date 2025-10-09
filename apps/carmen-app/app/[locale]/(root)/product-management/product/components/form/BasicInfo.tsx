@@ -280,24 +280,14 @@ export default function BasicInfo({
             {/* Right Section */}
             <div className="flex items-center gap-1.5">
               {currentMode === formType.VIEW ? (
-                <>
-                  <Button
-                    variant="outlinePrimary"
-                    size="sm"
-                    onClick={handleCancelClick}
-                  >
-                    <ChevronLeft className="h-3 w-3" />
-                    {tCommon("back")}
-                  </Button>
-                  <Button
-                    variant="outlinePrimary"
-                    size="sm"
-                    onClick={handleEditClick}
-                  >
-                    <Edit />
-                    {tCommon("edit")}
-                  </Button>
-                </>
+                <Button
+                  variant="outlinePrimary"
+                  size="sm"
+                  onClick={handleEditClick}
+                >
+                  <Edit />
+                  {tCommon("edit")}
+                </Button>
               ) : (
                 <>
                   <Button
