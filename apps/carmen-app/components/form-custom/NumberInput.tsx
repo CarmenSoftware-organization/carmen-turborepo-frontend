@@ -31,8 +31,12 @@ export default function NumberInput({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const inputValue = e.target.value;
 
-    if (inputValue === "" || inputValue === "-") {
+    if (inputValue === "") {
       onChange(0);
+      return;
+    }
+
+    if (inputValue === "-") {
       return;
     }
 
@@ -43,13 +47,18 @@ export default function NumberInput({
     }
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLInputElement>): void => {
+    e.currentTarget.select();
+  };
+
   const isHide = showContent || viewStage === "hidden";
 
   return (
     <Input
       type="number"
-      value={showContent ? (value?.toString() ?? "") : ""}
+      value={value}
       onChange={handleChange}
+      onClick={handleClick}
       min={min}
       max={max}
       step={step}
@@ -62,7 +71,7 @@ export default function NumberInput({
       placeholder={isHide ? placeholder : "••••••••"}
       readOnly={!showContent}
       className={cn(
-        "bg-background text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
+        "text-right [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]",
         classNames
       )}
     />

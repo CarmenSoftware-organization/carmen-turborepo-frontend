@@ -1,14 +1,23 @@
 import { useAuth } from "@/context/AuthContext";
 import { useProductLocation } from "@/hooks/useProductLocation";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+
 interface InventoryUnit {
     id: string;
     name: string;
@@ -38,6 +47,7 @@ export default function ProductLocationLookup({
     classNames = "max-w-40"
 }: ProductLocationLookupProps) {
     const { token, buCode } = useAuth();
+    const [open, setOpen] = useState(false);
 
     const { productLocation, isLoading, error } = useProductLocation(
         token,
@@ -52,72 +62,104 @@ export default function ProductLocationLookup({
             (p: ProductLocation) => p.id === selectedValue
         );
         onValueChange(selectedValue, selectedProduct);
+        setOpen(false);
     };
 
-    // ถ้ามี error ให้แสดง error message
+    const selectedProduct = productLocationData.find(p => p.id === value);
+
+    // Determine button label
+    const getButtonLabel = () => {
+        if (isLoading) {
+            return (
+                <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Loading...
+                </>
+            );
+        }
+        if (selectedProduct) {
+            return selectedProduct.name;
+        }
+        return placeholder;
+    };
+
+    // Determine empty message
+    const getEmptyMessage = () => {
+        if (productLocationData.length === 0) {
+            return "No products found for this location";
+        }
+        return "No product found.";
+    };
+
+    // Error state
     if (error) {
         return (
-            <Select disabled>
-                <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Error loading data" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="error" disabled>
-                        Failed to load product locations
-                    </SelectItem>
-                </SelectContent>
-            </Select>
+            <Button
+                variant="outline"
+                disabled
+                className={cn("justify-between", classNames)}
+            >
+                Error loading data
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
         );
     }
 
-    // Render content based on state
-    let selectContent;
-
+    // No location selected
     if (!location_id) {
-        selectContent = (
-            <SelectItem value="no-location" disabled>
-                Please select a location first
-            </SelectItem>
-        );
-    } else if (isLoading) {
-        selectContent = (
-            <SelectItem value="loading" disabled>
-                <div className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Loading...</span>
-                </div>
-            </SelectItem>
-        );
-    } else if (productLocationData.length === 0) {
-        selectContent = (
-            <SelectItem value="empty" disabled>
-                No products found for this location
-            </SelectItem>
-        );
-    } else {
-        selectContent = productLocationData.map((productLocationItem: ProductLocation) => (
-            <SelectItem
-                key={productLocationItem.id}
-                value={productLocationItem.id}
+        return (
+            <Button
+                variant="outline"
+                disabled
+                className={cn("justify-between", classNames)}
             >
-                {productLocationItem.name}
-            </SelectItem>
-        ));
-    };
+                Please select a location first
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+        );
+    }
 
     return (
-        <Select
-            key={location_id}
-            value={value}
-            onValueChange={handleValueChange}
-            disabled={disabled || isLoading}
-        >
-            <SelectTrigger className={cn(classNames)}>
-                <SelectValue placeholder={placeholder} />
-            </SelectTrigger>
-            <SelectContent>
-                {selectContent}
-            </SelectContent>
-        </Select>
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    aria-expanded={open}
+                    aria-haspopup="listbox"
+                    disabled={disabled || isLoading}
+                    className={cn("justify-between", classNames)}
+                >
+                    {getButtonLabel()}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[300px] p-0" align="start">
+                <Command>
+                    <CommandInput placeholder="Search product..." />
+                    <CommandList>
+                        <CommandEmpty>
+                            {getEmptyMessage()}
+                        </CommandEmpty>
+                        <CommandGroup>
+                            {productLocationData.map((productLocationItem: ProductLocation) => (
+                                <CommandItem
+                                    key={productLocationItem.id}
+                                    value={productLocationItem.name}
+                                    onSelect={() => handleValueChange(productLocationItem.id)}
+                                >
+                                    <Check
+                                        className={cn(
+                                            "mr-2 h-4 w-4",
+                                            value === productLocationItem.id ? "opacity-100" : "opacity-0"
+                                        )}
+                                    />
+                                    {productLocationItem.name}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
     );
 }

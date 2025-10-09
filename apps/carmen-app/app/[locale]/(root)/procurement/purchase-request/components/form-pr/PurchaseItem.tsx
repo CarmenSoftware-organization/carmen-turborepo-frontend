@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ChevronDown, ChevronRight, MapPin, Plus, Trash2Icon } from "lucide-react";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
@@ -21,10 +21,8 @@ import { Label } from "@/components/ui/label";
 import VendorComparison from "./VendorComparison";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
-import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import NumberInput from "@/components/form-custom/NumberInput";
 import UnitLookup from "@/components/lookup/UnitLookup";
-import { cellContentVariants } from "@/utils/framer-variants";
 import { Separator } from "@/components/ui/separator";
 import DateInput from "@/components/form-custom/DateInput";
 import { cn } from "@/lib/utils";
@@ -62,9 +60,6 @@ export default function PurchaseItem({
     const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>({});
     const [hoveredRow] = useState<string | null>(null);
 
-    // Local state สำหรับจัดการ UI แบบ realtime
-    const [localItems, setLocalItems] = useState<PurchaseRequestDetail[]>(items);
-
     const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
 
     const handleRemoveItemClick = (id: string, isNewItem: boolean = false, itemIndex?: number) => {
@@ -86,27 +81,6 @@ export default function PurchaseItem({
             ...prev,
             [itemId]: !prev[itemId]
         }));
-    };
-
-    // Update localItems เมื่อ items prop เปลี่ยน
-    useEffect(() => {
-        setLocalItems(items);
-    }, [items]);
-
-    // Local function สำหรับ update item แบบ realtime
-    const handleLocalItemUpdate = (itemId: string, fieldName: string, value: unknown, selectedProduct?: unknown) => {
-        setLocalItems(prev => {
-            const updated = prev.map(item =>
-                item.id === itemId
-                    ? { ...item, [fieldName]: value }
-                    : item
-            );
-            console.log('Updated localItems:', updated);
-            return updated;
-        });
-
-        // เรียก onItemUpdate ของ parent component ด้วย
-        onItemUpdate(itemId, fieldName, value, selectedProduct);
     };
 
 
@@ -142,14 +116,14 @@ export default function PurchaseItem({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {localItems?.length === 0 ? (
+                    {items?.length === 0 ? (
                         <TableRow>
                             <TableCell colSpan={11} className="text-center">
                                 <p className="text-muted-foreground">No items found</p>
                             </TableCell>
                         </TableRow>
                     ) : (
-                        localItems?.map((item, index) => {
+                        items?.map((item, index) => {
                             // Check if this is a new item
                             const isNewItem = !initValues.some(initItem => initItem.id === item.id);
 
@@ -218,7 +192,9 @@ export default function PurchaseItem({
                                                         classNames="text-xs h-7"
                                                         disabled={!getItemValue(item, 'location_id')}
                                                     />
-                                                    <p className="text-xs text-muted-foreground">{item.description || "-"}</p>
+                                                    {item.product_id && (
+                                                        <p className="text-xs text-muted-foreground">{item.description || "-"}</p>
+                                                    )}
                                                 </div>
                                             )}
                                         </TableCell>
@@ -230,7 +206,6 @@ export default function PurchaseItem({
                                             ) : (
                                                 <div className="flex items-center gap-1 justify-end">
                                                     <NumberInput
-                                                        key={`requested_qty_${item.id}`}
                                                         value={getItemValue(item, 'requested_qty') as number}
                                                         onChange={(value) => onItemUpdate(item.id, 'requested_qty', value)}
                                                         classNames="w-10 h-7 text-xs"
@@ -247,12 +222,8 @@ export default function PurchaseItem({
 
                                         </TableCell>
                                         <TableCell className="w-40 text-right">
-                                            <MotionDiv
-                                                variants={cellContentVariants}
-                                                initial="hidden"
-                                                animate="visible"
-                                            >
-                                                {currentFormType === formType.VIEW ? (
+                                            <div>
+                                                {currentFormType === formType.VIEW && (
                                                     <>
                                                         <p className="text-xs text-right font-semibold text-active">
                                                             {item.approved_qty} {item.approved_unit_name || "-"}
@@ -262,13 +233,14 @@ export default function PurchaseItem({
                                                             FOC: {item.foc_qty} {item.foc_unit_name || "-"}
                                                         </p>
                                                     </>
-                                                ) : isNewItem ? (
+                                                )}
+                                                {currentFormType !== formType.VIEW && isNewItem && (
                                                     <p>-</p>
-                                                ) : (
+                                                )}
+                                                {currentFormType !== formType.VIEW && !isNewItem && (
                                                     <div className="flex flex-col gap-1">
                                                         <div className="flex items-center gap-1 justify-end">
                                                             <NumberInput
-                                                                key={`approved_qty_${item.id}`}
                                                                 value={getItemValue(item, 'approved_qty') as number}
                                                                 onChange={(value) => onItemUpdate(item.id, 'approved_qty', value)}
                                                                 classNames="w-12 h-7 text-xs"
@@ -280,9 +252,7 @@ export default function PurchaseItem({
                                                             />
                                                         </div>
                                                         <div className="flex items-center gap-1 justify-end">
-                                                            {/* <p className="text-xs">FOC:</p> */}
                                                             <NumberInput
-                                                                key={`foc_qty_${item.id}`}
                                                                 value={getItemValue(item, 'foc_qty') as number}
                                                                 onChange={(value) => onItemUpdate(item.id, 'foc_qty', value)}
                                                                 classNames="w-12 h-7 text-xs"
@@ -295,7 +265,7 @@ export default function PurchaseItem({
                                                         </div>
                                                     </div>
                                                 )}
-                                            </MotionDiv>
+                                            </div>
                                         </TableCell>
                                         <TableCell className="w-56 text-center">
                                             {currentFormType === formType.VIEW ? (
@@ -383,7 +353,7 @@ export default function PurchaseItem({
                                                                     apv_unit={item.approved_unit_name ?? '-'}
                                                                     pricelist_detail_id={item.pricelist_detail_id ?? ''}
                                                                     itemId={item.id}
-                                                                    onItemUpdate={handleLocalItemUpdate}
+                                                                    onItemUpdate={onItemUpdate}
                                                                 />
                                                             </div>
 
