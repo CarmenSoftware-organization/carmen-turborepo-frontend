@@ -23,7 +23,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useLocationsQuery } from "@/hooks/useLocation";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
@@ -39,7 +39,14 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
 
-  const { getLocationName } = useStoreLocation();
+  const { data: locationsData } = useLocationsQuery({ token, buCode });
+  const locations = locationsData?.data || [];
+
+  const getLocationName = (id: string) => {
+    const location = locations.find((loc: { id: string; name: string }) => loc.id === id);
+    return location?.name ?? "";
+  };
+
   const { getUnitName } = useUnitQuery({
     token,
     buCode,

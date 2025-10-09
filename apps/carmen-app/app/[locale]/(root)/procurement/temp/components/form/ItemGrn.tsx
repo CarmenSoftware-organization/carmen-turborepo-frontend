@@ -30,7 +30,7 @@ import {
 import { useEffect, useState, useMemo } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import DialogItemGrnForm from "./DialogItemGrnForm";
-import { useStoreLocation } from "@/hooks/useStoreLocation";
+import { useLocationsQuery } from "@/hooks/useLocation";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -69,7 +69,14 @@ export default function ItemGrn({ control, mode, setValue }: ItemGrnProps) {
     buCode,
   });
 
-  const { getLocationName } = useStoreLocation();
+  const { data: locationsData } = useLocationsQuery({ token, buCode });
+  const locations = locationsData?.data || [];
+
+  const getLocationName = (id: string) => {
+    const location = locations.find((loc: { id: string; name: string }) => loc.id === id);
+    return location?.name ?? "";
+  };
+
   const { getProductName } = useProductQuery({
     token,
     buCode,
