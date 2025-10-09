@@ -98,6 +98,7 @@ export const usePurchaseItemManagement = ({
                         ? Number(value) || 0
                         : value;
 
+                    // Update only the changed field, keep others unchanged
                     updatedAddItems[fieldIndex] = {
                         ...updatedAddItems[fieldIndex],
                         [fieldName]: processedValue,
@@ -109,7 +110,11 @@ export const usePurchaseItemManagement = ({
                         } : {})
                     };
 
-                    form.setValue('body.purchase_request_detail.add', updatedAddItems);
+                    form.setValue('body.purchase_request_detail.add', updatedAddItems, {
+                        shouldValidate: false,
+                        shouldDirty: true,
+                        shouldTouch: false
+                    });
                 }
             }
         } else {
@@ -154,7 +159,11 @@ export const usePurchaseItemManagement = ({
                     };
 
                     // Update form with new update array
-                    form.setValue('body.purchase_request_detail.update', updateItems);
+                    form.setValue('body.purchase_request_detail.update', updateItems, {
+                        shouldValidate: false,
+                        shouldDirty: true,
+                        shouldTouch: false
+                    });
                     console.log('✅ Successfully updated form update array:', updateItems);
                 }
             }

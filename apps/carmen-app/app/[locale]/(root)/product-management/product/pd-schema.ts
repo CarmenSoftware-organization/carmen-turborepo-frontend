@@ -36,6 +36,18 @@ export const productFormSchema = z.object({
         })).optional()
     }),
     order_units: z.object({
+        data: z.array(z.object({
+            id: z.string().uuid(),
+            from_unit_id: z.string().uuid(),
+            from_unit_name: z.string().optional(),
+            from_unit_qty: z.number(),
+            to_unit_id: z.string().uuid(),
+            to_unit_name: z.string().optional(),
+            to_unit_qty: z.number(),
+            description: z.string().optional(),
+            is_active: z.boolean(),
+            is_default: z.boolean()
+        })).optional(),
         add: z.array(z.object({
             from_unit_id: z.string().uuid(),
             from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
@@ -60,6 +72,18 @@ export const productFormSchema = z.object({
         })).optional()
     }),
     ingredient_units: z.object({
+        data: z.array(z.object({
+            id: z.string().uuid(),
+            from_unit_id: z.string().uuid(),
+            from_unit_name: z.string().optional(),
+            from_unit_qty: z.number(),
+            to_unit_id: z.string().uuid(),
+            to_unit_name: z.string().optional(),
+            to_unit_qty: z.number(),
+            description: z.string().optional(),
+            is_active: z.boolean(),
+            is_default: z.boolean()
+        })).optional(),
         add: z.array(z.object({
             from_unit_id: z.string().uuid(),
             from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
@@ -75,7 +99,7 @@ export const productFormSchema = z.object({
             from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
             to_unit_id: z.string().uuid(),
             to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
-            description: z.string(),
+            description: z.string().optional(),
             is_active: z.boolean(),
             is_default: z.boolean()
         })).optional(),
@@ -151,9 +175,14 @@ export interface ProductInitialValues {
     } | Array<{
         id: string;
         from_unit_id: string;
+        from_unit_name?: string;
         from_unit_qty: number;
         to_unit_id: string;
+        to_unit_name?: string;
         to_unit_qty: number;
+        description?: string;
+        is_active?: boolean;
+        is_default?: boolean;
     }>;
     ingredient_units?: {
         add: {
@@ -179,9 +208,14 @@ export interface ProductInitialValues {
     } | Array<{
         id: string;
         from_unit_id: string;
+        from_unit_name?: string;
         from_unit_qty: number;
         to_unit_id: string;
+        to_unit_name?: string;
         to_unit_qty: number;
+        description?: string;
+        is_active?: boolean;
+        is_default?: boolean;
     }>;
     product_category?: { id: string; name: string };
     product_sub_category?: { id: string; name: string };

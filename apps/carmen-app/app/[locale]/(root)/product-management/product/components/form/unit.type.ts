@@ -13,8 +13,10 @@ export interface UnitValueItem {
 export interface UnitData {
     id?: string;
     from_unit_id: string;
+    from_unit_name?: string;
     from_unit_qty: number;
     to_unit_id: string;
+    to_unit_name?: string;
     to_unit_qty: number;
     description: string;
     is_active: boolean;

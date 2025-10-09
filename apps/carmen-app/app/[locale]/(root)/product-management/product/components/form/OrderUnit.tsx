@@ -1,25 +1,24 @@
+import { memo, useEffect, useMemo, useCallback } from "react";
 import { Control, useFieldArray, useFormContext } from "react-hook-form";
 import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
-
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto } from "@/dtos/unit.dto";
-import { UnitData, OrderUnitsFormData } from "./unit.type";
 import TableUnit from "./TableUnit";
 import { filterUnits } from "@/utils/helper";
 import { useTranslations } from "next-intl";
+import { useUnitManagement } from "./hooks/useUnitManagement";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
 
-export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
+const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
     const tProducts = useTranslations("Products");
     const { token, buCode } = useAuth();
     const { units } = useUnitQuery({
@@ -27,150 +26,97 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
         buCode,
     });
     const { watch, setValue } = useFormContext<ProductFormValues>();
-    const [editingId, setEditingId] = useState<string | null>(null);
-    const [editForm, setEditForm] = useState<UnitData | null>(null);
-    const orderUnits = watch("order_units") as OrderUnitsFormData;
-    const existingOrderUnits = (orderUnits as OrderUnitsFormData)?.data || [];
-    const newOrderUnits = watch("order_units.add") || [];
-    const removedOrderUnits = watch("order_units.remove") || [];
     const inventoryUnitId = watch("inventory_unit_id");
+
+    // Use custom hook for unit management
+    const {
+        editingId,
+        editForm,
+        setEditForm,
+        displayUnits,
+        existingUnits,
+        newUnits,
+        handleStartEdit,
+        handleSaveEdit,
+    } = useUnitManagement({
+        unitType: 'order',
+        watch,
+        setValue
+    });
 
     const { fields: orderUnitFields, append: appendOrderUnit, remove: removeOrderUnit } = useFieldArray({
         control,
         name: "order_units.add"
     });
 
-    const filteredUnits = filterUnits({
+    // Memoize filtered units
+    const filteredUnits = useMemo(() => filterUnits({
         units,
         excludedUnitId: inventoryUnitId,
-        existingUnits: existingOrderUnits,
+        existingUnits: existingUnits,
         editingId: editingId ?? undefined,
         compareField: 'from_unit_id'
-    });
+    }), [units, inventoryUnitId, existingUnits, editingId]);
 
+    // Memoize getUnitName
+    const getUnitName = useCallback((unitId: string) => {
+        return units?.data?.find((unit: UnitDto) => unit.id === unitId)?.name ?? '-';
+    }, [units]);
+
+    // Initialize from_unit_id when inventory unit changes
     useEffect(() => {
-        const currentAddFields = watch("order_units.add") || [];
+        if (!inventoryUnitId) return;
 
-        currentAddFields.forEach((field, index) => {
-            if (inventoryUnitId && (!field.from_unit_id || field.from_unit_id === "")) {
+        newUnits.forEach((field, index) => {
+            if (!field.from_unit_id) {
                 setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId);
             }
+        });
+    }, [inventoryUnitId, newUnits.length, setValue]);
 
-            const fromUnitId = field.from_unit_id || inventoryUnitId || "";
+    // Auto-calculate conversion when units match or initialize to_unit_qty
+    useEffect(() => {
+        newUnits.forEach((field, index) => {
+            const fromUnitId = field.from_unit_id || inventoryUnitId;
             const toUnitId = field.to_unit_id;
 
-            if (fromUnitId && toUnitId) {
-                const fromUnitQty = field.from_unit_qty;
+            if (!fromUnitId || !toUnitId) return;
 
-                if (fromUnitId === toUnitId) {
-                    setValue(`order_units.add.${index}.to_unit_qty`, fromUnitQty);
-                } else if (field.to_unit_qty === 0) {
-                    setValue(`order_units.add.${index}.to_unit_qty`, 1);
-                }
+            if (fromUnitId === toUnitId) {
+                setValue(`order_units.add.${index}.to_unit_qty`, field.from_unit_qty);
+            } else if (field.to_unit_qty === 0) {
+                setValue(`order_units.add.${index}.to_unit_qty`, 1);
             }
         });
-    }, [watch, inventoryUnitId, setValue]);
+    }, [newUnits, inventoryUnitId, setValue]);
 
     const { append: appendOrderUnitRemove } = useFieldArray({
         control,
         name: "order_units.remove"
     });
 
-    const { append: appendOrderUnitUpdate } = useFieldArray({
-        control,
-        name: "order_units.update"
-    });
-
-    const displayOrderUnits = existingOrderUnits.filter(
-        (orderUnit: UnitData) => !removedOrderUnits.some(removed => removed.product_order_unit_id === orderUnit.id)
+    // Memoize derived state
+    const hasOrderUnits = useMemo(
+        () => displayUnits.length > 0 || newUnits.length > 0,
+        [displayUnits.length, newUnits.length]
     );
 
-    const hasOrderUnits = displayOrderUnits.length > 0 || newOrderUnits.length > 0;
+    // Memoize handlers
+    const handleAddUnit = useCallback(() => {
+        appendOrderUnit({
+            from_unit_id: "",
+            from_unit_qty: 1,
+            to_unit_id: inventoryUnitId,
+            to_unit_qty: 1,
+            description: "",
+            is_active: true,
+            is_default: false
+        });
+    }, [appendOrderUnit, inventoryUnitId]);
 
-    const getUnitName = (unitId: string) => {
-        return units?.data?.find((unit: UnitDto) => unit.id === unitId)?.name ?? '-';
-    };
-
-    const handleStartEdit = (orderUnit: UnitData) => {
-        setEditingId(orderUnit.id ?? null);
-        if (!orderUnit.to_unit_id) {
-            const inventoryUnitId = watch("inventory_unit_id");
-            if (inventoryUnitId && inventoryUnitId !== orderUnit.from_unit_id) {
-                orderUnit = {
-                    ...orderUnit,
-                    to_unit_id: inventoryUnitId
-                };
-            }
-        }
-        setEditForm(orderUnit);
-    };
-
-    const handleSaveEdit = (orderUnit: UnitData) => {
-        if (!editForm || !orderUnit.id) return;
-
-        const updatedOrderUnit = {
-            product_order_unit_id: orderUnit.id,
-            from_unit_id: editForm.from_unit_id,
-            from_unit_qty: editForm.from_unit_qty,
-            to_unit_id: editForm.to_unit_id,
-            to_unit_qty: editForm.to_unit_qty,
-            description: editForm.description ?? '',
-            is_active: editForm.is_active ?? true,
-            is_default: editForm.is_default ?? false
-        };
-
-        // Update the form state
-        const currentOrderUnits = watch("order_units") as OrderUnitsFormData;
-        if ((currentOrderUnits as OrderUnitsFormData)?.data) {
-            // Update the data array for UI
-            const updatedData = (currentOrderUnits as OrderUnitsFormData).data!.map((item: UnitData) =>
-                item.id === orderUnit.id
-                    ? {
-                        ...item,
-                        from_unit_id: editForm.from_unit_id,
-                        from_unit_qty: editForm.from_unit_qty,
-                        to_unit_id: editForm.to_unit_id,
-                        to_unit_qty: editForm.to_unit_qty,
-                        description: editForm.description ?? '',
-                        is_active: editForm.is_active ?? true,
-                        is_default: editForm.is_default ?? false
-                    }
-                    : item
-            );
-
-            const existingUpdateIndex = (currentOrderUnits as OrderUnitsFormData).update?.findIndex(
-                (item) => item.product_order_unit_id === orderUnit.id
-            );
-
-            // Create updated order_units object with the correct update array
-            const updatedOrderUnits = { ...currentOrderUnits } as OrderUnitsFormData;
-            updatedOrderUnits.data = updatedData;
-
-            // If already in update array, replace it; otherwise append it
-            if (existingUpdateIndex !== undefined && existingUpdateIndex >= 0) {
-                updatedOrderUnits.update = [
-                    ...((currentOrderUnits as OrderUnitsFormData).update?.slice(0, existingUpdateIndex) || []),
-                    updatedOrderUnit,
-                    ...((currentOrderUnits as OrderUnitsFormData).update?.slice(existingUpdateIndex + 1) || [])
-                ];
-            } else {
-                updatedOrderUnits.update = [
-                    ...((currentOrderUnits as OrderUnitsFormData).update || []),
-                    updatedOrderUnit
-                ];
-            }
-
-            // Update the form state
-            setValue("order_units", updatedOrderUnits);
-        } else {
-            // Add to update array if data array doesn't exist
-            appendOrderUnitUpdate(updatedOrderUnit);
-        }
-
-        setEditingId(null);
-        setEditForm(null);
-    };
-
+    const handleRemoveUnit = useCallback((unitId: string) => {
+        appendOrderUnitRemove({ product_order_unit_id: unitId });
+    }, [appendOrderUnitRemove]);
 
     return (
         <Card className="p-4 space-y-4">
@@ -181,17 +127,7 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                         type="button"
                         variant="outlinePrimary"
                         size="sm"
-                        onClick={() => {
-                            appendOrderUnit({
-                                from_unit_id: "",
-                                from_unit_qty: 1,
-                                to_unit_id: inventoryUnitId,
-                                to_unit_qty: 1,
-                                description: "",
-                                is_active: true,
-                                is_default: false
-                            });
-                        }}
+                        onClick={handleAddUnit}
                         className="flex items-center gap-1.5 px-3"
                         disabled={!inventoryUnitId}
                     >
@@ -206,29 +142,43 @@ export default function OrderUnit({ control, currentMode }: OrderUnitProps) {
                     control={control}
                     currentMode={currentMode}
                     unitTitle={tProducts("order_unit")}
-                    displayUnits={displayOrderUnits}
+                    displayUnits={displayUnits}
                     editingId={editingId}
                     editForm={editForm}
-                    setEditingId={setEditingId}
+                    setEditingId={() => { }} // Not used anymore - handled in hook
                     setEditForm={setEditForm}
                     getUnitName={getUnitName}
                     filteredUnits={filteredUnits}
                     handleStartEdit={handleStartEdit}
                     handleSaveEdit={handleSaveEdit}
-                    handleRemove={(unitId) => appendOrderUnitRemove({ product_order_unit_id: unitId })}
+                    handleRemove={handleRemoveUnit}
                     addFieldName="order_units.add"
                     unitFields={orderUnitFields}
                     removeUnit={removeOrderUnit}
                 />
             ) : (
-                <div className="flex flex-col items-center justify-center py-12 px-4">
-                    {!inventoryUnitId ? (
-                        <p className="text-gray-500 mb-4">{tProducts("pls_select_order_unit")}</p>
-                    ) : (
-                        <p className="text-gray-500 mb-4">{tProducts("no_order_units_defined")}</p>
-                    )}
-                </div>
+                <EmptyState inventoryUnitId={inventoryUnitId} />
             )}
         </Card>
     );
-}
+};
+
+// Extract empty state component for better readability
+const EmptyState = memo(({ inventoryUnitId }: { inventoryUnitId?: string }) => {
+    const tProducts = useTranslations("Products");
+
+    return (
+        <div className="flex flex-col items-center justify-center py-12 px-4">
+            <p className="text-gray-500 mb-4">
+                {!inventoryUnitId
+                    ? tProducts("pls_select_order_unit")
+                    : tProducts("no_order_units_defined")
+                }
+            </p>
+        </div>
+    );
+});
+
+EmptyState.displayName = "OrderUnitEmptyState";
+
+export default memo(OrderUnit);

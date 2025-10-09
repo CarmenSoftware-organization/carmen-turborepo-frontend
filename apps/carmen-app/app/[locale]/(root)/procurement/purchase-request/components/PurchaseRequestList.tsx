@@ -240,11 +240,15 @@ export default function PurchaseRequestList({
       render: (_: unknown, record: TableDataSource) => {
         return (
           <div className="flex justify-center">
-            {record.pr_status && (
+            {record.pr_status !== 'voided' && (
+              <p>{record.workflow_current_stage}</p>
+            )}
+
+            {/* {record.pr_status && (
               <StatusBadge status={record.pr_status}>
                 {convertStatus(record.pr_status)}
               </StatusBadge>
-            )}
+            )} */}
           </div>
         )
       }

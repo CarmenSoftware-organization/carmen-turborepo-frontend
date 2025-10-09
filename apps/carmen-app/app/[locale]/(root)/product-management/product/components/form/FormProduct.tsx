@@ -19,7 +19,7 @@ import {
   ProductInitialValues,
   productFormSchema,
 } from "../../pd-schema";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "@/lib/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -36,7 +36,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const router = useRouter();
 
-  const transformInitialValues = () => {
+  const transformInitialValues = useMemo(() => {
     if (!initialValues)
       return {
         name: "",
@@ -129,9 +129,14 @@ export default function FormProduct({ mode, initialValues }: Props) {
           ? initialValues.order_units.map((unit) => ({
             id: unit.id ?? "",
             from_unit_id: unit.from_unit_id ?? "",
+            from_unit_name: unit.from_unit_name ?? "",
             from_unit_qty: unit.from_unit_qty ?? 0,
             to_unit_id: unit.to_unit_id ?? "",
+            to_unit_name: unit.to_unit_name ?? "",
             to_unit_qty: unit.to_unit_qty ?? 0,
+            is_default: unit.is_default ?? false,
+            is_active: unit.is_active ?? true,
+            description: unit.description ?? "",
           }))
           : [],
         add: [],
@@ -143,9 +148,14 @@ export default function FormProduct({ mode, initialValues }: Props) {
           ? initialValues.ingredient_units.map((unit) => ({
             id: unit.id ?? "",
             from_unit_id: unit.from_unit_id ?? "",
+            from_unit_name: unit.from_unit_name ?? "",
             from_unit_qty: unit.from_unit_qty ?? 0,
             to_unit_id: unit.to_unit_id ?? "",
+            to_unit_name: unit.to_unit_name ?? "",
             to_unit_qty: unit.to_unit_qty ?? 0,
+            is_default: unit.is_default ?? false,
+            is_active: unit.is_active ?? true,
+            description: unit.description ?? "",
           }))
           : [],
         add: [],
@@ -161,17 +171,16 @@ export default function FormProduct({ mode, initialValues }: Props) {
         name: initialValues.product_sub_category?.name ?? "",
       },
     };
-  };
+  }, [initialValues]);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
-    defaultValues: transformInitialValues() as ProductFormValues,
+    defaultValues: transformInitialValues as ProductFormValues,
   });
 
 
-  const onSubmit = async (data: ProductFormValues) => {
+  const onSubmit = useCallback(async (data: ProductFormValues) => {
     try {
-      // Create a copy of the data and remove .data properties
       const { locations, order_units, ingredient_units, ...restData } = data;
       const submitData = {
         ...restData,
@@ -233,16 +242,15 @@ export default function FormProduct({ mode, initialValues }: Props) {
       console.error("Error submitting form:", error);
       toastError({ message: "Error submitting form" });
     }
-  };
+  }, [mode, token, buCode, router]);
 
-  const handleEditClick = (e: React.MouseEvent) => {
+  const handleEditClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Edit button clicked, current mode:", currentMode);
     setCurrentMode(formType.EDIT);
-  };
+  }, []);
 
-  const handleCancelClick = (e: React.MouseEvent) => {
+  const handleCancelClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (currentMode === formType.ADD || currentMode === formType.VIEW) {
@@ -250,7 +258,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
     } else {
       setCurrentMode(formType.VIEW);
     }
-  };
+  }, [currentMode, router]);
 
   return (
     <div className="mx-auto">
@@ -295,7 +303,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
           </Tabs>
         </form>
       </Form>
-      {/* <JsonViewer data={formValues} title="Form Values" /> */}
     </div>
   );
 }

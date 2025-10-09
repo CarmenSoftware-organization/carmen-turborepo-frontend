@@ -1,25 +1,93 @@
-import { Control, useFieldArray, useWatch } from "react-hook-form";
+import { Control, useFieldArray } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
-import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import NumberInput from "@/components/form-custom/NumberInput";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import { memo, useMemo } from "react";
 
 interface ProductAttributeProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
+
 interface AttributeItem {
     label: string;
     value: string;
     data_type: string;
 }
+
+const AttributeViewItem = memo(({ attribute, index }: { attribute: AttributeItem; index: number }) => (
+    <div key={`attribute-${attribute.label}-${index}`} className="space-y-1">
+        <p className="font-semibold text-sm">{attribute.label}</p>
+        <p className="text-xs text-muted-foreground">{attribute.value}</p>
+    </div>
+));
+
+AttributeViewItem.displayName = 'AttributeViewItem';
+
+const AttributeFieldRow = memo(({
+    control,
+    index,
+    onRemove,
+    tProducts
+}: {
+    control: Control<ProductFormValues>;
+    index: number;
+    onRemove: () => void;
+    tProducts: (key: string) => string;
+}) => (
+    <div className="flex items-center gap-2">
+        <FormField
+            control={control}
+            name={`product_info.info.${index}.label`}
+            render={({ field }) => (
+                <FormItem>
+                    <FormControl>
+                        <Input
+                            placeholder={tProducts("enter_label")}
+                            {...field}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+
+        <FormField
+            control={control}
+            name={`product_info.info.${index}.value`}
+            render={({ field }) => (
+                <FormItem>
+                    <FormControl>
+                        <Input
+                            placeholder={tProducts("enter_value")}
+                            {...field}
+                        />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+
+        <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onRemove}
+            className="hover:text-destructive hover:bg-transparent"
+        >
+            <Trash2 className="h-4 w-4" />
+        </Button>
+    </div>
+));
+
+AttributeFieldRow.displayName = 'AttributeFieldRow';
 
 export default function ProductAttribute({ control, currentMode }: ProductAttributeProps) {
     const tProducts = useTranslations("Products");
@@ -29,24 +97,11 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
         name: "product_info.info"
     });
 
-    const [attributeValues, setAttributeValues] = useState<AttributeItem[]>([]);
-
-    const formValues = useWatch({
-        control,
-        name: "product_info.info"
-    });
-
-    useEffect(() => {
-        if (formValues) {
-            setAttributeValues(formValues);
-        }
-    }, [formValues]);
-
     const handleAddAttribute = () => {
         append({ label: "", value: "", data_type: "string" });
     };
 
-    const isViewMode = currentMode === formType.VIEW;
+    const isViewMode = useMemo(() => currentMode === formType.VIEW, [currentMode]);
 
     return (
         <Card className="p-4 space-y-4">
@@ -180,94 +235,28 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                 />
                 {isViewMode ? (
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-                        {attributeValues && attributeValues.length > 0 ? (
-                            attributeValues.map((attribute, index) => (
-                                <div key={`attribute-${attribute.label}-${index}`} className="space-y-1">
-                                    <p className="font-semibold text-sm">{attribute.label}</p>
-                                    <p className="text-xs text-muted-foreground">{attribute.value}</p>
-                                </div>
+                        {fields && fields.length > 0 ? (
+                            fields.map((field, index) => (
+                                <AttributeViewItem
+                                    key={field.id}
+                                    attribute={field as unknown as AttributeItem}
+                                    index={index}
+                                />
                             ))
                         ) : (
                             <p className="text-sm text-muted-foreground">{tProducts("no_attributes_added")}</p>
                         )}
                     </div>
-
                 ) : (
                     <>
                         {fields.map((field, index) => (
-                            <div key={field.id} className="flex items-center gap-2">
-                                <FormField
-                                    control={control}
-                                    name={`product_info.info.${index}.label`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder={tProducts("enter_label")}
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={control}
-                                    name={`product_info.info.${index}.value`}
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <Input
-                                                    placeholder={tProducts("enter_value")}
-                                                    {...field}
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => remove(index)}
-                                    className="hover:text-destructive hover:bg-transparent"
-                                >
-                                    <Trash2 className="h-4 w-4 " />
-                                </Button>
-
-                                {/* <div className="flex gap-2">
-                                    <FormField
-                                        control={control}
-                                        name={`product_info.info.${index}.data_type`}
-                                        render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                                <FormLabel>Data Type</FormLabel>
-                                                <Select
-                                                    onValueChange={field.onChange}
-                                                    value={field.value}
-                                                >
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder="Select type" />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="string">String</SelectItem>
-                                                        <SelectItem value="number">Number</SelectItem>
-                                                        <SelectItem value="boolean">Boolean</SelectItem>
-                                                        <SelectItem value="date">Date</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                </div> */}
-                            </div>
+                            <AttributeFieldRow
+                                key={field.id}
+                                control={control}
+                                index={index}
+                                onRemove={() => remove(index)}
+                                tProducts={tProducts}
+                            />
                         ))}
                     </>
                 )}

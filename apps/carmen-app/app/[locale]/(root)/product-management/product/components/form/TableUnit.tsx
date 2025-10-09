@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check, SquarePen, Trash2, X } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import {
     Table,
     TableBody,
@@ -31,6 +31,16 @@ import { UnitData } from "./unit.type";
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface UnitField {
+    id: string;
+    from_unit_id: string;
+    from_unit_name?: string;
+    from_unit_qty: number;
+    to_unit_id?: string;
+    to_unit_qty?: number;
+    is_default?: boolean;
+}
+
 interface TableUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
@@ -45,13 +55,12 @@ interface TableUnitProps {
     readonly handleStartEdit: (unit: UnitData) => void;
     readonly handleSaveEdit: (unit: UnitData) => void;
     readonly handleRemove: (unitId: string) => void;
-    readonly addFieldName: string; // e.g., "order_units.add" or "ingredient_units.add"
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly unitFields: any[];
+    readonly addFieldName: string;
+    readonly unitFields: UnitField[];
     readonly removeUnit: (index: number) => void;
 }
 
-const EditableRow = ({
+const EditableRow = memo(({
     editForm,
     onSave,
     onCancel,
@@ -157,7 +166,159 @@ const EditableRow = ({
             </TableCell>
         </>
     );
-};
+});
+
+EditableRow.displayName = 'EditableRow';
+
+const NewUnitRow = memo(({
+    field,
+    index,
+    control,
+    addFieldName,
+    getUnitName,
+    filteredUnits,
+    currentMode,
+    unitTitle,
+    removeUnit,
+    tProducts,
+}: {
+    field: UnitField;
+    index: number;
+    control: Control<ProductFormValues>;
+    addFieldName: string;
+    getUnitName: (id: string) => string;
+    filteredUnits: UnitDto[];
+    currentMode: formType;
+    unitTitle: string;
+    removeUnit: (index: number) => void;
+    tProducts: (key: string) => string;
+}) => {
+    const currentToUnitQty = field.to_unit_qty || 0;
+    const currentToUnitId = field.to_unit_id || "";
+
+    return (
+        <TableRow>
+            <TableCell className="text-left w-24">
+                <div className="flex items-center gap-2">
+                    <span className="font-medium">{field.from_unit_qty}</span>
+                    <span>{field.from_unit_name ? getUnitName(field.from_unit_name) : ''}</span>
+                    <FormField
+                        control={control}
+                        name={`${addFieldName}.${index}.from_unit_id` as `order_units.add.${number}.from_unit_id` | `ingredient_units.add.${number}.from_unit_id`}
+                        render={({ field }) => (
+                            <FormItem className="space-y-0">
+                                <FormControl>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger className="w-20 h-7">
+                                            <SelectValue placeholder={tProducts("unit")} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {filteredUnits.map((unit) => (
+                                                <SelectItem key={unit.id} value={unit.id ?? ""}>
+                                                    {unit.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            </TableCell>
+
+            <TableCell className="text-left w-16">
+                <div className="flex items-center gap-2">
+                    <FormField
+                        control={control}
+                        name={`${addFieldName}.${index}.to_unit_qty` as `order_units.add.${number}.to_unit_qty` | `ingredient_units.add.${number}.to_unit_qty`}
+                        render={({ field }) => (
+                            <FormItem className="space-y-0">
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        className="w-16 h-7"
+                                        value={field.value}
+                                        onChange={(e) => field.onChange(Number(e.target.value))}
+                                        onBlur={field.onBlur}
+                                        name={field.name}
+                                        ref={field.ref}
+                                        min={1}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={control}
+                        name={`${addFieldName}.${index}.to_unit_id` as `order_units.add.${number}.to_unit_id` | `ingredient_units.add.${number}.to_unit_id`}
+                        render={({ field }) => (
+                            <FormItem className="space-y-0">
+                                <FormControl>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger className="w-20 h-7">
+                                            <SelectValue placeholder={tProducts("unit")} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {filteredUnits.map((unit) => (
+                                                <SelectItem key={unit.id} value={unit.id ?? ""}>
+                                                    {unit.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+            </TableCell>
+
+            <TableCell className="text-center w-16">
+                <FormField
+                    control={control}
+                    name={`${addFieldName}.${index}.is_default` as `order_units.add.${number}.is_default` | `ingredient_units.add.${number}.is_default`}
+                    render={({ field }) => (
+                        <FormItem className="space-y-0">
+                            <FormControl>
+                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+            </TableCell>
+            <TableCell className="text-left w-28">
+                {field.from_unit_id && currentToUnitId ? (
+                    <div>
+                        <p className="text-xs font-medium">{`1 ${getUnitName(field.from_unit_id)} = ${currentToUnitQty} ${getUnitName(currentToUnitId)}`}</p>
+                        <p className="text-muted-foreground text-[11px]">{`Qty x ${currentToUnitQty * field.from_unit_qty}`}</p>
+                    </div>
+                ) : ''}
+            </TableCell>
+            {currentMode !== formType.VIEW && (
+                <TableCell className="text-right">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeUnit(index)}
+                        aria-label={`Remove ${unitTitle.toLowerCase()} unit`}
+                        className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                </TableCell>
+            )}
+        </TableRow>
+    );
+});
+
+NewUnitRow.displayName = 'NewUnitRow';
 
 const DisplayRow = ({
     unit,
@@ -178,13 +339,13 @@ const DisplayRow = ({
         <TableCell className="text-left w-24">
             <div className="flex items-center gap-2">
                 <span className="font-medium">{unit.from_unit_qty}</span>
-                <span>{getUnitName(unit.from_unit_id)}</span>
+                <span>{unit.from_unit_name || getUnitName(unit.from_unit_id)}</span>
             </div>
         </TableCell>
         <TableCell className="text-left w-16">
             <div className="flex items-center gap-2">
                 <span className="font-medium">{unit.to_unit_qty}</span>
-                <span>{getUnitName(unit.to_unit_id)}</span>
+                <span>{unit.to_unit_name || getUnitName(unit.to_unit_id)}</span>
             </div>
         </TableCell>
         <TableCell className="text-center w-16">
@@ -192,7 +353,7 @@ const DisplayRow = ({
         </TableCell>
         <TableCell className="text-left w-28">
             <div>
-                <p className="text-xs font-medium">{`1 ${getUnitName(unit.from_unit_id)} = ${unit.to_unit_qty} ${getUnitName(unit.to_unit_id)}`}</p>
+                <p className="text-xs font-medium">{`1 ${unit.from_unit_name || getUnitName(unit.from_unit_id)} = ${unit.to_unit_qty} ${unit.to_unit_name || getUnitName(unit.to_unit_id)}`}</p>
                 <p className="text-muted-foreground text-[11px]">{`Qty x ${unit.to_unit_qty * unit.from_unit_qty}`}</p>
             </div>
         </TableCell>
@@ -270,6 +431,7 @@ export default function TableUnit({
     const tProducts = useTranslations("Products");
     const { watch } = useFormContext<ProductFormValues>();
 
+
     return (
         <div className="overflow-x-auto">
             <Table>
@@ -312,113 +474,21 @@ export default function TableUnit({
                     ))}
 
                     {/* New Units */}
-                    {unitFields.map((field, index) => {
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const currentToUnitQty = (watch as any)(`${addFieldName}.${index}.to_unit_qty`) || 0;
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const currentToUnitId = (watch as any)(`${addFieldName}.${index}.to_unit_id`) || "";
-
-                        return (
-                            <TableRow key={field.id}>
-                                <TableCell className="text-left w-24">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-medium">{field.from_unit_qty}</span>
-                                        <span>{getUnitName(field.from_unit_id)}</span>
-                                    </div>
-                                </TableCell>
-
-                                <TableCell className="text-left w-16">
-                                    <div className="flex items-center gap-2">
-                                        <FormField
-                                            control={control}
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                            name={`${addFieldName}.${index}.to_unit_qty` as any}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Input
-                                                            type="number"
-                                                            className="w-16 h-7"
-                                                            value={field.value as number}
-                                                            onChange={(e) => field.onChange(Number(e.target.value))}
-                                                            onBlur={field.onBlur}
-                                                            name={field.name}
-                                                            ref={field.ref}
-                                                            min={1}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-
-                                        <FormField
-                                            control={control}
-                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                            name={`${addFieldName}.${index}.to_unit_id` as any}
-                                            render={({ field }) => (
-                                                <FormItem className="space-y-0">
-                                                    <FormControl>
-                                                        <Select onValueChange={field.onChange} value={field.value as string}>
-                                                            <SelectTrigger className="w-20 h-7">
-                                                                <SelectValue placeholder={tProducts("unit")} />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {filteredUnits.map((unit) => (
-                                                                    <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                                                        {unit.name}
-                                                                    </SelectItem>
-                                                                ))}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
-                                </TableCell>
-
-                                <TableCell className="text-center w-16">
-                                    <FormField
-                                        control={control}
-                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                        name={`${addFieldName}.${index}.is_default` as any}
-                                        render={({ field }) => (
-                                            <FormItem className="space-y-0">
-                                                <FormControl>
-                                                    <Checkbox checked={field.value as boolean} onCheckedChange={field.onChange} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell className="text-left w-28">
-                                    {field.from_unit_id && currentToUnitId ? (
-                                        <div>
-                                            <p className="text-xs font-medium">{`1 ${getUnitName(field.from_unit_id)} = ${currentToUnitQty} ${getUnitName(currentToUnitId as string)}`}</p>
-                                            <p className="text-muted-foreground text-[11px]">{`Qty x ${(currentToUnitQty as number) * (field.from_unit_qty as number)}`}</p>
-                                        </div>
-                                    ) : ''}
-                                </TableCell>
-                                {currentMode !== formType.VIEW && (
-                                    <TableCell className="text-right">
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => removeUnit(index)}
-                                            aria-label={`Remove ${unitTitle.toLowerCase()} unit`}
-                                            className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </TableCell>
-                                )}
-                            </TableRow>
-                        )
-                    })}
+                    {unitFields.map((field, index) => (
+                        <NewUnitRow
+                            key={field.id}
+                            field={field}
+                            index={index}
+                            control={control}
+                            addFieldName={addFieldName}
+                            getUnitName={getUnitName}
+                            filteredUnits={filteredUnits}
+                            currentMode={currentMode}
+                            unitTitle={unitTitle}
+                            removeUnit={removeUnit}
+                            tProducts={tProducts}
+                        />
+                    ))}
                 </TableBody>
             </Table>
         </div>

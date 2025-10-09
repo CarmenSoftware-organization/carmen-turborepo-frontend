@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { getCategoryListByItemGroup } from "@/services/product.service";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,6 @@ import UnitLookup from "@/components/lookup/UnitLookup";
 import { useUnitQuery } from "@/hooks/use-unit";
 import ButtonLink from "@/components/ButtonLink";
 import { cn } from "@/lib/utils";
-import FormBoolean from "@/components/form-custom/form-boolean";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
@@ -63,103 +62,62 @@ export default function BasicInfo({
   });
 
   const status = watch("product_status_type");
-  const [selectedItemGroup, setSelectedItemGroup] = useState<string>("");
   const productItemGroupId = watch("product_info.product_item_group_id");
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    setValue("product_status_type", "active");
+    if (!hasInitialized.current) {
+      setValue("product_status_type", "active", { shouldValidate: false });
+      hasInitialized.current = true;
+    }
   }, [setValue]);
 
-  useEffect(() => {
-    if (!selectedItemGroup) return;
+  const fetchAndSetCategoryData = useCallback(async (itemGroupId: string, shouldUpdateForm = true) => {
+    if (!itemGroupId) return;
 
-    const fetchCategoryData = async () => {
-      try {
+    setCategoryData({
+      category: { id: "", name: "" },
+      subCategory: { id: "", name: "" },
+    });
 
-        setCategoryData({
-          category: { id: "", name: "" },
-          subCategory: { id: "", name: "" },
-        });
+    try {
+      const response = await getCategoryListByItemGroup(token, buCode, itemGroupId);
 
-        const response = await getCategoryListByItemGroup(
-          token,
-          buCode,
-          selectedItemGroup
-        );
-
-        // Update local state
-        const newCategoryData = {
-          category: {
-            id: response.category.id,
-            name: response.category.name,
-          },
-          subCategory: {
-            id: response.sub_category.id,
-            name: response.sub_category.name,
-          },
-        };
-
-        setCategoryData(newCategoryData);
-        setValue("product_category", newCategoryData.category);
-        setValue("product_sub_category", newCategoryData.subCategory);
-      } catch (error) {
-        console.error("Error fetching category data:", error);
-        setCategoryData({
-          category: { id: "", name: "" },
-          subCategory: { id: "", name: "" },
-        });
-      }
-    };
-
-    fetchCategoryData();
-  }, [selectedItemGroup, token, buCode, setValue]);
-
-  // Initial data fetch on view mode
-  const initialLoadRef = useRef(false);
-
-  useEffect(() => {
-    if (initialLoadRef.current) return;
-
-    if (
-      productItemGroupId &&
-      currentMode === formType.VIEW &&
-      !initialLoadRef.current
-    ) {
-      initialLoadRef.current = true;
-
-      const fetchInitialData = async () => {
-        try {
-          const response = await getCategoryListByItemGroup(
-            token,
-            buCode,
-            productItemGroupId
-          );
-
-
-          const newCategoryData = {
-            category: {
-              id: response.category.id,
-              name: response.category.name,
-            },
-            subCategory: {
-              id: response.sub_category.id,
-              name: response.sub_category.name,
-            },
-          };
-
-          setCategoryData(newCategoryData);
-        } catch (error) {
-          console.error("Error fetching initial category data:", error);
-        }
+      const newCategoryData = {
+        category: {
+          id: response.category.id,
+          name: response.category.name,
+        },
+        subCategory: {
+          id: response.sub_category.id,
+          name: response.sub_category.name,
+        },
       };
 
-      fetchInitialData();
-    }
-  }, [productItemGroupId, currentMode, token, buCode]);
+      setCategoryData(newCategoryData);
 
-  const handleItemGroupChange = (value: string) => {
-    setSelectedItemGroup(value);
-  };
+      if (shouldUpdateForm) {
+        setValue("product_category", newCategoryData.category, { shouldValidate: false });
+        setValue("product_sub_category", newCategoryData.subCategory, { shouldValidate: false });
+      }
+    } catch (error) {
+      console.error("Error fetching category data:", error);
+      setCategoryData({
+        category: { id: "", name: "" },
+        subCategory: { id: "", name: "" },
+      });
+    }
+  }, [token, buCode, setValue]);
+
+  const handleItemGroupChange = useCallback((value: string) => {
+    fetchAndSetCategoryData(value, true);
+  }, [fetchAndSetCategoryData]);
+
+  useEffect(() => {
+    if (productItemGroupId && currentMode === formType.VIEW) {
+      fetchAndSetCategoryData(productItemGroupId, false);
+    }
+  }, [productItemGroupId, currentMode, fetchAndSetCategoryData]);
 
   // Watch required fields
   const watchedFields = useWatch({
@@ -176,7 +134,16 @@ export default function BasicInfo({
     ],
   });
 
-  const isFormValid = () => {
+  const orderUnits = watch("order_units");
+
+  const defaultUnit = useMemo(() =>
+    Array.isArray(orderUnits)
+      ? orderUnits.find((unit) => unit.is_default === true)
+      : orderUnits?.data?.find((unit) => unit.is_default === true),
+    [orderUnits]
+  );
+
+  const isFormValid = useMemo(() => {
     const [
       name,
       code,
@@ -198,7 +165,7 @@ export default function BasicInfo({
       qtyDeviation >= 1 &&
       itemGroupId
     );
-  };
+  }, [watchedFields]);
 
   return (
     <div className="space-y-2">
@@ -302,7 +269,7 @@ export default function BasicInfo({
                     variant="outlinePrimary"
                     size="sm"
                     type="submit"
-                    disabled={!isFormValid()}
+                    disabled={!isFormValid}
                   >
                     <Save />
                     {tCommon("save")}
@@ -314,31 +281,6 @@ export default function BasicInfo({
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <FormField
-              control={control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    {tProducts("description")}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder={tProducts("description")}
-                      {...field}
-                      disabled={currentMode === formType.VIEW}
-                      className={cn(
-                        currentMode === formType.VIEW && "bg-muted",
-                        ""
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Local Name */}
             <FormField
               control={control}
               name="local_name"
@@ -365,6 +307,35 @@ export default function BasicInfo({
 
             <FormField
               control={control}
+              name="description"
+              render={({ field }) => (
+                <FormItem
+                  className="col-span-2"
+                >
+                  <FormLabel>
+                    {tProducts("description")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={tProducts("description")}
+                      {...field}
+                      disabled={currentMode === formType.VIEW}
+                      className={cn(
+                        currentMode === formType.VIEW && "bg-muted",
+                        ""
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Local Name */}
+
+
+            {/* <FormField
+              control={control}
               name="product_info.is_ingredients"
               render={({ field }) => (
                 <FormItem className="mt-2">
@@ -385,11 +356,11 @@ export default function BasicInfo({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
           </div>
 
           <div className="space-y-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {/* Product Item Group */}
               <FormField
                 control={control}
@@ -474,6 +445,16 @@ export default function BasicInfo({
                   </FormItem>
                 )}
               />
+              {defaultUnit && (
+                <div className="flex items-center gap-2">
+                  <Label>{tProducts("order_unit")}</Label>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-muted border-border">
+                      {defaultUnit.from_unit_name}
+                    </Badge>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </CardContent>

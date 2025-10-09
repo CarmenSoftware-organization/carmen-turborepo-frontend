@@ -31,6 +31,7 @@ import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { memo, useMemo, useCallback } from "react";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -120,7 +121,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         name: "locations.remove"
     });
 
-    const getFilteredStoreLocationsByProduct = () => {
+    const filteredStoreLocationsByProduct = useMemo(() => {
         if (!productData) return storeLocations;
 
         return storeLocations.filter((location: StoreLocation) => {
@@ -135,27 +136,32 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             }
             return location.is_active;
         });
-    };
+    }, [productData, storeLocations]);
 
-    const displayLocations = existingLocations.filter(
-        (location: LocationData) => !removedLocations.some((removed: { id: string }) => removed.id === location.id)
+    const displayLocations = useMemo(() =>
+        existingLocations.filter(
+            (location: LocationData) => !removedLocations.some((removed: { id: string }) => removed.id === location.id)
+        ),
+        [existingLocations, removedLocations]
     );
 
     const hasLocations = displayLocations.length > 0 || newLocations.length > 0;
 
-
-    const filteredStoreLocations = getFilteredStoreLocationsByProduct().filter(
-        (location: StoreLocation) => !existingLocations.some((existing: LocationData) => existing.location_id === location.id)
+    const filteredStoreLocations = useMemo(() =>
+        filteredStoreLocationsByProduct.filter(
+            (location: StoreLocation) => !existingLocations.some((existing: LocationData) => existing.location_id === location.id)
+        ),
+        [filteredStoreLocationsByProduct, existingLocations]
     );
 
-    const getLocationType = (location_type?: INVENTORY_TYPE) => {
+    const getLocationType = useCallback((location_type?: INVENTORY_TYPE) => {
         if (location_type === INVENTORY_TYPE.DIRECT) {
             return tStoreLocation("direct");
         } else if (location_type === INVENTORY_TYPE.CONSIGNMENT) {
             return tStoreLocation("consignment");
         }
         return tStoreLocation("inventory");
-    };
+    }, [tStoreLocation]);
 
     // Merge into one list for display only
     const allLocations: LocationDisplayData[] = [
