@@ -180,12 +180,15 @@ export default function UnitComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="unit-list-action-buttons">
-      {unitPerms.canCreate && (
-        <Button size={"sm"} onClick={handleAdd}>
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Button>
-      )}
+      <Button
+        size={"sm"}
+        onClick={handleAdd}
+        data-id="unit-add-button"
+        disabled={!unitPerms.canCreate}
+      >
+        <Plus className="h-4 w-4" />
+        {tCommon("add")}
+      </Button>
       <Button
         variant="outlinePrimary"
         className="group"

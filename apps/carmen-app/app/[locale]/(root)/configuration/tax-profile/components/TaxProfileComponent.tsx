@@ -183,13 +183,15 @@ export function TaxProfileComponent() {
     setIsDialogOpen(true);
   };
 
+  const onDeleteSuccess = (id: string) => {
+    setTaxProfiles((prev) => prev.filter((profile) => profile.id !== id));
+    toastSuccess({ message: tTaxProfile("tax_profile_deleted") });
+    setDeleteProfileId(null);
+  };
+
   const handleDelete = (id: string) => {
     deleteTaxProfile(undefined, {
-      onSuccess: () => {
-        setTaxProfiles((prev) => prev.filter((profile) => profile.id !== id));
-        toastSuccess({ message: tTaxProfile("tax_profile_deleted") });
-        setDeleteProfileId(null);
-      },
+      onSuccess: () => onDeleteSuccess(id),
     });
   };
 
@@ -258,28 +260,32 @@ export function TaxProfileComponent() {
     />
   );
 
+  const onCreateSuccess = (data: TaxProfileFormData) => {
+    setTaxProfiles((prev) => [...prev, data as TaxProfileGetAllDto]);
+    setIsDialogOpen(false);
+    toastSuccess({ message: tTaxProfile("tax_profile_created") });
+  };
+
   const handleCreate = (data: TaxProfileFormData) => {
     createTaxProfile(data, {
-      onSuccess: () => {
-        setTaxProfiles((prev) => [...prev, data as TaxProfileGetAllDto]);
-        setIsDialogOpen(false);
-        toastSuccess({ message: tTaxProfile("tax_profile_created") });
-      },
+      onSuccess: () => onCreateSuccess(data),
     });
+  };
+
+  const onUpdateSuccess = (data: TaxProfileFormData) => {
+    setTaxProfiles((prev) =>
+      prev.map((profile) =>
+        profile.id === editingProfile ? { ...profile, ...data } : profile
+      )
+    );
+    toastSuccess({ message: tTaxProfile("tax_profile_updated") });
+    setIsDialogOpen(false);
+    setEditingProfile(null);
   };
 
   const handleUpdate = (data: TaxProfileFormData) => {
     updateTaxProfile(data as TaxProfileEditDto, {
-      onSuccess: () => {
-        setTaxProfiles((prev) =>
-          prev.map((profile) =>
-            profile.id === editingProfile ? { ...profile, ...data } : profile
-          )
-        );
-        toastSuccess({ message: tTaxProfile("tax_profile_updated") });
-        setIsDialogOpen(false);
-        setEditingProfile(null);
-      },
+      onSuccess: () => onUpdateSuccess(data),
     });
   };
 
