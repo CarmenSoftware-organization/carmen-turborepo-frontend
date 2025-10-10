@@ -10,6 +10,7 @@ import {
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useMemo } from "react";
 
 interface TreeNodeProps {
     readonly node: CategoryNode;
@@ -37,21 +38,23 @@ export default function TreeNode({
     const isExpanded = expanded[node.id] ?? false;
     const hasChildren = node.children && node.children.length > 0;
 
-    // Function to highlight search text
-    const highlightText = (text: string, searchTerm: string) => {
-        if (!searchTerm || !text) return text;
+    // Function to highlight search text - memoized
+    const highlightText = useMemo(() => {
+        return (text: string, searchTerm: string) => {
+            if (!searchTerm || !text) return text;
 
-        const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-        const parts = text.split(regex);
+            const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            const parts = text.split(regex);
 
-        return parts.map((part, index) =>
-            regex.test(part) ? (
-                <mark key={index} className="bg-yellow-300 px-1 rounded font-medium">
-                    {part}
-                </mark>
-            ) : part
-        );
-    };
+            return parts.map((part, index) =>
+                regex.test(part) ? (
+                    <mark key={index} className="bg-yellow-300 px-1 rounded font-medium">
+                        {part}
+                    </mark>
+                ) : part
+            );
+        };
+    }, []);
 
     const getTypeLabel = (type: CategoryNode["type"]) => {
         if (type === NODE_TYPE.CATEGORY) return tCategory("category");

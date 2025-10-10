@@ -1,164 +1,103 @@
-import { useCallback, useEffect, useState, useTransition } from "react";
+"use client";
 
 import { ItemGroupDto } from "@/dtos/category.dto";
 import { useAuth } from "@/context/AuthContext";
 import { createItemGroupService, deleteItemGroupService, getItemGroupService, updateItemGroupService } from "@/services/item-group.service";
-import { toastError } from "@/components/ui-custom/Toast";
 import { formType } from "@/dtos/form.dto";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useItemGroup = () => {
+export const useItemGroupsQuery = () => {
     const { token, buCode } = useAuth();
-    const [itemGroups, setItemGroups] = useState<ItemGroupDto[]>([]);
-    const [isPending, startTransition] = useTransition();
-    const [isUnauthorized, setIsUnauthorized] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
-    const fetchItemGroups = useCallback(() => {
-        if (!token || !buCode) {
-            setIsUnauthorized(true);
-            setIsLoading(false);
-            return;
-        }
-
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                setIsUnauthorized(false);
-
-                const data = await getItemGroupService(token, buCode);
-
-                if (data.statusCode === 401) {
-                    setIsUnauthorized(true);
-                    return;
-                }
-
-                if (!data.data) {
-                    console.error('Unexpected API response format:', data);
-                    toastError({ message: 'Unexpected data format from API' });
-                    setItemGroups([]);
-                    return;
-                }
-
-                setItemGroups(data.data);
-            } catch (error) {
-                console.error('Error fetching item groups:', error);
-                toastError({ message: 'Error fetching item groups' });
-                setItemGroups([]);
-            } finally {
-                setIsLoading(false);
+    return useQuery({
+        queryKey: ['itemGroups', buCode],
+        queryFn: async () => {
+            const response = await getItemGroupService(token, buCode);
+            if (response.statusCode === 401) {
+                throw new Error('Unauthorized');
             }
-        };
+            return response.data as ItemGroupDto[];
+        },
+        enabled: !!token && !!buCode,
+        staleTime: 60000,
+    });
+};
 
-        startTransition(fetchData);
-    }, [token, buCode]);
+export const useCreateItemGroupMutation = () => {
+    const { token, buCode } = useAuth();
+    const queryClient = useQueryClient();
 
-    useEffect(() => {
-        fetchItemGroups();
-    }, [fetchItemGroups]);
+    return useMutation({
+        mutationFn: async (data: ItemGroupDto) => {
+            return await createItemGroupService(token, buCode, data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['itemGroups', buCode] });
+        },
+    });
+};
 
-    const handleSubmit = useCallback((data: ItemGroupDto, mode: formType, selectedItemGroup?: ItemGroupDto) => {
-        if (!token || !buCode) {
-            toastError({ message: 'Authentication required' });
-            return Promise.reject(new Error('No token or tenant ID available'));
-        }
+export const useUpdateItemGroupMutation = () => {
+    const { token, buCode } = useAuth();
+    const queryClient = useQueryClient();
 
-        const submitAdd = async () => {
-            try {
-                const result = await createItemGroupService(token, buCode, data);
+    return useMutation({
+        mutationFn: async (data: ItemGroupDto) => {
+            return await updateItemGroupService(token, buCode, data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['itemGroups', buCode] });
+        },
+    });
+};
 
-                if (!result?.id) {
-                    toastError({ message: 'Failed to create item group' });
-                    return null;
-                }
+export const useDeleteItemGroupMutation = () => {
+    const { token, buCode } = useAuth();
+    const queryClient = useQueryClient();
 
-                const newItemGroup: ItemGroupDto = {
-                    ...data,
-                    id: result.id,
-                };
-                setItemGroups(prev => [...prev, newItemGroup]);
-                return result;
-            } catch (error) {
-                console.error('Error creating item group:', error);
-                toastError({ message: 'Error creating item group' });
-                throw error;
-            }
-        };
+    return useMutation({
+        mutationFn: async (itemGroupId: string) => {
+            return await deleteItemGroupService(token, buCode, itemGroupId);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['itemGroups', buCode] });
+        },
+    });
+};
 
-        const submitEdit = async () => {
-            if (!selectedItemGroup?.id) {
-                toastError({ message: 'Item group ID is required for update' });
-                return Promise.reject(new Error('Item group ID is required'));
-            }
+// Legacy hook for backward compatibility
+export const useItemGroup = () => {
+    const { data: itemGroups = [], isLoading, error } = useItemGroupsQuery();
+    const createMutation = useCreateItemGroupMutation();
+    const updateMutation = useUpdateItemGroupMutation();
+    const deleteMutation = useDeleteItemGroupMutation();
+    const queryClient = useQueryClient();
+    const { buCode } = useAuth();
 
-            try {
-                const updatedItemGroup: ItemGroupDto = {
-                    ...data,
-                    id: selectedItemGroup.id,
-                };
-                const result = await updateItemGroupService(token, buCode, updatedItemGroup);
-
-                if (!result) {
-                    toastError({ message: 'Failed to update item group' });
-                    return null;
-                }
-
-                const id = updatedItemGroup.id;
-                setItemGroups(prev => prev.map(c => c.id === id ? updatedItemGroup : c));
-                return result;
-            } catch (error) {
-                console.error('Error updating item group:', error);
-                toastError({ message: 'Error updating item group' });
-                throw error;
-            }
-        };
-
+    const handleSubmit = async (data: ItemGroupDto, mode: formType, selectedItemGroup?: ItemGroupDto) => {
         if (mode === formType.ADD) {
-            return submitAdd();
+            return await createMutation.mutateAsync(data);
         } else {
-            return submitEdit();
+            const updatedItemGroup = { ...data, id: selectedItemGroup!.id };
+            return await updateMutation.mutateAsync(updatedItemGroup);
         }
-    }, [token, buCode]);
+    };
 
-    const handleDelete = useCallback((itemGroup: ItemGroupDto) => {
-        if (!token || !buCode) {
-            toastError({ message: 'Authentication required' });
-            return Promise.reject(new Error('No token or tenant ID available'));
-        }
+    const handleDelete = async (itemGroup: ItemGroupDto) => {
+        return await deleteMutation.mutateAsync(itemGroup.id ?? '');
+    };
 
-        if (!itemGroup?.id) {
-            toastError({ message: 'Item group ID is required for deletion' });
-            return Promise.reject(new Error('Item group ID is required'));
-        }
-
-        const submitDelete = async () => {
-            try {
-                const result = await deleteItemGroupService(token, buCode, itemGroup.id);
-
-                if (!result) {
-                    toastError({ message: 'Failed to delete item group' });
-                    return null;
-                }
-
-                setItemGroups(prev => prev.filter(c => c.id !== itemGroup.id));
-                return result;
-            } catch (error) {
-                console.error('Error deleting item group:', error);
-                toastError({ message: 'Error deleting item group' });
-                throw error;
-            }
-        };
-
-        return submitDelete();
-    }, [token, buCode]);
-
+    const fetchItemGroups = () => {
+        queryClient.invalidateQueries({ queryKey: ['itemGroups', buCode] });
+    };
 
     return {
         itemGroups,
-        isPending,
-        isUnauthorized,
+        isPending: isLoading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending,
+        isUnauthorized: error?.message === 'Unauthorized',
         isLoading,
         fetchItemGroups,
         handleSubmit,
         handleDelete
-    }
-}
+    };
+};

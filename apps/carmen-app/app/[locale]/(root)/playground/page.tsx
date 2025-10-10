@@ -46,6 +46,10 @@ const itemsPlayground = [
     title: "Notification Component",
     href: "/playground/noti",
   },
+  {
+    title: "Product Lookup",
+    href: "/playground/product-lookup",
+  }
 ];
 
 export default function Playground() {

@@ -3,116 +3,101 @@
 import { createCategoryService, deleteCategoryService, getCategoryService, updateCategoryService } from "@/services/category.service";
 import { useAuth } from "@/context/AuthContext";
 import { CategoryDto } from "@/dtos/category.dto";
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { toastError } from "@/components/ui-custom/Toast";
 import { formType } from "@/dtos/form.dto";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-export const useCategory = () => {
+export const useCategoriesQuery = () => {
     const { token, buCode } = useAuth();
-    const [categories, setCategories] = useState<CategoryDto[]>([]);
-    const [isPending, startTransition] = useTransition();
-    const [isUnauthorized, setIsUnauthorized] = useState(false);
 
-    const fetchCategories = useCallback(() => {
-        if (!token) return;
-        const fetchData = async () => {
-            try {
-                setIsUnauthorized(false);
-                const data = await getCategoryService(token, buCode, {
-                    sort: 'code',
-                });
-                if (data.statusCode === 401) {
-                    setIsUnauthorized(true);
-                    return;
-                }
-                setCategories(data.data);
-            } catch (error) {
-                console.error('Error fetching categories:', error);
-                toastError({ message: 'Error fetching categories' });
+    return useQuery({
+        queryKey: ['categories', buCode],
+        queryFn: async () => {
+            const response = await getCategoryService(token, buCode, { sort: 'code' });
+            if (response.statusCode === 401) {
+                throw new Error('Unauthorized');
             }
-        };
+            return response.data as CategoryDto[];
+        },
+        enabled: !!token && !!buCode,
+        staleTime: 60000,
+    });
+};
 
-        startTransition(fetchData);
-    }, [token, buCode]);
+export const useCreateCategoryMutation = () => {
+    const { token, buCode } = useAuth();
+    const queryClient = useQueryClient();
 
+    return useMutation({
+        mutationFn: async (data: CategoryDto) => {
+            return await createCategoryService(token, buCode, data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories', buCode] });
+        },
+    });
+};
 
-    useEffect(() => {
-        fetchCategories();
-    }, [fetchCategories]);
+export const useUpdateCategoryMutation = () => {
+    const { token, buCode } = useAuth();
+    const queryClient = useQueryClient();
 
-    const handleSubmit = useCallback((data: CategoryDto, mode: formType, selectedCategory?: CategoryDto) => {
-        if (!token) return Promise.reject(new Error('No token available'));
+    return useMutation({
+        mutationFn: async (data: CategoryDto) => {
+            return await updateCategoryService(token, buCode, data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories', buCode] });
+        },
+    });
+};
 
-        const submitAdd = async () => {
-            try {
-                const result = await createCategoryService(token, buCode, data);
+export const useDeleteCategoryMutation = () => {
+    const { token, buCode } = useAuth();
+    const queryClient = useQueryClient();
 
-                const newCategory: CategoryDto = {
-                    ...data,
-                    id: result.id,
-                };
+    return useMutation({
+        mutationFn: async (categoryId: string) => {
+            return await deleteCategoryService(token, buCode, categoryId);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['categories', buCode] });
+        },
+    });
+};
 
-                setCategories([...categories, newCategory]);
-                return result;
-            } catch (error) {
-                console.error('Error creating category:', error);
-                throw error;
-            }
-        };
+// Legacy hook for backward compatibility
+export const useCategory = () => {
+    const { data: categories = [], isLoading, error } = useCategoriesQuery();
+    const createMutation = useCreateCategoryMutation();
+    const updateMutation = useUpdateCategoryMutation();
+    const deleteMutation = useDeleteCategoryMutation();
+    const queryClient = useQueryClient();
+    const { buCode } = useAuth();
 
-        const submitEdit = async () => {
-            try {
-                const updatedCategory: CategoryDto = {
-                    ...data,
-                    id: selectedCategory!.id,
-                };
-
-                const result = await updateCategoryService(token, buCode, updatedCategory);
-
-                const id = updatedCategory.id;
-                const updatedCategories = categories.map(c =>
-                    c.id === id ? updatedCategory : c
-                );
-
-                setCategories(updatedCategories);
-                return result;
-            } catch (error) {
-                console.error('Error updating category:', error);
-                throw error;
-            }
-        };
-
+    const handleSubmit = async (data: CategoryDto, mode: formType, selectedCategory?: CategoryDto) => {
         if (mode === formType.ADD) {
-            return submitAdd();
+            return await createMutation.mutateAsync(data);
         } else {
-            return submitEdit();
+            const updatedCategory = { ...data, id: selectedCategory!.id };
+            return await updateMutation.mutateAsync(updatedCategory);
         }
-    }, [token, buCode, categories]);
+    };
 
-    const handleDelete = useCallback((category: CategoryDto) => {
-        if (!token) return Promise.reject(new Error('No token available'));
-        const submitDelete = async () => {
-            try {
-                const result = await deleteCategoryService(token, buCode, category.id ?? '');
-                const updatedCategories = categories.filter(c => c.id !== category.id);
-                setCategories(updatedCategories);
-                return result;
-            } catch (error) {
-                console.error('Error deleting category:', error);
-                throw error;
-            }
-        };
+    const handleDelete = async (category: CategoryDto) => {
+        return await deleteMutation.mutateAsync(category.id ?? '');
+    };
 
-        return submitDelete();
-    }, [token, buCode, categories]);
+    const fetchCategories = () => {
+        queryClient.invalidateQueries({ queryKey: ['categories', buCode] });
+    };
 
     return {
         categories,
-        isPending,
-        isUnauthorized,
+        isPending: isLoading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending,
+        isUnauthorized: error?.message === 'Unauthorized',
         fetchCategories,
         handleSubmit,
         handleDelete
-    }
-}
+    };
+};
 

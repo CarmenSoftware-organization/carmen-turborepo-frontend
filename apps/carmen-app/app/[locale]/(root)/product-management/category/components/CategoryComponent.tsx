@@ -27,18 +27,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useCategoryTree } from "@/hooks/useCategoryTree";
 import { useCategoryDialog } from "@/hooks/useCategoryDialog";
 import { useCategoryDelete } from "@/hooks/useCategoryDelete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CategoryLoading from "@/components/loading/CategoryLoading";
 import { useTranslations } from "next-intl";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export default function CategoryComponent() {
   const tCategory = useTranslations("Category");
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [signInOpen, setSignInOpen] = useState(false);
   const {
     categories,
@@ -78,75 +80,91 @@ export default function CategoryComponent() {
       isLoading,
     });
 
-  // Filter data based on search term
-  const filteredCategoryData = categoryData.filter((category: CategoryNode) => {
-    const searchLower = search.toLowerCase();
-
-    // Check if category matches search
-    const categoryMatches =
-      category.code.toLowerCase().includes(searchLower) ||
-      category.name.toLowerCase().includes(searchLower) ||
-      category.description?.toLowerCase().includes(searchLower);
-
-    // Check if any subcategory matches search
-    const hasMatchingSubcategory = category.children?.some(
-      (subcategory: CategoryNode) => {
-        const subcategoryMatches =
-          subcategory.code.toLowerCase().includes(searchLower) ||
-          subcategory.name.toLowerCase().includes(searchLower) ||
-          subcategory.description?.toLowerCase().includes(searchLower);
-
-        // Check if any item group matches search
-        const hasMatchingItemGroup = subcategory.children?.some(
-          (itemGroup: CategoryNode) =>
-            itemGroup.code.toLowerCase().includes(searchLower) ||
-            itemGroup.name.toLowerCase().includes(searchLower) ||
-            itemGroup.description?.toLowerCase().includes(searchLower),
-        );
-
-        return subcategoryMatches || hasMatchingItemGroup;
-      },
+  // Helper function to check if node matches search
+  const nodeMatchesSearch = useCallback((node: CategoryNode, searchLower: string) => {
+    return (
+      node.code.toLowerCase().includes(searchLower) ||
+      node.name.toLowerCase().includes(searchLower) ||
+      node.description?.toLowerCase().includes(searchLower)
     );
+  }, []);
 
-    // Check if any item group directly under category matches search
+  // Helper: Check if subcategory or its children match search
+  const subcategoryMatchesSearch = useCallback((subcategory: CategoryNode, searchLower: string) => {
+    const subcategoryMatches = nodeMatchesSearch(subcategory, searchLower);
+    const hasMatchingItemGroup = subcategory.children?.some(
+      (itemGroup: CategoryNode) => nodeMatchesSearch(itemGroup, searchLower)
+    );
+    return subcategoryMatches || hasMatchingItemGroup;
+  }, [nodeMatchesSearch]);
+
+  // Helper: Check if category matches search (directly or through children)
+  const categoryMatchesSearch = useCallback((category: CategoryNode, searchLower: string) => {
+    const categoryMatches = nodeMatchesSearch(category, searchLower);
+    const hasMatchingSubcategory = category.children?.some(
+      (subcategory: CategoryNode) => subcategoryMatchesSearch(subcategory, searchLower)
+    );
     const hasMatchingItemGroup = category.children?.some(
       (itemGroup: CategoryNode) =>
         itemGroup.type === NODE_TYPE.ITEM_GROUP &&
-        (itemGroup.code.toLowerCase().includes(searchLower) ||
-          itemGroup.name.toLowerCase().includes(searchLower) ||
-          itemGroup.description?.toLowerCase().includes(searchLower)),
+        nodeMatchesSearch(itemGroup, searchLower)
+    );
+    return categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup;
+  }, [nodeMatchesSearch, subcategoryMatchesSearch]);
+
+  // Filter data based on search term with memoization
+  const filteredCategoryData = useMemo(() => {
+    if (!debouncedSearch) return categoryData;
+    const searchLower = debouncedSearch.toLowerCase();
+    return categoryData.filter((category) => categoryMatchesSearch(category, searchLower));
+  }, [categoryData, debouncedSearch, categoryMatchesSearch]);
+
+  // Helper: Process subcategory for expansion
+  const processSubcategoryExpansion = useCallback((
+    subcategory: CategoryNode,
+    searchLower: string,
+    expandedNodes: Record<string, boolean>
+  ) => {
+    const subcategoryMatches = nodeMatchesSearch(subcategory, searchLower);
+    const hasMatchingItemGroup = subcategory.children?.some(
+      (itemGroup: CategoryNode) => nodeMatchesSearch(itemGroup, searchLower)
     );
 
-    return categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup;
-  });
+    if (subcategoryMatches || hasMatchingItemGroup) {
+      expandedNodes[subcategory.id] = true;
+    }
+
+    return subcategoryMatches || hasMatchingItemGroup;
+  }, [nodeMatchesSearch]);
 
   // Auto-expand nodes that match search term
-  const searchExpanded: Record<string, boolean> = search ? {} : expanded;
-  if (search) {
+  const searchExpanded = useMemo(() => {
+    if (!debouncedSearch) return {};
+
+    const searchLower = debouncedSearch.toLowerCase();
+    const expandedNodes: Record<string, boolean> = {};
+
     filteredCategoryData.forEach((category: CategoryNode) => {
-      searchExpanded[category.id] = true;
+      const categoryMatches = nodeMatchesSearch(category, searchLower);
 
-      // Expand subcategories if they or their children match
-      category.children?.forEach((subcategory: CategoryNode) => {
-        const searchLower = search.toLowerCase();
-        const subcategoryMatches =
-          subcategory.code.toLowerCase().includes(searchLower) ||
-          subcategory.name.toLowerCase().includes(searchLower) ||
-          subcategory.description?.toLowerCase().includes(searchLower);
+      const hasMatchingSubcategory = category.children?.some(
+        (subcategory: CategoryNode) =>
+          processSubcategoryExpansion(subcategory, searchLower, expandedNodes)
+      );
 
-        const hasMatchingItemGroup = subcategory.children?.some(
-          (itemGroup: CategoryNode) =>
-            itemGroup.code.toLowerCase().includes(searchLower) ||
-            itemGroup.name.toLowerCase().includes(searchLower) ||
-            itemGroup.description?.toLowerCase().includes(searchLower),
-        );
+      const hasMatchingItemGroup = category.children?.some(
+        (itemGroup: CategoryNode) =>
+          itemGroup.type === NODE_TYPE.ITEM_GROUP &&
+          nodeMatchesSearch(itemGroup, searchLower)
+      );
 
-        if (subcategoryMatches || hasMatchingItemGroup) {
-          searchExpanded[subcategory.id] = true;
-        }
-      });
+      if (categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup) {
+        expandedNodes[category.id] = true;
+      }
     });
-  }
+
+    return expandedNodes;
+  }, [filteredCategoryData, debouncedSearch, nodeMatchesSearch, processSubcategoryExpansion]);
 
   const {
     dialogOpen,
@@ -466,12 +484,12 @@ export default function CategoryComponent() {
                 <TreeNode
                   key={category.id}
                   node={category}
-                  expanded={search ? searchExpanded : expanded}
+                  expanded={debouncedSearch ? searchExpanded : expanded}
                   toggleExpand={toggleExpand}
                   onEdit={handleEdit}
                   onAdd={handleAdd}
                   onDelete={handleDelete}
-                  search={search}
+                  search={debouncedSearch}
                 />
               ))}
             </>
