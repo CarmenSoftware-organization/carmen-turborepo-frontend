@@ -21,8 +21,10 @@ export const useUnitManagement = ({ unitType, watch, setValue }: UseUnitManageme
     // Get current units data
     const unitsData = watch(fieldName) as OrderUnitsFormData | IngredientUnitsFormData;
     const existingUnits = useMemo(() => unitsData?.data || [], [unitsData?.data]);
-    const newUnits = useMemo(() => watch(`${fieldName}.add`) || [], [watch(`${fieldName}.add`)]);
-    const removedUnits = useMemo(() => watch(`${fieldName}.remove`) || [], [watch(`${fieldName}.remove`)]);
+    const addFieldPath = `${fieldName}.add` as const;
+    const removeFieldPath = `${fieldName}.remove` as const;
+    const newUnits = useMemo(() => watch(addFieldPath) || [], [watch, addFieldPath]);
+    const removedUnits = useMemo(() => watch(removeFieldPath) || [], [watch, removeFieldPath]);
 
     // Display units (filter out removed)
     const displayUnits = useMemo(() =>
@@ -102,7 +104,7 @@ export const useUnitManagement = ({ unitType, watch, setValue }: UseUnitManageme
             ...unitsData,
             data: updatedData,
             update: newUpdates
-        } as any, {
+        } as never, {
             shouldValidate: false,
             shouldDirty: true,
             shouldTouch: false
@@ -110,7 +112,7 @@ export const useUnitManagement = ({ unitType, watch, setValue }: UseUnitManageme
 
         setEditingId(null);
         setEditForm(null);
-    }, [editForm, existingUnits, unitsData, setValue, fieldName, idFieldName]);
+    }, [editForm, existingUnits, unitsData, setValue, fieldName, idFieldName, unitType]);
 
     const handleCancelEdit = useCallback(() => {
         setEditingId(null);

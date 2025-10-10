@@ -1,4 +1,4 @@
-import { Control, useFormContext } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
@@ -429,7 +429,6 @@ export default function TableUnit({
 }: TableUnitProps) {
 
     const tProducts = useTranslations("Products");
-    const { watch } = useFormContext<ProductFormValues>();
 
 
     return (

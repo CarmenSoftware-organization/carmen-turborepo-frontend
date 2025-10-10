@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 import { Control } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { ProductFormValues } from "../../pd-schema";
@@ -12,7 +12,7 @@ interface PriceInfoProps {
     readonly currentMode: formType;
 }
 
-const PriceInfo = ({ control, currentMode }: PriceInfoProps) => {
+export default function PriceInfo({ control, currentMode }: PriceInfoProps) {
     const isViewMode = useMemo(() => currentMode === formType.VIEW, [currentMode]);
 
     return (

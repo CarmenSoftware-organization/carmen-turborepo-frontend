@@ -72,7 +72,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId);
             }
         });
-    }, [inventoryUnitId, newUnits.length, setValue]);
+    }, [inventoryUnitId, newUnits, setValue]);
 
     // Auto-calculate conversion when units match or initialize to_unit_qty
     useEffect(() => {

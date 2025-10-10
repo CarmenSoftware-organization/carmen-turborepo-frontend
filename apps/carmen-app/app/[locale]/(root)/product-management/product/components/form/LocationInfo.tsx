@@ -31,7 +31,7 @@ import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
-import { memo, useMemo, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -104,12 +104,13 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const tCommon = useTranslations("Common");
     const { token, buCode } = useAuth();
     const { data: locationsData, isLoading } = useLocationsQuery({ token, buCode });
-    const storeLocations = locationsData?.data || [];
     const { watch } = useFormContext<ProductFormValues>();
     const locations = watch("locations") as LocationsFormData;
-    const existingLocations = locations?.data || [];
     const newLocations = watch("locations.add") || [];
-    const removedLocations = watch("locations.remove") || [];
+
+    const storeLocations = useMemo(() => locationsData?.data || [], [locationsData?.data]);
+    const existingLocations = useMemo(() => locations?.data || [], [locations?.data]);
+    const removedLocations = useMemo(() => watch("locations.remove") || [], [watch]);
 
     const { fields: locationFields, append: appendLocation, remove: removeLocation } = useFieldArray({
         control,
