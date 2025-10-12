@@ -17,6 +17,7 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
+import { useAuth } from "@/context/AuthContext";
 
 export default function UserListLookup({
   value,
@@ -25,7 +26,8 @@ export default function UserListLookup({
   disabled = false,
   classNames,
 }: Readonly<PropsLookup>) {
-  const { userList, isLoading } = useUserList();
+  const { token, buCode } = useAuth();
+  const { userList, isLoading } = useUserList(token, buCode);
   const [open, setOpen] = useState(false);
 
   const selectedUserName = useMemo(() => {

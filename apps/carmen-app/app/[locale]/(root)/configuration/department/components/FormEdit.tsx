@@ -71,7 +71,8 @@ export default function FormEdit({
 }: FormEditProps) {
     const { token, buCode } = useAuth();
     const router = useRouter();
-    const { userList } = useUserList();
+    const { userList } = useUserList(token, buCode);
+
     const tDepartment = useTranslations("Department");
     const tHeader = useTranslations("TableHeader");
     const tDataControls = useTranslations("DataControls");

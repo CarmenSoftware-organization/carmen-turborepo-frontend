@@ -8,7 +8,7 @@ import {
 } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Save } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,14 +33,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
-import { useUserList } from "@/hooks/useUserList";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Transfer } from "@/components/ui-custom/Transfer";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import { useQueryClient } from "@tanstack/react-query";
 import transferHandler from "@/components/form-custom/TransferHandler";
 import { useTranslations } from "next-intl";
 import { useProductQuery } from "@/hooks/useProductQuery";
+import { useUserList } from "@/hooks/useUserList";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -71,12 +73,14 @@ export default function LocationForm({
   token,
   buCode,
 }: LocationFormProps) {
-  const { userList } = useUserList();
-  const { products } = useProductQuery({
+  const { userList, isLoading: isLoadingUsers } = useUserList(token, buCode);
+
+  const { products, isLoading: isLoadingProducts } = useProductQuery({
     token,
     buCode,
   });
   const router = useRouter();
+  const queryClient = useQueryClient();
   const tLocation = useTranslations("StoreLocation");
   const tCommon = useTranslations("Common");
 
@@ -96,6 +100,9 @@ export default function LocationForm({
     buCode,
     initialData?.id || ""
   );
+
+  const isPending = createMutation.isPending || updateMutation.isPending;
+  const isViewMode = mode === formType.VIEW;
 
   const initUsers = useMemo(() => {
     return (
@@ -124,10 +131,8 @@ export default function LocationForm({
   }, [initProducts]);
 
   // State สำหรับเก็บ selected items
-  const [selectedUsers, setSelectedUsers] =
-    useState<(string | number)[]>(initUserKeys);
-  const [selectedProducts, setSelectedProducts] =
-    useState<(string | number)[]>(initProductKeys);
+  const [selectedUsers, setSelectedUsers] = useState<(string | number)[]>([]);
+  const [selectedProducts, setSelectedProducts] = useState<(string | number)[]>([]);
 
   const form = useForm<FormLocationValues>({
     resolver: zodResolver(formLocationSchema),
@@ -151,6 +156,20 @@ export default function LocationForm({
     },
   });
 
+
+  // Fix Transfer initialization - update when init data changes
+  useEffect(() => {
+    if (initUserKeys.length > 0) {
+      setSelectedUsers(initUserKeys);
+    }
+  }, [initUserKeys]);
+
+  useEffect(() => {
+    if (initProductKeys.length > 0) {
+      setSelectedProducts(initProductKeys);
+    }
+  }, [initProductKeys]);
+
   const onCancel = () => {
     if (mode === formType.EDIT) {
       onViewMode();
@@ -170,6 +189,16 @@ export default function LocationForm({
 
         if (res) {
           toastSuccess({ message: "Location updated successfully" });
+
+          // Invalidate all related queries with correct query keys
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["location", buCode, initialData?.id] }),
+            queryClient.invalidateQueries({ queryKey: ["locations", buCode] }),
+            queryClient.invalidateQueries({ queryKey: ["users"] }),
+            queryClient.invalidateQueries({ queryKey: ["products"] }),
+          ]);
+
+          onViewMode();
         }
       } else {
         const response = (await createMutation.mutateAsync(
@@ -181,14 +210,14 @@ export default function LocationForm({
           return;
         }
       }
-      form.reset();
-      window.location.reload();
-      onViewMode();
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : "Something went wrong";
+        error instanceof Error ? error.message : tCommon("error_something_went_wrong");
       toastError({ message: errorMessage });
-      console.error("Location form error:", error);
+
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Location form error:", error);
+      }
     }
   };
 
@@ -205,21 +234,19 @@ export default function LocationForm({
               </CardTitle>
               <div className="fxr-e gap-2">
                 <Button
-                  type="submit"
-                  className="fxr-c gap-2 sm:order-2"
-                >
-                  <Save className="w-4 h-4" />
-                  {mode === formType.EDIT
-                    ? tLocation("edit_store_location")
-                    : tLocation("add_store_location")}
-                </Button>
-                <Button
                   type="button"
                   variant="outline"
                   onClick={onCancel}
-                  className="sm:order-1"
                 >
+                  <X />
                   {tCommon("cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending || isViewMode}
+                >
+                  <Save className="w-4 h-4" />
+                  {tCommon("save")}
                 </Button>
               </div>
             </div>
@@ -232,10 +259,17 @@ export default function LocationForm({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tLocation("store_location_name")}</FormLabel>
+                    <FormLabel>
+                      {tLocation("store_location_name")}
+                      <span className="text-destructive ml-1">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        {...field}
+                        disabled={isViewMode}
+                      />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -245,13 +279,19 @@ export default function LocationForm({
                 name="delivery_point_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tLocation("delivery_point")}</FormLabel>
+                    <FormLabel>
+                      {tLocation("delivery_point")}
+                      <span className="text-destructive ml-1">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <LookupDeliveryPoint
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      />
+                      <div className={isViewMode ? "pointer-events-none opacity-50" : ""}>
+                        <LookupDeliveryPoint
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        />
+                      </div>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -261,11 +301,15 @@ export default function LocationForm({
                 name="location_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{tLocation("location_type")}</FormLabel>
+                    <FormLabel>
+                      {tLocation("location_type")}
+                      <span className="text-destructive ml-1">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={isViewMode}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -285,6 +329,7 @@ export default function LocationForm({
                         </SelectContent>
                       </Select>
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -293,11 +338,15 @@ export default function LocationForm({
                 control={form.control}
                 name="description"
                 render={({ field }) => (
-                  <FormItem className="col-span-2">
+                  <FormItem className="col-span-3">
                     <FormLabel>{tCommon("description")}</FormLabel>
                     <FormControl>
-                      <Textarea {...field} />
+                      <Textarea
+                        {...field}
+                        disabled={isViewMode}
+                      />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -313,8 +362,10 @@ export default function LocationForm({
                       onChange={field.onChange}
                       label={tCommon("status")}
                       type="checkbox"
+                      disabled={isViewMode}
                     />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -324,12 +375,16 @@ export default function LocationForm({
               name="physical_count_type"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>{tLocation("physical_count_type")}</FormLabel>
+                  <FormLabel>
+                    {tLocation("physical_count_type")}
+                    <span className="text-destructive ml-1">*</span>
+                  </FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                       className="flex"
+                      disabled={isViewMode}
                     >
                       <FormItem className="fxr-c space-x-3 space-y-0">
                         <FormControl>
@@ -345,26 +400,29 @@ export default function LocationForm({
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
           </CardContent>
         </Card>
         <Transfer
-          dataSource={listUser}
+          dataSource={listUser || []}
           leftDataSource={initUsers}
           targetKeys={selectedUsers}
           onChange={handleUsersChange}
           titles={[tCommon("init_users"), tCommon("available_users")]}
           operations={["<", ">"]}
+          disabled={isViewMode || isLoadingUsers}
         />
         <Transfer
-          dataSource={listProduct}
+          dataSource={listProduct || []}
           leftDataSource={initProducts}
           targetKeys={selectedProducts}
           onChange={handleProductsChange}
           titles={[tCommon("init_products"), tCommon("available_products")]}
           operations={["<", ">"]}
+          disabled={isViewMode || isLoadingProducts}
         />
       </form>
     </FormProvider>

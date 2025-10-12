@@ -1,20 +1,14 @@
-"use client";
-
-import { useAuth } from "@/context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { getAllApiRequest } from "@/lib/config.api";
 
 const API_URL = `${backendApi}/api/user`;
 
-export const useUserList = () => {
-  const { token, buCode } = useAuth();
-
+export const useUserList = (token: string, buCode: string) => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["users", buCode],
     queryFn: async () => {
       if (!token || !buCode) {
-        console.log("❌ Missing credentials");
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
@@ -22,12 +16,11 @@ export const useUserList = () => {
         const result = await getAllApiRequest(
           API_URL,
           token,
-          "Failed to fetch user list",
+          "Failed to fetch user list"
         );
-
         return result;
       } catch (err) {
-        console.error("❌ API Error details:", err);
+        console.error("API Error:", err);
         throw err;
       }
     },
@@ -42,7 +35,7 @@ export const useUserList = () => {
 
   const getUserName = (userId: string) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const user = data?.find((user: any) => user.user_id === userId);
+    const user = data?.data?.find((user: any) => user.user_id === userId);
     return user?.firstname ?? "";
   };
 

@@ -6,7 +6,6 @@ import { formType } from "@/dtos/form.dto";
 import { useState } from "react";
 import LocationForm from "./LocationForm";
 import {
-  Building,
   ChevronLeft,
   SquarePen,
 } from "lucide-react";
@@ -63,18 +62,22 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
       ) : (
 
         <div className="space-y-4 p-2">
-          <div className="fxr-c gap-2">
+          <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild className="hover:bg-transparent">
               <Link href={`/configuration/location`}>
                 <ChevronLeft className="w-4 h-4" />
               </Link>
             </Button>
-            <div className="fxr-c gap-2">
-              <Building />
-              <h1 className="text-xl font-semibold">{initialData?.name}</h1>
-            </div>
+            <h1 className="text-xl font-semibold">{initialData?.name}</h1>
+            <Button
+              onClick={handleEditMode}
+              size="sm"
+              className="text-sm"
+            >
+              <SquarePen className="w-4 h-4" />
+              {tCommon("edit")}
+            </Button>
           </div>
-
           <Separator />
 
           <dl className="grid grid-cols-[160px_1fr] gap-y-2 gap-x-4 text-sm">
@@ -104,59 +107,44 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
 
           <Separator />
 
-          <div className="space-y-2">
-            <h2 className="text-sm font-semibold">
-              {tCommon("users")} ({initialData?.user_location?.length ?? 0})
-            </h2>
-            {(initialData?.user_location?.length ?? 0) > 0 ? (
-              <ul className="space-y-1 max-h-[150px] overflow-y-auto text-sm pl-4 list-disc">
-                {initialData?.user_location.map((user) => (
-                  <li key={user.id}>
-                    {user.firstname ?? '-'} {user.lastname ?? '-'}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground text-xs text-center py-2">
-                {tCommon("data_not_found")}
-              </p>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <h2 className="text-sm font-semibold">
+                {tCommon("users")} ({initialData?.user_location?.length ?? 0})
+              </h2>
+              {(initialData?.user_location?.length ?? 0) > 0 ? (
+                <ul className="space-y-1 h-[300px] overflow-y-auto text-sm pl-4 list-disc border border-border rounded-md p-2">
+                  {initialData?.user_location.map((user) => (
+                    <li key={user.id}>
+                      {user.firstname ?? '-'} {user.lastname ?? '-'}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground text-xs text-center py-2">
+                  {tCommon("data_not_found")}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-sm font-semibold">
+                {tCommon("products")} ({initialData?.product_location?.length ?? 0})
+              </h2>
+              {(initialData?.product_location?.length ?? 0) > 0 ? (
+                <ul className="space-y-1 h-[300px] overflow-y-auto text-sm pl-4 list-disc border border-border rounded-md p-2">
+                  {initialData?.product_location.map((product) => (
+                    <li key={product.id}>{product.name}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground text-xs text-center py-2">
+                  {tCommon("data_not_found")}
+                </p>
+              )}
+            </div>
           </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <h2 className="text-sm font-semibold">
-              {tCommon("products")} ({initialData?.product_location?.length ?? 0})
-            </h2>
-            {(initialData?.product_location?.length ?? 0) > 0 ? (
-              <ul className="space-y-1 max-h-[150px] overflow-y-auto text-sm pl-4 list-disc">
-                {initialData?.product_location.map((product) => (
-                  <li key={product.id}>{product.name}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-muted-foreground text-xs text-center py-2">
-                {tCommon("data_not_found")}
-              </p>
-            )}
-          </div>
-
-          <Separator />
-
-          <Button
-            onClick={handleEditMode}
-            size="sm"
-            variant="outlinePrimary"
-            className="text-sm"
-          >
-            <SquarePen className="w-4 h-4" />
-            {tCommon("edit")}
-          </Button>
         </div>
-
-
-
       )}
     </>
   );

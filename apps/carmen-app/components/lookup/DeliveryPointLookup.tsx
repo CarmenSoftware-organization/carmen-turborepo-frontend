@@ -27,6 +27,7 @@ export function LookupDeliveryPoint({
   const { deliveryPoints, isLoading } = useDeliveryPointQuery({
     token: token,
     buCode: buCode,
+    params: { perpage: -1 },
   });
 
   const [searchTerm, setSearchTerm] = useState<string>("");
