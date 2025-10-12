@@ -127,7 +127,9 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         name="product_info.price"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{tProducts("price")}</FormLabel>
+                                <FormLabel>
+                                    {tProducts("price")} <span className="text-destructive">*</span>
+                                </FormLabel>
                                 <FormControl>
                                     <NumberInput
                                         value={field.value}
@@ -146,7 +148,9 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         name="product_info.price_deviation_limit"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{tProducts("price_deviation_limit")}(%)</FormLabel>
+                                <FormLabel>
+                                    {tProducts("price_deviation_limit")} (%) <span className="text-destructive">*</span>
+                                </FormLabel>
                                 <FormControl>
                                     <NumberInput
                                         value={field.value}
@@ -165,7 +169,9 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                         name="product_info.qty_deviation_limit"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>{tProducts("qty_deviation_limit")}(%)</FormLabel>
+                                <FormLabel>
+                                    {tProducts("qty_deviation_limit")} (%) <span className="text-destructive">*</span>
+                                </FormLabel>
                                 <FormControl>
                                     <NumberInput
                                         value={field.value}

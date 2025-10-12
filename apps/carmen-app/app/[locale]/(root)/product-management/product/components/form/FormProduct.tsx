@@ -3,11 +3,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import {
-  createProductService,
-  updateProductService,
-} from "@/services/product.service";
 import { useAuth } from "@/context/AuthContext";
+import { useCreateProductMutation, useUpdateProductMutation } from "@/hooks/use-product";
 import { formType } from "@/dtos/form.dto";
 import BasicInfo from "./BasicInfo";
 import LocationInfo from "./LocationInfo";
@@ -35,6 +32,9 @@ export default function FormProduct({ mode, initialValues }: Props) {
   const tProducts = useTranslations("Products");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const router = useRouter();
+
+  const createProductMutation = useCreateProductMutation();
+  const updateProductMutation = useUpdateProductMutation();
 
   const transformInitialValues = useMemo(() => {
     if (!initialValues)
@@ -178,6 +178,10 @@ export default function FormProduct({ mode, initialValues }: Props) {
     defaultValues: transformInitialValues as ProductFormValues,
   });
 
+  // const watchForm = form.watch();
+  // console.log('watchForm', watchForm);
+
+  // console.log('currentMode', form.formState.isValid, form.formState.errors);
 
   const onSubmit = useCallback(async (data: ProductFormValues) => {
     try {
@@ -207,7 +211,17 @@ export default function FormProduct({ mode, initialValues }: Props) {
       };
 
       if (mode === formType.ADD) {
-        const result = await createProductService(token, buCode, submitData);
+        const result = await createProductMutation.mutateAsync({
+          token,
+          buCode,
+          product: submitData,
+        });
+
+        if (result?.error) {
+          toastError({ message: result.message || "Error creating product" });
+          return;
+        }
+
         toastSuccess({ message: "Product created successfully" });
         setCurrentMode(formType.VIEW);
 
@@ -227,12 +241,19 @@ export default function FormProduct({ mode, initialValues }: Props) {
         if (!submitData.id) {
           throw new Error("Product ID is required for update");
         }
-        const result = await updateProductService(
+
+        const result = await updateProductMutation.mutateAsync({
           token,
           buCode,
-          submitData.id,
-          submitData
-        );
+          id: submitData.id,
+          product: submitData,
+        });
+
+        if (result?.error) {
+          toastError({ message: result.message || "Error updating product" });
+          return;
+        }
+
         if (result?.id) {
           toastSuccess({ message: "Product updated successfully" });
           setCurrentMode(formType.VIEW);
@@ -242,7 +263,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
       console.error("Error submitting form:", error);
       toastError({ message: "Error submitting form" });
     }
-  }, [mode, token, buCode, router]);
+  }, [mode, token, buCode, router, createProductMutation, updateProductMutation]);
 
   const handleEditClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();

@@ -118,7 +118,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     displayUnits={displayUnits}
                     editingId={editingId}
                     editForm={editForm}
-                    setEditingId={() => {}} // Not used anymore - handled in hook
+                    setEditingId={() => { }} // Not used anymore - handled in hook
                     setEditForm={setEditForm}
                     getUnitName={getUnitName}
                     filteredUnits={filteredUnits}
@@ -144,7 +144,7 @@ const EmptyState = memo(({ inventoryUnitId }: { inventoryUnitId?: string }) => {
         <div className="flex flex-col items-center justify-center py-12 px-4">
             <p className="text-gray-500 mb-4">
                 {!inventoryUnitId
-                    ? tProducts("pls_select_inventory_unit")
+                    ? tProducts("pls_select_ingredient_unit")
                     : tProducts("no_ingredient_units_defined")
                 }
             </p>

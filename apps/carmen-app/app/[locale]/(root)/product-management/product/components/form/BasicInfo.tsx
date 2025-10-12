@@ -1,40 +1,34 @@
 import { formType } from "@/dtos/form.dto";
 import { Control, useFormContext, useWatch } from "react-hook-form";
 import { ProductFormValues } from "../../pd-schema";
-import {
-  FormField,
-  FormItem,
-  FormControl,
-  FormMessage,
-  FormLabel,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { getCategoryListByItemGroup } from "@/services/product.service";
-import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Save, X, Edit } from "lucide-react";
+import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
-import { useUnitQuery } from "@/hooks/use-unit";
 import ButtonLink from "@/components/ButtonLink";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
   readonly currentMode: formType;
   readonly handleEditClick?: (e: React.MouseEvent) => void;
   readonly handleCancelClick?: (e: React.MouseEvent) => void;
-}
-
-interface CategoryData {
-  category: { id: string; name: string };
-  subCategory: { id: string; name: string };
 }
 
 export default function BasicInfo({
@@ -46,20 +40,8 @@ export default function BasicInfo({
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tProducts = useTranslations("Products");
-  const { getUnitName } = useUnitQuery({
-    token,
-    buCode,
-    params: {
-      perpage: -1,
-    }
-  });
 
   const { watch, setValue } = useFormContext<ProductFormValues>();
-
-  const [categoryData, setCategoryData] = useState<CategoryData>({
-    category: { id: "", name: "" },
-    subCategory: { id: "", name: "" },
-  });
 
   const status = watch("product_status_type");
   const productItemGroupId = watch("product_info.product_item_group_id");
@@ -72,52 +54,44 @@ export default function BasicInfo({
     }
   }, [setValue]);
 
-  const fetchAndSetCategoryData = useCallback(async (itemGroupId: string, shouldUpdateForm = true) => {
-    if (!itemGroupId) return;
+  const { data: categoryResponse, isLoading: isCategoryLoading } = useCategoryByItemGroupQuery({
+    token,
+    buCode,
+    itemGroupId: productItemGroupId,
+    enabled: !!productItemGroupId,
+  });
 
-    setCategoryData({
-      category: { id: "", name: "" },
-      subCategory: { id: "", name: "" },
-    });
-
-    try {
-      const response = await getCategoryListByItemGroup(token, buCode, itemGroupId);
-
-      const newCategoryData = {
-        category: {
-          id: response.category.id,
-          name: response.category.name,
-        },
-        subCategory: {
-          id: response.sub_category.id,
-          name: response.sub_category.name,
-        },
-      };
-
-      setCategoryData(newCategoryData);
-
-      if (shouldUpdateForm) {
-        setValue("product_category", newCategoryData.category, { shouldValidate: false });
-        setValue("product_sub_category", newCategoryData.subCategory, { shouldValidate: false });
-      }
-    } catch (error) {
-      console.error("Error fetching category data:", error);
-      setCategoryData({
+  const categoryData = useMemo(() => {
+    if (!categoryResponse) {
+      return {
         category: { id: "", name: "" },
         subCategory: { id: "", name: "" },
-      });
+      };
     }
-  }, [token, buCode, setValue]);
 
-  const handleItemGroupChange = useCallback((value: string) => {
-    fetchAndSetCategoryData(value, true);
-  }, [fetchAndSetCategoryData]);
+    return {
+      category: {
+        id: categoryResponse.category?.id || "",
+        name: categoryResponse.category?.name || "",
+      },
+      subCategory: {
+        id: categoryResponse.sub_category?.id || "",
+        name: categoryResponse.sub_category?.name || "",
+      },
+    };
+  }, [categoryResponse]);
 
+  // Update form values when category data changes
   useEffect(() => {
-    if (productItemGroupId && currentMode === formType.VIEW) {
-      fetchAndSetCategoryData(productItemGroupId, false);
+    if (categoryResponse && productItemGroupId) {
+      setValue("product_category", categoryData.category, { shouldValidate: false });
+      setValue("product_sub_category", categoryData.subCategory, { shouldValidate: false });
     }
-  }, [productItemGroupId, currentMode, fetchAndSetCategoryData]);
+  }, [categoryResponse, categoryData, productItemGroupId, setValue]);
+
+  const handleItemGroupChange = useCallback(() => {
+    // Query will automatically refetch when itemGroupId changes
+  }, []);
 
   // Watch required fields
   const watchedFields = useWatch({
@@ -179,69 +153,22 @@ export default function BasicInfo({
                 <ChevronLeft className="h-4 w-4" />
               </ButtonLink>
 
-              <div className="flex items-center gap-6">
-                <FormField
-                  control={control}
-                  name="code"
-                  render={({ field }) => (
-                    <FormItem>
-                      {currentMode === formType.VIEW ? (
-                        <h1 className="text-lg font-semibold text-foreground leading-tight">
-                          {field.value || "Untitled Product"}
-                        </h1>
-                      ) : (
-                        <>
-                          <FormLabel className="font-medium">
-                            {tProducts("product_code")}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={tProducts("product_code")}
-                              {...field}
-                            />
-                          </FormControl>
-                        </>
-                      )}
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="flex items-center gap-2">
-                  <FormField
-                    control={control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        {currentMode === formType.VIEW ? (
-                          <h1 className="text-lg font-semibold text-foreground leading-tight">
-                            {field.value || "Untitled Product"}
-                          </h1>
-                        ) : (
-                          <>
-                            <FormLabel>
-                              {tProducts("product_name")}
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder={tProducts("product_name")}
-                                {...field}
-                              />
-                            </FormControl>
-                          </>
-                        )}
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {status && currentMode === formType.VIEW && (
+              {currentMode === formType.VIEW ? (
+                <div className="flex items-center gap-3">
+                  <h1 className="text-lg font-semibold text-foreground">
+                    {watch("code") || "N/A"} - {watch("name") || "Untitled Product"}
+                  </h1>
+                  {status && (
                     <StatusCustom is_active={status === "active"}>
                       {status === "active" ? tCommon("active") : tCommon("inactive")}
                     </StatusCustom>
                   )}
                 </div>
-
-              </div>
+              ) : (
+                <h1 className="text-lg font-semibold text-foreground">
+                  {currentMode === formType.ADD ? tProducts("add_product") : tProducts("edit_product")}
+                </h1>
+              )}
             </div>
 
             {/* Right Section */}
@@ -266,7 +193,6 @@ export default function BasicInfo({
                     {tCommon("cancel")}
                   </Button>
                   <Button
-                    variant="outlinePrimary"
                     size="sm"
                     type="submit"
                     disabled={!isFormValid}
@@ -281,6 +207,57 @@ export default function BasicInfo({
         </CardHeader>
         <CardContent className="space-y-4 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {/* Product Code */}
+            <FormField
+              control={control}
+              name="code"
+              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {tProducts("product_code")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={tProducts("product_code")}
+                      {...field}
+                      disabled={currentMode === formType.VIEW}
+                      className={cn(
+                        currentMode === formType.VIEW && "bg-muted"
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Product Name */}
+            <FormField
+              control={control}
+              name="name"
+              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {tProducts("product_name")}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={tProducts("product_name")}
+                      {...field}
+                      disabled={currentMode === formType.VIEW}
+                      className={cn(
+                        currentMode === formType.VIEW && "bg-muted"
+                      )}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Local Name */}
             <FormField
               control={control}
               name="local_name"
@@ -295,8 +272,7 @@ export default function BasicInfo({
                       {...field}
                       disabled={currentMode === formType.VIEW}
                       className={cn(
-                        currentMode === formType.VIEW && "bg-muted",
-                        ""
+                        currentMode === formType.VIEW && "bg-muted"
                       )}
                     />
                   </FormControl>
@@ -305,12 +281,13 @@ export default function BasicInfo({
               )}
             />
 
+            {/* Description */}
             <FormField
               control={control}
               name="description"
               render={({ field }) => (
                 <FormItem
-                  className="col-span-2"
+                  className="col-span-full"
                 >
                   <FormLabel>
                     {tProducts("description")}
@@ -321,8 +298,7 @@ export default function BasicInfo({
                       {...field}
                       disabled={currentMode === formType.VIEW}
                       className={cn(
-                        currentMode === formType.VIEW && "bg-muted",
-                        ""
+                        currentMode === formType.VIEW && "bg-muted"
                       )}
                     />
                   </FormControl>
@@ -330,107 +306,104 @@ export default function BasicInfo({
                 </FormItem>
               )}
             />
-
-            {/* Local Name */}
-
-
-            {/* <FormField
-              control={control}
-              name="product_info.is_ingredients"
-              render={({ field }) => (
-                <FormItem className="mt-2">
-                  <FormControl>
-                    <FormBoolean
-                      value={field.value}
-                      onChange={field.onChange}
-                      label={tProducts("use_for_ingredient")}
-                      positionLabel="top"
-                      type="checkbox"
-                      disabled={currentMode === formType.VIEW}
-                      classNames={cn(
-                        currentMode === formType.VIEW && "bg-muted",
-                        ""
-                      )}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
           </div>
 
-          <div className="space-y-2">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+          <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Product Item Group */}
-              <FormField
-                control={control}
-                name="product_info.product_item_group_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {tProducts("item_group")}
-                    </FormLabel>
-                    <FormControl>
-                      <ItemGroupLookup
-                        value={field.value}
-                        onValueChange={(value) => {
-                          handleItemGroupChange(value);
-                          field.onChange(value);
-                        }}
-                        disabled={currentMode === formType.VIEW}
-                        classNames={cn(
-                          currentMode === formType.VIEW && "bg-muted",
-                          ""
-                        )}
-                        placeholder={tProducts("item_group")}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="space-y-2">
-                <Label>
-                  {tProducts("sub_category")}
-                </Label>
+                <FormField
+                  control={control}
+                  name="product_info.product_item_group_id"
+                  required
+                  render={({ field }) => (
+                    <FormItem
+                      className="col-span-full"
+                    >
+                      <FormLabel>
+                        {tProducts("item_group")}
+                      </FormLabel>
+                      <FormControl>
+                        <ItemGroupLookup
+                          value={field.value}
+                          onValueChange={(value) => {
+                            handleItemGroupChange();
+                            field.onChange(value);
+                          }}
+                          disabled={currentMode === formType.VIEW}
+                          classNames={cn(
+                            currentMode === formType.VIEW && "bg-muted"
+                          )}
+                          placeholder={tProducts("item_group")}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Sub Category */}
+              <div className="space-y-3 mt-1.5">
+                <TooltipProvider>
+                  <div className="flex items-center gap-1">
+                    <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      {tProducts("sub_category")}
+                    </Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Auto-filled from Item Group</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TooltipProvider>
                 <Input
                   placeholder={tProducts("sub_category")}
-                  value={categoryData.subCategory.name}
+                  value={isCategoryLoading ? "Loading..." : categoryData.subCategory.name || "-"}
                   disabled
                   className="bg-muted"
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label>
-                  {tProducts("category")}
-                </Label>
+              {/* Category */}
+              <div className="space-y-3 mt-1.5">
+                <TooltipProvider>
+                  <div className="flex items-center gap-1">
+                    <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                      {tProducts("category")}
+                    </Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">Auto-filled from Item Group</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </TooltipProvider>
                 <Input
                   placeholder={tProducts("category")}
-                  value={categoryData.category.name}
+                  value={isCategoryLoading ? "Loading..." : categoryData.category.name || "-"}
                   disabled
                   className="bg-muted"
                 />
               </div>
 
-
-              <FormField
-                control={control}
-                name="inventory_unit_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {tProducts("inventory_unit")}
-                    </FormLabel>
-                    {currentMode === formType.VIEW ? (
-                      <Badge
-                        variant="outline"
-                        className="bg-muted border-border ml-2"
-                      >
-                        {getUnitName(field.value)}
-                      </Badge>
-                    ) : (
+              {/* Inventory Unit */}
+              <div className="space-y-2">
+                <FormField
+                  control={control}
+                  name="inventory_unit_id"
+                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {tProducts("inventory_unit")}
+                      </FormLabel>
                       <FormControl>
                         <UnitLookup
                           value={field.value}
@@ -438,23 +411,32 @@ export default function BasicInfo({
                             field.onChange(value);
                           }}
                           placeholder={tProducts("inventory_unit")}
+                          disabled={currentMode === formType.VIEW}
                         />
                       </FormControl>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {defaultUnit && (
-                <div className="flex items-center gap-2">
-                  <Label>{tProducts("order_unit")}</Label>
-                  <div className="flex items-center gap-2">
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              {/* Order Unit */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  {tProducts("order_unit")}
+                </Label>
+                <div>
+                  {defaultUnit ? (
                     <Badge variant="outline" className="bg-muted border-border">
                       {defaultUnit.from_unit_name}
                     </Badge>
-                  </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      {currentMode === formType.VIEW ? "-" : "No order unit set"}
+                    </p>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </CardContent>

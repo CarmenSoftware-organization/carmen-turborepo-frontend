@@ -717,8 +717,12 @@
     "conversion": "Conversion",
     "pls_select_order_unit": "Please select order unit",
     "no_order_units_defined": "No order units defined yet",
+    "pls_select_ingredient_unit": "Please select ingredient unit",
+    "no_ingredient_units_defined": "No ingredient units defined yet",
     "units": "Units",
-    "remove": "Remove"
+    "remove": "Remove",
+    "add_product": "Add Product",
+    "edit_product": "Edit Product"
   },
   "PurchaseOrder": {
     "title": "Purchase Order",

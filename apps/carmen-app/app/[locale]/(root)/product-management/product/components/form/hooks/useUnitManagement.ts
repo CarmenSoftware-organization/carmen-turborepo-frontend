@@ -23,8 +23,10 @@ export const useUnitManagement = ({ unitType, watch, setValue }: UseUnitManageme
     const existingUnits = useMemo(() => unitsData?.data || [], [unitsData?.data]);
     const addFieldPath = `${fieldName}.add` as const;
     const removeFieldPath = `${fieldName}.remove` as const;
-    const newUnits = useMemo(() => watch(addFieldPath) || [], [watch, addFieldPath]);
-    const removedUnits = useMemo(() => watch(removeFieldPath) || [], [watch, removeFieldPath]);
+    const newUnitsWatch = watch(addFieldPath);
+    const removedUnitsWatch = watch(removeFieldPath);
+    const newUnits = useMemo(() => newUnitsWatch || [], [newUnitsWatch]);
+    const removedUnits = useMemo(() => removedUnitsWatch || [], [removedUnitsWatch]);
 
     // Display units (filter out removed)
     const displayUnits = useMemo(() =>

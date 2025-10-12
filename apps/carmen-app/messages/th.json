@@ -713,8 +713,12 @@
     "conversion": "การแปลง",
     "pls_select_order_unit": "กรุณาเลือกหน่วยสั่งซื้อ",
     "no_order_units_defined": "ไม่มีหน่วยสั่งซื้อ",
+    "pls_select_ingredient_unit": "กรุณาเลือกหน่วยส่วนผสม",
+    "no_ingredient_units_defined": "ไม่มีหน่วยส่วนผสม",
     "units": "หน่วย",
-    "remove": "ลบ"
+    "remove": "ลบ",
+    "add_product": "เพิ่มสินค้า",
+    "edit_product": "แก้ไขสินค้า"
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",
