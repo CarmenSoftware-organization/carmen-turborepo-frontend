@@ -663,7 +663,9 @@
     "purchase_request_approved_purchase": "ใบขอซื้ออนุมัติซื้อเรียบร้อย",
     "purchase_request_approved_purchase_failed": "ใบขอซื้ออนุมัติซื้อไม่สำเร็จ",
     "purchase_request_reviewed": "ใบขอซื้อทำการตรวจสอบเรียบร้อย",
-    "purchase_request_reviewed_failed": "ใบขอซื้อทำการตรวจสอบไม่สำเร็จ"
+    "purchase_request_reviewed_failed": "ใบขอซื้อทำการตรวจสอบไม่สำเร็จ",
+    "tooltip_pr_created": "สร้างใบขอซื้อ",
+    "tooltip_pr_sort": "เรียงลำดับใบขอซื้อ"
   },
   "Procurement": {
     "title": "การจัดซื้อ"

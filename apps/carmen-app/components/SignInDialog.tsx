@@ -25,7 +25,9 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { PasswordInput } from "./ui-custom/PasswordInput";
-import { useSignInMutation } from "@/hooks/useAuth";
+import { useSignInMutation } from "@/hooks/use-auth-query";
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 interface Props {
     readonly open: boolean;
@@ -39,6 +41,7 @@ export default function SignInDialog({
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const { setSession } = useAuth();
     const [currentPath, setCurrentPath] = useState<string>('');
     const t = useTranslations('SignInPage');
     const signInMutation = useSignInMutation();
@@ -62,18 +65,33 @@ export default function SignInDialog({
     });
 
     const handleSubmit = (values: SignInFormValues) => {
-        signInMutation.mutate(values, {
-            onSuccess: () => {
-                router.push(currentPath || '/dashboard');
-                form.reset();
-                onOpenChange(false);
-            },
-            onError: (error) => {
-                form.setError("root", {
-                    message: error.message ?? t('signInError')
-                });
+        signInMutation.mutate(
+            { email: values.email, password: values.password },
+            {
+                onSuccess: (result) => {
+                    if (result?.access_token && result?.refresh_token) {
+                        setSession(result.access_token, result.refresh_token);
+                        form.reset();
+                        onOpenChange(false);
+
+                        setTimeout(() => {
+                            router.push(currentPath || '/dashboard');
+                        }, 100);
+                    } else {
+                        form.setError("root", {
+                            message: result?.message ?? t('signInError')
+                        });
+                    }
+                },
+                onError: (error) => {
+                    console.error("Sign in error:", error);
+                    form.setError("root", {
+                        message: t('signInError')
+                    });
+                    toast.error(t('signInError'));
+                }
             }
-        });
+        );
     };
 
     return (

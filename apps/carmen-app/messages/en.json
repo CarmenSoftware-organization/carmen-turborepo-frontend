@@ -667,7 +667,9 @@
     "purchase_request_approved_purchase": "Purchase Request approved purchase successfully",
     "purchase_request_approved_purchase_failed": "Purchase Request approved purchase failed",
     "purchase_request_reviewed": "Purchase Request reviewed successfully",
-    "purchase_request_reviewed_failed": "Purchase Request reviewed failed"
+    "purchase_request_reviewed_failed": "Purchase Request reviewed failed",
+    "tooltip_pr_created": "Create a new purchase request",
+    "tooltip_pr_sort": "Sort purchase request"
   },
   "Procurement": {
     "title": "Procurement"

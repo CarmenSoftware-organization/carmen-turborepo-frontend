@@ -18,6 +18,12 @@ import ToggleView from "@/components/ui-custom/ToggleView";
 import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { parseSortString } from "@/utils/table-sort";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 
 
@@ -93,28 +99,50 @@ export default function PurchaseRequestComponent() {
   };
 
   const actionButtons = (
-    <div
-      className="action-btn-container"
-      data-id="purchase-request-action-buttons"
-    >
-      <Button size={"sm"} onClick={handleOpenDialog}>
-        <Plus />
-        {tCommon("add")} {title}
-      </Button>
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size={"sm"}
-        data-id="pr-list-export-button"
+    <TooltipProvider>
+      <div
+        className="action-btn-container"
+        data-id="purchase-request-action-buttons"
       >
-        <FileDown />
-        {tCommon("export")}
-      </Button>
-      <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
-        <Printer />
-        {tCommon("print")}
-      </Button>
-    </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size={"sm"} onClick={handleOpenDialog}>
+              <Plus />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tPurchaseRequest("tooltip_pr_created")}</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size={"sm"}
+              data-id="pr-list-export-button"
+            >
+              <FileDown />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tCommon("export")}</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outlinePrimary" size={"sm"} data-id="pr-list-print-button">
+              <Printer />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tCommon("print")}</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
   );
 
   const filters = (
@@ -144,22 +172,50 @@ export default function PurchaseRequestComponent() {
           </SelectContent>
         </Select>
       </div>
+      <TooltipProvider>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <SortComponent
+                  fieldConfigs={sortFields}
+                  sort={sort}
+                  setSort={setSort}
+                  data-id="pr-list-sort-dropdown"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tPurchaseRequest("tooltip_pr_sort")}</p>
+            </TooltipContent>
+          </Tooltip>
 
-      <div className="flex items-center gap-2">
-        <SortComponent
-          fieldConfigs={sortFields}
-          sort={sort}
-          setSort={setSort}
-          data-id="pr-list-sort-dropdown"
-        />
-        <Button size={"sm"}>
-          <Filter className="h-4 w-4" />
-          {tDataControls("filter")}
-        </Button>
-        <div className="hidden lg:block">
-          <ToggleView view={view} setView={setView} />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size={"sm"}>
+                <Filter className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {tDataControls("filter")}
+            </TooltipContent>
+          </Tooltip>
+
+          <div className="hidden lg:block">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <ToggleView view={view} setView={setView} />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Switch between list and grid view</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
-      </div>
+      </TooltipProvider>
+
     </div>
   );
 

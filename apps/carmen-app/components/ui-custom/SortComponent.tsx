@@ -4,8 +4,6 @@ import React, { useState, useEffect } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { Button } from "../ui/button";
-import { useTranslations } from "next-intl";
-
 interface FieldConfig<T> {
     key: keyof T;
     label: string;
@@ -18,7 +16,6 @@ interface SortDropdownProps<T extends Record<string, unknown>> {
 }
 
 const SortComponent = <T extends Record<string, unknown>>({ fieldConfigs, sort, setSort }: SortDropdownProps<T>) => {
-    const t = useTranslations('Common');
     const [sortField, setSortField] = useState<keyof T | null>(null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
@@ -45,8 +42,7 @@ const SortComponent = <T extends Record<string, unknown>>({ fieldConfigs, sort, 
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outlinePrimary" size="sm">
-                    <ArrowUpDown className="mr-2 h-4 w-4" />
-                    {t('sort')}
+                    <ArrowUpDown className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

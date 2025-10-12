@@ -178,11 +178,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
     defaultValues: transformInitialValues as ProductFormValues,
   });
 
-  // const watchForm = form.watch();
-  // console.log('watchForm', watchForm);
-
-  // console.log('currentMode', form.formState.isValid, form.formState.errors);
-
   const onSubmit = useCallback(async (data: ProductFormValues) => {
     try {
       const { locations, order_units, ingredient_units, ...restData } = data;

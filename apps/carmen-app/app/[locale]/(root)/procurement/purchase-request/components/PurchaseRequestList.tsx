@@ -243,12 +243,6 @@ export default function PurchaseRequestList({
             {record.pr_status !== 'voided' && (
               <p>{record.workflow_current_stage}</p>
             )}
-
-            {/* {record.pr_status && (
-              <StatusBadge status={record.pr_status}>
-                {convertStatus(record.pr_status)}
-              </StatusBadge>
-            )} */}
           </div>
         )
       }

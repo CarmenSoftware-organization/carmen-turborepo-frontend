@@ -4,7 +4,6 @@ import { useAuth } from "@/context/AuthContext";
 import { SignInFormValues, signInSchema } from "@/dtos/sign-in.dto";
 import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import "@/styles/auth.css";
 import {
@@ -19,15 +18,16 @@ import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { toast } from "sonner";
-import { signInService } from "@/services/auth.service";
 import InputCustom from "@/components/ui-custom/InputCustom";
+import { useSignInMutation } from "@/hooks/use-auth-query";
 
 export default function SignInForm() {
-  const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const { setSession } = useAuth();
   const t = useTranslations("SignInPage");
   const tHome = useTranslations("HomePage");
+
+  const signInMutation = useSignInMutation();
 
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
@@ -38,31 +38,32 @@ export default function SignInForm() {
   });
 
   const handleSubmit = (values: SignInFormValues) => {
-    startTransition(async () => {
-      try {
-        const result = await signInService(values.email, values.password);
-        if (result) {
-          if (result.access_token && result.refresh_token) {
+    signInMutation.mutate(
+      { email: values.email, password: values.password },
+      {
+        onSuccess: (result) => {
+          if (result?.access_token && result?.refresh_token) {
             setSession(result.access_token, result.refresh_token);
+            form.reset();
 
             setTimeout(() => {
               router.push("/procurement/dashboard");
             }, 100);
+          } else {
+            form.setError("root", {
+              message: result?.message ?? t("signInError"),
+            });
           }
-          form.reset();
-        } else {
+        },
+        onError: (error) => {
+          console.error("Sign in error:", error);
           form.setError("root", {
-            message: result.message ?? t("signInError"),
+            message: t("signInError"),
           });
+          toast.error(t("signInError"));
         }
-      } catch (error) {
-        console.error("Sign in error:", error);
-        form.setError("root", {
-          message: t("signInError"),
-        });
-        toast.error(t("signInError"));
       }
-    });
+    );
   };
   return (
     <div className="login-page-wrapper">
@@ -145,10 +146,10 @@ export default function SignInForm() {
                   <Button
                     type="submit"
                     className="submit-button"
-                    disabled={isPending}
+                    disabled={signInMutation.isPending}
                     data-testid="sign-in-button"
                   >
-                    {isPending ? t("signingIn") : t("signIn")}
+                    {signInMutation.isPending ? t("signingIn") : t("signIn")}
                   </Button>
                 </div>
               </form>
