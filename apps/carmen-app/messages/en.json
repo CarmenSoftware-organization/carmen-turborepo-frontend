@@ -311,7 +311,8 @@
     "available_products": "Available Products",
     "select_vendor": "Select Vendor",
     "no_vendor_found": "No vendor found",
-    "no_vendor_available": "No vendor available"
+    "no_vendor_available": "No vendor available",
+    "no_data": "No data"
   },
   "TableHeader": {
     "all": "All",

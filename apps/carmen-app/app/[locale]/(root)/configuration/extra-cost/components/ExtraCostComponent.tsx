@@ -47,8 +47,6 @@ export default function ExtraCostComponent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [extraCostToDelete, setExtraCostToDelete] = useState<ExtraCostTypeDto | undefined>(undefined);
 
-  const [selectedExtraCosts, setSelectedExtraCosts] = useState<string[]>([]);
-
   const { extraCostTypes, isLoading } = useExtraCostTypeQuery(
     token,
     buCode,
@@ -69,24 +67,6 @@ export default function ExtraCostComponent() {
   const currentPage = extraCostTypes?.paginate?.page ?? 1;
   const totalPages = extraCostTypes?.paginate?.pages ?? 1;
   const totalItems = extraCostTypes?.paginate?.total ?? extraCostData.length;
-
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedExtraCosts(extraCostData.map((ec: ExtraCostTypeDto) => ec.id) ?? []);
-    } else {
-      setSelectedExtraCosts([]);
-    }
-  };
-
-  const handleSelect = (id: string) => {
-    setSelectedExtraCosts((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter(ecId => ecId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
@@ -205,22 +185,6 @@ export default function ExtraCostComponent() {
     </div>
   );
 
-  const handleSort = (field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':');
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  };
-
   const filters = (
     <div className="filter-container" data-id="extra-cost-list-filters">
       <SearchInput
@@ -253,16 +217,13 @@ export default function ExtraCostComponent() {
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
+      perpage={extraCostTypes?.paginate?.perpage ?? 10}
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
+      onSort={setSort}
+      setPerpage={handlePerpageChange}
       onEdit={handleEdit}
       onToggleStatus={handleDelete}
-      onSort={handleSort}
-      onSelectAll={handleSelectAll}
-      onSelect={handleSelect}
-      selectedExtraCosts={selectedExtraCosts}
-      perpage={extraCostTypes?.paginate?.perpage ?? 10}
-      setPerpage={handlePerpageChange}
       canUpdate={extraCostPerms.canUpdate}
       canDelete={extraCostPerms.canDelete}
     />

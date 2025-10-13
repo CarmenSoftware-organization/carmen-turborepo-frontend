@@ -38,7 +38,6 @@ export default function CurrencyComponent() {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
     const [page, setPage] = useURL("page");
     const [perpage, setPerpage] = useURL("perpage");
-    const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
     const tCurrency = useTranslations('Currency');
     const tCommon = useTranslations('Common');
     const tHeader = useTranslations('TableHeader');
@@ -162,30 +161,8 @@ export default function CurrencyComponent() {
         }
     ];
 
-    const handleSelectAll = (checked: boolean) => {
-        if (checked) {
-            setSelectedCurrencies(currenciesData.map((c: CurrencyGetDto) => c.id));
-        } else {
-            setSelectedCurrencies([]);
-        }
-    };
-
-    const handleSelect = (currencyId: string) => {
-        setSelectedCurrencies(prev =>
-            prev.includes(currencyId)
-                ? prev.filter(id => id !== currencyId)
-                : [...prev, currencyId]
-        );
-    };
-
     const handleSetPerpage = (newPerpage: number) => {
         setPerpage(newPerpage.toString());
-    };
-
-    const handleSort = (field: string) => {
-        const currentSort = parseSortString(sort);
-        const direction = currentSort?.field === field && currentSort.direction === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${direction}`);
     };
 
     const title = tCurrency('title');
@@ -255,10 +232,7 @@ export default function CurrencyComponent() {
             totalItems={totalItems}
             onPageChange={handlePageChange}
             sort={parseSortString(sort)}
-            onSort={handleSort}
-            selectedCurrencies={selectedCurrencies}
-            onSelectAll={handleSelectAll}
-            onSelect={handleSelect}
+            onSort={setSort}
             perpage={data?.paginate?.perpage}
             setPerpage={handleSetPerpage}
             canUpdate={currencyPerms.canUpdate}

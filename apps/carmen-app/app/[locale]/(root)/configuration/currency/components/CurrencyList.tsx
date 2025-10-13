@@ -6,14 +6,13 @@ import { Activity, Banknote, Coins, List, MoreHorizontal, Replace, Trash2 } from
 import { CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   ColumnDef,
   getCoreRowModel,
   useReactTable,
   PaginationState,
   SortingState,
-  RowSelectionState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
@@ -31,10 +30,7 @@ interface CurrencyListProps {
   readonly totalItems: number;
   readonly onPageChange: (page: number) => void;
   readonly sort?: { field: string; direction: "asc" | "desc" };
-  readonly onSort?: (field: string) => void;
-  readonly selectedCurrencies: string[];
-  readonly onSelectAll: (isChecked: boolean) => void;
-  readonly onSelect: (id: string) => void;
+  readonly onSort?: (sortString: string) => void;
   readonly perpage: number;
   readonly setPerpage: (perpage: number) => void;
   readonly canUpdate?: boolean;
@@ -52,9 +48,6 @@ export default function CurrencyList({
   onPageChange,
   sort,
   onSort,
-  selectedCurrencies,
-  onSelectAll,
-  onSelect,
   perpage,
   setPerpage,
   canUpdate = true,
@@ -63,40 +56,8 @@ export default function CurrencyList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  // Row selection state for TanStack Table
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-
-  // Sync rowSelection with parent component's selectedCurrencies
-  useEffect(() => {
-    const newRowSelection: RowSelectionState = {};
-    selectedCurrencies.forEach((id) => {
-      newRowSelection[id] = true;
-    });
-    setRowSelection(newRowSelection);
-  }, [selectedCurrencies]);
-
-  // Sync parent component when rowSelection changes
-  useEffect(() => {
-    const selectedRowIds = Object.keys(rowSelection);
-    const currentSelected = selectedCurrencies.sort().join(',');
-    const newSelected = selectedRowIds.sort().join(',');
-
-    if (currentSelected !== newSelected) {
-      // Update parent state
-      if (selectedRowIds.length === 0) {
-        onSelectAll(false);
-      } else if (selectedRowIds.length === currencies.length) {
-        onSelectAll(true);
-      } else {
-        // Individual selections
-        selectedRowIds.forEach(id => {
-          if (!selectedCurrencies.includes(id)) {
-            onSelect(id);
-          }
-        });
-      }
-    }
-  }, [rowSelection, selectedCurrencies, currencies.length, onSelectAll, onSelect]);
+  // Action header component
+  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
 
   // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
@@ -126,7 +87,7 @@ export default function CurrencyList({
       },
       {
         id: "no",
-        header: "#",
+        header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
           <div className="text-center">
             {(currentPage - 1) * perpage + row.index + 1}
@@ -136,6 +97,7 @@ export default function CurrencyList({
         size: 60,
         meta: {
           cellClassName: "text-center",
+          headerClassName: "text-center",
         },
       },
       {
@@ -167,7 +129,9 @@ export default function CurrencyList({
       {
         accessorKey: "code",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("code")} icon={<Banknote className="h-4 w-4" />} />
+          <div className="flex justify-center">
+            <DataGridColumnHeader column={column} title={t("code")} icon={<Banknote className="h-4 w-4" />} />
+          </div>
         ),
         cell: ({ row }) => <div className="text-center">{row.original.code}</div>,
         enableSorting: true,
@@ -175,12 +139,15 @@ export default function CurrencyList({
         meta: {
           headerTitle: t("code"),
           cellClassName: "text-center",
+          headerClassName: "text-center",
         },
       },
       {
         accessorKey: "symbol",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("symbol")} icon={<Coins className="h-4 w-4" />} />
+          <div className="flex justify-center">
+            <DataGridColumnHeader column={column} title={t("symbol")} icon={<Coins className="h-4 w-4" />} />
+          </div>
         ),
         cell: ({ row }) => <div className="text-center">{row.original.symbol}</div>,
         enableSorting: true,
@@ -188,12 +155,15 @@ export default function CurrencyList({
         meta: {
           headerTitle: t("symbol"),
           cellClassName: "text-center",
+          headerClassName: "text-center",
         },
       },
       {
         accessorKey: "exchange_rate",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("exchangeRate")} icon={<Replace className="h-4 w-4" />} />
+          <div className="flex justify-end">
+            <DataGridColumnHeader column={column} title={t("exchangeRate")} icon={<Replace className="h-4 w-4" />} />
+          </div>
         ),
         cell: ({ row }) => (
           <div className="text-right">
@@ -207,12 +177,15 @@ export default function CurrencyList({
         meta: {
           headerTitle: t("exchangeRate"),
           cellClassName: "text-right",
+          headerClassName: "text-right",
         },
       },
       {
         accessorKey: "is_active",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+          <div className="flex justify-center">
+            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+          </div>
         ),
         cell: ({ row }) => (
           <div className="flex justify-center">
@@ -226,11 +199,12 @@ export default function CurrencyList({
         meta: {
           headerTitle: t("status"),
           cellClassName: "text-center",
+          headerClassName: "text-center",
         },
       },
       {
         id: "action",
-        header: t("action"),
+        header: ActionHeader,
         cell: ({ row }) => {
           const currency = row.original;
 
@@ -264,6 +238,7 @@ export default function CurrencyList({
         size: 80,
         meta: {
           cellClassName: "text-right",
+          headerClassName: "text-right",
         },
       },
     ],
@@ -284,29 +259,34 @@ export default function CurrencyList({
     data: currencies,
     columns,
     pageCount: totalPages,
-    getRowId: (row) => row.id, // Important: use currency ID as row ID
+    getRowId: (row) => row.id,
     state: {
       pagination,
       sorting,
-      rowSelection,
     },
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
     onPaginationChange: (updater) => {
       const newPagination =
         typeof updater === "function" ? updater(pagination) : updater;
-      onPageChange(newPagination.pageIndex + 1); // Convert back to 1-based
+      onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },
     onSortingChange: (updater) => {
+      if (!onSort) return;
+
       const newSorting = typeof updater === "function" ? updater(sorting) : updater;
-      if (newSorting.length > 0 && onSort) {
-        onSort(newSorting[0].id);
+
+      if (newSorting.length > 0) {
+        const sortField = newSorting[0].id;
+        const sortDirection = newSorting[0].desc ? "desc" : "asc";
+        onSort(`${sortField}:${sortDirection}`);
+      } else {
+        onSort("");
       }
     },
     getCoreRowModel: getCoreRowModel(),
-    manualPagination: true, // Server-side pagination
-    manualSorting: true, // Server-side sorting
+    manualPagination: true,
+    manualSorting: true,
   });
 
   return (

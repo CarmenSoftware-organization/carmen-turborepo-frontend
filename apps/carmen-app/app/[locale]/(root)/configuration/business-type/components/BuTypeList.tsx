@@ -1,216 +1,289 @@
-import SortableColumnHeader from "@/components/table/SortableColumnHeader";
-import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
-import { Checkbox } from "@/components/ui/checkbox";
+"use client";
+
 import { BuTypeGetAllDto } from "@/dtos/bu-type.dto";
-import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { Activity, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { useMemo } from "react";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+  PaginationState,
+  SortingState,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface BuTypeListProps {
-    readonly buTypes: BuTypeGetAllDto[];
-    readonly isLoading: boolean;
-    readonly onEdit: (id: string) => void;
-    readonly onDelete: (id: string) => void;
-    readonly currentPage: number;
-    readonly totalPages: number;
-    readonly onPageChange: (page: number) => void;
-    readonly totalItems: number;
-    readonly sort?: SortConfig;
-    readonly onSort?: (field: string) => void;
-    readonly selectedBuTypes: string[];
-    readonly onSelectAll: (isChecked: boolean) => void;
-    readonly onSelect: (id: string) => void;
-    readonly perpage?: number;
-    readonly setPerpage?: (perpage: number) => void;
-    readonly canUpdate?: boolean;
-    readonly canDelete?: boolean;
+  readonly buTypes: BuTypeGetAllDto[];
+  readonly isLoading: boolean;
+  readonly onEdit: (id: string) => void;
+  readonly onDelete: (id: string) => void;
+  readonly currentPage: number;
+  readonly totalPages: number;
+  readonly totalItems: number;
+  readonly perpage: number;
+  readonly onPageChange: (page: number) => void;
+  readonly sort?: { field: string; direction: "asc" | "desc" };
+  readonly onSort?: (sortString: string) => void;
+  readonly setPerpage: (perpage: number) => void;
+  readonly canUpdate?: boolean;
+  readonly canDelete?: boolean;
 }
 
 export default function BuTypeList({
-    buTypes,
-    isLoading,
-    onEdit,
-    onDelete,
-    currentPage,
-    totalPages,
-    onPageChange,
-    totalItems,
-    sort,
-    onSort,
-    selectedBuTypes,
-    onSelectAll,
-    onSelect,
-    perpage,
-    setPerpage,
-    canUpdate = true,
-    canDelete = true,
+  buTypes,
+  isLoading,
+  onEdit,
+  onDelete,
+  currentPage,
+  totalPages,
+  totalItems,
+  perpage,
+  onPageChange,
+  sort,
+  onSort,
+  setPerpage,
+  canUpdate = true,
+  canDelete = true,
 }: BuTypeListProps) {
-    const t = useTranslations("TableHeader");
-    const tCommon = useTranslations("Common");
+  const t = useTranslations("TableHeader");
+  const tCommon = useTranslations("Common");
 
-    const columns: TableColumn[] = [
-        {
-            title: (
-                <Checkbox
-                    checked={selectedBuTypes.length === buTypes.length}
-                    onCheckedChange={onSelectAll}
-                />
-            ),
-            dataIndex: "select",
-            key: "select",
-            width: "w-8",
-            align: "center",
-            render: (_: unknown, record: TableDataSource) => {
-                return <Checkbox checked={selectedBuTypes.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
-            },
-        },
-        {
-            title: "#",
-            dataIndex: "no",
-            key: "no",
-            width: "w-8",
-            align: "center",
-        },
-        {
-            title: (
-                <SortableColumnHeader
-                    columnKey="name"
-                    label={t("name")}
-                    sort={sort ?? { field: "name", direction: "asc" }}
-                    onSort={onSort ?? (() => { })}
-                    getSortableColumnProps={getSortableColumnProps}
-                    renderSortIcon={renderSortIcon}
-                />
-            ),
-            dataIndex: "name",
-            key: "name",
-            icon: <List className="h-4 w-4" />,
-            align: "left",
-            render: (_: unknown, record: TableDataSource) => {
-                const buType = buTypes.find(bt => bt.id === record.key);
-                if (!buType) return null;
+  // Action header component
+  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
 
-                if (canUpdate) {
-                    return (
-                        <button
-                            type="button"
-                            className="btn-dialog"
-                            onClick={() => onEdit(buType.id)}
-                        >
-                            {buType.name}
-                        </button>
-                    );
-                }
+  // Convert sort to TanStack Table format
+  const sorting: SortingState = useMemo(() => {
+    if (!sort) return [];
+    return [{ id: sort.field, desc: sort.direction === "desc" }];
+  }, [sort]);
 
-                return <span>{buType.name}</span>;
-            },
-        },
-        {
-            title: t("description"),
-            dataIndex: "description",
-            key: "description",
-            icon: <Info className="h-4 w-4" />,
-            align: "left",
-            render: (description: string) => (
-                <span className="truncate max-w-[300px] inline-block">
-                    {description}
-                </span>
-            ),
-        },
-        {
-            title: t("note"),
-            dataIndex: "note",
-            key: "note",
-            icon: <Info className="h-4 w-4" />,
-            align: "left",
-        },
-        {
-            title: (
-                <SortableColumnHeader
-                    columnKey="is_active"
-                    label={t("status")}
-                    sort={sort ?? { field: "is_active", direction: "asc" }}
-                    onSort={onSort ?? (() => { })}
-                    getSortableColumnProps={getSortableColumnProps}
-                    renderSortIcon={renderSortIcon}
-                />
-            ),
-            dataIndex: "is_active",
-            key: "is_active",
-            icon: <Activity className="h-4 w-4" />,
-            align: "center",
-            render: (_: unknown, record: TableDataSource) => {
-                const buType = buTypes.find(bt => bt.id === record.key);
-                if (!buType) return null;
-                return (
-                    <div className="flex justify-center">
-                        <StatusCustom is_active={buType.is_active}>
-                            {buType.is_active ? tCommon("active") : tCommon("inactive")}
-                        </StatusCustom>
-                    </div>
-                )
-            },
-        },
-        {
-            title: t("action"),
-            dataIndex: "action",
-            key: "action",
-            width: "w-0 md:w-32",
-            align: "right",
-            render: (_: unknown, record: TableDataSource) => {
-                const buType = buTypes.find(bt => bt.id === record.key);
-                if (!buType) return null;
+  // Pagination state
+  const pagination: PaginationState = useMemo(
+    () => ({
+      pageIndex: currentPage - 1,
+      pageSize: perpage,
+    }),
+    [currentPage, perpage]
+  );
 
-                // Hide action menu if no permissions
-                if (!canDelete) return null;
-
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            {canDelete && (
-                                <DropdownMenuItem
-                                    className="text-destructive cursor-pointer hover:bg-transparent"
-                                    onClick={() => onDelete(buType.id)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                    Delete
-                                </DropdownMenuItem>
-                            )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
+  // Define columns
+  const columns = useMemo<ColumnDef<BuTypeGetAllDto>[]>(
+    () => [
+      {
+        id: "select",
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        enableSorting: false,
+        enableHiding: false,
+        size: 20,
+      },
+      {
+        id: "no",
+        header: () => <div className="text-center">#</div>,
+        cell: ({ row }) => (
+          <div className="text-center">
+            {(currentPage - 1) * perpage + row.index + 1}
+          </div>
+        ),
+        enableSorting: false,
+        size: 20,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
         },
-    ]
+      },
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => {
+          const buType = row.original;
+          if (canUpdate) {
+            return (
+              <div className="max-w-[200px] truncate">
+                <button
+                  type="button"
+                  className="btn-dialog"
+                  onClick={() => onEdit(buType.id)}
+                >
+                  {buType.name}
+                </button>
+              </div>
+            );
+          }
+          return <span className="max-w-[200px] truncate inline-block">{buType.name}</span>;
+        },
+        enableSorting: true,
+        size: 200,
+        meta: {
+          headerTitle: t("name"),
+        },
+      },
+      {
+        accessorKey: "description",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("description")} icon={<Info className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span className="truncate max-w-[200px] inline-block">
+            {row.original.description}
+          </span>
+        ),
+        enableSorting: false,
+        size: 200,
+        meta: {
+          headerTitle: t("description"),
+        },
+      },
+      {
+        accessorKey: "note",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("note")} icon={<Info className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span className="truncate max-w-[200px] inline-block">
+            {row.original.note}
+          </span>
+        ),
+        enableSorting: false,
+        size: 200,
+        meta: {
+          headerTitle: t("note"),
+        },
+      },
+      {
+        accessorKey: "is_active",
+        header: ({ column }) => (
+          <div className="flex justify-center">
+            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <StatusCustom is_active={row.original.is_active}>
+              {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+            </StatusCustom>
+          </div>
+        ),
+        enableSorting: true,
+        size: 120,
+        meta: {
+          headerTitle: t("status"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        id: "action",
+        header: ActionHeader,
+        cell: ({ row }) => {
+          const buType = row.original;
 
-    const dataSource: TableDataSource[] = buTypes.map((bu, index) => ({
-        select: false,
-        key: bu.id,
-        no: index + 1,
-        name: bu.name,
-        note: bu.note,
-        is_active: bu.is_active,
-    }));
+          if (!canDelete) return null;
 
-    return (
-        <TableTemplate
-            columns={columns}
-            dataSource={dataSource}
-            isLoading={isLoading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={onPageChange}
-            totalItems={totalItems}
-            perpage={perpage}
-            setPerpage={setPerpage}
-        />
-    )
+          return (
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {canDelete && (
+                    <DropdownMenuItem
+                      className="text-destructive cursor-pointer hover:bg-transparent"
+                      onClick={() => onDelete(buType.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {tCommon("delete")}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        },
+        enableSorting: false,
+        size: 80,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
+      },
+    ],
+    [t, tCommon, currentPage, perpage, canUpdate, canDelete, onEdit, onDelete]
+  );
+
+  // Initialize table
+  const table = useReactTable({
+    data: buTypes,
+    columns,
+    pageCount: totalPages,
+    getRowId: (row) => row.id,
+    state: {
+      pagination,
+      sorting,
+    },
+    enableRowSelection: true,
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(newPagination.pageIndex + 1);
+      setPerpage(newPagination.pageSize);
+    },
+    onSortingChange: (updater) => {
+      if (!onSort) return;
+
+      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
+
+      if (newSorting.length > 0) {
+        const sortField = newSorting[0].id;
+        const sortDirection = newSorting[0].desc ? "desc" : "asc";
+        onSort(`${sortField}:${sortDirection}`);
+      } else {
+        onSort("");
+      }
+    },
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+  });
+
+  return (
+    <DataGrid
+      table={table}
+      recordCount={totalItems}
+      isLoading={isLoading}
+      loadingMode="skeleton"
+      emptyMessage={tCommon("no_data")}
+      tableLayout={{
+        headerSticky: true,
+        dense: false,
+        rowBorder: true,
+        headerBackground: true,
+        headerBorder: true,
+        width: "fixed",
+      }}
+    >
+      <div className="w-full space-y-2.5">
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+      </div>
+    </DataGrid>
+  );
 }

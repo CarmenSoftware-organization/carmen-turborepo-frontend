@@ -90,7 +90,6 @@ export function TaxProfileComponent() {
 
 
   const [statusOpen, setStatusOpen] = useState(false);
-  const [selectedTaxProfiles, setSelectedTaxProfiles] = useState<string[]>([]);
 
   const currentPage = taxProfileData?.paginate.page ?? 1;
   const totalPages = taxProfileData?.paginate.pages ?? 1;
@@ -108,7 +107,6 @@ export function TaxProfileComponent() {
       label: tHeader("status"),
     },
   ];
-
 
   useEffect(() => {
     if (search) {
@@ -199,43 +197,8 @@ export function TaxProfileComponent() {
     setPage(newPage.toString());
   };
 
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setSelectedTaxProfiles(taxProfiles?.map((tp: any) => tp.id) ?? []);
-    } else {
-      setSelectedTaxProfiles([]);
-    }
-  };
-
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
-  };
-
-  const handleSort = (field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':');
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  };
-
-  const handleSelect = (id: string) => {
-    setSelectedTaxProfiles((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter(tpId => tpId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
   };
 
   const content = (
@@ -246,17 +209,14 @@ export function TaxProfileComponent() {
       onDelete={handleDelete}
       currentPage={currentPage}
       totalPages={totalPages}
-      onPageChange={handlePageChange}
       totalItems={totalItems}
+      perpage={taxProfileData?.paginate.perpage ?? 10}
+      onPageChange={handlePageChange}
       sort={parseSortString(sort)}
-      onSort={handleSort}
+      onSort={setSort}
+      setPerpage={handleSetPerpage}
       canUpdate={taxProfilePerms.canUpdate}
       canDelete={taxProfilePerms.canDelete}
-      selectedTaxProfiles={selectedTaxProfiles}
-      onSelectAll={handleSelectAll}
-      onSelect={handleSelect}
-      perpage={taxProfileData?.paginate.perpage}
-      setPerpage={handleSetPerpage}
     />
   );
 

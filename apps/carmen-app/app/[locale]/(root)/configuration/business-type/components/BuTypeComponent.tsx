@@ -67,7 +67,6 @@ export default function BusinessTypeComponent() {
   });
 
   const [buTypesData, setBuTypesData] = useState<BuTypeGetAllDto[]>([]);
-  const [selectedBuTypes, setSelectedBuTypes] = useState<string[]>([]);
 
   useEffect(() => {
     if (buTypes?.data) {
@@ -106,40 +105,6 @@ export default function BusinessTypeComponent() {
       setSort("");
     }
   }, [search, setSort]);
-
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedBuTypes(buTypesData.map((bu) => bu.id));
-    } else {
-      setSelectedBuTypes([]);
-    }
-  };
-
-  const handleSelect = (id: string) => {
-    setSelectedBuTypes((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter(buId => buId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
-  const handleSort = (field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':');
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  };
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
@@ -274,14 +239,11 @@ export default function BusinessTypeComponent() {
       onDelete={handleDelete}
       currentPage={parseInt(page || "1")}
       totalPages={buTypes?.paginate.pages ?? 1}
-      onPageChange={handlePageChange}
       totalItems={buTypes?.paginate.total ?? buTypes?.data?.length ?? 0}
+      perpage={buTypes?.paginate.perpage ?? 10}
+      onPageChange={handlePageChange}
       sort={parseSortString(sort)}
-      onSort={handleSort}
-      selectedBuTypes={selectedBuTypes}
-      onSelectAll={handleSelectAll}
-      onSelect={handleSelect}
-      perpage={buTypes?.paginate.perpage}
+      onSort={setSort}
       setPerpage={handleSetPerpage}
       canUpdate={businessTypePerms.canUpdate}
       canDelete={businessTypePerms.canDelete}

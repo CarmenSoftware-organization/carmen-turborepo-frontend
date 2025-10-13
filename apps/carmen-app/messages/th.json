@@ -308,7 +308,8 @@
     "init_users": "ผู้ใช้งานที่มีอยู่",
     "available_users": "ผู้ใช้งานที่พร้อมใช้งาน",
     "init_products": "สินค้าที่มีอยู่",
-    "available_products": "สินค้าที่พร้อมใช้งาน"
+    "available_products": "สินค้าที่พร้อมใช้งาน",
+    "no_data": "ไม่มีข้อมูล"
   },
   "TableHeader": {
     "all": "ทั้งหมด",

@@ -32,7 +32,6 @@ export default function LocationComponent() {
   const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
 
   const {
     data: locations,
@@ -50,25 +49,6 @@ export default function LocationComponent() {
     },
   });
 
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setSelectedLocations(locations?.data.map((location: any) => location.id) ?? []);
-    } else {
-      setSelectedLocations([]);
-    }
-  };
-
-  const handleSelect = (id: string) => {
-    setSelectedLocations((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter(locationId => locationId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
   useEffect(() => {
     if (
       (error as { response?: { status?: number } })?.response?.status === 401
@@ -78,23 +58,6 @@ export default function LocationComponent() {
   }, [error, setLoginDialogOpen]);
 
   const sortFields = [{ key: "name", label: tHeader("name") }];
-
-
-  const handleSort = (field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':');
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
@@ -164,13 +127,13 @@ export default function LocationComponent() {
     <ListLocations
       locations={locations?.data ?? []}
       isLoading={isLoading}
+      currentPage={locations?.paginate.current_page ?? 1}
+      totalPages={locations?.paginate.total_pages ?? 1}
+      totalItems={locations?.paginate.total ?? 0}
+      perpage={locations?.paginate.perpage ?? 10}
       sort={parseSortString(sort)}
-      onSort={handleSort}
+      onSort={setSort}
       onPageChange={handlePageChange}
-      onSelectAll={handleSelectAll}
-      onSelect={handleSelect}
-      selectedLocations={selectedLocations}
-      perpage={locations?.paginate.perpage}
       canUpdate={locationPerms.canUpdate}
       canDelete={locationPerms.canDelete}
       setPerpage={handleSetPerpage}

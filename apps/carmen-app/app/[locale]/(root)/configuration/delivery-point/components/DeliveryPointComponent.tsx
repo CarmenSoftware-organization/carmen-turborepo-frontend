@@ -59,10 +59,6 @@ export default function DeliveryPointComponent() {
     DeliveryPointUpdateDto | undefined
   >(undefined);
 
-  const [selectedDeliveryPoints, setSelectedDeliveryPoints] = useState<
-    string[]
-  >([]);
-
   const { deliveryPoints, isLoading } = useDeliveryPointQuery({
     token,
     buCode,
@@ -84,26 +80,6 @@ export default function DeliveryPointComponent() {
   const totalPages = deliveryPoints?.paginate.pages ?? 1;
   const totalItems =
     deliveryPoints?.paginate.total ?? deliveryPoints?.data?.length ?? 0;
-
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedDeliveryPoints(
-        deliveryPoints?.data.map((dept: DeliveryPointUpdateDto) => dept.id) ?? [],
-      );
-    } else {
-      setSelectedDeliveryPoints([]);
-    }
-  };
-
-  const handleSelect = (id: string) => {
-    setSelectedDeliveryPoints((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((dpId) => dpId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
@@ -234,22 +210,6 @@ export default function DeliveryPointComponent() {
     </div>
   );
 
-  const handleSort = (field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(":");
-
-      if (currentField === field) {
-        const newDirection = currentDirection === "asc" ? "desc" : "asc";
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  };
-
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
   };
@@ -291,10 +251,7 @@ export default function DeliveryPointComponent() {
       sort={parseSortString(sort)}
       onEdit={handleEdit}
       onToggleStatus={handleDelete}
-      onSort={handleSort}
-      onSelectAll={handleSelectAll}
-      onSelect={handleSelect}
-      selectedDeliveryPoints={selectedDeliveryPoints}
+      onSort={setSort}
       setPerpage={handleSetPerpage}
       perpage={deliveryPoints?.paginate.perpage}
       canUpdate={deliveryPointPerms.canUpdate}

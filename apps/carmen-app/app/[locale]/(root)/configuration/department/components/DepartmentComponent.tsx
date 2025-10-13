@@ -42,32 +42,12 @@ export default function DepartmentComponent() {
     filter,
     perpage
   });
-  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
 
   useEffect(() => {
     if (isUnauthorized) {
       setLoginDialogOpen(true);
     }
   }, [isUnauthorized]);
-
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setSelectedDepartments(departments?.data.map((dept: any) => dept.id) ?? []);
-    } else {
-      setSelectedDepartments([]);
-    }
-  };
-
-  const handleSelect = (id: string) => {
-    setSelectedDepartments((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter(deptId => deptId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
 
   const currentPage = departments?.paginate.page ?? 1;
   const totalPages = departments?.paginate.pages ?? 1;
@@ -79,22 +59,6 @@ export default function DepartmentComponent() {
 
   const handleAdd = () => {
     router.push("/configuration/department/new");
-  };
-
-  const handleSort = (field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(":");
-
-      if (currentField === field) {
-        const newDirection = currentDirection === "asc" ? "desc" : "asc";
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
   };
 
   const handleSetPerpage = (newPerpage: number) => {
@@ -179,13 +143,10 @@ export default function DepartmentComponent() {
       currentPage={currentPage}
       totalPages={totalPages}
       totalItems={totalItems}
+      perpage={departments?.paginate.perpage ?? 10}
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
-      onSort={handleSort}
-      selectedDepartments={selectedDepartments}
-      onSelectAll={handleSelectAll}
-      onSelect={handleSelect}
-      perpage={departments?.paginate.perpage}
+      onSort={setSort}
       setPerpage={handleSetPerpage}
       canUpdate={departmentPerms.canUpdate}
       canDelete={departmentPerms.canDelete}
