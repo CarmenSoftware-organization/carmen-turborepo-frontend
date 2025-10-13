@@ -1,8 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { PriceListDto } from "@/dtos/price-list.dto";
 import { Calendar, List, MoreHorizontal, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useDeletePriceList } from "@/hooks/usePriceList";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -17,9 +18,6 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
-import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import ButtonLink from "@/components/ButtonLink";
 import {
     DropdownMenu,
@@ -29,6 +27,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatDateFns } from "@/utils/config-system";
 import { useTranslations } from "next-intl";
+import {
+    ColumnDef,
+    getCoreRowModel,
+    useReactTable,
+    PaginationState,
+    SortingState,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface ListPriceListProps {
     readonly priceLists?: PriceListDto[];
@@ -38,8 +48,8 @@ interface ListPriceListProps {
     readonly perpage?: number;
     readonly currentPage?: number;
     readonly onPageChange?: (page: number) => void;
-    readonly sort?: SortConfig;
-    readonly onSort?: (field: string) => void;
+    readonly sort?: { field: string; direction: "asc" | "desc" } | null;
+    readonly onSort?: (sortString: string) => void;
     readonly setPerpage?: (perpage: number) => void;
 }
 
@@ -57,31 +67,31 @@ export default function ListPriceList({
 }: ListPriceListProps) {
     const { token, buCode, dateFormat } = useAuth();
     const tTableHeader = useTranslations("TableHeader");
+    const tCommon = useTranslations("Common");
     const queryClient = useQueryClient();
-    const [selectedItems, setSelectedItems] = useState<string[]>([]);
     const [deleteId, setDeleteId] = useState<string>('');
     const [alertOpen, setAlertOpen] = useState(false);
     const [selectedPriceList, setSelectedPriceList] = useState<PriceListDto | null>(null);
 
     const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode, deleteId);
 
-    const handleSelectItem = (id: string) => {
-        setSelectedItems(prev =>
-            prev.includes(id)
-                ? prev.filter(item => item !== id)
-                : [...prev, id]
-        );
-    };
-    const handleSelectAll = () => {
-        if (selectedItems.length === priceLists.length) {
-            // If all items are selected, unselect all
-            setSelectedItems([]);
-        } else {
-            // Otherwise, select all items
-            const allIds = priceLists.map(pr => pr.id ?? '').filter(Boolean);
-            setSelectedItems(allIds);
-        }
-    };
+    // Action header component
+    const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
+
+    // Convert sort to TanStack Table format
+    const sorting: SortingState = useMemo(() => {
+        if (!sort) return [];
+        return [{ id: sort.field, desc: sort.direction === "desc" }];
+    }, [sort]);
+
+    // Pagination state
+    const pagination: PaginationState = useMemo(
+        () => ({
+            pageIndex: currentPage - 1,
+            pageSize: perpage,
+        }),
+        [currentPage, perpage]
+    );
 
     const handleDeleteClick = (priceList: PriceListDto) => {
         setSelectedPriceList(priceList);
@@ -110,137 +120,185 @@ export default function ListPriceList({
         });
     };
 
-    const isAllSelected = priceLists?.length > 0 && selectedItems.length === priceLists.length;
+    // Define columns
+    const columns = useMemo<ColumnDef<PriceListDto>[]>(
+        () => [
+            {
+                id: "select",
+                header: () => <DataGridTableRowSelectAll />,
+                cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+                enableSorting: false,
+                enableHiding: false,
+                size: 30,
+            },
+            {
+                id: "no",
+                header: () => <div className="text-center">#</div>,
+                cell: ({ row }) => (
+                    <div className="text-center">
+                        {(currentPage - 1) * perpage + row.index + 1}
+                    </div>
+                ),
+                enableSorting: false,
+                size: 30,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                accessorKey: "vendor.name",
+                header: ({ column }) => (
+                    <DataGridColumnHeader column={column} title={tTableHeader("name")} icon={<List className="h-4 w-4" />} />
+                ),
+                cell: ({ row }) => {
+                    const priceList = row.original;
+                    return (
+                        <ButtonLink href={`/vendor-management/price-list/${priceList.id}`}>
+                            {priceList.vendor?.name}
+                        </ButtonLink>
+                    );
+                },
+                enableSorting: true,
+                size: 300,
+                meta: {
+                    headerTitle: tTableHeader("name"),
+                },
+            },
+            {
+                accessorKey: "from_date",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>{tTableHeader("start_date")}</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <span>{formatDateFns(row.original.from_date ?? '', dateFormat ?? 'dd/MM/yyyy')}</span>
+                ),
+                enableSorting: false,
+                size: 150,
+            },
+            {
+                accessorKey: "to_date",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>{tTableHeader("end_date")}</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <span>{formatDateFns(row.original.to_date ?? '', dateFormat ?? 'dd/MM/yyyy')}</span>
+                ),
+                enableSorting: false,
+                size: 150,
+            },
+            {
+                id: "action",
+                header: ActionHeader,
+                cell: ({ row }) => {
+                    const priceList = row.original;
 
-    const columns: TableColumn[] = [
-        {
-            title: (
-                <Checkbox
-                    checked={isAllSelected}
-                    onCheckedChange={handleSelectAll}
-                />
-            ),
-            dataIndex: "select",
-            key: "select",
-            width: "w-10",
-            align: "center",
-            render: (_: unknown, record: TableDataSource) => {
-                return (
-                    <Checkbox
-                        checked={selectedItems.includes(record.key)}
-                        onCheckedChange={() => handleSelectItem(record.key)}
-                        aria-label={`Select ${record.cn_no || "item"}`}
-                    />
-                );
+                    return (
+                        <div className="flex justify-end">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                        <span className="sr-only">More options</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                        className="text-destructive cursor-pointer hover:bg-transparent"
+                                        disabled={isDeleting && deleteId === priceList?.id}
+                                        onClick={() => handleDeleteClick(priceList)}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        Delete
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                    );
+                },
+                enableSorting: false,
+                size: 80,
+                meta: {
+                    cellClassName: "text-right",
+                    headerClassName: "text-right",
+                },
             },
-        },
-        {
-            title: "#",
-            dataIndex: "no",
-            key: "no",
-            align: "center",
-        },
-        {
-            title: (
-                <SortableColumnHeader
-                    columnKey="name"
-                    label={tTableHeader("name")}
-                    sort={sort ?? { field: '', direction: 'asc' }}
-                    onSort={onSort ?? (() => { })}
-                    getSortableColumnProps={getSortableColumnProps}
-                    renderSortIcon={renderSortIcon}
-                />
-            ),
-            dataIndex: "name",
-            icon: <List className="h-4 w-4" />,
-            key: "name",
-            align: "left",
-            render: (_: unknown, record: TableDataSource) => {
-                return (
-                    <ButtonLink href={`/vendor-management/price-list/${record.key}`}>
-                        {record.name}
-                    </ButtonLink>
-                );
-            },
-        },
-        {
-            title: tTableHeader("start_date"),
-            dataIndex: "from_date",
-            icon: <Calendar className="h-4 w-4" />,
-            key: "from_date",
-            align: "left",
-            render: (_: unknown, record: TableDataSource) => {
-                return (
-                    <p>{formatDateFns(record.from_date ?? '', dateFormat ?? 'dd/MM/yyyy')}</p>
-                );
-            },
-        },
-        {
-            title: tTableHeader("end_date"),
-            dataIndex: "to_date",
-            icon: <Calendar className="h-4 w-4" />,
-            key: "to_date",
-            align: "left",
-            render: (_: unknown, record: TableDataSource) => {
-                return (
-                    <p>{formatDateFns(record.to_date ?? '', dateFormat ?? 'dd/MM/yyyy')}</p>
-                );
-            },
-        },
-        {
-            title: tTableHeader("action"),
-            dataIndex: "action",
-            key: "action",
-            align: "right",
-            render: (_: unknown, record: TableDataSource) => {
-                const currentPriceList = priceLists.find(pl => pl.id === record.key);
+        ],
+        [tTableHeader, currentPage, perpage, dateFormat, isDeleting, deleteId]
+    );
 
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                disabled={isDeleting && deleteId === currentPriceList?.id}
-                                onClick={() => currentPriceList && handleDeleteClick(currentPriceList)}
-                            >
-                                <Trash2 className="h-3 w-3 mr-2" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
+    // Initialize table
+    const table = useReactTable({
+        data: priceLists,
+        columns,
+        pageCount: totalPages,
+        getRowId: (row) => row.id ?? "",
+        state: {
+            pagination,
+            sorting,
         },
-    ];
+        enableRowSelection: true,
+        onPaginationChange: (updater) => {
+            const newPagination =
+                typeof updater === "function" ? updater(pagination) : updater;
+            if (onPageChange) {
+                onPageChange(newPagination.pageIndex + 1);
+            }
+            if (setPerpage) {
+                setPerpage(newPagination.pageSize);
+            }
+        },
+        onSortingChange: (updater) => {
+            if (!onSort) return;
 
-    const dataSource: TableDataSource[] = priceLists?.map((pl, index) => ({
-        key: pl?.id ?? '',
-        no: index + 1,
-        name: pl?.vendor?.name,
-        from_date: pl?.from_date,
-        to_date: pl?.to_date,
-    })) || [];
+            const newSorting = typeof updater === "function" ? updater(sorting) : updater;
 
-    console.log(priceLists);
+            if (newSorting.length > 0) {
+                const sortField = newSorting[0].id;
+                const sortDirection = newSorting[0].desc ? "desc" : "asc";
+                onSort(`${sortField}:${sortDirection}`);
+            } else {
+                onSort("");
+            }
+        },
+        getCoreRowModel: getCoreRowModel(),
+        manualPagination: true,
+        manualSorting: true,
+    });
 
     return (
         <>
-            <TableTemplate
-                columns={columns}
-                dataSource={dataSource}
-                totalItems={totalItems}
-                totalPages={totalPages}
-                currentPage={currentPage}
-                onPageChange={onPageChange}
+            <DataGrid
+                table={table}
+                recordCount={totalItems}
                 isLoading={isLoading}
-                perpage={perpage}
-                setPerpage={setPerpage}
-            />
+                loadingMode="skeleton"
+                emptyMessage={tCommon("no_data")}
+                tableLayout={{
+                    headerSticky: true,
+                    dense: false,
+                    rowBorder: true,
+                    headerBackground: true,
+                    headerBorder: true,
+                    width: "fixed",
+                }}
+            >
+                <div className="w-full space-y-2.5">
+                    <DataGridContainer>
+                        <ScrollArea className="max-h-[calc(100vh-250px)]">
+                            <DataGridTable />
+                            <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                    </DataGridContainer>
+                    <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+                </div>
+            </DataGrid>
 
             <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
                 <AlertDialogContent>

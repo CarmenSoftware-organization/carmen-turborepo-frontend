@@ -1,125 +1,244 @@
+"use client";
+
 import { StockCardDto } from "@/dtos/inventory-management.dto";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, Pencil, Trash } from "lucide-react";
+import { Eye, Pencil, Trash, FileText, Package, Tag, Activity, Box, TrendingUp, DollarSign } from "lucide-react";
+import { useMemo } from "react";
+import {
+    ColumnDef,
+    getCoreRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useTranslations } from "next-intl";
 
 interface StockCardListProps {
     readonly stockCardData: StockCardDto[];
+    readonly isLoading?: boolean;
 }
 
-export default function StockCardList({ stockCardData }: StockCardListProps) {
+export default function StockCardList({ stockCardData, isLoading = false }: StockCardListProps) {
+    const tCommon = useTranslations("Common");
+    const tTableHeader = useTranslations("TableHeader");
+
+    // Action header component
+    const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
+
+    // Define columns
+    const columns = useMemo<ColumnDef<StockCardDto>[]>(
+        () => [
+            {
+                id: "select",
+                header: () => <DataGridTableRowSelectAll />,
+                cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+                enableSorting: false,
+                enableHiding: false,
+                size: 30,
+            },
+            {
+                id: "no",
+                header: () => <div className="text-center">#</div>,
+                cell: ({ row }) => (
+                    <div className="text-center">
+                        {row.index + 1}
+                    </div>
+                ),
+                enableSorting: false,
+                size: 30,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                accessorKey: "code",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4" />
+                        <span>Code</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <span className="font-medium">{row.original.code}</span>
+                ),
+                enableSorting: false,
+                size: 120,
+            },
+            {
+                accessorKey: "name",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <Package className="h-4 w-4" />
+                        <span>Name</span>
+                    </div>
+                ),
+                cell: ({ row }) => <span>{row.original.name}</span>,
+                enableSorting: false,
+                size: 200,
+            },
+            {
+                accessorKey: "category",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <Tag className="h-4 w-4" />
+                        <span>Category</span>
+                    </div>
+                ),
+                cell: ({ row }) => <span>{row.original.category}</span>,
+                enableSorting: false,
+                size: 150,
+            },
+            {
+                accessorKey: "status",
+                header: () => (
+                    <div className="flex items-center gap-2 justify-center">
+                        <Activity className="h-4 w-4" />
+                        <span>Status</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <div className="flex justify-center">
+                        <Badge variant={row.original.status ? "default" : "destructive"}>
+                            {row.original.status ? "Active" : "Inactive"}
+                        </Badge>
+                    </div>
+                ),
+                enableSorting: false,
+                size: 120,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                id: "current_stock",
+                header: () => (
+                    <div className="flex items-center gap-2 justify-center">
+                        <Box className="h-4 w-4" />
+                        <span>Current Stock</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <div className="text-center">
+                        {row.original.count} {row.original.unit}
+                    </div>
+                ),
+                enableSorting: false,
+                size: 150,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                accessorKey: "stock_level",
+                header: () => (
+                    <div className="flex items-center gap-2 justify-center">
+                        <TrendingUp className="h-4 w-4" />
+                        <span>Stock Level</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <div className="text-center">
+                        {row.original.stock_level}
+                    </div>
+                ),
+                enableSorting: false,
+                size: 120,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                accessorKey: "value",
+                header: () => (
+                    <div className="flex items-center gap-2 justify-end">
+                        <DollarSign className="h-4 w-4" />
+                        <span>Value</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <div className="text-right">
+                        ${row.original.value}
+                    </div>
+                ),
+                enableSorting: false,
+                size: 120,
+                meta: {
+                    cellClassName: "text-right",
+                    headerClassName: "text-right",
+                },
+            },
+            {
+                id: "action",
+                header: ActionHeader,
+                cell: ({ row }) => {
+                    return (
+                        <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <Eye className="h-4 w-4" />
+                                <span className="sr-only">View</span>
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7">
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80">
+                                <Trash className="h-4 w-4" />
+                                <span className="sr-only">Delete</span>
+                            </Button>
+                        </div>
+                    );
+                },
+                enableSorting: false,
+                size: 120,
+                meta: {
+                    cellClassName: "text-right",
+                    headerClassName: "text-right",
+                },
+            },
+        ],
+        [tTableHeader]
+    );
+
+    // Initialize table
+    const table = useReactTable({
+        data: stockCardData,
+        columns,
+        getRowId: (row) => row.id ?? "",
+        state: {},
+        enableRowSelection: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
+
     return (
-        <div className="space-y-4">
-            <div className="hidden md:block">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-10 text-center">#</TableHead>
-                            <TableHead>Code</TableHead>
-                            <TableHead>Name</TableHead>
-                            <TableHead>Category</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Current Stock</TableHead>
-                            <TableHead>Stock Level</TableHead>
-                            <TableHead>Value</TableHead>
-                            <TableHead className="text-right">Action</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {stockCardData.map((stockCard, index) => (
-                            <TableRow key={stockCard.id}>
-                                <TableCell className="text-center w-10">{index + 1}</TableCell>
-                                <TableCell className="font-medium">{stockCard.code}</TableCell>
-                                <TableCell>{stockCard.name}</TableCell>
-                                <TableCell>{stockCard.category}</TableCell>
-                                <TableCell>
-                                    <Badge variant={stockCard.status ? "default" : "destructive"}>
-                                        {stockCard.status ? "Active" : "Inactive"}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>
-                                    {stockCard.count} {stockCard.unit}
-                                </TableCell>
-                                <TableCell>{stockCard.stock_level}</TableCell>
-                                <TableCell>${stockCard.value}</TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant="ghost" size="icon">
-                                        <Eye className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon">
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon">
-                                        <Trash className="h-4 w-4" />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+        <DataGrid
+            table={table}
+            recordCount={stockCardData.length}
+            isLoading={isLoading}
+            loadingMode="skeleton"
+            emptyMessage={tCommon("no_data")}
+            tableLayout={{
+                headerSticky: true,
+                dense: false,
+                rowBorder: true,
+                headerBackground: true,
+                headerBorder: true,
+                width: "fixed",
+            }}
+        >
+            <div className="w-full space-y-2.5">
+                <DataGridContainer>
+                    <ScrollArea className="max-h-[calc(100vh-250px)]">
+                        <DataGridTable />
+                        <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+                </DataGridContainer>
             </div>
-
-            <div className="grid gap-4 md:hidden">
-                {stockCardData.map((stockCard) => (
-                    <Card key={stockCard.id}>
-                        <CardHeader>
-                            <div className="flex justify-between items-start">
-                                <div className="fxr-c gap-2">
-                                    <p className="text-sm font-medium">{stockCard.code}</p>
-                                    <Badge variant={stockCard.status ? "default" : "destructive"}>
-                                        {stockCard.status ? "Active" : "Inactive"}
-                                    </Badge>
-                                </div>
-                                <div className="fxr-c gap-1">
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                        <Eye className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-accent">
-                                        <Pencil className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive">
-                                        <Trash className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="p-4 pt-0">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Name</p>
-                                    <p className="text-sm font-medium">{stockCard.name}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Category</p>
-                                    <p className="text-sm font-medium">{stockCard.category}</p>
-                                </div>
-
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Current Stock</p>
-                                    <p className="text-sm font-medium">{stockCard.count} {stockCard.unit}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Stock Level</p>
-                                    <p className="text-sm font-medium">{stockCard.stock_level}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-sm text-muted-foreground">Value</p>
-                                    <p className="text-sm font-medium">${stockCard.value}</p>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        </div>
+        </DataGrid>
     )
 }

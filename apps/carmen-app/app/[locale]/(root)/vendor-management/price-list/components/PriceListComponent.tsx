@@ -49,31 +49,16 @@ export default function PriceListComponent() {
     });
 
     const priceLists = response?.data ?? [];
-    const totalItems = response?.paginate.total ?? 0;
-    const totalPages = response?.paginate.pages ?? 1;
-    const currentPage = response?.paginate.page ?? 1;
+    const totalItems = response?.paginate?.total ?? 0;
+    const totalPages = response?.paginate?.pages ?? 1;
+    const currentPage = response?.paginate?.page ?? 1;
+    const currentPerpage = response?.paginate?.perpage ?? 10;
 
     useEffect(() => {
         if (isUnauthorized) {
             setLoginDialogOpen(true);
         }
     }, [isUnauthorized]);
-
-    const handleSort = useCallback((field: string) => {
-        if (!sort) {
-            setSort(`${field}:asc`);
-        } else {
-            const [currentField, currentDirection] = sort.split(':') as [string, string];
-
-            if (currentField === field) {
-                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-                setSort(`${field}:${newDirection}`);
-            } else {
-                setSort(`${field}:asc`);
-            }
-            setPage("1");
-        }
-    }, [setSort, sort, setPage]);
 
     const handlePageChange = useCallback(
         (newPage: number) => {
@@ -145,10 +130,10 @@ export default function PriceListComponent() {
             totalItems={totalItems}
             totalPages={totalPages}
             currentPage={currentPage}
-            perpage={response?.paginate.perpage}
+            perpage={currentPerpage}
             onPageChange={handlePageChange}
             sort={parseSortString(sort)}
-            onSort={handleSort}
+            onSort={setSort}
             setPerpage={handleSetPerpage}
         />
     )

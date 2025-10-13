@@ -1,81 +1,217 @@
+"use client";
+
 import { SpotCheckDto } from "@/dtos/inventory-management.dto";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash } from "lucide-react";
+import { Eye, Trash, Building, MapPin, User, Calendar, Activity } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ProgressCustom } from "@/components/ui-custom/progress-custom";
 import { Link } from "@/lib/navigation";
 import { calculateProgress } from "@/utils/calculate";
+import { useMemo } from "react";
+import {
+    ColumnDef,
+    getCoreRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useTranslations } from "next-intl";
+
 interface SpotCheckListProps {
     readonly spotCheckData: SpotCheckDto[];
+    readonly isLoading?: boolean;
 }
 
-export default function SpotCheckList({ spotCheckData }: SpotCheckListProps) {
+export default function SpotCheckList({ spotCheckData, isLoading = false }: SpotCheckListProps) {
+    const tCommon = useTranslations("Common");
+    const tTableHeader = useTranslations("TableHeader");
+
+    // Action header component
+    const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
+
+    // Define columns
+    const columns = useMemo<ColumnDef<SpotCheckDto>[]>(
+        () => [
+            {
+                id: "select",
+                header: () => <DataGridTableRowSelectAll />,
+                cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+                enableSorting: false,
+                enableHiding: false,
+                size: 30,
+            },
+            {
+                id: "no",
+                header: () => <div className="text-center">#</div>,
+                cell: ({ row }) => (
+                    <div className="text-center">
+                        {row.index + 1}
+                    </div>
+                ),
+                enableSorting: false,
+                size: 30,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                accessorKey: "department",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <Building className="h-4 w-4" />
+                        <span>Department</span>
+                    </div>
+                ),
+                cell: ({ row }) => <span>{row.original.department}</span>,
+                enableSorting: false,
+                size: 150,
+            },
+            {
+                accessorKey: "location",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>Store Name</span>
+                    </div>
+                ),
+                cell: ({ row }) => <span>{row.original.location}</span>,
+                enableSorting: false,
+                size: 200,
+            },
+            {
+                accessorKey: "requested_by",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span>Requested By</span>
+                    </div>
+                ),
+                cell: ({ row }) => <span>{row.original.requested_by}</span>,
+                enableSorting: false,
+                size: 150,
+            },
+            {
+                accessorKey: "date",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>Date</span>
+                    </div>
+                ),
+                cell: ({ row }) => <span>{row.original.date}</span>,
+                enableSorting: false,
+                size: 120,
+            },
+            {
+                id: "progress",
+                header: () => <span>Progress</span>,
+                cell: ({ row }) => {
+                    const spotCheck = row.original;
+                    const progress = calculateProgress(spotCheck.checked_items, spotCheck.count_items);
+                    return (
+                        <div className="flex flex-col gap-1 min-w-[200px]">
+                            <ProgressCustom value={progress} />
+                            <div className="text-xs">
+                                <strong>Progress {progress}%</strong>
+                                <span className="ml-2">
+                                    {spotCheck.checked_items} of {spotCheck.count_items} items checked
+                                </span>
+                            </div>
+                        </div>
+                    );
+                },
+                enableSorting: false,
+                size: 250,
+            },
+            {
+                accessorKey: "status",
+                header: () => (
+                    <div className="flex items-center gap-2 justify-center">
+                        <Activity className="h-4 w-4" />
+                        <span>Status</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <div className="flex justify-center">
+                        <Badge>
+                            {row.original.status}
+                        </Badge>
+                    </div>
+                ),
+                enableSorting: false,
+                size: 120,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                id: "action",
+                header: ActionHeader,
+                cell: ({ row }) => {
+                    const spotCheck = row.original;
+                    return (
+                        <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
+                                <Link href={`/inventory-management/spot-check/${spotCheck.id}`}>
+                                    <Eye className="h-4 w-4" />
+                                    <span className="sr-only">View</span>
+                                </Link>
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80">
+                                <Trash className="h-4 w-4" />
+                                <span className="sr-only">Delete</span>
+                            </Button>
+                        </div>
+                    );
+                },
+                enableSorting: false,
+                size: 100,
+                meta: {
+                    cellClassName: "text-right",
+                    headerClassName: "text-right",
+                },
+            },
+        ],
+        [tTableHeader]
+    );
+
+    // Initialize table
+    const table = useReactTable({
+        data: spotCheckData,
+        columns,
+        getRowId: (row) => row.id ?? "",
+        state: {},
+        enableRowSelection: true,
+        getCoreRowModel: getCoreRowModel(),
+    });
+
     return (
-        <div className="space-y-4">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>#</TableHead>
-                        <TableHead>Department</TableHead>
-                        <TableHead>Store Name</TableHead>
-                        <TableHead>Requested By</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Progress</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {spotCheckData.map((spotCheck, index) => {
-                        const progress = calculateProgress(spotCheck.checked_items, spotCheck.count_items)
-                        return (
-                            <TableRow key={spotCheck.id}>
-                                <TableCell>{index + 1}</TableCell>
-                                <TableCell>{spotCheck.department}</TableCell>
-                                <TableCell>{spotCheck.location}</TableCell>
-                                <TableCell>{spotCheck.requested_by}</TableCell>
-                                <TableCell>{spotCheck.date}</TableCell>
-                                <TableCell>
-                                    <div className="flex flex-col gap-1">
-                                        <ProgressCustom
-                                            value={progress}
-                                        />
-                                        <div className="text-xs">
-                                            <strong>Progress {progress}%</strong>
-                                            <span className="ml-2">
-                                                {spotCheck.checked_items} of {spotCheck.count_items} items checked
-                                            </span>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge>
-                                        {spotCheck.status}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant="ghost" size={'sm'} asChild>
-                                        <Link href={`/inventory-management/spot-check/${spotCheck.id}`}>
-                                            <Eye className="h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                    <Button variant="ghost" size={'sm'}>
-                                        <Trash className="h-4 w-4" />
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        )
-                    })}
-                </TableBody>
-            </Table>
-        </div>
+        <DataGrid
+            table={table}
+            recordCount={spotCheckData.length}
+            isLoading={isLoading}
+            loadingMode="skeleton"
+            emptyMessage={tCommon("no_data")}
+            tableLayout={{
+                headerSticky: true,
+                dense: false,
+                rowBorder: true,
+                headerBackground: true,
+                headerBorder: true,
+                width: "fixed",
+            }}
+        >
+            <div className="w-full space-y-2.5">
+                <DataGridContainer>
+                    <ScrollArea className="max-h-[calc(100vh-250px)]">
+                        <DataGridTable />
+                        <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+                </DataGridContainer>
+            </div>
+        </DataGrid>
     )
 }

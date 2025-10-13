@@ -43,6 +43,11 @@ export default function VendorComponent() {
         perpage: perpage ? parseInt(perpage) : 10,
     });
 
+    const totalItems = vendors?.paginate?.total ?? 0;
+    const totalPages = vendors?.paginate?.pages ?? 1;
+    const currentPage = vendors?.paginate?.page ?? 1;
+    const currentPerpage = vendors?.paginate?.perpage ?? 10;
+
     const handlePageChange = (newPage: number) => {
         setPage(newPage.toString());
     };
@@ -52,22 +57,6 @@ export default function VendorComponent() {
             setLoginDialogOpen(true);
         }
     }, [isUnauthorized]);
-
-    const handleSort = (field: string) => {
-        if (!sort) {
-            setSort(`${field}:asc`);
-        } else {
-            const [currentField, currentDirection] = sort.split(':') as [string, string];
-
-            if (currentField === field) {
-                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-                setSort(`${field}:${newDirection}`);
-            } else {
-                setSort(`${field}:asc`);
-            }
-            setPage("1");
-        }
-    };
 
     const handleSetPerpage = (newPerpage: number) => {
         setPerpage(newPerpage.toString());
@@ -137,15 +126,15 @@ export default function VendorComponent() {
 
     const content = (
         <VendorList
-            vendors={vendors?.data}
+            vendors={vendors?.data ?? []}
             isLoading={isLoading}
-            currentPage={parseInt(page || '1')}
-            totalPages={vendors?.paginate.pages ?? 1}
+            currentPage={currentPage}
+            totalPages={totalPages}
             onPageChange={handlePageChange}
-            sort={parseSortString(sort) ?? { field: '', direction: 'asc' }}
-            onSort={handleSort}
-            totalItems={vendors?.paginate.total ?? 0}
-            perpage={vendors?.paginate.perpage ?? 10}
+            sort={parseSortString(sort)}
+            onSort={setSort}
+            totalItems={totalItems}
+            perpage={currentPerpage}
             setPerpage={handleSetPerpage}
             canUpdate={vendorPerms.canUpdate}
             canDelete={vendorPerms.canDelete}
