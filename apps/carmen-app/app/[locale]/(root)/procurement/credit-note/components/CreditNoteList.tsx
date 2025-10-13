@@ -115,7 +115,7 @@ export default function CreditNoteList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 20,
+        size: 30,
       },
       {
         id: "no",
@@ -126,7 +126,7 @@ export default function CreditNoteList({
           </div>
         ),
         enableSorting: false,
-        size: 20,
+        size: 30,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",

@@ -20,6 +20,7 @@ import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Link } from "@/lib/navigation";
 
 interface Location {
   readonly id: string;
@@ -129,10 +130,12 @@ export default function ListLocations({
           if (canUpdate) {
             return (
               <div className="space-y-0 w-[200px] truncate ellipsis">
-                <ButtonLink href={`/configuration/location/${location.id}`}>
+                <Link
+                  href={`/configuration/location/${location.id}`}
+                  className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+                >
                   {location.name}
-                </ButtonLink>
-                <p className="text-xs">{location.description}</p>
+                </Link>
               </div>
             );
           }
@@ -246,7 +249,7 @@ export default function ListLocations({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 150,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",

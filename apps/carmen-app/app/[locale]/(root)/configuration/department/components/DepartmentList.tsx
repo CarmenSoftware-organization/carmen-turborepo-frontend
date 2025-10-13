@@ -4,7 +4,6 @@ import { DepartmentGetListDto } from "@/dtos/department.dto";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Activity, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
-import ButtonLink from "@/components/ButtonLink";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
@@ -20,6 +19,7 @@ import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Link } from "@/lib/navigation";
 
 interface DepartmentListProps {
   readonly departments: DepartmentGetListDto[];
@@ -80,7 +80,7 @@ export default function DepartmentList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 20,
+        size: 30,
       },
       {
         id: "no",
@@ -91,7 +91,7 @@ export default function DepartmentList({
           </div>
         ),
         enableSorting: false,
-        size: 20,
+        size: 30,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
@@ -107,9 +107,12 @@ export default function DepartmentList({
           if (canUpdate) {
             return (
               <div className="max-w-[200px] truncate">
-                <ButtonLink href={`/configuration/department/${department.id}`}>
+                <Link
+                  href={`/configuration/department/${department.id}`}
+                  className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+                >
                   {department.name}
-                </ButtonLink>
+                </Link>
               </div>
             );
           }
@@ -240,11 +243,11 @@ export default function DepartmentList({
       emptyMessage={tCommon("no_data")}
       tableLayout={{
         headerSticky: true,
-        dense: false,
         rowBorder: true,
         headerBackground: true,
         headerBorder: true,
         width: "fixed",
+        dense: false,
       }}
     >
       <div className="w-full space-y-2.5">

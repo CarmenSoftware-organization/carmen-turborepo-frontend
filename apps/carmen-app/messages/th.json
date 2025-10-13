@@ -439,7 +439,9 @@
     "add_delivery_point": "เพิ่มจุดส่งสินค้า",
     "edit_delivery_point": "แก้ไขจุดส่งสินค้า",
     "add_delivery_point_description": "กรอกข้อมูลเพื่อสร้างจุดส่งสินค้าใหม่",
-    "edit_delivery_point_description": "อัพเดตข้อมูลจุดส่งสินค้าด้านล่าง"
+    "edit_delivery_point_description": "อัพเดตข้อมูลจุดส่งสินค้าด้านล่าง",
+    "del_delivery_point": "ลบจุดส่งสินค้า",
+    "del_delivery_point_description": "คุณแน่ใจหรือไม่ที่จะลบจุดส่งสินค้านี้? การลบจุดส่งสินค้าจะส่งผลต่อการซื้อขายสินค้าและการจัดการรายการสินค้า"
   },
   "Department": {
     "title": "แผนก",

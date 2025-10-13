@@ -279,6 +279,8 @@ export default function DeliveryPointComponent() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
+        title={tDeliveryPoint("del_delivery_point")}
+        description={tDeliveryPoint("del_delivery_point_description")}
       />
     </>
   );

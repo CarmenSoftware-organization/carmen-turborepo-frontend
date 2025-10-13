@@ -21,8 +21,8 @@ const headerCellSpacingVariants = cva('', {
 const bodyCellSpacingVariants = cva('', {
   variants: {
     size: {
-      dense: 'px-2.5 py-2',
-      default: 'px-4 py-3',
+      dense: 'px-2.5 py-1',
+      default: 'px-4 py-1.5',
     },
   },
   defaultVariants: {
@@ -136,7 +136,7 @@ function DataGridTableHeadRowCell<TData>({
       data-pinned={isPinned || undefined}
       data-last-col={isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined}
       className={cn(
-        'relative h-10 text-left rtl:text-right align-middle font-normal text-accent-foreground [&:has([role=checkbox])]:pe-0',
+        'relative h-12 text-left rtl:text-right align-middle font-normal text-accent-foreground [&:has([role=checkbox])]:pe-0',
         headerCellSpacing,
         props.tableLayout?.headerSticky && 'sticky top-0 rounded-t-md border-border',
         props.tableLayout?.cellBorder && 'border-e border-border',
@@ -324,7 +324,7 @@ function DataGridTableBodyRowCell<TData>({
       data-pinned={isPinned || undefined}
       data-last-col={isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined}
       className={cn(
-        'align-middle',
+        'align-middle text-muted-foreground',
         bodyCellSpacing,
         props.tableLayout?.cellBorder && 'border-e border-border',
         props.tableLayout?.columnsResizable && column.getCanResize() && 'truncate',

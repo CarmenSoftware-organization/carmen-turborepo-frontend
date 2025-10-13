@@ -440,7 +440,9 @@
     "add_delivery_point": "Add Delivery Point",
     "edit_delivery_point": "Edit Delivery Point",
     "add_delivery_point_description": "Fill in the details to create a new delivery point.",
-    "edit_delivery_point_description": "Update the delivery point information below."
+    "edit_delivery_point_description": "Update the delivery point information below.",
+    "del_delivery_point": "Delete Delivery Point",
+    "del_delivery_point_description": "Are you sure you want to delete this delivery point? This action cannot be undone."
   },
   "Department": {
     "title": "Department",

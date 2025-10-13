@@ -83,7 +83,7 @@ export default function CurrencyList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 35,
+        size: 30,
       },
       {
         id: "no",
@@ -94,7 +94,7 @@ export default function CurrencyList({
           </div>
         ),
         enableSorting: false,
-        size: 60,
+        size: 30,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
@@ -121,7 +121,7 @@ export default function CurrencyList({
           return <span>{currency.name}</span>;
         },
         enableSorting: true,
-        size: 300,
+        size: 250,
         meta: {
           headerTitle: t("name"),
         },
@@ -151,7 +151,7 @@ export default function CurrencyList({
         ),
         cell: ({ row }) => <div className="text-center">{row.original.symbol}</div>,
         enableSorting: true,
-        size: 100,
+        size: 120,
         meta: {
           headerTitle: t("symbol"),
           cellClassName: "text-center",
@@ -173,7 +173,7 @@ export default function CurrencyList({
           </div>
         ),
         enableSorting: true,
-        size: 150,
+        size: 200,
         meta: {
           headerTitle: t("exchangeRate"),
           cellClassName: "text-right",
@@ -195,7 +195,7 @@ export default function CurrencyList({
           </div>
         ),
         enableSorting: true,
-        size: 120,
+        size: 150,
         meta: {
           headerTitle: t("status"),
           cellClassName: "text-center",
@@ -235,7 +235,7 @@ export default function CurrencyList({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",

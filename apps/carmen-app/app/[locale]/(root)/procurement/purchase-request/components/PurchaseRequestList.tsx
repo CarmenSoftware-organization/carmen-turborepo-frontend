@@ -129,14 +129,14 @@ export default function PurchaseRequestList({
           <DataGridColumnHeader column={column} title={tTableHeader("pr_no")} icon={<FileText className="h-4 w-4" />} />
         ),
         cell: ({ row }) => (
-          <div className="max-w-[150px] truncate">
+          <div className="max-w-[200px] truncate">
             <ButtonLink href={`/procurement/purchase-request/${row.original.id}`}>
               {row.original.pr_no ?? "-"}
             </ButtonLink>
           </div>
         ),
         enableSorting: true,
-        size: 150,
+        size: 200,
         meta: {
           headerTitle: tTableHeader("pr_no"),
         },

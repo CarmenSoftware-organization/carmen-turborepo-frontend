@@ -29,6 +29,7 @@ export default function CreditNoteComponent() {
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
   const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
   const [sort, setSort] = useURL("sort");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
@@ -37,6 +38,7 @@ export default function CreditNoteComponent() {
     search,
     sort,
     page: page ? parseInt(page) : 1,
+    perpage: perpage ? parseInt(perpage) : 10,
   });
 
   const handlePageChange = useCallback(
@@ -46,9 +48,12 @@ export default function CreditNoteComponent() {
     [setPage]
   );
 
+  const handleSetPerpage = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
 
   const totalItems = creditNotes?.paginate.total;
-  const perpage = creditNotes?.paginate.perpage;
+  const perpageItem = creditNotes?.paginate.perpage;
 
   const title = tCreditNote("title");
 
@@ -123,11 +128,11 @@ export default function CreditNoteComponent() {
       totalItems={totalItems ?? 0}
       currentPage={creditNotes?.paginate.page ?? 1}
       totalPages={creditNotes?.paginate.pages ?? 1}
-      perpage={perpage ?? 10}
+      perpage={perpageItem ?? 10}
       onPageChange={handlePageChange}
       sort={parseSortString(sort)}
       onSort={setSort}
-      setPerpage={(newPerpage: number) => console.log('setPerpage', newPerpage)}
+      setPerpage={handleSetPerpage}
     />
   );
 
