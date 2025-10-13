@@ -3,17 +3,23 @@
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Activity, Banknote, Coins, List, MoreHorizontal, Replace, Trash2 } from "lucide-react";
-import {
-  SortConfig,
-  getSortableColumnProps,
-  renderSortIcon,
-} from "@/utils/table-sort";
 import { CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
-import { Checkbox } from "@/components/ui/checkbox";
-import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+  PaginationState,
+  SortingState,
+  RowSelectionState,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface CurrencyListProps {
   readonly isLoading: boolean;
@@ -24,7 +30,7 @@ interface CurrencyListProps {
   readonly totalPages: number;
   readonly totalItems: number;
   readonly onPageChange: (page: number) => void;
-  readonly sort?: SortConfig;
+  readonly sort?: { field: string; direction: "asc" | "desc" };
   readonly onSort?: (field: string) => void;
   readonly selectedCurrencies: string[];
   readonly onSelectAll: (isChecked: boolean) => void;
@@ -34,7 +40,6 @@ interface CurrencyListProps {
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
 }
-
 
 export default function CurrencyList({
   isLoading,
@@ -58,202 +63,277 @@ export default function CurrencyList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  const columns: TableColumn[] = [
-    {
-      title: (
-        <Checkbox
-          checked={selectedCurrencies.length === currencies.length}
-          onCheckedChange={onSelectAll}
-        />
-      ),
-      dataIndex: "select",
-      key: "select",
-      width: "w-4",
-      align: "center",
-      render: (_: unknown, record: TableDataSource) => {
-        return <Checkbox checked={selectedCurrencies.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
-      },
-    },
-    {
-      title: "#",
-      dataIndex: "no",
-      key: "no",
-      width: "w-4",
-      align: "center",
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="name"
-          label={t("name")}
-          sort={sort ?? { field: "name", direction: "asc" }}
-          onSort={onSort ?? (() => { })}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "name",
-      key: "name",
-      align: "left",
-      width: "w-0 md:w-96",
-      icon: <List className="h-4 w-4" />,
-      render: (_: unknown, record: TableDataSource) => {
-        const currency = currencies.find(c => c.id === record.key);
-        if (!currency) return null;
+  // Row selection state for TanStack Table
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
-        if (canUpdate) {
+  // Sync rowSelection with parent component's selectedCurrencies
+  useEffect(() => {
+    const newRowSelection: RowSelectionState = {};
+    selectedCurrencies.forEach((id) => {
+      newRowSelection[id] = true;
+    });
+    setRowSelection(newRowSelection);
+  }, [selectedCurrencies]);
+
+  // Sync parent component when rowSelection changes
+  useEffect(() => {
+    const selectedRowIds = Object.keys(rowSelection);
+    const currentSelected = selectedCurrencies.sort().join(',');
+    const newSelected = selectedRowIds.sort().join(',');
+
+    if (currentSelected !== newSelected) {
+      // Update parent state
+      if (selectedRowIds.length === 0) {
+        onSelectAll(false);
+      } else if (selectedRowIds.length === currencies.length) {
+        onSelectAll(true);
+      } else {
+        // Individual selections
+        selectedRowIds.forEach(id => {
+          if (!selectedCurrencies.includes(id)) {
+            onSelect(id);
+          }
+        });
+      }
+    }
+  }, [rowSelection, selectedCurrencies, currencies.length, onSelectAll, onSelect]);
+
+  // Convert sort to TanStack Table format
+  const sorting: SortingState = useMemo(() => {
+    if (!sort) return [];
+    return [{ id: sort.field, desc: sort.direction === "desc" }];
+  }, [sort]);
+
+  // Pagination state
+  const pagination: PaginationState = useMemo(
+    () => ({
+      pageIndex: currentPage - 1, // TanStack uses 0-based index
+      pageSize: perpage,
+    }),
+    [currentPage, perpage]
+  );
+
+  // Define columns
+  const columns = useMemo<ColumnDef<CurrencyGetDto>[]>(
+    () => [
+      {
+        id: "select",
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        enableSorting: false,
+        enableHiding: false,
+        size: 35,
+      },
+      {
+        id: "no",
+        header: "#",
+        cell: ({ row }) => (
+          <div className="text-center">
+            {(currentPage - 1) * perpage + row.index + 1}
+          </div>
+        ),
+        enableSorting: false,
+        size: 60,
+        meta: {
+          cellClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => {
+          const currency = row.original;
+          if (canUpdate) {
+            return (
+              <button
+                type="button"
+                className="btn-dialog"
+                onClick={() => onEdit(currency)}
+              >
+                {currency.name}
+              </button>
+            );
+          }
+          return <span>{currency.name}</span>;
+        },
+        enableSorting: true,
+        size: 300,
+        meta: {
+          headerTitle: t("name"),
+        },
+      },
+      {
+        accessorKey: "code",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("code")} icon={<Banknote className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => <div className="text-center">{row.original.code}</div>,
+        enableSorting: true,
+        size: 100,
+        meta: {
+          headerTitle: t("code"),
+          cellClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "symbol",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("symbol")} icon={<Coins className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => <div className="text-center">{row.original.symbol}</div>,
+        enableSorting: true,
+        size: 100,
+        meta: {
+          headerTitle: t("symbol"),
+          cellClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "exchange_rate",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("exchangeRate")} icon={<Replace className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <div className="text-right">
+            <span className="text-sm font-medium font-mono">
+              {row.original.exchange_rate}
+            </span>
+          </div>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          headerTitle: t("exchangeRate"),
+          cellClassName: "text-right",
+        },
+      },
+      {
+        accessorKey: "is_active",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <StatusCustom is_active={row.original.is_active}>
+              {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+            </StatusCustom>
+          </div>
+        ),
+        enableSorting: true,
+        size: 120,
+        meta: {
+          headerTitle: t("status"),
+          cellClassName: "text-center",
+        },
+      },
+      {
+        id: "action",
+        header: t("action"),
+        cell: ({ row }) => {
+          const currency = row.original;
+
+          // Hide action menu if no permissions
+          if (!canDelete) return null;
+
           return (
-            <button
-              type="button"
-              className="btn-dialog"
-              onClick={() => onEdit(currency)}
-            >
-              {currency.name}
-            </button>
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {canDelete && (
+                    <DropdownMenuItem
+                      className="text-destructive cursor-pointer hover:bg-transparent"
+                      onClick={() => onToggleStatus(currency)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {tCommon("delete")}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           );
-        }
-
-        return <span>{currency.name}</span>;
+        },
+        enableSorting: false,
+        size: 80,
+        meta: {
+          cellClassName: "text-right",
+        },
       },
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="code"
-          label={t("code")}
-          sort={sort ?? { field: "code", direction: "asc" }}
-          onSort={onSort ?? (() => { })}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "code",
-      key: "code",
-      align: "center",
-      width: "w-20",
-      icon: <Banknote className="h-4 w-4" />,
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="symbol"
-          label={t("symbol")}
-          sort={sort ?? { field: "symbol", direction: "asc" }}
-          onSort={onSort ?? (() => { })}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "symbol",
-      key: "symbol",
-      width: "w-20",
-      align: "center",
-      icon: <Coins className="h-4 w-4" />,
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="exchange_rate"
-          label={t("exchangeRate")}
-          sort={sort ?? { field: "exchange_rate", direction: "asc" }}
-          onSort={onSort ?? (() => { })}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "exchange_rate",
-      key: "exchange_rate",
-      width: "w-44",
-      align: "right",
-      icon: <Replace className="h-4 w-4" />,
-      render: (value: number) => {
-        return <span className="text-sm font-medium font-mono">{value}</span>;
-      },
+    ],
+    [
+      t,
+      tCommon,
+      currentPage,
+      perpage,
+      canUpdate,
+      canDelete,
+      onEdit,
+      onToggleStatus,
+    ]
+  );
 
+  // Initialize table
+  const table = useReactTable({
+    data: currencies,
+    columns,
+    pageCount: totalPages,
+    getRowId: (row) => row.id, // Important: use currency ID as row ID
+    state: {
+      pagination,
+      sorting,
+      rowSelection,
     },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="is_active"
-          label={t("status")}
-          sort={sort ?? { field: "is_active", direction: "asc" }}
-          onSort={onSort ?? (() => { })}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "is_active",
-      key: "is_active",
-      width: "w-0 md:w-20",
-      align: "center",
-      icon: <Activity className="h-4 w-4" />,
-      render: (is_active: boolean) => (
-        <div className="flex justify-center">
-          <StatusCustom is_active={is_active}>
-            {is_active ? tCommon("active") : tCommon("inactive")}
-          </StatusCustom>
-        </div>
-      ),
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(newPagination.pageIndex + 1); // Convert back to 1-based
+      setPerpage(newPagination.pageSize);
     },
-    {
-      title: t("action"),
-      dataIndex: "action",
-      key: "action",
-      width: "w-0 md:w-32",
-      align: "right",
-      render: (_: unknown, record: TableDataSource) => {
-        const currency = currencies.find(c => c.id === record.key);
-        if (!currency) return null;
-
-        // Hide action menu if no permissions
-        if (!canDelete) return null;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {canDelete && (
-                <DropdownMenuItem
-                  className="text-destructive cursor-pointer hover:bg-transparent"
-                  onClick={() => onToggleStatus(currency)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                  {tCommon("delete")}
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
+    onSortingChange: (updater) => {
+      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
+      if (newSorting.length > 0 && onSort) {
+        onSort(newSorting[0].id);
+      }
     },
-  ];
-
-  const dataSource: TableDataSource[] = currencies.map((currency, index) => ({
-    select: false,
-    key: currency.id,
-    no: (currentPage - 1) * 10 + index + 1,
-    name: currency.name,
-    code: currency.code,
-    symbol: currency.symbol,
-    exchange_rate: currency.exchange_rate,
-    is_active: currency.is_active,
-  }));
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true, // Server-side pagination
+    manualSorting: true, // Server-side sorting
+  });
 
   return (
-    <TableTemplate
-      columns={columns}
-      dataSource={dataSource}
-      totalItems={totalItems}
-      totalPages={totalPages}
-      currentPage={currentPage}
-      onPageChange={onPageChange}
+    <DataGrid
+      table={table}
+      recordCount={totalItems}
       isLoading={isLoading}
-      perpage={perpage}
-      setPerpage={setPerpage}
-    />
+      loadingMode="skeleton"
+      emptyMessage={tCommon("no_data")}
+      tableLayout={{
+        headerSticky: true,
+        dense: false,
+        rowBorder: true,
+        headerBackground: true,
+        headerBorder: true,
+        width: "fixed",
+      }}
+    >
+      <div className="w-full space-y-2.5">
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+      </div>
+    </DataGrid>
   );
 }

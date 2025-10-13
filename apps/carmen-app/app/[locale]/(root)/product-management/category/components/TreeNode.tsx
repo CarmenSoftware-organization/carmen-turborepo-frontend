@@ -67,7 +67,7 @@ export default function TreeNode({
             <div
                 className={cn(
                     "fxr-c p-2 hover:bg-muted/50 rounded-md group transition-colors",
-                    level > 0 ? "ml-6" : "",
+                    level > 0 ? "ml-8" : "",
                 )}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
             >
@@ -81,7 +81,7 @@ export default function TreeNode({
                         />
                     </button>
                 ) : (
-                    <div className="w-6"></div>
+                    <div className="w-6 ml-4"></div>
                 )}
 
                 <div className="flex-1">

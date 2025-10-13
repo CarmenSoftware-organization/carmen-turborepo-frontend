@@ -111,33 +111,23 @@ export default function ListLocations({
       key: "name",
       icon: <List className="h-4 w-4" />,
       align: "left",
-      width: "w-40",
       render: (_: unknown, record: TableDataSource) => {
         const location = locations.find(l => l.id === record.key);
         if (!location) return null;
 
         if (canUpdate) {
           return (
-            <ButtonLink href={`/configuration/location/${location.id}`}>
-              {location.name}
-            </ButtonLink>
+            <div className="space-y-0 w-[200px] truncate ellipsis">
+              <ButtonLink href={`/configuration/location/${location.id}`}>
+                {location.name}
+              </ButtonLink>
+              <p className="text-xs">{record.description}</p>
+            </div>
           );
         }
 
         return <span>{location.name}</span>;
       },
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      icon: <Info className="h-4 w-4" />,
-      align: "left",
-      render: (description: string) => (
-        <span className="truncate max-w-[300px] inline-block">
-          {description}
-        </span>
-      ),
     },
     {
       title: t("type"),
