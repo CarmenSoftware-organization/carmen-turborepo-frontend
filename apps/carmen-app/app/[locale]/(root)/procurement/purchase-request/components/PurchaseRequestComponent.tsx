@@ -60,8 +60,8 @@ export default function PurchaseRequestComponent() {
     perpage: perpage,
   });
 
-  const totalItems = prs?.paginate?.total;
-  const totalPages = prs?.paginate?.pages;
+  const totalItems = prs?.paginate?.total ?? 0;
+  const totalPages = prs?.paginate?.pages ?? 1;
 
   console.log('prs', prs);
 
@@ -72,21 +72,6 @@ export default function PurchaseRequestComponent() {
     }
   }, [search, setPage]);
 
-  const handleSort = useCallback((field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':');
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  }, [setSort, sort, setPage]);
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
@@ -243,12 +228,12 @@ export default function PurchaseRequestComponent() {
             purchaseRequests={prs?.data || []}
             currentPage={currentPageNumber}
             totalPages={totalPages}
-            perpage={prs?.paginate?.perpage}
+            totalItems={totalItems}
+            perpage={prs?.paginate?.perpage ?? 10}
             onPageChange={handlePageChange}
             isLoading={isLoading}
-            totalItems={totalItems}
-            sort={parseSortString(sort) || { field: '', direction: 'asc' }}
-            onSort={handleSort}
+            sort={parseSortString(sort)}
+            onSort={setSort}
             setPerpage={handleSetPerpage}
           />
         ) : (

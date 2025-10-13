@@ -44,7 +44,6 @@ export default function UnitComponent() {
   // Delete confirmation dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [unitToDelete, setUnitToDelete] = useState<UnitDto | undefined>(undefined);
-  const [selectedUnits, setSelectedUnits] = useState<string[]>([]);
 
   const { units, isLoading } = useUnitQuery({
     token,
@@ -62,48 +61,13 @@ export default function UnitComponent() {
   const { mutate: updateUnit } = useUpdateUnit(token, buCode, selectedUnit?.id ?? "");
   const { mutate: deleteUnit } = useDeleteUnit(token, buCode, selectedUnit?.id ?? "");
 
-  const currentPage = units?.paginate.page ?? 1;
-  const totalPages = units?.paginate.pages ?? 1;
-  const totalItems = units?.paginate.total ?? units?.data?.length ?? 0;
-
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setSelectedUnits(units?.data.map((unit: any) => unit.id) ?? []);
-    } else {
-      setSelectedUnits([]);
-    }
-  };
-
-  const handleSelect = (id: string) => {
-    setSelectedUnits((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter(unitId => unitId !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
-  };
-
+  const totalItems = units?.paginate?.total ?? 0;
+  const totalPages = units?.paginate?.pages ?? 1;
+  const currentPage = units?.paginate?.page ?? 1;
+  const currentPerpage = units?.paginate?.perpage ?? 10;
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
-  };
-
-  const handleSort = (field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':');
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
   };
 
   const handleSetPerpage = (newPerpage: number) => {
@@ -245,12 +209,9 @@ export default function UnitComponent() {
       onEdit={handleEdit}
       onDelete={handleDelete}
       totalItems={totalItems}
-      selectedUnits={selectedUnits}
-      onSelectAll={handleSelectAll}
-      onSelect={handleSelect}
       sort={parseSortString(sort)}
-      onSort={handleSort}
-      perpage={units?.paginate.perpage}
+      onSort={setSort}
+      perpage={currentPerpage}
       setPerpage={handleSetPerpage}
       canUpdate={unitPerms.canUpdate}
       canDelete={unitPerms.canDelete}

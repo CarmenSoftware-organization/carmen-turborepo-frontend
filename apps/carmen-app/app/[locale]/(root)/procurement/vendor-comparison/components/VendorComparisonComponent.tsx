@@ -40,21 +40,6 @@ export default function VendorComparisonComponent() {
         setPage(newPage.toString());
     };
 
-    const handleSort = useCallback((field: string) => {
-        if (!sort) {
-            setSort(`${field}:asc`);
-        } else {
-            const [currentField, currentDirection] = sort.split(':');
-
-            if (currentField === field) {
-                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-                setSort(`${field}:${newDirection}`);
-            } else {
-                setSort(`${field}:asc`);
-            }
-            setPage("1");
-        }
-    }, [setSort, sort, setPage]);
 
     const title = tVendorComparison("title");
 
@@ -116,12 +101,12 @@ export default function VendorComparisonComponent() {
             vendorComparisons={mockVendorComparisonData}
             currentPage={page ? parseInt(page) : 1}
             totalPages={totalPages}
+            totalItems={totalItems}
             perpage={perpage ? parseInt(perpage) : 10}
             onPageChange={handlePageChange}
             isLoading={false}
-            totalItems={totalItems}
-            sort={parseSortString(sort) || { field: '', direction: 'asc' }}
-            onSort={handleSort}
+            sort={parseSortString(sort)}
+            onSort={setSort}
             setPerpage={handleSetPerpage}
         />
     )

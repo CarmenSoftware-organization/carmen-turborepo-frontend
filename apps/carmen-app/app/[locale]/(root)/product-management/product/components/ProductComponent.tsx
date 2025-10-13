@@ -52,22 +52,6 @@ export default function ProductComponent() {
     setPage(newPage.toString());
   }, [setPage]);
 
-  const handleSort = useCallback((field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':') as [string, string];
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  }, [setSort, sort, setPage]);
-
   const handlePerpageChange = useCallback((newPerpage: number) => {
     setPerpage(newPerpage.toString());
   }, [setPerpage]);
@@ -126,18 +110,22 @@ export default function ProductComponent() {
     </div>
   );
 
+  const totalItems = products?.paginate?.total ?? 0;
+  const totalPages = products?.paginate?.pages ?? 1;
+  const currentPage = products?.paginate?.page ?? 1;
+  const currentPerpage = products?.paginate?.perpage ?? 10;
+
   const content = (
     <ProductList
-      products={products?.data}
+      products={products?.data ?? []}
       isLoading={isLoading}
-      currentPage={products?.paginate.page}
+      currentPage={currentPage}
       onPageChange={handlePageChange}
-      totalPages={products?.paginate.total}
-      data-id="product-list-template"
-      totalItems={products?.paginate.total}
-      sort={parseSortString(sort) ?? { field: "name", direction: "asc" }}
-      onSort={handleSort}
-      perpage={products?.paginate.perpage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      sort={parseSortString(sort)}
+      onSort={setSort}
+      perpage={currentPerpage}
       setPerpage={handlePerpageChange}
     />
   )

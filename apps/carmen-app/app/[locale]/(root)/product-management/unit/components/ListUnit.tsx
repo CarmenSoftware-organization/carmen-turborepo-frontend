@@ -1,13 +1,24 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Trash2, MoreHorizontal, List, Info, Activity } from "lucide-react";
 import { UnitDto } from "@/dtos/unit.dto";
-import { Checkbox } from "@/components/ui/checkbox";
-import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
 import { useTranslations } from "next-intl";
-import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { useMemo } from "react";
+import {
+    ColumnDef,
+    getCoreRowModel,
+    useReactTable,
+    PaginationState,
+    SortingState,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface ListUnitProps {
     readonly units: UnitDto[];
@@ -18,11 +29,8 @@ interface ListUnitProps {
     readonly onPageChange: (page: number) => void;
     readonly onEdit: (unit: UnitDto) => void;
     readonly onDelete: (unit: UnitDto) => void;
-    readonly sort?: SortConfig;
-    readonly onSort?: (field: string) => void;
-    readonly selectedUnits: string[];
-    readonly onSelectAll: (isChecked: boolean) => void;
-    readonly onSelect: (id: string) => void;
+    readonly sort?: { field: string; direction: "asc" | "desc" } | null;
+    readonly onSort?: (sortString: string) => void;
     readonly perpage?: number;
     readonly setPerpage?: (perpage: number) => void;
     readonly canUpdate?: boolean;
@@ -39,11 +47,8 @@ export default function ListUnit({
     onDelete,
     sort,
     onSort,
-    selectedUnits,
-    onSelectAll,
     totalItems,
-    onSelect,
-    perpage,
+    perpage = 10,
     setPerpage,
     canUpdate = true,
     canDelete = true,
@@ -52,157 +57,220 @@ export default function ListUnit({
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
 
-    const columns: TableColumn[] = [
-        {
-            title: (
-                <Checkbox
-                    checked={selectedUnits.length === units.length}
-                    onCheckedChange={onSelectAll}
-                />
-            ),
-            dataIndex: "select",
-            key: "select",
-            width: "w-10",
-            align: "center",
-            render: (_: unknown, record: TableDataSource) => {
-                return <Checkbox checked={selectedUnits.includes(record.key)} onCheckedChange={() => onSelect(record.key)} />;
-            },
-        },
-        {
-            title: "#",
-            dataIndex: "no",
-            key: "no",
-            width: "w-10",
-            align: "center",
-        },
-        {
-            title: (
-                <SortableColumnHeader
-                    columnKey="name"
-                    label={t("name")}
-                    sort={sort ?? { field: "name", direction: "asc" }}
-                    onSort={onSort ?? (() => { })}
-                    getSortableColumnProps={getSortableColumnProps}
-                    renderSortIcon={renderSortIcon}
-                />
-            ),
-            dataIndex: "name",
-            key: "name",
-            icon: <List className="h-4 w-4" />,
-            align: "left",
-            width: "w-48",
-            render: (_: unknown, record: TableDataSource) => {
-                const unit = units.find(u => u.id === record.key);
-                if (!unit) return null;
+    // Action header component
+    const ActionHeader = () => <div className="text-right">{t("action")}</div>;
 
-                if (canUpdate) {
+    // Convert sort to TanStack Table format
+    const sorting: SortingState = useMemo(() => {
+        if (!sort) return [];
+        return [{ id: sort.field, desc: sort.direction === "desc" }];
+    }, [sort]);
+
+    // Pagination state
+    const pagination: PaginationState = useMemo(
+        () => ({
+            pageIndex: currentPage - 1,
+            pageSize: perpage,
+        }),
+        [currentPage, perpage]
+    );
+
+    // Define columns
+    const columns = useMemo<ColumnDef<UnitDto>[]>(
+        () => [
+            {
+                id: "select",
+                header: () => <DataGridTableRowSelectAll />,
+                cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+                enableSorting: false,
+                enableHiding: false,
+                size: 30,
+            },
+            {
+                id: "no",
+                header: () => <div className="text-center">#</div>,
+                cell: ({ row }) => (
+                    <div className="text-center">
+                        {(currentPage - 1) * perpage + row.index + 1}
+                    </div>
+                ),
+                enableSorting: false,
+                size: 30,
+                meta: {
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                accessorKey: "name",
+                header: ({ column }) => (
+                    <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+                ),
+                cell: ({ row }) => {
+                    const unit = row.original;
+
+                    if (canUpdate) {
+                        return (
+                            <button
+                                type="button"
+                                className="btn-dialog"
+                                onClick={() => onEdit(unit)}
+                            >
+                                {unit.name}
+                            </button>
+                        );
+                    }
+
+                    return <span>{unit.name}</span>;
+                },
+                enableSorting: true,
+                size: 200,
+                meta: {
+                    headerTitle: t("name"),
+                },
+            },
+            {
+                accessorKey: "description",
+                header: () => (
+                    <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4" />
+                        <span>{t("description")}</span>
+                    </div>
+                ),
+                cell: ({ row }) => (
+                    <span className="truncate max-w-[300px] inline-block">
+                        {row.original.description}
+                    </span>
+                ),
+                enableSorting: false,
+                size: 300,
+            },
+            {
+                accessorKey: "is_active",
+                header: ({ column }) => (
+                    <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+                ),
+                cell: ({ row }) => (
+                    <div className="flex justify-center">
+                        <StatusCustom is_active={row.original.is_active}>
+                            {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+                        </StatusCustom>
+                    </div>
+                ),
+                enableSorting: true,
+                size: 120,
+                meta: {
+                    headerTitle: t("status"),
+                    cellClassName: "text-center",
+                    headerClassName: "text-center",
+                },
+            },
+            {
+                id: "action",
+                header: ActionHeader,
+                cell: ({ row }) => {
+                    const unit = row.original;
+
+                    // Hide action menu if no permissions
+                    if (!canDelete) return null;
+
                     return (
-                        <button
-                            type="button"
-                            className="btn-dialog"
-                            onClick={() => onEdit(unit)}
-                        >
-                            {unit.name}
-                        </button>
+                        <div className="flex justify-end">
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-7 w-7">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                        <span className="sr-only">More options</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    {canDelete && (
+                                        <DropdownMenuItem
+                                            className="text-destructive cursor-pointer hover:bg-transparent"
+                                            onClick={() => onDelete(unit)}
+                                        >
+                                            <Trash2 className="h-4 w-4" />
+                                            Delete
+                                        </DropdownMenuItem>
+                                    )}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     );
-                }
-
-                return <span>{unit.name}</span>;
+                },
+                enableSorting: false,
+                size: 80,
+                meta: {
+                    cellClassName: "text-right",
+                    headerClassName: "text-right",
+                },
             },
-        },
-        {
-            title: t("description"),
-            dataIndex: "description",
-            icon: <Info className="h-4 w-4" />,
-            key: "description",
-            align: "left",
-            render: (description: string) => (
-                <span className="truncate max-w-[300px] inline-block">
-                    {description}
-                </span>
-            ),
-        },
-        {
-            title: (
-                <SortableColumnHeader
-                    columnKey="is_active"
-                    label={t("status")}
-                    sort={sort ?? { field: "is_active", direction: "asc" }}
-                    onSort={onSort ?? (() => { })}
-                    getSortableColumnProps={getSortableColumnProps}
-                    renderSortIcon={renderSortIcon}
-                />
-            ),
-            dataIndex: "is_active",
-            key: "is_active",
-            icon: <Activity className="h-4 w-4" />,
-            width: "w-36",
-            align: "center",
-            render: (is_active: boolean) => (
-                <div className="flex justify-center">
-                    <StatusCustom is_active={is_active}>
-                        {is_active ? tCommon("active") : tCommon("inactive")}
-                    </StatusCustom>
-                </div>
-            ),
-        },
-        {
-            title: t("action"),
-            dataIndex: "action",
-            key: "action",
-            width: "w-40",
-            align: "right",
-            render: (_: unknown, record: TableDataSource) => {
-                const unit = units.find(u => u.id === record.key);
-                if (!unit) return null;
+        ],
+        [t, tCommon, currentPage, perpage, canUpdate, canDelete, onEdit, onDelete]
+    );
 
-                // Hide action menu if no permissions
-                if (!canDelete) return null;
-
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-7 w-7">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            {canDelete && (
-                                <DropdownMenuItem
-                                    className="text-destructive cursor-pointer hover:bg-transparent"
-                                    onClick={() => onDelete(unit)}
-                                >
-                                    <Trash2 className="h-4 w-4" />
-                                    Delete
-                                </DropdownMenuItem>
-                            )}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
+    // Initialize table
+    const table = useReactTable({
+        data: units,
+        columns,
+        pageCount: totalPages,
+        getRowId: (row) => row.id ?? "",
+        state: {
+            pagination,
+            sorting,
         },
-    ];
+        enableRowSelection: true,
+        onPaginationChange: (updater) => {
+            const newPagination =
+                typeof updater === "function" ? updater(pagination) : updater;
+            onPageChange(newPagination.pageIndex + 1);
+            if (setPerpage) {
+                setPerpage(newPagination.pageSize);
+            }
+        },
+        onSortingChange: (updater) => {
+            if (!onSort) return;
 
-    const dataSource: TableDataSource[] = units.map((unit, index) => ({
-        select: false,
-        key: unit.id,
-        no: (currentPage - 1) * 10 + index + 1,
-        name: unit.name,
-        description: unit.description,
-        is_active: unit.is_active,
-    }));
+            const newSorting = typeof updater === "function" ? updater(sorting) : updater;
+
+            if (newSorting.length > 0) {
+                const sortField = newSorting[0].id;
+                const sortDirection = newSorting[0].desc ? "desc" : "asc";
+                onSort(`${sortField}:${sortDirection}`);
+            } else {
+                onSort("");
+            }
+        },
+        getCoreRowModel: getCoreRowModel(),
+        manualPagination: true,
+        manualSorting: true,
+    });
 
     return (
-        <TableTemplate
-            columns={columns}
-            dataSource={dataSource}
-            totalItems={totalItems}
-            totalPages={totalPages}
-            currentPage={currentPage}
-            onPageChange={onPageChange}
+        <DataGrid
+            table={table}
+            recordCount={totalItems}
             isLoading={isLoading}
-            perpage={perpage}
-            setPerpage={setPerpage}
-        />
+            loadingMode="skeleton"
+            emptyMessage={tCommon("no_data")}
+            tableLayout={{
+                headerSticky: true,
+                dense: false,
+                rowBorder: true,
+                headerBackground: true,
+                headerBorder: true,
+                width: "fixed",
+            }}
+        >
+            <div className="w-full space-y-2.5">
+                <DataGridContainer>
+                    <ScrollArea className="max-h-[calc(100vh-250px)]">
+                        <DataGridTable />
+                        <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+                </DataGridContainer>
+                <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+            </div>
+        </DataGrid>
     );
-};
+}

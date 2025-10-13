@@ -1,30 +1,37 @@
 "use client";
 
 import { ProductGetDto } from "@/dtos/product.dto";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Activity, Box, Layers, List, MoreHorizontal, Ruler, Tag } from "lucide-react";
-import { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
+import { Activity, Box, Layers, List, MoreHorizontal, Ruler, Tag, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
-import SortableColumnHeader from "@/components/table/SortableColumnHeader";
 import ButtonLink from "@/components/ButtonLink";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
+import { useMemo } from "react";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+  PaginationState,
+  SortingState,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface ProductListProps {
-  readonly products?: ProductGetDto[];
+  readonly products: ProductGetDto[];
   readonly isLoading: boolean;
   readonly currentPage: number;
-  readonly onPageChange: (page: number) => void;
-  readonly totalPages: number | undefined;
+  readonly totalPages: number;
   readonly totalItems: number;
-  readonly sort: SortConfig;
-  readonly onSort: (field: string) => void;
   readonly perpage: number;
+  readonly onPageChange: (page: number) => void;
+  readonly sort?: { field: string; direction: "asc" | "desc" };
+  readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
 }
 
@@ -32,194 +39,270 @@ export default function ProductList({
   products = [],
   isLoading,
   currentPage,
-  onPageChange,
-  totalPages = 1,
+  totalPages,
   totalItems,
+  perpage,
+  onPageChange,
   sort,
   onSort,
-  perpage,
   setPerpage,
 }: ProductListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  const handleSelectItem = (id: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
+  // Action header component
+  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
 
-  const handleSelectAll = () => {
-    if (!products || products.length === 0) {
-      return;
-    }
+  // Convert sort to TanStack Table format
+  const sorting: SortingState = useMemo(() => {
+    if (!sort) return [];
+    return [{ id: sort.field, desc: sort.direction === "desc" }];
+  }, [sort]);
 
-    if (selectedItems.length === products.length) {
-      setSelectedItems([]);
-    } else {
-      const allIds = products.map((pd) => pd.id ?? "").filter(Boolean);
-      setSelectedItems(allIds);
-    }
-  };
+  // Pagination state
+  const pagination: PaginationState = useMemo(
+    () => ({
+      pageIndex: currentPage - 1,
+      pageSize: perpage,
+    }),
+    [currentPage, perpage]
+  );
 
-  const columns: TableColumn[] = [
-    {
-      title: (
-        <Checkbox
-          checked={selectedItems.length === products.length}
-          onCheckedChange={handleSelectAll}
-        />
-      ),
-      dataIndex: "select",
-      key: "select",
-      width: "w-6",
-      align: "center",
-      render: (_: unknown, record: TableDataSource) => {
-        return <Checkbox checked={selectedItems.includes(record.key)} onCheckedChange={() => handleSelectItem(record.key)} />;
+  // Define columns
+  const columns = useMemo<ColumnDef<ProductGetDto>[]>(
+    () => [
+      {
+        id: "select",
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        enableSorting: false,
+        enableHiding: false,
+        size: 30,
       },
-    },
-    {
-      title: "#",
-      dataIndex: "no",
-      key: "no",
-      width: "w-6",
-      align: "center",
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="name"
-          label={t("name")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "name",
-      key: "name",
-      icon: <List className="h-4 w-4" />,
-      align: "left",
-      width: "w-[200px]",
-      render: (_: unknown, record: TableDataSource) => {
-        const product = products.find(p => p.id === record.key);
-        if (!product) return null;
-        return (
-          <div className="flex items-center gap-2">
-            <ButtonLink
-              href={`/product-management/product/${record.key}`}
-            >
-              {record.name}
-            </ButtonLink>
-            <Badge variant="secondary">
-              {record.code}
-            </Badge>
+      {
+        id: "no",
+        header: () => <div className="text-center">#</div>,
+        cell: ({ row }) => (
+          <div className="text-center">
+            {(currentPage - 1) * perpage + row.index + 1}
           </div>
-
-        );
+        ),
+        enableSorting: false,
+        size: 30,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="category"
-          label={t("category")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "category",
-      key: "category",
-      align: "left",
-      icon: <Tag className="h-4 w-4" />,
-    },
-    {
-      title: t("sub_category"),
-      dataIndex: "sub_category",
-      key: "sub_category",
-      align: "left",
-      icon: <Layers className="h-4 w-4" />,
-    },
-    {
-      title: t("item_group"),
-      dataIndex: "item_group",
-      key: "item_group",
-      align: "left",
-      icon: <Box className="h-4 w-4" />,
-    },
-    {
-      title: t("inventory_unit"),
-      dataIndex: "inventory_unit",
-      key: "inventory_unit",
-      align: "left",
-      icon: <Ruler className="h-4 w-4" />,
-    },
-    {
-      title: t("status"),
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-      icon: <Activity className="h-4 w-4" />,
-      render: (status: string) => (
-        <div className="flex items-center justify-center">
-          <StatusCustom is_active={status === "active"}>
-            {status === "active" ? tCommon("active") : tCommon("inactive")}
-          </StatusCustom>
-        </div>
-      ),
-    },
-    {
-      title: t("action"),
-      dataIndex: "action",
-      key: "action",
-      align: "right",
-      render: (_: unknown, record: TableDataSource) => {
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem className="text-destructive cursor-pointer hover:bg-transparent" onClick={() => console.log(record.key)}>
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => {
+          const product = row.original;
+          return (
+            <div className="flex items-center gap-2 max-w-[450px]">
+              <ButtonLink
+                href={`/product-management/product/${product.id}`}
+                className="truncate"
+              >
+                {product.name}
+              </ButtonLink>
+              <Badge variant="secondary" className="shrink-0">
+                {product.code}
+              </Badge>
+            </div>
+          );
+        },
+        enableSorting: true,
+        size: 450,
+        meta: {
+          headerTitle: t("name"),
+        },
       },
+      {
+        accessorKey: "product_category.name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("category")} icon={<Tag className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span className="truncate max-w-[150px] inline-block">
+            {row.original.product_category?.name || "-"}
+          </span>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          headerTitle: t("category"),
+        },
+      },
+      {
+        accessorKey: "product_sub_category.name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("sub_category")} icon={<Layers className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span className="truncate max-w-[150px] inline-block">
+            {row.original.product_sub_category?.name || "-"}
+          </span>
+        ),
+        enableSorting: false,
+        size: 150,
+        meta: {
+          headerTitle: t("sub_category"),
+        },
+      },
+      {
+        accessorKey: "product_item_group.name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("item_group")} icon={<Box className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span className="truncate max-w-[150px] inline-block">
+            {row.original.product_item_group?.name || "-"}
+          </span>
+        ),
+        enableSorting: false,
+        size: 150,
+        meta: {
+          headerTitle: t("item_group"),
+        },
+      },
+      {
+        accessorKey: "inventory_unit_name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={t("inventory_unit")} icon={<Ruler className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span>{row.original.inventory_unit_name || "-"}</span>
+        ),
+        enableSorting: false,
+        size: 150,
+        meta: {
+          headerTitle: t("inventory_unit"),
+        },
+      },
+      {
+        accessorKey: "product_status_type",
+        header: ({ column }) => (
+          <div className="flex justify-center">
+            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <StatusCustom is_active={row.original.product_status_type === "active"}>
+              {row.original.product_status_type === "active" ? tCommon("active") : tCommon("inactive")}
+            </StatusCustom>
+          </div>
+        ),
+        enableSorting: false,
+        size: 120,
+        meta: {
+          headerTitle: t("status"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        id: "action",
+        header: ActionHeader,
+        cell: ({ row }) => {
+          const product = row.original;
+          return (
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">More options</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    className="text-destructive cursor-pointer hover:bg-transparent"
+                    onClick={() => console.log("Delete", product.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {tCommon("delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        },
+        enableSorting: false,
+        size: 80,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
+      },
+    ],
+    [t, tCommon, currentPage, perpage]
+  );
+
+  // Initialize table
+  const table = useReactTable({
+    data: products,
+    columns,
+    pageCount: totalPages,
+    getRowId: (row) => row.id ?? "",
+    state: {
+      pagination,
+      sorting,
     },
-  ];
+    enableRowSelection: true,
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(newPagination.pageIndex + 1);
+      setPerpage(newPagination.pageSize);
+    },
+    onSortingChange: (updater) => {
+      if (!onSort) return;
 
-  const dataSource: TableDataSource[] = products.map((product, index) => ({
-    select: false,
-    key: product.id,
-    no: (currentPage - 1) * 10 + index + 1,
-    name: product.name,
-    code: product.code,
-    category: product.product_category?.name,
-    sub_category: product.product_sub_category?.name,
-    item_group: product.product_item_group?.name,
-    inventory_unit: product.inventory_unit_name,
-    status: product.product_status_type,
-  }));
+      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
 
+      if (newSorting.length > 0) {
+        const sortField = newSorting[0].id;
+        const sortDirection = newSorting[0].desc ? "desc" : "asc";
+        onSort(`${sortField}:${sortDirection}`);
+      } else {
+        onSort("");
+      }
+    },
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+  });
 
   return (
-    <TableTemplate
-      columns={columns}
-      dataSource={dataSource}
-      totalItems={totalItems}
-      totalPages={totalPages}
-      currentPage={currentPage}
-      onPageChange={onPageChange}
+    <DataGrid
+      table={table}
+      recordCount={totalItems}
       isLoading={isLoading}
-      perpage={perpage}
-      setPerpage={setPerpage}
-    />
+      loadingMode="skeleton"
+      emptyMessage={tCommon("no_data")}
+      tableLayout={{
+        headerSticky: true,
+        dense: false,
+        rowBorder: true,
+        headerBackground: true,
+        headerBorder: true,
+        width: "fixed",
+      }}
+    >
+      <div className="w-full space-y-2.5">
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+      </div>
+    </DataGrid>
   );
 }

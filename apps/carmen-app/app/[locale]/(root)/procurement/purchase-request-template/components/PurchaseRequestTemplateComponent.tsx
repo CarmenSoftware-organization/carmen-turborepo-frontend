@@ -12,6 +12,7 @@ import PurchaseRequestTemplateList from "./PurchaseRequestTemplateList";
 import { mockPurchaseRequestTemplates } from "@/mock-data/procurement";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { useRouter } from "@/lib/navigation";
+import { parseSortString } from "@/utils/table-sort";
 
 export default function PurchaseRequestTemplateComponent() {
     const tCommon = useTranslations('Common');
@@ -94,8 +95,9 @@ export default function PurchaseRequestTemplateComponent() {
         totalPages={1}
         perpage={10}
         onPageChange={() => { }}
-        sort={{ field: 'code', direction: 'asc' }}
-        onSort={() => { }}
+        sort={parseSortString(sort)}
+        onSort={setSort}
+        setPerpage={() => { }}
     />
 
     return (

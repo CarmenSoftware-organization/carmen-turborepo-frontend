@@ -46,21 +46,6 @@ export default function CreditNoteComponent() {
     [setPage]
   );
 
-  const handleSort = useCallback((field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
-      const [currentField, currentDirection] = sort.split(':') as [string, string];
-
-      if (currentField === field) {
-        const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-        setSort(`${field}:${newDirection}`);
-      } else {
-        setSort(`${field}:asc`);
-      }
-      setPage("1");
-    }
-  }, [setSort, sort, setPage]);
 
   const totalItems = creditNotes?.paginate.total;
   const perpage = creditNotes?.paginate.perpage;
@@ -133,15 +118,16 @@ export default function CreditNoteComponent() {
 
   const content = (
     <ViewComponent
-      creditNotes={creditNotes?.data}
+      creditNotes={creditNotes?.data ?? []}
       isLoading={isLoading}
-      totalItems={totalItems}
-      currentPage={creditNotes?.paginate.page}
-      totalPages={creditNotes?.paginate.pages}
-      perpage={perpage}
+      totalItems={totalItems ?? 0}
+      currentPage={creditNotes?.paginate.page ?? 1}
+      totalPages={creditNotes?.paginate.pages ?? 1}
+      perpage={perpage ?? 10}
       onPageChange={handlePageChange}
-      sort={parseSortString(sort) ?? { field: '', direction: 'asc' }}
-      onSort={handleSort}
+      sort={parseSortString(sort)}
+      onSort={setSort}
+      setPerpage={(newPerpage: number) => console.log('setPerpage', newPerpage)}
     />
   );
 

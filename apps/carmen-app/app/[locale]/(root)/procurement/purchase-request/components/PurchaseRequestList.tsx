@@ -1,6 +1,6 @@
-import { useState } from "react";
+"use client";
+
 import { Activity, Building, Calendar, DollarSign, FileDown, FileText, MoreHorizontal, Printer, Trash2, TypeIcon, User, Workflow } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
@@ -12,32 +12,43 @@ import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import ButtonLink from "@/components/ButtonLink";
-import TableTemplate, { TableColumn, TableDataSource } from "@/components/table/TableTemplate";
-import SortableColumnHeader from "@/components/table/SortableColumnHeader";
-import { getSortableColumnProps, renderSortIcon, SortConfig } from "@/utils/table-sort";
 import { StatusBadge } from "@/components/ui-custom/StatusBadge";
+import { useMemo } from "react";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+  PaginationState,
+  SortingState,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
-  readonly currentPage?: number;
-  readonly totalPages?: number;
-  readonly perpage?: number;
-  readonly onPageChange?: (page: number) => void;
-  readonly isLoading: boolean;
+  readonly currentPage: number;
+  readonly totalPages: number;
   readonly totalItems: number;
-  readonly sort: SortConfig;
-  readonly onSort: (field: string) => void;
+  readonly perpage: number;
+  readonly onPageChange: (page: number) => void;
+  readonly isLoading: boolean;
+  readonly sort?: { field: string; direction: "asc" | "desc" };
+  readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
 }
 
 export default function PurchaseRequestList({
   purchaseRequests,
-  currentPage = 1,
-  totalPages = 1,
-  perpage = 10,
-  onPageChange = () => { },
-  isLoading,
+  currentPage,
+  totalPages,
   totalItems,
+  perpage,
+  onPageChange,
+  isLoading,
   sort,
   onSort,
   setPerpage,
@@ -47,325 +58,350 @@ export default function PurchaseRequestList({
   const tStatus = useTranslations("Status");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const { dateFormat, amount, currencyBase } = useAuth();
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-
-  const handleSelectItem = (id: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
-  };
 
   const getTypeName = (type: string) => {
     if (type === "General") {
       return tPurchaseRequest("general");
     }
     return tPurchaseRequest("market_list");
-  }
-
-  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 }
-
-  const handleSelectAll = () => {
-    if (selectedItems.length === purchaseRequests.length) {
-      // If all items are selected, unselect all
-      setSelectedItems([]);
-    } else {
-      // Otherwise, select all items
-      const allIds = purchaseRequests.map((pr) => pr.id ?? "").filter(Boolean);
-      setSelectedItems(allIds);
-    }
   };
 
-  const isAllSelected =
-    purchaseRequests?.length > 0 &&
-    selectedItems.length === purchaseRequests.length;
+  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
 
   const convertStatus = (status: string) => {
-    if (status === 'submit') {
-      return tStatus("submit")
-    }
-    if (status === 'draft') {
-      return tStatus("draft")
-    }
-    if (status === 'Completed') {
-      return tStatus("completed")
-    }
+    if (status === 'submit') return tStatus("submit");
+    if (status === 'draft') return tStatus("draft");
+    if (status === 'Completed') return tStatus("completed");
+    if (status === 'in_progress') return tStatus("in_progress");
+    if (status === 'approved') return tStatus("approved");
+    if (status === 'rejected') return tStatus("rejected");
+    if (status === 'voided') return tStatus("voided");
+    return '';
+  };
 
-    if (status === 'in_progress') {
-      return tStatus("in_progress")
-    }
-    if (status === 'approved') {
-      return tStatus("approved")
-    }
-    if (status === 'rejected') {
-      return tStatus("rejected")
-    }
-    if (status === 'voided') {
-      return tStatus("voided")
-    }
-    return ''
-  }
+  // Action header component
+  const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
 
-  const columns: TableColumn[] = [
-    {
-      title: (
-        <Checkbox
-          checked={isAllSelected}
-          onCheckedChange={handleSelectAll}
-        />
-      ),
-      dataIndex: "select",
-      key: "select",
-      width: "w-6",
-      align: "center",
-      render: (_: unknown, record: TableDataSource) => {
-        return <Checkbox checked={selectedItems.includes(record.key)} onCheckedChange={() => handleSelectItem(record.key)} />;
+  // Convert sort to TanStack Table format
+  const sorting: SortingState = useMemo(() => {
+    if (!sort) return [];
+    return [{ id: sort.field, desc: sort.direction === "desc" }];
+  }, [sort]);
+
+  // Pagination state
+  const pagination: PaginationState = useMemo(
+    () => ({
+      pageIndex: currentPage - 1,
+      pageSize: perpage,
+    }),
+    [currentPage, perpage]
+  );
+
+  // Define columns
+  const columns = useMemo<ColumnDef<PurchaseRequestListDto>[]>(
+    () => [
+      {
+        id: "select",
+        header: () => <DataGridTableRowSelectAll />,
+        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
+        enableSorting: false,
+        enableHiding: false,
+        size: 30,
       },
-    },
-    {
-      title: "#",
-      dataIndex: "no",
-      key: "no",
-      width: "w-6",
-      align: "center",
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="pr_no"
-          label={tTableHeader("pr_no")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "pr_no",
-      key: "pr_no",
-      align: "left",
-      icon: <FileText className="h-4 w-4" />,
-      render: (_: unknown, record: TableDataSource) => {
-        return <ButtonLink href={`/procurement/purchase-request/${record.key}`}>
-          {record.pr_no ?? "-"}
-        </ButtonLink>;
-      },
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="pr_date"
-          label={tTableHeader("date")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "pr_date",
-      key: "pr_date",
-      align: "left",
-      icon: <Calendar className="h-4 w-4" />,
-      render: (_: unknown, record: TableDataSource) => {
-        return (
-          <div className="text-left">
-            {formatDateFns(record.pr_date, dateFormat || 'yyyy-MM-dd')}
+      {
+        id: "no",
+        header: () => <div className="text-center">#</div>,
+        cell: ({ row }) => (
+          <div className="text-center">
+            {(currentPage - 1) * perpage + row.index + 1}
           </div>
-        )
+        ),
+        enableSorting: false,
+        size: 30,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="workflow_name"
-          label={tTableHeader("type")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "workflow_name",
-      key: "workflow_name",
-      align: "left",
-      icon: <TypeIcon className="h-4 w-4" />,
-      render: (_: unknown, record: TableDataSource) => {
-        return (
-          <p>
-            {getTypeName(record.workflow_name)}
-          </p>
-        )
+      {
+        accessorKey: "pr_no",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tTableHeader("pr_no")} icon={<FileText className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <div className="max-w-[150px] truncate">
+            <ButtonLink href={`/procurement/purchase-request/${row.original.id}`}>
+              {row.original.pr_no ?? "-"}
+            </ButtonLink>
+          </div>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          headerTitle: tTableHeader("pr_no"),
+        },
       },
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="pr_status"
-          label={tTableHeader("status")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "pr_status",
-      key: "pr_status",
-      align: "center",
-      icon: <Activity className="h-4 w-4" />,
-      render: (_: unknown, record: TableDataSource) => {
-        return (
+      {
+        accessorKey: "pr_date",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tTableHeader("date")} icon={<Calendar className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <div className="text-left">
+            {formatDateFns(row.original.pr_date, dateFormat || 'yyyy-MM-dd')}
+          </div>
+        ),
+        enableSorting: true,
+        size: 120,
+        meta: {
+          headerTitle: tTableHeader("date"),
+        },
+      },
+      {
+        accessorKey: "workflow_name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tTableHeader("type")} icon={<TypeIcon className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <p>{getTypeName(row.original.workflow_name)}</p>
+        ),
+        enableSorting: true,
+        size: 120,
+        meta: {
+          headerTitle: tTableHeader("type"),
+        },
+      },
+      {
+        accessorKey: "pr_status",
+        header: ({ column }) => (
           <div className="flex justify-center">
-            {record.pr_status && (
-              <StatusBadge status={record.pr_status}>
-                {convertStatus(record.pr_status)}
+            <DataGridColumnHeader column={column} title={tTableHeader("status")} icon={<Activity className="h-4 w-4" />} />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            {row.original.pr_status && (
+              <StatusBadge status={row.original.pr_status}>
+                {convertStatus(row.original.pr_status)}
               </StatusBadge>
             )}
           </div>
-        )
-      }
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="workflow_current_stage"
-          label={tTableHeader("stage")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "workflow_current_stage",
-      key: "workflow_current_stage",
-      align: "center",
-      icon: <Workflow className="h-4 w-4" />,
-      render: (_: unknown, record: TableDataSource) => {
-        return (
+        ),
+        enableSorting: true,
+        size: 180,
+        meta: {
+          headerTitle: tTableHeader("status"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "workflow_current_stage",
+        header: ({ column }) => (
           <div className="flex justify-center">
-            {record.pr_status !== 'voided' && (
-              <p>{record.workflow_current_stage}</p>
+            <DataGridColumnHeader column={column} title={tTableHeader("stage")} icon={<Workflow className="h-4 w-4" />} />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            {row.original.pr_status !== 'voided' && (
+              <p>{row.original.workflow_current_stage}</p>
             )}
           </div>
-        )
+        ),
+        enableSorting: true,
+        size: 100,
+        meta: {
+          headerTitle: tTableHeader("stage"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "requestor_name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tTableHeader("requestor")} icon={<User className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span className="truncate max-w-[150px] inline-block">
+            {row.original.requestor_name}
+          </span>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          headerTitle: tTableHeader("requestor"),
+        },
+      },
+      {
+        accessorKey: "department_name",
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title={tTableHeader("department")} icon={<Building className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => (
+          <span className="truncate max-w-[150px] inline-block">
+            {row.original.department_name}
+          </span>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          headerTitle: tTableHeader("department"),
+        },
+      },
+      {
+        accessorKey: "total_amount",
+        header: ({ column }) => (
+          <div className="flex justify-end">
+            <DataGridColumnHeader column={column} title={tTableHeader("amount")} icon={<DollarSign className="h-4 w-4" />} />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="text-right">
+            <span className="font-mono text-sm">
+              {formatPriceConf(row.original.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
+            </span>
+          </div>
+        ),
+        enableSorting: false,
+        size: 150,
+        meta: {
+          headerTitle: tTableHeader("amount"),
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
+      },
+      {
+        id: "action",
+        header: ActionHeader,
+        cell: ({ row }) => {
+          const pr = row.original;
+          return (
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">More options</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Print", pr.id);
+                    }}
+                  >
+                    <Printer className="h-4 w-4" />
+                    {tCommon("print")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Export", pr.id);
+                    }}
+                  >
+                    <FileDown className="h-4 w-4" />
+                    {tCommon("export")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Delete", pr.id);
+                    }}
+                    className="text-destructive cursor-pointer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {tCommon("delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        },
+        enableSorting: false,
+        size: 80,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
+      },
+    ],
+    [
+      tTableHeader,
+      tCommon,
+      tStatus,
+      tPurchaseRequest,
+      currentPage,
+      perpage,
+      dateFormat,
+      amount,
+      currencyBase,
+      getTypeName,
+      convertStatus,
+    ]
+  );
+
+  // Initialize table
+  const table = useReactTable({
+    data: purchaseRequests,
+    columns,
+    pageCount: totalPages,
+    getRowId: (row) => row.id ?? "",
+    state: {
+      pagination,
+      sorting,
+    },
+    enableRowSelection: true,
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(newPagination.pageIndex + 1);
+      setPerpage(newPagination.pageSize);
+    },
+    onSortingChange: (updater) => {
+      if (!onSort) return;
+
+      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
+
+      if (newSorting.length > 0) {
+        const sortField = newSorting[0].id;
+        const sortDirection = newSorting[0].desc ? "desc" : "asc";
+        onSort(`${sortField}:${sortDirection}`);
+      } else {
+        onSort("");
       }
     },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="requestor_name"
-          label={tTableHeader("requestor")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "requestor_name",
-      key: "requestor_name",
-      align: "left",
-      icon: <User className="h-4 w-4" />,
-    },
-    {
-      title: (
-        <SortableColumnHeader
-          columnKey="department_name"
-          label={tTableHeader("department")}
-          sort={sort}
-          onSort={onSort}
-          getSortableColumnProps={getSortableColumnProps}
-          renderSortIcon={renderSortIcon}
-        />
-      ),
-      dataIndex: "department_name",
-      key: "department_name",
-      align: "left",
-      icon: <Building className="h-4 w-4" />,
-    },
-    {
-      title: tTableHeader("amount"),
-      dataIndex: "total_amount",
-      key: "total_amount",
-      align: "right",
-      icon: <DollarSign className="h-4 w-4" />,
-      render: (_: unknown, record: TableDataSource) => {
-        return <p>
-          {formatPriceConf(record.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
-        </p>;
-      },
-    },
-    {
-      title: tTableHeader("action"),
-      dataIndex: "action",
-      key: "action",
-      align: "right",
-      render: (_: unknown, pr: TableDataSource) => {
-        return <div className="text-right">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              onClick={(e) => e.stopPropagation()}
-            >
-              <span className="sr-only">More options</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log("Approve", pr.id);
-                }}
-              >
-                <Printer />
-                {tCommon("print")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log("Download", pr.id);
-                }}
-              >
-                <FileDown />
-                {tCommon("export")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log("Delete", pr.id);
-                }}
-                className="text-red-500 hover:text-red-300"
-              >
-                <Trash2 />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>;
-      },
-    },
-  ];
-
-  const dataSource: TableDataSource[] = purchaseRequests?.map((pr, index) => ({
-    select: false,
-    key: pr.id ?? "",
-    no: index + 1,
-    pr_no: pr.pr_no ?? "-",
-    pr_date: pr.pr_date,
-    workflow_name: pr.workflow_name,
-    pr_status: pr.pr_status,
-    workflow_current_stage: pr.workflow_current_stage,
-    requestor_name: pr.requestor_name,
-    department_name: pr.department_name,
-    total_amount: pr.total_amount,
-  }));
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+  });
 
   return (
-    <TableTemplate
-      columns={columns}
-      dataSource={dataSource}
-      totalItems={totalItems}
-      totalPages={totalPages}
-      perpage={perpage}
-      setPerpage={setPerpage}
-      currentPage={currentPage}
-      onPageChange={onPageChange}
+    <DataGrid
+      table={table}
+      recordCount={totalItems}
       isLoading={isLoading}
-    />
+      loadingMode="skeleton"
+      emptyMessage={tCommon("no_data")}
+      tableLayout={{
+        headerSticky: true,
+        dense: false,
+        rowBorder: true,
+        headerBackground: true,
+        headerBorder: true,
+        width: "fixed",
+      }}
+    >
+      <div className="w-full space-y-2.5">
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+      </div>
+    </DataGrid>
   );
 }

@@ -41,21 +41,6 @@ export default function GoodsReceivedNoteComponent() {
         [setPage]
     );
 
-    const handleSort = useCallback((field: string) => {
-        if (!sort) {
-            setSort(`${field}:asc`);
-        } else {
-            const [currentField, currentDirection] = sort.split(':') as [string, string];
-
-            if (currentField === field) {
-                const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
-                setSort(`${field}:${newDirection}`);
-            } else {
-                setSort(`${field}:asc`);
-            }
-            setPage("1");
-        }
-    }, [setSort, sort, setPage]);
 
     const sortFields = [
         { key: 'name', label: 'Name' },
@@ -125,15 +110,16 @@ export default function GoodsReceivedNoteComponent() {
 
     const content = (
         <GoodsReceivedNoteList
-            goodsReceivedNotes={data?.data.data}
-            currentPage={data?.data.paginate?.page}
-            totalPages={data?.data.paginate?.pages}
+            goodsReceivedNotes={data?.data.data ?? []}
+            currentPage={data?.data.paginate?.page ?? 1}
+            totalPages={data?.data.paginate?.pages ?? 1}
+            totalItems={data?.data.paginate?.total ?? 0}
+            perpage={perpage ? parseInt(perpage) : 10}
             onPageChange={handlePageChange}
             isLoading={isLoading}
-            totalItems={data?.data.paginate?.total}
-            sort={parseSortString(sort) ?? { field: '', direction: 'asc' }}
-            onSort={handleSort}
-            perpage={perpage ? parseInt(perpage) : 10}
+            sort={parseSortString(sort)}
+            onSort={setSort}
+            setPerpage={(newPerpage) => setPage(newPerpage.toString())}
         />
     )
 
