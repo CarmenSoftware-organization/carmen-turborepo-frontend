@@ -220,9 +220,7 @@ export default function ListLocations({
       {
         id: "action",
         header: ActionHeader,
-        cell: ({ row }) => {
-          const location = row.original;
-
+        cell: () => {
           if (!canDelete) return null;
 
           return (

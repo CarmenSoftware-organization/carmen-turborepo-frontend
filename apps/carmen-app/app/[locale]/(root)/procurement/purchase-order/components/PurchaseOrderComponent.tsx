@@ -6,7 +6,7 @@ import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PurchaseOrderList from "./PurchaseOrderList";
 import { mockPurchaseOrders } from "@/mock-data/procurement";
 import DialogNewPo from "./DialogNewPo";

@@ -176,7 +176,7 @@ export default function StockCardList({ stockCardData, isLoading = false }: Stoc
             {
                 id: "action",
                 header: ActionHeader,
-                cell: ({ row }) => {
+                cell: () => {
                     return (
                         <div className="flex items-center justify-end gap-1">
                             <Button variant="ghost" size="icon" className="h-7 w-7">

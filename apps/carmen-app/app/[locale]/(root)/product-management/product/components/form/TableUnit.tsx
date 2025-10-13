@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Check, SquarePen, Trash2, X, Package, ArrowRight, CheckCircle, Calculator } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect, memo, useMemo, useCallback } from "react";
+import { useState, useEffect, memo, useMemo } from "react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -135,7 +135,7 @@ export default function TableUnit({
                                 <span>{unit.from_unit_name ? getUnitName(unit.from_unit_name) : ''}</span>
                                 <FormField
                                     control={control}
-                                    name={`${addFieldName}.${unit.fieldIndex!}.from_unit_id` as any}
+                                    name={`${addFieldName}.${unit.fieldIndex!}.from_unit_id` as `order_units.add.${number}.from_unit_id` | `ingredient_units.add.${number}.from_unit_id`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -200,7 +200,7 @@ export default function TableUnit({
                             <div className="flex items-center gap-2">
                                 <FormField
                                     control={control}
-                                    name={`${addFieldName}.${unit.fieldIndex!}.to_unit_qty` as any}
+                                    name={`${addFieldName}.${unit.fieldIndex!}.to_unit_qty` as `order_units.add.${number}.to_unit_qty` | `ingredient_units.add.${number}.to_unit_qty`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -221,7 +221,7 @@ export default function TableUnit({
                                 />
                                 <FormField
                                     control={control}
-                                    name={`${addFieldName}.${unit.fieldIndex!}.to_unit_id` as any}
+                                    name={`${addFieldName}.${unit.fieldIndex!}.to_unit_id` as `order_units.add.${number}.to_unit_id` | `ingredient_units.add.${number}.to_unit_id`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -285,7 +285,7 @@ export default function TableUnit({
                             <div className="flex justify-center">
                                 <FormField
                                     control={control}
-                                    name={`${addFieldName}.${unit.fieldIndex!}.is_default` as any}
+                                    name={`${addFieldName}.${unit.fieldIndex!}.is_default` as `order_units.add.${number}.is_default` | `ingredient_units.add.${number}.is_default`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>

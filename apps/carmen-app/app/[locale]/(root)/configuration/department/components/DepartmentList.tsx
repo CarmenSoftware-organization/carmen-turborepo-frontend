@@ -162,9 +162,7 @@ export default function DepartmentList({
       {
         id: "action",
         header: ActionHeader,
-        cell: ({ row }) => {
-          const department = row.original;
-
+        cell: () => {
           if (!canDelete) return null;
 
           return (

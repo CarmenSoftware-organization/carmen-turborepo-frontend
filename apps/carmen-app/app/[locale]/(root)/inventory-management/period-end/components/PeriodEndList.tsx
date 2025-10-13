@@ -168,7 +168,7 @@ export default function PeriodEndList({ periodEnds, isLoading = false }: PeriodE
             {
                 id: "action",
                 header: ActionHeader,
-                cell: ({ row }) => {
+                cell: () => {
                     return (
                         <div className="flex items-center justify-end gap-1">
                             <Button variant="ghost" size="icon" className="h-7 w-7">

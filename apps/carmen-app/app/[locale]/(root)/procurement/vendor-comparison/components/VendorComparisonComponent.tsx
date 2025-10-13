@@ -4,7 +4,7 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { mockVendorComparisonData } from "@/mock-data/procurement";
 import VendorComparisonList from "./VendorComparisonList";
 import { useURL } from "@/hooks/useURL";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
