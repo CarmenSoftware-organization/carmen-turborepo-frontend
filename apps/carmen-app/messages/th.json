@@ -721,7 +721,8 @@
     "units": "หน่วย",
     "remove": "ลบ",
     "add_product": "เพิ่มสินค้า",
-    "edit_product": "แก้ไขสินค้า"
+    "edit_product": "แก้ไขสินค้า",
+    "select_unit": "เลือกหน่วย"
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",

@@ -725,7 +725,8 @@
     "units": "Units",
     "remove": "Remove",
     "add_product": "Add Product",
-    "edit_product": "Edit Product"
+    "edit_product": "Edit Product",
+    "select_unit": "Select Unit"
   },
   "PurchaseOrder": {
     "title": "Purchase Order",

@@ -10,7 +10,7 @@ export const productFormSchema = z.object({
     local_name: z.string().min(1, "Local name is required"),
     description: z.string().optional(),
     product_info: z.object({
-        id: z.string().uuid().optional(),
+        id: z.union([z.string().uuid(), z.literal("")]).optional(),
         product_item_group_id: z.string().uuid(),
         is_used_in_recipe: z.boolean(),
         is_sold_directly: z.boolean(),
