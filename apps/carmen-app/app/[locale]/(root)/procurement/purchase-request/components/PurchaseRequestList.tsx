@@ -27,6 +27,7 @@ import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/lib/navigation";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -130,9 +131,15 @@ export default function PurchaseRequestList({
         ),
         cell: ({ row }) => (
           <div className="max-w-[200px] truncate">
-            <ButtonLink href={`/procurement/purchase-request/${row.original.id}`}>
+            {/* <ButtonLink href={`/procurement/purchase-request/${row.original.id}`}>
               {row.original.pr_no ?? "-"}
-            </ButtonLink>
+            </ButtonLink> */}
+            <Link
+              href={`/procurement/purchase-request/${row.original.id}`}
+              className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+            >
+              {row.original.pr_no ?? "-"}
+            </Link>
           </div>
         ),
         enableSorting: true,
@@ -320,7 +327,7 @@ export default function PurchaseRequestList({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",

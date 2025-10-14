@@ -83,7 +83,7 @@ export default function BuTypeList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 20,
+        size: 30,
       },
       {
         id: "no",
@@ -94,7 +94,7 @@ export default function BuTypeList({
           </div>
         ),
         enableSorting: false,
-        size: 20,
+        size: 30,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
@@ -214,7 +214,7 @@ export default function BuTypeList({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",
