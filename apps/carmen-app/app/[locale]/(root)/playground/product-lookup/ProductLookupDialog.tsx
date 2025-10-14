@@ -30,14 +30,16 @@ export default function ProductLookupDialog({ onSelect, triggerButton }: Product
             <DialogTrigger asChild>
                 {triggerButton || <Button variant="outline">Select Products</Button>}
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
+            <DialogContent className="max-w-6xl max-h-[90vh]">
                 <DialogHeader>
                     <DialogTitle>Select Products</DialogTitle>
                     <DialogDescription>
-                        Search and select products from the tree
+                        Search and select products from the tree. Selected items will remain visible even when searching.
                     </DialogDescription>
                 </DialogHeader>
-                <TreeProductLookup onSelect={handleSelect} />
+                <div className="overflow-hidden">
+                    <TreeProductLookup onSelect={handleSelect} />
+                </div>
             </DialogContent>
         </Dialog>
     );

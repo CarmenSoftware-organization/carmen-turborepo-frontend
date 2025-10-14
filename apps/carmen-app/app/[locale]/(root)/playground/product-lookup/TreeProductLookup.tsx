@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { Tree, TreeItem, TreeItemLabel } from "@/components/ui/tree";
 import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
@@ -30,23 +30,72 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
     const { token, buCode } = useAuth();
     const [searchQuery, setSearchQuery] = useState("");
     const [searchTrigger, setSearchTrigger] = useState("");
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [selectedItemsCache, setSelectedItemsCache] = useState<Record<string, TreeNodeData>>({});
 
     const handleSearch = useCallback(() => {
-        setSearchTrigger(searchQuery);
+        setSearchTrigger(searchQuery.trim());
     }, [searchQuery]);
 
+    const handleSearchQueryChange = useCallback((value: string) => {
+        setSearchQuery(value);
+        // Clear search trigger immediately when query is empty
+        if (!value.trim()) {
+            setSearchTrigger("");
+        }
+    }, []);
+
+    // Load all products once (no search param)
     const { products, isLoading } = useProductQuery({
         token,
         buCode,
         params: {
-            search: searchTrigger,
             perpage: -1
         }
     });
 
-    // Build tree data structure from product data
+    // Filter products on client side when search is triggered
+    const filteredProducts = useMemo(() => {
+        if (!products?.data || !searchTrigger.trim()) {
+            return products?.data || [];
+        }
+
+        const query = searchTrigger.toLowerCase().trim();
+        return products.data.filter((product: ProductGetDto) => {
+            // Cache toLowerCase results to avoid multiple calls
+            const nameLC = product.name?.toLowerCase();
+            const codeLC = product.code?.toLowerCase();
+            const descLC = product.description?.toLowerCase();
+            const localNameLC = product.local_name?.toLowerCase();
+            const categoryNameLC = product.product_category?.name?.toLowerCase();
+            const subCategoryNameLC = product.product_sub_category?.name?.toLowerCase();
+            const itemGroupNameLC = product.product_item_group?.name?.toLowerCase();
+
+            return (
+                nameLC?.includes(query) ||
+                codeLC?.includes(query) ||
+                descLC?.includes(query) ||
+                localNameLC?.includes(query) ||
+                categoryNameLC?.includes(query) ||
+                subCategoryNameLC?.includes(query) ||
+                itemGroupNameLC?.includes(query)
+            );
+        });
+    }, [products?.data, searchTrigger]);
+
+    // Get selected product IDs as stable array for dependency
+    const selectedProductIdsArray = useMemo(() => {
+        return Array.from(selectedIds).filter(id => id.startsWith('product-')).sort();
+    }, [selectedIds]);
+
+    // Stable string for dependency comparison
+    const selectedProductIdsKey = useMemo(() => {
+        return selectedProductIdsArray.join(',');
+    }, [selectedProductIdsArray]);
+
+    // Build tree data structure from filtered product data + keep selected items
     const { items, rootItems } = useMemo((): { items: Record<string, TreeNodeData>; rootItems: string[] } => {
-        if (isLoading || !products?.data) {
+        if (isLoading || !filteredProducts) {
             return {
                 items: {},
                 rootItems: []
@@ -58,7 +107,8 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
         const subCategoryMap = new Map<string, Set<string>>();
         const itemGroupMap = new Map<string, Set<string>>();
 
-        products.data.forEach((product: ProductGetDto) => {
+        // Helper to add product to tree structure
+        const addProductToTree = (product: ProductGetDto) => {
             const category = product.product_category;
             const subCategory = product.product_sub_category;
             const itemGroup = product.product_item_group;
@@ -129,7 +179,29 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
                 itemGroupMap.set(itemGroupId, new Set());
             }
             itemGroupMap.get(itemGroupId)!.add(productId);
+        };
+
+        // Add filtered products
+        filteredProducts.forEach((product: ProductGetDto) => {
+            addProductToTree(product);
         });
+
+        // Add selected products that are not in filtered results (from cache)
+        // Only process if we have a search active to avoid unnecessary work
+        if (searchTrigger.trim() && products?.data && selectedProductIdsArray.length > 0) {
+            selectedProductIdsArray.forEach(productId => {
+                // If product is already in itemsMap, skip it
+                if (itemsMap[productId]) return;
+
+                // Find the product in original data
+                const productIdNumber = productId.replace('product-', '');
+                const product = products.data.find((p: ProductGetDto) => p.id === productIdNumber);
+
+                if (product) {
+                    addProductToTree(product);
+                }
+            });
+        }
 
         // Assign children arrays
         categoryMap.forEach((subCategoryIds, categoryId) => {
@@ -147,20 +219,23 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
         const roots = Array.from(categoryMap.keys());
 
         return { items: itemsMap, rootItems: roots };
-    }, [products?.data, isLoading]);
+    }, [filteredProducts, isLoading, selectedProductIdsKey, products?.data, searchTrigger]);
 
     const searchInput = (
-        <Input
-            className="mb-4"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                    handleSearch();
-                }
-            }}
-        />
+        <div className="flex gap-2">
+            <Input
+                className="mb-4"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => handleSearchQueryChange(e.target.value)}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        handleSearch();
+                    }
+                }}
+            />
+            <Button onClick={handleSearch} className="mb-4">Search</Button>
+        </div>
     );
 
     if (isLoading) {
@@ -172,7 +247,7 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
         );
     }
 
-    if (!products?.data || rootItems.length === 0) {
+    if (!products?.data) {
         return (
             <div className="p-6 space-y-4">
                 {searchInput}
@@ -181,15 +256,60 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
         );
     }
 
-    return <TreeProductLookupContent items={items} rootItems={rootItems} searchInput={searchInput} hasSearch={!!searchTrigger} onSelect={onSelect} />;
+    if (rootItems.length === 0) {
+        return (
+            <div className="p-6 space-y-4">
+                {searchInput}
+                <p className="text-muted-foreground">
+                    {searchTrigger.trim() ? `No results found for "${searchTrigger}"` : 'No data available'}
+                </p>
+            </div>
+        );
+    }
+
+    return (
+        <TreeProductLookupContent
+            items={items}
+            rootItems={rootItems}
+            searchInput={searchInput}
+            hasSearch={!!searchTrigger.trim()}
+            onSelect={onSelect}
+            allProducts={products?.data || []}
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
+            selectedItemsCache={selectedItemsCache}
+            setSelectedItemsCache={setSelectedItemsCache}
+        />
+    );
 }
 
-function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, onSelect }: { items: Record<string, TreeNodeData>; rootItems: string[]; searchInput: React.ReactNode; hasSearch: boolean; onSelect?: (productIds: { id: string }[]) => void }) {
-    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+const TreeProductLookupContent = memo(function TreeProductLookupContent({
+    items,
+    rootItems,
+    searchInput,
+    hasSearch,
+    onSelect,
+    allProducts,
+    selectedIds,
+    setSelectedIds,
+    selectedItemsCache,
+    setSelectedItemsCache
+}: {
+    items: Record<string, TreeNodeData>;
+    rootItems: string[];
+    searchInput: React.ReactNode;
+    hasSearch: boolean;
+    onSelect?: (productIds: { id: string }[]) => void;
+    allProducts: ProductGetDto[];
+    selectedIds: Set<string>;
+    setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+    selectedItemsCache: Record<string, TreeNodeData>;
+    setSelectedItemsCache: React.Dispatch<React.SetStateAction<Record<string, TreeNodeData>>>;
+}) {
 
     // Get all item IDs recursively
     const getAllItemIds = useCallback((itemId: string): string[] => {
-        const item = items[itemId];
+        const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return [];
 
         const ids = [itemId];
@@ -199,11 +319,11 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
             });
         }
         return ids;
-    }, [items]);
+    }, [items, selectedItemsCache]);
 
     // Get all product IDs under a node (recursively)
     const getAllProductIds = useCallback((itemId: string): string[] => {
-        const item = items[itemId];
+        const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return [];
 
         if (item.type === 'product') {
@@ -215,11 +335,11 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
             productIds.push(...getAllProductIds(childId));
         });
         return productIds;
-    }, [items]);
+    }, [items, selectedItemsCache]);
 
     // Handle checkbox change
     const handleCheckboxChange = useCallback((itemId: string, checked: boolean) => {
-        const item = items[itemId];
+        const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return;
 
         setSelectedIds(prev => {
@@ -229,6 +349,11 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
                 // Toggle single product
                 if (checked) {
                     newSet.add(itemId);
+                    // Cache the product when selected
+                    setSelectedItemsCache(prevCache => ({
+                        ...prevCache,
+                        [itemId]: item
+                    }));
                 } else {
                     newSet.delete(itemId);
                 }
@@ -236,7 +361,19 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
                 // Toggle all products under this node
                 const productIds = getAllProductIds(itemId);
                 if (checked) {
-                    productIds.forEach(id => newSet.add(id));
+                    // Cache all products when selecting a category/subcategory/itemgroup
+                    const newCache: Record<string, TreeNodeData> = {};
+                    productIds.forEach(id => {
+                        newSet.add(id);
+                        const productItem = items[id] || selectedItemsCache[id];
+                        if (productItem) {
+                            newCache[id] = productItem;
+                        }
+                    });
+                    setSelectedItemsCache(prevCache => ({
+                        ...prevCache,
+                        ...newCache
+                    }));
                 } else {
                     productIds.forEach(id => newSet.delete(id));
                 }
@@ -244,11 +381,11 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
 
             return newSet;
         });
-    }, [items, getAllProductIds]);
+    }, [items, selectedItemsCache, getAllProductIds]);
 
     // Check if an item is checked (for indeterminate state)
     const getCheckboxState = useCallback((itemId: string): { checked: boolean; indeterminate: boolean } => {
-        const item = items[itemId];
+        const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return { checked: false, indeterminate: false };
 
         if (item.type === 'product') {
@@ -265,18 +402,24 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
         } else {
             return { checked: false, indeterminate: true };
         }
-    }, [items, selectedIds, getAllProductIds]);
+    }, [items, selectedItemsCache, selectedIds, getAllProductIds]);
 
     // Get selected products as array
     const selectedProducts = useMemo(() => {
         return Array.from(selectedIds)
-            .filter(id => items[id]?.type === 'product')
-            .map(id => ({
-                id: id.replace('product-', ''),
-                name: items[id].name,
-                code: items[id].code,
-            }));
-    }, [selectedIds, items]);
+            .filter(id => {
+                const item = items[id] || selectedItemsCache[id];
+                return item?.type === 'product';
+            })
+            .map(id => {
+                const item = items[id] || selectedItemsCache[id];
+                return {
+                    id: id.replace('product-', ''),
+                    name: item.name,
+                    code: item.code,
+                };
+            });
+    }, [selectedIds, items, selectedItemsCache]);
 
     // Log selected products when changed
     useMemo(() => {
@@ -301,15 +444,24 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
                 if (itemId === 'root') {
                     return { id: 'root', name: 'Root', type: 'category' as const, children: rootItems } as TreeNodeData;
                 }
-                return items[itemId];
+                const item = items[itemId];
+                // Must return a valid object, never undefined
+                if (!item) {
+                    return { id: itemId, name: '', type: 'product' as const, children: [] } as TreeNodeData;
+                }
+                return item;
             },
             getChildren: (itemId) => {
                 if (itemId === 'root') return rootItems;
-                return items[itemId]?.children ?? [];
+                const item = items[itemId];
+                if (!item) return [];
+                return item.children ?? [];
             }
         },
         initialState: {
-            expandedItems: hasSearch ? rootItems.flatMap(id => getAllItemIds(id)).filter(id => items[id]?.type !== 'product') : rootItems.slice(0, 3)
+            expandedItems: hasSearch
+                ? rootItems.flatMap(id => getAllItemIds(id)).filter(id => items[id] && items[id]?.type !== 'product')
+                : rootItems.slice(0, 3).filter(id => items[id])
         },
         features: [syncDataLoaderFeature, hotkeysCoreFeature]
     });
@@ -320,6 +472,12 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
             <Tree tree={tree} indent={24} toggleIconType="chevron" className="max-h-[600px] overflow-auto">
                 {tree.getItems().map((item) => {
                     const data = item.getItemData();
+
+                    // Skip rendering items without name (fallback items)
+                    if (!data.name) {
+                        return null;
+                    }
+
                     const checkboxState = getCheckboxState(data.id);
 
                     return (
@@ -365,15 +523,21 @@ function TreeProductLookupContent({ items, rootItems, searchInput, hasSearch, on
                     <Button
                         onClick={() => {
                             const productIds = Array.from(selectedIds)
-                                .filter(id => items[id]?.type === 'product')
-                                .map(id => ({ id }));
+                                .filter(id => {
+                                    const item = items[id] || selectedItemsCache[id];
+                                    return item?.type === 'product';
+                                })
+                                .map(id => ({ id: id.replace('product-', '') }));
                             onSelect(productIds);
                         }}
                     >
-                        Confirm Selection ({Array.from(selectedIds).filter(id => items[id]?.type === 'product').length})
+                        Confirm Selection ({Array.from(selectedIds).filter(id => {
+                            const item = items[id] || selectedItemsCache[id];
+                            return item?.type === 'product';
+                        }).length})
                     </Button>
                 </div>
             )}
         </div>
     );
-}
+});
