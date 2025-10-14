@@ -386,7 +386,8 @@
     "updated": "Updated",
     "country": "Country",
     "date_required": "Date Required",
-    "pricing": "Pricing"
+    "pricing": "Pricing",
+    "value": "Value"
   },
   "Product": {
     "title": "Product"

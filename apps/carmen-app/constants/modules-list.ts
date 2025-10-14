@@ -367,11 +367,6 @@ export const moduleItems: ModuleItem[] = [
         icon: FileText,
       },
       {
-        labelKey: "Modules.Finance.exchangeRates",
-        href: "/finance/exchange-rates",
-        icon: TrendingUp,
-      },
-      {
         labelKey: "Modules.Finance.budgetPlanningAndControl",
         href: "/finance/budget-planning-and-control",
         icon: Calculator,

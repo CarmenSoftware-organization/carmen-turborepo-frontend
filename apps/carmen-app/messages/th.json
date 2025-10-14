@@ -385,7 +385,8 @@
     "no_vendor_found": "ไม่พบผู้จัดจำหน่าย",
     "no_vendor_available": "ไม่มีผู้จัดจำหน่าย",
     "date_required": "วันที่ต้องการ",
-    "pricing": "ราคา"
+    "pricing": "ราคา",
+    "value": "ค่า"
   },
   "Product": {
     "title": "สินค้า"

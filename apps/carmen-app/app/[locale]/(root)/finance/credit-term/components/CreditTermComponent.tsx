@@ -6,12 +6,6 @@ import {
   Filter,
   Plus,
   Printer,
-  CreditCard,
-  CheckCircle,
-  XCircle,
-  StickyNote,
-  Trash2,
-  SquarePen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
@@ -20,13 +14,12 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import { useState } from "react";
 import { useURL } from "@/hooks/useURL";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CreditTermGetAllDto,
   CreateCreditTermFormValues,
 } from "@/dtos/credit-term.dto";
-import { Badge } from "@/components/ui/badge";
 import CreditTermDialog from "./CreditTermDialog";
+import CreditTermList from "./CreditTermList";
 import { formType } from "@/dtos/form.dto";
 import {
   AlertDialog,
@@ -49,13 +42,16 @@ import { useQueryClient } from "@tanstack/react-query";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 const sortFields = [
-  { key: "name", label: "Name" }
+  { key: "name", label: "Name" },
+  { key: "value", label: "Value" },
+  { key: "is_active", label: "Status" },
 ];
 
 export default function CreditTermComponent() {
   const { token, buCode } = useAuth();
   const queryClient = useQueryClient();
-  const { creditTerms } = useCreditTermQuery(token, buCode);
+  const { creditTerms, isLoading } = useCreditTermQuery(token, buCode);
+
   const [selectedCreditTerm, setSelectedCreditTerm] =
     useState<CreditTermGetAllDto | null>(null);
   const { mutate: createCreditTerm, isPending: isCreating } =
@@ -64,6 +60,7 @@ export default function CreditTermComponent() {
     useUpdateCreditTerm(token, buCode, selectedCreditTerm?.id || "");
   const { mutate: deleteCreditTerm, isPending: isDeleting } =
     useDeleteCreditTerm(token, buCode, selectedCreditTerm?.id || "");
+
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
@@ -74,6 +71,14 @@ export default function CreditTermComponent() {
   const [dialogMode, setDialogMode] = useState<formType | undefined>(undefined);
 
   const title = "Credit Term";
+
+  // Parse sort string
+  const parsedSort = sort
+    ? {
+      field: sort.split(":")[0],
+      direction: sort.split(":")[1] as "asc" | "desc",
+    }
+    : undefined;
 
   const handleCreateCreditTerm = (data: CreateCreditTermFormValues) => {
     createCreditTerm(data, {
@@ -166,13 +171,13 @@ export default function CreditTermComponent() {
           onChange={setStatus}
           open={statusOpen}
           onOpenChange={setStatusOpen}
-          data-id="credit-note-list-status-search-dropdown"
+          data-id="credit-term-list-status-search-dropdown"
         />
         <SortComponent
           fieldConfigs={sortFields}
           sort={sort}
           setSort={setSort}
-          data-id="credit-note-list-sort-dropdown"
+          data-id="credit-term-list-sort-dropdown"
         />
         <Button size={"sm"}>
           <Filter className="h-4 w-4" />
@@ -183,89 +188,16 @@ export default function CreditTermComponent() {
   );
 
   const content = (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {creditTerms?.data.map((creditTerm: CreditTermGetAllDto) => (
-        <Card
-          key={creditTerm.id}
-          className="group border border-border/50 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:border-border/80"
-        >
-          <CardHeader className="pb-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg border border-border/50">
-                  <CreditCard className="h-5 w-5 text-primary" />
-                </div>
-                <div className="flex-1">
-                  <CardTitle className="text-lg font-semibold text-foreground leading-tight group-hover:text-primary transition-colors duration-200">
-                    {creditTerm.name}
-                  </CardTitle>
-                </div>
-              </div>
-              <Badge
-                variant={creditTerm.is_active ? "active" : "inactive"}
-                className={`
-                  flex items-center gap-1 text-xs px-2 py-1 rounded-full border-0
-                  ${creditTerm.is_active
-                    ? "text-green-700 ring-1 ring-green-200"
-                    : "text-gray-600 ring-1 ring-gray-200"
-                  }
-                `}
-              >
-                {creditTerm.is_active ? (
-                  <CheckCircle className="h-3 w-3" />
-                ) : (
-                  <XCircle className="h-3 w-3" />
-                )}
-                {creditTerm.is_active ? "Active" : "Inactive"}
-              </Badge>
-            </div>
-          </CardHeader>
-
-          <CardContent className="pt-0 space-y-4">
-            {creditTerm.description && (
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {creditTerm.description}
-                </p>
-              </div>
-            )}
-
-            {creditTerm.note && (
-              <div className="flex items-start gap-2 p-1 rounded-lg border border-border/30">
-                <StickyNote className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                    Note
-                  </p>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {creditTerm.note}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center justify-end">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleOpenEditDialog(creditTerm)}
-                disabled={isUpdating}
-              >
-                <SquarePen className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleOpenDeleteDialog(creditTerm)}
-                disabled={isDeleting}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <CreditTermList
+      creditTerms={creditTerms || []}
+      isLoading={isLoading}
+      onEdit={handleOpenEditDialog}
+      onDelete={handleOpenDeleteDialog}
+      sort={parsedSort}
+      onSort={setSort}
+      canUpdate={true}
+      canDelete={true}
+    />
   );
 
   return (
