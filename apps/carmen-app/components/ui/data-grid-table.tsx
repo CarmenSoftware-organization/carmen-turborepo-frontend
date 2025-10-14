@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { CSSProperties, Fragment, ReactNode } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useDataGrid } from '@/components/ui/data-grid';
 import { Cell, Column, flexRender, Header, HeaderGroup, Row } from '@tanstack/react-table';
 import { cva } from 'class-variance-authority';
@@ -235,7 +236,7 @@ function DataGridTableBodyRowSkeletonCell<TData>({ children, column }: { childre
           : '',
       )}
     >
-      {children}
+      {children ? children : <Skeleton className="h-4 w-full" />}
     </td>
   );
 }

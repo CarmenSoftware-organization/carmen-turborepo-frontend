@@ -309,7 +309,10 @@
     "available_users": "ผู้ใช้งานที่พร้อมใช้งาน",
     "init_products": "สินค้าที่มีอยู่",
     "available_products": "สินค้าที่พร้อมใช้งาน",
-    "no_data": "ไม่มีข้อมูล"
+    "no_data": "ไม่มีข้อมูล",
+    "row_per_page": "แถวต่อหน้า",
+    "next_page": "ไปยังหน้าถัดไป",
+    "prev_page": "ไปยังหน้าก่อนหน้า"
   },
   "TableHeader": {
     "all": "ทั้งหมด",

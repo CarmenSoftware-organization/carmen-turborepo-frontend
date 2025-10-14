@@ -5,6 +5,7 @@ import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 import { useRouter } from "@/lib/navigation";
 import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ActionFieldsProps {
     readonly mode: formType;
@@ -30,6 +31,7 @@ export default function ActionFields({
     const tPr = useTranslations("PurchaseRequest");
     const router = useRouter();
     const tStatus = useTranslations("Status");
+    const tCommon = useTranslations("Common");
 
     const convertStatus = (status: string) => {
         if (status === 'submit') {
@@ -79,91 +81,136 @@ export default function ActionFields({
     };
 
     return (
-        <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleBack}
-                    className="hover:bg-transparent"
-                >
-                    <ChevronLeft className="h-4 w-4" />
-                </Button>
-
-                <div className="flex items-start gap-2">
-                    {mode === formType.ADD ? (
-                        <p className="text-xl font-bold">{tPr("title")}</p>
-                    ) : (
-                        <p className="text-xl font-bold">
-                            {initValues?.pr_no}
-                        </p>
-                    )}
-                    {initValues?.pr_status && (
-                        <StatusBadge
-                            status={initValues?.pr_status}
-                        >
-                            {convertStatus(initValues?.pr_status)}
-                        </StatusBadge>
-                    )}
-                </div>
-            </div>
-            {prStatus !== 'voided' && (
+        <TooltipProvider>
+            <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                    {currentMode === formType.VIEW ? (
-                        <Button
-                            variant="default"
-                            size={"sm"}
-                            className="text-xs"
-                            onClick={onEdit}
-                        >
-                            <Pencil />
-                            {/* {tCommon("edit")} */}
-                        </Button>
-                    ) : (
-                        <>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
                             <Button
-                                variant="outline"
-                                size={"sm"}
-                                onClick={(e) => onCancel(e, 'cancel')}
+                                variant="ghost"
+                                size="icon"
+                                onClick={handleBack}
+                                className="hover:bg-transparent"
                             >
-                                <X />
-                                {/* {tCommon("cancel")} */}
+                                <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            <Button
-                                variant="default"
-                                size={"sm"}
-                                type="submit"
-                                disabled={isCreatingPr}
-                            >
-                                {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
-                                {/* {tCommon("save")} */}
-                            </Button>
-                        </>
-                    )}
-                    <Button
-                        variant="outline"
-                        size={"sm"}
-                    >
-                        <Printer />
-                        {/* {tCommon("print")} */}
-                    </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{tCommon("back")}</p>
+                        </TooltipContent>
+                    </Tooltip>
 
-                    <Button
-                        variant="outline"
-                        size={"sm"}
-                    >
-                        <FileDown />
-                        {/* {tCommon("export")} */}
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size={"sm"}
-                    >
-                        <Share />
-                        {/* {tCommon("share")} */}
-                    </Button>
+                    <div className="flex items-start gap-2">
+                        {mode === formType.ADD ? (
+                            <p className="text-xl font-bold">{tPr("title")}</p>
+                        ) : (
+                            <p className="text-xl font-bold">
+                                {initValues?.pr_no}
+                            </p>
+                        )}
+                        {initValues?.pr_status && (
+                            <StatusBadge
+                                status={initValues?.pr_status}
+                            >
+                                {convertStatus(initValues?.pr_status)}
+                            </StatusBadge>
+                        )}
+                    </div>
                 </div>
-            )}
-        </div>
+                {prStatus !== 'voided' && (
+                    <div className="flex items-center gap-2">
+                        {currentMode === formType.VIEW ? (
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="default"
+                                        size={"sm"}
+                                        className="text-xs"
+                                        onClick={onEdit}
+                                    >
+                                        <Pencil />
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{tCommon("edit")}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        ) : (
+                            <>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size={"sm"}
+                                            onClick={(e) => onCancel(e, 'cancel')}
+                                        >
+                                            <X />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{tCommon("cancel")}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="default"
+                                            size={"sm"}
+                                            type="submit"
+                                            disabled={isCreatingPr}
+                                        >
+                                            {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{tCommon("save")}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </>
+                        )}
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size={"sm"}
+                                >
+                                    <Printer />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tCommon("print")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size={"sm"}
+                                >
+                                    <FileDown />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tCommon("export")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size={"sm"}
+                                >
+                                    <Share />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tCommon("share")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                )}
+            </div>
+        </TooltipProvider>
     )
 }

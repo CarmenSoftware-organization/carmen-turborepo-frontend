@@ -12,7 +12,7 @@ import { Form } from "@/components/ui/form";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
-import PurchaseItem from "./PurchaseItem";
+import PurchaseItemDataGrid from "./PurchaseItemDataGrid";
 import { Card } from "@/components/ui/card";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
@@ -30,6 +30,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { usePrActions } from "@/hooks/usePrActions";
 import { useTranslations } from "next-intl";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
     mode: formType;
@@ -113,11 +114,11 @@ export default function MainForm({ mode, initValues }: Props) {
 
     const handleSubmit = (data: CreatePrDto) => {
 
-        if (data.body.purchase_request_detail?.add?.length && data.body.purchase_request_detail.add.length > 0) {
+        if (data.body.purchase_request_detail?.add && data.body.purchase_request_detail.add.length > 0) {
             data.body.purchase_request_detail.add.forEach((item) => {
                 delete item.id;
             });
-        };
+        }
 
         if (currentFormType === formType.ADD) {
             createPr(data, {
@@ -137,7 +138,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 }
             });
         } else {
-            save(data.body as PurchaseRequestUpdateFormDto, {
+            save(data, {
                 onSuccess: () => {
                     toastSuccess({
                         message: tPR("purchase_request_updated"),
@@ -324,9 +325,9 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const isNewPr = currentFormType === formType.ADD
-    const prStatus = initValues?.pr_status
+    const prStatus = initValues?.pr_status;
 
-    console.log('prStatus', prStatus);
+    const watchForm = form.watch();
 
     return (
         <>
@@ -372,9 +373,9 @@ export default function MainForm({ mode, initValues }: Props) {
                                         </TabsTrigger>
                                         {!isNewPr && (
                                             <>
-                                                <TabsTrigger className="w-full h-6" value="budget">
+                                                {/* <TabsTrigger className="w-full h-6" value="budget">
                                                     {tPR("budget")}
-                                                </TabsTrigger>
+                                                </TabsTrigger> */}
                                                 <TabsTrigger className="w-full h-6" value="workflow">
                                                     {tPR("workflow")}
                                                 </TabsTrigger>
@@ -382,7 +383,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                         )}
                                     </TabsList>
                                     <TabsContent value="items" className="mt-2">
-                                        <PurchaseItem
+                                        <PurchaseItemDataGrid
                                             currentFormType={currentFormType}
                                             items={purchaseItemManager.items}
                                             initValues={initValues?.purchase_request_detail}
@@ -393,9 +394,9 @@ export default function MainForm({ mode, initValues }: Props) {
                                             getItemValue={purchaseItemManager.getItemValue}
                                         />
                                     </TabsContent>
-                                    <TabsContent value="budget" className="mt-2">
+                                    {/* <TabsContent value="budget" className="mt-2">
                                         Budget Pr
-                                    </TabsContent>
+                                    </TabsContent> */}
                                     <TabsContent value="workflow" className="mt-2">
                                         <WorkflowHistory workflow_history={initValues?.workflow_history} />
                                     </TabsContent>

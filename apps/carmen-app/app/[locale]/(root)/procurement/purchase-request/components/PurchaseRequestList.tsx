@@ -402,7 +402,7 @@ export default function PurchaseRequestList({
     >
       <div className="w-full space-y-2.5">
         <DataGridContainer>
-          <ScrollArea className="max-h-[calc(100vh-250px)]">
+          <ScrollArea className="max-h-[calc(100vh-250px)] pb-2">
             <DataGridTable />
             <ScrollBar orientation="horizontal" />
           </ScrollArea>

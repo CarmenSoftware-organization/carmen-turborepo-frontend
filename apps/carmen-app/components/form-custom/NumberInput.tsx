@@ -1,5 +1,6 @@
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 interface InputNumberProps {
   readonly value: number;
@@ -28,22 +29,32 @@ export default function NumberInput({
   viewStage = "enable",
   classNames,
 }: InputNumberProps) {
+  const [localValue, setLocalValue] = useState<string>(String(value || 0));
+
+  // Sync with external value changes
+  useEffect(() => {
+    setLocalValue(String(value || 0));
+  }, [value]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const inputValue = e.target.value;
+    setLocalValue(inputValue);
+  };
 
-    if (inputValue === "") {
+  const handleBlur = (): void => {
+    if (localValue === "" || localValue === "-") {
       onChange(0);
+      setLocalValue("0");
       return;
     }
 
-    if (inputValue === "-") {
-      return;
-    }
-
-    const numericValue = parseFloat(inputValue);
+    const numericValue = parseFloat(localValue);
 
     if (!isNaN(numericValue) && isFinite(numericValue)) {
       onChange(numericValue);
+    } else {
+      // Reset to previous value if invalid
+      setLocalValue(String(value || 0));
     }
   };
 
@@ -56,8 +67,9 @@ export default function NumberInput({
   return (
     <Input
       type="number"
-      value={value}
+      value={localValue}
       onChange={handleChange}
+      onBlur={handleBlur}
       onClick={handleClick}
       min={min}
       max={max}

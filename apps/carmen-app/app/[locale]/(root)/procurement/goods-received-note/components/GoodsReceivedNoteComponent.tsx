@@ -29,7 +29,11 @@ export default function GoodsReceivedNoteComponent() {
     const [statusOpen, setStatusOpen] = useState(false);
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
-    const { data, isLoading } = useGrnQuery(token, buCode, { page: page ? parseInt(page) : 1, sort, search });
+    const { data, isLoading } = useGrnQuery(token, buCode, {
+        page: page ? parseInt(page) : 1,
+        sort,
+        search
+    });
 
     console.log(data);
 

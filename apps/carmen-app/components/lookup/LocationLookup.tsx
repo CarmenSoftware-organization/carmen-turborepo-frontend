@@ -48,8 +48,11 @@ export default function LocationLookup({
                     aria-expanded={open}
                     className="w-full justify-between"
                     disabled={disabled}
+                    title={value && selectedLocationName ? selectedLocationName : placeholder}
                 >
-                    {value && selectedLocationName ? selectedLocationName : placeholder}
+                    <span className="truncate">
+                        {value && selectedLocationName ? selectedLocationName : placeholder}
+                    </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>

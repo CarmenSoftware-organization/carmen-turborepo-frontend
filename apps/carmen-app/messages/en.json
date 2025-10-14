@@ -312,7 +312,10 @@
     "select_vendor": "Select Vendor",
     "no_vendor_found": "No vendor found",
     "no_vendor_available": "No vendor available",
-    "no_data": "No data"
+    "no_data": "No data",
+    "row_per_page": "Rows per page",
+    "next_page": "Go to next page",
+    "prev_page": "Go to previous page"
   },
   "TableHeader": {
     "all": "All",

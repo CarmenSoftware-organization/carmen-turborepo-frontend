@@ -23,6 +23,7 @@ type FormFieldContextValue<
 > = {
   name: TName,
   required?: boolean;
+  icon?: React.ReactNode;
 }
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
@@ -34,10 +35,11 @@ const FormField = <
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
 >({
   required = false,
+  icon,
   ...props
-}: ControllerProps<TFieldValues, TName> & { required?: boolean }) => {
+}: ControllerProps<TFieldValues, TName> & { required?: boolean; icon?: React.ReactNode }) => {
   return (
-    <FormFieldContext.Provider value={{ name: props.name, required }}>
+    <FormFieldContext.Provider value={{ name: props.name, required, icon }}>
       <Controller {...props} />
     </FormFieldContext.Provider>
   );
@@ -62,6 +64,7 @@ const useFormField = () => {
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
     required: fieldContext.required,
+    icon: fieldContext.icon,
     ...fieldState,
   };
 };
@@ -92,7 +95,7 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const { error, formItemId, required } = useFormField();
+  const { error, formItemId, required, icon } = useFormField();
 
   return (
     <Label
@@ -101,8 +104,18 @@ const FormLabel = React.forwardRef<
       htmlFor={formItemId}
       {...props}
     >
-      {props.children}
-      {required && <span className="ml-1 text-destructive">*</span>}
+      {icon ? (
+        <div className="flex items-center gap-1.5">
+          {icon}
+          <span className="text-muted-foreground">{props.children}</span>
+          {required && <span className="text-destructive">*</span>}
+        </div>
+      ) : (
+        <>
+          <span className="text-muted-foreground">{props.children}</span>
+          {required && <span className="ml-1 text-destructive">*</span>}
+        </>
+      )}
     </Label>
   );
 });

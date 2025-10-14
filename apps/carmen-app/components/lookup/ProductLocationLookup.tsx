@@ -73,10 +73,18 @@ export default function ProductLocationLookup({
             return (
                 <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Loading...
+                    <span className="truncate">Loading...</span>
                 </>
             );
         }
+        if (selectedProduct) {
+            return <span className="truncate">{selectedProduct.name}</span>;
+        }
+        return <span className="truncate">{placeholder}</span>;
+    };
+
+    // Get title for tooltip
+    const getButtonTitle = () => {
         if (selectedProduct) {
             return selectedProduct.name;
         }
@@ -98,8 +106,9 @@ export default function ProductLocationLookup({
                 variant="outline"
                 disabled
                 className={cn("justify-between", classNames)}
+                title="Error loading data"
             >
-                Error loading data
+                <span className="truncate">Error loading data</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
         );
@@ -112,8 +121,9 @@ export default function ProductLocationLookup({
                 variant="outline"
                 disabled
                 className={cn("justify-between", classNames)}
+                title="Please select a location first"
             >
-                Please select a location first
+                <span className="truncate">Please select a location first</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
         );
@@ -128,6 +138,7 @@ export default function ProductLocationLookup({
                     aria-haspopup="listbox"
                     disabled={disabled || isLoading}
                     className={cn("justify-between", classNames)}
+                    title={!isLoading ? getButtonTitle() : "Loading..."}
                 >
                     {getButtonLabel()}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

@@ -1,13 +1,13 @@
 import DateInput from "@/components/form-custom/DateInput";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 import WorkflowLookup from "@/components/lookup/WorkflowLookup";
-import { FormControl, FormItem, FormField, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { formType } from "@/dtos/form.dto";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { cn } from "@/lib/utils";
-import { CircleCheck, Clock4 } from "lucide-react";
+import { Building2, Calendar, CircleCheck, Clock4, FileText, GitBranch, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { UseFormReturn } from "react-hook-form";
 
@@ -39,6 +39,8 @@ export default function HeadForm({
             <FormField
                 control={form.control}
                 name="body.pr_date"
+                required
+                icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>{tPr("pr_date")}</FormLabel>
@@ -51,6 +53,8 @@ export default function HeadForm({
             <FormField
                 control={form.control}
                 name="body.workflow_id"
+                required
+                icon={<GitBranch className="h-4 w-4 text-muted-foreground" />}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>{tPr("pr_type")}</FormLabel>
@@ -67,7 +71,12 @@ export default function HeadForm({
                 )}
             />
             <div className="space-y-2">
-                <Label>{tPr("requestor")}</Label>
+                <Label>
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <User className="h-4 w-4" />
+                        {tPr("requestor")}
+                    </div>
+                </Label>
                 <Input
                     placeholder="Requestor"
                     disabled
@@ -76,7 +85,12 @@ export default function HeadForm({
                 />
             </div>
             <div className="space-y-2">
-                <Label>{tPr("department")}</Label>
+                <Label>
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                        <Building2 className="h-4 w-4" />
+                        {tPr("department")}
+                    </div>
+                </Label>
                 <Input
                     placeholder="PR-XXXX"
                     disabled
@@ -88,8 +102,9 @@ export default function HeadForm({
             <FormField
                 control={form.control}
                 name="body.description"
+                icon={<FileText className="h-4 w-4 text-muted-foreground" />}
                 render={({ field }) => (
-                    <FormItem className="col-span-2">
+                    <FormItem className="col-span-2 mt-2">
                         <FormLabel>{tPr("description")}</FormLabel>
                         <FormControl>
                             <Textarea
@@ -140,7 +155,6 @@ export default function HeadForm({
                     </div>
                 </div>
             )}
-
         </div>
     )
 }

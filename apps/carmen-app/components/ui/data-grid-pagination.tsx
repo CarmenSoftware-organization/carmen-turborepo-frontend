@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface DataGridPaginationProps {
   sizes?: number[];
@@ -21,7 +22,7 @@ interface DataGridPaginationProps {
 
 function DataGridPagination(props: DataGridPaginationProps) {
   const { table, recordCount, isLoading } = useDataGrid();
-
+  const tCommon = useTranslations('Common');
   const defaultProps: Partial<DataGridPaginationProps> = {
     sizes: [5, 10, 25, 50, 100],
     sizesLabel: 'Show',
@@ -46,9 +47,9 @@ function DataGridPagination(props: DataGridPaginationProps) {
   // Replace placeholders in paginationInfo
   const paginationInfo = mergedProps?.info
     ? mergedProps.info
-        .replace('{from}', from.toString())
-        .replace('{to}', to.toString())
-        .replace('{count}', recordCount.toString())
+      .replace('{from}', from.toString())
+      .replace('{to}', to.toString())
+      .replace('{count}', recordCount.toString())
     : `${from} - ${to} of ${recordCount}`;
 
   // Pagination limit logic
@@ -130,7 +131,7 @@ function DataGridPagination(props: DataGridPaginationProps) {
           mergedProps?.sizesSkeleton
         ) : (
           <>
-            <div className="text-sm text-muted-foreground">Rows per page</div>
+            <p className="text-sm text-muted-foreground">{tCommon("row_per_page")}</p>
             <Select
               value={`${pageSize}`}
               onValueChange={(value) => {
@@ -167,7 +168,7 @@ function DataGridPagination(props: DataGridPaginationProps) {
                   onClick={() => table.previousPage()}
                   disabled={!table.getCanPreviousPage()}
                 >
-                  <span className="sr-only">Go to previous page</span>
+                  <span className="sr-only">{tCommon("prev_page")}</span>
                   <ChevronLeftIcon className="size-4" />
                 </Button>
 
@@ -184,7 +185,7 @@ function DataGridPagination(props: DataGridPaginationProps) {
                   onClick={() => table.nextPage()}
                   disabled={!table.getCanNextPage()}
                 >
-                  <span className="sr-only">Go to next page</span>
+                  <span className="sr-only">{tCommon("next_page")}</span>
                   <ChevronRightIcon className="size-4" />
                 </Button>
               </div>

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { ActionPr, PurchaseRequestCreateFormDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
+import { ActionPr, CreatePrDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { backendApi } from "@/lib/backend-api";
 import { postApiRequest, updateApiRequest, getByIdApiRequest } from "@/lib/config.api";
 import axios from "axios";
@@ -67,12 +67,11 @@ export const usePurchaseRequestById = (token: string, buCode: string, id: string
 export const usePrMutation = (token: string, buCode: string) => {
     const API_URL = `${backendApi}/api/${buCode}/purchase-request`;
     return useMutation({
-        mutationFn: async (data: PurchaseRequestCreateFormDto | { state_role: string; body: PurchaseRequestCreateFormDto }) => {
-            const requestData = 'body' in data ? data.body : data;
+        mutationFn: async (payload: CreatePrDto) => {
             return await postApiRequest(
                 API_URL,
                 token,
-                requestData,
+                payload,
                 "Error creating PR"
             );
         },
