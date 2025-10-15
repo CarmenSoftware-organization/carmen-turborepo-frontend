@@ -2,6 +2,12 @@ import { formType } from "@/dtos/form.dto";
 import { WorkflowCreateModel } from "@/dtos/workflows.dto";
 import { backendApi } from "@/lib/backend-api";
 
+// Helper function to build workflow API URL
+const getWorkflowApiUrl = (buCode: string, path: string = "") => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/workflows`;
+  return path ? `${baseUrl}/${path}` : baseUrl;
+};
+
 export const getWorkflowList = async (
   accessToken: string,
   buCode: string,
@@ -21,30 +27,30 @@ export const getWorkflowList = async (
   });
 
   const queryString = query.toString();
-
-  const url = queryString ? `${backendApi}/api/config/workflows?${queryString}` : `${backendApi}/api/config/workflows`;
+  const url = queryString
+    ? `${getWorkflowApiUrl(buCode)}?${queryString}`
+    : getWorkflowApiUrl(buCode);
 
   const options = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
-      "x-tenant-id": buCode,
     },
   };
   const response = await fetch(url, options);
   const data = await response.json();
+
   return data;
 };
 
 export const getWorkflowId = async (accessToken: string, buCode: string, id: string) => {
-  const url = `${backendApi}/api/config/workflows/${id}`;
+  const url = getWorkflowApiUrl(buCode, id);
   const options = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
-      "x-tenant-id": buCode,
     },
   };
   const response = await fetch(url, options);
@@ -58,11 +64,10 @@ export const createWorkflow = async (
   buCode: string
 ): Promise<WorkflowCreateModel | null> => {
   try {
-    const response = await fetch(`${backendApi}/api/config/workflows`, {
+    const response = await fetch(getWorkflowApiUrl(buCode), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-tenant-id": buCode,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
@@ -90,14 +95,15 @@ export const handleSubmit = async (
   mode: formType
 ): Promise<WorkflowCreateModel | null> => {
   try {
-    const url = values?.id ? `${backendApi}/api/config/workflows/${values.id}` : `${backendApi}/api/config/workflows`;
+    const url = values?.id
+      ? getWorkflowApiUrl(buCode, values.id)
+      : getWorkflowApiUrl(buCode);
 
     const method = mode === formType.ADD ? "POST" : "PUT";
     const response = await fetch(url, {
       method,
       headers: {
         Authorization: `Bearer ${token}`,
-        "x-tenant-id": buCode,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(values),
@@ -120,11 +126,10 @@ export const handleSubmit = async (
 };
 
 export const deleteWorkflow = async (token: string, buCode: string, id: string) => {
-  const response = await fetch(`${backendApi}/api/config/workflows/${id}`, {
+  const response = await fetch(getWorkflowApiUrl(buCode, id), {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
-      "x-tenant-id": buCode,
     },
   });
 
