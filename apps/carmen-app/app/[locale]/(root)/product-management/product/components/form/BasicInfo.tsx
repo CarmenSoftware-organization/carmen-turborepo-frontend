@@ -81,7 +81,6 @@ export default function BasicInfo({
     };
   }, [categoryResponse]);
 
-  // Update form values when category data changes
   useEffect(() => {
     if (categoryResponse && productItemGroupId) {
       setValue("product_category", categoryData.category, { shouldValidate: false });
@@ -146,7 +145,7 @@ export default function BasicInfo({
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <ButtonLink
                 href="/product-management/product"
               >
@@ -171,43 +170,64 @@ export default function BasicInfo({
               )}
             </div>
 
-            {/* Right Section */}
             <div className="flex items-center gap-1.5">
               {currentMode === formType.VIEW ? (
-                <Button
-                  variant="outlinePrimary"
-                  size="sm"
-                  onClick={handleEditClick}
-                >
-                  <Edit />
-                  {tCommon("edit")}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="sm"
+                        onClick={handleEditClick}
+                      >
+                        <Edit />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{tCommon("edit")}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ) : (
                 <>
-                  <Button
-                    variant="outlinePrimary"
-                    size="sm"
-                    onClick={handleCancelClick}
-                  >
-                    <X />
-                    {tCommon("cancel")}
-                  </Button>
-                  <Button
-                    size="sm"
-                    type="submit"
-                    disabled={!isFormValid}
-                  >
-                    <Save />
-                    {tCommon("save")}
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outlinePrimary"
+                          size="sm"
+                          onClick={handleCancelClick}
+                        >
+                          <X />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{tCommon("cancel")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="sm"
+                          type="submit"
+                          disabled={!isFormValid}
+                        >
+                          <Save />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{tCommon("save")}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </>
               )}
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4 pt-0">
+        <CardContent className="space-y-2 pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {/* Product Code */}
             <FormField
               control={control}
               name="code"
@@ -310,7 +330,6 @@ export default function BasicInfo({
 
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {/* Product Item Group */}
               <div className="space-y-2">
                 <FormField
                   control={control}
@@ -412,6 +431,7 @@ export default function BasicInfo({
                           }}
                           placeholder={tProducts("inventory_unit")}
                           disabled={currentMode === formType.VIEW}
+                          classNames="h-7"
                         />
                       </FormControl>
                       <FormMessage />
@@ -427,7 +447,7 @@ export default function BasicInfo({
                 </Label>
                 <div>
                   {defaultUnit ? (
-                    <Badge variant="outline" className="bg-muted border-border">
+                    <Badge variant="outline" className="bg-muted border-border text-muted-foreground">
                       {defaultUnit.from_unit_name}
                     </Badge>
                   ) : (

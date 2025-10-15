@@ -1,11 +1,11 @@
 "use client";
 
-import { Control, useFieldArray, useFormContext } from "react-hook-form";
+import { Control, useFieldArray, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, MapPin, Tag, Info, Building, Activity } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLocationsQuery } from "@/hooks/useLocation";
 import { useAuth } from "@/context/AuthContext";
@@ -33,6 +33,8 @@ import {
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -105,13 +107,27 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const tCommon = useTranslations("Common");
     const { token, buCode } = useAuth();
     const { data: locationsData, isLoading } = useLocationsQuery({ token, buCode });
-    const { watch } = useFormContext<ProductFormValues>();
-    const locations = watch("locations") as LocationsFormData;
-    const newLocations = watch("locations.add") || [];
+
+    // Use useWatch instead of watch() to prevent infinite re-renders
+    const locations = useWatch({
+        control,
+        name: "locations"
+    }) as LocationsFormData | undefined;
 
     const storeLocations = useMemo(() => locationsData?.data || [], [locationsData?.data]);
+
+    // Create lookup map for O(1) access instead of O(n) find operations
+    const storeLocationsMap = useMemo(() => {
+        const map = new Map<string, StoreLocation>();
+        storeLocations.forEach((loc: StoreLocation) => {
+            map.set(loc.id, loc);
+        });
+        return map;
+    }, [storeLocations]);
+
     const existingLocations = useMemo(() => locations?.data || [], [locations?.data]);
-    const removedLocations = useMemo(() => watch("locations.remove") || [], [watch]);
+    const newLocations = useMemo(() => locations?.add || [], [locations?.add]);
+    const removedLocations = useMemo(() => locations?.remove || [], [locations?.remove]);
 
     const { fields: locationFields, append: appendLocation, remove: removeLocation } = useFieldArray({
         control,
@@ -140,20 +156,37 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         });
     }, [productData, storeLocations]);
 
+    // Create Set for O(1) lookup instead of O(n) some() operations
+    const removedLocationIds = useMemo(() => {
+        const set = new Set<string>();
+        removedLocations.forEach((removed: { id: string }) => {
+            set.add(removed.id);
+        });
+        return set;
+    }, [removedLocations]);
+
+    const existingLocationIds = useMemo(() => {
+        const set = new Set<string>();
+        existingLocations.forEach((location: LocationData) => {
+            set.add(location.location_id);
+        });
+        return set;
+    }, [existingLocations]);
+
     const displayLocations = useMemo(() =>
         existingLocations.filter(
-            (location: LocationData) => !removedLocations.some((removed: { id: string }) => removed.id === location.id)
+            (location: LocationData) => !removedLocationIds.has(location.id)
         ),
-        [existingLocations, removedLocations]
+        [existingLocations, removedLocationIds]
     );
 
     const hasLocations = displayLocations.length > 0 || newLocations.length > 0;
 
     const filteredStoreLocations = useMemo(() =>
         filteredStoreLocationsByProduct.filter(
-            (location: StoreLocation) => !existingLocations.some((existing: LocationData) => existing.location_id === location.id)
+            (location: StoreLocation) => !existingLocationIds.has(location.id)
         ),
-        [filteredStoreLocationsByProduct, existingLocations]
+        [filteredStoreLocationsByProduct, existingLocationIds]
     );
 
     const getLocationType = useCallback((location_type?: INVENTORY_TYPE) => {
@@ -165,8 +198,8 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         return tStoreLocation("inventory");
     }, [tStoreLocation]);
 
-    // Merge into one list for display only
-    const allLocations: LocationDisplayData[] = [
+    // Merge into one list for display only - memoize to prevent re-creation
+    const allLocations: LocationDisplayData[] = useMemo(() => [
         ...displayLocations.map((loc: LocationData) => ({ ...loc, isNew: false })),
         ...locationFields.map((field, index) => ({
             ...newLocations[index],
@@ -174,24 +207,22 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             isNew: true,
             fieldIndex: index
         }))
-    ];
+    ], [displayLocations, locationFields, newLocations]);
 
     // Define columns
     const columns = useMemo<ColumnDef<LocationDisplayData>[]>(
         () => [
             {
                 accessorKey: "location_id",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>{tProducts("location_name")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("location_name")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const location = row.original;
-                    const storeLocation = storeLocations.find(
-                        (loc: StoreLocation) => loc.id === location.location_id
-                    ) as StoreLocation | undefined;
+                    const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
                         <div className="font-medium">
@@ -241,20 +272,18 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             },
             {
                 id: "type",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Tag className="h-4 w-4" />
-                        <span>{tProducts("type")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("type")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const location = row.original;
-                    const storeLocation = storeLocations.find(
-                        (loc: StoreLocation) => loc.id === location.location_id
-                    ) as StoreLocation | undefined;
+                    const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
-                        <p className="text-xs md:text-base">
+                        <p>
                             {getLocationType(storeLocation?.location_type as INVENTORY_TYPE)}
                         </p>
                     );
@@ -264,20 +293,18 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             },
             {
                 id: "description",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Info className="h-4 w-4" />
-                        <span>{tProducts("description")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("description")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const location = row.original;
-                    const storeLocation = storeLocations.find(
-                        (loc: StoreLocation) => loc.id === location.location_id
-                    ) as StoreLocation | undefined;
+                    const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
-                        <span className="text-gray-500 truncate max-w-[200px] inline-block">
+                        <span className="truncate max-w-[200px] inline-block">
                             {storeLocation?.description || "-"}
                         </span>
                     );
@@ -287,20 +314,18 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             },
             {
                 id: "delivery_point",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Building className="h-4 w-4" />
-                        <span>{tProducts("delivery_point")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("delivery_point")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const location = row.original;
-                    const storeLocation = storeLocations.find(
-                        (loc: StoreLocation) => loc.id === location.location_id
-                    ) as StoreLocation | undefined;
+                    const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
-                        <span className="text-gray-500">
+                        <span>
                             {storeLocation?.delivery_point?.name || "-"}
                         </span>
                     );
@@ -310,17 +335,15 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             },
             {
                 id: "status",
-                header: () => (
-                    <div className="flex items-center gap-2 justify-center">
-                        <Activity className="h-4 w-4" />
-                        <span>{tProducts("status")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("status")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const location = row.original;
-                    const storeLocation = storeLocations.find(
-                        (loc: StoreLocation) => loc.id === location.location_id
-                    ) as StoreLocation | undefined;
+                    const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
                         <div className="flex justify-center">
@@ -339,13 +362,12 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             },
             ...(currentMode !== formType.VIEW ? [{
                 id: "action",
-                header: () => <div className="text-right">{tProducts("action")}</div>,
+                header: () => (
+                    <span className="text-muted-foreground text-[0.8rem]">{tProducts("action")}</span>
+                ),
                 cell: ({ row }: { row: { original: LocationDisplayData } }) => {
                     const location = row.original;
-                    const storeLocation = storeLocations.find(
-                        (loc: StoreLocation) => loc.id === location.location_id
-                    ) as StoreLocation | undefined;
-
+                    const storeLocation = storeLocationsMap.get(location.location_id);
                     return (
                         <div className="text-right">
                             {location.isNew ? (
@@ -404,10 +426,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
             }] : [])
         ],
-        [tProducts, tStoreLocation, tCommon, storeLocations, control, currentMode, filteredStoreLocations, getLocationType, removeLocation, appendLocationRemove]
+        [tProducts, tCommon, storeLocationsMap, control, currentMode, filteredStoreLocations, getLocationType, removeLocation, appendLocationRemove]
     );
 
-    // Initialize table
     const table = useReactTable({
         data: allLocations,
         columns,
@@ -419,18 +440,25 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">{tProducts("location")}</h2>
+                <h2 className="text-base text-muted-foreground font-semibold">{tProducts("location")}</h2>
                 {currentMode !== formType.VIEW && (
-                    <Button
-                        type="button"
-                        variant="outlinePrimary"
-                        size="sm"
-                        onClick={() => appendLocation({ location_id: "" })}
-                        disabled={isLoading}
-                    >
-                        <Plus />
-                        {tProducts("add_locations")}
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="sm"
+                                    className="w-7 h-7"
+                                    onClick={() => appendLocation({ location_id: "" })}
+                                    disabled={isLoading}
+                                >
+                                    <Plus />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tProducts("add_locations")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 )}
             </div>
 
@@ -443,16 +471,15 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                     emptyMessage={tCommon("no_data")}
                     tableLayout={{
                         headerSticky: true,
-                        dense: false,
+                        dense: true,
                         rowBorder: true,
                         headerBackground: true,
                         headerBorder: true,
-                        width: "fixed",
                     }}
                 >
                     <div className="w-full">
                         <DataGridContainer>
-                            <ScrollArea className="max-h-96">
+                            <ScrollArea className="max-h-52">
                                 <DataGridTable />
                                 <ScrollBar orientation="horizontal" />
                             </ScrollArea>

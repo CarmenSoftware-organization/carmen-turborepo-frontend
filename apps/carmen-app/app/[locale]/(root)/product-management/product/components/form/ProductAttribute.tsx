@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl";
 import NumberInput from "@/components/form-custom/NumberInput";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { memo, useMemo } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ProductAttributeProps {
     readonly control: Control<ProductFormValues>;
@@ -106,18 +107,27 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">{tProducts("product_attribute")}</h2>
-                <Button
-                    type="button"
-                    variant="outlinePrimary"
-                    size="sm"
-                    onClick={handleAddAttribute}
-                    className="flex items-center gap-2"
-                    disabled={isViewMode}
-                >
-                    <Plus className="h-4 w-4" />
-                    {tProducts("add_attribute")}
-                </Button>
+                <h2 className="text-base text-muted-foreground font-semibold">{tProducts("product_attribute")}</h2>
+                {currentMode !== formType.VIEW && (
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={handleAddAttribute}
+                                    className="w-7 h-7"
+                                    disabled={isViewMode}
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tProducts("add_attribute")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+                )}
             </div>
 
             <div className="space-y-4">

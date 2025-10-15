@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { Control, UseFormSetValue, UseFormWatch, useWatch } from "react-hook-form";
 import { ProductFormValues } from "../../../pd-schema";
 import { UnitData, OrderUnitsFormData, IngredientUnitsFormData } from "../unit.type";
 
@@ -7,26 +7,27 @@ type UnitType = 'order' | 'ingredient';
 
 interface UseUnitManagementProps {
     unitType: UnitType;
+    control: Control<ProductFormValues>;
     watch: UseFormWatch<ProductFormValues>;
     setValue: UseFormSetValue<ProductFormValues>;
 }
 
-export const useUnitManagement = ({ unitType, watch, setValue }: UseUnitManagementProps) => {
+export const useUnitManagement = ({ unitType, control, watch, setValue }: UseUnitManagementProps) => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<UnitData | null>(null);
 
     const fieldName = unitType === 'order' ? 'order_units' : 'ingredient_units';
     const idFieldName = unitType === 'order' ? 'product_order_unit_id' : 'product_ingredient_unit_id';
 
-    // Get current units data
-    const unitsData = watch(fieldName) as OrderUnitsFormData | IngredientUnitsFormData;
+    // Use useWatch instead of watch() to prevent infinite re-renders
+    const unitsData = useWatch({
+        control,
+        name: fieldName as 'order_units' | 'ingredient_units'
+    }) as OrderUnitsFormData | IngredientUnitsFormData | undefined;
+
     const existingUnits = useMemo(() => unitsData?.data || [], [unitsData?.data]);
-    const addFieldPath = `${fieldName}.add` as const;
-    const removeFieldPath = `${fieldName}.remove` as const;
-    const newUnitsWatch = watch(addFieldPath);
-    const removedUnitsWatch = watch(removeFieldPath);
-    const newUnits = useMemo(() => newUnitsWatch || [], [newUnitsWatch]);
-    const removedUnits = useMemo(() => removedUnitsWatch || [], [removedUnitsWatch]);
+    const newUnits = useMemo(() => unitsData?.add || [], [unitsData?.add]);
+    const removedUnits = useMemo(() => unitsData?.remove || [], [unitsData?.remove]);
 
     // Display units (filter out removed)
     const displayUnits = useMemo(() =>

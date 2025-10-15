@@ -9,9 +9,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto } from "@/dtos/unit.dto";
 import TableUnit from "./TableUnit";
-import { filterUnits } from "@/utils/helper";
 import { useTranslations } from "next-intl";
 import { useUnitManagement } from "./hooks/useUnitManagement";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -24,22 +24,20 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
     const { units } = useUnitQuery({
         token,
         buCode,
+        params: {
+            perpage: -1
+        }
     });
     const { watch, setValue } = useFormContext<ProductFormValues>();
     const inventoryUnitId = watch("inventory_unit_id");
 
     // Use custom hook for unit management
     const {
-        editingId,
-        editForm,
-        setEditForm,
         displayUnits,
-        existingUnits,
         newUnits,
-        handleStartEdit,
-        handleSaveEdit,
     } = useUnitManagement({
         unitType: 'order',
+        control,
         watch,
         setValue
     });
@@ -49,16 +47,6 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         name: "order_units.add"
     });
 
-    // Memoize filtered units
-    const filteredUnits = useMemo(() => filterUnits({
-        units,
-        excludedUnitId: inventoryUnitId,
-        existingUnits: existingUnits,
-        editingId: editingId ?? undefined,
-        compareField: 'from_unit_id'
-    }), [units, inventoryUnitId, existingUnits, editingId]);
-
-    // Memoize getUnitName
     const getUnitName = useCallback((unitId: string) => {
         return units?.data?.find((unit: UnitDto) => unit.id === unitId)?.name ?? '-';
     }, [units]);
@@ -101,7 +89,100 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         [displayUnits.length, newUnits.length]
     );
 
-    // Memoize handlers
+    // Handle default change - ensure only one default exists
+    const handleDefaultChange = useCallback((index: number, isDataField: boolean, checked: boolean) => {
+        if (!checked) return; // Only handle when setting to true
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const unitsData = watch('order_units') as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const currentUpdate = unitsData?.update || [];
+
+        // Update all existing units to false if not the current one
+        if (unitsData?.data) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            unitsData.data.forEach((unit: any, i: number) => {
+                if (isDataField && i === index) return; // Skip the current one
+
+                // Set to false in data
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                setValue(`order_units.data.${i}.is_default` as any, false, { shouldDirty: true });
+
+                // Add to update array if not already there
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const existingUpdateIndex = currentUpdate.findIndex(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    (u: any) => u.product_order_unit_id === unit.id
+                );
+
+                const updatedUnit = {
+                    product_order_unit_id: unit.id,
+                    from_unit_id: unit.from_unit_id,
+                    from_unit_qty: unit.from_unit_qty,
+                    to_unit_id: unit.to_unit_id,
+                    to_unit_qty: unit.to_unit_qty,
+                    description: unit.description || '',
+                    is_active: unit.is_active ?? true,
+                    is_default: false
+                };
+
+                if (existingUpdateIndex >= 0) {
+                    currentUpdate[existingUpdateIndex] = updatedUnit;
+                } else {
+                    currentUpdate.push(updatedUnit);
+                }
+            });
+        }
+
+        // Update all new units to false if not the current one
+        if (unitsData?.add) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            unitsData.add.forEach((_: any, i: number) => {
+                if (!isDataField && i === index) return;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                setValue(`order_units.add.${i}.is_default` as any, false, { shouldDirty: true });
+            });
+        }
+
+        // Set the current one to true
+        if (isDataField) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setValue(`order_units.data.${index}.is_default` as any, true, { shouldDirty: true });
+
+            // Add current unit to update array
+            const currentUnit = unitsData.data[index];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const existingUpdateIndex = currentUpdate.findIndex(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                (u: any) => u.product_order_unit_id === currentUnit.id
+            );
+
+            const updatedUnit = {
+                product_order_unit_id: currentUnit.id,
+                from_unit_id: currentUnit.from_unit_id,
+                from_unit_qty: currentUnit.from_unit_qty,
+                to_unit_id: currentUnit.to_unit_id,
+                to_unit_qty: currentUnit.to_unit_qty,
+                description: currentUnit.description || '',
+                is_active: currentUnit.is_active ?? true,
+                is_default: true
+            };
+
+            if (existingUpdateIndex >= 0) {
+                currentUpdate[existingUpdateIndex] = updatedUnit;
+            } else {
+                currentUpdate.push(updatedUnit);
+            }
+        } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            setValue(`order_units.add.${index}.is_default` as any, true, { shouldDirty: true });
+        }
+
+        // Update the update array
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setValue('order_units.update' as any, currentUpdate, { shouldDirty: true });
+    }, [watch, setValue]);
+
     const handleAddUnit = useCallback(() => {
         appendOrderUnit({
             from_unit_id: "",
@@ -121,19 +202,25 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">{tProducts("order_unit")}</h2>
+                <h2 className="text-base text-muted-foreground font-semibold">{tProducts("order_unit")}</h2>
                 {currentMode !== formType.VIEW && (
-                    <Button
-                        type="button"
-                        variant="outlinePrimary"
-                        size="sm"
-                        onClick={handleAddUnit}
-                        className="flex items-center gap-1.5 px-3"
-                        disabled={!inventoryUnitId}
-                    >
-                        <Plus className="h-4 w-4" />
-                        {tProducts("add_order_unit")}
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="sm"
+                                    onClick={handleAddUnit}
+                                    disabled={!inventoryUnitId}
+                                    className="w-7 h-7"
+                                >
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tProducts("add_order_unit")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 )}
             </div>
 
@@ -141,20 +228,14 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 <TableUnit
                     control={control}
                     currentMode={currentMode}
-                    unitTitle={tProducts("order_unit")}
                     displayUnits={displayUnits}
-                    editingId={editingId}
-                    editForm={editForm}
-                    setEditingId={() => { }} // Not used anymore - handled in hook
-                    setEditForm={setEditForm}
                     getUnitName={getUnitName}
-                    filteredUnits={filteredUnits}
-                    handleStartEdit={handleStartEdit}
-                    handleSaveEdit={handleSaveEdit}
                     handleRemove={handleRemoveUnit}
                     addFieldName="order_units.add"
                     unitFields={orderUnitFields}
                     removeUnit={removeOrderUnit}
+                    inventoryUnitId={inventoryUnitId}
+                    handleDefaultChange={handleDefaultChange}
                 />
             ) : (
                 <EmptyState inventoryUnitId={inventoryUnitId} />

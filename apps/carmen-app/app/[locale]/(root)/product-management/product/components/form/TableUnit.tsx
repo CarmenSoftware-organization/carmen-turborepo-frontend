@@ -3,10 +3,12 @@ import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Check, SquarePen, Trash2, X, Package, ArrowRight, CheckCircle, Calculator } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, memo, useMemo } from "react";
+import UnitLookup from "@/components/lookup/UnitLookup";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -18,7 +20,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { UnitDto } from "@/dtos/unit.dto";
 import { UnitData } from "./unit.type";
 import { useTranslations } from "next-intl";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -44,52 +45,40 @@ interface UnitField {
 interface TableUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
-    readonly unitTitle: string;
     readonly displayUnits: UnitData[];
-    readonly editingId: string | null;
-    readonly editForm: UnitData | null;
-    readonly setEditingId: (id: string | null) => void;
-    readonly setEditForm: React.Dispatch<React.SetStateAction<UnitData | null>>;
     readonly getUnitName: (id: string) => string;
-    readonly filteredUnits: UnitDto[];
-    readonly handleStartEdit: (unit: UnitData) => void;
-    readonly handleSaveEdit: (unit: UnitData) => void;
     readonly handleRemove: (unitId: string) => void;
     readonly addFieldName: string;
     readonly unitFields: UnitField[];
     readonly removeUnit: (index: number) => void;
+    readonly inventoryUnitId?: string;
+    readonly handleDefaultChange: (index: number, isDataField: boolean, checked: boolean) => void;
 }
 
 interface UnitRow extends UnitData {
     isNew: boolean;
     fieldIndex?: number;
+    dataIndex?: number;
 }
 
 export default function TableUnit({
     control,
     currentMode,
-    unitTitle,
     displayUnits,
-    editingId,
-    editForm,
-    setEditingId,
-    setEditForm,
     getUnitName,
-    filteredUnits,
-    handleStartEdit,
-    handleSaveEdit,
     handleRemove,
     addFieldName,
     unitFields,
     removeUnit,
+    inventoryUnitId,
+    handleDefaultChange,
 }: TableUnitProps) {
-
     const tProducts = useTranslations("Products");
     const tCommon = useTranslations("Common");
+    const inventoryUnitName = inventoryUnitId ? getUnitName(inventoryUnitId) : '';
 
-    // Merge existing and new units
     const allUnits: UnitRow[] = useMemo(() => [
-        ...displayUnits.map(unit => ({ ...unit, isNew: false })),
+        ...displayUnits.map((unit, index) => ({ ...unit, isNew: false, dataIndex: index })),
         ...unitFields.map((field, index) => ({
             ...field,
             to_unit_id: field.to_unit_id || "",
@@ -102,32 +91,18 @@ export default function TableUnit({
         }))
     ], [displayUnits, unitFields]);
 
-    // Define columns
     const columns = useMemo<ColumnDef<UnitRow>[]>(
         () => [
             {
                 accessorKey: "from_unit",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Package className="h-4 w-4" />
-                        <span>{unitTitle}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("order_unit")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    const isEditing = editingId === unit.id;
-
-                    // Editable row
-                    if (isEditing && editForm) {
-                        return (
-                            <div className="flex items-center gap-2">
-                                <span className="font-medium">{editForm.from_unit_qty}</span>
-                                <span>{getUnitName(editForm.from_unit_id)}</span>
-                            </div>
-                        );
-                    }
-
-                    // New row
                     if (unit.isNew) {
                         return (
                             <div className="flex items-center gap-2">
@@ -139,18 +114,13 @@ export default function TableUnit({
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <SelectTrigger className="w-20 h-7">
-                                                        <SelectValue placeholder={tProducts("unit")} />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {filteredUnits.map((unit) => (
-                                                            <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                                                {unit.name}
-                                                            </SelectItem>
-                                                        ))}
-                                                    </SelectContent>
-                                                </Select>
+                                                <UnitLookup
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                    placeholder=""
+                                                    classNames="min-w-20 h-7"
+                                                    disabled={currentMode === formType.VIEW}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -160,9 +130,52 @@ export default function TableUnit({
                         );
                     }
 
-                    // Display row
+                    if (currentMode === formType.EDIT && unit.dataIndex !== undefined) {
+                        const fieldNameBase = addFieldName.replace('.add', '.data');
+                        return (
+                            <div className="flex items-center gap-2">
+                                <FormField
+                                    control={control}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    name={`${fieldNameBase}.${unit.dataIndex}.from_unit_qty` as any}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-0">
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    className="w-16 h-7"
+                                                    value={field.value}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    min={1}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={control}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    name={`${fieldNameBase}.${unit.dataIndex}.from_unit_id` as any}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-0">
+                                            <FormControl>
+                                                <UnitLookup
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                    placeholder=""
+                                                    classNames="min-w-20 h-7"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        );
+                    }
                     return (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 text-xs">
                             <span className="font-medium">{unit.from_unit_qty}</span>
                             <span>{unit.from_unit_name || getUnitName(unit.from_unit_id)}</span>
                         </div>
@@ -173,28 +186,16 @@ export default function TableUnit({
             },
             {
                 accessorKey: "to_unit",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <ArrowRight className="h-4 w-4" />
-                        <span>{tProducts("to_unit")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("to_unit")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    const isEditing = editingId === unit.id;
 
-                    // Editable row
-                    if (isEditing && editForm) {
-                        return (
-                            <EditableToUnit
-                                editForm={editForm}
-                                setEditForm={setEditForm}
-                                filteredUnits={filteredUnits}
-                            />
-                        );
-                    }
-
-                    // New row
+                    // New row (always editable)
                     if (unit.isNew) {
                         return (
                             <div className="flex items-center gap-2">
@@ -225,16 +226,16 @@ export default function TableUnit({
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <SelectTrigger className="w-20 h-7">
-                                                        <SelectValue placeholder={tProducts("select_unit")} />
+                                                <Select onValueChange={field.onChange} value={field.value} disabled>
+                                                    <SelectTrigger className="h-7">
+                                                        <SelectValue placeholder={"Unit.."} />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        {filteredUnits.map((unit) => (
-                                                            <SelectItem key={unit.id} value={unit.id ?? ""}>
-                                                                {unit.name}
+                                                        {inventoryUnitId && inventoryUnitName && (
+                                                            <SelectItem key={inventoryUnitId} value={inventoryUnitId}>
+                                                                {inventoryUnitName}
                                                             </SelectItem>
-                                                        ))}
+                                                        )}
                                                     </SelectContent>
                                                 </Select>
                                             </FormControl>
@@ -246,9 +247,35 @@ export default function TableUnit({
                         );
                     }
 
-                    // Display row
+                    if (currentMode === formType.EDIT && unit.dataIndex !== undefined) {
+                        const fieldNameBase = addFieldName.replace('.add', '.data');
+                        return (
+                            <div className="flex items-center gap-2">
+                                <FormField
+                                    control={control}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    name={`${fieldNameBase}.${unit.dataIndex}.to_unit_qty` as any}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-0">
+                                            <FormControl>
+                                                <Input
+                                                    type="number"
+                                                    className="w-16 h-7"
+                                                    value={field.value}
+                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    min={1}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <span className="text-xs">{unit.to_unit_name || getUnitName(unit.to_unit_id)}</span>
+                            </div>
+                        );
+                    }
                     return (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 text-xs">
                             <span className="font-medium">{unit.to_unit_qty}</span>
                             <span>{unit.to_unit_name || getUnitName(unit.to_unit_id)}</span>
                         </div>
@@ -259,27 +286,16 @@ export default function TableUnit({
             },
             {
                 accessorKey: "is_default",
-                header: () => (
-                    <div className="flex items-center gap-2 justify-center">
-                        <CheckCircle className="h-4 w-4" />
-                        <span>{tProducts("default")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("default")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    const isEditing = editingId === unit.id;
 
-                    if (isEditing && editForm) {
-                        return (
-                            <div className="flex justify-center">
-                                <Checkbox
-                                    checked={editForm.is_default}
-                                    onCheckedChange={() => setEditForm({ ...editForm, is_default: !editForm.is_default })}
-                                />
-                            </div>
-                        );
-                    }
-
+                    // New row (editable)
                     if (unit.isNew) {
                         return (
                             <div className="flex justify-center">
@@ -289,7 +305,38 @@ export default function TableUnit({
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
-                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={(checked) => {
+                                                        handleDefaultChange(unit.fieldIndex!, false, checked as boolean);
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+                        );
+                    }
+
+                    if (currentMode === formType.EDIT && unit.dataIndex !== undefined) {
+                        const fieldNameBase = addFieldName.replace('.add', '.data');
+                        return (
+                            <div className="flex justify-center">
+                                <FormField
+                                    control={control}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    name={`${fieldNameBase}.${unit.dataIndex}.is_default` as any}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-0">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={(checked) => {
+                                                        handleDefaultChange(unit.dataIndex!, true, checked as boolean);
+                                                    }}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -314,29 +361,15 @@ export default function TableUnit({
             },
             {
                 id: "conversion",
-                header: () => (
-                    <div className="flex items-center gap-2">
-                        <Calculator className="h-4 w-4" />
-                        <span>{tProducts("conversion")}</span>
-                    </div>
+                header: ({ column }) => (
+                    <DataGridColumnHeader
+                        column={column}
+                        title={tProducts("conversion")}
+                    />
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    const isEditing = editingId === unit.id;
-
-                    if (isEditing && editForm && editForm.from_unit_id && editForm.to_unit_id) {
-                        return (
-                            <ConversionPreview
-                                fromUnitId={editForm.from_unit_id}
-                                toUnitId={editForm.to_unit_id}
-                                fromUnitQty={editForm.from_unit_qty}
-                                toUnitQty={editForm.to_unit_qty}
-                                getUnitName={getUnitName}
-                            />
-                        );
-                    }
-
-                    if (unit.isNew && unit.from_unit_id && unit.to_unit_id) {
+                    if (unit.from_unit_id && unit.to_unit_id) {
                         return (
                             <ConversionPreview
                                 fromUnitId={unit.from_unit_id}
@@ -347,19 +380,6 @@ export default function TableUnit({
                             />
                         );
                     }
-
-                    if (!unit.isNew && unit.from_unit_id && unit.to_unit_id) {
-                        return (
-                            <ConversionPreview
-                                fromUnitId={unit.from_unit_id}
-                                toUnitId={unit.to_unit_id}
-                                fromUnitQty={unit.from_unit_qty}
-                                toUnitQty={unit.to_unit_qty}
-                                getUnitName={getUnitName}
-                            />
-                        );
-                    }
-
                     return null;
                 },
                 enableSorting: false,
@@ -367,39 +387,12 @@ export default function TableUnit({
             },
             ...(currentMode !== formType.VIEW ? [{
                 id: "action",
-                header: () => <div className="text-right">{tProducts("action")}</div>,
+                header: () => (
+                    <span className="text-muted-foreground text-[0.8rem]">{tProducts("action")}</span>
+                ),
                 cell: ({ row }: { row: { original: UnitRow } }) => {
                     const unit = row.original;
-                    const isEditing = editingId === unit.id;
-
-                    if (isEditing && editForm) {
-                        return (
-                            <div className="flex items-center justify-end gap-1">
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleSaveEdit(unit)}
-                                    className="h-7 w-7 text-green-500 hover:text-green-500/80"
-                                >
-                                    <Check className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => {
-                                        setEditingId(null);
-                                        setEditForm(null);
-                                    }}
-                                    className="h-7 w-7 text-destructive hover:text-destructive/80"
-                                >
-                                    <X className="h-4 w-4" />
-                                </Button>
-                            </div>
-                        );
-                    }
-
+                    // New row - show remove button
                     if (unit.isNew) {
                         return (
                             <div className="text-right">
@@ -417,16 +410,7 @@ export default function TableUnit({
                     }
 
                     return (
-                        <div className="flex items-center justify-end gap-1">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => handleStartEdit(unit)}
-                                className="h-7 w-7 hover:bg-transparent"
-                            >
-                                <SquarePen className="h-4 w-4" />
-                            </Button>
+                        <div className="text-right">
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
@@ -440,14 +424,9 @@ export default function TableUnit({
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="max-w-md">
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle className="text-xl">Remove {unitTitle}</AlertDialogTitle>
-                                        <AlertDialogDescription className="space-y-2 text-gray-600">
-                                            <p>Are you sure you want to remove this {unitTitle.toLowerCase()} unit?</p>
-                                            <div className="mt-2 p-4 space-y-1.5 text-sm">
-                                                <p><span className="font-semibold">From Unit:</span> {getUnitName(unit.from_unit_id)}</p>
-                                                <p><span className="font-semibold">To Unit:</span> {getUnitName(unit.to_unit_id)}</p>
-                                                <p><span className="font-semibold">Description:</span> {unit.description ?? '-'}</p>
-                                            </div>
+                                        <AlertDialogTitle className="text-xl">Remove {tProducts("order_unit")}</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            <p className="text-muted-foreground">Are you sure you want to remove this {tProducts("order_unit")} unit?</p>
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter className="gap-2 mt-4">
@@ -469,7 +448,7 @@ export default function TableUnit({
                 },
             }] : [])
         ],
-        [tProducts, unitTitle, editingId, editForm, control, addFieldName, filteredUnits, getUnitName, currentMode, setEditForm, setEditingId, handleSaveEdit, handleStartEdit, handleRemove, removeUnit]
+        [tProducts, control, addFieldName, getUnitName, currentMode, handleRemove, removeUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange]
     );
 
     const table = useReactTable({
@@ -489,7 +468,7 @@ export default function TableUnit({
             emptyMessage={tCommon("no_data")}
             tableLayout={{
                 headerSticky: false,
-                dense: false,
+                dense: true,
                 rowBorder: true,
                 headerBackground: true,
                 headerBorder: true,
@@ -508,43 +487,6 @@ export default function TableUnit({
     );
 }
 
-// Helper component for editable to_unit
-const EditableToUnit = memo(({ editForm, setEditForm, filteredUnits }: {
-    editForm: UnitData;
-    setEditForm: React.Dispatch<React.SetStateAction<UnitData | null>>;
-    filteredUnits: UnitDto[];
-}) => {
-    return (
-        <div className="flex items-center gap-2">
-            <Input
-                type="number"
-                className="w-16 h-7"
-                value={editForm.to_unit_qty}
-                onChange={(e) => setEditForm({ ...editForm, to_unit_qty: Number(e.target.value) })}
-                min={1}
-            />
-            <Select
-                value={editForm.to_unit_id}
-                onValueChange={(value) => setEditForm({ ...editForm, to_unit_id: value })}
-            >
-                <SelectTrigger className="w-20 h-7">
-                    <SelectValue placeholder="Unit" />
-                </SelectTrigger>
-                <SelectContent>
-                    {filteredUnits.map((unit) => (
-                        <SelectItem key={unit.id} value={unit.id ?? ""}>
-                            {unit.name}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-        </div>
-    );
-});
-
-EditableToUnit.displayName = 'EditableToUnit';
-
-// Helper component for conversion preview
 const ConversionPreview = memo(({ fromUnitId, toUnitId, fromUnitQty, toUnitQty, getUnitName }: {
     fromUnitId: string;
     toUnitId: string;

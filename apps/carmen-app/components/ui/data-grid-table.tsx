@@ -89,7 +89,7 @@ function DataGridTableHeadRow<TData>({
     <tr
       key={headerGroup.id}
       className={cn(
-        'bg-muted/40',
+        'bg-muted',
         props.tableLayout?.headerBorder && '[&>th]:border-b [&>th]:border-border',
         props.tableLayout?.cellBorder && '[&_>:last-child]:border-e-0',
         props.tableLayout?.stripped && 'bg-transparent',
