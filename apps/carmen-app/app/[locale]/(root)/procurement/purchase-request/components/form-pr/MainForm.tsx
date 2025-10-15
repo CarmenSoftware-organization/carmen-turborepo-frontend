@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { usePrActions } from "@/hooks/usePrActions";
 import { useTranslations } from "next-intl";
 import JsonViewer from "@/components/JsonViewer";
+import { init } from "@sentry/nextjs";
 
 interface Props {
     mode: formType;
@@ -250,12 +251,14 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const onReject = () => {
-        const rejectData = initValues?.purchase_request_detail?.map((item) => ({
-            id: item.id,
-            stage_status: 'reject',
-            stage_message: 'ไม่ต้องซื้อ',
-        })) || [];
-
+        const rejectData = {
+            stage_role: STAGE_ROLE.REJECT,
+            body: initValues?.purchase_request_detail?.map((item) => ({
+                id: item.id,
+                stage_status: 'reject',
+                stage_message: 'ไม่ต้องซื้อ',
+            })) || [],
+        }
         reject(rejectData, {
             onSuccess: () => {
                 toastSuccess({
@@ -274,11 +277,15 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     const onSendBack = () => {
-        const sendBackData = initValues?.purchase_request_detail?.map((item) => ({
-            id: item.id,
-            stage_status: 'send_back',
-            stage_message: 'ส่งกลับ',
-        })) || [];
+
+        const sendBackData = {
+            stage_role: STAGE_ROLE.SEND_BACK,
+            body: initValues?.purchase_request_detail?.map((item) => ({
+                id: item.id,
+                stage_status: 'send_back',
+                stage_message: 'ส่งกลับ',
+            })) || [],
+        }
 
         sendBack(sendBackData, {
             onSuccess: () => {
