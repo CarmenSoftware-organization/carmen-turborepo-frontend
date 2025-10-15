@@ -83,7 +83,7 @@ function DataGridColumnHeader<TData, TValue>({
     return (
       <div
         className={cn(
-          'text-muted-foreground font-normal inline-flex h-full items-center gap-1.5 text-[0.8125rem] leading-[calc(1.125/0.8125)] [&_svg]:size-3.5 [&_svg]:opacity-60',
+          'text-muted-foreground font-semibold inline-flex h-full items-center gap-1.5 text-[0.8125rem] leading-[calc(1.125/0.8125)] [&_svg]:size-3.5 [&_svg]:opacity-60',
           className,
         )}
       >

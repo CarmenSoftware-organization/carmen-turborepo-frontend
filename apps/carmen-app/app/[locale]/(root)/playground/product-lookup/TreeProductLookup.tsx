@@ -274,7 +274,6 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
             searchInput={searchInput}
             hasSearch={!!searchTrigger.trim()}
             onSelect={onSelect}
-            allProducts={products?.data || []}
             selectedIds={selectedIds}
             setSelectedIds={setSelectedIds}
             selectedItemsCache={selectedItemsCache}
@@ -289,7 +288,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     searchInput,
     hasSearch,
     onSelect,
-    allProducts,
     selectedIds,
     setSelectedIds,
     selectedItemsCache,
@@ -300,7 +298,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     searchInput: React.ReactNode;
     hasSearch: boolean;
     onSelect?: (productIds: { id: string }[]) => void;
-    allProducts: ProductGetDto[];
     selectedIds: Set<string>;
     setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
     selectedItemsCache: Record<string, TreeNodeData>;

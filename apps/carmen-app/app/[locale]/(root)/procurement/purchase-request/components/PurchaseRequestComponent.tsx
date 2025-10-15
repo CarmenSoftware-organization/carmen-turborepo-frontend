@@ -63,9 +63,6 @@ export default function PurchaseRequestComponent() {
   const totalItems = prs?.paginate?.total ?? 0;
   const totalPages = prs?.paginate?.pages ?? 1;
 
-  console.log('prs', prs);
-
-
   useEffect(() => {
     if (search) {
       setPage("");

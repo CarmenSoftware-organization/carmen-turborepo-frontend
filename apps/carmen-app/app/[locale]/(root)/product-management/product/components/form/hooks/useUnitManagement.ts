@@ -84,7 +84,7 @@ export const useUnitManagement = ({ unitType, control, watch, setValue }: UseUni
         );
 
         // Check if already in update array
-        const currentUpdates = unitsData.update || [];
+        const currentUpdates = unitsData?.update || [];
         const existingUpdateIndex = currentUpdates.findIndex(
             (item) => {
                 const itemId = unitType === 'order'

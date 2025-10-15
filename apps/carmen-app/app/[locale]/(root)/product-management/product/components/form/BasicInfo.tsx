@@ -3,7 +3,7 @@ import { Control, useFormContext, useWatch } from "react-hook-form";
 import { ProductFormValues } from "../../pd-schema";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { useEffect, useRef, useCallback, useMemo } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -87,10 +87,6 @@ export default function BasicInfo({
       setValue("product_sub_category", categoryData.subCategory, { shouldValidate: false });
     }
   }, [categoryResponse, categoryData, productItemGroupId, setValue]);
-
-  const handleItemGroupChange = useCallback(() => {
-    // Query will automatically refetch when itemGroupId changes
-  }, []);
 
   // Watch required fields
   const watchedFields = useWatch({
@@ -346,7 +342,6 @@ export default function BasicInfo({
                         <ItemGroupLookup
                           value={field.value}
                           onValueChange={(value) => {
-                            handleItemGroupChange();
                             field.onChange(value);
                           }}
                           disabled={currentMode === formType.VIEW}

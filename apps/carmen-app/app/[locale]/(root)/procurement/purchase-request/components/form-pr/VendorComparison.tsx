@@ -137,11 +137,6 @@ export default function VendorComparison({
         getCoreRowModel: getCoreRowModel(),
         debugTable: true, // เพิ่มเพื่อ debug
     });
-
-    console.log('VendorComparison - data:', mockProductPriceListCompare);
-    console.log('VendorComparison - columns:', columns);
-    console.log('VendorComparison - table rows:', table.getRowModel().rows);
-
     const handleSelectVendor = () => {
         if (selectedVendorId) {
             const selectedItem = mockProductPriceListCompare.find(
@@ -168,7 +163,7 @@ export default function VendorComparison({
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger
-                className="hover:bg-transparent text-primary hover:text-primary/70 text-sm font-semibold pr-4"
+                className="hover:bg-transparent text-primary hover:text-blue-500 text-xs font-semibold pr-4"
                 onClick={() => setIsOpen(true)}
             >
                 {tPr("compare")}

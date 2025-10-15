@@ -164,7 +164,6 @@ export const usePurchaseItemManagement = ({
                         shouldDirty: true,
                         shouldTouch: false
                     });
-                    console.log('✅ Successfully updated form update array:', updateItems);
                 }
             }
 
@@ -199,7 +198,6 @@ export const usePurchaseItemManagement = ({
         if (isNewItem && itemIndex !== undefined) {
             // Remove from field array (new items) - this will automatically update UI
             addRemove(itemIndex);
-            console.log('✅ Removed new item from add array at index:', itemIndex);
         } else {
             // Mark existing item as removed and add to form remove array
             const currentValues = form.getValues();
@@ -210,14 +208,12 @@ export const usePurchaseItemManagement = ({
             const updatedUpdateItems = updateItems.filter((updateItem: any) => updateItem.id !== itemId);
             if (updatedUpdateItems.length !== updateItems.length) {
                 form.setValue('body.purchase_request_detail.update', updatedUpdateItems);
-                console.log('✅ Removed from update array:', { id: itemId });
             }
 
             // Add to remove array if not already there
             if (!removeItems.some((removeItem: any) => removeItem.id === itemId)) {
                 removeItems.push({ id: itemId });
                 form.setValue('body.purchase_request_detail.remove', removeItems);
-                console.log('✅ Added existing item to remove array:', { id: itemId });
             }
 
             // Also update state for UI display

@@ -1,12 +1,11 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { CreatePrDto, CreatePrSchema, PurchaseRequestByIdDto, PurchaseRequestUpdateFormDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
+import { CreatePrDto, CreatePrSchema, PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "@/hooks/usePurchaseItemManagement";
-import { format } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
 import { Form } from "@/components/ui/form";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -16,7 +15,6 @@ import PurchaseItemDataGrid from "./PurchaseItemDataGrid";
 import { Card } from "@/components/ui/card";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
-
 import { useRouter } from "@/lib/navigation";
 import DetailsAndComments from "@/components/DetailsAndComments";
 import { usePrMutation } from "@/hooks/usePurchaseRequest";
@@ -31,7 +29,7 @@ import { cn } from "@/lib/utils";
 import { usePrActions } from "@/hooks/usePrActions";
 import { useTranslations } from "next-intl";
 import JsonViewer from "@/components/JsonViewer";
-import { init } from "@sentry/nextjs";
+import { format } from "date-fns";
 
 interface Props {
     mode: formType;
@@ -335,6 +333,8 @@ export default function MainForm({ mode, initValues }: Props) {
     const prStatus = initValues?.pr_status;
 
     const watchForm = form.watch();
+
+    // console.log('error', form.formState.errors)
 
     return (
         <>

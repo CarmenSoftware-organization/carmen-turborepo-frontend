@@ -85,3 +85,35 @@ export const useDeleteUnit = (token: string, buCode: string, id: string) => {
         },
     });
 };
+
+// Get order units by product
+export const useOrderUnitByProduct = ({
+    token,
+    buCode,
+    productId,
+    enabled = true
+}: {
+    token: string;
+    buCode: string;
+    productId: string;
+    enabled?: boolean;
+}) => {
+    const API_URL = `${backendApi}/api/${buCode}/unit/order/product/${productId}`;
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["order-units-by-product", buCode, productId],
+        queryFn: async () => {
+            if (!token || !buCode || !productId) throw new Error("Missing required parameters");
+
+            const response = await getAllApiRequest(
+                API_URL,
+                token,
+                "Error fetching order units by product"
+            );
+            return response;
+        },
+        enabled: !!token && !!buCode && !!productId && enabled,
+    });
+
+    return { data, isLoading, error };
+};

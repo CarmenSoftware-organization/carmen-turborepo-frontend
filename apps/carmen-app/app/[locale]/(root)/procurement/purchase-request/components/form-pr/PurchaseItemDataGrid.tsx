@@ -3,10 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import { useAuth } from "@/context/AuthContext";
+import { useOrderUnitByProduct } from "@/hooks/use-unit";
 import {
     Accordion,
     AccordionContent,
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import VendorComparison from "./VendorComparison";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
@@ -50,6 +52,12 @@ interface Props {
     getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
 }
 
+interface UnitOderProduct {
+    id: string
+    name: string
+    conversion: number
+}
+
 export default function PurchaseItemDataGrid({
     currentFormType,
     items,
@@ -68,8 +76,42 @@ export default function PurchaseItemDataGrid({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; isAddItem: boolean; addIndex?: number } | null>(null);
     const [sorting, setSorting] = useState<SortingState>([]);
+    const [selectedProductId, setSelectedProductId] = useState<string>("");
+    const [selectedItemId, setSelectedItemId] = useState<string>("");
 
     const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
+
+    const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
+        token,
+        buCode,
+        productId: selectedProductId,
+        enabled: !!selectedProductId
+    });
+
+    // Auto-set first unit when product is selected
+    useEffect(() => {
+        if (orderUnitsData && orderUnitsData.length > 0 && selectedItemId) {
+            const firstUnit = orderUnitsData[0];
+            const currentItem = items.find(item => item.id === selectedItemId);
+
+            if (currentItem && !currentItem.requested_unit_id) {
+                // Set both id and name
+                onItemUpdate(currentItem.id, 'requested_unit_id', firstUnit.id);
+                onItemUpdate(currentItem.id, 'requested_unit_name', firstUnit.name);
+            }
+        }
+    }, [orderUnitsData, selectedItemId, items, onItemUpdate]);
+
+    // Auto-init units for items with product but no unit (e.g., when adding new items)
+    useEffect(() => {
+        items.forEach((item) => {
+            if (item.product_id && !item.requested_unit_id && currentFormType !== formType.VIEW) {
+                // Set selected product to trigger API call
+                setSelectedProductId(item.product_id);
+                setSelectedItemId(item.id);
+            }
+        });
+    }, [items, currentFormType]);
 
     const handleRemoveItemClick = (id: string, isNewItem: boolean = false, itemIndex?: number) => {
         setItemToDelete({ id, isAddItem: isNewItem, addIndex: itemIndex });
@@ -83,6 +125,7 @@ export default function PurchaseItemDataGrid({
         setDeleteDialogOpen(false);
         setItemToDelete(null);
     };
+
 
     // Define columns
     const columns = useMemo<ColumnDef<PurchaseRequestDetail>[]>(
@@ -116,7 +159,7 @@ export default function PurchaseItemDataGrid({
                                     <AccordionItem value="item-1">
                                         <div className="flex items-center justify-between border-b border-border">
                                             <AccordionTrigger iconPosition="left" className="px-2">
-                                                <h4 className="font-semibold text-sm text-muted-foreground">{tPr("vendor_and_price_info")}</h4>
+                                                <h4 className="font-semibold text-xs text-muted-foreground">{tPr("vendor_and_price_info")}</h4>
                                             </AccordionTrigger>
                                             <VendorComparison
                                                 req_qty={item.requested_qty}
@@ -133,7 +176,7 @@ export default function PurchaseItemDataGrid({
                                                 <PrLabelItem label={tPr("vendor")} value={(getItemValue(item, 'vendor_name') as string) ?? "-"} />
                                                 <PrLabelItem label={tPr("pricelist")} value={(getItemValue(item, 'pricelist_no') as string) ?? "-"} />
                                             </div>
-                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 px-2">
+                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 px-2">
                                                 <PrLabelItem label={tPr("unit_price")} value={formatPriceConf(Number(getItemValue(item, 'pricelist_price')) || item.base_price || 0, defaultAmount, currencyBase ?? 'THB')} position="text-right" />
                                                 <PrLabelItem label={tPr("sub_total")} value={Number(getItemValue(item, 'base_sub_total_price') ?? item.base_sub_total_price).toFixed(2)} position="text-right" />
                                                 <PrLabelItem label={tPr("discount")} value={Number(getItemValue(item, 'discount_amount') ?? item.discount_amount ?? 0).toFixed(2)} position="text-right" />
@@ -151,7 +194,7 @@ export default function PurchaseItemDataGrid({
                                 <Accordion type="single" collapsible>
                                     <AccordionItem value="item-2">
                                         <AccordionTrigger iconPosition="left" className="px-2">
-                                            <h4 className="font-bold text-sm text-muted-foreground">{tPr("inventory_info")}</h4>
+                                            <h4 className="font-bold text-xs text-muted-foreground">{tPr("inventory_info")}</h4>
                                         </AccordionTrigger>
                                         <AccordionContent className="space-y-1 flex flex-col gap-2 border-l border-l-4 border-green-100 mx-3 my-1 -mt-px">
                                             <InventoryInfo item={item} token={token} buCode={buCode} />
@@ -274,6 +317,9 @@ export default function PurchaseItemDataGrid({
                                         onItemUpdate(item.id, 'product_id', value, selectedProduct);
                                         onItemUpdate(item.id, 'inventory_unit_id', selectedProduct?.inventory_unit?.id);
                                         onItemUpdate(item.id, 'inventory_unit_name', selectedProduct?.inventory_unit?.name);
+                                        if (value) {
+                                            setSelectedProductId(value);
+                                        }
                                     }}
                                     classNames="text-xs h-7 w-full"
                                     disabled={!getItemValue(item, 'location_id')}
@@ -314,12 +360,33 @@ export default function PurchaseItemDataGrid({
                                     classNames="h-7 text-xs bg-background w-16"
                                     disabled={!getItemValue(item, 'product_id')}
                                 />
-                                <UnitLookup
-                                    value={getItemValue(item, 'requested_unit_id') as string}
-                                    onValueChange={(value) => onItemUpdate(item.id, 'requested_unit_id', value)}
-                                    classNames="h-7 text-xs"
-                                    disabled={!getItemValue(item, 'product_id')}
-                                />
+                                {(() => {
+                                    const currentValue = (getItemValue(item, 'requested_unit_id') as string) || orderUnitsData?.[0]?.id || '';
+                                    return (
+                                        <Select
+                                            value={currentValue}
+                                            onValueChange={(value) => {
+                                                const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
+                                                if (selectedUnit) {
+                                                    onItemUpdate(item.id, 'requested_unit_name', selectedUnit?.name);
+                                                    onItemUpdate(item.id, 'requested_unit_id', selectedUnit?.id);
+                                                }
+                                            }}
+                                            disabled={!getItemValue(item, 'product_id') || isLoadingOrderUnits}
+                                        >
+                                            <SelectTrigger className="h-7 text-xs">
+                                                <SelectValue placeholder={isLoadingOrderUnits ? "Loading..." : "Select unit"} />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {orderUnitsData?.map((unit: UnitOderProduct) => (
+                                                    <SelectItem key={unit.id} value={unit.id}>
+                                                        {unit?.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    );
+                                })()}
                             </div>
                         );
                     },
