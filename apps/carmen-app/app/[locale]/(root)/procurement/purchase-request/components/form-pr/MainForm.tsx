@@ -410,7 +410,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                 </Tabs>
                             </form>
                         </Form>
-                        {/* <JsonViewer data={watchForm} title="Form Data" /> */}
+                        <JsonViewer data={watchForm} title="Form Data" />
                     </Card>
 
                     {prStatus !== 'voided' && (
