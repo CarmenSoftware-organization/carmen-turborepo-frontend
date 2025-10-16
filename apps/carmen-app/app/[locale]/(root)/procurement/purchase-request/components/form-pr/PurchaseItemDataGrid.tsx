@@ -275,7 +275,14 @@ export default function PurchaseItemDataGrid({
                             <div className="min-w-[200px] pr-4">
                                 <LocationLookup
                                     value={getItemValue(item, 'location_id') as string | undefined}
-                                    onValueChange={(value) => onItemUpdate(item.id, 'location_id', value)}
+                                    onValueChange={(value, selectedLocation) => {
+                                        onItemUpdate(item.id, 'location_id', value);
+                                        // Auto-init delivery point from location
+                                        if (selectedLocation?.delivery_point) {
+                                            onItemUpdate(item.id, 'delivery_point_id', selectedLocation.delivery_point.id);
+                                            onItemUpdate(item.id, 'delivery_point_name', selectedLocation.delivery_point.name);
+                                        }
+                                    }}
                                     classNames="text-xs h-7 w-full"
                                 />
                             </div>

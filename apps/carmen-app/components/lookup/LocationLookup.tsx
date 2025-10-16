@@ -20,13 +20,17 @@ import { useAuth } from "@/context/AuthContext";
 import { useLocationQuery } from "@/hooks/use-location";
 import { StoreLocationDto } from "@/dtos/config.dto";
 
+interface LocationLookupProps extends Omit<PropsLookup, 'onValueChange'> {
+    onValueChange: (value: string, selectedLocation?: StoreLocationDto) => void;
+}
+
 export default function LocationLookup({
     value,
     onValueChange,
     placeholder = "Select location",
     disabled = false,
     classNames = ""
-}: Readonly<PropsLookup>) {
+}: Readonly<LocationLookupProps>) {
     const [open, setOpen] = useState(false);
     const { token, buCode } = useAuth();
 
@@ -79,7 +83,7 @@ export default function LocationLookup({
                                                 value={storeLocation.name}
                                                 onSelect={() => {
                                                     if (storeLocation.id) {
-                                                        onValueChange(storeLocation.id);
+                                                        onValueChange(storeLocation.id, storeLocation);
                                                     }
                                                     setOpen(false);
                                                 }}
