@@ -722,6 +722,7 @@
     "add_order_unit": "Add Order Unit",
     "add_ingredient_unit": "Add Ingredient Unit",
     "to_unit": "To Unit",
+    "to_inventory_unit": "To Inventory Unit",
     "default": "Default",
     "conversion": "Conversion",
     "pls_select_order_unit": "Please select order unit",

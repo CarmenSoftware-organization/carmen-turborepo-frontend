@@ -718,6 +718,7 @@
     "add_order_unit": "เพิ่มหน่วยสั่งซื้อ",
     "add_ingredient_unit": "เพิ่มหน่วยส่วนผสม",
     "to_unit": "หน่วยสั่งซื้อ",
+    "to_inventory_unit": "ถึงหน่วยนับสินค้า",
     "default": "ค่าเริ่มต้น",
     "conversion": "การแปลง",
     "pls_select_order_unit": "กรุณาเลือกหน่วยสั่งซื้อ",
