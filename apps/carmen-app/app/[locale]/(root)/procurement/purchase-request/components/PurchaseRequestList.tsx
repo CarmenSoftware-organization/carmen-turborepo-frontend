@@ -106,7 +106,7 @@ export default function PurchaseRequestList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 30,
+        size: 35,
       },
       {
         id: "no",
@@ -261,7 +261,7 @@ export default function PurchaseRequestList({
         ),
         cell: ({ row }) => (
           <div className="text-right">
-            <span className="font-mono text-sm">
+            <span>
               {formatPriceConf(row.original.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
             </span>
           </div>

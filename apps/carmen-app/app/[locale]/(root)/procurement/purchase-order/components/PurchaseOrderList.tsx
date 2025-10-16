@@ -76,7 +76,7 @@ export default function PurchaseOrderList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 20,
+        size: 40,
       },
       {
         id: "no",
@@ -87,7 +87,7 @@ export default function PurchaseOrderList({
           </div>
         ),
         enableSorting: false,
-        size: 20,
+        size: 30,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
@@ -99,14 +99,12 @@ export default function PurchaseOrderList({
           <DataGridColumnHeader column={column} title={tTableHeader("po_number")} icon={<FileText className="h-4 w-4" />} />
         ),
         cell: ({ row }) => (
-          <div className="max-w-[150px] truncate">
-            <ButtonLink href={`/procurement/purchase-order/${row.original.id}`}>
-              {row.original.po_number ?? "-"}
-            </ButtonLink>
-          </div>
+          <ButtonLink href={`/procurement/purchase-order/${row.original.id}`}>
+            {row.original.po_number ?? "-"}
+          </ButtonLink>
         ),
         enableSorting: true,
-        size: 150,
+        size: 200,
         meta: {
           headerTitle: tTableHeader("po_number"),
         },
@@ -117,12 +115,12 @@ export default function PurchaseOrderList({
           <DataGridColumnHeader column={column} title={tTableHeader("vendor")} icon={<Building2 className="h-4 w-4" />} />
         ),
         cell: ({ row }) => (
-          <span className="truncate max-w-[180px] inline-block">
+          <span>
             {row.original.vendor ?? "-"}
           </span>
         ),
         enableSorting: true,
-        size: 180,
+        size: 200,
         meta: {
           headerTitle: tTableHeader("vendor"),
         },

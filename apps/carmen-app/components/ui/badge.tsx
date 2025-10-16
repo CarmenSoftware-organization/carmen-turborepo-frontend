@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "text-[11px] inline-flex items-center rounded-full border px-1.5 md:px-2.5 py-0 md:py-0.5 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "text-[11px] inline-flex items-center rounded-full px-1.5 md:px-2.5 py-0 md:py-0.5 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -15,13 +15,13 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
-        active: "bg-emerald-100 text-emerald-800 hover:bg-emerald-300 transition-colors duration-200 border",
-        inactive: "bg-rose-100 text-rose-800 hover:bg-rose-300 transition-colors duration-200 border",
-        voided: "bg-rose-100 text-rose-800 hover:bg-rose-300 transition-colors duration-200 border border-rose-300",
-        warning: "bg-amber-100 text-amber-800 hover:bg-amber-300 transition-colors duration-200 border",
-        draft: "bg-gray-100 text-gray-800 hover:bg-gray-300 transition-colors duration-200 border",
-        work_in_process: "bg-blue-100 text-blue-800 hover:bg-blue-300 transition-colors duration-200 border",
-        in_progress: "bg-yellow-100 text-yellow-800 hover:bg-yellow-300 transition-colors duration-200 border",
+        active: "bg-emerald-100 text-emerald-800 borde-none",
+        inactive: "bg-rose-100 text-rose-800 borde-none",
+        voided: "bg-rose-100 text-rose-800 borde-none",
+        warning: "bg-amber-100 text-amber-800 borde-none",
+        draft: "bg-gray-100 text-gray-800 borde-none",
+        work_in_process: "bg-blue-100 text-blue-800 borde-none",
+        in_progress: "bg-yellow-100 text-yellow-800 borde-none",
       },
     },
     defaultVariants: {

@@ -358,7 +358,7 @@ export default function PurchaseItemDataGrid({
                         const item = row.original;
 
                         return currentFormType === formType.VIEW ? (
-                            <p className="text-xs font-semibold text-right">
+                            <p className="text-xs text-right">
                                 {item.requested_qty} {item.requested_unit_name || "-"}
                             </p>
                         ) : (
@@ -421,11 +421,11 @@ export default function PurchaseItemDataGrid({
                         if (currentFormType === formType.VIEW) {
                             return (
                                 <div className="text-right">
-                                    <p className="text-xs font-semibold text-active">
+                                    <p className="text-xs text-active">
                                         {item.approved_qty} {item.approved_unit_name || "-"}
                                     </p>
                                     <Separator className="my-0.5" />
-                                    <p className="text-xs font-semibold text-active">
+                                    <p className="text-xs text-active">
                                         FOC: {item.foc_qty} {item.foc_unit_name || "-"}
                                     </p>
                                 </div>
@@ -484,7 +484,7 @@ export default function PurchaseItemDataGrid({
                         const item = row.original;
 
                         return currentFormType === formType.VIEW ? (
-                            <p className="text-sm font-medium text-center text-xs">
+                            <p className="text-sm text-center text-xs">
                                 {formatDateFns(item.delivery_date, dateFormat || 'yyyy-MM-dd')}
                             </p>
                         ) : (
@@ -516,7 +516,7 @@ export default function PurchaseItemDataGrid({
                         const item = row.original;
 
                         return currentFormType === formType.VIEW ? (
-                            <p className="text-xs font-medium break-words">{item.delivery_point_name || "-"}</p>
+                            <p className="text-xs">{item.delivery_point_name || "-"}</p>
                         ) : (
                             <div className="min-w-[200px] pr-4">
                                 <DeliveryPointSelectLookup

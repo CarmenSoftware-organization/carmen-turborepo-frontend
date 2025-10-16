@@ -128,12 +128,12 @@ export default function DepartmentList({
           <DataGridColumnHeader column={column} title={t("description")} icon={<Info className="h-4 w-4" />} />
         ),
         cell: ({ row }) => (
-          <p className="break-words max-w-[200px]">
+          <p className="max-w-[200px] truncate">
             {row.original.description}
           </p>
         ),
         enableSorting: false,
-        size: 250,
+        size: 200,
         meta: {
           headerTitle: t("description"),
         },
