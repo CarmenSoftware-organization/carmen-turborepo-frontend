@@ -1,5 +1,4 @@
 import ButtonIcon from "@/components/ButtonIcon";
-import ButtonLink from "@/components/ButtonLink";
 import CardLoading from "@/components/loading/CardLoading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
+import { Link } from "@/lib/navigation";
 import { formatDateFns } from "@/utils/config-system";
 import { FileText, Trash2 } from "lucide-react";
 
@@ -59,9 +59,11 @@ export default function CreditNoteCard({
                                         className="mt-1"
                                     />
                                     <CardTitle className="text-base text-primary hover:underline cursor-pointer">
-                                        <ButtonLink href={`/procurement/credit-note/${cn.id}`}>
+                                        <Link
+                                            href={`/procurement/credit-note/${cn.id}`} className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+                                        >
                                             {cn.cn_no}
-                                        </ButtonLink>
+                                        </Link>
                                     </CardTitle>
                                     <Badge variant={cn?.doc_status}>
                                         {cn?.doc_status || "-"}

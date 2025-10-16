@@ -1,12 +1,10 @@
 "use client";
 
 import { ProductGetDto } from "@/dtos/product.dto";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Activity, Box, Layers, List, MoreHorizontal, Ruler, Tag, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import ButtonLink from "@/components/ButtonLink";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import {
@@ -21,6 +19,7 @@ import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Link } from "@/lib/navigation";
 
 interface ProductListProps {
   readonly products: ProductGetDto[];
@@ -50,16 +49,11 @@ export default function ProductList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -68,7 +62,6 @@ export default function ProductList({
     [currentPage, perpage]
   );
 
-  // Define columns
   const columns = useMemo<ColumnDef<ProductGetDto>[]>(
     () => [
       {
@@ -77,7 +70,7 @@ export default function ProductList({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 30,
+        size: 40,
       },
       {
         id: "no",
@@ -102,24 +95,38 @@ export default function ProductList({
         cell: ({ row }) => {
           const product = row.original;
           return (
-            <div className="flex items-center gap-2 max-w-[450px]">
-              <ButtonLink
+            <div className="max-w-[300px] truncate">
+              <Link
                 href={`/product-management/product/${product.id}`}
-                className="truncate"
+                className="link-primary"
               >
                 {product.name}
-              </ButtonLink>
-              <Badge variant="secondary" className="shrink-0">
-                {product.code}
-              </Badge>
+              </Link>
             </div>
           );
         },
         enableSorting: true,
-        size: 450,
+        size: 300,
         meta: {
           headerTitle: t("name"),
         },
+      },
+      {
+        id: "code",
+        accessorKey: 'code',
+        header: ({ column }) => (
+          <DataGridColumnHeader column={column} title="SKU" icon={<Tag className="h-4 w-4" />} />
+        ),
+        cell: ({ row }) => {
+          const product = row.original;
+          return (
+            <span className="text-sm">
+              {product.code}
+            </span>
+          );
+        },
+        enableSorting: true,
+        size: 120,
       },
       {
         accessorKey: "product_category.name",
@@ -175,12 +182,14 @@ export default function ProductList({
           <DataGridColumnHeader column={column} title={t("inventory_unit")} icon={<Ruler className="h-4 w-4" />} />
         ),
         cell: ({ row }) => (
-          <span>{row.original.inventory_unit_name || "-"}</span>
+          <span className="text-sm">{row.original.inventory_unit_name || "-"}</span>
         ),
         enableSorting: false,
         size: 150,
         meta: {
           headerTitle: t("inventory_unit"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
         },
       },
       {
@@ -207,14 +216,14 @@ export default function ProductList({
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => <div className="text-right">{t("action")}</div>,
         cell: ({ row }) => {
           const product = row.original;
           return (
             <div className="flex justify-end">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                  <Button variant="ghost" size="sm" className="h-6 w-6">
                     <MoreHorizontal className="h-4 w-4" />
                     <span className="sr-only">More options</span>
                   </Button>
@@ -243,7 +252,6 @@ export default function ProductList({
     [t, tCommon, currentPage, perpage]
   );
 
-  // Initialize table
   const table = useReactTable({
     data: products,
     columns,
@@ -294,7 +302,7 @@ export default function ProductList({
         width: "fixed",
       }}
     >
-      <div className="w-full space-y-2.5">
+      <div className="w-full space-y-2">
         <DataGridContainer>
           <ScrollArea className="max-h-[calc(100vh-250px)]">
             <DataGridTable />

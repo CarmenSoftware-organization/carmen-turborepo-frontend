@@ -8,7 +8,7 @@ export const StatusCustom = ({ is_active, children }: { is_active: boolean, chil
                 is_active ? "bg-active" : "bg-inactive"
             )}></div>
             <p className={cn(
-                "font-medium",
+                "font-medium text-sm",
                 is_active ? "text-active" : "text-inactive"
             )}>
                 {children}

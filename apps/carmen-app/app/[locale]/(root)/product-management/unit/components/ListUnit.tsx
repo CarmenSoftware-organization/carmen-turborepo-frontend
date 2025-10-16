@@ -108,12 +108,11 @@ export default function ListUnit({
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-
                     if (canUpdate) {
                         return (
                             <button
                                 type="button"
-                                className="btn-dialog"
+                                className="btn-dialog text-sm"
                                 onClick={() => onEdit(unit)}
                             >
                                 {unit.name}
@@ -138,7 +137,7 @@ export default function ListUnit({
                     </div>
                 ),
                 cell: ({ row }) => (
-                    <span className="truncate max-w-[300px] inline-block">
+                    <span className="text-sm">
                         {row.original.description}
                     </span>
                 ),
@@ -262,7 +261,7 @@ export default function ListUnit({
                 width: "fixed",
             }}
         >
-            <div className="w-full space-y-2.5">
+            <div className="w-full space-y-2">
                 <DataGridContainer>
                     <ScrollArea className="max-h-[calc(100vh-250px)]">
                         <DataGridTable />

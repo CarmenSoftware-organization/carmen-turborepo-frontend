@@ -174,6 +174,10 @@
     @apply text-primary dark:text-foreground cursor-pointer hover:underline transition-colors text-left text-xs md:text-base;
   }
 
+  .link-primary {
+    @apply hover:underline text-primary dark:text-primary-foreground hover:text-primary/80;
+  }
+
   .fxr-c {
     @apply flex flex-row items-center;
   }

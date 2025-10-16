@@ -132,7 +132,7 @@ export default function PurchaseRequestList({
           <div className="max-w-[200px] truncate">
             <Link
               href={`/procurement/purchase-request/${row.original.id}`}
-              className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+              className="link-primary"
             >
               {row.original.pr_no ?? "-"}
             </Link>
