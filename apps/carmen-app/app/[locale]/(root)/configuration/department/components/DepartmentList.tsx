@@ -91,7 +91,7 @@ export default function DepartmentList({
           </div>
         ),
         enableSorting: false,
-        size: 30,
+        size: 20,
         meta: {
           cellClassName: "text-center",
           headerClassName: "text-center",
@@ -106,20 +106,18 @@ export default function DepartmentList({
           const department = row.original;
           if (canUpdate) {
             return (
-              <div className="max-w-[200px] truncate">
-                <Link
-                  href={`/configuration/department/${department.id}`}
-                  className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
-                >
-                  {department.name}
-                </Link>
-              </div>
+              <Link
+                href={`/configuration/department/${department.id}`}
+                className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+              >
+                {department.name}
+              </Link>
             );
           }
-          return <span className="max-w-[200px] truncate inline-block">{department.name}</span>;
+          return <span className="max-w-[200px] break-words">{department.name}</span>;
         },
         enableSorting: true,
-        size: 200,
+        size: 280,
         meta: {
           headerTitle: t("name"),
         },
@@ -130,7 +128,7 @@ export default function DepartmentList({
           <DataGridColumnHeader column={column} title={t("description")} icon={<Info className="h-4 w-4" />} />
         ),
         cell: ({ row }) => (
-          <p className="truncate max-w-[200px] inline-block">
+          <p className="break-words max-w-[200px]">
             {row.original.description}
           </p>
         ),

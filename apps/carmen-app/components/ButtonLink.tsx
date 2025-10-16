@@ -11,7 +11,7 @@ interface ButtonLinkProps {
 export default function ButtonLink({ href, children, className }: ButtonLinkProps) {
     return (
         <Button variant={'ghost'} asChild className={cn("p-0 hover:bg-transparent", className)}>
-            <Link href={href} className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80">
+            <Link href={href} className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80">
                 {children}
             </Link>
         </Button>

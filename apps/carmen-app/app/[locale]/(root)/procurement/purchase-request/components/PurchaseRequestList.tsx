@@ -132,7 +132,7 @@ export default function PurchaseRequestList({
           <div className="max-w-[200px] truncate">
             <Link
               href={`/procurement/purchase-request/${row.original.id}`}
-              className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+              className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
             >
               {row.original.pr_no ?? "-"}
             </Link>
@@ -184,9 +184,6 @@ export default function PurchaseRequestList({
         cell: ({ row }) => (
           <div className="flex justify-center">
             {row.original.pr_status && (
-              // <StatusBadge status={row.original.pr_status}>
-
-              // </StatusBadge>
               <Badge variant={row.original.pr_status}>
                 {convertStatus(row.original.pr_status)}
               </Badge>

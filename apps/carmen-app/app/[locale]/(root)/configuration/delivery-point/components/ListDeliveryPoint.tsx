@@ -111,7 +111,7 @@ export default function ListDeliveryPoint({
             return (
               <button
                 type="button"
-                className="btn-dialog"
+                className="btn-dialog text-sm"
                 onClick={() => onEdit(deliveryPoint)}
               >
                 {deliveryPoint.name}

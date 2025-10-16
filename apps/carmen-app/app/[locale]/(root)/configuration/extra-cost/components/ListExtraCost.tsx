@@ -112,7 +112,7 @@ export default function ListExtraCost({
               <div className="max-w-[250px] truncate">
                 <button
                   type="button"
-                  className="btn-dialog"
+                  className="btn-dialog text-sm"
                   onClick={() => onEdit(extraCost)}
                 >
                   {extraCost.name}

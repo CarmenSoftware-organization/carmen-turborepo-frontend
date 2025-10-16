@@ -128,14 +128,12 @@ export default function ListLocations({
           const location = row.original;
           if (canUpdate) {
             return (
-              <div className="space-y-0 w-[200px] truncate ellipsis">
-                <Link
-                  href={`/configuration/location/${location.id}`}
-                  className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
-                >
-                  {location.name}
-                </Link>
-              </div>
+              <Link
+                href={`/configuration/location/${location.id}`}
+                className="hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+              >
+                {location.name}
+              </Link>
             );
           }
           return <span>{location.name}</span>;

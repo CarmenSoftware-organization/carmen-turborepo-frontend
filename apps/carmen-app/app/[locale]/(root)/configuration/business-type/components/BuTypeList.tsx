@@ -65,7 +65,6 @@ export default function BuTypeList({
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -74,7 +73,6 @@ export default function BuTypeList({
     [currentPage, perpage]
   );
 
-  // Define columns
   const columns = useMemo<ColumnDef<BuTypeGetAllDto>[]>(
     () => [
       {
@@ -109,21 +107,19 @@ export default function BuTypeList({
           const buType = row.original;
           if (canUpdate) {
             return (
-              <div className="max-w-[200px] truncate">
-                <button
-                  type="button"
-                  className="btn-dialog"
-                  onClick={() => onEdit(buType.id)}
-                >
-                  {buType.name}
-                </button>
-              </div>
+              <button
+                type="button"
+                className="btn-dialog text-sm"
+                onClick={() => onEdit(buType.id)}
+              >
+                {buType.name}
+              </button>
             );
           }
           return <span className="max-w-[200px] truncate inline-block">{buType.name}</span>;
         },
         enableSorting: true,
-        size: 200,
+        size: 280,
         meta: {
           headerTitle: t("name"),
         },
@@ -134,32 +130,32 @@ export default function BuTypeList({
           <DataGridColumnHeader column={column} title={t("description")} icon={<Info className="h-4 w-4" />} />
         ),
         cell: ({ row }) => (
-          <span className="truncate max-w-[200px] inline-block">
+          <p>
             {row.original.description}
-          </span>
+          </p>
         ),
         enableSorting: false,
-        size: 200,
+        size: 250,
         meta: {
           headerTitle: t("description"),
         },
       },
-      {
-        accessorKey: "note",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("note")} icon={<Info className="h-4 w-4" />} />
-        ),
-        cell: ({ row }) => (
-          <span className="truncate max-w-[200px] inline-block">
-            {row.original.note}
-          </span>
-        ),
-        enableSorting: false,
-        size: 200,
-        meta: {
-          headerTitle: t("note"),
-        },
-      },
+      // {
+      //   accessorKey: "note",
+      //   header: ({ column }) => (
+      //     <DataGridColumnHeader column={column} title={t("note")} icon={<Info className="h-4 w-4" />} />
+      //   ),
+      //   cell: ({ row }) => (
+      //     <span className="truncate max-w-[200px] inline-block">
+      //       {row.original.note}
+      //     </span>
+      //   ),
+      //   enableSorting: false,
+      //   size: 200,
+      //   meta: {
+      //     headerTitle: t("note"),
+      //   },
+      // },
       {
         accessorKey: "is_active",
         header: ({ column }) => (
