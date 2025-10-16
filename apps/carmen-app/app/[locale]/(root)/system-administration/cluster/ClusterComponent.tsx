@@ -16,9 +16,8 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { useMemo, useState } from "react";
 import {
     ColumnDef,
