@@ -1,4 +1,3 @@
-import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
@@ -6,6 +5,7 @@ import { useRouter } from "@/lib/navigation";
 import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 
 interface ActionFieldsProps {
     readonly mode: formType;
@@ -109,11 +109,9 @@ export default function ActionFields({
                             </p>
                         )}
                         {initValues?.pr_status && (
-                            <StatusBadge
-                                status={initValues?.pr_status}
-                            >
+                            <Badge variant={initValues?.pr_status}>
                                 {convertStatus(initValues?.pr_status)}
-                            </StatusBadge>
+                            </Badge>
                         )}
                     </div>
                 </div>

@@ -3,7 +3,7 @@ import { Control, useFieldArray, useFormContext } from "react-hook-form";
 import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
@@ -16,7 +16,6 @@ import { Input } from "@/components/ui/input";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Check, ChevronsUpDown } from "lucide-react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -44,17 +43,6 @@ interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
-
-interface UnitField {
-    id: string;
-    from_unit_id: string;
-    from_unit_name?: string;
-    from_unit_qty: number;
-    to_unit_id?: string;
-    to_unit_qty?: number;
-    is_default?: boolean;
-}
-
 interface UnitRow extends UnitData {
     isNew: boolean;
     fieldIndex?: number;
@@ -91,6 +79,66 @@ const ConversionPreview = memo(({ fromUnitId, toUnitId, fromUnitQty, toUnitQty, 
 });
 
 ConversionPreview.displayName = 'ConversionPreview';
+
+// Unit Combobox Component
+const UnitCombobox = memo(({
+    value,
+    onChange,
+    availableUnits,
+    disabled
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    availableUnits: UnitDto[];
+    disabled?: boolean;
+}) => {
+    const [open, setOpen] = useState(false);
+    const selectedUnit = availableUnits.find((u: UnitDto) => u.id === value);
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="min-w-32 h-7 justify-between text-xs"
+                    disabled={disabled}
+                >
+                    {selectedUnit?.name || "Select unit"}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+                <Command>
+                    <CommandInput placeholder="Search unit..." className="h-8" />
+                    <CommandList>
+                        <CommandEmpty>No unit found.</CommandEmpty>
+                        <CommandGroup>
+                            {availableUnits.map((unit: UnitDto) => (
+                                <CommandItem
+                                    key={unit.id}
+                                    value={unit.name}
+                                    onSelect={() => {
+                                        onChange(unit.id);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    <Check
+                                        className={`mr-2 h-4 w-4 ${value === unit.id ? "opacity-100" : "opacity-0"}`}
+                                    />
+                                    {unit.name}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    );
+});
+
+UnitCombobox.displayName = 'UnitCombobox';
 
 const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
     const tProducts = useTranslations("Products");
@@ -336,58 +384,19 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                 <FormField
                                     control={control}
                                     name={`order_units.add.${unit.fieldIndex!}.from_unit_id` as `order_units.add.${number}.from_unit_id`}
-                                    render={({ field }) => {
-                                        const [open, setOpen] = useState(false);
-                                        const selectedUnit = availableUnits.find((u: UnitDto) => u.id === field.value);
-
-                                        return (
-                                            <FormItem className="space-y-0">
-                                                <Popover open={open} onOpenChange={setOpen}>
-                                                    <PopoverTrigger asChild>
-                                                        <FormControl>
-                                                            <Button
-                                                                variant="outline"
-                                                                role="combobox"
-                                                                aria-expanded={open}
-                                                                className="min-w-32 h-7 justify-between text-xs"
-                                                                disabled={currentMode === formType.VIEW}
-                                                            >
-                                                                {selectedUnit?.name || "Select unit"}
-                                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                            </Button>
-                                                        </FormControl>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-[200px] p-0">
-                                                        <Command>
-                                                            <CommandInput placeholder="Search unit..." className="h-8" />
-                                                            <CommandList>
-                                                                <CommandEmpty>No unit found.</CommandEmpty>
-                                                                <CommandGroup>
-                                                                    {availableUnits.map((unit: UnitDto) => (
-                                                                        <CommandItem
-                                                                            key={unit.id}
-                                                                            value={unit.name}
-                                                                            onSelect={() => {
-                                                                                field.onChange(unit.id);
-                                                                                setOpen(false);
-                                                                            }}
-                                                                        >
-                                                                            <Check
-                                                                                className={`mr-2 h-4 w-4 ${field.value === unit.id ? "opacity-100" : "opacity-0"
-                                                                                    }`}
-                                                                            />
-                                                                            {unit.name}
-                                                                        </CommandItem>
-                                                                    ))}
-                                                                </CommandGroup>
-                                                            </CommandList>
-                                                        </Command>
-                                                    </PopoverContent>
-                                                </Popover>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-0">
+                                            <FormControl>
+                                                <UnitCombobox
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    availableUnits={availableUnits}
+                                                    disabled={currentMode === formType.VIEW}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
                             </div>
                         );
@@ -421,57 +430,18 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                     control={control}
                                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     name={`order_units.data.${unit.dataIndex}.from_unit_id` as any}
-                                    render={({ field }) => {
-                                        const [open, setOpen] = useState(false);
-                                        const selectedUnit = availableUnits.find((u: UnitDto) => u.id === field.value);
-
-                                        return (
-                                            <FormItem className="space-y-0">
-                                                <Popover open={open} onOpenChange={setOpen}>
-                                                    <PopoverTrigger asChild>
-                                                        <FormControl>
-                                                            <Button
-                                                                variant="outline"
-                                                                role="combobox"
-                                                                aria-expanded={open}
-                                                                className="min-w-32 h-7 justify-between text-xs"
-                                                            >
-                                                                {selectedUnit?.name || "Select unit"}
-                                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                            </Button>
-                                                        </FormControl>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent className="w-[200px] p-0">
-                                                        <Command>
-                                                            <CommandInput placeholder="Search unit..." className="h-8" />
-                                                            <CommandList>
-                                                                <CommandEmpty>No unit found.</CommandEmpty>
-                                                                <CommandGroup>
-                                                                    {availableUnits.map((unit: UnitDto) => (
-                                                                        <CommandItem
-                                                                            key={unit.id}
-                                                                            value={unit.name}
-                                                                            onSelect={() => {
-                                                                                field.onChange(unit.id);
-                                                                                setOpen(false);
-                                                                            }}
-                                                                        >
-                                                                            <Check
-                                                                                className={`mr-2 h-4 w-4 ${field.value === unit.id ? "opacity-100" : "opacity-0"
-                                                                                    }`}
-                                                                            />
-                                                                            {unit.name}
-                                                                        </CommandItem>
-                                                                    ))}
-                                                                </CommandGroup>
-                                                            </CommandList>
-                                                        </Command>
-                                                    </PopoverContent>
-                                                </Popover>
-                                                <FormMessage />
-                                            </FormItem>
-                                        );
-                                    }}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-0">
+                                            <FormControl>
+                                                <UnitCombobox
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    availableUnits={availableUnits}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
                             </div>
                         );
@@ -745,7 +715,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 },
             }] : [])
         ],
-        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeOrderUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange]
+        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeOrderUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits]
     );
 
     const table = useReactTable({

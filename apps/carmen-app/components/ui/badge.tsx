@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const badgeVariants = cva(
-  "text-xs md:text-sm inline-flex items-center rounded-md border px-1.5 md:px-2.5 py-0 md:py-0.5 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "text-[11px] inline-flex items-center rounded-full border px-1.5 md:px-2.5 py-0 md:py-0.5 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -15,12 +15,13 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
-        active: "bg-emerald-100 text-emerald-800 hover:bg-emerald-300 transition-colors duration-200 rounded-full border border-emerald-300",
-        inactive: "bg-rose-100 text-rose-800 hover:bg-rose-300 transition-colors duration-200 rounded-full border border-rose-300",
-        warning: "bg-amber-100 text-amber-800 hover:bg-amber-300 transition-colors duration-200 rounded-full border border-amber-300",
-        draft: "bg-gray-100 text-gray-800 hover:bg-gray-300 transition-colors duration-200 rounded-full border border-gray-300",
-        work_in_process: "bg-blue-100 text-blue-800 hover:bg-blue-300 transition-colors duration-200 rounded-full border border-blue-300",
-        in_progress: "bg-yellow-100 text-yellow-800 hover:bg-yellow-300 transition-colors duration-200 rounded-full border border-yellow-300",
+        active: "bg-emerald-100 text-emerald-800 hover:bg-emerald-300 transition-colors duration-200 border",
+        inactive: "bg-rose-100 text-rose-800 hover:bg-rose-300 transition-colors duration-200 border",
+        voided: "bg-rose-100 text-rose-800 hover:bg-rose-300 transition-colors duration-200 border border-rose-300",
+        warning: "bg-amber-100 text-amber-800 hover:bg-amber-300 transition-colors duration-200 border",
+        draft: "bg-gray-100 text-gray-800 hover:bg-gray-300 transition-colors duration-200 border",
+        work_in_process: "bg-blue-100 text-blue-800 hover:bg-blue-300 transition-colors duration-200 border",
+        in_progress: "bg-yellow-100 text-yellow-800 hover:bg-yellow-300 transition-colors duration-200 border",
       },
     },
     defaultVariants: {
@@ -47,7 +48,8 @@ function Badge({ className, variant, ...props }: BadgeProps) {
     'warning',
     'draft',
     'work_in_process',
-    'in_progress'
+    'in_progress',
+    'voided'
   ] as const;
 
   type ValidVariant = typeof validVariants[number];

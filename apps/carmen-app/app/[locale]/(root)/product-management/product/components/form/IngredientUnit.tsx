@@ -44,16 +44,6 @@ interface IngredientUnitProps {
     readonly currentMode: formType;
 }
 
-interface UnitField {
-    id: string;
-    from_unit_id: string;
-    from_unit_name?: string;
-    from_unit_qty: number;
-    to_unit_id?: string;
-    to_unit_qty?: number;
-    is_default?: boolean;
-}
-
 interface UnitRow extends UnitData {
     isNew: boolean;
     fieldIndex?: number;
@@ -90,6 +80,77 @@ const ConversionPreview = memo(({ fromUnitId, toUnitId, fromUnitQty, toUnitQty, 
 });
 
 ConversionPreview.displayName = 'ConversionPreview';
+
+// Unit Combobox Component
+const UnitCombobox = memo(({
+    value,
+    onChange,
+    availableUnits,
+    disabled
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    availableUnits: UnitDto[];
+    disabled?: boolean;
+}) => {
+    const [open, setOpen] = useState(false);
+
+    const getUnitName = useCallback((unitId: string) => {
+        return availableUnits.find((unit: UnitDto) => unit.id === unitId)?.name ?? 'Select unit...';
+    }, [availableUnits]);
+
+    return (
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className={cn(
+                        "min-w-32 h-7 justify-between text-xs",
+                        !value && "text-muted-foreground"
+                    )}
+                    disabled={disabled}
+                >
+                    {value ? getUnitName(value) : "Select unit..."}
+                    <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+                <Command>
+                    <CommandInput placeholder="Search unit..." className="h-8" />
+                    <CommandList>
+                        <CommandEmpty>No unit found.</CommandEmpty>
+                        <CommandGroup>
+                            {availableUnits.map((unit: UnitDto) => (
+                                <CommandItem
+                                    key={unit.id}
+                                    value={unit.name}
+                                    onSelect={() => {
+                                        onChange(unit.id);
+                                        setOpen(false);
+                                    }}
+                                >
+                                    <Check
+                                        className={cn(
+                                            "mr-2 h-4 w-4",
+                                            value === unit.id
+                                                ? "opacity-100"
+                                                : "opacity-0"
+                                        )}
+                                    />
+                                    {unit.name}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </CommandList>
+                </Command>
+            </PopoverContent>
+        </Popover>
+    );
+});
+
+UnitCombobox.displayName = 'UnitCombobox';
 
 const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
     const tProducts = useTranslations("Products");
@@ -414,55 +475,14 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                     name={`ingredient_units.add.${unit.fieldIndex!}.to_unit_id` as `ingredient_units.add.${number}.to_unit_id`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant="outline"
-                                                            role="combobox"
-                                                            className={cn(
-                                                                "min-w-32 h-7 justify-between text-xs",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                            disabled={currentMode === formType.VIEW}
-                                                        >
-                                                            {field.value
-                                                                ? getUnitName(field.value)
-                                                                : "Select unit..."}
-                                                            <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-[200px] p-0">
-                                                    <Command>
-                                                        <CommandInput placeholder="Search unit..." className="h-8" />
-                                                        <CommandList>
-                                                            <CommandEmpty>No unit found.</CommandEmpty>
-                                                            <CommandGroup>
-                                                                {availableUnits.map((unit: UnitDto) => (
-                                                                    <CommandItem
-                                                                        key={unit.id}
-                                                                        value={unit.name}
-                                                                        onSelect={() => {
-                                                                            field.onChange(unit.id);
-                                                                        }}
-                                                                    >
-                                                                        <Check
-                                                                            className={cn(
-                                                                                "mr-2 h-4 w-4",
-                                                                                field.value === unit.id
-                                                                                    ? "opacity-100"
-                                                                                    : "opacity-0"
-                                                                            )}
-                                                                        />
-                                                                        {unit.name}
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        </CommandList>
-                                                    </Command>
-                                                </PopoverContent>
-                                            </Popover>
+                                            <FormControl>
+                                                <UnitCombobox
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    availableUnits={availableUnits}
+                                                    disabled={currentMode === formType.VIEW}
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -500,54 +520,13 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                     name={`ingredient_units.data.${unit.dataIndex}.to_unit_id` as any}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant="outline"
-                                                            role="combobox"
-                                                            className={cn(
-                                                                "min-w-32 h-7 justify-between text-xs",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value
-                                                                ? getUnitName(field.value)
-                                                                : "Select unit..."}
-                                                            <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-[200px] p-0">
-                                                    <Command>
-                                                        <CommandInput placeholder="Search unit..." className="h-8" />
-                                                        <CommandList>
-                                                            <CommandEmpty>No unit found.</CommandEmpty>
-                                                            <CommandGroup>
-                                                                {availableUnits.map((unit: UnitDto) => (
-                                                                    <CommandItem
-                                                                        key={unit.id}
-                                                                        value={unit.name}
-                                                                        onSelect={() => {
-                                                                            field.onChange(unit.id);
-                                                                        }}
-                                                                    >
-                                                                        <Check
-                                                                            className={cn(
-                                                                                "mr-2 h-4 w-4",
-                                                                                field.value === unit.id
-                                                                                    ? "opacity-100"
-                                                                                    : "opacity-0"
-                                                                            )}
-                                                                        />
-                                                                        {unit.name}
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        </CommandList>
-                                                    </Command>
-                                                </PopoverContent>
-                                            </Popover>
+                                            <FormControl>
+                                                <UnitCombobox
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    availableUnits={availableUnits}
+                                                />
+                                            </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -767,7 +746,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                         headerSticky: false,
                         dense: true,
                         rowBorder: true,
-                        headerBackground: true,
+                        headerBackground: false,
                         headerBorder: true,
                         width: "fixed",
                     }}

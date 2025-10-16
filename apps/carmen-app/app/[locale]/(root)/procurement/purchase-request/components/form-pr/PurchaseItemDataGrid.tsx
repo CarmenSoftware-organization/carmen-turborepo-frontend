@@ -105,10 +105,12 @@ export default function PurchaseItemDataGrid({
     // Auto-init units for items with product but no unit (e.g., when adding new items)
     useEffect(() => {
         items.forEach((item) => {
-            if (item.product_id && !item.requested_unit_id && currentFormType !== formType.VIEW) {
-                // Set selected product to trigger API call
-                setSelectedProductId(item.product_id);
-                setSelectedItemId(item.id);
+            if (item.product_id && currentFormType !== formType.VIEW) {
+                // Set selected product to trigger API call for fetching order units
+                if (!item.requested_unit_id) {
+                    setSelectedProductId(item.product_id);
+                    setSelectedItemId(item.id);
+                }
             }
         });
     }, [items, currentFormType]);
@@ -659,7 +661,7 @@ export default function PurchaseItemDataGrid({
                     headerSticky: true,
                     dense: true,
                     rowBorder: true,
-                    headerBackground: true,
+                    headerBackground: false,
                     headerBorder: true,
                     width: "fixed",
                 }}

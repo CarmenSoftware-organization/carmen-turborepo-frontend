@@ -27,6 +27,7 @@ import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/navigation";
+import { Badge } from "@/components/ui/badge";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -130,9 +131,6 @@ export default function PurchaseRequestList({
         ),
         cell: ({ row }) => (
           <div className="max-w-[200px] truncate">
-            {/* <ButtonLink href={`/procurement/purchase-request/${row.original.id}`}>
-              {row.original.pr_no ?? "-"}
-            </ButtonLink> */}
             <Link
               href={`/procurement/purchase-request/${row.original.id}`}
               className="text-base hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
@@ -187,9 +185,12 @@ export default function PurchaseRequestList({
         cell: ({ row }) => (
           <div className="flex justify-center">
             {row.original.pr_status && (
-              <StatusBadge status={row.original.pr_status}>
+              // <StatusBadge status={row.original.pr_status}>
+
+              // </StatusBadge>
+              <Badge variant={row.original.pr_status}>
                 {convertStatus(row.original.pr_status)}
-              </StatusBadge>
+              </Badge>
             )}
           </div>
         ),
