@@ -676,7 +676,13 @@
     "purchase_request_reviewed": "Purchase Request reviewed successfully",
     "purchase_request_reviewed_failed": "Purchase Request reviewed failed",
     "tooltip_pr_created": "Create a new purchase request",
-    "tooltip_pr_sort": "Sort purchase request"
+    "tooltip_pr_sort": "Sort purchase request",
+    "create_new_pr": "Create New Purchase Request",
+    "create_new_pr_desc": "Choose how you would like to create a new purchase request",
+    "blank_pr": "Blank PR",
+    "blank_pr_desc": "Create a new purchase request from scratch",
+    "template_pr": "Template PR",
+    "template_pr_desc": "Create a new purchase request from a purchase request"
   },
   "Procurement": {
     "title": "Procurement"

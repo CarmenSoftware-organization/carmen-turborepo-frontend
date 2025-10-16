@@ -672,7 +672,13 @@
     "purchase_request_reviewed": "ใบขอซื้อทำการตรวจสอบเรียบร้อย",
     "purchase_request_reviewed_failed": "ใบขอซื้อทำการตรวจสอบไม่สำเร็จ",
     "tooltip_pr_created": "สร้างใบขอซื้อ",
-    "tooltip_pr_sort": "เรียงลำดับใบขอซื้อ"
+    "tooltip_pr_sort": "เรียงลำดับใบขอซื้อ",
+    "create_new_pr": "สร้างใบขอซื้อใหม่",
+    "create_new_pr_desc": "เลือกวิธีการสร้างใบขอซื้อใหม่",
+    "blank_pr": "ใบขอซื้อเปล่า",
+    "blank_pr_desc": "สร้างใบขอซื้อใหม่ตั้งแต่ต้น",
+    "template_pr": "ใบขอซื้อจากแม่แบบ",
+    "template_pr_desc": "สร้างใบขอซื้อใหม่จากแม่แบบใบขอซื้อ"
   },
   "Procurement": {
     "title": "การจัดซื้อ"

@@ -87,12 +87,12 @@ export default function ActionFields({
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
-                                variant="ghost"
-                                size="icon"
+                                variant="outline"
+                                size="sm"
                                 onClick={handleBack}
-                                className="hover:bg-transparent"
+                                className="hover:bg-transparent w-8 h-8"
                             >
-                                <ChevronLeft className="h-4 w-4" />
+                                <ChevronLeft />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -100,7 +100,7 @@ export default function ActionFields({
                         </TooltipContent>
                     </Tooltip>
 
-                    <div className="flex items-start gap-2">
+                    <div className="flex items-center gap-2">
                         {mode === formType.ADD ? (
                             <p className="text-xl font-bold">{tPr("title")}</p>
                         ) : (
