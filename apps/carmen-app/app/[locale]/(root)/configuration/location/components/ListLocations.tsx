@@ -102,7 +102,7 @@ export default function ListLocations({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 30,
+        size: 40,
       },
       {
         id: "no",

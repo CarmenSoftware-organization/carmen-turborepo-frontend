@@ -83,7 +83,7 @@ export default function ListDeliveryPoint({
         cell: ({ row }) => <DataGridTableRowSelect row={row} />,
         enableSorting: false,
         enableHiding: false,
-        size: 20,
+        size: 30,
       },
       {
         id: "no",
