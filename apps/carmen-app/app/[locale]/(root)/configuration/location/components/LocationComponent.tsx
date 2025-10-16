@@ -23,7 +23,7 @@ export default function LocationComponent() {
   const tHeader = useTranslations("TableHeader");
   const { token, buCode, permissions } = useAuth();
   const router = useRouter();
-  // Get permissions for store_location resource
+
   const locationPerms = configurationPermission.get(permissions, "store_location");
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
