@@ -1,7 +1,8 @@
-import { Building2, Calendar } from "lucide-react";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { SwitchTheme } from "@/components/SwitchTheme";
+import { Building2 } from "lucide-react";
 
 export default function HeaderLegal() {
-    const lastUpdated = 'October 17, 2025';
     return (
         <header className="bg-background border-b border-border sticky top-0 z-10 shadow-sm">
             <div className="max-w-7xl mx-auto px-6 py-4">
@@ -14,8 +15,8 @@ export default function HeaderLegal() {
                         </div>
                     </div>
                     <div className="flex items-center space-x-2 text-sm">
-                        <Calendar className="w-4 h-4" />
-                        <span>Updated: {lastUpdated}</span>
+                        <SwitchTheme />
+                        <LanguageSwitcher />
                     </div>
                 </div>
             </div>

@@ -780,6 +780,8 @@
     "no_results_found": "ไม่พบผลลัพธ์ที่ตรงกับ"
   },
   "Legal": {
+    "terms_and_conditions": "ข้อกําหนดและเงื่อนไข",
+    "privacy_policy": "ความเป็นส่วนตัว",
     "privacyPolicyTitle": "นโยบายความเป็นส่วนตัว - Carmen Software",
     "privacyPolicyDescription": "เรียนรู้วิธีที่ Carmen Software เก็บรวบรวม ใช้ และปกป้องข้อมูลส่วนบุคคลของคุณตาม พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล",
     "termsOfServiceTitle": "ข้อตกลงการใช้บริการ - Carmen Software",
