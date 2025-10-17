@@ -98,9 +98,9 @@ export default function SignInDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Session Expired</DialogTitle>
+                    <DialogTitle>{t('sessionExpired')}</DialogTitle>
                     <DialogDescription>
-                        Please sign in again to continue.
+                        {t('sessionExpiredDescription')}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -110,10 +110,10 @@ export default function SignInDialog({
                             name="email"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Email</FormLabel>
+                                    <FormLabel>{t('email')}</FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="email@example.com"
+                                            placeholder={t('emailPlaceholder')}
                                             type="email"
                                             autoComplete="email"
                                             disabled={signInMutation.isPending}
@@ -129,10 +129,10 @@ export default function SignInDialog({
                             name="password"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel>{t('password')}</FormLabel>
                                     <FormControl>
                                         <PasswordInput
-                                            placeholder="••••••••"
+                                            placeholder={t('passwordPlaceholder')}
                                             type="password"
                                             autoComplete="current-password"
                                             disabled={signInMutation.isPending}

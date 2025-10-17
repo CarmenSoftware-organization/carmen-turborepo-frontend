@@ -7,12 +7,11 @@ export default getRequestConfig(async ({ locale }) => {
     try {
         const mainMessages = (await import(`../messages/${validLocale}.json`)).default;
         const legalMessages = (await import(`../messages/legal-${validLocale}.json`)).default;
+        const homePageMessages = (await import(`../messages/home-${validLocale}.json`)).default;
         const messages = {
             ...mainMessages,
-            Legal: {
-                ...mainMessages.Legal,
-                ...legalMessages
-            }
+            Legal: legalMessages,
+            HomePage: homePageMessages
         };
 
         return {

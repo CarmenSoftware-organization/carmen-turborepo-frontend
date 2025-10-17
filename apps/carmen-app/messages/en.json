@@ -20,7 +20,11 @@
     "emailRequired": "Email is required",
     "emailInvalid": "Please enter a valid email address",
     "passwordRequired": "Password is required",
-    "passwordMinLength": "Password must be at least 6 characters"
+    "passwordMinLength": "Password must be at least 6 characters",
+    "sessionExpired": "Session Expired",
+    "sessionExpiredDescription": "Please sign in again to continue.",
+    "emailPlaceholder": "email@example.com",
+    "passwordPlaceholder": "••••••••"
   },
   "DashboardPage": {
     "dashboardTitle": "Dashboard Page",

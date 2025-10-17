@@ -1,0 +1,202 @@
+{
+  "CarmenSoftware": "Carmen Software",
+  "HotelFinanceManagementSoftware": "Hotel finance management software",
+  "navbar": {
+    "brand": "Carmen",
+    "home": "Home",
+    "features": "Features",
+    "testimonials": "Testimonials",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "getDemo": "Get Demo"
+  },
+  "hero": {
+    "title": "Hotel Management Reimagined",
+    "description": "Carmen provides a seamless, elegant back office solution to help you focus on what matters most: your guests' experience.",
+    "requestDemo": "Request Demo",
+    "exploreFeatures": "Explore Features",
+    "features": {
+      "analytics": {
+        "title": "Analytics Dashboard",
+        "description": "Real-time insights into your hotel's performance metrics and occupancy rates."
+      },
+      "staff": {
+        "title": "Staff Management",
+        "description": "Effortlessly manage staff schedules, permissions, and performance tracking."
+      },
+      "booking": {
+        "title": "Booking System",
+        "description": "Streamlined reservation management with automated confirmations and reminders."
+      }
+    }
+  },
+  "features": {
+    "badge": "Features",
+    "title": "Everything you need to run your hotel efficiently",
+    "description": "Carmen combines powerful tools with an intuitive interface to give you complete control over your operations.",
+    "items": {
+      "performanceAnalytics": {
+        "title": "Performance Analytics",
+        "description": "Comprehensive dashboards with real-time KPIs and actionable insights."
+      },
+      "automatedWorkflows": {
+        "title": "Automated Workflows",
+        "description": "Eliminate manual tasks with intelligent workflow automation."
+      },
+      "secureAccess": {
+        "title": "Secure Access Control",
+        "description": "Role-based permissions and multi-factor authentication."
+      },
+      "integratedPayments": {
+        "title": "Integrated Payments",
+        "description": "Seamless payment processing and financial reporting."
+      },
+      "continuousUpdates": {
+        "title": "Continuous Updates",
+        "description": "Stay ahead with regular feature enhancements and improvements."
+      },
+      "customConfiguration": {
+        "title": "Custom Configuration",
+        "description": "Tailor the system to your specific operational requirements."
+      },
+      "resourcePlanning": {
+        "title": "Resource Planning",
+        "description": "Optimize staff scheduling and resource allocation."
+      },
+      "support247": {
+        "title": "24/7 Support",
+        "description": "Dedicated support team available around the clock."
+      },
+      "mobileAccessibility": {
+        "title": "Mobile Accessibility",
+        "description": "Manage your property from anywhere with our mobile app."
+      },
+      "inventoryManagement": {
+        "title": "Inventory Management",
+        "description": "Track supplies and automate reordering processes."
+      },
+      "multiProperty": {
+        "title": "Multi-Property Support",
+        "description": "Manage multiple properties from a single unified interface."
+      },
+      "guestProfiles": {
+        "title": "Guest Profiles",
+        "description": "Detailed guest history and preference tracking."
+      }
+    }
+  },
+  "testimonials": {
+    "badge": "Testimonials",
+    "title": "Trusted by hoteliers worldwide",
+    "description": "See what our customers have to say about their experience with Carmen.",
+    "items": {
+      "testimonial1": {
+        "quote": "Carmen has transformed how we manage our hotel chain. The intuitive interface and powerful analytics have improved our efficiency by over 40%.",
+        "author": "Alexandra Richards",
+        "position": "Operations Director, Luxury Hotels Group"
+      },
+      "testimonial2": {
+        "quote": "After implementing Carmen, our staff can focus more on guest experience rather than administrative tasks. It's been a game-changer for our boutique hotel.",
+        "author": "Michael Torres",
+        "position": "General Manager, Riverside Boutique Hotel"
+      },
+      "testimonial3": {
+        "quote": "The level of customization and the responsive support team make Carmen stand out from other hotel management systems we've used in the past.",
+        "author": "Sophia Chen",
+        "position": "IT Manager, Grand Plaza Hotels"
+      }
+    }
+  },
+  "contact": {
+    "badge": "Get Started Today",
+    "title": "Ready to elevate your hotel management?",
+    "description": "Schedule a free demonstration with our team and discover how Carmen can transform your operations.",
+    "benefits": {
+      "benefit1": "Personalized demo of all features",
+      "benefit2": "Custom implementation strategy",
+      "benefit3": "Pricing tailored to your property size",
+      "benefit4": "No commitment required",
+      "benefit5": "Direct access to our product specialists"
+    },
+    "contactInfo": {
+      "email": "demo@carmen.com",
+      "phone": "+1-800-CARMEN"
+    },
+    "form": {
+      "heading": "Request a Demo",
+      "fullName": {
+        "label": "Full Name",
+        "placeholder": "John Smith"
+      },
+      "email": {
+        "label": "Email Address",
+        "placeholder": "john@example.com"
+      },
+      "company": {
+        "label": "Hotel/Company Name",
+        "placeholder": "Grand Hotel"
+      },
+      "rooms": {
+        "label": "Number of Rooms",
+        "placeholder": "Select room count",
+        "options": {
+          "option1": "1-20 rooms",
+          "option2": "21-50 rooms",
+          "option3": "51-100 rooms",
+          "option4": "101+ rooms"
+        }
+      },
+      "message": {
+        "label": "Additional Information",
+        "placeholder": "Tell us about your current setup and challenges..."
+      },
+      "submit": "Request Demo",
+      "privacy": "By submitting this form, you agree to our",
+      "privacyLink": "Privacy Policy"
+    }
+  },
+  "footer": {
+    "brand": {
+      "name": "Carmen",
+      "description": "Elevating hotel management with intuitive, powerful tools designed for hoteliers who care about exceptional guest experiences."
+    },
+    "columns": {
+      "product": {
+        "title": "Product",
+        "links": {
+          "features": "Features",
+          "pricing": "Pricing",
+          "caseStudies": "Case Studies",
+          "reviews": "Reviews",
+          "updates": "Updates"
+        }
+      },
+      "company": {
+        "title": "Company",
+        "links": {
+          "aboutUs": "About Us",
+          "careers": "Careers",
+          "press": "Press",
+          "partners": "Partners",
+          "contact": "Contact"
+        }
+      },
+      "resources": {
+        "title": "Resources",
+        "links": {
+          "blog": "Blog",
+          "support": "Support",
+          "documentation": "Documentation",
+          "api": "API",
+          "community": "Community"
+        }
+      }
+    },
+    "copyright": "Carmen Hotel Management. All rights reserved.",
+    "legal": {
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "cookies": "Cookies"
+    }
+  }
+}

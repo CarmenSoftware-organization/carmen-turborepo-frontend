@@ -4,10 +4,13 @@ import { cn } from "@/lib/utils";
 import { Hotel, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import LanguageSwitcher from "../LanguageSwitcher";
 import { Button } from "../ui/button";
+import { SwitchTheme } from "../SwitchTheme";
 
 export default function HomeNavbar() {
+    const t = useTranslations('HomePage');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -43,10 +46,10 @@ export default function HomeNavbar() {
     };
 
     const navItems = [
-        { name: 'Home', href: '#home' },
-        { name: 'Features', href: '#features' },
-        { name: 'Testimonials', href: '#testimonials' },
-        { name: 'Contact', href: '#contact' },
+        { name: t('navbar.home'), href: '#home' },
+        { name: t('navbar.features'), href: '#features' },
+        { name: t('navbar.testimonials'), href: '#testimonials' },
+        { name: t('navbar.contact'), href: '#contact' },
     ];
 
     return (
@@ -80,7 +83,7 @@ export default function HomeNavbar() {
                     ))}
                     <Button asChild>
                         <Link href="/sign-in">
-                            Sign In
+                            {t('navbar.signIn')}
                         </Link>
                     </Button>
                     <Link
@@ -88,9 +91,10 @@ export default function HomeNavbar() {
                         className="bg-primary text-primary-foreground px-5 py-2 rounded-md hover:bg-primary/90 transition-all duration-300 text-sm font-medium"
                         onClick={(e) => handleSmoothScroll(e, '#demo')}
                     >
-                        Get Demo
+                        {t('navbar.getDemo')}
                     </Link>
                     <LanguageSwitcher />
+                    <SwitchTheme />
                 </nav>
 
                 {/* Mobile Menu Button */}
@@ -122,7 +126,7 @@ export default function HomeNavbar() {
                             className="bg-primary text-primary-foreground px-5 py-2 rounded-md hover:bg-primary/90 transition-all duration-300 text-sm font-medium text-center mt-2"
                             onClick={(e) => handleSmoothScroll(e, '#demo')}
                         >
-                            Get Demo
+                            {t('navbar.getDemo')}
                         </a>
                     </nav>
                 </div>

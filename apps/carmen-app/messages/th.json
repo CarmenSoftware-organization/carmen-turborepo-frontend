@@ -20,7 +20,11 @@
     "emailRequired": "กรุณากรอกอีเมล",
     "emailInvalid": "กรุณากรอกอีเมลที่ถูกต้อง",
     "passwordRequired": "กรุณากรอกรหัสผ่าน",
-    "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร"
+    "passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+    "sessionExpired": "เซสชันหมดอายุ",
+    "sessionExpiredDescription": "กรุณาเข้าสู่ระบบอีกครั้งเพื่อดำเนินการต่อ",
+    "emailPlaceholder": "email@example.com",
+    "passwordPlaceholder": "••••••••"
   },
   "DashboardPage": {
     "dashboardTitle": "แดชบอร์ด",

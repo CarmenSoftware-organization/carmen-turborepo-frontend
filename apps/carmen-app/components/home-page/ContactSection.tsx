@@ -1,13 +1,18 @@
+"use client";
+
 import { CheckCircle2, ArrowRight, Mail, Phone } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function ContactSection() {
+    const t = useTranslations('HomePage');
+
     const benefits = [
-        { id: "benefit-1", text: "Personalized demo of all features" },
-        { id: "benefit-2", text: "Custom implementation strategy" },
-        { id: "benefit-3", text: "Pricing tailored to your property size" },
-        { id: "benefit-4", text: "No commitment required" },
-        { id: "benefit-5", text: "Direct access to our product specialists" }
+        { id: "benefit-1", key: "benefit1" },
+        { id: "benefit-2", key: "benefit2" },
+        { id: "benefit-3", key: "benefit3" },
+        { id: "benefit-4", key: "benefit4" },
+        { id: "benefit-5", key: "benefit5" }
     ];
     return (
         <section id="contact" className="py-20 bg-background relative">
@@ -16,20 +21,22 @@ export default function ContactSection() {
                     <div className="grid md:grid-cols-2 gap-10 items-center">
                         <div className="section-transition">
                             <div className="inline-flex items-center bg-primary/10 px-4 py-1.5 rounded-full text-xs font-medium text-foreground border border-border mb-5">
-                                Get Started Today
+                                {t('contact.badge')}
                             </div>
                             <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-6">
-                                Ready to elevate your hotel management?
+                                {t('contact.title')}
                             </h2>
                             <p className="text-lg text-muted-foreground mb-8">
-                                Schedule a free demonstration with our team and discover how Carmen can transform your operations.
+                                {t('contact.description')}
                             </p>
 
                             <ul className="space-y-3 mb-8">
                                 {benefits.map((benefit) => (
                                     <li key={benefit.id} className="flex items-start">
                                         <CheckCircle2 className="h-5 w-5 text-primary mr-3 flex-shrink-0 mt-0.5" />
-                                        <span className="text-muted-foreground">{benefit.text}</span>
+                                        <span className="text-muted-foreground">
+                                            {t(`contact.benefits.${benefit.key}`)}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
@@ -37,83 +44,83 @@ export default function ContactSection() {
                             <div className="space-y-4">
                                 <div className="flex items-center">
                                     <Mail className="h-5 w-5 text-muted-foreground mr-3" />
-                                    <a href="mailto:demo@carmen.com" className="text-foreground hover:text-primary transition-colors">
-                                        demo@carmen.com
+                                    <a href={`mailto:${t('contact.contactInfo.email')}`} className="text-foreground hover:text-primary transition-colors">
+                                        {t('contact.contactInfo.email')}
                                     </a>
                                 </div>
                                 <div className="flex items-center">
                                     <Phone className="h-5 w-5 text-muted-foreground mr-3" />
-                                    <a href="tel:+1-800-CARMEN" className="text-foreground hover:text-primary transition-colors">
-                                        +1-800-CARMEN
+                                    <a href={`tel:${t('contact.contactInfo.phone')}`} className="text-foreground hover:text-primary transition-colors">
+                                        {t('contact.contactInfo.phone')}
                                     </a>
                                 </div>
                             </div>
                         </div>
 
                         <div className="bg-background border border-border rounded-xl p-8 shadow-sm section-transition">
-                            <h3 className="text-xl font-semibold mb-6 text-foreground">Request a Demo</h3>
+                            <h3 className="text-xl font-semibold mb-6 text-foreground">{t('contact.form.heading')}</h3>
                             <form className="space-y-4">
                                 <div>
                                     <label htmlFor="name" className="block text-sm font-medium text-muted-foreground mb-1">
-                                        Full Name
+                                        {t('contact.form.fullName.label')}
                                     </label>
                                     <input
                                         type="text"
                                         id="name"
                                         className="w-full px-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all bg-background text-foreground"
-                                        placeholder="John Smith"
+                                        placeholder={t('contact.form.fullName.placeholder')}
                                     />
                                 </div>
 
                                 <div>
                                     <label htmlFor="email" className="block text-sm font-medium text-muted-foreground mb-1">
-                                        Email Address
+                                        {t('contact.form.email.label')}
                                     </label>
                                     <input
                                         type="email"
                                         id="email"
                                         className="w-full px-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all bg-background text-foreground"
-                                        placeholder="john@example.com"
+                                        placeholder={t('contact.form.email.placeholder')}
                                     />
                                 </div>
 
                                 <div>
                                     <label htmlFor="company" className="block text-sm font-medium text-muted-foreground mb-1">
-                                        Hotel/Company Name
+                                        {t('contact.form.company.label')}
                                     </label>
                                     <input
                                         type="text"
                                         id="company"
                                         className="w-full px-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all bg-background text-foreground"
-                                        placeholder="Grand Hotel"
+                                        placeholder={t('contact.form.company.placeholder')}
                                     />
                                 </div>
 
                                 <div>
                                     <label htmlFor="size" className="block text-sm font-medium text-muted-foreground mb-1">
-                                        Number of Rooms
+                                        {t('contact.form.rooms.label')}
                                     </label>
                                     <select
                                         id="size"
                                         className="w-full px-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all bg-background text-foreground"
                                     >
-                                        <option value="">Select room count</option>
-                                        <option value="1-20">1-20 rooms</option>
-                                        <option value="21-50">21-50 rooms</option>
-                                        <option value="51-100">51-100 rooms</option>
-                                        <option value="101+">101+ rooms</option>
+                                        <option value="">{t('contact.form.rooms.placeholder')}</option>
+                                        <option value="1-20">{t('contact.form.rooms.options.option1')}</option>
+                                        <option value="21-50">{t('contact.form.rooms.options.option2')}</option>
+                                        <option value="51-100">{t('contact.form.rooms.options.option3')}</option>
+                                        <option value="101+">{t('contact.form.rooms.options.option4')}</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label htmlFor="message" className="block text-sm font-medium text-muted-foreground mb-1">
-                                        Additional Information
+                                        {t('contact.form.message.label')}
                                     </label>
                                     <textarea
                                         id="message"
                                         rows={3}
                                         className="w-full px-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none transition-all bg-background text-foreground"
-                                        placeholder="Tell us about your current setup and challenges..."
+                                        placeholder={t('contact.form.message.placeholder')}
                                     ></textarea>
                                 </div>
 
@@ -121,12 +128,12 @@ export default function ContactSection() {
                                     type="button"
                                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-3 rounded-md font-medium flex items-center justify-center gap-2 transition-all duration-300"
                                 >
-                                    Request Demo
+                                    {t('contact.form.submit')}
                                     <ArrowRight className="h-4 w-4" />
                                 </button>
 
                                 <p className="text-xs text-muted-foreground text-center">
-                                    By submitting this form, you agree to our <Link href="#" className="text-blue-600 hover:underline">Privacy Policy</Link>.
+                                    {t('contact.form.privacy')} <Link href="/policy" className="text-blue-600 hover:underline">{t('contact.form.privacyLink')}</Link>.
                                 </p>
                             </form>
                         </div>
