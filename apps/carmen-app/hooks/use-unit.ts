@@ -86,7 +86,6 @@ export const useDeleteUnit = (token: string, buCode: string, id: string) => {
     });
 };
 
-// Get order units by product
 export const useOrderUnitByProduct = ({
     token,
     buCode,

@@ -110,7 +110,7 @@ export default function HeadForm({
                             <Textarea
                                 value={field.value ?? ""}
                                 onChange={(e) => field.onChange(e.target.value)}
-                                placeholder="Description"
+                                placeholder={tPr("description")}
                                 className={cn(mode === formType.VIEW ? "bg-muted" : "")}
                                 disabled={mode === formType.VIEW}
                             />
@@ -124,8 +124,9 @@ export default function HeadForm({
                     <div className={`bg-muted/80 p-2 rounded-md grid grid-cols-${lastThreeSteps.length} gap-0`}>
                         {lastThreeSteps.map((step, index) => {
                             const isLast = index === lastThreeSteps.length - 1;
+                            const uniqueKey = `${step.title}-${index}`;
                             return (
-                                <div key={index} className="flex flex-col items-center relative">
+                                <div key={uniqueKey} className="flex flex-col items-center relative">
                                     <div
                                         className={cn(
                                             "w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium mb-1 z-10",

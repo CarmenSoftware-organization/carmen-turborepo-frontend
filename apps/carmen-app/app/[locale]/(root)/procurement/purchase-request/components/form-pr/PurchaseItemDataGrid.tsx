@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { useState, useMemo, useEffect } from "react";
-import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Loader, Plus, Trash2 } from "lucide-react";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import { useAuth } from "@/context/AuthContext";
 import { useOrderUnitByProduct } from "@/hooks/use-unit";
@@ -40,6 +40,7 @@ import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Props {
     currentFormType: formType;
@@ -76,44 +77,8 @@ export default function PurchaseItemDataGrid({
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<{ id: string; isAddItem: boolean; addIndex?: number } | null>(null);
     const [sorting, setSorting] = useState<SortingState>([]);
-    const [selectedProductId, setSelectedProductId] = useState<string>("");
-    const [selectedItemId, setSelectedItemId] = useState<string>("");
 
     const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
-
-    const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
-        token,
-        buCode,
-        productId: selectedProductId,
-        enabled: !!selectedProductId
-    });
-
-    // Auto-set first unit when product is selected
-    useEffect(() => {
-        if (orderUnitsData && orderUnitsData.length > 0 && selectedItemId) {
-            const firstUnit = orderUnitsData[0];
-            const currentItem = items.find(item => item.id === selectedItemId);
-
-            if (currentItem && !currentItem.requested_unit_id) {
-                // Set both id and name
-                onItemUpdate(currentItem.id, 'requested_unit_id', firstUnit.id);
-                onItemUpdate(currentItem.id, 'requested_unit_name', firstUnit.name);
-            }
-        }
-    }, [orderUnitsData, selectedItemId, items, onItemUpdate]);
-
-    // Auto-init units for items with product but no unit (e.g., when adding new items)
-    useEffect(() => {
-        items.forEach((item) => {
-            if (item.product_id && currentFormType !== formType.VIEW) {
-                // Set selected product to trigger API call for fetching order units
-                if (!item.requested_unit_id) {
-                    setSelectedProductId(item.product_id);
-                    setSelectedItemId(item.id);
-                }
-            }
-        });
-    }, [items, currentFormType]);
 
     const handleRemoveItemClick = (id: string, isNewItem: boolean = false, itemIndex?: number) => {
         setItemToDelete({ id, isAddItem: isNewItem, addIndex: itemIndex });
@@ -128,8 +93,6 @@ export default function PurchaseItemDataGrid({
         setItemToDelete(null);
     };
 
-
-    // Define columns
     const columns = useMemo<ColumnDef<PurchaseRequestDetail>[]>(
         () => {
             const baseColumns: ColumnDef<PurchaseRequestDetail>[] = [
@@ -142,7 +105,7 @@ export default function PurchaseItemDataGrid({
                                 onClick={row.getToggleExpandedHandler()}
                                 variant={'outline'}
                                 size={'sm'}
-                                className="w-4 h-7"
+                                className="w-4 h-6"
                             >
                                 {row.getIsExpanded() ? (
                                     <ChevronDown className="h-3 w-3" />
@@ -326,9 +289,8 @@ export default function PurchaseItemDataGrid({
                                         onItemUpdate(item.id, 'product_id', value, selectedProduct);
                                         onItemUpdate(item.id, 'inventory_unit_id', selectedProduct?.inventory_unit?.id);
                                         onItemUpdate(item.id, 'inventory_unit_name', selectedProduct?.inventory_unit?.name);
-                                        if (value) {
-                                            setSelectedProductId(value);
-                                        }
+                                        onItemUpdate(item.id, 'requested_unit_id', '');
+                                        onItemUpdate(item.id, 'requested_unit_name', '');
                                     }}
                                     classNames="text-xs h-7 w-full"
                                     disabled={!getItemValue(item, 'location_id')}
@@ -369,33 +331,14 @@ export default function PurchaseItemDataGrid({
                                     classNames="h-7 text-xs bg-background w-16"
                                     disabled={!getItemValue(item, 'product_id')}
                                 />
-                                {(() => {
-                                    const currentValue = (getItemValue(item, 'requested_unit_id') as string) || orderUnitsData?.[0]?.id || '';
-                                    return (
-                                        <Select
-                                            value={currentValue}
-                                            onValueChange={(value) => {
-                                                const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
-                                                if (selectedUnit) {
-                                                    onItemUpdate(item.id, 'requested_unit_name', selectedUnit?.name);
-                                                    onItemUpdate(item.id, 'requested_unit_id', selectedUnit?.id);
-                                                }
-                                            }}
-                                            disabled={!getItemValue(item, 'product_id') || isLoadingOrderUnits}
-                                        >
-                                            <SelectTrigger className="h-7 text-xs">
-                                                <SelectValue placeholder={isLoadingOrderUnits ? "Loading..." : "Select unit"} />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {orderUnitsData?.map((unit: UnitOderProduct) => (
-                                                    <SelectItem key={unit.id} value={unit.id}>
-                                                        {unit?.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    );
-                                })()}
+                                <UnitSelectCell
+                                    item={item}
+                                    productId={getItemValue(item, 'product_id') as string || ''}
+                                    currentUnitId={getItemValue(item, 'requested_unit_id') as string | undefined}
+                                    onItemUpdate={onItemUpdate}
+                                    token={token}
+                                    buCode={buCode}
+                                />
                             </div>
                         );
                     },
@@ -523,6 +466,7 @@ export default function PurchaseItemDataGrid({
                                     value={getItemValue(item, 'delivery_point_id') as string || ''}
                                     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
                                     className="h-7 text-xs w-full"
+                                    disabled={!getItemValue(item, 'location_id')}
                                 />
                             </div>
                         );
@@ -601,7 +545,6 @@ export default function PurchaseItemDataGrid({
                 },
             ];
 
-            // Filter out action column in VIEW mode
             if (currentFormType === formType.VIEW) {
                 return baseColumns.filter(col => col.id !== 'action');
             }
@@ -624,7 +567,6 @@ export default function PurchaseItemDataGrid({
         ]
     );
 
-    // Initialize table
     const table = useReactTable({
         data: items,
         columns,
@@ -642,12 +584,21 @@ export default function PurchaseItemDataGrid({
     return (
         <div className="mt-4 space-y-4">
             <div className="flex items-center justify-between">
-                <p className="font-semibold text-muted-foreground ">Items</p>
+                <p className="font-semibold text-muted-foreground ">{tPr("items")}</p>
                 {currentFormType !== formType.VIEW && (
-                    <Button onClick={onAddItem} size="sm">
-                        <Plus className="h-4 w-4" />
-                        {tPr("add_item")}
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button onClick={onAddItem} size="sm" className="w-7 h-7">
+                                    <Plus className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tPr("add_item")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
+
                 )}
             </div>
 
@@ -704,5 +655,63 @@ const PrLabelItem = ({
                 <p className="text-xs text-muted-foreground">{sub_value}</p>
             )}
         </div>
+    );
+};
+
+const UnitSelectCell = ({
+    item,
+    productId,
+    currentUnitId,
+    onItemUpdate,
+    token,
+    buCode
+}: {
+    item: PurchaseRequestDetail;
+    productId: string;
+    currentUnitId: string | undefined;
+    onItemUpdate: (itemId: string, fieldName: string, value: unknown) => void;
+    token: string;
+    buCode: string;
+}) => {
+    const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
+        token,
+        buCode,
+        productId: productId,
+        enabled: !!productId
+    });
+
+    useEffect(() => {
+        if (orderUnitsData && orderUnitsData.length > 0 && !currentUnitId) {
+            const firstUnit = orderUnitsData[0];
+            onItemUpdate(item.id, 'requested_unit_id', firstUnit.id);
+            onItemUpdate(item.id, 'requested_unit_name', firstUnit.name);
+        }
+    }, [orderUnitsData, currentUnitId, item.id, onItemUpdate]);
+
+    const selectValue = currentUnitId || orderUnitsData?.[0]?.id || '';
+
+    return (
+        <Select
+            value={selectValue}
+            onValueChange={(value) => {
+                const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
+                if (selectedUnit) {
+                    onItemUpdate(item.id, 'requested_unit_name', selectedUnit.name);
+                    onItemUpdate(item.id, 'requested_unit_id', selectedUnit.id);
+                }
+            }}
+            disabled={!productId || isLoadingOrderUnits}
+        >
+            <SelectTrigger className="h-7 text-xs">
+                <SelectValue placeholder={isLoadingOrderUnits ? <Loader className="w-3 h-3" /> : "Select unit"} />
+            </SelectTrigger>
+            <SelectContent>
+                {orderUnitsData?.map((unit: UnitOderProduct) => (
+                    <SelectItem key={unit.id} value={unit.id}>
+                        {unit.name}
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
     );
 };
