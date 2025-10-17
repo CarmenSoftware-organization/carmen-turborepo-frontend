@@ -16,6 +16,7 @@ import {
   ReactNode,
 } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface InputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
@@ -31,6 +32,12 @@ interface InputProps
   pattern?: string;
   showPasswordToggle?: boolean;
   onValidation?: (isValid: boolean, errorMessage?: string) => void;
+  validationMessages?: {
+    fieldRequired?: string;
+    minLength?: string;
+    maxLength?: string;
+    invalidFormat?: string;
+  };
 }
 
 const InputCustom = forwardRef<HTMLInputElement, InputProps>(
@@ -59,10 +66,12 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       onFocus,
       onClick,
       onValidation,
+      validationMessages,
       ...props
     },
     ref
   ) => {
+    const t = useTranslations("Validation");
     const [focused, setFocused] = useState(false);
     const [hasValue, setHasValue] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -98,7 +107,10 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       (inputValue: string): { isValid: boolean; errorMessage?: string } => {
         // Check required field
         if (inputIsRequired && inputValue.trim().length === 0) {
-          return { isValid: false, errorMessage: "This field is required" };
+          return {
+            isValid: false,
+            errorMessage: validationMessages?.fieldRequired || t("fieldRequired")
+          };
         }
 
         // Check minimum length
@@ -109,7 +121,8 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         ) {
           return {
             isValid: false,
-            errorMessage: `Minimum length is ${minLength} characters`,
+            errorMessage: validationMessages?.minLength ||
+              t("minLength", { min: minLength }),
           };
         }
 
@@ -117,7 +130,8 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         if (maxLength && inputValue.length > maxLength) {
           return {
             isValid: false,
-            errorMessage: `Maximum length is ${maxLength} characters`,
+            errorMessage: validationMessages?.maxLength ||
+              t("maxLength", { max: maxLength }),
           };
         }
 
@@ -127,12 +141,15 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
           inputValue.length > 0 &&
           !new RegExp(pattern).test(inputValue)
         ) {
-          return { isValid: false, errorMessage: "Invalid format" };
+          return {
+            isValid: false,
+            errorMessage: validationMessages?.invalidFormat || t("invalidFormat")
+          };
         }
 
         return { isValid: true };
       },
-      [inputIsRequired, minLength, maxLength, pattern]
+      [inputIsRequired, minLength, maxLength, pattern, validationMessages, t]
     );
 
     // Check initial value immediately and when value/defaultValue changes

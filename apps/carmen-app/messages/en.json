@@ -16,7 +16,11 @@
     "signInSuccess": "Sign in successful",
     "signInError": "Invalid email or password",
     "termsOfService": "Terms of Service",
-    "privacyPolicy": "Privacy Policy"
+    "privacyPolicy": "Privacy Policy",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least 6 characters"
   },
   "DashboardPage": {
     "dashboardTitle": "Dashboard Page",
@@ -242,6 +246,12 @@
   },
   "UserManagement": {
     "title": "User Management"
+  },
+  "Validation": {
+    "fieldRequired": "This field is required",
+    "minLength": "Minimum length is {min} characters",
+    "maxLength": "Maximum length is {max} characters",
+    "invalidFormat": "Invalid format"
   },
   "Common": {
     "all": "All",
@@ -772,5 +782,11 @@
     "title": "Exchange Rate",
     "found": "Found",
     "no_results_found": "No results found for"
+  },
+  "Legal": {
+    "privacyPolicyTitle": "Privacy Policy - Carmen Software",
+    "privacyPolicyDescription": "Learn how Carmen Software collects, uses, and protects your personal data in compliance with PDPA and data protection laws.",
+    "termsOfServiceTitle": "Terms of Service - Carmen Software",
+    "termsOfServiceDescription": "Read the terms and conditions for using Carmen Software's hotel finance management and inventory system."
   }
 }

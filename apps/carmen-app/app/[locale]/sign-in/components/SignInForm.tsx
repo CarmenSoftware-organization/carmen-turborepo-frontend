@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { SignInFormValues, signInSchema } from "@/dtos/sign-in.dto";
+import { SignInFormValues, createSignInSchema } from "@/dtos/sign-in.dto";
 import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -29,6 +29,8 @@ export default function SignInForm() {
 
   const signInMutation = useSignInMutation();
 
+  const signInSchema = createSignInSchema(t);
+
   const form = useForm<SignInFormValues>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -42,6 +44,7 @@ export default function SignInForm() {
       { email: values.email, password: values.password },
       {
         onSuccess: (result) => {
+          console.log('result', result);
           if (result?.access_token && result?.refresh_token) {
             setSession(result.access_token, result.refresh_token);
             form.reset();

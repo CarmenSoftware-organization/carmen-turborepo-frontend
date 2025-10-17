@@ -43,7 +43,7 @@ export default function LanguageSwitch() {
             value={currentLocale}
             onValueChange={handleLocaleChange}
         >
-            <SelectTrigger className="w-[100px] border-none focus:ring-ring">
+            <SelectTrigger className="w-[100px] border border-border focus:ring-ring">
                 <SelectValue>
                     <div className="flex items-center gap-2">
                         <span>{currentLocale === 'en' ? 'English' : 'ไทย'}</span>
