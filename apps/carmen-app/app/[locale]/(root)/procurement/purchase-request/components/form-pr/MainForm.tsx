@@ -397,6 +397,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                             onItemRemove={purchaseItemManager.removeItem}
                                             onAddItem={purchaseItemManager.addItem}
                                             getItemValue={purchaseItemManager.getItemValue}
+                                            workflow_id={form.watch('body.workflow_id')}
                                         />
                                     </TabsContent>
                                     {/* <TabsContent value="budget" className="mt-2">

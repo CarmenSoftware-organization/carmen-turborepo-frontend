@@ -67,7 +67,7 @@ export default function WorkflowLookup({
             onValueChange={onValueChange}
             disabled={disabled || isLoading}
         >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full text-sm">
                 <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>

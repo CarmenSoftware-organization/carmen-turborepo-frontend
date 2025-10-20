@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 const headerCellSpacingVariants = cva('', {
   variants: {
     size: {
-      dense: 'px-2.5 h-8',
+      dense: 'px-2.5 h-8 py-1',
       default: 'px-4',
     },
   },
@@ -22,7 +22,7 @@ const headerCellSpacingVariants = cva('', {
 const bodyCellSpacingVariants = cva('', {
   variants: {
     size: {
-      dense: 'px-2.5 py-1',
+      dense: 'px-2.5 py-2',
       default: 'px-4 py-1.5',
     },
   },

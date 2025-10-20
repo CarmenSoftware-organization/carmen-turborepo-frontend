@@ -51,6 +51,7 @@ interface Props {
     onItemRemove: (itemId: string, isNewItem?: boolean, itemIndex?: number) => void;
     onAddItem: () => void;
     getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
+    workflow_id?: string;
 }
 
 interface UnitOderProduct {
@@ -67,7 +68,8 @@ export default function PurchaseItemDataGrid({
     onItemUpdate,
     onItemRemove,
     onAddItem,
-    getItemValue
+    getItemValue,
+    workflow_id
 }: Props) {
     const { dateFormat, currencyBase, token, buCode } = useAuth();
     const tPr = useTranslations("PurchaseRequest");
@@ -536,7 +538,7 @@ export default function PurchaseItemDataGrid({
                         );
                     },
                     enableSorting: false,
-                    size: 60,
+                    size: currentFormType === formType.VIEW ? 60 : 100,
                     meta: {
                         headerTitle: tHeader("action"),
                         cellClassName: "text-right",
@@ -589,7 +591,12 @@ export default function PurchaseItemDataGrid({
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button onClick={onAddItem} size="sm" className="w-7 h-7">
+                                <Button
+                                    onClick={onAddItem}
+                                    size="sm"
+                                    className="w-7 h-7"
+                                    disabled={!workflow_id}
+                                >
                                     <Plus className="h-4 w-4" />
                                 </Button>
                             </TooltipTrigger>
@@ -619,7 +626,7 @@ export default function PurchaseItemDataGrid({
             >
                 <div className="w-full space-y-2.5">
                     <DataGridContainer>
-                        <ScrollArea className="max-h-[calc(100vh-350px)] pb-4">
+                        <ScrollArea className="max-h-[calc(100vh-350px)] pb-2">
                             <DataGridTable />
                             <ScrollBar orientation="horizontal" />
                         </ScrollArea>

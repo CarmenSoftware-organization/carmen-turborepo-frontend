@@ -776,6 +776,7 @@
     "grn": "Goods Receipt Note",
     "docs": "Documents",
     "add_item": "Add Item",
+    "select_workflow_first": "Please select PR Type first",
     "grns": "Goods Receipt Notes",
     "related_docs": "Related Documents"
   },
