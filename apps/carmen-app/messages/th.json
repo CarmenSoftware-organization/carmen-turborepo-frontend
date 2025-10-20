@@ -783,5 +783,11 @@
     "title": "อัตราแลกเปลี่ยนเงิน",
     "found": "พบ",
     "no_results_found": "ไม่พบผลลัพธ์ที่ตรงกับ"
+  },
+  "Workflow": {
+    "workflow": "กระบวนการ",
+    "workflow_history": "ประวัติกระบวนการ",
+    "no_workflow_history": "ไม่มีประวัติกระบวนการ",
+    "by": "โดย"
   }
 }

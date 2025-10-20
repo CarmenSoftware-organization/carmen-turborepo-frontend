@@ -276,6 +276,9 @@ export default function FormProduct({ mode, initialValues }: Props) {
     }
   }, [currentMode, router]);
 
+  console.log('from error', form.formState.errors);
+
+
   return (
     <div className="mx-auto">
       <Form {...form}>

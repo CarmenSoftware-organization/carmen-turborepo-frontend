@@ -16,6 +16,7 @@ interface ActionFieldsProps {
     readonly hasFormChanges: () => boolean;
     readonly isCreatingPr: boolean;
     readonly prStatus: string;
+    readonly hasFormErrors: boolean;
 }
 
 export default function ActionFields({
@@ -26,7 +27,8 @@ export default function ActionFields({
     onCancel,
     hasFormChanges,
     isCreatingPr,
-    prStatus
+    prStatus,
+    hasFormErrors
 }: ActionFieldsProps) {
     const tPr = useTranslations("PurchaseRequest");
     const router = useRouter();
@@ -155,7 +157,7 @@ export default function ActionFields({
                                             variant="default"
                                             size={"sm"}
                                             type="submit"
-                                            disabled={isCreatingPr}
+                                            disabled={isCreatingPr || hasFormErrors}
                                         >
                                             {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
                                         </Button>

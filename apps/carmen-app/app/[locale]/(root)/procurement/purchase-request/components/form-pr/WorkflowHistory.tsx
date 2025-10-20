@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { formatDateFns } from "@/utils/config-system";
 import { ArrowRightIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface WorkflowHistoryItem {
     action: string;
@@ -21,13 +22,14 @@ interface Props {
 
 export default function WorkflowHistory({ workflow_history }: Props) {
     const { dateFormat } = useAuth();
+    const tWorkflow = useTranslations("Workflow");
 
     if (!workflow_history || workflow_history.length === 0) {
         return (
             <div className="p-4">
-                <h1 className="text-2xl font-bold mb-6">Workflow History</h1>
+                <h1 className="text-2xl font-bold mb-6">{tWorkflow("workflow")}</h1>
                 <div className="text-center py-12">
-                    <p>No workflow history available</p>
+                    <p>{tWorkflow("no_workflow_history")}</p>
                 </div>
             </div>
         );
@@ -41,15 +43,15 @@ export default function WorkflowHistory({ workflow_history }: Props) {
                         <TimelineTime variant="outline" className="bg-transparent">
                             {formatDateFns(item.datetime, dateFormat || 'yyyy-MM-dd')}
                         </TimelineTime>
-                        <TimelineTitle className="text-foreground">
-                            {item.action}
+                        <TimelineTitle className="text-primary">
+                            {item.action.toUpperCase()}
                         </TimelineTitle>
                     </TimelineHeader>
                     <TimelineDescription>
-                        <div className="mb-2 text-sm">
-                            By: <span className="font-medium">{item.user.name}</span>
+                        <div className="mb-1 text-sm">
+                            {tWorkflow("by")}: <span className="font-medium">{item.user.name}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-1 text-sm">
                             <Badge variant="outline">
                                 {item.current_stage}
                             </Badge>

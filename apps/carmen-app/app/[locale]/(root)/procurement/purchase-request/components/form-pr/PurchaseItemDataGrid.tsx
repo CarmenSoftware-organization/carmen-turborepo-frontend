@@ -239,7 +239,9 @@ export default function PurchaseItemDataGrid({
                                 {item.location_name || "-"}
                             </p>
                         ) : (
-                            <div className="min-w-[200px] pr-4">
+                            <div
+                                className="min-w-[200px] pr-4"
+                            >
                                 <LocationLookup
                                     value={getItemValue(item, 'location_id') as string | undefined}
                                     onValueChange={(value, selectedLocation) => {
@@ -283,7 +285,9 @@ export default function PurchaseItemDataGrid({
                                 )}
                             </div>
                         ) : (
-                            <div className="space-y-1 min-w-[250px] pr-4">
+                            <div
+                                className="space-y-1 min-w-[250px] pr-4"
+                            >
                                 <ProductLocationLookup
                                     location_id={getItemValue(item, 'location_id') as string || ''}
                                     value={getItemValue(item, 'product_id') as string || ''}
@@ -326,7 +330,9 @@ export default function PurchaseItemDataGrid({
                                 {item.requested_qty} {item.requested_unit_name || "-"}
                             </p>
                         ) : (
-                            <div className="flex items-center gap-1 justify-end min-w-[120px]">
+                            <div
+                                className="flex items-center gap-1 justify-end min-w-[120px]"
+                            >
                                 <NumberInput
                                     value={getItemValue(item, 'requested_qty') as number}
                                     onChange={(value) => onItemUpdate(item.id, 'requested_qty', value)}
@@ -382,7 +388,9 @@ export default function PurchaseItemDataGrid({
                         }
 
                         return (
-                            <div className="flex flex-col gap-1 min-w-[180px] pr-4">
+                            <div
+                                className="flex flex-col gap-1 min-w-[180px] pr-4"
+                            >
                                 <div className="flex items-center gap-1 justify-end">
                                     <NumberInput
                                         value={getItemValue(item, 'approved_qty') as number}
@@ -433,7 +441,9 @@ export default function PurchaseItemDataGrid({
                                 {formatDateFns(item.delivery_date, dateFormat || 'yyyy-MM-dd')}
                             </p>
                         ) : (
-                            <div className="flex justify-center min-w-[120px] pr-4">
+                            <div
+                                className="flex justify-center min-w-[120px] pr-4"
+                            >
                                 <DateInput
                                     field={{
                                         value: getItemValue(item, 'delivery_date') as Date | undefined,
@@ -463,7 +473,9 @@ export default function PurchaseItemDataGrid({
                         return currentFormType === formType.VIEW ? (
                             <p className="text-xs">{item.delivery_point_name || "-"}</p>
                         ) : (
-                            <div className="min-w-[200px] pr-4">
+                            <div
+                                className="min-w-[200px] pr-4"
+                            >
                                 <DeliveryPointSelectLookup
                                     value={getItemValue(item, 'delivery_point_id') as string || ''}
                                     onValueChange={(value) => onItemUpdate(item.id, 'delivery_point_id', value)}
@@ -592,7 +604,11 @@ export default function PurchaseItemDataGrid({
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
-                                    onClick={onAddItem}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        onAddItem();
+                                    }}
                                     size="sm"
                                     className="w-7 h-7"
                                     disabled={!workflow_id}

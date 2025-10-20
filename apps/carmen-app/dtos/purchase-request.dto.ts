@@ -266,6 +266,54 @@ export const CreatePrSchema = z.object({
                 remove: z.array(z.object({ id: z.string().uuid() })).optional(),
             }).optional()
         })
+}).superRefine((data, ctx) => {
+    // Validate that items in add array have required fields filled
+    const addItems = data.body.purchase_request_detail?.add;
+    console.log('Validating add items:', addItems);
+    if (addItems && addItems.length > 0) {
+        addItems.forEach((item, index) => {
+            console.log(`Item ${index}:`, item);
+            if (!item.location_id) {
+                console.log(`Item ${index} missing location_id`);
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Location is required",
+                    path: ['body', 'purchase_request_detail', 'add', index, 'location_id']
+                });
+            }
+            if (!item.product_id) {
+                console.log(`Item ${index} missing product_id`);
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Product is required",
+                    path: ['body', 'purchase_request_detail', 'add', index, 'product_id']
+                });
+            }
+            if (item.requested_qty === undefined || item.requested_qty === null) {
+                console.log(`Item ${index} missing requested_qty:`, item.requested_qty);
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Quantity is required",
+                    path: ['body', 'purchase_request_detail', 'add', index, 'requested_qty']
+                });
+            } else if (typeof item.requested_qty !== 'number' || item.requested_qty < 0) {
+                console.log(`Item ${index} invalid requested_qty:`, item.requested_qty);
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Quantity must be a valid number and not negative",
+                    path: ['body', 'purchase_request_detail', 'add', index, 'requested_qty']
+                });
+            }
+            if (!item.requested_unit_id) {
+                console.log(`Item ${index} missing requested_unit_id`);
+                ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Unit is required",
+                    path: ['body', 'purchase_request_detail', 'add', index, 'requested_unit_id']
+                });
+            }
+        });
+    }
 })
 
 export type CreatePrDto = z.infer<typeof CreatePrSchema>;

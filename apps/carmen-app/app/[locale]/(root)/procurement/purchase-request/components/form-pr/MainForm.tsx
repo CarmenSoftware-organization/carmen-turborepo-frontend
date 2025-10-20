@@ -25,10 +25,10 @@ import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
 import ActionButtons from "./ActionButtons";
 import { useQueryClient } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
 import { usePrActions } from "@/hooks/usePrActions";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
+// import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
     mode: formType;
@@ -111,10 +111,39 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const handleSubmit = (data: CreatePrDto) => {
+        console.log('Original payload:', JSON.stringify(data, null, 2));
 
         if (data.body.purchase_request_detail?.add && data.body.purchase_request_detail.add.length > 0) {
-            data.body.purchase_request_detail.add.forEach((item) => {
-                delete item.id;
+            data.body.purchase_request_detail.add = data.body.purchase_request_detail.add.map((item) => {
+                // Remove unnecessary fields
+                const {
+                    id,
+                    product_name,
+                    inventory_unit_name,
+                    requested_unit_name,
+                    delivery_point_name,
+                    location_name,
+                    ...cleanedItem
+                } = item as any;
+
+                Object.keys(cleanedItem).forEach(key => {
+                    if (cleanedItem[key] === "" || cleanedItem[key] === null) {
+                        delete cleanedItem[key];
+                    }
+                });
+
+                // Ensure numeric fields are numbers, not strings
+                if (cleanedItem.requested_qty !== undefined) {
+                    cleanedItem.requested_qty = Number(cleanedItem.requested_qty);
+                }
+                if (cleanedItem.approved_qty !== undefined) {
+                    cleanedItem.approved_qty = Number(cleanedItem.approved_qty);
+                }
+                if (cleanedItem.foc_qty !== undefined) {
+                    cleanedItem.foc_qty = Number(cleanedItem.foc_qty);
+                }
+
+                return cleanedItem;
             });
         }
 
@@ -158,7 +187,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const handleConfirmDelete = () => {
         // ใช้ purchaseItemManager แทน
         if (itemToDelete) {
-            const index = parseInt(itemToDelete);
+            const index = Number(itemToDelete);
             if (index >= 0) {
                 purchaseItemManager.removeField(index);
             }
@@ -332,7 +361,6 @@ export default function MainForm({ mode, initValues }: Props) {
     const prStatus = initValues?.pr_status;
 
     // const watchForm = form.watch();
-    // console.log('error', form.formState.errors)
 
     return (
         <>
@@ -353,6 +381,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     hasFormChanges={hasFormChanges}
                                     isCreatingPr={isCreatingPr || isPending}
                                     prStatus={prStatus ?? ""}
+                                    hasFormErrors={Object.keys(form.formState.errors).length > 0}
                                 />
                                 <HeadForm
                                     form={form}
@@ -363,29 +392,16 @@ export default function MainForm({ mode, initValues }: Props) {
                                     workflowStages={workflowStages}
                                 />
                                 <Tabs defaultValue="items">
-                                    <TabsList className={cn(
-                                        "mt-4",
-                                        isNewPr ? "" : "w-full"
-                                    )}>
+                                    <TabsList className={'mt-4'}>
                                         <TabsTrigger
-                                            className={cn(
-                                                "h-6",
-                                                isNewPr ? "" : "w-full"
-                                            )}
+                                            className={"w-full h-6"}
                                             value="items"
                                         >
                                             {tPR("items")}
                                         </TabsTrigger>
-                                        {!isNewPr && (
-                                            <>
-                                                {/* <TabsTrigger className="w-full h-6" value="budget">
-                                                    {tPR("budget")}
-                                                </TabsTrigger> */}
-                                                <TabsTrigger className="w-full h-6" value="workflow">
-                                                    {tPR("workflow")}
-                                                </TabsTrigger>
-                                            </>
-                                        )}
+                                        <TabsTrigger className="w-full h-6" value="workflow">
+                                            {tPR("workflow")}
+                                        </TabsTrigger>
                                     </TabsList>
                                     <TabsContent value="items" className="mt-2">
                                         <PurchaseItemDataGrid

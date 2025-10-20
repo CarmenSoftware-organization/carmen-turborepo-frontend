@@ -64,16 +64,21 @@ export const usePurchaseItemManagement = ({
     const addItem = useCallback(() => {
         const newItem = {
             id: nanoid(),
-            location_id: "",
-            product_id: "",
-            inventory_unit_id: "",
-            description: "",
+            location_id: undefined,
+            product_id: undefined,
+            inventory_unit_id: undefined,
+            description: undefined,
             requested_qty: 0,
-            requested_unit_id: "",
+            requested_unit_id: undefined,
             delivery_date: undefined,
         };
         addAppend(newItem);
-    }, [addAppend]);
+
+        // Trigger validation after adding item to show errors immediately
+        setTimeout(async () => {
+            await form.trigger();
+        }, 100);
+    }, [addAppend, form]);
 
     // Update item field
     const updateItem = useCallback((
@@ -94,9 +99,15 @@ export const usePurchaseItemManagement = ({
 
                 if (updatedAddItems[fieldIndex]) {
                     // Convert string to number for quantity fields
-                    const processedValue = ['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)
-                        ? Number(value) || 0
-                        : value;
+                    let processedValue = value;
+                    if (['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)) {
+                        // Allow 0 as a valid value
+                        if (value === undefined || value === null || value === '') {
+                            processedValue = 0;
+                        } else {
+                            processedValue = Number(value);
+                        }
+                    }
 
                     // Update only the changed field, keep others unchanged
                     updatedAddItems[fieldIndex] = {
@@ -113,8 +124,14 @@ export const usePurchaseItemManagement = ({
                     form.setValue('body.purchase_request_detail.add', updatedAddItems, {
                         shouldValidate: false,
                         shouldDirty: true,
-                        shouldTouch: false
+                        shouldTouch: true
                     });
+
+                    // Clear and re-trigger validation to ensure errors are updated
+                    setTimeout(async () => {
+                        form.clearErrors();
+                        await form.trigger();
+                    }, 50);
                 }
             }
         } else {
@@ -143,9 +160,15 @@ export const usePurchaseItemManagement = ({
 
                 if (existingUpdateIndex >= 0) {
                     // Convert string to number for quantity fields
-                    const processedValue = ['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)
-                        ? Number(value) || 0
-                        : value;
+                    let processedValue = value;
+                    if (['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)) {
+                        // Allow 0 as a valid value
+                        if (value === undefined || value === null || value === '') {
+                            processedValue = 0;
+                        } else {
+                            processedValue = Number(value);
+                        }
+                    }
 
                     updateItems[existingUpdateIndex] = {
                         ...updateItems[existingUpdateIndex],
@@ -175,7 +198,7 @@ export const usePurchaseItemManagement = ({
                     [itemId]: {
                         ...prev.updatedItems[itemId],
                         [fieldName]: ['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)
-                            ? Number(value) || 0
+                            ? (value !== undefined && value !== null && value !== '' ? Number(value) : 0)
                             : value,
                         // Handle product selection
                         ...(selectedProduct && fieldName === 'product_id' ? {

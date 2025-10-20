@@ -787,5 +787,11 @@
     "title": "Exchange Rate",
     "found": "Found",
     "no_results_found": "No results found for"
+  },
+  "Workflow": {
+    "workflow": "Workflow",
+    "workflow_history": "Workflow History",
+    "no_workflow_history": "No workflow history available",
+    "by": "By"
   }
 }

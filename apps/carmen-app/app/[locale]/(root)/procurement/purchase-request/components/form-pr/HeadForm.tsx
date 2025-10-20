@@ -46,7 +46,7 @@ export default function HeadForm({
                         <FormLabel>{tPr("pr_type")}</FormLabel>
                         <FormControl>
                             <WorkflowLookup
-                                value={field.value ? field.value : workflow_id}
+                                value={field.value || workflow_id || ""}
                                 onValueChange={field.onChange}
                                 type={enum_workflow_type.purchase_request}
                                 disabled={mode === formType.VIEW}

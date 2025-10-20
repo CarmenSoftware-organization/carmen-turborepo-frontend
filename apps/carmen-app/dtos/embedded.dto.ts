@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 export const ValidateSchema = z.object({
-    quantity: z.number().int().positive(),
-    price: z.number().positive().min(0),
+    quantity: z.number().int().min(0),  // Allow 0 and positive integers
+    price: z.number().min(0),  // Allow 0 and positive numbers
     uuid: z.string().uuid(),
     date: z.string().datetime().pipe(z.coerce.date()),
 })
