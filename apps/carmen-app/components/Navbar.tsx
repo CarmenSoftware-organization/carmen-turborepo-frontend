@@ -5,12 +5,10 @@ import { SwitchTheme } from "./SwitchTheme";
 import TenantList from "./TenantList";
 import UserAvatar from "./UserAvatar";
 import Notification from "./Notification";
-import { useTranslations } from "next-intl";
 import "@/styles/layout.css";
 import { Link } from "@/lib/navigation";
 
 export default function Navbar() {
-    const tHome = useTranslations('HomePage');
 
     return (
         <div className="fxb-c navbar-container">
@@ -19,13 +17,13 @@ export default function Navbar() {
                     className="navbar-logo-text"
                     data-id="sidebar-logo-text"
                 >
-                    {tHome('carmenTitle')}
+                    Carmen
                 </span>
                 <span
                     className="navbar-logo-subtext"
                     data-id="sidebar-logo-text-sub"
                 >
-                    {tHome('HospitalitySupplyChain')}
+                    Hospitality Supply Chain
                 </span>
             </Link>
             <div className="flex items-center gap-2">

@@ -54,7 +54,7 @@ export default function PurchaseRequestComponent() {
   ];
 
   const { data: prs, isLoading } = usePurchaseRequest(token, buCode, {
-    page: page ? parseInt(page) : 1,
+    page: page ? Number(page) : 1,
     sort,
     search,
     perpage: perpage,
@@ -143,7 +143,7 @@ export default function PurchaseRequestComponent() {
           {tDataControls("allDoc")}
         </Button>
         <Select>
-          <SelectTrigger className="w-[120px] h-8 text-xs bg-muted">
+          <SelectTrigger className="w-[120px] h-8 bg-muted">
             <SelectValue placeholder={tDataControls("allStage")} />
           </SelectTrigger>
           <SelectContent >
@@ -205,7 +205,7 @@ export default function PurchaseRequestComponent() {
     setPage(newPage.toString());
   };
 
-  const currentPageNumber = parseInt(page || "1");
+  const currentPageNumber = Number(page || "1");
 
   const content = (
     <>

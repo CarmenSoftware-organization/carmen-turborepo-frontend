@@ -38,20 +38,6 @@ export default function HeadForm({
         <div className="grid grid-cols-4 gap-2">
             <FormField
                 control={form.control}
-                name="body.pr_date"
-                required
-                icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>{tPr("pr_date")}</FormLabel>
-                        <FormControl>
-                            <DateInput field={field} disabled={true} />
-                        </FormControl>
-                    </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
                 name="body.workflow_id"
                 required
                 icon={<GitBranch className="h-4 w-4 text-muted-foreground" />}
@@ -67,6 +53,20 @@ export default function HeadForm({
                             />
                         </FormControl>
                         <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="body.pr_date"
+                required
+                icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>{tPr("pr_date")}</FormLabel>
+                        <FormControl>
+                            <DateInput field={field} disabled={true} />
+                        </FormControl>
                     </FormItem>
                 )}
             />

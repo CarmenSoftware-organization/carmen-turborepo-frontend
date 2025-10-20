@@ -73,4 +73,14 @@ export enum FORM_FIELD_TYPE {
   RANGE = 'range',
   FILE = 'file',
   CUSTOM = 'custom',
+};
+
+export enum PLATFORM_ROLE {
+  SUPER_ADMIN = "super_admin",
+  PLATFORM_ADMIN = "platform_admin",
+  SUPPORT_MANAGER = "support_manager",
+  SUPPORT_STAFF = "support_staff",
+  SECURITY_OFFICER = "security_officer",
+  INTEGRATION_DEVELOPER = "integration_developer",
+  USER = "user",
 }

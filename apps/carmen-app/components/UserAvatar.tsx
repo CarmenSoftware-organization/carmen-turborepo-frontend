@@ -40,7 +40,7 @@ export default function UserAvatar() {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="mx-1 h-8 w-8 rounded-full" aria-label="User menu">
+                <Button variant="ghost" className="h-8 w-8 rounded-full" aria-label="User menu">
                     <Avatar className="h-8 w-8">
                         <AvatarFallback className="font-medium text-xs">
                             {getInitials()}

@@ -23,7 +23,7 @@ export function SwitchTheme() {
 
 	return (
 		<Button
-			variant={'ghost'}
+			variant={'outline'}
 			onClick={handleClick}
 			data-id="switch-theme-button"
 			className="cursor-pointer w-8 h-8 mx-2 relative overflow-hidden transition-all duration-300 hover:scale-105 active:scale-95"

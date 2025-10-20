@@ -20,6 +20,8 @@ import Image from "next/image";
 import { toast } from "sonner";
 import InputCustom from "@/components/ui-custom/InputCustom";
 import { useSignInMutation } from "@/hooks/use-auth-query";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { userList } from "./user-list";
 
 export default function SignInForm() {
   const router = useRouter();
@@ -104,7 +106,7 @@ export default function SignInForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <InputCustom
+                        {/* <InputCustom
                           label={t("email")}
                           labelPlacement="inside"
                           placeholder="This shows when input has value"
@@ -112,7 +114,24 @@ export default function SignInForm() {
                           autoComplete="username"
                           {...field}
                           className="h-12 sm:h-11"
-                        />
+                        /> */}
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="h-11">
+                            <SelectValue placeholder="Select a Email" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {userList.map((user) => (
+                                <SelectItem key={user.email} value={user.email}>
+                                  {user.email}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

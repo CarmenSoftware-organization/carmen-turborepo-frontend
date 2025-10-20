@@ -47,7 +47,7 @@ export default function ModuleMobile() {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild >
-                <Button variant="ghost">
+                <Button variant="outline">
                     {activeModule?.icon &&
                         React.createElement(activeModule.icon, { className: "h-4 w-4" })}
                     {activeModule ? t(activeModule.labelKey.split('.').pop() ?? '') : t('dashboard')}

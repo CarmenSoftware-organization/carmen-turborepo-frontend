@@ -104,7 +104,7 @@ export default function Notification() {
         <Popover>
             <PopoverTrigger asChild>
                 <Button
-                    variant={'ghost'}
+                    variant={'outline'}
                     className="relative inline-flex justify-center items-center w-8 h-8"
                     size={'sm'}
                 >

@@ -44,12 +44,12 @@ export default function LanguageSwitcher() {
             value={currentLocale}
             onValueChange={handleLocaleChange}
         >
-            <SelectTrigger className="border-none focus:ring-ring w-14 h-8 px-1.5">
+            <SelectTrigger className="border border-border w-12 h-8 px-1.5">
                 <SelectValue>
                     <p>{currentLocale.toUpperCase()}</p>
                 </SelectValue>
             </SelectTrigger>
-            <SelectContent className='w-16'>
+            <SelectContent>
                 {locales.map((locale) => (
                     <SelectItem
                         key={locale}

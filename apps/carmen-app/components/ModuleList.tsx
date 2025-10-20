@@ -47,7 +47,7 @@ export default function ModuleList() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" className="w-8 h-8">
+        <Button variant="outline" className="w-8 h-8">
           <LayoutGrid className="h-5 w-5" strokeWidth={0.95} />
         </Button>
       </PopoverTrigger>
