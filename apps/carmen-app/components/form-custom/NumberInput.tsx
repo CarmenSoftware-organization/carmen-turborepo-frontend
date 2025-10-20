@@ -41,7 +41,7 @@ export default function NumberInput({
     setLocalValue(inputValue);
   };
 
-  const handleBlur = (): void => {
+  const commitValue = (): void => {
     if (localValue === "" || localValue === "-") {
       onChange(0);
       setLocalValue("0");
@@ -58,6 +58,16 @@ export default function NumberInput({
     }
   };
 
+  const handleBlur = (): void => {
+    commitValue();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === "Enter" || e.key === "Tab") {
+      commitValue();
+    }
+  };
+
   const handleClick = (e: React.MouseEvent<HTMLInputElement>): void => {
     e.currentTarget.select();
   };
@@ -70,6 +80,7 @@ export default function NumberInput({
       value={localValue}
       onChange={handleChange}
       onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
       onClick={handleClick}
       min={min}
       max={max}

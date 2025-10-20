@@ -680,6 +680,7 @@ const UnitSelectCell = ({
     token: string;
     buCode: string;
 }) => {
+    const [open, setOpen] = useState(false);
     const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
         token,
         buCode,
@@ -697,19 +698,29 @@ const UnitSelectCell = ({
 
     const selectValue = currentUnitId || orderUnitsData?.[0]?.id || '';
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        // Close dropdown on Tab key to allow normal tab navigation
+        if (e.key === 'Tab') {
+            setOpen(false);
+        }
+    };
+
     return (
         <Select
             value={selectValue}
+            open={open}
+            onOpenChange={setOpen}
             onValueChange={(value) => {
                 const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
                 if (selectedUnit) {
                     onItemUpdate(item.id, 'requested_unit_name', selectedUnit.name);
                     onItemUpdate(item.id, 'requested_unit_id', selectedUnit.id);
                 }
+                setOpen(false);
             }}
             disabled={!productId || isLoadingOrderUnits}
         >
-            <SelectTrigger className="h-7 text-xs">
+            <SelectTrigger className="h-7 text-xs" onKeyDown={handleKeyDown}>
                 <SelectValue placeholder={isLoadingOrderUnits ? <Loader className="w-3 h-3" /> : "Select unit"} />
             </SelectTrigger>
             <SelectContent>

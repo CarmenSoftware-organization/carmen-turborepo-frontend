@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SignInFormValues, signInSchema } from "@/dtos/sign-in.dto";
+import { SignInFormValues, createSignInSchema } from "@/dtos/sign-in.dto";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -57,7 +57,7 @@ export default function SignInDialog({
     }, [open, pathname, searchParams]);
 
     const form = useForm<SignInFormValues>({
-        resolver: zodResolver(signInSchema),
+        resolver: zodResolver(createSignInSchema(t)),
         defaultValues: {
             email: "",
             password: "",
