@@ -12,7 +12,7 @@ import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ListUnit from "./ListUnit";
-import { UnitDto } from "@/dtos/unit.dto";
+import { UnitDto, CreateUnitDto, UpdateUnitDto } from "@/dtos/unit.dto";
 import UnitDialog from "@/components/shared/UnitDialog";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -23,8 +23,6 @@ import { productManagementPermission } from "@/lib/permission";
 
 export default function UnitComponent() {
   const { token, buCode, permissions } = useAuth();
-
-  // Get permissions for unit resource
   const unitPerms = productManagementPermission.get(permissions, "unit");
   const tCommon = useTranslations("Common");
   const tUnit = useTranslations("Unit");
@@ -35,13 +33,9 @@ export default function UnitComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
-
-  // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
   const [selectedUnit, setSelectedUnit] = useState<UnitDto | undefined>(undefined);
-
-  // Delete confirmation dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [unitToDelete, setUnitToDelete] = useState<UnitDto | undefined>(undefined);
 
@@ -52,8 +46,8 @@ export default function UnitComponent() {
       search,
       filter,
       sort,
-      page: page ? parseInt(page) : 1,
-      perpage: perpage ? parseInt(perpage) : 10,
+      page: page ? Number(page) : 1,
+      perpage: perpage ? Number(perpage) : 10,
     }
   });
 
@@ -95,40 +89,49 @@ export default function UnitComponent() {
     if (unitToDelete) {
       deleteUnit(undefined, {
         onSuccess: () => {
-          toastSuccess({ message: 'Delete unit successfully' });
-          queryClient.invalidateQueries({ queryKey: ["units", buCode] });
+          toastSuccess({ message: tUnit('delete_success') });
+          queryClient.invalidateQueries({ queryKey: ["units"] });
           setDeleteDialogOpen(false);
           setUnitToDelete(undefined);
         },
         onError: (error) => {
-          toastError({ message: 'Failed to delete unit' });
+          toastError({ message: tUnit('delete_error') });
           console.error("Failed to delete unit:", error);
         }
       });
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDialogSubmit = (data: any) => {
+  const handleDialogSubmit = (data: CreateUnitDto) => {
     if (dialogMode === formType.ADD) {
       createUnit(data, {
         onSuccess: () => {
-          toastSuccess({ message: 'Create unit successfully' });
-          queryClient.invalidateQueries({ queryKey: ["units", buCode] });
+          toastSuccess({ message: tUnit('add_success') });
+          // Invalidate all "units" queries to refetch data
+          queryClient.invalidateQueries({ queryKey: ["units"] });
+          setDialogOpen(false);
         },
         onError: (error) => {
+          toastError({ message: tUnit('add_error') });
           console.error("Failed to create unit:", error);
         }
       });
     } else if (dialogMode === formType.EDIT && selectedUnit) {
-      const updateData = { ...data, id: selectedUnit.id };
+      const updateData: UpdateUnitDto = {
+        ...data,
+        id: selectedUnit.id,
+        created_at: selectedUnit.created_at,
+        updated_at: selectedUnit.updated_at,
+      };
+
       updateUnit(updateData, {
         onSuccess: () => {
-          toastSuccess({ message: 'Update unit successfully' });
-          queryClient.invalidateQueries({ queryKey: ["units", buCode] });
+          toastSuccess({ message: tUnit('update_success') });
+          queryClient.invalidateQueries({ queryKey: ["units"] });
+          setDialogOpen(false);
         },
         onError: (error) => {
-          toastError({ message: 'Failed to create unit' });
+          toastError({ message: tUnit('update_error') });
           console.error("Failed to update unit:", error);
         }
       });

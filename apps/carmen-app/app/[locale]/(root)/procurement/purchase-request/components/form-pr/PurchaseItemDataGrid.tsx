@@ -58,7 +58,7 @@ interface UnitOderProduct {
     id: string
     name: string
     conversion: number
-}
+};
 
 export default function PurchaseItemDataGrid({
     currentFormType,
@@ -209,16 +209,27 @@ export default function PurchaseItemDataGrid({
                 },
                 {
                     id: "select",
-                    header: () => currentFormType !== formType.VIEW ? <DataGridTableRowSelectAll /> : null,
-                    cell: ({ row }) => currentFormType !== formType.VIEW ? <DataGridTableRowSelect row={row} /> : null,
+                    header: () => {
+                        if (currentFormType === formType.VIEW) {
+                            return null;
+                        }
+                        return <DataGridTableRowSelectAll />;
+                    },
+                    cell: ({ row }) => {
+                        if (currentFormType === formType.VIEW) {
+                            return null;
+                        }
+                        return <DataGridTableRowSelect row={row} />;
+                    },
+
                     enableSorting: false,
                     enableHiding: false,
                     size: 30,
                 },
                 {
                     id: "no",
-                    header: () => <div className="text-center text-muted-foreground">#</div>,
-                    cell: ({ row }) => <div className="text-center text-xs">{row.index + 1}</div>,
+                    header: () => <span className="text-center text-muted-foreground">#</span>,
+                    cell: ({ row }) => <span className="text-center text-xs">{row.index + 1}</span>,
                     enableSorting: false,
                     size: 30,
                     meta: {
@@ -235,9 +246,9 @@ export default function PurchaseItemDataGrid({
                         const item = row.original;
 
                         return currentFormType === formType.VIEW ? (
-                            <p className="font-semibold text-muted-foreground text-xs break-words">
+                            <span className="font-semibold text-muted-foreground text-xs break-words">
                                 {item.location_name || "-"}
-                            </p>
+                            </span>
                         ) : (
                             <div
                                 className="min-w-[200px] pr-4"
@@ -715,7 +726,6 @@ const UnitSelectCell = ({
     const selectValue = currentUnitId || orderUnitsData?.[0]?.id || '';
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        // Close dropdown on Tab key to allow normal tab navigation
         if (e.key === 'Tab') {
             setOpen(false);
         }

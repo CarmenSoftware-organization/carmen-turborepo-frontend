@@ -1,10 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Trash2, MoreHorizontal, List, Info, Activity } from "lucide-react";
+import { Trash2, List, Info, Activity } from "lucide-react";
 import { UnitDto } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import {
@@ -57,9 +56,6 @@ export default function ListUnit({
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
 
-    // Action header component
-    const ActionHeader = () => <div className="text-right">{t("action")}</div>;
-
     // Convert sort to TanStack Table format
     const sorting: SortingState = useMemo(() => {
         if (!sort) return [];
@@ -88,11 +84,11 @@ export default function ListUnit({
             },
             {
                 id: "no",
-                header: () => <div className="text-center">#</div>,
+                header: () => <span className="text-center">#</span>,
                 cell: ({ row }) => (
-                    <div className="text-center">
+                    <span className="text-center">
                         {(currentPage - 1) * perpage + row.index + 1}
-                    </div>
+                    </span>
                 ),
                 enableSorting: false,
                 size: 30,
@@ -112,7 +108,7 @@ export default function ListUnit({
                         return (
                             <button
                                 type="button"
-                                className="btn-dialog text-sm"
+                                className="btn-dialog"
                                 onClick={() => onEdit(unit)}
                             >
                                 {unit.name}
@@ -147,7 +143,10 @@ export default function ListUnit({
             {
                 accessorKey: "is_active",
                 header: ({ column }) => (
-                    <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+                    <div className="flex justify-center items-center gap-2">
+                        <Activity className="h-4 w-4" />
+                        <DataGridColumnHeader column={column} title={t("status")} />
+                    </div>
                 ),
                 cell: ({ row }) => (
                     <div className="flex justify-center">
@@ -166,34 +165,20 @@ export default function ListUnit({
             },
             {
                 id: "action",
-                header: ActionHeader,
+                header: () => <span className="text-right">{t("action")}</span>,
                 cell: ({ row }) => {
                     const unit = row.original;
-
-                    // Hide action menu if no permissions
                     if (!canDelete) return null;
-
                     return (
                         <div className="flex justify-end">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="h-7 w-7">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                        <span className="sr-only">More options</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    {canDelete && (
-                                        <DropdownMenuItem
-                                            className="text-destructive cursor-pointer hover:bg-transparent"
-                                            onClick={() => onDelete(unit)}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                            Delete
-                                        </DropdownMenuItem>
-                                    )}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <Button
+                                className="h-7 w-7 text-destructive cursor-pointer hover:bg-transparent"
+                                onClick={() => onDelete(unit)}
+                                variant="ghost"
+                                size="sm"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
                         </div>
                     );
                 },
@@ -208,7 +193,6 @@ export default function ListUnit({
         [t, tCommon, currentPage, perpage, canUpdate, canDelete, onEdit, onDelete]
     );
 
-    // Initialize table
     const table = useReactTable({
         data: units,
         columns,

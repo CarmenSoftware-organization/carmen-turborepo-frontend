@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
-import { Activity, List, MoreHorizontal, Trash2 } from "lucide-react";
+import { Activity, List, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import {
@@ -56,10 +55,6 @@ export default function TaxProfileList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
@@ -152,7 +147,7 @@ export default function TaxProfileList({
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => <span className="text-right">{t("action")}</span>,
         cell: ({ row }) => {
           const taxProfile = row.original;
 
@@ -160,7 +155,18 @@ export default function TaxProfileList({
 
           return (
             <div className="flex justify-end">
-              <DropdownMenu>
+              {canDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 text-destructive cursor-pointer hover:bg-transparent"
+                  onClick={() => onDelete(taxProfile.id)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+
+              {/* <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-7 w-7">
                     <MoreHorizontal className="h-4 w-4" />
@@ -177,7 +183,7 @@ export default function TaxProfileList({
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
-              </DropdownMenu>
+              </DropdownMenu> */}
             </div>
           );
         },

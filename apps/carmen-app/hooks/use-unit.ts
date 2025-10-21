@@ -1,7 +1,7 @@
 import { backendApi } from "@/lib/backend-api";
 import { deleteApiRequest, getAllApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { UnitDto } from "@/dtos/unit.dto";
+import { UnitDto, CreateUnitDto, UpdateUnitDto } from "@/dtos/unit.dto";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 
@@ -46,7 +46,7 @@ export const useUnitQuery = ({
 export const useUnitMutation = (token: string, buCode: string) => {
     const API_URL = unitApiUrl(buCode);
     return useMutation({
-        mutationFn: async (data: UnitDto) => {
+        mutationFn: async (data: CreateUnitDto) => {
             return await postApiRequest(
                 API_URL,
                 token,
@@ -60,7 +60,7 @@ export const useUnitMutation = (token: string, buCode: string) => {
 export const useUpdateUnit = (token: string, buCode: string, id: string) => {
     const API_URL_BY_ID = unitApiUrl(buCode, id);
     return useMutation({
-        mutationFn: async (data: UnitDto) => {
+        mutationFn: async (data: UpdateUnitDto) => {
             return await updateApiRequest(
                 API_URL_BY_ID,
                 token,

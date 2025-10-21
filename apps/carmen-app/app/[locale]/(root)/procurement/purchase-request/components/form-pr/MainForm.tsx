@@ -303,7 +303,6 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     const onSendBack = () => {
-
         const sendBackData = {
             stage_role: STAGE_ROLE.SEND_BACK,
             body: initValues?.purchase_request_detail?.map((item) => ({

@@ -171,7 +171,7 @@
   }
 
   .btn-dialog {
-    @apply text-primary dark:text-foreground cursor-pointer hover:underline transition-colors text-left text-xs md:text-base;
+    @apply text-primary dark:text-foreground cursor-pointer hover:underline transition-colors text-left text-xs md:text-sm;
   }
 
   .link-primary {

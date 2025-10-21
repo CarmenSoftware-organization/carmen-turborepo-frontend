@@ -411,8 +411,14 @@
   },
   "Unit": {
     "title": "Unit",
+    "add_success": "Unit created successfully",
     "add_description": "Fill in the details to create a new unit.",
-    "edit_description": "Update the unit information below."
+    "add_error": "Failed to create unit",
+    "edit_description": "Update the unit information below.",
+    "update_success": "Unit updated successfully",
+    "update_error": "Failed to update unit",
+    "delete_success": "Unit deleted successfully",
+    "delete_error": "Failed to delete unit"
   },
   "Currency": {
     "title": "Currency",
