@@ -16,6 +16,14 @@ import { useTranslations } from "next-intl";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { Separator } from "@/components/ui/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+import TabUsersLocation from "./TabUsersLocation";
+import TabUsersProduct from "./TabUsersProduct";
 
 interface LocationViewProps {
   readonly initialData?: LocationByIdDto;
@@ -23,9 +31,9 @@ interface LocationViewProps {
 }
 
 export default function LocationView({ initialData, mode }: LocationViewProps) {
-  const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, buCode } = useAuth();
-
+  const { getDeliveryPointName } = useDeliveryPointQuery({ token, buCode });
+  const [currentMode, setCurrentMode] = useState<formType>(mode);
   const tStoreLocation = useTranslations("StoreLocation");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
@@ -47,20 +55,9 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
     setCurrentMode(formType.EDIT);
   };
 
-  const { getDeliveryPointName } = useDeliveryPointQuery({ token, buCode });
-
   return (
     <>
-      {currentMode !== formType.VIEW ? (
-        <LocationForm
-          initialData={initialData}
-          mode={currentMode}
-          onViewMode={handleViewMode}
-          token={token}
-          buCode={buCode}
-        />
-      ) : (
-
+      {currentMode === formType.VIEW ? (
         <div className="space-y-4 p-2">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild className="hover:bg-transparent">
@@ -72,10 +69,8 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
             <Button
               onClick={handleEditMode}
               size="sm"
-              className="text-sm"
             >
               <SquarePen className="w-4 h-4" />
-              {tCommon("edit")}
             </Button>
           </div>
           <Separator />
@@ -107,44 +102,27 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
 
           <Separator />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <h2 className="text-sm font-semibold">
-                {tCommon("users")} ({initialData?.user_location?.length ?? 0})
-              </h2>
-              {(initialData?.user_location?.length ?? 0) > 0 ? (
-                <ul className="space-y-1 h-[300px] overflow-y-auto text-sm pl-4 list-disc border border-border rounded-md p-2">
-                  {initialData?.user_location.map((user) => (
-                    <li key={user.id}>
-                      {user.firstname ?? '-'} {user.lastname ?? '-'}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted-foreground text-xs text-center py-2">
-                  {tCommon("data_not_found")}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-sm font-semibold">
-                {tCommon("products")} ({initialData?.product_location?.length ?? 0})
-              </h2>
-              {(initialData?.product_location?.length ?? 0) > 0 ? (
-                <ul className="space-y-1 h-[300px] overflow-y-auto text-sm pl-4 list-disc border border-border rounded-md p-2">
-                  {initialData?.product_location.map((product) => (
-                    <li key={product.id}>{product.name}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-muted-foreground text-xs text-center py-2">
-                  {tCommon("data_not_found")}
-                </p>
-              )}
-            </div>
-          </div>
+          <Tabs defaultValue="users">
+            <TabsList>
+              <TabsTrigger value="users">{tCommon("users")}</TabsTrigger>
+              <TabsTrigger value="products">{tCommon("products")}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="users">
+              <TabUsersLocation users={initialData?.user_location || []} />
+            </TabsContent>
+            <TabsContent value="products">
+              <TabUsersProduct products={initialData?.product_location || []} />
+            </TabsContent>
+          </Tabs>
         </div>
+      ) : (
+        <LocationForm
+          initialData={initialData}
+          mode={currentMode}
+          onViewMode={handleViewMode}
+          token={token}
+          buCode={buCode}
+        />
       )}
     </>
   );

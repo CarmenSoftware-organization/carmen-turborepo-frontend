@@ -51,6 +51,17 @@ export const getStoreLocationSchema = storeLocationSchema.extend({
 });
 
 export type StoreLocationDto = z.infer<typeof getStoreLocationSchema>;
+
+export interface UserLocationDto {
+  id: string;
+  firstname: string;
+  lastname: string;
+}
+
+export interface ProductLocationDto {
+  id: string;
+  name: string;
+}
 export interface LocationByIdDto {
   id: string;
   name: string;
@@ -58,16 +69,8 @@ export interface LocationByIdDto {
   physical_count_type: PHYSICAL_COUNT_TYPE;
   description: string;
   is_active: boolean;
-  user_location: {
-    id: string;
-    firstname: string;
-    lastname: string;
-  }[];
-
-  product_location: {
-    id: string;
-    name: string;
-  }[];
+  user_location: UserLocationDto[];
+  product_location: ProductLocationDto[];
   delivery_point: DeliveryPointGetDto;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   info?: any;
