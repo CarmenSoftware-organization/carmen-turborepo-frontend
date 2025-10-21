@@ -1,9 +1,10 @@
 import { backendApi } from "@/lib/backend-api";
-import { deleteApiRequest, getAllApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
+import { getAllApiRequest, postApiRequest, updateApiRequest, requestHeaders } from "@/lib/config.api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { UnitDto, CreateUnitDto, UpdateUnitDto } from "@/dtos/unit.dto";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import axios from "axios";
 
 const unitApiUrl = (buCode: string, id?: string) => {
     const baseUrl = `${backendApi}/api/config/${buCode}/units`;
@@ -73,15 +74,22 @@ export const useUpdateUnit = (token: string, buCode: string, id: string) => {
 };
 
 
-export const useDeleteUnit = (token: string, buCode: string, id: string) => {
-    const API_URL_BY_ID = unitApiUrl(buCode, id);
+export const useDeleteUnit = (token: string, buCode: string) => {
     return useMutation({
-        mutationFn: async () => {
-            return await deleteApiRequest(
-                API_URL_BY_ID,
-                token,
-                id,
-                "Error deleting unit");
+        mutationFn: async (id: string) => {
+            if (!token || !buCode || !id) {
+                throw new Error("Unauthorized: Missing required parameters");
+            }
+            try {
+                const API_URL_BY_ID = unitApiUrl(buCode, id);
+                const response = await axios.delete(API_URL_BY_ID, {
+                    headers: requestHeaders(token),
+                });
+                return response.data;
+            } catch (error) {
+                console.error("Error deleting unit:", error);
+                throw error;
+            }
         },
     });
 };

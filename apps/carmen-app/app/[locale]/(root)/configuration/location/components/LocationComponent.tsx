@@ -3,6 +3,7 @@
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { useAuth } from "@/context/AuthContext";
 import { useLocationsQuery } from "@/hooks/useLocation";
+import { useDeleteLocation } from "@/hooks/use-location";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import { FileDown, Plus, Printer } from "lucide-react";
@@ -13,9 +14,13 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListLocations from "./ListLocations";
 import { useRouter } from "@/lib/navigation";
 import SignInDialog from "@/components/SignInDialog";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { StoreLocationDto } from "@/dtos/config.dto";
+import { useQueryClient } from "@tanstack/react-query";
+import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 
 export default function LocationComponent() {
   const tCommon = useTranslations("Common");
@@ -25,6 +30,8 @@ export default function LocationComponent() {
   const router = useRouter();
 
   const locationPerms = configurationPermission.get(permissions, "store_location");
+  const queryClient = useQueryClient();
+
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
   const [sort, setSort] = useURL("sort");
@@ -32,6 +39,8 @@ export default function LocationComponent() {
   const [perpage, setPerpage] = useURL("perpage");
   const [statusOpen, setStatusOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [locationToDelete, setLocationToDelete] = useState<StoreLocationDto | undefined>(undefined);
 
   const {
     data: locations,
@@ -49,6 +58,8 @@ export default function LocationComponent() {
     },
   });
 
+  const { mutate: deleteLocation } = useDeleteLocation(token, buCode);
+
   useEffect(() => {
     if (
       (error as { response?: { status?: number } })?.response?.status === 401
@@ -61,6 +72,35 @@ export default function LocationComponent() {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage.toString());
+  };
+
+  const handleDelete = (location: StoreLocationDto) => {
+    setLocationToDelete(location);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (locationToDelete?.id) {
+      deleteLocation(locationToDelete.id, {
+        onSuccess: () => {
+          toastSuccess({ message: "Location deleted successfully" });
+          queryClient.invalidateQueries({ queryKey: ["locations", buCode] });
+          setDeleteDialogOpen(false);
+          setLocationToDelete(undefined);
+        },
+        onError: (error: Error) => {
+          toastError({ message: "Failed to delete location" });
+          console.error("Failed to delete location:", error);
+          setDeleteDialogOpen(false);
+          setLocationToDelete(undefined);
+        },
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setLocationToDelete(undefined);
   };
 
   const actionButtons = (
@@ -134,6 +174,7 @@ export default function LocationComponent() {
       sort={parseSortString(sort)}
       onSort={setSort}
       onPageChange={handlePageChange}
+      onDelete={handleDelete}
       canUpdate={locationPerms.canUpdate}
       canDelete={locationPerms.canDelete}
       setPerpage={handleSetPerpage}
@@ -148,6 +189,13 @@ export default function LocationComponent() {
         filters={filters}
         content={content}
         data-id="location-list-template"
+      />
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Location"
+        description="Are you sure you want to delete this location? This action cannot be undone."
       />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>

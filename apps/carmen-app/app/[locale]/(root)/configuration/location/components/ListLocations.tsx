@@ -20,6 +20,7 @@ import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
+import { StoreLocationDto } from "@/dtos/config.dto";
 
 interface Location {
   readonly id: string;
@@ -44,6 +45,7 @@ interface ListLocationsProps {
   readonly sort?: { field: string; direction: "asc" | "desc" };
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
+  readonly onDelete?: (location: StoreLocationDto) => void;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
 }
@@ -59,6 +61,7 @@ export default function ListLocations({
   sort,
   onSort,
   setPerpage,
+  onDelete,
   canUpdate = true,
   canDelete = true,
 }: ListLocationsProps) {
@@ -220,8 +223,10 @@ export default function ListLocations({
       {
         id: "action",
         header: ActionHeader,
-        cell: () => {
+        cell: ({ row }) => {
           if (!canDelete) return null;
+
+          const location = row.original;
 
           return (
             <div className="flex justify-end">
@@ -232,9 +237,10 @@ export default function ListLocations({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {canDelete && (
+                  {canDelete && onDelete && (
                     <DropdownMenuItem
                       className="text-destructive cursor-pointer hover:bg-transparent"
+                      onClick={() => onDelete(location as unknown as StoreLocationDto)}
                     >
                       <Trash2 className="h-4 w-4" />
                       {tCommon("delete")}
@@ -261,6 +267,7 @@ export default function ListLocations({
       perpage,
       canUpdate,
       canDelete,
+      onDelete,
       getLocationType,
     ]
   );

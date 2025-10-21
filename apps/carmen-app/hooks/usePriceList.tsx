@@ -3,12 +3,13 @@ import { ParamsGetDto } from "@/dtos/param.dto";
 import { CreatePriceListDto, UpdatePriceListDto } from "@/dtos/price-list.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
-  deleteApiRequest,
   getAllApiRequest,
   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
+import axios from "axios";
 
 const queryKey = "price-list";
 
@@ -113,18 +114,23 @@ export const useUpdatePriceList = (
 
 export const useDeletePriceList = (
   token: string,
-  buCode: string,
-  id: string
+  buCode: string
 ) => {
-  const API_URL_BY_ID = priceListApiUrl(buCode, id);
   return useMutation({
-    mutationFn: async () => {
-      return deleteApiRequest(
-        API_URL_BY_ID,
-        token,
-        id,
-        "Failed to delete price list"
-      );
+    mutationFn: async (id: string) => {
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      try {
+        const API_URL_BY_ID = priceListApiUrl(buCode, id);
+        const response = await axios.delete(API_URL_BY_ID, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting price list:", error);
+        throw error;
+      }
     },
   });
 };

@@ -30,7 +30,7 @@ export default function GoodsReceivedNoteComponent() {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
     const { data, isLoading } = useGrnQuery(token, buCode, {
-        page: page ? parseInt(page) : 1,
+        page: page ? Number(page) : 1,
         sort,
         search
     });
@@ -118,7 +118,7 @@ export default function GoodsReceivedNoteComponent() {
             currentPage={data?.data.paginate?.page ?? 1}
             totalPages={data?.data.paginate?.pages ?? 1}
             totalItems={data?.data.paginate?.total ?? 0}
-            perpage={perpage ? parseInt(perpage) : 10}
+            perpage={perpage ? Number(perpage) : 10}
             onPageChange={handlePageChange}
             isLoading={isLoading}
             sort={parseSortString(sort)}

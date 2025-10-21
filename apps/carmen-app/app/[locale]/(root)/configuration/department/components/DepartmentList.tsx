@@ -32,6 +32,7 @@ interface DepartmentListProps {
   readonly sort?: { field: string; direction: "asc" | "desc" };
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
+  readonly onDelete?: (department: DepartmentGetListDto) => void;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
 }
@@ -47,6 +48,7 @@ export default function DepartmentList({
   sort,
   onSort,
   setPerpage,
+  onDelete,
   canUpdate = true,
   canDelete = true,
 }: DepartmentListProps) {
@@ -163,8 +165,10 @@ export default function DepartmentList({
       {
         id: "action",
         header: ActionHeader,
-        cell: () => {
+        cell: ({ row }) => {
           if (!canDelete) return null;
+
+          const department = row.original;
 
           return (
             <div className="flex justify-end">
@@ -175,8 +179,11 @@ export default function DepartmentList({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {canDelete && (
-                    <DropdownMenuItem className="cursor-pointer">
+                  {canDelete && onDelete && (
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      onClick={() => onDelete(department)}
+                    >
                       <Trash2 className="h-4 w-4" />
                       {tCommon("delete")}
                     </DropdownMenuItem>
@@ -194,7 +201,7 @@ export default function DepartmentList({
         },
       },
     ],
-    [t, tCommon, currentPage, perpage, canUpdate, canDelete]
+    [t, tCommon, currentPage, perpage, canUpdate, canDelete, onDelete]
   );
 
   // Initialize table

@@ -2,13 +2,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import {
-  deleteApiRequest,
   getAllApiRequest,
   postApiRequest,
   updateApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
 import { useCallback } from "react";
 import { FormLocationValues, StoreLocationDto } from "@/dtos/config.dto";
+import axios from "axios";
 
 const locationApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/locations`;
@@ -80,19 +81,21 @@ export const useUpdateLocation = (
 
 export const useDeleteLocation = (
   token: string,
-  buCode: string,
-  id: string
+  buCode: string
 ) => {
-  const API_URL_BY_ID = locationApiUrl(buCode, id);
   return useMutation({
-    mutationFn: () => {
+    mutationFn: async (id: string) => {
       if (!token || !buCode || !id) throw new Error("Unauthorized");
-      return deleteApiRequest(
-        API_URL_BY_ID,
-        token,
-        id,
-        "Error deleting location"
-      );
+      try {
+        const API_URL_BY_ID = locationApiUrl(buCode, id);
+        const response = await axios.delete(API_URL_BY_ID, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting location:", error);
+        throw error;
+      }
     },
   });
 };

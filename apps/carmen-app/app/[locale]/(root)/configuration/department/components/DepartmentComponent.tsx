@@ -1,12 +1,13 @@
 "use client";
 
 import SignInDialog from "@/components/SignInDialog";
+import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { useDepartmentsQuery } from "@/hooks/useDepartments";
+import { useDepartmentsQuery, useDepartmentDeleteMutation } from "@/hooks/useDepartments";
 import { useURL } from "@/hooks/useURL";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer } from "lucide-react";
@@ -16,18 +17,24 @@ import DepartmentList from "./DepartmentList";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { DepartmentGetListDto } from "@/dtos/department.dto";
+import { useQueryClient } from "@tanstack/react-query";
+import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 
 export default function DepartmentComponent() {
   const { token, buCode, permissions } = useAuth();
 
   // Get permissions for department resource
   const departmentPerms = configurationPermission.get(permissions, "department");
+  const queryClient = useQueryClient();
 
   const tDepartment = useTranslations("Department");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
   const router = useRouter();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [departmentToDelete, setDepartmentToDelete] = useState<DepartmentGetListDto | undefined>(undefined);
   const [statusOpen, setStatusOpen] = useState(false);
   const [search, setSearch] = useURL("search");
   const [filter, setFilter] = useURL("filter");
@@ -42,6 +49,8 @@ export default function DepartmentComponent() {
     filter,
     perpage
   });
+
+  const { mutate: deleteDepartment } = useDepartmentDeleteMutation(token, buCode);
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -63,6 +72,35 @@ export default function DepartmentComponent() {
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
+  };
+
+  const handleDelete = (department: DepartmentGetListDto) => {
+    setDepartmentToDelete(department);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (departmentToDelete?.id) {
+      deleteDepartment(departmentToDelete.id, {
+        onSuccess: () => {
+          toastSuccess({ message: "Department deleted successfully" });
+          queryClient.invalidateQueries({ queryKey: ["departments", buCode] });
+          setDeleteDialogOpen(false);
+          setDepartmentToDelete(undefined);
+        },
+        onError: (error: Error) => {
+          toastError({ message: "Failed to delete department" });
+          console.error("Failed to delete department:", error);
+          setDeleteDialogOpen(false);
+          setDepartmentToDelete(undefined);
+        },
+      });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setDepartmentToDelete(undefined);
   };
 
   const sortFields = [
@@ -148,6 +186,7 @@ export default function DepartmentComponent() {
       sort={parseSortString(sort)}
       onSort={setSort}
       setPerpage={handleSetPerpage}
+      onDelete={handleDelete}
       canUpdate={departmentPerms.canUpdate}
       canDelete={departmentPerms.canDelete}
     />
@@ -160,6 +199,13 @@ export default function DepartmentComponent() {
         actionButtons={actionButtons}
         filters={filters}
         content={content}
+      />
+      <DeleteConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Department"
+        description="Are you sure you want to delete this department? This action cannot be undone."
       />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>

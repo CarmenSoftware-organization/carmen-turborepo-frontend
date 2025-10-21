@@ -59,7 +59,7 @@ export default function BusinessTypeComponent() {
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
 
   const { buTypes, isLoading } = useBuTypeQuery(token, buCode, {
-    page: page ? parseInt(page) : 1,
+    page: page ? Number(page) : 1,
     perpage: perpage,
     search,
     filter,
@@ -82,11 +82,7 @@ export default function BusinessTypeComponent() {
     editingProfileId ?? ""
   );
 
-  const { mutate: deleteBuType } = useDeleteBuType(
-    token,
-    buCode,
-    deleteProfileId ?? ""
-  );
+  const { mutate: deleteBuType } = useDeleteBuType(token, buCode);
   const title = tBusinessType("title");
 
   const sortFields = [
@@ -221,7 +217,7 @@ export default function BusinessTypeComponent() {
 
   const confirmDelete = () => {
     if (deleteProfileId) {
-      deleteBuType(undefined, {
+      deleteBuType(deleteProfileId, {
         onSuccess: () => {
           setBuTypesData((prev) => prev.filter((bu) => bu.id !== deleteProfileId));
           toastSuccess({ message: tBusinessType("business_type_deleted") });
@@ -237,7 +233,7 @@ export default function BusinessTypeComponent() {
       isLoading={isLoading}
       onEdit={handleEdit}
       onDelete={handleDelete}
-      currentPage={parseInt(page || "1")}
+      currentPage={Number(page || "1")}
       totalPages={buTypes?.paginate.pages ?? 1}
       totalItems={buTypes?.paginate.total ?? buTypes?.data?.length ?? 0}
       perpage={buTypes?.paginate.perpage ?? 10}

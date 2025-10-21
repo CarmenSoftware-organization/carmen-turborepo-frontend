@@ -36,7 +36,7 @@ export const useGrn = () => {
   } = useQuery({
     queryKey: ["grns", buCode, search, page, sort],
     queryFn: () =>
-      getAllGrn(token || "", buCode || "", { search, page: page ? parseInt(page) : 1, sort }),
+      getAllGrn(token || "", buCode || "", { search, page: page ? Number(page) : 1, sort }),
     enabled: !!token && !!buCode,
   });
 

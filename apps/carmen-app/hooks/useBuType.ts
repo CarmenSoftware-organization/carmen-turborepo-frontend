@@ -7,13 +7,14 @@ import {
   //   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
-  deleteApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
 import {
   BuTypeEditDto,
   BuTypeFormDto,
   BuTypeGetAllDto,
 } from "@/dtos/bu-type.dto";
+import axios from "axios";
 
 const buTypeApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/vendor-business-type`;
@@ -98,18 +99,23 @@ export const useUpdateBuType = (
 
 export const useDeleteBuType = (
   token: string,
-  buCode: string,
-  id: string
+  buCode: string
 ) => {
-  const API_ID = buTypeApiUrl(buCode, id);
   return useMutation({
-    mutationFn: async () => {
-      return await deleteApiRequest(
-        API_ID,
-        token,
-        id,
-        "Error deleting bu type"
-      );
+    mutationFn: async (id: string) => {
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      try {
+        const API_ID = buTypeApiUrl(buCode, id);
+        const response = await axios.delete(API_ID, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting bu type:", error);
+        throw error;
+      }
     },
   });
 };

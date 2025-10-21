@@ -1,9 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
-import { deleteApiRequest, getAllApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
+import { getAllApiRequest, postApiRequest, updateApiRequest, requestHeaders } from "@/lib/config.api";
 import { useCallback } from "react";
 import { DeliveryPointCreateDto, DeliveryPointGetDto, DeliveryPointUpdateDto } from "@/dtos/delivery-point.dto";
+import axios from "axios";
 
 const deliveryPointApiUrl = (buCode: string, id?: string) => {
     const baseUrl = `${backendApi}/api/config/${buCode}/delivery-point`;
@@ -23,7 +24,7 @@ export const useDeliveryPointQuery = ({
     const API_URL = deliveryPointApiUrl(buCode);
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["delivery-point", params],
+        queryKey: ["delivery-point", buCode, params],
         queryFn: async () => {
             try {
                 const result = await getAllApiRequest(
@@ -92,13 +93,16 @@ export const useDeleteDeliveryPoint = (
     return useMutation({
         mutationFn: async (id: string) => {
             if (!token || !buCode || !id) throw new Error("Unauthorized");
-            const API_URL_BY_ID = deliveryPointApiUrl(buCode, id);
-            return await deleteApiRequest(
-                API_URL_BY_ID,
-                token,
-                id,
-                "Error deleting delivery point"
-            );
+            try {
+                const API_URL_BY_ID = deliveryPointApiUrl(buCode, id);
+                const response = await axios.delete(API_URL_BY_ID, {
+                    headers: requestHeaders(token),
+                });
+                return response.data;
+            } catch (error) {
+                console.error("Error deleting delivery point:", error);
+                throw error;
+            }
         },
     });
 };

@@ -45,7 +45,7 @@ export default function PriceListComponent() {
         search,
         filter,
         sort,
-        perpage: perpage ? parseInt(perpage) : 10,
+        perpage: perpage ? Number(perpage) : 10,
     });
 
     const priceLists = response?.data ?? [];

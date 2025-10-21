@@ -4,14 +4,15 @@ import {
 } from "@/dtos/credit-term.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import {
-  deleteApiRequest,
   getAllApiRequest,
   postApiRequest,
   updateApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
 import { useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const creditTermApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/credit-term`;
@@ -108,22 +109,23 @@ export const useUpdateCreditTerm = (
 
 export const useDeleteCreditTerm = (
   token: string,
-  buCode: string,
-  id: string
+  buCode: string
 ) => {
-  const API_URL_BY_ID = creditTermApiUrl(buCode, id);
-
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
-      return deleteApiRequest(
-        API_URL_BY_ID,
-        token,
-        id,
-        "Failed to delete credit term"
-      );
+      try {
+        const API_URL_BY_ID = creditTermApiUrl(buCode, id);
+        const response = await axios.delete(API_URL_BY_ID, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting credit term:", error);
+        throw error;
+      }
     },
   });
 };

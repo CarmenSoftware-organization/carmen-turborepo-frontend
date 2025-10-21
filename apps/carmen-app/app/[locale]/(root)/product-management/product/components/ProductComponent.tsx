@@ -34,8 +34,8 @@ export default function ProductComponent() {
     params: {
       search,
       sort,
-      page: page ? parseInt(page) : 1,
-      perpage: perpage ? parseInt(perpage) : 10,
+      page: page ? Number(page) : 1,
+      perpage: perpage ? Number(perpage) : 10,
     }
   });
 

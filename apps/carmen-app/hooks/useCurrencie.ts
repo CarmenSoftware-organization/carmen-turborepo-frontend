@@ -4,10 +4,12 @@ import {
     getAllApiRequest,
     postApiRequest,
     updateApiRequest,
+    requestHeaders,
 } from "@/lib/config.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { CurrencyCreateDto, CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
+import axios from "axios";
 
 const currencyApiUrl = (buCode: string, id?: string) => {
     const baseUrl = `${backendApi}/api/config/${buCode}/currencies`;
@@ -23,7 +25,7 @@ export const useCurrenciesQuery = (
     const API_URL = currencyApiUrl(buCode);
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["currencies", params],
+        queryKey: ["currencies", buCode, params],
         queryFn: async () => {
             if (!token || !buCode) {
                 throw new Error("Unauthorized: Missing token or buCode");
@@ -112,17 +114,22 @@ export const useCurrencyUpdateMutation = (token: string, buCode: string, id: str
     });
 };
 
-export const useCurrencyDeleteMutation = (token: string, buCode: string, id: string) => {
-    const API_URL_BY_ID = currencyApiUrl(buCode, id);
+export const useCurrencyDeleteMutation = (token: string, buCode: string) => {
     return useMutation({
-        mutationFn: async () => {
-            return await updateApiRequest(
-                API_URL_BY_ID,
-                token,
-                id,
-                "Error deleting currency",
-                "PATCH"
-            );
+        mutationFn: async (id: string) => {
+            if (!token || !buCode || !id) {
+                throw new Error("Unauthorized: Missing required parameters");
+            }
+            try {
+                const API_URL_BY_ID = currencyApiUrl(buCode, id);
+                const response = await axios.delete(API_URL_BY_ID, {
+                    headers: requestHeaders(token),
+                });
+                return response.data;
+            } catch (error) {
+                console.error("Error deleting currency:", error);
+                throw error;
+            }
         },
     });
 };

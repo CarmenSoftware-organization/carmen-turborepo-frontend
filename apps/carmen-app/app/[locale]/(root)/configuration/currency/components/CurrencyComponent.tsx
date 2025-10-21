@@ -24,10 +24,7 @@ import { configurationPermission } from "@/lib/permission";
 
 export default function CurrencyComponent() {
     const { token, buCode, permissions } = useAuth();
-
-    // Get permissions for currency resource
     const currencyPerms = configurationPermission.get(permissions, "currency");
-
     const [search, setSearch] = useURL('search');
     const [filter, setFilter] = useURL('filter');
     const [statusOpen, setStatusOpen] = useState(false);
@@ -75,7 +72,7 @@ export default function CurrencyComponent() {
 
     const createCurrencyMutation = useCurrencyMutation(token, buCode);
     const updateCurrencyMutation = useCurrencyUpdateMutation(token, buCode, selectedCurrency?.id || '');
-    const deleteStatusMutation = useCurrencyDeleteMutation(token, buCode, selectedCurrency?.id || '');
+    const deleteStatusMutation = useCurrencyDeleteMutation(token, buCode);
 
     const handleToggleStatus = (currency: CurrencyUpdateDto) => {
         if (!currency.id) {
@@ -93,7 +90,7 @@ export default function CurrencyComponent() {
 
     const handleConfirmToggle = () => {
         if (selectedCurrency?.id) {
-            deleteStatusMutation.mutate(undefined, {
+            deleteStatusMutation.mutate(selectedCurrency.id, {
                 onSuccess: () => {
                     refetchCurrencies();
                     toastSuccess({ message: tCurrency("deactivate_success") });
@@ -227,7 +224,7 @@ export default function CurrencyComponent() {
             currencies={currenciesData}
             onEdit={handleEdit}
             onToggleStatus={handleToggleStatus}
-            currentPage={parseInt(page || '1')}
+            currentPage={Number(page || '1')}
             totalPages={totalPages}
             totalItems={totalItems}
             onPageChange={handlePageChange}

@@ -99,10 +99,10 @@ export default function VendorComparisonComponent() {
     const content = (
         <VendorComparisonList
             vendorComparisons={mockVendorComparisonData}
-            currentPage={page ? parseInt(page) : 1}
+            currentPage={page ? Number(page) : 1}
             totalPages={totalPages}
             totalItems={totalItems}
-            perpage={perpage ? parseInt(perpage) : 10}
+            perpage={perpage ? Number(perpage) : 10}
             onPageChange={handlePageChange}
             isLoading={false}
             sort={parseSortString(sort)}

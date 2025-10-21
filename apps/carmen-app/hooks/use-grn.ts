@@ -2,13 +2,14 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
-    deleteApiRequest,
     getAllApiRequest,
     getByIdApiRequest,
     postApiRequest,
     updateApiRequest,
+    requestHeaders,
 } from "@/lib/config.api";
 import { CreateGRNDto } from "@/dtos/grn.dto";
+import axios from "axios";
 
 const grnApiUrl = (buCode: string, id?: string) => {
     const baseUrl = `${backendApi}/api/${buCode}/good-received-note`;
@@ -51,10 +52,22 @@ export const useGrnUpdate = (token: string, buCode: string, id: string) => {
     return { mutate, isPending, error };
 };
 
-export const useGrnDelete = (token: string, buCode: string, id: string) => {
-    const API_URL = grnApiUrl(buCode, id);
-    const { mutate, error } = useMutation({
-        mutationFn: () => deleteApiRequest(API_URL, token, id, "Error deleting GRN"),
+export const useGrnDelete = (token: string, buCode: string) => {
+    return useMutation({
+        mutationFn: async (id: string) => {
+            if (!token || !buCode || !id) {
+                throw new Error("Unauthorized: Missing required parameters");
+            }
+            try {
+                const API_URL_BY_ID = grnApiUrl(buCode, id);
+                const response = await axios.delete(API_URL_BY_ID, {
+                    headers: requestHeaders(token),
+                });
+                return response.data;
+            } catch (error) {
+                console.error("Error deleting GRN:", error);
+                throw error;
+            }
+        },
     });
-    return { mutate, error };
 };

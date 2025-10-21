@@ -93,22 +93,3 @@ export const updateApiRequest = async <T = unknown, R = unknown>(
     throw error;
   }
 };
-
-export const deleteApiRequest = async (
-  API_URL: string,
-  token: string,
-  id: string,
-  errorContext: string
-) => {
-  try {
-    const response = await axios.delete(`${API_URL}/${id}`, {
-      headers: requestHeaders(token),
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error(`${errorContext}:`, error);
-    throw error;
-  }
-};
-

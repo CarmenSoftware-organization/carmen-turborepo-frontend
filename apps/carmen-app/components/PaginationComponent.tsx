@@ -55,12 +55,12 @@ const PaginationComponent = ({
 
 	const handlePerPageChange = (newPerpage: string) => {
 		if (setPerpage) {
-			setPerpage(parseInt(newPerpage));
+			setPerpage(Number(newPerpage));
 		}
 	};
 
 	const onGoToPage = (value: string) => {
-		const page = parseInt(value);
+		const page = Number(value);
 		if (!isNaN(page)) {
 			handlePageChange(page);
 		}

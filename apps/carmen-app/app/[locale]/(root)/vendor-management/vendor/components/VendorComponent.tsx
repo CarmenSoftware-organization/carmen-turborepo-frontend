@@ -39,8 +39,8 @@ export default function VendorComponent() {
     const { vendors, isLoading, isUnauthorized } = useVendor(token, buCode, {
         search,
         sort,
-        page: page ? parseInt(page) : 1,
-        perpage: perpage ? parseInt(perpage) : 10,
+        page: page ? Number(page) : 1,
+        perpage: perpage ? Number(perpage) : 10,
     });
 
     const totalItems = vendors?.paginate?.total ?? 0;

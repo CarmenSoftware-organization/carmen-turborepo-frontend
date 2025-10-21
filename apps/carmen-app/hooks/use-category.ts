@@ -1,7 +1,7 @@
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { deleteApiRequest, getAllApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
+import { getAllApiRequest, postApiRequest, updateApiRequest } from "@/lib/config.api";
 import { useCallback } from "react";
 
 const categoryApiUrl = (buCode: string, id?: string) => {

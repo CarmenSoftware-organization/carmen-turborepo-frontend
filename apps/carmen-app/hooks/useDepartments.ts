@@ -2,14 +2,15 @@ import { DepartmentCreateDto, DepartmentGetListDto, DepartmentUpdateDto } from "
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
-  deleteApiRequest,
   getAllApiRequest,
   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import axios from "axios";
 
 const departmentApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/departments`;
@@ -122,15 +123,21 @@ export const useDepartmentDeleteMutation = (
   token: string,
   buCode: string
 ) => {
-  const API_URL = departmentApiUrl(buCode);
   return useMutation({
     mutationFn: async (id: string) => {
-      return await deleteApiRequest(
-        API_URL,
-        token,
-        id,
-        "Error to delete department"
-      );
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      try {
+        const API_URL = departmentApiUrl(buCode, id);
+        const response = await axios.delete(API_URL, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting department:", error);
+        throw error;
+      }
     },
   });
 };

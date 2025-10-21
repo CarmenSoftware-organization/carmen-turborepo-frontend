@@ -122,7 +122,7 @@ export default function StockTable() {
                                                 value={item.orderAmount || suggestedOrder}
                                                 className="w-20 text-right"
                                                 onChange={(e) => {
-                                                    const value = parseInt(e.target.value, 10);
+                                                    const value = Number(e.target.value, 10);
                                                     setItems(
                                                         items.map(i =>
                                                             i.id === item.id ? { ...i, orderAmount: value } : i
