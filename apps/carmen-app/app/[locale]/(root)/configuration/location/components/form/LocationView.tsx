@@ -58,8 +58,8 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
   return (
     <>
       {currentMode === formType.VIEW ? (
-        <div className="space-y-4 p-2">
-          <div className="flex items-center gap-4">
+        <div className="space-y-2 p-2">
+          <div className="flex items-center gap-4 mb-2">
             <Button variant="ghost" size="sm" asChild className="hover:bg-transparent">
               <Link href={`/configuration/location`}>
                 <ChevronLeft className="w-4 h-4" />
