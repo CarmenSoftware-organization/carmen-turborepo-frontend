@@ -6,9 +6,11 @@ import {
   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import axios from "axios";
 
 const extraCostTypeApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/extra-cost-type`;
@@ -138,22 +140,23 @@ export const useUpdateExtraCostType = (
 
 export const useDeleteExtraCostType = (
   token: string,
-  buCode: string,
-  id: string
+  buCode: string
 ) => {
-  const API_ID = extraCostTypeApiUrl(buCode, id);
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async (id: string) => {
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
-      return updateApiRequest(
-        API_ID,
-        token,
-        id,
-        "Failed to delete extra cost type",
-        "PUT"
-      );
+      try {
+        const API_ID = extraCostTypeApiUrl(buCode, id);
+        const response = await axios.delete(API_ID, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting extra cost type:", error);
+        throw error;
+      }
     },
   });
 };

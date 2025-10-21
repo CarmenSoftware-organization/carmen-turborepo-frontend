@@ -599,7 +599,9 @@
     "update_success": "Extra cost updated successfully",
     "update_error": "Failed to update extra cost",
     "delete_success": "Extra cost deleted successfully",
-    "delete_error": "Failed to delete extra cost"
+    "delete_error": "Failed to delete extra cost",
+    "del_extra_cost": "Delete Extra Cost",
+    "del_extra_cost_description": "Cannot delete this extra cost as it is associated with existing records."
   },
   "BusinessType": {
     "title": "Business Type",

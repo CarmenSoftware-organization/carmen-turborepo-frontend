@@ -16,8 +16,8 @@ interface DeleteConfirmDialogProps {
     readonly open: boolean;
     readonly onOpenChange: (open: boolean) => void;
     readonly onConfirm: () => void;
-    readonly title?: string;
-    readonly description?: string;
+    readonly title: string;
+    readonly description: string;
     readonly isLoading?: boolean;
 }
 

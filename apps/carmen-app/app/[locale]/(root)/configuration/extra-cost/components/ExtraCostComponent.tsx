@@ -54,14 +54,14 @@ export default function ExtraCostComponent() {
       search,
       filter,
       sort,
-      page: page ? parseInt(page) : 1,
-      perpage: perpage ? parseInt(perpage) : 10,
+      page: page ? Number(page) : 1,
+      perpage: perpage ? Number(perpage) : 10,
     }
   );
 
   const { mutate: createExtraCost } = useCreateExtraCostType(token, buCode);
   const { mutate: updateExtraCost } = useUpdateExtraCostType(token, buCode, selectedExtraCost?.id ?? "");
-  const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, buCode, extraCostToDelete?.id ?? "");
+  const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, buCode);
 
   const extraCostData = Array.isArray(extraCostTypes) ? extraCostTypes : extraCostTypes?.data || [];
   const currentPage = extraCostTypes?.paginate?.page ?? 1;
@@ -94,8 +94,8 @@ export default function ExtraCostComponent() {
   };
 
   const handleConfirmDelete = () => {
-    if (extraCostToDelete) {
-      deleteExtraCost(undefined, {
+    if (extraCostToDelete?.id) {
+      deleteExtraCost(extraCostToDelete.id, {
         onSuccess: () => {
           toastSuccess({ message: tExtraCost("delete_success") });
           queryClient.invalidateQueries({ queryKey: ["extra-cost-type", buCode] });
@@ -249,6 +249,9 @@ export default function ExtraCostComponent() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
+        title={tExtraCost("del_extra_cost")}
+        description={tExtraCost("del_extra_cost_description")}
+        isLoading={isLoading}
       />
     </>
   );
