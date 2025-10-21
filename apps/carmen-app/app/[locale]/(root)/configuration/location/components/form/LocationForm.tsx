@@ -12,15 +12,7 @@ import { Save, X } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -35,13 +27,15 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Transfer } from "@/components/ui-custom/Transfer";
-import { useMemo, useState, useEffect } from "react";
+import TreeProductLookup from "@/components/lookup/TreeProductLookup";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { useQueryClient } from "@tanstack/react-query";
 import transferHandler from "@/components/form-custom/TransferHandler";
 import { useTranslations } from "next-intl";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useUserList } from "@/hooks/useUserList";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -122,6 +116,9 @@ export default function LocationForm({
     );
   }, [initialData?.product_location]);
 
+  console.log('initProducts', initProducts);
+
+
   const initUserKeys = useMemo(() => {
     return initUsers.map((user) => user.key);
   }, [initUsers]);
@@ -182,6 +179,30 @@ export default function LocationForm({
 
   const handleProductsChange = transferHandler({ form, fieldName: "products", setSelected: setSelectedProducts });
 
+  // Handle TreeProductLookup selection
+  const handleTreeProductSelect = useCallback((productIds: { id: string }[]) => {
+    // Get current selected product IDs from initProductKeys
+    const currentProductIds = initProductKeys.map(key => key.toString());
+    const newProductIds = productIds.map(p => p.id);
+
+    // Calculate add and remove
+    const toAdd = newProductIds
+      .filter(id => !currentProductIds.includes(id))
+      .map(id => ({ id }));
+    const toRemove = currentProductIds
+      .filter(id => !newProductIds.includes(id))
+      .map(id => ({ id }));
+
+    // Update form values
+    form.setValue("products", {
+      add: toAdd,
+      remove: toRemove,
+    });
+
+    // Update selectedProducts state for UI
+    setSelectedProducts(newProductIds);
+  }, [initProductKeys, form]);
+
   const handleSubmit = async (data: FormLocationValues) => {
     try {
       if (mode === formType.EDIT) {
@@ -222,46 +243,47 @@ export default function LocationForm({
   };
 
   return (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <Card>
-          <CardHeader>
-            <div className="fxb-c">
-              <CardTitle className="text-2xl font-semibold">
-                {mode === formType.EDIT
-                  ? tLocation("edit_store_location")
-                  : tLocation("add_store_location")}
-              </CardTitle>
-              <div className="fxr-e gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onCancel}
-                >
-                  <X />
-                  {tCommon("cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isPending || isViewMode}
-                >
-                  <Save className="w-4 h-4" />
-                  {tCommon("save")}
-                </Button>
-              </div>
-            </div>
-
-          </CardHeader>
-          <CardContent className="space-y-4">
+    <div className="h-full flex flex-col">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-20 bg-background border-b">
+        <div className="flex items-center justify-between mb-2 pb-2">
+          <h1 className="text-xl font-semibold">
+            {mode === formType.EDIT
+              ? tLocation("edit_store_location")
+              : tLocation("add_store_location")}
+          </h1>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onCancel}
+            >
+              <X className="w-4 h-4" />
+              {tCommon("cancel")}
+            </Button>
+            <Button
+              size="sm"
+              onClick={form.handleSubmit(handleSubmit)}
+              disabled={isPending || isViewMode}
+            >
+              <Save className="w-4 h-4" />
+              {tCommon("save")}
+            </Button>
+          </div>
+        </div>
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        <FormProvider {...form}>
+          <div className="py-4 space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="name"
+                required
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
                       {tLocation("store_location_name")}
-                      <span className="text-destructive ml-1">*</span>
                     </FormLabel>
                     <FormControl>
                       <Input
@@ -277,17 +299,18 @@ export default function LocationForm({
               <FormField
                 control={form.control}
                 name="delivery_point_id"
+                required
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
                       {tLocation("delivery_point")}
-                      <span className="text-destructive ml-1">*</span>
                     </FormLabel>
                     <FormControl>
                       <div className={isViewMode ? "pointer-events-none opacity-50" : ""}>
                         <LookupDeliveryPoint
                           value={field.value}
                           onValueChange={field.onChange}
+                          placeholder={tLocation("delivery_point")}
                         />
                       </div>
                     </FormControl>
@@ -299,11 +322,11 @@ export default function LocationForm({
               <FormField
                 control={form.control}
                 name="location_type"
+                required
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
                       {tLocation("location_type")}
-                      <span className="text-destructive ml-1">*</span>
                     </FormLabel>
                     <FormControl>
                       <Select
@@ -333,36 +356,20 @@ export default function LocationForm({
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="col-span-3">
-                    <FormLabel>{tCommon("description")}</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        {...field}
-                        disabled={isViewMode}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
+
+            {/* Description */}
             <FormField
               control={form.control}
-              name="is_active"
+              name="description"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between">
+                <FormItem className="max-w-md">
+                  <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
-                    <FormBoolean
-                      value={field.value}
-                      onChange={field.onChange}
-                      label={tCommon("status")}
-                      type="checkbox"
+                    <Textarea
+                      {...field}
                       disabled={isViewMode}
+                      rows={3}
                     />
                   </FormControl>
                   <FormMessage />
@@ -370,61 +377,92 @@ export default function LocationForm({
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="physical_count_type"
-              render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>
-                    {tLocation("physical_count_type")}
-                    <span className="text-destructive ml-1">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      className="flex"
-                      disabled={isViewMode}
-                    >
-                      <FormItem className="fxr-c space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value={PHYSICAL_COUNT_TYPE.YES} />
-                        </FormControl>
-                        <FormLabel className="font-normal">{tCommon("yes")}</FormLabel>
-                      </FormItem>
-                      <FormItem className="fxr-c space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value={PHYSICAL_COUNT_TYPE.NO} />
-                        </FormControl>
-                        <FormLabel className="font-normal">{tCommon("no")}</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-        <Transfer
-          dataSource={listUser || []}
-          leftDataSource={initUsers}
-          targetKeys={selectedUsers}
-          onChange={handleUsersChange}
-          titles={[tCommon("init_users"), tCommon("available_users")]}
-          operations={["<", ">"]}
-          disabled={isViewMode || isLoadingUsers}
-        />
-        <Transfer
-          dataSource={listProduct || []}
-          leftDataSource={initProducts}
-          targetKeys={selectedProducts}
-          onChange={handleProductsChange}
-          titles={[tCommon("init_products"), tCommon("available_products")]}
-          operations={["<", ">"]}
-          disabled={isViewMode || isLoadingProducts}
-        />
-      </form>
-    </FormProvider>
+            {/* Status & Physical Count */}
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="is_active"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <FormBoolean
+                        value={field.value}
+                        onChange={field.onChange}
+                        label={tCommon("status")}
+                        type="checkbox"
+                        disabled={isViewMode}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="physical_count_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {tLocation("physical_count_type")}
+                      <span className="text-destructive ml-1">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex gap-4"
+                        disabled={isViewMode}
+                      >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value={PHYSICAL_COUNT_TYPE.YES} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{tCommon("yes")}</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value={PHYSICAL_COUNT_TYPE.NO} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{tCommon("no")}</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Transfer Components */}
+            <div className="space-y-4 pt-4 border-t">
+              <div>
+                <h3 className="text-sm font-semibold mb-3">{tCommon("users")}</h3>
+                <Transfer
+                  dataSource={listUser || []}
+                  leftDataSource={initUsers}
+                  targetKeys={selectedUsers}
+                  onChange={handleUsersChange}
+                  titles={[tCommon("init_users"), tCommon("available_users")]}
+                  operations={["<", ">"]}
+                  disabled={isViewMode || isLoadingUsers}
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-semibold mb-3">{tCommon("products")}</h3>
+                <div className={isViewMode ? "pointer-events-none opacity-50" : ""}>
+                  <TreeProductLookup
+                    onSelect={handleTreeProductSelect}
+                    initialSelectedIds={initProductKeys.map(key => key.toString())}
+                    initialProducts={initProducts}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </FormProvider>
+      </div>
+    </div>
   );
 }

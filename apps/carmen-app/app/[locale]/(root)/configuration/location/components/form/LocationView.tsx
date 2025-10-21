@@ -107,10 +107,10 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
               <TabsTrigger value="users">{tCommon("users")}</TabsTrigger>
               <TabsTrigger value="products">{tCommon("products")}</TabsTrigger>
             </TabsList>
-            <TabsContent value="users">
+            <TabsContent value="users" className="w-1/2">
               <TabUsersLocation users={initialData?.user_location || []} />
             </TabsContent>
-            <TabsContent value="products">
+            <TabsContent value="products" className="w-1/2">
               <TabUsersProduct products={initialData?.product_location || []} />
             </TabsContent>
           </Tabs>
