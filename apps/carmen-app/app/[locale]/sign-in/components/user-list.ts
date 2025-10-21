@@ -9,7 +9,7 @@ export const userList = [
         firstname: "system-admin",
         lastname: "system-admin",
         platform_role: PLATFORM_ROLE.PLATFORM_ADMIN,
-        created_by_id: null
+        created_by_id: null,
     },
     {
         email: "test@test.com",

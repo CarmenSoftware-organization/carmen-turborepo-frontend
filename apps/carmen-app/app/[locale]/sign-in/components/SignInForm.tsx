@@ -18,10 +18,11 @@ import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { toast } from "sonner";
-import InputCustom from "@/components/ui-custom/InputCustom";
+// import InputCustom from "@/components/ui-custom/InputCustom";
 import { useSignInMutation } from "@/hooks/use-auth-query";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { userList } from "./user-list";
+import { Input } from "@/components/ui/input";
 
 export default function SignInForm() {
   const router = useRouter();
@@ -70,6 +71,7 @@ export default function SignInForm() {
       }
     );
   };
+
   return (
     <div className="login-page-wrapper">
       <div className="login-container">
@@ -116,7 +118,11 @@ export default function SignInForm() {
                           className="h-12 sm:h-11"
                         /> */}
                         <Select
-                          onValueChange={field.onChange}
+                          onValueChange={(value) => {
+                            field.onChange(value);
+                            // Auto-fill password when email is selected
+                            form.setValue('password', '12345678');
+                          }}
                           defaultValue={field.value}
                         >
                           <SelectTrigger className="h-11">
@@ -142,9 +148,9 @@ export default function SignInForm() {
                   name="password"
                   data-testid="password-input"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="hidden">
                       <FormControl>
-                        <InputCustom
+                        {/* <InputCustom
                           label={t("password")}
                           labelPlacement="inside"
                           placeholder="This shows when input has value"
@@ -153,6 +159,14 @@ export default function SignInForm() {
                           autoComplete="current-password"
                           {...field}
                           className="h-12 sm:h-11"
+                        /> */}
+                        <Input
+                          type="password"
+                          placeholder={t("password")}
+                          {...field}
+                          className="h-11"
+                          defaultValue={'12345678'}
+                          disabled
                         />
                       </FormControl>
                       <FormMessage />

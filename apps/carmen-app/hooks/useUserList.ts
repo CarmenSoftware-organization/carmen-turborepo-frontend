@@ -2,9 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { backendApi } from "@/lib/backend-api";
 import { getAllApiRequest } from "@/lib/config.api";
 
-const API_URL = `${backendApi}/api/user`;
-
 export const useUserList = (token: string, buCode: string) => {
+  const API_URL = `${backendApi}/api/${buCode}/users`;
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["users", buCode],
     queryFn: async () => {
