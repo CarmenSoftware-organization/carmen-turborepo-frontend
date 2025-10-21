@@ -1,8 +1,9 @@
 "use client";
 
 import { Plus, FileDown, Printer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,9 +22,6 @@ import {
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import { FormTaxProfile } from "./FormTaxProfile";
 import { useTranslations } from "next-intl";
-import SearchInput from "@/components/ui-custom/SearchInput";
-import SortComponent from "@/components/ui-custom/SortComponent";
-import { useURL } from "@/hooks/useURL";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -33,43 +31,26 @@ import {
   useUpdateTaxProfile,
 } from "@/hooks/useTaxProfile";
 import TaxProfileList from "./TaxProfileList";
-import { parseSortString } from "@/utils/table-sort";
-import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
 
 export function TaxProfileComponent() {
   const { token, buCode, permissions } = useAuth();
+  const queryClient = useQueryClient();
 
   // Get permissions for tax_profile resource
   const taxProfilePerms = configurationPermission.get(permissions, "tax_profile");
 
   const tCommon = useTranslations("Common");
-  const tHeader = useTranslations("TableHeader");
   const tTaxProfile = useTranslations("TaxProfile");
-  const [page, setPage] = useURL("page");
-  const [search, setSearch] = useURL("search");
-  const [sort, setSort] = useURL("sort");
-  const [filter, setFilter] = useURL("filter");
-  const [perpage, setPerpage] = useURL("perpage");
 
   const { taxProfiles: taxProfileData, isLoading } = useTaxProfileQuery(
     token,
     buCode,
-    {
-      search,
-      filter,
-      sort,
-      page: page ? parseInt(page) : 1,
-      perpage: perpage ? parseInt(perpage) : 10,
-    },
+    {}
   );
-  const [taxProfiles, setTaxProfiles] = useState<TaxProfileGetAllDto[]>([]);
 
-  useEffect(() => {
-    if (taxProfileData?.data) {
-      setTaxProfiles(taxProfileData.data);
-    }
-  }, [taxProfileData?.data]);
+  // Use data directly from query instead of local state
+  const taxProfiles = taxProfileData?.data || [];
 
   const { mutate: createTaxProfile } = useTaxProfileMutation(token, buCode);
 
@@ -82,37 +63,9 @@ export function TaxProfileComponent() {
   );
 
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
-  const { mutate: deleteTaxProfile } = useDeleteTaxProfile(
-    token,
-    buCode,
-    deleteProfileId ?? ""
-  );
-
-
-  const [statusOpen, setStatusOpen] = useState(false);
-
-  const currentPage = taxProfileData?.paginate.page ?? 1;
-  const totalPages = taxProfileData?.paginate.pages ?? 1;
-  const totalItems = taxProfileData?.paginate.total ?? taxProfileData?.data?.length ?? 0;
+  const { mutate: deleteTaxProfile } = useDeleteTaxProfile(token, buCode);
 
   const title = tTaxProfile("title");
-
-  const sortFields = [
-    {
-      key: "name",
-      label: tHeader("name"),
-    },
-    {
-      key: "is_active",
-      label: tHeader("status"),
-    },
-  ];
-
-  useEffect(() => {
-    if (search) {
-      setSort("");
-    }
-  }, [search, setSort]);
 
   const handleAddNew = () => {
     setEditingProfile(null);
@@ -150,55 +103,33 @@ export function TaxProfileComponent() {
     </div>
   );
 
-  const filters = (
-    <div className="filter-container" data-id="tax-profile-filters">
-      <SearchInput
-        defaultValue={search}
-        onSearch={setSearch}
-        placeholder={tCommon("search")}
-        data-id="tax-profile-search-input"
-      />
-      <div className="fxr-c gap-2">
-        <StatusSearchDropdown
-          value={filter}
-          onChange={setFilter}
-          open={statusOpen}
-          onOpenChange={setStatusOpen}
-          data-id="tax-profile-status-search-dropdown"
-        />
-        <SortComponent
-          fieldConfigs={sortFields}
-          sort={sort}
-          setSort={setSort}
-          data-id="tax-profile-sort-dropdown"
-        />
-      </div>
-    </div>
-  );
 
   const handleEdit = (profileId: string) => {
     setEditingProfile(profileId);
     setIsDialogOpen(true);
   };
 
-  const onDeleteSuccess = (id: string) => {
-    setTaxProfiles((prev) => prev.filter((profile) => profile.id !== id));
-    toastSuccess({ message: tTaxProfile("tax_profile_deleted") });
-    setDeleteProfileId(null);
+  const handleDeleteClick = (id: string) => {
+    setDeleteProfileId(id);
   };
 
-  const handleDelete = (id: string) => {
-    deleteTaxProfile(undefined, {
-      onSuccess: () => onDeleteSuccess(id),
+  const handleDeleteConfirm = () => {
+    if (!deleteProfileId) return;
+
+    deleteTaxProfile(deleteProfileId, {
+      onSuccess: () => {
+        toastSuccess({ message: "Tax profile deleted successfully" });
+        queryClient.invalidateQueries({ queryKey: ["tax-profile"] });
+        setDeleteProfileId(null);
+      },
+      onError: () => {
+        setDeleteProfileId(null);
+      },
     });
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handleSetPerpage = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
+  const handleDeleteCancel = () => {
+    setDeleteProfileId(null);
   };
 
   const content = (
@@ -206,46 +137,32 @@ export function TaxProfileComponent() {
       taxProfiles={taxProfiles}
       isLoading={isLoading}
       onEdit={handleEdit}
-      onDelete={handleDelete}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      totalItems={totalItems}
-      perpage={taxProfileData?.paginate.perpage ?? 10}
-      onPageChange={handlePageChange}
-      sort={parseSortString(sort)}
-      onSort={setSort}
-      setPerpage={handleSetPerpage}
+      onDelete={handleDeleteClick}
       canUpdate={taxProfilePerms.canUpdate}
       canDelete={taxProfilePerms.canDelete}
     />
   );
 
-  const onCreateSuccess = (data: TaxProfileFormData) => {
-    setTaxProfiles((prev) => [...prev, data as TaxProfileGetAllDto]);
-    setIsDialogOpen(false);
-    toastSuccess({ message: tTaxProfile("tax_profile_created") });
-  };
-
   const handleCreate = (data: TaxProfileFormData) => {
     createTaxProfile(data, {
-      onSuccess: () => onCreateSuccess(data),
+      onSuccess: () => {
+        toastSuccess({ message: tTaxProfile("tax_profile_created") });
+        // Invalidate queries to refetch data
+        queryClient.invalidateQueries({ queryKey: ["tax-profile"] });
+        setIsDialogOpen(false);
+      },
     });
-  };
-
-  const onUpdateSuccess = (data: TaxProfileFormData) => {
-    setTaxProfiles((prev) =>
-      prev.map((profile) =>
-        profile.id === editingProfile ? { ...profile, ...data } : profile
-      )
-    );
-    toastSuccess({ message: tTaxProfile("tax_profile_updated") });
-    setIsDialogOpen(false);
-    setEditingProfile(null);
   };
 
   const handleUpdate = (data: TaxProfileFormData) => {
     updateTaxProfile(data as TaxProfileEditDto, {
-      onSuccess: () => onUpdateSuccess(data),
+      onSuccess: () => {
+        toastSuccess({ message: tTaxProfile("tax_profile_updated") });
+        // Invalidate queries to refetch data
+        queryClient.invalidateQueries({ queryKey: ["tax-profile"] });
+        setIsDialogOpen(false);
+        setEditingProfile(null);
+      },
     });
   };
 
@@ -267,7 +184,6 @@ export function TaxProfileComponent() {
       <DataDisplayTemplate
         title={title}
         actionButtons={actionButtons}
-        filters={filters}
         content={content}
       />
       <FormTaxProfile
@@ -276,7 +192,7 @@ export function TaxProfileComponent() {
         onSubmit={handleSubmit}
         editingProfile={
           editingProfile
-            ? taxProfiles.find((p) => p.id === editingProfile)
+            ? taxProfiles.find((p: TaxProfileGetAllDto) => p.id === editingProfile)
             : null
         }
         onCancel={handleDialogClose}
@@ -284,19 +200,21 @@ export function TaxProfileComponent() {
 
       <AlertDialog
         open={deleteProfileId !== null}
-        onOpenChange={() => setDeleteProfileId(null)}
+        onOpenChange={handleDeleteCancel}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{tTaxProfile("confirm_delete")}</AlertDialogTitle>
+            <AlertDialogTitle>{tTaxProfile("del_tax_profile")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {tTaxProfile("confirm_delete_description")}
+              {tTaxProfile("del_tax_profile_description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+            <AlertDialogCancel onClick={handleDeleteCancel}>
+              {tCommon("cancel")}
+            </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteProfileId && handleDelete(deleteProfileId)}
+              onClick={handleDeleteConfirm}
               className="bg-destructive hover:bg-destructive/90"
             >
               {tCommon("delete")}

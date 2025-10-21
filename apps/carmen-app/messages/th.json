@@ -571,7 +571,9 @@
     "confirm_delete_description": "คุณแน่ใจหรือไม่ที่จะลบระบบภาษีนี้? การลบจะไม่สามารถยกเลิกได้",
     "tax_profile_created": "สร้างระบบภาษีเรียบร้อย",
     "tax_profile_updated": "แก้ไขระบบภาษีเรียบร้อย",
-    "tax_profile_deleted": "ลบระบบภาษีเรียบร้อย"
+    "tax_profile_deleted": "ลบระบบภาษีเรียบร้อย",
+    "del_tax_profile": "ลบระบบภาษี",
+    "del_tax_profile_description": "คุณแน่ใจหรือไม่ที่จะลบระบบภาษีนี้? การลบจะไม่สามารถยกเลิกได้"
   },
   "ExtraCost": {
     "title": "ค่าใช้จ่ายเพิ่มเติม",

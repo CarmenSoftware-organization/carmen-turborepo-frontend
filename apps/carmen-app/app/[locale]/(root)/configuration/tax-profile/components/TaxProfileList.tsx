@@ -10,13 +10,9 @@ import {
   ColumnDef,
   getCoreRowModel,
   useReactTable,
-  PaginationState,
-  SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
-import { DataGridPagination } from "@/components/ui/data-grid-pagination";
-import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface TaxProfileListProps {
@@ -24,14 +20,6 @@ interface TaxProfileListProps {
   readonly isLoading: boolean;
   readonly onEdit: (id: string) => void;
   readonly onDelete: (id: string) => void;
-  readonly currentPage: number;
-  readonly totalPages: number;
-  readonly totalItems: number;
-  readonly perpage: number;
-  readonly onPageChange: (page: number) => void;
-  readonly sort?: { field: string; direction: "asc" | "desc" };
-  readonly onSort?: (sortString: string) => void;
-  readonly setPerpage: (perpage: number) => void;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
 }
@@ -41,51 +29,21 @@ export default function TaxProfileList({
   isLoading,
   onEdit,
   onDelete,
-  currentPage,
-  totalPages,
-  totalItems,
-  perpage,
-  onPageChange,
-  sort,
-  onSort,
-  setPerpage,
   canUpdate = true,
   canDelete = true,
 }: TaxProfileListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  const sorting: SortingState = useMemo(() => {
-    if (!sort) return [];
-    return [{ id: sort.field, desc: sort.direction === "desc" }];
-  }, [sort]);
-
-  // Pagination state
-  const pagination: PaginationState = useMemo(
-    () => ({
-      pageIndex: currentPage - 1,
-      pageSize: perpage,
-    }),
-    [currentPage, perpage]
-  );
-
   // Define columns
   const columns = useMemo<ColumnDef<TaxProfileGetAllDto>[]>(
     () => [
-      {
-        id: "select",
-        header: () => <DataGridTableRowSelectAll />,
-        cell: ({ row }) => <DataGridTableRowSelect row={row} />,
-        enableSorting: false,
-        enableHiding: false,
-        size: 20,
-      },
       {
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
           <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
+            {row.index + 1}
           </div>
         ),
         enableSorting: false,
@@ -97,8 +55,11 @@ export default function TaxProfileList({
       },
       {
         accessorKey: "name",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+        header: () => (
+          <div className="flex items-center gap-2">
+            <List className="h-4 w-4" />
+            {t("name")}
+          </div>
         ),
         cell: ({ row }) => {
           const taxProfile = row.original;
@@ -117,17 +78,15 @@ export default function TaxProfileList({
           }
           return <span className="max-w-[300px] truncate inline-block">{taxProfile.name}</span>;
         },
-        enableSorting: true,
+        enableSorting: false,
         size: 300,
-        meta: {
-          headerTitle: t("name"),
-        },
       },
       {
         accessorKey: "is_active",
-        header: ({ column }) => (
-          <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+        header: () => (
+          <div className="flex justify-center items-center gap-2">
+            <Activity className="h-4 w-4" />
+            {t("status")}
           </div>
         ),
         cell: ({ row }) => (
@@ -137,10 +96,9 @@ export default function TaxProfileList({
             </StatusCustom>
           </div>
         ),
-        enableSorting: true,
+        enableSorting: false,
         size: 120,
         meta: {
-          headerTitle: t("status"),
           cellClassName: "text-center",
           headerClassName: "text-center",
         },
@@ -195,48 +153,21 @@ export default function TaxProfileList({
         },
       },
     ],
-    [t, tCommon, currentPage, perpage, canUpdate, canDelete, onEdit, onDelete]
+    [t, tCommon, canUpdate, canDelete, onEdit, onDelete]
   );
 
   // Initialize table
   const table = useReactTable({
     data: taxProfiles,
     columns,
-    pageCount: totalPages,
     getRowId: (row) => row.id,
-    state: {
-      pagination,
-      sorting,
-    },
-    enableRowSelection: true,
-    onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
-      onPageChange(newPagination.pageIndex + 1);
-      setPerpage(newPagination.pageSize);
-    },
-    onSortingChange: (updater) => {
-      if (!onSort) return;
-
-      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
-
-      if (newSorting.length > 0) {
-        const sortField = newSorting[0].id;
-        const sortDirection = newSorting[0].desc ? "desc" : "asc";
-        onSort(`${sortField}:${sortDirection}`);
-      } else {
-        onSort("");
-      }
-    },
     getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    manualSorting: true,
   });
 
   return (
     <DataGrid
       table={table}
-      recordCount={totalItems}
+      recordCount={taxProfiles.length}
       isLoading={isLoading}
       loadingMode="skeleton"
       emptyMessage={tCommon("no_data")}
@@ -249,15 +180,12 @@ export default function TaxProfileList({
         width: "fixed",
       }}
     >
-      <div className="w-full space-y-2.5">
-        <DataGridContainer>
-          <ScrollArea className="max-h-[calc(100vh-250px)]">
-            <DataGridTable />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </DataGridContainer>
-        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
-      </div>
+      <DataGridContainer>
+        <ScrollArea className="max-h-[calc(100vh-250px)]">
+          <DataGridTable />
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </DataGridContainer>
     </DataGrid>
   );
 }

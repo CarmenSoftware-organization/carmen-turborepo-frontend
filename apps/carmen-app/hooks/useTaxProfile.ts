@@ -7,9 +7,10 @@ import {
   getByIdApiRequest,
   postApiRequest,
   updateApiRequest,
-  deleteApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
 import { TaxProfileEditDto, TaxProfileFormData, TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
+import axios from "axios";
 
 const taxProfileApiUrl = (buCode: string, id?: string) => {
   const baseUrl = `${backendApi}/api/config/${buCode}/tax-profile`;
@@ -23,9 +24,6 @@ export const useTaxProfileQuery = (
 ) => {
 
   const API_URL = taxProfileApiUrl(buCode);
-
-  console.log('API_URL', API_URL);
-
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["tax-profile", buCode, params],
@@ -73,7 +71,7 @@ export const useTaxProfileByIdQuery = (
 ) => {
   const API_ID = taxProfileApiUrl(buCode, id);
   return useQuery({
-    queryKey: ["tax-profile-id", id],
+    queryKey: ["tax-profile", buCode, id],
     queryFn: async () => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
@@ -124,18 +122,20 @@ export const useUpdateTaxProfile = (
 
 export const useDeleteTaxProfile = (
   token: string,
-  buCode: string,
-  id: string
+  buCode: string
 ) => {
-  const API_ID = taxProfileApiUrl(buCode, id);
   return useMutation({
-    mutationFn: async () => {
-      return await deleteApiRequest(
-        API_ID,
-        token,
-        id,
-        "Error deleting tax profile"
-      );
+    mutationFn: async (id: string) => {
+      try {
+        const API_URL = taxProfileApiUrl(buCode, id);
+        const response = await axios.delete(API_URL, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting tax profile:", error);
+        throw error;
+      }
     },
   });
 };
