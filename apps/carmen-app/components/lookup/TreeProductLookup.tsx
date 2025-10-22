@@ -187,19 +187,13 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
             itemGroupMap.get(itemGroupId)!.add(productId);
         };
 
-        // Add filtered products
-        filteredProducts.forEach((product: ProductGetDto) => {
+        for (const product of filteredProducts) {
             addProductToTree(product);
-        });
+        }
 
-        // Add selected products that are not in filtered results (from cache)
-        // Only process if we have a search active to avoid unnecessary work
         if (searchTrigger.trim() && products?.data && selectedProductIdsArray.length > 0) {
             selectedProductIdsArray.forEach(productId => {
-                // If product is already in itemsMap, skip it
                 if (itemsMap[productId]) return;
-
-                // Find the product in original data
                 const productIdNumber = productId.replace('product-', '');
                 const product = products.data.find((p: ProductGetDto) => p.id === productIdNumber);
 
@@ -209,7 +203,6 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
             });
         }
 
-        // Assign children arrays
         categoryMap.forEach((subCategoryIds, categoryId) => {
             itemsMap[categoryId].children = Array.from(subCategoryIds);
         });
@@ -549,14 +542,14 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                             <Button
                                 variant="ghost"
                                 size="sm"
+                                data-id="remove-all-selected-products"
                                 onClick={() => {
-                                    // Clear only newly selected, keep initial
                                     const initialIds = new Set(initialProducts.map(p => `product-${p.key}`));
                                     setSelectedIds(initialIds);
                                     setSelectedItemsCache({});
                                 }}
                             >
-                                <Trash2 />
+                                remove all
                             </Button>
                         )}
                     </div>

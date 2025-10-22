@@ -3,7 +3,6 @@ import {
   FormLocationValues,
   LocationByIdDto,
   PHYSICAL_COUNT_TYPE,
-  ProductItemTransfer,
   UserItemTransfer,
 } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
@@ -33,7 +32,6 @@ import FormBoolean from "@/components/form-custom/form-boolean";
 import { useQueryClient } from "@tanstack/react-query";
 import transferHandler from "@/components/form-custom/TransferHandler";
 import { useTranslations } from "next-intl";
-import { useProductQuery } from "@/hooks/useProductQuery";
 import { useUserList } from "@/hooks/useUserList";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
 
@@ -68,11 +66,6 @@ export default function LocationForm({
   buCode,
 }: LocationFormProps) {
   const { userList, isLoading: isLoadingUsers } = useUserList(token, buCode);
-
-  const { products, isLoading: isLoadingProducts } = useProductQuery({
-    token,
-    buCode,
-  });
   const router = useRouter();
   const queryClient = useQueryClient();
   const tLocation = useTranslations("StoreLocation");
@@ -81,11 +74,6 @@ export default function LocationForm({
   const listUser = userList?.map((user: UserItemTransfer) => ({
     key: user.user_id,
     title: user.firstname + " " + user.lastname,
-  }));
-
-  const listProduct = products?.data.map((product: ProductItemTransfer) => ({
-    key: product.id,
-    title: product.name,
   }));
 
   const createMutation = useLocationMutation(token, buCode);
@@ -129,7 +117,6 @@ export default function LocationForm({
 
   // State สำหรับเก็บ selected items
   const [selectedUsers, setSelectedUsers] = useState<(string | number)[]>([]);
-  const [selectedProducts, setSelectedProducts] = useState<(string | number)[]>([]);
 
   const form = useForm<FormLocationValues>({
     resolver: zodResolver(formLocationSchema),
@@ -161,11 +148,6 @@ export default function LocationForm({
     }
   }, [initUserKeys]);
 
-  useEffect(() => {
-    if (initProductKeys.length > 0) {
-      setSelectedProducts(initProductKeys);
-    }
-  }, [initProductKeys]);
 
   const onCancel = () => {
     if (mode === formType.EDIT) {
@@ -176,8 +158,6 @@ export default function LocationForm({
   };
 
   const handleUsersChange = transferHandler({ form, fieldName: "users", setSelected: setSelectedUsers });
-
-  const handleProductsChange = transferHandler({ form, fieldName: "products", setSelected: setSelectedProducts });
 
   // Handle TreeProductLookup selection
   const handleTreeProductSelect = useCallback((productIds: { id: string }[]) => {
@@ -198,9 +178,6 @@ export default function LocationForm({
       add: toAdd,
       remove: toRemove,
     });
-
-    // Update selectedProducts state for UI
-    setSelectedProducts(newProductIds);
   }, [initProductKeys, form]);
 
   const handleSubmit = async (data: FormLocationValues) => {
