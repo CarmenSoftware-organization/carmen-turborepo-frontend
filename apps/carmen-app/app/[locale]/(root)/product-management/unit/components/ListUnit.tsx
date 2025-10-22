@@ -52,17 +52,13 @@ export default function ListUnit({
     canUpdate = true,
     canDelete = true,
 }: ListUnitProps) {
-
     const t = useTranslations("TableHeader");
     const tCommon = useTranslations("Common");
-
-    // Convert sort to TanStack Table format
     const sorting: SortingState = useMemo(() => {
         if (!sort) return [];
         return [{ id: sort.field, desc: sort.direction === "desc" }];
     }, [sort]);
 
-    // Pagination state
     const pagination: PaginationState = useMemo(
         () => ({
             pageIndex: currentPage - 1,
@@ -71,7 +67,6 @@ export default function ListUnit({
         [currentPage, perpage]
     );
 
-    // Define columns
     const columns = useMemo<ColumnDef<UnitDto>[]>(
         () => [
             {
@@ -183,7 +178,7 @@ export default function ListUnit({
                     );
                 },
                 enableSorting: false,
-                size: 80,
+                size: 120,
                 meta: {
                     cellClassName: "text-right",
                     headerClassName: "text-right",

@@ -10,6 +10,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useTranslations } from "next-intl";
 
 interface DeleteConfirmDialogProps {
     readonly open: boolean;
@@ -22,21 +23,22 @@ export default function DeleteConfirmDialog({
     onOpenChange,
     onConfirm,
 }: DeleteConfirmDialogProps) {
+    const tCommon = useTranslations("Common");
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        Confirm Delete
+                        {tCommon("delete")}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                        Are you sure you want to delete this item?
+                        {tCommon("del_desc")}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={onConfirm}>
-                        Delete
+                    <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
+                    <AlertDialogAction onClick={onConfirm} className="bg-destructive hover:bg-destructive/90">
+                        {tCommon("delete")}
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

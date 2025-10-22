@@ -263,6 +263,7 @@
     "add": "Add",
     "edit": "Edit",
     "delete": "Delete",
+    "del_desc": "Are you sure you want to delete this item?",
     "cancel": "Cancel",
     "export": "Export",
     "print": "Print",
