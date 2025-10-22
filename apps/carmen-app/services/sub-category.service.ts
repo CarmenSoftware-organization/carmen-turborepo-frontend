@@ -40,6 +40,9 @@ export const updateSubCategoryService = async (token: string, buCode: string, da
 }
 
 export const deleteSubCategoryService = async (token: string, buCode: string, id: string) => {
+
+    console.log('result id', id);
+
     const response = await fetch(`${backendApi}/api/config/${buCode}/products/sub-category/${id}`, {
         method: 'DELETE',
         headers: {
@@ -47,8 +50,16 @@ export const deleteSubCategoryService = async (token: string, buCode: string, id
             'Content-Type': 'application/json',
         },
     });
-    const result = await response.json();
-    return result;
+
+    try {
+        const result = await response.json();
+        return { statusCode: response.status, ...result };
+    } catch (error) {
+        if (response.ok) {
+            return { statusCode: response.status, data: null };
+        }
+        throw error;
+    }
 }
 
 

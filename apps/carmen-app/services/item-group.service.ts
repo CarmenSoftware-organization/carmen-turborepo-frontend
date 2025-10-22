@@ -108,8 +108,22 @@ export const deleteItemGroupService = async (token: string, buCode: string, id: 
             throw new Error(`API error: ${response.status}`);
         }
 
-        const result = await response.json();
-        return result;
+        // Handle empty response (204 No Content)
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
+            return { statusCode: response.status, data: null };
+        }
+
+        // Try to parse JSON, handle empty responses gracefully
+        try {
+            const result = await response.json();
+            return { statusCode: response.status, ...result };
+        } catch (jsonError) {
+            // If JSON parsing fails but response is ok, treat as success
+            if (response.ok) {
+                return { statusCode: response.status, data: null };
+            }
+            throw jsonError;
+        }
     } catch (error) {
         console.error('Error deleting item group:', error);
         return null;

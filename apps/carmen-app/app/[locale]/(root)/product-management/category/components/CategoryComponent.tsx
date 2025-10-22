@@ -61,12 +61,14 @@ export default function CategoryComponent() {
     subCategories,
     isPending: isSubCategoriesPending,
     handleSubmit: submitSubCategory,
+    handleDelete: deleteSubCategory,
   } = useSubCategory();
 
   const {
     itemGroups,
     isPending: isItemGroupsPending,
     handleSubmit: submitItemGroup,
+    handleDelete: deleteItemGroup,
   } = useItemGroup();
 
   const isLoading =
@@ -80,7 +82,6 @@ export default function CategoryComponent() {
       isLoading,
     });
 
-  // Helper function to check if node matches search
   const nodeMatchesSearch = useCallback((node: CategoryNode, searchLower: string) => {
     return (
       node.code.toLowerCase().includes(searchLower) ||
@@ -89,7 +90,6 @@ export default function CategoryComponent() {
     );
   }, []);
 
-  // Helper: Check if subcategory or its children match search
   const subcategoryMatchesSearch = useCallback((subcategory: CategoryNode, searchLower: string) => {
     const subcategoryMatches = nodeMatchesSearch(subcategory, searchLower);
     const hasMatchingItemGroup = subcategory.children?.some(
@@ -98,7 +98,6 @@ export default function CategoryComponent() {
     return subcategoryMatches || hasMatchingItemGroup;
   }, [nodeMatchesSearch]);
 
-  // Helper: Check if category matches search (directly or through children)
   const categoryMatchesSearch = useCallback((category: CategoryNode, searchLower: string) => {
     const categoryMatches = nodeMatchesSearch(category, searchLower);
     const hasMatchingSubcategory = category.children?.some(
@@ -112,14 +111,12 @@ export default function CategoryComponent() {
     return categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup;
   }, [nodeMatchesSearch, subcategoryMatchesSearch]);
 
-  // Filter data based on search term with memoization
   const filteredCategoryData = useMemo(() => {
     if (!debouncedSearch) return categoryData;
     const searchLower = debouncedSearch.toLowerCase();
     return categoryData.filter((category) => categoryMatchesSearch(category, searchLower));
   }, [categoryData, debouncedSearch, categoryMatchesSearch]);
 
-  // Helper: Process subcategory for expansion
   const processSubcategoryExpansion = useCallback((
     subcategory: CategoryNode,
     searchLower: string,
@@ -137,23 +134,21 @@ export default function CategoryComponent() {
     return subcategoryMatches || hasMatchingItemGroup;
   }, [nodeMatchesSearch]);
 
-  // Auto-expand nodes that match search term
   const searchExpanded = useMemo(() => {
     if (!debouncedSearch) return {};
 
     const searchLower = debouncedSearch.toLowerCase();
     const expandedNodes: Record<string, boolean> = {};
 
-    filteredCategoryData.forEach((category: CategoryNode) => {
+    for (const category of filteredCategoryData) {
       const categoryMatches = nodeMatchesSearch(category, searchLower);
 
       const hasMatchingSubcategory = category.children?.some(
-        (subcategory: CategoryNode) =>
-          processSubcategoryExpansion(subcategory, searchLower, expandedNodes)
+        subcategory => processSubcategoryExpansion(subcategory, searchLower, expandedNodes)
       );
 
       const hasMatchingItemGroup = category.children?.some(
-        (itemGroup: CategoryNode) =>
+        itemGroup =>
           itemGroup.type === NODE_TYPE.ITEM_GROUP &&
           nodeMatchesSearch(itemGroup, searchLower)
       );
@@ -161,7 +156,7 @@ export default function CategoryComponent() {
       if (categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup) {
         expandedNodes[category.id] = true;
       }
-    });
+    }
 
     return expandedNodes;
   }, [filteredCategoryData, debouncedSearch, nodeMatchesSearch, processSubcategoryExpansion]);
@@ -312,9 +307,12 @@ export default function CategoryComponent() {
     handleDelete: deleteHandleDelete,
     getDeleteMessage,
   } = useCategoryDelete({
+    getDeleteMessage: (node) => {
+      const typeLabel = getNodeTypeLabel(node.type);
+      return `${tCommon("del_desc")} ${typeLabel} "${node.name}"?`;
+    },
     onDelete: async (node) => {
       try {
-        let success = false;
         const nodeType = node.type;
         let result;
 
@@ -332,63 +330,61 @@ export default function CategoryComponent() {
             is_sold_directly: node.is_sold_directly ?? false,
           };
           result = await deleteCategory(categoryDto);
-          success = !!result;
         } else if (nodeType === NODE_TYPE.SUBCATEGORY) {
           const subCategoryDto: SubCategoryDto = {
             id: node.id,
             code: node.code,
             name: node.name,
             description: node.description,
-            is_active: false,
+            is_active: true,
             product_category_id: node.product_category_id ?? "",
             price_deviation_limit: node.price_deviation_limit ?? 0,
             qty_deviation_limit: node.qty_deviation_limit ?? 0,
             is_used_in_recipe: node.is_used_in_recipe ?? false,
             is_sold_directly: node.is_sold_directly ?? false,
           };
-          result = await submitSubCategory(
-            subCategoryDto,
-            formType.EDIT,
-            subCategoryDto,
-          );
-          success = !!result;
+          result = await deleteSubCategory(subCategoryDto);
         } else {
-          // Must be itemGroup
           const itemGroupDto: ItemGroupDto = {
             id: node.id,
             code: node.code,
             name: node.name,
             description: node.description,
-            is_active: false,
+            is_active: true,
             product_subcategory_id: node.product_subcategory_id ?? "",
             price_deviation_limit: node.price_deviation_limit ?? 0,
             qty_deviation_limit: node.qty_deviation_limit ?? 0,
             is_used_in_recipe: node.is_used_in_recipe ?? false,
             is_sold_directly: node.is_sold_directly ?? false,
           };
-          result = await submitItemGroup(
-            itemGroupDto,
-            formType.EDIT,
-            itemGroupDto,
-          );
-          success = !!result;
+          result = await deleteItemGroup(itemGroupDto);
         }
 
-        if (success) {
+        // Check if result indicates success
+        // API typically returns { statusCode: 200, data: ... } for success
+        const isSuccess = result && (
+          result.statusCode === 200 ||
+          result.statusCode === 201 ||
+          result.statusCode === 204 ||
+          (result.data && !result.error)
+        );
+
+        console.log('isSuccess', isSuccess);
+
+
+        if (isSuccess) {
           toastSuccess({ message: tCategory("delete_success") });
-          handleDeleteDialogChange(false); // Close dialog only on success
+          handleDeleteDialogChange(false);
         } else {
-          toastError({ message: tCategory("delete_error") });
+          toastError({ message: result?.message || tCategory("delete_error") });
         }
       } catch (error) {
         console.error("Error deleting item:", error);
         toastError({ message: tCategory("delete_error") });
-        // Don't close dialog on error
       }
     },
   });
 
-  // Connect tree events to dialog actions
   const handleEdit = (node: CategoryNode) => {
     dialogHandleEdit(node);
   };
@@ -537,7 +533,10 @@ export default function CategoryComponent() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete}>
+              <AlertDialogAction
+                onClick={handleConfirmDelete}
+                className="bg-destructive hover:bg-destructive/90"
+              >
                 {tCommon("delete")}
               </AlertDialogAction>
             </AlertDialogFooter>

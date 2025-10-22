@@ -3,6 +3,7 @@ import { CategoryNode } from "@/dtos/category.dto";
 
 export interface UseCategoryDeleteProps {
     onDelete: (node: CategoryNode) => Promise<void> | void;
+    getDeleteMessage?: (node: CategoryNode) => string;
 }
 
 export interface UseCategoryDeleteReturn {
@@ -14,8 +15,15 @@ export interface UseCategoryDeleteReturn {
     getDeleteMessage: (node: CategoryNode) => string;
 }
 
+const TYPE_LABELS: Record<CategoryNode['type'], string> = {
+    category: 'Category',
+    subcategory: 'Subcategory',
+    itemGroup: 'Item Group'
+};
+
 export const useCategoryDelete = ({
-    onDelete
+    onDelete,
+    getDeleteMessage: customGetDeleteMessage
 }: UseCategoryDeleteProps): UseCategoryDeleteReturn => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [nodeToDelete, setNodeToDelete] = useState<CategoryNode | undefined>();
@@ -42,11 +50,12 @@ export const useCategoryDelete = ({
         }
     }, [nodeToDelete, onDelete]);
 
-    const getDeleteMessage = useCallback((node: CategoryNode) => {
-        const type = node.type === "category" ? "Category" :
-            node.type === "subcategory" ? "Subcategory" : "Item Group";
+    const defaultGetDeleteMessage = useCallback((node: CategoryNode) => {
+        const type = TYPE_LABELS[node.type];
         return `Are you sure you want to delete this ${type}? This action cannot be undone.`;
     }, []);
+
+    const getDeleteMessage = customGetDeleteMessage || defaultGetDeleteMessage;
 
     return {
         deleteDialogOpen,

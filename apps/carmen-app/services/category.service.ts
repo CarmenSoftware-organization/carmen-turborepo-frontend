@@ -63,8 +63,22 @@ export const deleteCategoryService = async (token: string, buCode: string, categ
             'Content-Type': 'application/json',
         },
     });
-    const data = await response.json();
-    return data;
+
+    // Handle empty response (204 No Content)
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+        return { statusCode: response.status, data: null };
+    }
+
+    // Try to parse JSON, handle empty responses gracefully
+    try {
+        const data = await response.json();
+        return { statusCode: response.status, ...data };
+    } catch (error) {
+        if (response.ok) {
+            return { statusCode: response.status, data: null };
+        }
+        throw error;
+    }
 }
 
 
