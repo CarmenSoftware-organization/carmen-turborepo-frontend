@@ -329,7 +329,8 @@
     "no_data": "No data",
     "row_per_page": "Rows per page",
     "next_page": "Go to next page",
-    "prev_page": "Go to previous page"
+    "prev_page": "Go to previous page",
+    "loading": "Loading..."
   },
   "TableHeader": {
     "all": "All",

@@ -8,10 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, Trash2 } from "lucide-react";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useAuth } from "@/context/AuthContext";
 import { ProductGetDto } from "@/dtos/product.dto";
+import { useTranslations } from "next-intl";
 
 interface TreeNodeData {
     id: string;
@@ -32,6 +33,7 @@ interface TreeProductLookupProps {
 export default function TreeProductLookup({ onSelect, initialSelectedIds = [], initialProducts = [] }: TreeProductLookupProps) {
     const { token, buCode } = useAuth();
     const [searchQuery, setSearchQuery] = useState("");
+    const tCommon = useTranslations("Common");
     const [searchTrigger, setSearchTrigger] = useState("");
     const [selectedIds, setSelectedIds] = useState<Set<string>>(
         new Set(initialSelectedIds.map(id => `product-${id}`))
@@ -88,7 +90,6 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         });
     }, [products?.data, searchTrigger]);
 
-    // Get selected product IDs as stable array for dependency
     const selectedProductIdsArray = useMemo(() => {
         return Array.from(selectedIds).filter(id => id.startsWith('product-')).sort();
     }, [selectedIds]);
@@ -230,7 +231,7 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         <div className="flex gap-2">
             <Input
                 className="mb-4"
-                placeholder="Search..."
+                placeholder={tCommon("search")}
                 value={searchQuery}
                 onChange={(e) => handleSearchQueryChange(e.target.value)}
                 onKeyDown={(e) => {
@@ -239,7 +240,7 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
                     }
                 }}
             />
-            <Button onClick={handleSearch} className="mb-4">Search</Button>
+            <Button onClick={handleSearch} className="mb-4">{tCommon("search")}</Button>
         </div>
     );
 
@@ -247,7 +248,7 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         return (
             <div className="p-6 space-y-4">
                 {searchInput}
-                <p className="text-muted-foreground">Loading...</p>
+                <p className="text-muted-foreground">{tCommon("loading")}</p>
             </div>
         );
     }
@@ -256,7 +257,7 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         return (
             <div className="p-6 space-y-4">
                 {searchInput}
-                <p className="text-muted-foreground">No data available</p>
+                <p className="text-muted-foreground">{tCommon("data_not_found")}</p>
             </div>
         );
     }
@@ -266,7 +267,7 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
             <div className="p-6 space-y-4">
                 {searchInput}
                 <p className="text-muted-foreground">
-                    {searchTrigger.trim() ? `No results found for "${searchTrigger}"` : 'No data available'}
+                    {tCommon("data_not_found")}
                 </p>
             </div>
         );
@@ -313,7 +314,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
 }) {
     // Local search for selected products (left panel)
     const [selectedSearchQuery, setSelectedSearchQuery] = useState("");
-
+    const tCommon = useTranslations("Common");
     // Get all item IDs recursively
     const getAllItemIds = useCallback((itemId: string): string[] => {
         const item = items[itemId] || selectedItemsCache[itemId];
@@ -542,7 +543,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                 <div className="border rounded-lg p-4 flex flex-col">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-semibold">
-                            Selected Products ({filteredSelectedProducts.length}/{allProducts.length})
+                            {tCommon("init_products")}
                         </h3>
                         {selectedProducts.length > 0 && (
                             <Button
@@ -555,7 +556,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                     setSelectedItemsCache({});
                                 }}
                             >
-                                Clear New
+                                <Trash2 />
                             </Button>
                         )}
                     </div>
@@ -565,17 +566,17 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                             type="text"
-                            placeholder="Search selected..."
+                            placeholder={tCommon("search")}
                             value={selectedSearchQuery}
                             onChange={(e) => setSelectedSearchQuery(e.target.value)}
-                            className="pl-8 h-8 text-sm"
+                            className="pl-8 h-9 text-xs"
                         />
                     </div>
 
                     <div className="flex-1 overflow-auto space-y-2">
                         {filteredSelectedProducts.length === 0 ? (
                             <div className="flex items-center justify-center h-full">
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-xs text-muted-foreground">
                                     {selectedSearchQuery ? "No results found" : "No products selected"}
                                 </p>
                             </div>
@@ -583,20 +584,16 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                             filteredSelectedProducts.map((product) => (
                                 <div
                                     key={product.id}
-                                    className={`flex items-center justify-between p-3 border rounded-md transition-colors ${product.isInitial ? 'bg-muted/30' : 'hover:bg-muted/50'
-                                        }`}
+                                    className="flex items-center justify-between"
                                 >
                                     <div className="flex-1 space-y-1">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <p className="text-sm font-medium">
+                                            <p className="text-xs font-medium">
                                                 {product.name}
                                                 {product.local_name && ` - ${product.local_name}`}
                                             </p>
                                             {product.code && (
-                                                <Badge variant="outline" className="text-xs">{product.code}</Badge>
-                                            )}
-                                            {product.isInitial && (
-                                                <Badge variant="secondary" className="text-xs">Initial</Badge>
+                                                <Badge className="text-xs">{product.code}</Badge>
                                             )}
                                         </div>
                                     </div>
@@ -607,7 +604,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                             handleCheckboxChange(`product-${product.id}`, false);
                                         }}
                                     >
-                                        Remove
+                                        <Trash2 />
                                     </Button>
                                 </div>
                             ))
@@ -615,63 +612,62 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                     </div>
                 </div>
 
-                {/* Right: Tree Selection */}
                 <div className="border rounded-lg p-4 flex flex-col">
-                    <h3 className="text-sm font-semibold mb-3">Available Products</h3>
+                    <h3 className="text-sm font-semibold mb-3">{tCommon("available_products")}</h3>
 
                     {/* Search for Tree */}
-                    <div className="mb-3">
+                    <div>
                         {searchInput}
                     </div>
 
                     <div className="flex-1 overflow-auto">
                         <Tree tree={tree} indent={24} toggleIconType="chevron" className="overflow-auto">
-                        {tree.getItems().map((item) => {
-                            const data = item.getItemData();
+                            {tree.getItems().map((item) => {
+                                const data = item.getItemData();
 
-                            // Skip rendering items without name (fallback items)
-                            if (!data.name) {
-                                return null;
-                            }
+                                // Skip rendering items without name (fallback items)
+                                if (!data.name) {
+                                    return null;
+                                }
 
-                            const checkboxState = getCheckboxState(data.id);
+                                const checkboxState = getCheckboxState(data.id);
 
-                            return (
-                                <TreeItem key={item.getId()} item={item} asChild>
-                                    <div>
-                                        <TreeItemLabel>
-                                            {data.type === 'product' ? (
-                                                <div className="w-full">
-                                                    <div className="flex items-center space-x-2 ml-4">
+                                return (
+                                    <TreeItem key={item.getId()} item={item} asChild>
+                                        <div>
+                                            <TreeItemLabel>
+                                                {data.type === 'product' ? (
+                                                    <div className="w-full">
+                                                        <div className="flex items-center space-x-2 ml-4">
+                                                            <Checkbox
+                                                                checked={checkboxState.checked}
+                                                                onCheckedChange={(checked) => {
+                                                                    handleCheckboxChange(data.id, checked === true);
+                                                                }}
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            />
+                                                            <p className="text-xs">{data.name} - {data.local_name}</p>
+                                                            <Badge>{data.code}</Badge>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-2">
                                                         <Checkbox
-                                                            checked={checkboxState.checked}
+                                                            checked={checkboxState.indeterminate ? "indeterminate" : checkboxState.checked}
                                                             onCheckedChange={(checked) => {
                                                                 handleCheckboxChange(data.id, checked === true);
                                                             }}
                                                             onClick={(e) => e.stopPropagation()}
                                                         />
-                                                        <p>{data.name} - {data.local_name}</p>
-                                                        <Badge>{data.code}</Badge>
+                                                        <p className="text-xs">{data.name}</p>
+                                                        <Badge variant="secondary">{data.children?.length || 0}</Badge>
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center gap-2">
-                                                    <Checkbox
-                                                        checked={checkboxState.indeterminate ? "indeterminate" : checkboxState.checked}
-                                                        onCheckedChange={(checked) => {
-                                                            handleCheckboxChange(data.id, checked === true);
-                                                        }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    />
-                                                    <p>{data.name}</p>
-                                                    <Badge variant="secondary">{data.children?.length || 0}</Badge>
-                                                </div>
-                                            )}
-                                        </TreeItemLabel>
-                                    </div>
-                                </TreeItem>
-                            );
-                        })}
+                                                )}
+                                            </TreeItemLabel>
+                                        </div>
+                                    </TreeItem>
+                                );
+                            })}
                         </Tree>
                     </div>
                 </div>
