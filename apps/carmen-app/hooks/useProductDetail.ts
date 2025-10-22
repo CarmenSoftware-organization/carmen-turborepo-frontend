@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import { getProductIdService } from "@/services/product.service";
+import { useEffect, useState } from "react";
+import { useProductByIdQuery } from "./use-product";
 import { ProductFormValues } from "@/app/[locale]/(root)/product-management/product/pd-schema";
 
 type UseProductDetailProps = {
@@ -15,7 +15,7 @@ type UseProductDetailReturn = {
   error: Error | null;
   loginDialogOpen: boolean;
   setLoginDialogOpen: (open: boolean) => void;
-  refetch: () => Promise<void>;
+  refetch: () => void;
 };
 
 export const useProductDetail = ({
@@ -24,51 +24,29 @@ export const useProductDetail = ({
   id,
   authLoading,
 }: UseProductDetailProps): UseProductDetailReturn => {
-  const [product, setProduct] = useState<ProductFormValues | undefined>(
-    undefined
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
-  const fetchProduct = useCallback(async () => {
-    if (!token || !buCode) {
-      return;
-    }
+  // Use the new useProductByIdQuery hook
+  const { data, isLoading, error, refetch } = useProductByIdQuery({
+    token: token || "",
+    buCode: buCode || "",
+    id,
+    enabled: !!token && !!buCode && !authLoading,
+  });
 
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getProductIdService(token, buCode, id);
-
-      if (data.statusCode === 401) {
-        setLoginDialogOpen(true);
-        return;
-      }
-
-      setProduct(data);
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      setError(error instanceof Error ? error : new Error("Unknown error"));
-    } finally {
-      setLoading(false);
-    }
-  }, [token, buCode, id]);
-
+  // Check for 401 status
   useEffect(() => {
-    if (!token || !buCode || authLoading) {
-      return;
+    if (error && error.message.includes("401")) {
+      setLoginDialogOpen(true);
     }
-
-    fetchProduct();
-  }, [token, buCode, id, authLoading, fetchProduct]);
+  }, [error]);
 
   return {
-    product,
-    loading,
-    error,
+    product: data as ProductFormValues | undefined,
+    loading: isLoading,
+    error: error instanceof Error ? error : null,
     loginDialogOpen,
     setLoginDialogOpen,
-    refetch: fetchProduct,
+    refetch,
   };
 };

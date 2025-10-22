@@ -210,20 +210,17 @@ export default function FormProduct({ mode, initialValues }: Props) {
           token,
           buCode,
           product: submitData,
-        });
-
-        if (result?.error) {
-          toastError({ message: result.message || "Error creating product" });
-          return;
-        }
+        }) as { id?: string; data?: { id?: string } };
 
         toastSuccess({ message: "Product created successfully" });
         setCurrentMode(formType.VIEW);
 
-        if (result?.id) {
-          const newUrl = window.location.pathname.replace(
+        // Check for ID in response (could be result.id or result.data.id)
+        const resultId = result?.id || result?.data?.id;
+        if (resultId) {
+          const newUrl = globalThis.location.pathname.replace(
             "/new",
-            `/${result.id}`
+            `/${resultId}`
           );
           router.replace(newUrl);
         } else {
@@ -242,16 +239,14 @@ export default function FormProduct({ mode, initialValues }: Props) {
           buCode,
           id: submitData.id,
           product: submitData,
-        });
+        }) as { id?: string; data?: { id?: string } };
 
-        if (result?.error) {
-          toastError({ message: result.message || "Error updating product" });
-          return;
-        }
+        toastSuccess({ message: "Product updated successfully" });
+        setCurrentMode(formType.VIEW);
 
-        if (result?.id) {
-          toastSuccess({ message: "Product updated successfully" });
-          setCurrentMode(formType.VIEW);
+        // Optionally: check if we need to handle the result
+        if (result) {
+          console.log("Product updated:", result);
         }
       }
     } catch (error) {
@@ -275,9 +270,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
       setCurrentMode(formType.VIEW);
     }
   }, [currentMode, router]);
-
-  console.log('from error', form.formState.errors);
-
 
   return (
     <div className="mx-auto">

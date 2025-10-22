@@ -407,9 +407,6 @@
     "pricing": "ราคา",
     "value": "ค่า"
   },
-  "Product": {
-    "title": "สินค้า"
-  },
   "Unit": {
     "title": "หน่วยนับ",
     "add_success": "หน่วยนับสร้างเรียบร้อย",
@@ -736,8 +733,8 @@
     "product_attribute": "คุณลักษณะสินค้า",
     "add_attribute": "เพิ่มคุณลักษณะ",
     "price": "ราคา",
-    "price_deviation_limit": "ลิมิตการยอมรับความคลาดเคลื่อนราคา",
-    "qty_deviation_limit": "ลิมิตการยอมรับความคลาดเคลื่อนปริมาณ",
+    "price_deviation_limit": "ความคลาดเคลื่อนราคา",
+    "qty_deviation_limit": "ความคลาดเคลื่อนปริมาณ",
     "barcode": "บาร์โค้ด",
     "used_in_recipe": "ใช้ในสูตรอาหาร",
     "sold_directly": "ขายตรง",
@@ -764,7 +761,9 @@
     "remove": "ลบ",
     "add_product": "เพิ่มสินค้า",
     "edit_product": "แก้ไขสินค้า",
-    "select_unit": "เลือกหน่วย"
+    "select_unit": "เลือกหน่วย",
+    "auto_fill_from_item_group": "ข้อมูลกรอกอัตโนมัติจากหมวดสินค้ากลุ่ม",
+    "auto_fill_sub_category": "ข้อมูลกรอกอัตโนมัติจากหมวดสินค้าย่อย"
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",

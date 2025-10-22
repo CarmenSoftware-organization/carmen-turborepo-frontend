@@ -408,9 +408,6 @@
     "pricing": "Pricing",
     "value": "Value"
   },
-  "Product": {
-    "title": "Product"
-  },
   "Unit": {
     "title": "Unit",
     "add_success": "Unit created successfully",
@@ -768,7 +765,9 @@
     "remove": "Remove",
     "add_product": "Add Product",
     "edit_product": "Edit Product",
-    "select_unit": "Select Unit"
+    "select_unit": "Select Unit",
+    "auto_fill_from_item_group": "Auto-fill from Item Group",
+    "auto_fill_sub_category": "Auto-fill Sub Category"
   },
   "PurchaseOrder": {
     "title": "Purchase Order",

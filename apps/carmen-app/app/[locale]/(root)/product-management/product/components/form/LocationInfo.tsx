@@ -470,15 +470,17 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                         defaultValue={searchQuery}
                         onSearch={setSearchQuery}
                         placeholder={tCommon("search")}
+                        inputClassName="h-7 text-xs"
                     />
                 </div>
+
                 {currentMode !== formType.VIEW && (
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
                                     size="sm"
-                                    className="w-7 h-7"
+                                    className="w-6 h-6"
                                     onClick={() => appendLocation({ location_id: "" })}
                                     disabled={isLoading}
                                 >

@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useCallback, useState } from "react";
+import { memo, useEffect, useMemo, useCallback, useState, useRef } from "react";
 import { Control, useFieldArray, useFormContext } from "react-hook-form";
 import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
@@ -80,7 +80,6 @@ const ConversionPreview = memo(({ fromUnitId, toUnitId, fromUnitQty, toUnitQty, 
 
 ConversionPreview.displayName = 'ConversionPreview';
 
-// Unit Combobox Component
 const UnitCombobox = memo(({
     value,
     onChange,
@@ -174,46 +173,57 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         return units?.data?.find((unit: UnitDto) => unit.id === unitId)?.name ?? '-';
     }, [units]);
 
-    // Initialize from_unit_id when inventory unit changes
+    const isInitializingRef = useRef(false);
+    const previousLengthRef = useRef(newUnits.length);
+
     useEffect(() => {
-        if (!inventoryUnitId) return;
+        if (!inventoryUnitId || isInitializingRef.current) return;
+        if (previousLengthRef.current === newUnits.length) return;
+
+        isInitializingRef.current = true;
 
         newUnits.forEach((field, index) => {
             if (!field.from_unit_id) {
-                setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId);
+                setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId, { shouldDirty: false });
             }
         });
-    }, [inventoryUnitId, newUnits, setValue]);
 
-    // Auto-calculate conversion when units match or initialize to_unit_qty
+        previousLengthRef.current = newUnits.length;
+
+        setTimeout(() => {
+            isInitializingRef.current = false;
+        }, 0);
+    }, [inventoryUnitId, newUnits.length, setValue]);
+
     useEffect(() => {
+        if (isInitializingRef.current) return;
+
         newUnits.forEach((field, index) => {
             const fromUnitId = field.from_unit_id || inventoryUnitId;
             const toUnitId = field.to_unit_id;
 
             if (!fromUnitId || !toUnitId) return;
 
-            if (fromUnitId === toUnitId) {
-                setValue(`order_units.add.${index}.to_unit_qty`, field.from_unit_qty);
+            if (fromUnitId === toUnitId && field.to_unit_qty !== field.from_unit_qty) {
+                setValue(`order_units.add.${index}.to_unit_qty`, field.from_unit_qty, { shouldDirty: false });
             } else if (field.to_unit_qty === 0) {
-                setValue(`order_units.add.${index}.to_unit_qty`, 1);
+                setValue(`order_units.add.${index}.to_unit_qty`, 1, { shouldDirty: false });
             }
         });
-    }, [newUnits, inventoryUnitId, setValue]);
+    }, [newUnits.length, inventoryUnitId, setValue]);
 
     const { append: appendOrderUnitRemove } = useFieldArray({
         control,
         name: "order_units.remove"
     });
 
-    // Memoize derived state
     const hasOrderUnits = useMemo(
         () => displayUnits.length > 0 || newUnits.length > 0,
         [displayUnits.length, newUnits.length]
     );
 
     const handleDefaultChange = useCallback((index: number, isDataField: boolean, checked: boolean) => {
-        if (!checked) return; // Only handle when setting to true
+        if (!checked) return;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const unitsData = watch('order_units') as any;
@@ -224,12 +234,8 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             unitsData.data.forEach((unit: any, i: number) => {
                 if (isDataField && i === index) return; // Skip the current one
-
-                // Set to false in data
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 setValue(`order_units.data.${i}.is_default` as any, false, { shouldDirty: true });
-
-                // Add to update array if not already there
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const existingUpdateIndex = currentUpdate.findIndex(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -264,13 +270,9 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 setValue(`order_units.add.${i}.is_default` as any, false, { shouldDirty: true });
             });
         }
-
-        // Set the current one to true
         if (isDataField) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             setValue(`order_units.data.${index}.is_default` as any, true, { shouldDirty: true });
-
-            // Add current unit to update array
             const currentUnit = unitsData.data[index];
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const existingUpdateIndex = currentUpdate.findIndex(
@@ -298,13 +300,16 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             setValue(`order_units.add.${index}.is_default` as any, true, { shouldDirty: true });
         }
-
-        // Update the update array
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setValue('order_units.update' as any, currentUpdate, { shouldDirty: true });
     }, [watch, setValue]);
 
-    const handleAddUnit = useCallback(() => {
+    const handleAddUnit = useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
         appendOrderUnit({
             from_unit_id: "",
             from_unit_qty: 1,
@@ -668,7 +673,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => removeOrderUnit(unit.fieldIndex!)}
-                                    className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
+                                    className="h-7 w-7 text-destructive hover:text-destructive/80 hover:bg-transparent"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -684,22 +689,24 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                         type="button"
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
+                                        className="h-7 w-7 text-destructive hover:text-destructive/80 hover:bg-transparent"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="max-w-md">
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle className="text-xl">Remove {tProducts("order_unit")}</AlertDialogTitle>
+                                        <AlertDialogTitle className="text-xl">{tCommon("delete")} {tProducts("order_unit")}</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            <p className="text-muted-foreground">Are you sure you want to remove this {tProducts("order_unit")} unit?</p>
+                                            <p className="text-muted-foreground">{tCommon("del_desc")}</p>
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter className="gap-2 mt-4">
-                                        <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+                                        <AlertDialogCancel className="mt-0">
+                                            {tCommon("cancel")}
+                                        </AlertDialogCancel>
                                         <AlertDialogAction onClick={() => handleRemoveUnit(unit.id!)} className="bg-red-600">
-                                            Remove
+                                            {tCommon("delete")}
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -735,10 +742,11 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Button
+                                    type="button"
                                     size="sm"
                                     onClick={handleAddUnit}
                                     disabled={!inventoryUnitId}
-                                    className="w-7 h-7"
+                                    className="w-6 h-6"
                                 >
                                     <Plus className="h-4 w-4" />
                                 </Button>

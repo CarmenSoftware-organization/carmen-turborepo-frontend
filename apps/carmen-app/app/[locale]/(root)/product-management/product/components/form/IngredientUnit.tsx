@@ -38,6 +38,7 @@ import {
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -658,7 +659,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => removeIngredientUnit(unit.fieldIndex!)}
-                                    className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
+                                    className="h-7 w-7 text-destructive hover:text-destructive/80 hover:bg-transparent"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -674,22 +675,24 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                         type="button"
                                         variant="ghost"
                                         size="icon"
-                                        className="h-7 w-7 hover:text-destructive/80 hover:bg-transparent"
+                                        className="h-7 w-7 text-destructive hover:text-destructive/80 hover:bg-transparent"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="max-w-md">
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle className="text-xl">Remove {tProducts("ingredient_unit")}</AlertDialogTitle>
+                                        <AlertDialogTitle className="text-xl">{tCommon("delete")} {tProducts("ingredient_unit")}</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            <p className="text-muted-foreground">Are you sure you want to remove this {tProducts("ingredient_unit")} unit?</p>
+                                            <p className="text-muted-foreground">{tCommon("del_desc")}</p>
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter className="gap-2 mt-4">
-                                        <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+                                        <AlertDialogCancel className="mt-0">
+                                            {tCommon("cancel")}
+                                        </AlertDialogCancel>
                                         <AlertDialogAction onClick={() => handleRemoveUnit(unit.id!)} className="bg-red-600">
-                                            Remove
+                                            {tCommon("delete")}
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -721,17 +724,23 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
             <div className="flex justify-between items-center">
                 <h2 className="text-lg font-semibold">{tProducts("ingredient_unit")}</h2>
                 {currentMode !== formType.VIEW && (
-                    <Button
-                        type="button"
-                        variant="outlinePrimary"
-                        size="sm"
-                        onClick={handleAddUnit}
-                        className="flex items-center gap-1.5 px-3"
-                        disabled={!inventoryUnitId}
-                    >
-                        <Plus className="h-4 w-4" />
-                        {tProducts("add_ingredient_unit")}
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    size="sm"
+                                    className="w-6 h-6"
+                                    onClick={handleAddUnit}
+                                    disabled={!inventoryUnitId}
+                                >
+                                    <Plus />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{tProducts("add_ingredient_unit")}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 )}
             </div>
 
