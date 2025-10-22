@@ -1,6 +1,16 @@
 import { cn } from "@/lib/utils";
 
-export const StatusCustom = ({ is_active, children }: { is_active: boolean, children: React.ReactNode }) => {
+interface Props {
+    is_active: boolean;
+    dense?: boolean;
+    children: React.ReactNode
+}
+
+export const StatusCustom = ({
+    is_active,
+    dense,
+    children
+}: Props) => {
     return (
         <div className="flex items-center gap-1">
             <div className={cn(
@@ -8,8 +18,9 @@ export const StatusCustom = ({ is_active, children }: { is_active: boolean, chil
                 is_active ? "bg-active" : "bg-inactive"
             )}></div>
             <p className={cn(
-                "font-medium text-sm",
-                is_active ? "text-active" : "text-inactive"
+                "font-medium",
+                is_active ? "text-active" : "text-inactive",
+                dense ? "text-xs" : "text-sm"
             )}>
                 {children}
             </p>

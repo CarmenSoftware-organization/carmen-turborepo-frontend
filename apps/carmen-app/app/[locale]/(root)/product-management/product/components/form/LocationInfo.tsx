@@ -24,7 +24,7 @@ import { useTranslations } from "next-intl";
 import { Card } from "@/components/ui/card";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import {
     ColumnDef,
     getCoreRowModel,
@@ -35,6 +35,9 @@ import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+import SearchInput from "@/components/ui-custom/SearchInput";
+import { Link } from "@/lib/navigation";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -107,6 +110,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const tCommon = useTranslations("Common");
     const { token, buCode } = useAuth();
     const { data: locationsData, isLoading } = useLocationsQuery({ token, buCode });
+    const [searchQuery, setSearchQuery] = useState("");
 
     // Use useWatch instead of watch() to prevent infinite re-renders
     const locations = useWatch({
@@ -119,9 +123,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     // Create lookup map for O(1) access instead of O(n) find operations
     const storeLocationsMap = useMemo(() => {
         const map = new Map<string, StoreLocation>();
-        storeLocations.forEach((loc: StoreLocation) => {
+        for (const loc of storeLocations) {
             map.set(loc.id, loc);
-        });
+        }
         return map;
     }, [storeLocations]);
 
@@ -156,20 +160,19 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         });
     }, [productData, storeLocations]);
 
-    // Create Set for O(1) lookup instead of O(n) some() operations
     const removedLocationIds = useMemo(() => {
         const set = new Set<string>();
-        removedLocations.forEach((removed: { id: string }) => {
+        for (const removed of removedLocations) {
             set.add(removed.id);
-        });
+        }
         return set;
     }, [removedLocations]);
 
     const existingLocationIds = useMemo(() => {
         const set = new Set<string>();
-        existingLocations.forEach((location: LocationData) => {
+        for (const location of existingLocations) {
             set.add(location.location_id);
-        });
+        }
         return set;
     }, [existingLocations]);
 
@@ -198,7 +201,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         return tStoreLocation("inventory");
     }, [tStoreLocation]);
 
-    // Merge into one list for display only - memoize to prevent re-creation
     const allLocations: LocationDisplayData[] = useMemo(() => [
         ...displayLocations.map((loc: LocationData) => ({ ...loc, isNew: false })),
         ...locationFields.map((field, index) => ({
@@ -209,7 +211,27 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         }))
     ], [displayLocations, locationFields, newLocations]);
 
-    // Define columns
+    const filteredLocations = useMemo(() => {
+        if (!searchQuery.trim()) return allLocations;
+
+        const query = searchQuery.toLowerCase();
+        return allLocations.filter((location) => {
+            const storeLocation = storeLocationsMap.get(location.location_id);
+            if (!storeLocation) return false;
+
+            const searchableFields = [
+                storeLocation.name,
+                storeLocation.description,
+                storeLocation.delivery_point?.name,
+                getLocationType(storeLocation.location_type as INVENTORY_TYPE),
+            ].filter(Boolean);
+
+            return searchableFields.some((field) =>
+                field?.toLowerCase().includes(query)
+            );
+        });
+    }, [allLocations, searchQuery, storeLocationsMap, getLocationType]);
+
     const columns = useMemo<ColumnDef<LocationDisplayData>[]>(
         () => [
             {
@@ -243,7 +265,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                                                     <SelectContent>
                                                         {filteredStoreLocations.length === 0 ? (
                                                             <div className="flex items-center justify-center py-2 text-sm text-gray-500">
-                                                                No locations available
+                                                                {tStoreLocation("no_locations_available")}
                                                             </div>
                                                         ) : (
                                                             filteredStoreLocations.map((loc: StoreLocation) => (
@@ -262,7 +284,11 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                                     )}
                                 />
                             ) : (
-                                storeLocation?.name ?? "Unknown Location"
+                                <Link
+                                    href={`/configuration/location/${storeLocation?.id}`}
+                                    className="hover:underline text-xs">
+                                    {storeLocation?.name || "-"}
+                                </Link>
                             )}
                         </div>
                     );
@@ -283,7 +309,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                     const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
-                        <p>
+                        <p className="text-xs">
                             {getLocationType(storeLocation?.location_type as INVENTORY_TYPE)}
                         </p>
                     );
@@ -304,13 +330,13 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                     const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
-                        <span className="truncate max-w-[200px] inline-block">
+                        <span className="truncate max-w-[200px] inline-block text-xs">
                             {storeLocation?.description || "-"}
                         </span>
                     );
                 },
                 enableSorting: false,
-                size: 200,
+                size: 150,
             },
             {
                 id: "delivery_point",
@@ -325,7 +351,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                     const storeLocation = storeLocationsMap.get(location.location_id);
 
                     return (
-                        <span>
+                        <span className="text-xs">
                             {storeLocation?.delivery_point?.name || "-"}
                         </span>
                     );
@@ -347,7 +373,10 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
 
                     return (
                         <div className="flex justify-center">
-                            <StatusCustom is_active={!!storeLocation?.is_active}>
+                            <StatusCustom
+                                is_active={!!storeLocation?.is_active}
+                                dense={true}
+                            >
                                 {storeLocation?.is_active ? tCommon("active") : tCommon("inactive")}
                             </StatusCustom>
                         </div>
@@ -367,7 +396,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 ),
                 cell: ({ row }: { row: { original: LocationDisplayData } }) => {
                     const location = row.original;
-                    const storeLocation = storeLocationsMap.get(location.location_id);
                     return (
                         <div className="text-right">
                             {location.isNew ? (
@@ -376,7 +404,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => removeLocation(location.fieldIndex!)}
-                                    className="hover:text-destructive hover:bg-transparent h-7 w-7"
+                                    className="text-destructive hover:text-destructive/80 hover:bg-transparent h-7 w-7"
                                 >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -387,29 +415,25 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                                             type="button"
                                             variant="ghost"
                                             size="icon"
-                                            className="hover:text-destructive hover:bg-transparent h-7 w-7"
+                                            className="text-destructive hover:text-destructive/80 hover:bg-transparent h-7 w-7"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
                                         <AlertDialogHeader>
-                                            <AlertDialogTitle>Remove Location</AlertDialogTitle>
+                                            <AlertDialogTitle>{tStoreLocation("del_location")}</AlertDialogTitle>
                                             <AlertDialogDescription className="space-y-2">
-                                                <p>Are you sure you want to remove this location?</p>
-                                                <div className="mt-2 p-3 bg-gray-50 rounded-md space-y-1">
-                                                    <p><span className="font-semibold">Location ID:</span> {location.id}</p>
-                                                    <p><span className="font-semibold">Name:</span> {storeLocation?.name}</p>
-                                                    <p><span className="font-semibold">Type:</span> {storeLocation?.location_type}</p>
-                                                </div>
+                                                {tStoreLocation("del_location_description")}
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
                                             <AlertDialogAction
                                                 onClick={() => appendLocationRemove({ id: location.id })}
+                                                className="bg-destructive hover:bg-destructive/90"
                                             >
-                                                Remove
+                                                {tCommon("delete")}
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
@@ -419,7 +443,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                     );
                 },
                 enableSorting: false,
-                size: 80,
+                size: 100,
                 meta: {
                     cellClassName: "text-right",
                     headerClassName: "text-right",
@@ -430,7 +454,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     );
 
     const table = useReactTable({
-        data: allLocations,
+        data: filteredLocations,
         columns,
         getRowId: (row) => row.id ?? "",
         state: {},
@@ -440,7 +464,14 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-base text-muted-foreground font-semibold">{tProducts("location")}</h2>
+                <div className="flex items-center gap-4">
+                    <h2 className="text-base text-muted-foreground font-semibold whitespace-nowrap">{tProducts("location")}</h2>
+                    <SearchInput
+                        defaultValue={searchQuery}
+                        onSearch={setSearchQuery}
+                        placeholder={tCommon("search")}
+                    />
+                </div>
                 {currentMode !== formType.VIEW && (
                     <TooltipProvider>
                         <Tooltip>
@@ -465,10 +496,10 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             {(hasLocations || isLoading) && (
                 <DataGrid
                     table={table}
-                    recordCount={allLocations.length}
+                    recordCount={filteredLocations.length}
                     isLoading={isLoading}
                     loadingMode="skeleton"
-                    emptyMessage={tCommon("no_data")}
+                    emptyMessage={searchQuery.trim() ? tCommon("data_not_found") : tCommon("no_data")}
                     tableLayout={{
                         headerSticky: true,
                         dense: true,

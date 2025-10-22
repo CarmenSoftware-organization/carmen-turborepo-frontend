@@ -499,7 +499,10 @@
     "inventory": "รายการสินค้า",
     "direct": "สินค้าตรง",
     "consignment": "สินค้าฝากขาย",
-    "physical_count_type": "ประเภทการตรวจนับสินค้า"
+    "physical_count_type": "ประเภทการตรวจนับสินค้า",
+    "del_location": "ลบสถานที่เก็บสินค้า",
+    "del_location_description": "คุณแน่ใจหรือไม่ที่จะลบสถานที่เก็บสินค้านี้? การลบสถานที่เก็บสินค้าจะส่งผลต่อการซื้อขายสินค้าและการจัดการรายการสินค้า",
+    "no_locations_available": "ไม่มีสถานที่เก็บสินค้า"
   },
   "InventoryManagement": {
     "StockOverview": {
