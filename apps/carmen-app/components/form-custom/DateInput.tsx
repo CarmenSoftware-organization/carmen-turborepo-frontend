@@ -21,9 +21,10 @@ interface DateInputProps {
     readonly wrapWithFormControl?: boolean;
     readonly disabled?: boolean;
     readonly classNames?: string;
+    readonly disablePastDates?: boolean;
 }
 
-export default function DateInput({ field, wrapWithFormControl = true, disabled = false, classNames = "" }: DateInputProps) {
+export default function DateInput({ field, wrapWithFormControl = true, disabled = false, classNames = "", disablePastDates = false }: DateInputProps) {
     const [internalValue, setInternalValue] = useState<DateValue>(field.value);
 
     // Sync internal value with field value
@@ -54,6 +55,10 @@ export default function DateInput({ field, wrapWithFormControl = true, disabled 
 
     const formattedDate = formatDate(internalValue);
     const selectedDate = getSelectedDate();
+
+    // Get today's date at midnight for comparison
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const ButtonComponent = (
         <Button
@@ -88,6 +93,7 @@ export default function DateInput({ field, wrapWithFormControl = true, disabled 
                             field.onChange(isoString);
                         }
                     }}
+                    disabled={disablePastDates ? (date) => date < today : undefined}
                     initialFocus
                 />
             </PopoverContent>

@@ -111,28 +111,12 @@ export default function MainForm({ mode, initValues }: Props) {
     };
 
     const handleSubmit = (data: CreatePrDto) => {
-        console.log('Original payload:', JSON.stringify(data, null, 2));
-
         if (data.body.purchase_request_detail?.add && data.body.purchase_request_detail.add.length > 0) {
             data.body.purchase_request_detail.add = data.body.purchase_request_detail.add.map((item) => {
 
                 const {
-                    id,
-                    product_name,
-                    inventory_unit_name,
-                    requested_unit_name,
-                    delivery_point_name,
-                    location_name,
                     ...cleanedItem
                 } = item as Record<string, unknown>;
-
-                // Mark unused variables to satisfy linter
-                void id;
-                void product_name;
-                void inventory_unit_name;
-                void requested_unit_name;
-                void delivery_point_name;
-                void location_name;
 
                 Object.keys(cleanedItem).forEach(key => {
                     if (cleanedItem[key] === "" || cleanedItem[key] === null) {
@@ -140,7 +124,6 @@ export default function MainForm({ mode, initValues }: Props) {
                     }
                 });
 
-                // Ensure numeric fields are numbers, not strings
                 if (cleanedItem.requested_qty !== undefined) {
                     cleanedItem.requested_qty = Number(cleanedItem.requested_qty);
                 }

@@ -461,6 +461,7 @@ export default function PurchaseItemDataGrid({
                                         onChange: (value) => onItemUpdate(item.id, 'delivery_date', value)
                                     }}
                                     classNames="text-xs h-7 w-full"
+                                    disablePastDates={true}
                                 />
                             </div>
                         );
