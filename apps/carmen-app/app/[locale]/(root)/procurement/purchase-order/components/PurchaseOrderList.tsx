@@ -188,7 +188,7 @@ export default function PurchaseOrderList({
         ),
         cell: ({ row }) => (
           <div className="text-right">
-            <span className="font-mono text-sm">{row.original.net_amount}</span>
+            <span className="text-sm">{row.original.net_amount}</span>
           </div>
         ),
         enableSorting: false,
@@ -208,11 +208,11 @@ export default function PurchaseOrderList({
         ),
         cell: ({ row }) => (
           <div className="text-right">
-            <span className="font-mono text-sm">{row.original.tax_amount}</span>
+            <span className="text-sm">{row.original.tax_amount}</span>
           </div>
         ),
         enableSorting: false,
-        size: 130,
+        size: 150,
         meta: {
           headerTitle: tTableHeader("tax_amount"),
           cellClassName: "text-right",
@@ -228,7 +228,7 @@ export default function PurchaseOrderList({
         ),
         cell: ({ row }) => (
           <div className="text-right">
-            <span className="font-mono text-sm font-medium">{row.original.amount}</span>
+            <span className="text-sm font-medium">{row.original.amount}</span>
           </div>
         ),
         enableSorting: false,
@@ -312,7 +312,7 @@ export default function PurchaseOrderList({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",

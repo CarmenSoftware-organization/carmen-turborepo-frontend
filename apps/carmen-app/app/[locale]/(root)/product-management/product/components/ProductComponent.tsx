@@ -19,7 +19,7 @@ export default function ProductComponent() {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");
-  const tProduct = useTranslations("Product");
+  const tProduct = useTranslations("Products");
 
   const [search, setSearch] = useURL("search");
   const [status, setStatus] = useURL("status");
