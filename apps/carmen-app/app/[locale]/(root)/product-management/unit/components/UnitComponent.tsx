@@ -53,7 +53,7 @@ export default function UnitComponent() {
 
   const { mutate: createUnit } = useUnitMutation(token, buCode);
   const { mutate: updateUnit } = useUpdateUnit(token, buCode, selectedUnit?.id ?? "");
-  const { mutate: deleteUnit } = useDeleteUnit(token, buCode, selectedUnit?.id ?? "");
+  const { mutate: deleteUnit } = useDeleteUnit(token, buCode);
 
   const totalItems = units?.paginate?.total ?? 0;
   const totalPages = units?.paginate?.pages ?? 1;
@@ -87,7 +87,7 @@ export default function UnitComponent() {
 
   const handleConfirmDelete = () => {
     if (unitToDelete) {
-      deleteUnit(undefined, {
+      deleteUnit(unitToDelete.id, {
         onSuccess: () => {
           toastSuccess({ message: tUnit('delete_success') });
           queryClient.invalidateQueries({ queryKey: ["units"] });

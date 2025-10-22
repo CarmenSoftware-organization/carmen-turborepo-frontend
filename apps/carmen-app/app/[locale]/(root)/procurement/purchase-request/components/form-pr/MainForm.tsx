@@ -115,7 +115,7 @@ export default function MainForm({ mode, initValues }: Props) {
 
         if (data.body.purchase_request_detail?.add && data.body.purchase_request_detail.add.length > 0) {
             data.body.purchase_request_detail.add = data.body.purchase_request_detail.add.map((item) => {
-                // Remove unnecessary fields
+
                 const {
                     id,
                     product_name,
@@ -124,7 +124,15 @@ export default function MainForm({ mode, initValues }: Props) {
                     delivery_point_name,
                     location_name,
                     ...cleanedItem
-                } = item as any;
+                } = item as Record<string, unknown>;
+
+                // Mark unused variables to satisfy linter
+                void id;
+                void product_name;
+                void inventory_unit_name;
+                void requested_unit_name;
+                void delivery_point_name;
+                void location_name;
 
                 Object.keys(cleanedItem).forEach(key => {
                     if (cleanedItem[key] === "" || cleanedItem[key] === null) {

@@ -73,7 +73,7 @@ export default function ListPriceList({
     const [alertOpen, setAlertOpen] = useState(false);
     const [selectedPriceList, setSelectedPriceList] = useState<PriceListDto | null>(null);
 
-    const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode, deleteId);
+    const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode);
 
     // Action header component
     const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
@@ -102,7 +102,7 @@ export default function ListPriceList({
         if (!selectedPriceList?.id) return;
 
         setDeleteId(selectedPriceList.id);
-        deletePriceList(undefined, {
+        deletePriceList(selectedPriceList.id, {
             onSuccess: () => {
                 toastSuccess({ message: 'Price list deleted successfully' });
                 setDeleteId('');

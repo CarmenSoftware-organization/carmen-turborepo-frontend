@@ -94,11 +94,6 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         return Array.from(selectedIds).filter(id => id.startsWith('product-')).sort();
     }, [selectedIds]);
 
-    // Stable string for dependency comparison
-    const selectedProductIdsKey = useMemo(() => {
-        return selectedProductIdsArray.join(',');
-    }, [selectedProductIdsArray]);
-
     // Build tree data structure from filtered product data + keep selected items
     const { items, rootItems } = useMemo((): { items: Record<string, TreeNodeData>; rootItems: string[] } => {
         if (isLoading || !filteredProducts) {
@@ -218,7 +213,7 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         const roots = Array.from(categoryMap.keys());
 
         return { items: itemsMap, rootItems: roots };
-    }, [filteredProducts, isLoading, selectedProductIdsKey, products?.data, searchTrigger]);
+    }, [filteredProducts, isLoading, selectedProductIdsArray, products?.data, searchTrigger]);
 
     const searchInput = (
         <div className="flex gap-2">
@@ -382,7 +377,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
 
             return newSet;
         });
-    }, [items, selectedItemsCache, getAllProductIds]);
+    }, [items, selectedItemsCache, getAllProductIds, setSelectedIds, setSelectedItemsCache]);
 
     // Check if an item is checked (for indeterminate state)
     const getCheckboxState = useCallback((itemId: string): { checked: boolean; indeterminate: boolean } => {

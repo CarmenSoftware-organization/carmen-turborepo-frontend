@@ -17,7 +17,7 @@ import {
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useGrn } from "@/hooks/useGrn";
-import { GrnDto } from "@/app/[locale]/(root)/procurement/temp/type.dto";
+import { GoodsReceivedNoteListDto } from "@/dtos/grn.dto";
 
 export default function GrnLookup({
   value,
@@ -72,7 +72,7 @@ export default function GrnLookup({
                 <CommandEmpty>No price ranges found.</CommandEmpty>
                 <CommandGroup>
                   {grnDatas && grnDatas.length > 0 ? (
-                    grnDatas.map((grn: GrnDto) => (
+                    grnDatas.map((grn: GoodsReceivedNoteListDto) => (
                       <CommandItem
                         key={grn.id}
                         value={grn.id}

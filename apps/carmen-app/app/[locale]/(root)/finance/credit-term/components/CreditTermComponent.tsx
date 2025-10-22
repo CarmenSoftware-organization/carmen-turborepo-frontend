@@ -59,7 +59,7 @@ export default function CreditTermComponent() {
   const { mutate: updateCreditTerm, isPending: isUpdating } =
     useUpdateCreditTerm(token, buCode, selectedCreditTerm?.id || "");
   const { mutate: deleteCreditTerm, isPending: isDeleting } =
-    useDeleteCreditTerm(token, buCode, selectedCreditTerm?.id || "");
+    useDeleteCreditTerm(token, buCode);
 
   const tCommon = useTranslations("Common");
   const [search, setSearch] = useURL("search");
@@ -104,7 +104,7 @@ export default function CreditTermComponent() {
 
   const handleDeleteCreditTerm = () => {
     if (!selectedCreditTerm?.id) return;
-    deleteCreditTerm(undefined, {
+    deleteCreditTerm(selectedCreditTerm.id, {
       onSuccess: () => {
         setDeleteDialogOpen(false);
         setSelectedCreditTerm(null);

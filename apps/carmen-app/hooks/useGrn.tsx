@@ -5,8 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useURL } from "./useURL";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAllGrn } from "@/services/grn.service";
-import { CreateGRNDto } from "@/dtos/grn.dto";
-import { GrnDto } from "@/app/[locale]/(root)/procurement/temp/type.dto";
+import { CreateGRNDto, GoodsReceivedNoteListDto } from "@/dtos/grn.dto";
 import { postApiRequest, updateApiRequest } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -58,7 +57,7 @@ export const useGrn = () => {
   const grns = response?.isAuthError ? [] : (response?.data ?? []);
 
   const getGrnNo = (id: string) => {
-    const found = grns?.data?.find((grn: GrnDto) => grn.id === id);
+    const found = grns?.data?.find((grn: GoodsReceivedNoteListDto) => grn.id === id);
     return found?.grn_no ?? null;
   };
 
