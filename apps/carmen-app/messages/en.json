@@ -767,7 +767,8 @@
     "edit_product": "Edit Product",
     "select_unit": "Select Unit",
     "auto_fill_from_item_group": "Auto-fill from Item Group",
-    "auto_fill_sub_category": "Auto-fill Sub Category"
+    "auto_fill_sub_category": "Auto-fill Sub Category",
+    "no_order_unit_set": "No order unit set"
   },
   "PurchaseOrder": {
     "title": "Purchase Order",

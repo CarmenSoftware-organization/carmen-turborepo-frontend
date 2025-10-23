@@ -1,6 +1,5 @@
 import { Control, useFieldArray } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
-import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { memo, useMemo } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ProductFormValues } from "@/dtos/product.dto";
 
 interface ProductAttributeProps {
     readonly control: Control<ProductFormValues>;
@@ -130,153 +130,155 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                 )}
             </div>
 
-            <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <FormField
-                        control={control}
-                        name="product_info.price"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    {tProducts("price")} <span className="text-destructive">*</span>
-                                </FormLabel>
-                                <FormControl>
-                                    <NumberInput
-                                        value={field.value}
-                                        onChange={(value) => field.onChange(value)}
-                                        placeholder={tProducts("price")}
-                                        disabled={isViewMode}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={control}
-                        name="product_info.price_deviation_limit"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    {tProducts("price_deviation_limit")} (%) <span className="text-destructive">*</span>
-                                </FormLabel>
-                                <FormControl>
-                                    <NumberInput
-                                        value={field.value}
-                                        onChange={(value) => field.onChange(value)}
-                                        placeholder={tProducts("price_deviation_limit")}
-                                        disabled={isViewMode}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={control}
-                        name="product_info.qty_deviation_limit"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>
-                                    {tProducts("qty_deviation_limit")} (%) <span className="text-destructive">*</span>
-                                </FormLabel>
-                                <FormControl>
-                                    <NumberInput
-                                        value={field.value}
-                                        onChange={(value) => field.onChange(value)}
-                                        placeholder={tProducts("qty_deviation_limit")}
-                                        disabled={isViewMode}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={control}
-                        name="product_info.barcode"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>{tProducts("barcode")}</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder={tProducts("barcode")}
-                                        {...field}
-                                        disabled={isViewMode}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <FormField
                     control={control}
-                    name="product_info.is_used_in_recipe"
+                    name="product_info.price"
                     render={({ field }) => (
                         <FormItem>
+                            <FormLabel>
+                                {tProducts("price")} <span className="text-destructive">*</span>
+                            </FormLabel>
                             <FormControl>
-                                <FormBoolean
+                                <NumberInput
                                     value={field.value}
-                                    onChange={field.onChange}
-                                    label={tProducts("used_in_recipe")}
-                                    type="checkbox"
+                                    onChange={(value) => field.onChange(value)}
+                                    placeholder={tProducts("price")}
                                     disabled={isViewMode}
+                                    min={0}
                                 />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
 
                 <FormField
                     control={control}
-                    name="product_info.is_sold_directly"
+                    name="product_info.price_deviation_limit"
                     render={({ field }) => (
                         <FormItem>
+                            <FormLabel>
+                                {tProducts("price_deviation_limit")} (%) <span className="text-destructive">*</span>
+                            </FormLabel>
                             <FormControl>
-                                <FormBoolean
+                                <NumberInput
                                     value={field.value}
-                                    onChange={field.onChange}
-                                    label={tProducts("sold_directly")}
-                                    type="checkbox"
+                                    onChange={(value) => field.onChange(value)}
+                                    placeholder={tProducts("price_deviation_limit")}
                                     disabled={isViewMode}
+                                    min={0}
                                 />
                             </FormControl>
+                            <FormMessage />
                         </FormItem>
                     )}
                 />
-                {isViewMode ? (
-                    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
-                        {fields && fields.length > 0 ? (
-                            fields.map((field, index) => (
-                                <AttributeViewItem
-                                    key={field.id}
-                                    attribute={field as unknown as AttributeItem}
-                                    index={index}
+
+                <FormField
+                    control={control}
+                    name="product_info.qty_deviation_limit"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                {tProducts("qty_deviation_limit")} (%) <span className="text-destructive">*</span>
+                            </FormLabel>
+                            <FormControl>
+                                <NumberInput
+                                    value={field.value}
+                                    onChange={(value) => field.onChange(value)}
+                                    placeholder={tProducts("qty_deviation_limit")}
+                                    disabled={isViewMode}
+                                    min={0}
                                 />
-                            ))
-                        ) : (
-                            <p className="text-sm text-muted-foreground">{tProducts("no_attributes_added")}</p>
-                        )}
-                    </div>
-                ) : (
-                    <>
-                        {fields.map((field, index) => (
-                            <AttributeFieldRow
-                                key={field.id}
-                                control={control}
-                                index={index}
-                                onRemove={() => remove(index)}
-                                tProducts={tProducts}
-                            />
-                        ))}
-                    </>
-                )}
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+
+                <FormField
+                    control={control}
+                    name="product_info.barcode"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>{tProducts("barcode")}</FormLabel>
+                            <FormControl>
+                                <Input
+                                    placeholder={tProducts("barcode")}
+                                    {...field}
+                                    disabled={isViewMode}
+                                />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
             </div>
+
+            <FormField
+                control={control}
+                name="product_info.is_used_in_recipe"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormControl>
+                            <FormBoolean
+                                value={field.value}
+                                onChange={field.onChange}
+                                label={tProducts("used_in_recipe")}
+                                type="checkbox"
+                                disabled={isViewMode}
+                            />
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={control}
+                name="product_info.is_sold_directly"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormControl>
+                            <FormBoolean
+                                value={field.value}
+                                onChange={field.onChange}
+                                label={tProducts("sold_directly")}
+                                type="checkbox"
+                                disabled={isViewMode}
+                            />
+                        </FormControl>
+                    </FormItem>
+                )}
+            />
+
+            {isViewMode ? (
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                    {fields && fields.length > 0 ? (
+                        fields.map((field, index) => (
+                            <AttributeViewItem
+                                key={field.id}
+                                attribute={field as unknown as AttributeItem}
+                                index={index}
+                            />
+                        ))
+                    ) : (
+                        <p className="text-sm text-muted-foreground">{tProducts("no_attributes_added")}</p>
+                    )}
+                </div>
+            ) : (
+                <>
+                    {fields.map((field, index) => (
+                        <AttributeFieldRow
+                            key={field.id}
+                            control={control}
+                            index={index}
+                            onRemove={() => remove(index)}
+                            tProducts={tProducts}
+                        />
+                    ))}
+                </>
+            )}
         </Card>
     );
 }

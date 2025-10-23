@@ -92,7 +92,6 @@ export default function BasicInfo({
     }
   }, [categoryResponse, categoryData, productItemGroupId, setValue]);
 
-  // Watch required fields
   const watchedFields = useWatch({
     control,
     name: [
@@ -345,7 +344,6 @@ export default function BasicInfo({
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
-                          // Set product_item_group with id and name
                           const selectedItemGroup = itemGroups.find(ig => ig.id === value);
                           if (selectedItemGroup) {
                             setValue("product_item_group", {
@@ -367,7 +365,6 @@ export default function BasicInfo({
               />
             </div>
 
-            {/* Sub Category */}
             <div className="space-y-3 mt-1.5">
               <TooltipProvider>
                 <div className="flex items-center gap-1">
@@ -392,7 +389,6 @@ export default function BasicInfo({
               />
             </div>
 
-            {/* Category */}
             <div className="space-y-3 mt-1.5">
               <TooltipProvider>
                 <div className="flex items-center gap-1">
@@ -417,7 +413,6 @@ export default function BasicInfo({
               />
             </div>
 
-            {/* Inventory Unit */}
             <div className="space-y-2">
               <FormField
                 control={control}
@@ -448,7 +443,6 @@ export default function BasicInfo({
               />
             </div>
 
-            {/* Order Unit */}
             <div className="space-y-2">
               <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {tProducts("order_unit")}
@@ -460,7 +454,7 @@ export default function BasicInfo({
                   </Badge>
                 ) : (
                   <p className="text-sm text-muted-foreground">
-                    {currentMode === formType.VIEW ? "-" : "No order unit set"}
+                    {currentMode === formType.VIEW ? "-" : tProducts("no_order_unit_set")}
                   </p>
                 )}
               </div>

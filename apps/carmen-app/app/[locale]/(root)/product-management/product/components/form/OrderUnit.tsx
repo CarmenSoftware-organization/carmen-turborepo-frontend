@@ -686,8 +686,8 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                     </div>
                 </DataGrid>
             ) : (
-                <div className="flex flex-col items-center justify-center py-12 px-4">
-                    <p className="text-gray-500 mb-4">
+                <div className="flex flex-col items-center justify-center py-4">
+                    <p className="text-muted-foreground">
                         {inventoryUnitId
                             ? tProducts("no_order_units_defined")
                             : tProducts("pls_select_order_unit")

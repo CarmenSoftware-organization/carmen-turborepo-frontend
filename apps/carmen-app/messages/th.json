@@ -763,7 +763,8 @@
     "edit_product": "แก้ไขสินค้า",
     "select_unit": "เลือกหน่วย",
     "auto_fill_from_item_group": "ข้อมูลกรอกอัตโนมัติจากหมวดสินค้ากลุ่ม",
-    "auto_fill_sub_category": "ข้อมูลกรอกอัตโนมัติจากหมวดสินค้าย่อย"
+    "auto_fill_sub_category": "ข้อมูลกรอกอัตโนมัติจากหมวดสินค้าย่อย",
+    "no_order_unit_set": "ยังไม่มีการตั้งค่าหน่วยสั่งซื้อ"
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",

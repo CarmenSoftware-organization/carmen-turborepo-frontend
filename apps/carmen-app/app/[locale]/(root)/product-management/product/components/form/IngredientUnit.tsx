@@ -609,7 +609,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
     return (
         <Card className="p-4 space-y-4">
             <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold">{tProducts("ingredient_unit")}</h2>
+                <h2 className="text-base text-muted-foreground font-semibold">{tProducts("ingredient_unit")}</h2>
                 {currentMode !== formType.VIEW && (
                     <TooltipProvider>
                         <Tooltip>
@@ -657,7 +657,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     </div>
                 </DataGrid>
             ) : (
-                <div className="flex flex-col items-center justify-center py-12 px-4">
+                <div className="flex flex-col items-center justify-center py-4">
                     <p className="text-muted-foreground">
                         {inventoryUnitId
                             ? tProducts("no_ingredient_units_defined")

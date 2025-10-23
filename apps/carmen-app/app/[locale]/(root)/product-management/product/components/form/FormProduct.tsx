@@ -284,48 +284,46 @@ export default function FormProduct({ mode, initialValues }: Props) {
   }, [currentMode, router]);
 
   return (
-    <div className="mx-auto">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
-          <BasicInfo
-            control={form.control}
-            currentMode={currentMode}
-            handleEditClick={handleEditClick}
-            handleCancelClick={handleCancelClick}
-          />
-          <Tabs defaultValue="general" className="mt-2">
-            <TabsList>
-              <TabsTrigger value="general">{tProducts("general")}</TabsTrigger>
-              <TabsTrigger value="location">{tProducts("location")}</TabsTrigger>
-              <TabsTrigger value="orderUnit">{tProducts("order_unit")}</TabsTrigger>
-              <TabsTrigger value="ingredientUnit">
-                {tProducts("ingredient_unit")}
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="general">
-              <ProductAttribute
-                control={form.control}
-                currentMode={currentMode}
-              />
-            </TabsContent>
-            <TabsContent value="location">
-              <LocationInfo
-                control={form.control}
-                currentMode={currentMode}
-              />
-            </TabsContent>
-            <TabsContent value="orderUnit">
-              <OrderUnit control={form.control} currentMode={currentMode} />
-            </TabsContent>
-            <TabsContent value="ingredientUnit">
-              <IngredientUnit
-                control={form.control}
-                currentMode={currentMode}
-              />
-            </TabsContent>
-          </Tabs>
-        </form>
-      </Form>
-    </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+        <BasicInfo
+          control={form.control}
+          currentMode={currentMode}
+          handleEditClick={handleEditClick}
+          handleCancelClick={handleCancelClick}
+        />
+        <Tabs defaultValue="general" className="mt-2">
+          <TabsList>
+            <TabsTrigger value="general">{tProducts("general")}</TabsTrigger>
+            <TabsTrigger value="location">{tProducts("location")}</TabsTrigger>
+            <TabsTrigger value="orderUnit">{tProducts("order_unit")}</TabsTrigger>
+            <TabsTrigger value="ingredientUnit">
+              {tProducts("ingredient_unit")}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="general">
+            <ProductAttribute
+              control={form.control}
+              currentMode={currentMode}
+            />
+          </TabsContent>
+          <TabsContent value="location">
+            <LocationInfo
+              control={form.control}
+              currentMode={currentMode}
+            />
+          </TabsContent>
+          <TabsContent value="orderUnit">
+            <OrderUnit control={form.control} currentMode={currentMode} />
+          </TabsContent>
+          <TabsContent value="ingredientUnit">
+            <IngredientUnit
+              control={form.control}
+              currentMode={currentMode}
+            />
+          </TabsContent>
+        </Tabs>
+      </form>
+    </Form>
   );
 }
