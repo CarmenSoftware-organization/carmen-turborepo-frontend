@@ -11,16 +11,12 @@ import LocationInfo from "./LocationInfo";
 import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
 import ProductAttribute from "./ProductAttribute";
-import {
-  ProductFormValues,
-  ProductInitialValues,
-  productFormSchema,
-} from "../../pd-schema";
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "@/lib/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useTranslations } from "next-intl";
+import { productFormSchema, ProductFormValues, ProductInitialValues } from "@/dtos/product.dto";
 
 interface Props {
   readonly mode: formType;
@@ -80,6 +76,10 @@ export default function FormProduct({ mode, initialValues }: Props) {
           name: "",
         },
         product_sub_category: {
+          id: "",
+          name: "",
+        },
+        product_item_group: {
           id: "",
           name: "",
         },
@@ -170,6 +170,10 @@ export default function FormProduct({ mode, initialValues }: Props) {
         id: initialValues.product_sub_category?.id ?? "",
         name: initialValues.product_sub_category?.name ?? "",
       },
+      product_item_group: {
+        id: initialValues.product_item_group?.id ?? "",
+        name: initialValues.product_item_group?.name ?? "",
+      },
     };
   }, [initialValues]);
 
@@ -180,9 +184,22 @@ export default function FormProduct({ mode, initialValues }: Props) {
 
   const onSubmit = useCallback(async (data: ProductFormValues) => {
     try {
-      const { locations, order_units, ingredient_units, ...restData } = data;
+      const { locations, order_units, ingredient_units, product_category, product_sub_category, product_item_group, ...restData } = data;
+
       const submitData = {
         ...restData,
+        product_category: {
+          id: product_category.id,
+          name: product_category.name,
+        },
+        product_sub_category: {
+          id: product_sub_category.id,
+          name: product_sub_category.name,
+        },
+        product_item_group: {
+          id: product_item_group.id,
+          name: product_item_group.name,
+        },
         locations: {
           add: locations.add,
           remove: locations.remove?.map((item) => ({
@@ -214,8 +231,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
 
         toastSuccess({ message: "Product created successfully" });
         setCurrentMode(formType.VIEW);
-
-        // Check for ID in response (could be result.id or result.data.id)
         const resultId = result?.id || result?.data?.id;
         if (resultId) {
           const newUrl = globalThis.location.pathname.replace(
@@ -241,12 +256,9 @@ export default function FormProduct({ mode, initialValues }: Props) {
           product: submitData,
         }) as { id?: string; data?: { id?: string } };
 
-        toastSuccess({ message: "Product updated successfully" });
-        setCurrentMode(formType.VIEW);
-
-        // Optionally: check if we need to handle the result
         if (result) {
-          console.log("Product updated:", result);
+          toastSuccess({ message: "Product updated successfully" });
+          setCurrentMode(formType.VIEW);
         }
       }
     } catch (error) {

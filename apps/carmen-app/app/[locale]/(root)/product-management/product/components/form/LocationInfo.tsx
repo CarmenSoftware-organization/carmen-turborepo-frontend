@@ -2,7 +2,6 @@
 
 import { Control, useFieldArray, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
-import { ProductFormValues } from "../../pd-schema";
 import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
@@ -35,9 +34,9 @@ import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Input } from "@/components/ui/input";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { Link } from "@/lib/navigation";
+import { ProductFormValues } from "@/dtos/product.dto";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;

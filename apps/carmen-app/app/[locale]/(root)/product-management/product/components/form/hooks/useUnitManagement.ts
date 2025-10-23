@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { Control, UseFormSetValue, UseFormWatch, useWatch } from "react-hook-form";
-import { ProductFormValues } from "../../../pd-schema";
-import { UnitData, OrderUnitsFormData, IngredientUnitsFormData } from "../unit.type";
+import { UnitData, OrderUnitsFormData, IngredientUnitsFormData } from "@/dtos/unit.dto";
+import { ProductFormValues } from "@/dtos/product.dto";
 
 type UnitType = 'order' | 'ingredient';
 

@@ -1,10 +1,10 @@
 import { formType } from "@/dtos/form.dto";
 import { Control, useFormContext, useWatch } from "react-hook-form";
-import { ProductFormValues } from "../../pd-schema";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
+import { useItemGroupsQuery } from "@/hooks/useItemGroup";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import { useTranslations } from "next-intl";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
 import { Textarea } from "@/components/ui/textarea";
+import { ProductFormValues } from "@/dtos/product.dto";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -47,6 +48,8 @@ export default function BasicInfo({
   const status = watch("product_status_type");
   const productItemGroupId = watch("product_info.product_item_group_id");
   const hasInitialized = useRef(false);
+
+  const { data: itemGroups = [] } = useItemGroupsQuery();
 
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -342,6 +345,14 @@ export default function BasicInfo({
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
+                          // Set product_item_group with id and name
+                          const selectedItemGroup = itemGroups.find(ig => ig.id === value);
+                          if (selectedItemGroup) {
+                            setValue("product_item_group", {
+                              id: selectedItemGroup.id,
+                              name: selectedItemGroup.name,
+                            }, { shouldValidate: false });
+                          }
                         }}
                         disabled={currentMode === formType.VIEW}
                         classNames={cn(

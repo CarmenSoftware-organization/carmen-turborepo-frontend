@@ -1,22 +1,18 @@
-import { memo, useEffect, useMemo, useCallback, useState } from "react";
+import { memo, useMemo, useCallback } from "react";
 import { Control, useFieldArray, useFormContext } from "react-hook-form";
-import { ProductFormValues } from "../../pd-schema";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Check, ChevronsUpDown } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
-import { UnitDto } from "@/dtos/unit.dto";
+import { UnitDto, UnitRow, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
 import { useUnitManagement } from "./hooks/useUnitManagement";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { cn } from "@/lib/utils";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -28,7 +24,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { UnitData } from "./unit.type";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
     ColumnDef,
@@ -39,119 +34,14 @@ import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ProductFormValues } from "@/dtos/product.dto";
+import UnitCombobox from "@/components/lookup/UnitCombobox";
+import ConversionPreview from "@/components/ConversionPreview";
 
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
-
-interface UnitRow extends UnitData {
-    isNew: boolean;
-    fieldIndex?: number;
-    dataIndex?: number;
-}
-
-const ConversionPreview = memo(({ fromUnitId, toUnitId, fromUnitQty, toUnitQty, getUnitName }: {
-    fromUnitId: string;
-    toUnitId: string;
-    fromUnitQty: number;
-    toUnitQty: number;
-    getUnitName: (id: string) => string;
-}) => {
-    const [conversionPreview, setConversionPreview] = useState<{ unitRatio: string; qtyMultiplier: string }>({
-        unitRatio: '',
-        qtyMultiplier: ''
-    });
-
-    useEffect(() => {
-        if (fromUnitId && toUnitId) {
-            setConversionPreview({
-                unitRatio: `1 ${getUnitName(fromUnitId)} = ${toUnitQty} ${getUnitName(toUnitId)}`,
-                qtyMultiplier: `Qty x ${toUnitQty * fromUnitQty}`
-            });
-        }
-    }, [fromUnitId, toUnitId, toUnitQty, fromUnitQty, getUnitName]);
-
-    return (
-        <div>
-            <p className="text-xs font-medium">{conversionPreview.unitRatio}</p>
-            <p className="text-muted-foreground text-[11px]">{conversionPreview.qtyMultiplier}</p>
-        </div>
-    );
-});
-
-ConversionPreview.displayName = 'ConversionPreview';
-
-// Unit Combobox Component
-const UnitCombobox = memo(({
-    value,
-    onChange,
-    availableUnits,
-    disabled
-}: {
-    value: string;
-    onChange: (value: string) => void;
-    availableUnits: UnitDto[];
-    disabled?: boolean;
-}) => {
-    const [open, setOpen] = useState(false);
-
-    const getUnitName = useCallback((unitId: string) => {
-        return availableUnits.find((unit: UnitDto) => unit.id === unitId)?.name ?? 'Select unit...';
-    }, [availableUnits]);
-
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className={cn(
-                        "min-w-32 h-7 justify-between text-xs",
-                        !value && "text-muted-foreground"
-                    )}
-                    disabled={disabled}
-                >
-                    {value ? getUnitName(value) : "Select unit..."}
-                    <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-                <Command>
-                    <CommandInput placeholder="Search unit..." className="h-8" />
-                    <CommandList>
-                        <CommandEmpty>No unit found.</CommandEmpty>
-                        <CommandGroup>
-                            {availableUnits.map((unit: UnitDto) => (
-                                <CommandItem
-                                    key={unit.id}
-                                    value={unit.name}
-                                    onSelect={() => {
-                                        onChange(unit.id);
-                                        setOpen(false);
-                                    }}
-                                >
-                                    <Check
-                                        className={cn(
-                                            "mr-2 h-4 w-4",
-                                            value === unit.id
-                                                ? "opacity-100"
-                                                : "opacity-0"
-                                        )}
-                                    />
-                                    {unit.name}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
-    );
-});
-
-UnitCombobox.displayName = 'UnitCombobox';
 
 const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
     const tProducts = useTranslations("Products");
@@ -166,9 +56,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
     });
     const { watch, setValue } = useFormContext<ProductFormValues>();
 
-
-
-    // Use shared hook for unit management
     const {
         displayUnits,
         newUnits,
@@ -213,7 +100,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         const usedUnitIds = new Set<string>();
 
         // Add to_unit_ids from existing units
-        displayUnits.forEach((unit) => {
+        displayUnits.forEach((unit: UnitData) => {
             if (unit.to_unit_id) usedUnitIds.add(unit.to_unit_id);
         });
 
@@ -341,7 +228,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
 
 
     const allUnits: UnitRow[] = useMemo(() => [
-        ...displayUnits.map((unit, index) => ({ ...unit, isNew: false, dataIndex: index })),
+        ...displayUnits.map((unit: UnitData, index: number) => ({ ...unit, isNew: false, dataIndex: index })),
         ...ingredientUnitFields.map((field, index) => ({
             ...field,
             to_unit_id: field.to_unit_id || "",
@@ -770,28 +657,17 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     </div>
                 </DataGrid>
             ) : (
-                <EmptyState inventoryUnitId={inventoryUnitId} />
+                <div className="flex flex-col items-center justify-center py-12 px-4">
+                    <p className="text-muted-foreground">
+                        {inventoryUnitId
+                            ? tProducts("no_ingredient_units_defined")
+                            : tProducts("pls_select_ingredient_unit")
+                        }
+                    </p>
+                </div>
             )}
         </Card>
     );
 };
-
-// Extract empty state component for better readability
-const EmptyState = memo(({ inventoryUnitId }: { inventoryUnitId?: string }) => {
-    const tProducts = useTranslations("Products");
-
-    return (
-        <div className="flex flex-col items-center justify-center py-12 px-4">
-            <p className="text-gray-500 mb-4">
-                {!inventoryUnitId
-                    ? tProducts("pls_select_ingredient_unit")
-                    : tProducts("no_ingredient_units_defined")
-                }
-            </p>
-        </div>
-    );
-});
-
-EmptyState.displayName = "IngredientUnitEmptyState";
 
 export default memo(IngredientUnit);
