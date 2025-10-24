@@ -136,7 +136,7 @@ function DataGridTableHeadRowCell<TData>({
       data-pinned={isPinned || undefined}
       data-last-col={isLastLeftPinned ? 'left' : isFirstRightPinned ? 'right' : undefined}
       className={cn(
-        'relative bg-muted h-12 text-left rtl:text-right align-middle font-normal text-accent-foreground [&:has([role=checkbox])]:pe-0',
+        'relative h-12 text-left rtl:text-right align-middle font-normal text-accent-foreground [&:has([role=checkbox])]:pe-0',
         headerCellSpacing,
         props.tableLayout?.headerSticky && 'sticky top-0 border-border',
         props.tableLayout?.cellBorder && 'border-e border-border',
