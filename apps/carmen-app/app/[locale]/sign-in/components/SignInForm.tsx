@@ -148,7 +148,7 @@ export default function SignInForm() {
                   name="password"
                   data-testid="password-input"
                   render={({ field }) => (
-                    <FormItem className="hidden">
+                    <FormItem>
                       <FormControl>
                         {/* <InputCustom
                           label={t("password")}
@@ -166,7 +166,6 @@ export default function SignInForm() {
                           {...field}
                           className="h-11"
                           defaultValue={'12345678'}
-                          disabled
                         />
                       </FormControl>
                       <FormMessage />
