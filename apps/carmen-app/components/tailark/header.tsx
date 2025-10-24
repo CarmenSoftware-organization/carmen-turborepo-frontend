@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react';
 import LanguageSwitcher from '../LanguageSwitcher';
 import { SwitchTheme } from '../SwitchTheme';
+// import Image from 'next/image';
 
 export const HeroHeader = () => {
     const t = useTranslations('HomePage');
@@ -43,6 +44,13 @@ export const HeroHeader = () => {
                                 aria-label="home"
                                 className="flex items-center space-x-2"
                             >
+                                {/* <Image
+                                    src="/images/carmen_pic.jpg"
+                                    alt="Carmen Logo"
+                                    width={60}
+                                    height={60}
+                                    className="h-10 w-10 object-contain"
+                                /> */}
                                 <span className="text-primary text-3xl font-extrabold tracking-tight">Carmen</span>
                             </Link>
 

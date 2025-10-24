@@ -8,35 +8,36 @@ export default function FaqsSection() {
                             Frequently <br className="hidden lg:block" /> Asked <br className="hidden lg:block" />
                             Questions
                         </h2>
-                        <p>Accusantium quisquam. Illo, omnis?</p>
+                        <p>Everything you need to know about Carmen inventory management system</p>
                     </div>
 
                     <div className="divide-y divide-dashed sm:mx-auto sm:max-w-lg lg:mx-0">
                         <div className="pb-6">
-                            <h3 className="font-medium">What is the refund policy?</h3>
-                            <p className="text-muted-foreground mt-4">We offer a 30-day money back guarantee. If you are not satisfied with our product, you can request a refund within 30 days of your purchase.</p>
+                            <h3 className="font-medium">How does multi-property management work?</h3>
+                            <p className="text-muted-foreground mt-4">Carmen supports multi-tenant architecture, allowing you to manage inventory across multiple hotel properties from a single platform.</p>
 
                             <ol className="list-outside list-decimal space-y-2 pl-4">
-                                <li className="text-muted-foreground mt-4">To request a refund, please contact our support team with your order number and reason for the refund.</li>
-                                <li className="text-muted-foreground mt-4">Refunds will be processed within 3-5 business days.</li>
-                                <li className="text-muted-foreground mt-4">Please note that refunds are only available for new customers and are limited to one per customer.</li>
+                                <li className="text-muted-foreground mt-4">Each property maintains isolated data with complete security and privacy.</li>
+                                <li className="text-muted-foreground mt-4">Switch between properties seamlessly with business unit selection.</li>
+                                <li className="text-muted-foreground mt-4">View consolidated reports across all properties or filter by specific locations.</li>
                             </ol>
                         </div>
                         <div className="py-6">
-                            <h3 className="font-medium">How do I cancel my subscription?</h3>
-                            <p className="text-muted-foreground mt-4">You can cancel your subscription at any time by logging into your account and clicking on the cancel button.</p>
+                            <h3 className="font-medium">Can I track stock movements between departments?</h3>
+                            <p className="text-muted-foreground mt-4">Yes, Carmen provides comprehensive tracking of inventory movements between departments such as kitchen, bar, housekeeping, and storage areas with full audit trails.</p>
                         </div>
                         <div className="py-6">
-                            <h3 className="font-medium">Can I upgrade my plan?</h3>
-                            <p className="text-muted-foreground my-4">Yes, you can upgrade your plan at any time by logging into your account and selecting the plan you want to upgrade to.</p>
+                            <h3 className="font-medium">What procurement features are included?</h3>
+                            <p className="text-muted-foreground my-4">Carmen includes a complete procurement workflow management system designed for hospitality operations.</p>
                             <ul className="list-outside list-disc space-y-2 pl-4">
-                                <li className="text-muted-foreground">You will be charged the difference in price between your current plan and the plan you are upgrading to.</li>
-                                <li className="text-muted-foreground">Your new plan will take effect immediately and you will be billed at the new rate on your next billing cycle.</li>
+                                <li className="text-muted-foreground">Create and approve purchase requests with customizable approval workflows.</li>
+                                <li className="text-muted-foreground">Manage vendor relationships, track orders, and process goods receipts.</li>
+                                <li className="text-muted-foreground">Generate reports on spending patterns and vendor performance.</li>
                             </ul>
                         </div>
                         <div className="py-6">
-                            <h3 className="font-medium">Do you offer phone support?</h3>
-                            <p className="text-muted-foreground mt-4">We do not offer phone support at this time. However, you can contact us via email or live chat for any questions or concerns you may have.</p>
+                            <h3 className="font-medium">What kind of support do you offer?</h3>
+                            <p className="text-muted-foreground mt-4">We provide dedicated support for all hotel partners including email support, live chat during business hours, and comprehensive documentation with video tutorials.</p>
                         </div>
                     </div>
                 </div>

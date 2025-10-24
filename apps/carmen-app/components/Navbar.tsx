@@ -33,7 +33,7 @@ export default function Navbar() {
                 <div className="block md:hidden">
                     <ModuleMobile />
                 </div>
-                <div className="hidden md:flex items-center">
+                <div className="hidden md:flex items-center gap-2">
                     <TenantList />
                     <SwitchTheme />
                     <LanguageSwitcher />

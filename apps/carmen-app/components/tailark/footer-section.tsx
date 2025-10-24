@@ -6,55 +6,55 @@ const links = [
         items: [
             {
                 title: 'Features',
+                href: '#features',
+            },
+            {
+                title: 'Procurement',
                 href: '#',
             },
             {
-                title: 'Solution',
+                title: 'Inventory Control',
                 href: '#',
             },
             {
-                title: 'Customers',
+                title: 'Multi-Property',
                 href: '#',
+            },
+            {
+                title: 'Testimonials',
+                href: '#testimonials',
             },
             {
                 title: 'Pricing',
                 href: '#',
             },
-            {
-                title: 'Help',
-                href: '#',
-            },
-            {
-                title: 'About',
-                href: '#',
-            },
         ],
     },
     {
-        group: 'Company',
+        group: 'Resources',
         items: [
             {
-                title: 'About',
+                title: 'Documentation',
                 href: '#',
             },
             {
-                title: 'Careers',
+                title: 'API Reference',
                 href: '#',
             },
             {
-                title: 'Blog',
+                title: 'Video Tutorials',
                 href: '#',
             },
             {
-                title: 'Press',
+                title: 'Case Studies',
                 href: '#',
             },
             {
-                title: 'Contact',
+                title: 'Support',
                 href: '#',
             },
             {
-                title: 'Help',
+                title: 'FAQ',
                 href: '#',
             },
         ],
@@ -63,15 +63,15 @@ const links = [
         group: 'Legal',
         items: [
             {
-                title: 'Licence',
+                title: 'Terms of Service',
                 href: '#',
             },
             {
-                title: 'Privacy',
+                title: 'Privacy Policy',
                 href: '#',
             },
             {
-                title: 'Cookies',
+                title: 'Cookie Policy',
                 href: '#',
             },
             {
@@ -115,7 +115,7 @@ export default function FooterSection() {
                     </div>
                 </div>
                 <div className="mt-12 flex flex-wrap items-end justify-between gap-6 border-t py-6">
-                    <span className="text-muted-foreground order-last block text-center text-sm md:order-first">© {new Date().getFullYear()} Tailark Mist, All rights reserved</span>
+                    <span className="text-muted-foreground order-last block text-center text-sm md:order-first">© {new Date().getFullYear()} Carmen Inventory Management. All rights reserved</span>
                     <div className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">
                         <Link
                             href="#"

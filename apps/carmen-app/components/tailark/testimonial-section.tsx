@@ -3,22 +3,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 export default function TestimonialSection() {
     const testimonials = [
         {
-            name: 'Méschac Irung',
-            role: 'Creator',
+            name: 'Sarah Johnson',
+            role: 'Procurement Manager',
             avatar: 'https://avatars.githubusercontent.com/u/47919550?v=4',
-            content: "Using Tailark has been like unlocking a secret design superpower. It's the perfect fusion of simplicity and versatility.",
+            content: "Carmen has revolutionized our procurement process. We've reduced ordering time by 60% and eliminated stock-out situations completely.",
         },
         {
-            name: 'Théo Balick',
-            role: 'Frontend Dev',
+            name: 'Michael Chen',
+            role: 'Hotel General Manager',
             avatar: 'https://avatars.githubusercontent.com/u/68236786?v=4',
-            content: 'Tailark has transformed the way I develop web applications. The flexibility to customize every aspect is amazing.',
+            content: 'The multi-property support is outstanding. Managing inventory across our 5 hotel properties has never been easier. Real-time visibility is a game-changer.',
         },
         {
-            name: 'Glodie Lukose',
-            role: 'Frontend Dev',
+            name: 'Emma Rodriguez',
+            role: 'F&B Director',
             avatar: 'https://avatars.githubusercontent.com/u/99137927?v=4',
-            content: 'The extensive collection of UI components has significantly accelerated my workflow. Tailark is a game-changer.',
+            content: 'Tracking stock movements between kitchen, bar, and storage areas is seamless. The reporting features help us reduce waste by 40%.',
         },
     ]
 
@@ -27,8 +27,8 @@ export default function TestimonialSection() {
             <div className="bg-muted py-24">
                 <div className="container mx-auto w-full max-w-5xl px-6">
                     <div className="mb-12">
-                        <h2 className="text-foreground text-4xl font-semibold">What Our Clients Say</h2>
-                        <p className="text-muted-foreground my-4 text-balance text-lg">Discover why our clients love working with us. Read their testimonials about our dedication to excellence, innovative solutions, and exceptional customer service.</p>
+                        <h2 className="text-foreground text-4xl font-semibold">What Our Hotel Partners Say</h2>
+                        <p className="text-muted-foreground my-4 text-balance text-lg">Discover how Carmen helps hotels optimize their inventory operations. Read testimonials from procurement managers, hotel operators, and F&B directors who trust our platform.</p>
                     </div>
                     <div className="lg:grid-cols-3 grid gap-6">
                         {testimonials.map((testimonial, index) => (

@@ -8,19 +8,20 @@ const THEO_AVATAR = 'https://avatars.githubusercontent.com/u/68236786?v=4'
 const GLODIE_AVATAR = 'https://avatars.githubusercontent.com/u/99137927?v=4'
 
 export default function FeaturesSection() {
+
     return (
         <section id='features'>
             <div className="py-24">
                 <div className="mx-auto w-full max-w-5xl px-6">
                     <div>
-                        <h2 className="text-foreground max-w-2xl text-balance text-4xl font-semibold">Empowering developers with AI-driven solutions</h2>
+                        <h2 className="text-foreground max-w-2xl text-balance text-4xl font-semibold">Streamline your hotel inventory management</h2>
                     </div>
                     <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                         <Card
                             className="overflow-hidden p-6">
                             <Target className="text-primary size-5" />
-                            <h3 className="text-foreground mt-5 text-lg font-semibold">AI Code Generation</h3>
-                            <p className="text-muted-foreground mt-3 text-balance">Our advanced AI models transform natural language into production-ready code.</p>
+                            <h3 className="text-foreground mt-5 text-lg font-semibold">Procurement Management</h3>
+                            <p className="text-muted-foreground mt-3 text-balance">Efficiently manage purchase requests, orders, and vendor relationships with comprehensive tracking.</p>
 
                             <MeetingIllustration />
                         </Card>
@@ -28,16 +29,16 @@ export default function FeaturesSection() {
                         <Card
                             className="group overflow-hidden px-6 pt-6">
                             <CalendarCheck className="text-primary size-5" />
-                            <h3 className="text-foreground mt-5 text-lg font-semibold">Intelligent Code Review</h3>
-                            <p className="text-muted-foreground mt-3 text-balance">Our AI analyzes your code for bugs, security issues, and optimization opportunities.</p>
+                            <h3 className="text-foreground mt-5 text-lg font-semibold">Real-time Stock Control</h3>
+                            <p className="text-muted-foreground mt-3 text-balance">Track inventory levels, manage goods receipts, and monitor stock movements across all departments.</p>
 
                             <CodeReviewIllustration />
                         </Card>
                         <Card
                             className="group overflow-hidden px-6 pt-6">
                             <Sparkles className="text-primary size-5" />
-                            <h3 className="text-foreground mt-5 text-lg font-semibold">Contextual AI Assistant</h3>
-                            <p className="text-muted-foreground mt-3 text-balance">A personalized AI companion that understands your codebase and helps solve complex...</p>
+                            <h3 className="text-foreground mt-5 text-lg font-semibold">Multi-tenant Support</h3>
+                            <p className="text-muted-foreground mt-3 text-balance">Manage multiple hotel properties with isolated data and seamless business unit switching.</p>
 
                             <div className="mask-b-from-50 -mx-2 -mt-2 px-2 pt-2">
                                 <AIAssistantIllustration />
@@ -59,7 +60,7 @@ const MeetingIllustration = () => {
                 <div className="absolute -left-1.5 bottom-1.5 rounded-md border-t border-red-700 bg-red-500 px-1 py-px text-[10px] font-medium text-white shadow-md shadow-red-500/35">PDF</div>
                 <div className="h-10 w-8 rounded-md border bg-gradient-to-b from-zinc-100 to-zinc-200"></div>
             </div>
-            <div className="mb-0.5 text-sm font-semibold">AI Strategy Meeting</div>
+            <div className="mb-0.5 text-sm font-semibold">Procurement Planning</div>
             <div className="mb-4 flex gap-2 text-sm">
                 <span className="text-muted-foreground">2:30 - 3:45 PM</span>
             </div>
@@ -85,7 +86,7 @@ const MeetingIllustration = () => {
                     ))}
                 </div>
             </div>
-            <div className="text-muted-foreground text-sm font-medium">ML Pipeline Discussion</div>
+            <div className="text-muted-foreground text-sm font-medium">Inventory Review Meeting</div>
         </Card>
     )
 }
@@ -135,10 +136,10 @@ const AIAssistantIllustration = () => {
             className="mt-6 aspect-video translate-y-4 p-4 pb-6 transition-transform duration-200 group-hover:translate-y-0">
             <div className="w-fit">
                 <Sparkles className="size-3.5 fill-purple-300 stroke-purple-300" />
-                <p className="mt-2 line-clamp-2 text-sm">How can I optimize my neural network to reduce inference time while maintaining accuracy?</p>
+                <p className="mt-2 line-clamp-2 text-sm">How can I track inventory movements between departments and generate stock reports?</p>
             </div>
             <div className="bg-foreground/5 -mx-3 -mb-3 mt-3 space-y-3 rounded-lg p-3">
-                <div className="text-muted-foreground text-sm">Ask AI Assistant</div>
+                <div className="text-muted-foreground text-sm">Search Inventory</div>
 
                 <div className="flex justify-between">
                     <div className="flex gap-2">

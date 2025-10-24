@@ -6,17 +6,17 @@ export default function StatsSection() {
             <div className="py-24">
                 <div className="mx-auto max-w-5xl px-6">
                     <div>
-                        <h2 className="text-2xl font-semibold">Tailark in numbers</h2>
-                        <p className="text-muted-foreground mt-4 text-balance text-lg">Our platform continues to grow with developers and businesses using our tools to create innovative solutions and enhance productivity.</p>
+                        <h2 className="text-2xl font-semibold">Carmen in numbers</h2>
+                        <p className="text-muted-foreground mt-4 text-balance text-lg">Our platform empowers hotels and hospitality businesses to streamline inventory operations, reduce costs, and optimize procurement workflows.</p>
                     </div>
                     <ul
                         role="list"
                         className="text-muted-foreground mt-8 space-y-2">
                         {[
-                            { value: '90+', label: 'Integrations' },
-                            { value: '56%', label: 'Productivity Boost' },
-                            { value: '24/7', label: 'Customer Support' },
-                            { value: '10k+', label: 'Active Users' },
+                            { value: '50+', label: 'Hotel Properties' },
+                            { value: '40%', label: 'Cost Reduction' },
+                            { value: '99.9%', label: 'Uptime Guarantee' },
+                            { value: '5k+', label: 'Daily Transactions' },
                         ].map((stat, index) => (
                             <li
                                 key={index}
