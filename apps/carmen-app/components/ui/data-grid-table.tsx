@@ -93,6 +93,7 @@ function DataGridTableHeadRow<TData>({
         props.tableLayout?.cellBorder && '[&_>:last-child]:border-e-0',
         props.tableLayout?.stripped && 'bg-transparent',
         props.tableLayout?.headerBackground === false && 'bg-transparent',
+        props.tableLayout?.headerSticky && '[&>th:first-child]:rounded-tl-lg [&>th:last-child]:rounded-tr-lg',
         props.tableClassNames?.headerRow,
       )}
     >
