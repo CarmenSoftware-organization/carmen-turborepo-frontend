@@ -141,7 +141,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                             </FormLabel>
                             <FormControl>
                                 <NumberInput
-                                    value={field.value}
+                                    value={field.value ?? 0}
                                     onChange={(value) => field.onChange(value)}
                                     placeholder={tProducts("price")}
                                     disabled={isViewMode}
@@ -163,7 +163,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                             </FormLabel>
                             <FormControl>
                                 <NumberInput
-                                    value={field.value}
+                                    value={field.value ?? 0}
                                     onChange={(value) => field.onChange(value)}
                                     placeholder={tProducts("price_deviation_limit")}
                                     disabled={isViewMode}
@@ -185,7 +185,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                             </FormLabel>
                             <FormControl>
                                 <NumberInput
-                                    value={field.value}
+                                    value={field.value ?? 0}
                                     onChange={(value) => field.onChange(value)}
                                     placeholder={tProducts("qty_deviation_limit")}
                                     disabled={isViewMode}

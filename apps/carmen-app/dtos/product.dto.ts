@@ -14,13 +14,13 @@ export const productFormSchema = z.object({
         product_item_group_id: z.string().uuid(),
         is_used_in_recipe: z.boolean(),
         is_sold_directly: z.boolean(),
-        barcode: z.string(),
-        price_deviation_limit: z.number().min(1, "Price deviation limit must be greater than or equal to 1"),
-        qty_deviation_limit: z.number().min(1, "Quantity deviation limit must be greater than or equal to 1"),
+        barcode: z.string().optional(),
+        price_deviation_limit: z.number().optional(),
+        qty_deviation_limit: z.number().optional(),
         is_ingredients: z.boolean(),
-        price: z.number().min(0.01, "Price must be greater than or equal to 0.01"),
+        price: z.number().optional(),
         tax_type: z.enum(["none", "included", "excluded"]).default("none"),
-        tax_rate: z.number().min(0, "Tax rate must be greater than or equal to 0"),
+        tax_rate: z.number().optional(),
         info: z.array(z.object({
             label: z.string(),
             value: z.string(),
@@ -37,11 +37,11 @@ export const productFormSchema = z.object({
     }),
     order_units: z.object({
         data: z.array(z.object({
-            id: z.string().uuid(),
-            from_unit_id: z.string().uuid(),
+            id: z.union([z.string().uuid(), z.literal("")]),
+            from_unit_id: z.union([z.string().uuid(), z.literal("")]),
             from_unit_name: z.string().optional(),
             from_unit_qty: z.number(),
-            to_unit_id: z.string().uuid(),
+            to_unit_id: z.union([z.string().uuid(), z.literal("")]),
             to_unit_name: z.string().optional(),
             to_unit_qty: z.number(),
             description: z.string().optional(),
@@ -73,11 +73,11 @@ export const productFormSchema = z.object({
     }),
     ingredient_units: z.object({
         data: z.array(z.object({
-            id: z.string().uuid(),
-            from_unit_id: z.string().uuid(),
+            id: z.union([z.string().uuid(), z.literal("")]),
+            from_unit_id: z.union([z.string().uuid(), z.literal("")]),
             from_unit_name: z.string().optional(),
             from_unit_qty: z.number(),
-            to_unit_id: z.string().uuid(),
+            to_unit_id: z.union([z.string().uuid(), z.literal("")]),
             to_unit_name: z.string().optional(),
             to_unit_qty: z.number(),
             description: z.string().optional(),
@@ -85,9 +85,9 @@ export const productFormSchema = z.object({
             is_default: z.boolean()
         })).optional(),
         add: z.array(z.object({
-            from_unit_id: z.string().uuid(),
+            from_unit_id: z.union([z.string().uuid(), z.literal("")]),
             from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
-            to_unit_id: z.string().uuid(),
+            to_unit_id: z.union([z.string().uuid(), z.literal("")]),
             to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
             description: z.string().optional(),
             is_active: z.boolean(),
@@ -253,4 +253,57 @@ export type InventoryDataDto = {
     locations: StockLocationDto[];
     aggregateSettings: AggregateSettingsDto;
 };
+
+export interface ProductIdDto {
+    id: string;
+    code: string;
+    name: string;
+    local_name: string;
+    description: string;
+    product_status_type: string;
+    inventory_unit: {
+        id: string;
+        name: string;
+    };
+    is_sold_directly: boolean;
+    is_used_in_recipe: boolean;
+    price_deviation_limit: number;
+    qty_deviation_limit: number;
+    info: unknown[];
+    product_item_group: {
+        id: string;
+        name: string;
+    };
+    locations: ProductLocation[];
+    order_units: ProductUnit[];
+    ingredient_units: ProductUnit[];
+    product_sub_category: {
+        id: string;
+        name: string;
+    };
+    product_category: {
+        id: string;
+        name: string;
+    };
+}
+
+export interface ProductLocation {
+    id: string;
+    location_id: string;
+    location_name: string;
+}
+
+export interface ProductUnit {
+    id: string;
+    from_unit_id: string;
+    from_unit_name: string;
+    from_unit_qty: number;
+    to_unit_id: string;
+    to_unit_name: string;
+    to_unit_qty: number;
+    unit_type: string;
+    description: string;
+    is_active: boolean;
+    is_default: boolean;
+}
 

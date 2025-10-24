@@ -28,16 +28,16 @@ export default function UnitCombobox({ value, onChange, availableUnits, disabled
                     variant="outline"
                     aria-expanded={open}
                     className={cn(
-                        "min-w-32 h-7 justify-between text-xs",
+                        "min-w-24 h-7 justify-end text-xs px-1",
                         !value && "text-muted-foreground"
                     )}
                     disabled={disabled}
                 >
                     {value ? getUnitName(value) : "Select unit..."}
-                    <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
+                    <ChevronsUpDown className="h-3 w-3 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent className="p-0">
                 <Command>
                     <CommandInput placeholder="Search unit..." className="h-8" />
                     <CommandList>

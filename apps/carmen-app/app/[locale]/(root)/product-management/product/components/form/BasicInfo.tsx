@@ -99,9 +99,6 @@ export default function BasicInfo({
       "code",
       "local_name",
       "inventory_unit_id",
-      "product_info.price",
-      "product_info.price_deviation_limit",
-      "product_info.qty_deviation_limit",
       "product_info.product_item_group_id",
     ],
   });
@@ -121,9 +118,6 @@ export default function BasicInfo({
       code,
       localName,
       inventoryUnitId,
-      price,
-      priceDeviation,
-      qtyDeviation,
       itemGroupId,
     ] = watchedFields;
 
@@ -132,9 +126,6 @@ export default function BasicInfo({
       code &&
       localName &&
       inventoryUnitId &&
-      price >= 0.01 &&
-      priceDeviation >= 1 &&
-      qtyDeviation >= 1 &&
       itemGroupId
     );
   }, [watchedFields]);
@@ -212,6 +203,9 @@ export default function BasicInfo({
                         size="sm"
                         type="submit"
                         disabled={!isFormValid}
+                        className={cn(
+                          !isFormValid && "bg-muted-foreground/60 cursor-not-allowed"
+                        )}
                       >
                         <Save />
                       </Button>

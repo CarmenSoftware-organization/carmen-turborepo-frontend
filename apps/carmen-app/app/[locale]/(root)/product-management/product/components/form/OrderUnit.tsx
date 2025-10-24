@@ -37,6 +37,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
+import NumberInput from "@/components/form-custom/NumberInput";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -286,7 +287,13 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                         const availableUnits = getAvailableUnits(unit.from_unit_id);
                         return (
                             <div className="flex items-center gap-2">
-                                <span className="font-medium">{unit.from_unit_qty}</span>
+                                <Input
+                                    value={unit.from_unit_qty}
+                                    min={0}
+                                    step={0}
+                                    disabled
+                                    className="w-16 h-7 text-right bg-muted cursor-not-allowed"
+                                />
                                 <FormField
                                     control={control}
                                     name={`order_units.add.${unit.fieldIndex!}.from_unit_id` as `order_units.add.${number}.from_unit_id`}
@@ -319,13 +326,13 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    className="w-16 h-7"
+                                                <NumberInput
                                                     value={field.value}
-                                                    onChange={(e) => field.onChange(Number(e.target.value))}
-                                                    min={1}
+                                                    onChange={field.onChange}
+                                                    min={0}
+                                                    step={0}
                                                     disabled
+                                                    classNames="w-16 h-7 bg-muted cursor-not-allowed"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -382,15 +389,12 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    className="w-16 h-7"
+                                                <NumberInput
                                                     value={field.value}
-                                                    onChange={(e) => field.onChange(Number(e.target.value))}
-                                                    onBlur={field.onBlur}
-                                                    name={field.name}
-                                                    ref={field.ref}
+                                                    onChange={field.onChange}
                                                     min={1}
+                                                    step={1}
+                                                    classNames="w-16 h-7"
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -403,18 +407,12 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
-                                                <Select onValueChange={field.onChange} value={field.value} disabled>
-                                                    <SelectTrigger className="h-7">
-                                                        <SelectValue placeholder={"Unit.."} />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        {inventoryUnitId && inventoryUnitName && (
-                                                            <SelectItem key={inventoryUnitId} value={inventoryUnitId}>
-                                                                {inventoryUnitName}
-                                                            </SelectItem>
-                                                        )}
-                                                    </SelectContent>
-                                                </Select>
+                                                <Input
+                                                    className="w-16 h-7 bg-muted cursor-not-allowed text-xs"
+                                                    value={getUnitName(field.value)}
+                                                    disabled
+                                                    readOnly
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -434,19 +432,24 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    className="w-16 h-7"
+                                                <NumberInput
                                                     value={field.value}
-                                                    onChange={(e) => field.onChange(Number(e.target.value))}
+                                                    onChange={field.onChange}
                                                     min={1}
+                                                    step={1}
+                                                    classNames="w-16 h-7"
                                                 />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                                <span className="text-xs">{unit.to_unit_name || getUnitName(unit.to_unit_id)}</span>
+                                <Input
+                                    className="w-16 h-7 bg-muted cursor-not-allowed text-xs"
+                                    value={getUnitName(unit.to_unit_id)}
+                                    disabled
+                                    readOnly
+                                />
                             </div>
                         );
                     }
