@@ -480,7 +480,13 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                                 <Button
                                     size="sm"
                                     className="w-6 h-6"
-                                    onClick={() => appendLocation({ location_id: "" })}
+                                    onClick={(e?: React.MouseEvent<HTMLButtonElement>) => {
+                                        if (e) {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }
+                                        appendLocation({ location_id: "" });
+                                    }}
                                     disabled={isLoading}
                                 >
                                     <Plus />

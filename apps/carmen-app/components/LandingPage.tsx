@@ -1,11 +1,6 @@
 "use client";
 
 import ContactSection from "./home-page/ContactSection";
-import Features from "./home-page/Features";
-import Hero from "./home-page/Hero";
-import HomeFooter from "./home-page/HomeFooter";
-import HomeNavbar from "./home-page/HomeNavbar";
-import Testimonials from "./home-page/Testimonials";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";

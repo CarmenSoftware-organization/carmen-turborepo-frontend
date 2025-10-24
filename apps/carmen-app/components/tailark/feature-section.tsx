@@ -75,6 +75,7 @@ const MeetingIllustration = () => {
                         <div
                             key={index}
                             className="bg-background size-7 rounded-full border p-0.5 shadow shadow-zinc-950/5">
+                            {/* @next/next/no-img-element */}
                             <img
                                 className="aspect-square rounded-full object-cover"
                                 src={avatar.src}
@@ -99,6 +100,7 @@ const CodeReviewIllustration = () => {
             <Card className="aspect-video w-4/5 translate-y-4 p-3 transition-transform duration-200 ease-in-out group-hover:-rotate-3">
                 <div className="mb-3 flex items-center gap-2">
                     <div className="bg-background size-6 rounded-full border p-0.5 shadow shadow-zinc-950/5">
+                        {/* @next/next/no-img-element */}
                         <img
                             className="aspect-square rounded-full object-cover"
                             src={MESCHAC_AVATAR}

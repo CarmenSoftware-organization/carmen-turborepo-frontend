@@ -28,7 +28,7 @@ export default function TeamSection() {
                             variant="outline"
                             className="pr-2">
                             <Link href="#">
-                                We're hiring
+                                We are hiring
                                 <ChevronRight className="opacity-50" />
                             </Link>
                         </Button>

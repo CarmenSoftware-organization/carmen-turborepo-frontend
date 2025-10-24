@@ -55,7 +55,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `order_units.add.${unit.fieldIndex}.from_unit_id` as `order_units.add.${number}.from_unit_id`
-            : `order_units.data.${unit.dataIndex}.from_unit_id` as any,
+            : `order_units.data.${unit.dataIndex}.from_unit_id` as `order_units.data.${number}.from_unit_id`,
         defaultValue: unit.from_unit_id
     });
 
@@ -63,7 +63,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `order_units.add.${unit.fieldIndex}.to_unit_id` as `order_units.add.${number}.to_unit_id`
-            : `order_units.data.${unit.dataIndex}.to_unit_id` as any,
+            : `order_units.data.${unit.dataIndex}.to_unit_id` as `order_units.data.${number}.to_unit_id`,
         defaultValue: unit.to_unit_id
     });
 
@@ -71,7 +71,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `order_units.add.${unit.fieldIndex}.from_unit_qty` as `order_units.add.${number}.from_unit_qty`
-            : `order_units.data.${unit.dataIndex}.from_unit_qty` as any,
+            : `order_units.data.${unit.dataIndex}.from_unit_qty` as `order_units.data.${number}.from_unit_qty`,
         defaultValue: unit.from_unit_qty
     });
 
@@ -79,7 +79,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `order_units.add.${unit.fieldIndex}.to_unit_qty` as `order_units.add.${number}.to_unit_qty`
-            : `order_units.data.${unit.dataIndex}.to_unit_qty` as any,
+            : `order_units.data.${unit.dataIndex}.to_unit_qty` as `order_units.data.${number}.to_unit_qty`,
         defaultValue: unit.to_unit_qty || 1
     });
 
@@ -182,21 +182,16 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
     const handleDefaultChange = useCallback((index: number, isDataField: boolean, checked: boolean) => {
         if (!checked) return;
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const unitsData = watch('order_units') as any;
+        const unitsData = watch('order_units');
 
         const currentUpdate = unitsData?.update || [];
 
         if (unitsData?.data) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            unitsData.data.forEach((unit: any, i: number) => {
+            unitsData.data.forEach((unit, i: number) => {
                 if (isDataField && i === index) return; // Skip the current one
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(`order_units.data.${i}.is_default` as any, false, { shouldDirty: true });
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                setValue(`order_units.data.${i}.is_default` as `order_units.data.${number}.is_default`, false, { shouldDirty: true });
                 const existingUpdateIndex = currentUpdate.findIndex(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (u: any) => u.product_order_unit_id === unit.id
+                    (u) => u.product_order_unit_id === unit.id
                 );
 
                 const updatedUnit = {
@@ -219,21 +214,16 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         }
 
         if (unitsData?.add) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            unitsData.add.forEach((_: any, i: number) => {
+            unitsData.add.forEach((_, i: number) => {
                 if (!isDataField && i === index) return;
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(`order_units.add.${i}.is_default` as any, false, { shouldDirty: true });
+                setValue(`order_units.add.${i}.is_default` as `order_units.add.${number}.is_default`, false, { shouldDirty: true });
             });
         }
-        if (isDataField) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setValue(`order_units.data.${index}.is_default` as any, true, { shouldDirty: true });
+        if (isDataField && unitsData?.data) {
+            setValue(`order_units.data.${index}.is_default` as `order_units.data.${number}.is_default`, true, { shouldDirty: true });
             const currentUnit = unitsData.data[index];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const existingUpdateIndex = currentUpdate.findIndex(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (u: any) => u.product_order_unit_id === currentUnit.id
+                (u) => u.product_order_unit_id === currentUnit.id
             );
 
             const updatedUnit = {
@@ -253,11 +243,9 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 currentUpdate.push(updatedUnit);
             }
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setValue(`order_units.add.${index}.is_default` as any, true, { shouldDirty: true });
+            setValue(`order_units.add.${index}.is_default` as `order_units.add.${number}.is_default`, true, { shouldDirty: true });
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setValue('order_units.update' as any, currentUpdate, { shouldDirty: true });
+        setValue('order_units.update', currentUpdate, { shouldDirty: true });
     }, [watch, setValue]);
 
     const handleAddUnit = useCallback((e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -375,8 +363,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                             <div className="flex items-center gap-2">
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`order_units.data.${unit.dataIndex}.from_unit_qty` as any}
+                                    name={`order_units.data.${unit.dataIndex}.from_unit_qty` as `order_units.data.${number}.from_unit_qty`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -395,8 +382,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                 />
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`order_units.data.${unit.dataIndex}.from_unit_id` as any}
+                                    name={`order_units.data.${unit.dataIndex}.from_unit_id` as `order_units.data.${number}.from_unit_id`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -481,8 +467,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                             <div className="flex items-center gap-2">
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`order_units.data.${unit.dataIndex}.to_unit_qty` as any}
+                                    name={`order_units.data.${unit.dataIndex}.to_unit_qty` as `order_units.data.${number}.to_unit_qty`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -557,8 +542,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                             <div className="flex justify-center">
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`order_units.data.${unit.dataIndex}.is_default` as any}
+                                    name={`order_units.data.${unit.dataIndex}.is_default` as `order_units.data.${number}.is_default`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>

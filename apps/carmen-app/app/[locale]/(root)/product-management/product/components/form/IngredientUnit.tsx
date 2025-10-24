@@ -10,7 +10,6 @@ import { UnitDto, UnitRow, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
 import { useUnitManagement } from "./hooks/useUnitManagement";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import {
@@ -56,7 +55,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `ingredient_units.add.${unit.fieldIndex}.from_unit_id` as `ingredient_units.add.${number}.from_unit_id`
-            : `ingredient_units.data.${unit.dataIndex}.from_unit_id` as any,
+            : `ingredient_units.data.${unit.dataIndex}.from_unit_id` as `ingredient_units.data.${number}.from_unit_id`,
         defaultValue: unit.from_unit_id
     });
 
@@ -64,7 +63,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `ingredient_units.add.${unit.fieldIndex}.to_unit_id` as `ingredient_units.add.${number}.to_unit_id`
-            : `ingredient_units.data.${unit.dataIndex}.to_unit_id` as any,
+            : `ingredient_units.data.${unit.dataIndex}.to_unit_id` as `ingredient_units.data.${number}.to_unit_id`,
         defaultValue: unit.to_unit_id
     });
 
@@ -72,7 +71,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `ingredient_units.add.${unit.fieldIndex}.from_unit_qty` as `ingredient_units.add.${number}.from_unit_qty`
-            : `ingredient_units.data.${unit.dataIndex}.from_unit_qty` as any,
+            : `ingredient_units.data.${unit.dataIndex}.from_unit_qty` as `ingredient_units.data.${number}.from_unit_qty`,
         defaultValue: unit.from_unit_qty
     });
 
@@ -80,7 +79,7 @@ const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, 
         control,
         name: unit.isNew
             ? `ingredient_units.add.${unit.fieldIndex}.to_unit_qty` as `ingredient_units.add.${number}.to_unit_qty`
-            : `ingredient_units.data.${unit.dataIndex}.to_unit_qty` as any,
+            : `ingredient_units.data.${unit.dataIndex}.to_unit_qty` as `ingredient_units.data.${number}.to_unit_qty`,
         defaultValue: unit.to_unit_qty || 1
     });
 
@@ -194,26 +193,20 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
     const handleDefaultChange = useCallback((index: number, isDataField: boolean, checked: boolean) => {
         if (!checked) return; // Only handle when setting to true
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const unitsData = watch('ingredient_units') as any;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const unitsData = watch('ingredient_units');
         const currentUpdate = unitsData?.update || [];
 
         // Update all existing units to false if not the current one
         if (unitsData?.data) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            unitsData.data.forEach((unit: any, i: number) => {
+            unitsData.data.forEach((unit, i: number) => {
                 if (isDataField && i === index) return; // Skip the current one
 
                 // Set to false in data
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(`ingredient_units.data.${i}.is_default` as any, false, { shouldDirty: true });
+                setValue(`ingredient_units.data.${i}.is_default` as `ingredient_units.data.${number}.is_default`, false, { shouldDirty: true });
 
                 // Add to update array if not already there
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const existingUpdateIndex = currentUpdate.findIndex(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    (u: any) => u.product_ingredient_unit_id === unit.id
+                    (u) => u.product_ingredient_unit_id === unit.id
                 );
 
                 const updatedUnit = {
@@ -237,25 +230,20 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
 
         // Update all new units to false if not the current one
         if (unitsData?.add) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            unitsData.add.forEach((_: any, i: number) => {
+            unitsData.add.forEach((_, i: number) => {
                 if (!isDataField && i === index) return;
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(`ingredient_units.add.${i}.is_default` as any, false, { shouldDirty: true });
+                setValue(`ingredient_units.add.${i}.is_default` as `ingredient_units.add.${number}.is_default`, false, { shouldDirty: true });
             });
         }
 
         // Set the current one to true
-        if (isDataField) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setValue(`ingredient_units.data.${index}.is_default` as any, true, { shouldDirty: true });
+        if (isDataField && unitsData?.data) {
+            setValue(`ingredient_units.data.${index}.is_default` as `ingredient_units.data.${number}.is_default`, true, { shouldDirty: true });
 
             // Add current unit to update array
             const currentUnit = unitsData.data[index];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const existingUpdateIndex = currentUpdate.findIndex(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                (u: any) => u.product_ingredient_unit_id === currentUnit.id
+                (u) => u.product_ingredient_unit_id === currentUnit.id
             );
 
             const updatedUnit = {
@@ -275,13 +263,11 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 currentUpdate.push(updatedUnit);
             }
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            setValue(`ingredient_units.add.${index}.is_default` as any, true, { shouldDirty: true });
+            setValue(`ingredient_units.add.${index}.is_default` as `ingredient_units.add.${number}.is_default`, true, { shouldDirty: true });
         }
 
         // Update the update array
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        setValue('ingredient_units.update' as any, currentUpdate, { shouldDirty: true });
+        setValue('ingredient_units.update', currentUpdate, { shouldDirty: true });
     }, [watch, setValue]);
 
 
@@ -359,8 +345,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                             <div className="flex items-center gap-2">
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`ingredient_units.data.${unit.dataIndex}.from_unit_qty` as any}
+                                    name={`ingredient_units.data.${unit.dataIndex}.from_unit_qty` as `ingredient_units.data.${number}.from_unit_qty`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -456,8 +441,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                             <div className="flex items-center gap-2">
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`ingredient_units.data.${unit.dataIndex}.to_unit_qty` as any}
+                                    name={`ingredient_units.data.${unit.dataIndex}.to_unit_qty` as `ingredient_units.data.${number}.to_unit_qty`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -475,8 +459,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                 />
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`ingredient_units.data.${unit.dataIndex}.to_unit_id` as any}
+                                    name={`ingredient_units.data.${unit.dataIndex}.to_unit_id` as `ingredient_units.data.${number}.to_unit_id`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
@@ -543,8 +526,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                             <div className="flex justify-center">
                                 <FormField
                                     control={control}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                                    name={`ingredient_units.data.${unit.dataIndex}.is_default` as any}
+                                    name={`ingredient_units.data.${unit.dataIndex}.is_default` as `ingredient_units.data.${number}.is_default`}
                                     render={({ field }) => (
                                         <FormItem className="space-y-0">
                                             <FormControl>
