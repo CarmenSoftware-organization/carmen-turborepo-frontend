@@ -8,7 +8,10 @@
     "testimonials": "Testimonials",
     "contact": "Contact",
     "signIn": "Sign In",
-    "getDemo": "Get Demo"
+    "getDemo": "Get Demo",
+    "pricing": "Pricing",
+    "team": "Team",
+    "faqs": "FAQs"
   },
   "hero": {
     "title": "Hotel Management Reimagined",

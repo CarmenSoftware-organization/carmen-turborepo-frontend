@@ -15,8 +15,8 @@ export default function ContactSection() {
         { id: "benefit-5", key: "benefit5" }
     ];
     return (
-        <section id="contact" className="py-20 bg-background relative">
-            <div className="container mx-auto px-4 md:px-6">
+        <section id="contact" className="scroll-py-16 py-16 md:scroll-py-32 md:py-32">
+            <div className="container mx-auto w-full max-w-5xl px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="grid md:grid-cols-2 gap-10 items-center">
                         <div className="section-transition">
