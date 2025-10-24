@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useAuth } from "@/context/AuthContext";
-import { ProductGetDto } from "@/dtos/product.dto";
 
 interface TreeNodeData {
     id: string;
@@ -61,7 +60,8 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
         }
 
         const query = searchTrigger.toLowerCase().trim();
-        return products.data.filter((product: ProductGetDto) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return products.data.filter((product: any) => {
             // Cache toLowerCase results to avoid multiple calls
             const nameLC = product.name?.toLowerCase();
             const codeLC = product.code?.toLowerCase();
@@ -107,8 +107,8 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
         const subCategoryMap = new Map<string, Set<string>>();
         const itemGroupMap = new Map<string, Set<string>>();
 
-        // Helper to add product to tree structure
-        const addProductToTree = (product: ProductGetDto) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const addProductToTree = (product: any) => {
             const category = product.product_category;
             const subCategory = product.product_sub_category;
             const itemGroup = product.product_item_group;
@@ -181,8 +181,8 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
             itemGroupMap.get(itemGroupId)!.add(productId);
         };
 
-        // Add filtered products
-        filteredProducts.forEach((product: ProductGetDto) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        filteredProducts.forEach((product: any) => {
             addProductToTree(product);
         });
 
@@ -195,7 +195,8 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
 
                 // Find the product in original data
                 const productIdNumber = productId.replace('product-', '');
-                const product = products.data.find((p: ProductGetDto) => p.id === productIdNumber);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const product = products.data.find((p: any) => p.id === productIdNumber);
 
                 if (product) {
                     addProductToTree(product);

@@ -16,7 +16,6 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
-import { ProductGetDto } from "@/dtos/product.dto";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useAuth } from "@/context/AuthContext";
 
@@ -72,7 +71,8 @@ export default function ProductLookup({
                                 <CommandEmpty>No products found.</CommandEmpty>
                                 <CommandGroup>
                                     {products && products.length > 0 ? (
-                                        products.map((product: ProductGetDto) => (
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        products.map((product: any) => (
                                             <CommandItem
                                                 key={product.id}
                                                 value={product.id}

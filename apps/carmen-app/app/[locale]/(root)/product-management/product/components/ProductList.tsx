@@ -1,6 +1,5 @@
 "use client";
 
-import { ProductGetDto } from "@/dtos/product.dto";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Activity, Box, Layers, List, MoreHorizontal, Ruler, Tag, Trash2 } from "lucide-react";
@@ -22,7 +21,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
 
 interface ProductListProps {
-  readonly products: ProductGetDto[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly products: any[];
   readonly isLoading: boolean;
   readonly currentPage: number;
   readonly totalPages: number;
@@ -62,7 +62,8 @@ export default function ProductList({
     [currentPage, perpage]
   );
 
-  const columns = useMemo<ColumnDef<ProductGetDto>[]>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const columns = useMemo<ColumnDef<any>[]>(
     () => [
       {
         id: "select",

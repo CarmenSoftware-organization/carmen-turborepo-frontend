@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useProductByIdQuery } from "./use-product";
-import { ProductFormValues } from "@/app/[locale]/(root)/product-management/product/pd-schema";
+import { ProductFormValues } from "@/dtos/product.dto";
 
 type UseProductDetailProps = {
   token: string | null;

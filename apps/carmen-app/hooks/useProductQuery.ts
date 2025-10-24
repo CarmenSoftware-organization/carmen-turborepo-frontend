@@ -3,7 +3,6 @@ import { backendApi } from "@/lib/backend-api";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { getAllApiRequest } from "@/lib/config.api";
 import { useCallback } from "react";
-import { ProductGetDto } from "@/dtos/product.dto";
 
 const productApiUrl = (buCode: string, id?: string) => {
     const baseUrl = `${backendApi}/api/config/${buCode}/products`;
@@ -42,7 +41,8 @@ export const useProductQuery = ({
     const products = data;
 
     const getProductName = useCallback((productId: string) => {
-        const product = products?.data.find((p: ProductGetDto) => p.id === productId);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const product = products?.data.find((p: any) => p.id === productId);
         return product?.name ?? "";
     }, [products]);
 
