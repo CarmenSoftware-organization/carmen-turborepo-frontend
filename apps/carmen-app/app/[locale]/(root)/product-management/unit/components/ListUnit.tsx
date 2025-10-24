@@ -81,7 +81,7 @@ export default function ListUnit({
                 id: "no",
                 header: () => <span className="text-center">#</span>,
                 cell: ({ row }) => (
-                    <span className="text-center">
+                    <span className="text-center text-xs">
                         {(currentPage - 1) * perpage + row.index + 1}
                     </span>
                 ),
@@ -102,8 +102,7 @@ export default function ListUnit({
                     if (canUpdate) {
                         return (
                             <button
-                                type="button"
-                                className="btn-dialog"
+                                className="btn-dialog text-xs"
                                 onClick={() => onEdit(unit)}
                             >
                                 {unit.name}
@@ -128,7 +127,7 @@ export default function ListUnit({
                     </div>
                 ),
                 cell: ({ row }) => (
-                    <span className="text-sm">
+                    <span className="text-xs">
                         {row.original.description}
                     </span>
                 ),
@@ -145,7 +144,7 @@ export default function ListUnit({
                 ),
                 cell: ({ row }) => (
                     <div className="flex justify-center">
-                        <StatusCustom is_active={row.original.is_active}>
+                        <StatusCustom is_active={row.original.is_active} dense={true}>
                             {row.original.is_active ? tCommon("active") : tCommon("inactive")}
                         </StatusCustom>
                     </div>
@@ -167,7 +166,7 @@ export default function ListUnit({
                     return (
                         <div className="flex justify-end">
                             <Button
-                                className="h-7 w-7 text-destructive cursor-pointer hover:bg-transparent"
+                                className="h-7 w-7 text-destructive hover:text-destructive/80 cursor-pointer hover:bg-transparent p-0"
                                 onClick={() => onDelete(unit)}
                                 variant="ghost"
                                 size="sm"
