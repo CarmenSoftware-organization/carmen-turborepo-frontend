@@ -1,5 +1,5 @@
-import { memo, useMemo, useCallback } from "react";
-import { Control, useFieldArray, useFormContext } from "react-hook-form";
+import { memo, useMemo, useCallback, FC } from "react";
+import { Control, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
@@ -43,6 +43,60 @@ interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
+
+// Component to watch and display conversion preview with real-time updates
+interface ConversionPreviewWatcherProps {
+    control: Control<ProductFormValues>;
+    unit: UnitRow;
+    getUnitName: (unitId: string) => string;
+}
+
+const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, unit, getUnitName }) => {
+    const fromUnitId = useWatch({
+        control,
+        name: unit.isNew
+            ? `ingredient_units.add.${unit.fieldIndex}.from_unit_id` as `ingredient_units.add.${number}.from_unit_id`
+            : `ingredient_units.data.${unit.dataIndex}.from_unit_id` as any,
+        defaultValue: unit.from_unit_id
+    });
+
+    const toUnitId = useWatch({
+        control,
+        name: unit.isNew
+            ? `ingredient_units.add.${unit.fieldIndex}.to_unit_id` as `ingredient_units.add.${number}.to_unit_id`
+            : `ingredient_units.data.${unit.dataIndex}.to_unit_id` as any,
+        defaultValue: unit.to_unit_id
+    });
+
+    const fromUnitQty = useWatch({
+        control,
+        name: unit.isNew
+            ? `ingredient_units.add.${unit.fieldIndex}.from_unit_qty` as `ingredient_units.add.${number}.from_unit_qty`
+            : `ingredient_units.data.${unit.dataIndex}.from_unit_qty` as any,
+        defaultValue: unit.from_unit_qty
+    });
+
+    const toUnitQty = useWatch({
+        control,
+        name: unit.isNew
+            ? `ingredient_units.add.${unit.fieldIndex}.to_unit_qty` as `ingredient_units.add.${number}.to_unit_qty`
+            : `ingredient_units.data.${unit.dataIndex}.to_unit_qty` as any,
+        defaultValue: unit.to_unit_qty || 1
+    });
+
+    if (fromUnitId && toUnitId) {
+        return (
+            <ConversionPreview
+                fromUnitId={fromUnitId as string}
+                toUnitId={toUnitId as string}
+                fromUnitQty={fromUnitQty as number}
+                toUnitQty={toUnitQty as number}
+                getUnitName={getUnitName}
+            />
+        );
+    }
+    return null;
+};
 
 const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
     const tProducts = useTranslations("Products");
@@ -125,7 +179,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         appendIngredientUnit({
             from_unit_id: inventoryUnitId,
             from_unit_qty: 1,
-            to_unit_id: "",
+            to_unit_id: inventoryUnitId,
             to_unit_qty: 1,
             description: "",
             is_active: true,
@@ -357,11 +411,23 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                         const availableUnits = getAvailableUnits(unit.to_unit_id);
                         return (
                             <div className="flex items-center gap-2">
-                                <Input
-                                    value={unit.to_unit_qty}
-                                    min={0}
-                                    step={0}
-                                    className="w-16 h-7 text-right"
+                                <FormField
+                                    control={control}
+                                    name={`ingredient_units.add.${unit.fieldIndex!}.to_unit_qty` as `ingredient_units.add.${number}.to_unit_qty`}
+                                    render={({ field }) => (
+                                        <FormItem className="space-y-0">
+                                            <FormControl>
+                                                <NumberInput
+                                                    value={field.value}
+                                                    onChange={field.onChange}
+                                                    min={0}
+                                                    step={0}
+                                                    classNames="w-16 h-7"
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
                                 <FormField
                                     control={control}
@@ -520,18 +586,13 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    if (unit.from_unit_id && unit.to_unit_id) {
-                        return (
-                            <ConversionPreview
-                                fromUnitId={unit.from_unit_id}
-                                toUnitId={unit.to_unit_id}
-                                fromUnitQty={unit.from_unit_qty}
-                                toUnitQty={unit.to_unit_qty || 1}
-                                getUnitName={getUnitName}
-                            />
-                        );
-                    }
-                    return null;
+                    return (
+                        <ConversionPreviewWatcher
+                            control={control}
+                            unit={unit}
+                            getUnitName={getUnitName}
+                        />
+                    );
                 },
                 enableSorting: false,
                 size: 180,

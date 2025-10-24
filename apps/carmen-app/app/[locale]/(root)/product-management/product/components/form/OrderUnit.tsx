@@ -1,5 +1,5 @@
-import { memo, useEffect, useMemo, useCallback, useRef } from "react";
-import { Control, useFieldArray, useFormContext } from "react-hook-form";
+import { memo, useEffect, useMemo, useCallback, useRef, FC } from "react";
+import { Control, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
@@ -33,7 +33,6 @@ import {
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
@@ -43,6 +42,61 @@ interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
+
+// Component to watch and display conversion preview with real-time updates
+interface ConversionPreviewWatcherProps {
+    control: Control<ProductFormValues>;
+    unit: UnitRow;
+    getUnitName: (unitId: string) => string;
+}
+
+const ConversionPreviewWatcher: FC<ConversionPreviewWatcherProps> = ({ control, unit, getUnitName }) => {
+    const fromUnitId = useWatch({
+        control,
+        name: unit.isNew
+            ? `order_units.add.${unit.fieldIndex}.from_unit_id` as `order_units.add.${number}.from_unit_id`
+            : `order_units.data.${unit.dataIndex}.from_unit_id` as any,
+        defaultValue: unit.from_unit_id
+    });
+
+    const toUnitId = useWatch({
+        control,
+        name: unit.isNew
+            ? `order_units.add.${unit.fieldIndex}.to_unit_id` as `order_units.add.${number}.to_unit_id`
+            : `order_units.data.${unit.dataIndex}.to_unit_id` as any,
+        defaultValue: unit.to_unit_id
+    });
+
+    const fromUnitQty = useWatch({
+        control,
+        name: unit.isNew
+            ? `order_units.add.${unit.fieldIndex}.from_unit_qty` as `order_units.add.${number}.from_unit_qty`
+            : `order_units.data.${unit.dataIndex}.from_unit_qty` as any,
+        defaultValue: unit.from_unit_qty
+    });
+
+    const toUnitQty = useWatch({
+        control,
+        name: unit.isNew
+            ? `order_units.add.${unit.fieldIndex}.to_unit_qty` as `order_units.add.${number}.to_unit_qty`
+            : `order_units.data.${unit.dataIndex}.to_unit_qty` as any,
+        defaultValue: unit.to_unit_qty || 1
+    });
+
+    if (fromUnitId && toUnitId) {
+        return (
+            <ConversionPreview
+                fromUnitId={fromUnitId as string}
+                toUnitId={toUnitId as string}
+                fromUnitQty={fromUnitQty as number}
+                toUnitQty={toUnitQty as number}
+                getUnitName={getUnitName}
+            />
+        );
+    }
+    return null;
+};
+
 const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
     const tProducts = useTranslations("Products");
     const tCommon = useTranslations("Common");
@@ -213,7 +267,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         }
 
         appendOrderUnit({
-            from_unit_id: "",
+            from_unit_id: inventoryUnitId,
             from_unit_qty: 1,
             to_unit_id: inventoryUnitId,
             to_unit_qty: 1,
@@ -546,18 +600,13 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    if (unit.from_unit_id && unit.to_unit_id) {
-                        return (
-                            <ConversionPreview
-                                fromUnitId={unit.from_unit_id}
-                                toUnitId={unit.to_unit_id}
-                                fromUnitQty={unit.from_unit_qty}
-                                toUnitQty={unit.to_unit_qty || 1}
-                                getUnitName={getUnitName}
-                            />
-                        );
-                    }
-                    return null;
+                    return (
+                        <ConversionPreviewWatcher
+                            control={control}
+                            unit={unit}
+                            getUnitName={getUnitName}
+                        />
+                    );
                 },
                 enableSorting: false,
                 size: 180,
