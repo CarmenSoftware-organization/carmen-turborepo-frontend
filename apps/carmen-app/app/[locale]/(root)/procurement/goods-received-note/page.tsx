@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import GoodsReceivedNoteComponent from "./components/GoodsReceivedNoteComponent";
+import GoodsReceivedNoteComponent from "./_components/GoodsReceivedNoteComponent";
 
 export const metadata: Metadata = {
     title: "Goods Received Note",

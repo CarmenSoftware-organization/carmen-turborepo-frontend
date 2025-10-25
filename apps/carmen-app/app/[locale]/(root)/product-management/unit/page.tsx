@@ -1,4 +1,4 @@
-import UnitComponent from "./components/UnitComponent";
+import UnitComponent from "./_components/UnitComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

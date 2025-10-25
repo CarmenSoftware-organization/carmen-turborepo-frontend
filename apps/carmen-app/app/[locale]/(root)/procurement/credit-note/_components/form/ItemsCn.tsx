@@ -4,7 +4,7 @@ import { Control, useWatch, useFieldArray } from "react-hook-form";
 import {
   CreditNoteDetailFormItemDto,
   CreditNoteFormDto,
-} from "../../dto/cdn.dto";
+} from "@/dtos/credit-note.dto";
 import { formType } from "@/dtos/form.dto";
 import {
   Table,

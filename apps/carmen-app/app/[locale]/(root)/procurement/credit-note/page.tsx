@@ -1,4 +1,4 @@
-import CreditNoteComponent from "./components/CreditNoteComponent";
+import CreditNoteComponent from "./_components/CreditNoteComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

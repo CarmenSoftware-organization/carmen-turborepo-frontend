@@ -2,7 +2,7 @@
 
 import { formType } from "@/dtos/form.dto";
 // import { useSearchParams } from "next/navigation";
-import MainForm from "../components/form-pr/MainForm";
+import MainForm from "../_components/form-pr/MainForm";
 
 export default function PurchaseRequestNewPage() {
     // const searchParams = useSearchParams();

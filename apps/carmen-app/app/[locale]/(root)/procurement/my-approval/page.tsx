@@ -1,4 +1,4 @@
-import MyApprovalComponent from "./components/MyApprovalComponent";
+import MyApprovalComponent from "./_components/MyApprovalComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

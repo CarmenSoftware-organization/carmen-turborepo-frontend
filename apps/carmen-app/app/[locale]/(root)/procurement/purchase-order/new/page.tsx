@@ -1,8 +1,8 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import BlankPo from "./components/BlankPo";
-import FromPr from "./components/FromPr";
+import BlankPo from "./_components/BlankPo";
+import FromPr from "./_components/FromPr";
 
 export default function NewPurchaseOrderPage() {
     const searchParams = useSearchParams();

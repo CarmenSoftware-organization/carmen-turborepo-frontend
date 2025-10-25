@@ -1,5 +1,5 @@
 import { formType } from "@/dtos/form.dto";
-import PrtForm from "../components/form/PrtForm";
+import PrtForm from "../_components/form/PrtForm";
 import { mockDetail } from "./mockDetail";
 
 

@@ -4,7 +4,7 @@ import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useAuth } from "@/context/AuthContext";
 import { useGrnByIdQuery } from "@/hooks/use-grn";
 import { useParams } from "next/navigation";
-import FormGrn from "../components/form/FormGrn";
+import FormGrn from "../_components/form/FormGrn";
 import { formType } from "@/dtos/form.dto";
 
 export default function GoodsReceivedNoteIdPage() {

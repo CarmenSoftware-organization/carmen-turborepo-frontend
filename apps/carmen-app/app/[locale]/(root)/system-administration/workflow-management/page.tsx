@@ -2,8 +2,8 @@
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import WorkflowList from './components/WorkflowList';
-import { WorkflowTemplates } from './components/WorkflowTemplates';
+import WorkflowList from './_components/WorkflowList';
+import { WorkflowTemplates } from './_components/WorkflowTemplates';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 

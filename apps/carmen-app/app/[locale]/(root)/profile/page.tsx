@@ -1,4 +1,4 @@
-import ProfileComponent from "./components/ProfileComponent";
+import ProfileComponent from "./_components/ProfileComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

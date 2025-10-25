@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
-import MainForm from "../components/form-pr/MainForm";
+import MainForm from "../_components/form-pr/MainForm";
 import { usePurchaseRequestById } from "@/hooks/usePurchaseRequest";
 
 export default function PurchaseRequestIdPage() {

@@ -1,4 +1,4 @@
-import PurchaseRequestComponent from "./components/PurchaseRequestComponent";
+import PurchaseRequestComponent from "./_components/PurchaseRequestComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -4,7 +4,7 @@ import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useAuth } from "@/context/AuthContext";
 import { useCreditNoteByIdQuery } from "@/hooks/useCreditNote";
 import { useParams } from "next/navigation";
-import CnForm from "../components/form/CnForm";
+import CnForm from "../_components/form/CnForm";
 import { formType } from "@/dtos/form.dto";
 
 

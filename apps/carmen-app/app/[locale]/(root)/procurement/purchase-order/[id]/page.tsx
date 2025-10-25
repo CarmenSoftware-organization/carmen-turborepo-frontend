@@ -1,5 +1,5 @@
 import { mockPoDetail } from "@/mock-data/procurement";
-import PoForm from "../components/form/PoForm";
+import PoForm from "../_components/form/PoForm";
 import { formType } from "@/dtos/form.dto";
 
 export default function PurchaseOrderDetailPage() {

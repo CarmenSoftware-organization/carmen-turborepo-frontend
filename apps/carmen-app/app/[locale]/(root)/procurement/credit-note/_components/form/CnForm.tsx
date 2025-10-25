@@ -26,7 +26,7 @@ import {
   CreditNoteFormDto,
   CreditNoteSubmitDto,
   creditNoteSubmitSchemaDto,
-} from "../../dto/cdn.dto";
+} from "@/dtos/credit-note.dto";
 import ItemsCn from "./ItemsCn";
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";

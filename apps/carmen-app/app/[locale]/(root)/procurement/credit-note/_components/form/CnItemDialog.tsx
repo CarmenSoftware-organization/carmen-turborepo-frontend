@@ -1,4 +1,4 @@
-import { CreditNoteDetailFormItemDto } from "../../dto/cdn.dto";
+import { CreditNoteDetailFormItemDto } from "@/dtos/credit-note.dto";
 import {
   Dialog,
   DialogContent,

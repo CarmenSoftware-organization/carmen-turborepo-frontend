@@ -1,4 +1,4 @@
-import CategoryComponent from "./components/CategoryComponent";
+import CategoryComponent from "./_components/CategoryComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

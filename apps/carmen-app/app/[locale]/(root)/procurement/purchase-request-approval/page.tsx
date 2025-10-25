@@ -1,4 +1,4 @@
-import PurchaseRequestApprovalComponent from "./components/PurchaseRequestApprovalComponent";
+import PurchaseRequestApprovalComponent from "./_components/PurchaseRequestApprovalComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
-import { CreditNoteFormDto } from "../../dto/cdn.dto";
+import { CreditNoteFormDto } from "@/dtos/credit-note.dto";
 import {
   Select,
   SelectTrigger,

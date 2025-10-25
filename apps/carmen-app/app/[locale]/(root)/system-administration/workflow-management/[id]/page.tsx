@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import WorkflowDetail from "../components/WorkflowDetail";
+import WorkflowDetail from "../_components/WorkflowDetail";
 import { WorkflowCreateModel } from "@/dtos/workflows.dto";
 import { getWorkflowId } from "@/services/workflow";
 import { formType } from "@/dtos/form.dto";
