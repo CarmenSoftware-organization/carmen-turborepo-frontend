@@ -78,14 +78,13 @@ export const updateApiRequest = async <T = unknown, R = unknown>(
   method: "PUT" | "PATCH"
 ) => {
   try {
-    const response =
-      method === "PUT"
-        ? await axios.put<R>(API_URL, data, {
-          headers: requestHeaders(token),
-        })
-        : await axios.patch<R>(API_URL, data, {
-          headers: requestHeaders(token),
-        });
+    const config = {
+      headers: requestHeaders(token),
+    };
+
+    const response = method === "PUT"
+      ? await axios.put<R>(API_URL, data, config)
+      : await axios.patch<R>(API_URL, data, config);
 
     return response.data;
   } catch (error) {
