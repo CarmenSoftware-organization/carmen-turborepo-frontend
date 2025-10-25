@@ -1,4 +1,4 @@
-import PeriodEndComponent from "./components/PeriodEndComponent";
+import PeriodEndComponent from "./_components/PeriodEndComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

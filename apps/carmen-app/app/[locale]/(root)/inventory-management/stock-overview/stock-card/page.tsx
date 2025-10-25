@@ -1,4 +1,4 @@
-import StockCardComponent from "./components/StockCardComponent";
+import StockCardComponent from "./_components/StockCardComponent";
 export default function StockCardPage() {
     return <StockCardComponent />
 }

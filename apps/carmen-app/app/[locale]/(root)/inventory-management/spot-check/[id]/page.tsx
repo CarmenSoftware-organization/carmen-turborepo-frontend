@@ -1,6 +1,6 @@
 "use client"
 
-import FormSpotCheck from "../components/FormSpotCheck";
+import FormSpotCheck from "../_components/FormSpotCheck";
 import { formType } from "@/dtos/form.dto";
 import { useParams } from 'next/navigation'
 import { mockSpotCheckData } from "@/mock-data/inventory-management";

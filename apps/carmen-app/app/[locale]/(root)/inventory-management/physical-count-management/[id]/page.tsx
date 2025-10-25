@@ -1,6 +1,6 @@
 "use client";
 import { mockPhysicalCountData } from "@/mock-data/inventory-management";
-import FormPcm from "../components/FormPcm";
+import FormPcm from "../_components/FormPcm";
 import { formType } from "@/dtos/form.dto";
 import { useParams } from "next/navigation";
 

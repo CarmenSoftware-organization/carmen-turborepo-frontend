@@ -1,4 +1,4 @@
-import PhysicalCountManagementComponent from "./components/PhysicalCountManagementComponent";
+import PhysicalCountManagementComponent from "./_components/PhysicalCountManagementComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

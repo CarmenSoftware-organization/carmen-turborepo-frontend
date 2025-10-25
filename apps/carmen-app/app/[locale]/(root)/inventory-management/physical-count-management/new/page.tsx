@@ -1,4 +1,4 @@
-import FormPcm from "../components/FormPcm";
+import FormPcm from "../_components/FormPcm";
 import { formType } from "@/dtos/form.dto";
 
 export default function NewPhysicalCountManagementPage() {
