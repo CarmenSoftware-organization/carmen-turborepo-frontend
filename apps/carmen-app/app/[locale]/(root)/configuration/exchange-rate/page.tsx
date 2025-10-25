@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import ExchangeRateComponent from "./components/ExchangeRateComponent";
+import ExchangeRateComponent from "./ExchangeRateComponent";
 
 export const metadata: Metadata = {
     title: "Exchange Rate",

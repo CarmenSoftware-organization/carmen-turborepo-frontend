@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import BusinessTypeComponent from "./components/BuTypeComponent";
+import BusinessTypeComponent from "./_components/BuTypeComponent";
 
 export const metadata: Metadata = {
   title: "Business Type",

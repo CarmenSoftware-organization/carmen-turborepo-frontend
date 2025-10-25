@@ -1,4 +1,4 @@
-import CurrencyComponent from "./components/CurrencyComponent";
+import CurrencyComponent from "./_components/CurrencyComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

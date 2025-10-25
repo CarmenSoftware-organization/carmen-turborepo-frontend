@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import DepartmentDetail from "../components/DepartmentDetail";
+import DepartmentDetail from "../_components/DepartmentDetail";
 import { formType } from "@/dtos/form.dto";
 import { useDepartmentByIdQuery } from "@/hooks/useDepartments";
 

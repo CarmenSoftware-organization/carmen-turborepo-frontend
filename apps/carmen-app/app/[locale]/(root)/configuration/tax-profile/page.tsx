@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { TaxProfileComponent } from "./components/TaxProfileComponent";
+import { TaxProfileComponent } from "./_components/TaxProfileComponent";
 
 export const metadata: Metadata = {
   title: "Tax Profile",

@@ -1,4 +1,4 @@
-import VendorComponent from "./components/VendorComponent";
+import VendorComponent from "./_components/VendorComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

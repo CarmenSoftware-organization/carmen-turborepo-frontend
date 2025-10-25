@@ -1,4 +1,4 @@
-import PriceListComponent from "./components/PriceListComponent";
+import PriceListComponent from "./_components/PriceListComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -1,4 +1,4 @@
-import PriceComparisonComponent from "./components/PriceComparisonComponent";
+import PriceComparisonComponent from "./_components/PriceComparisonComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import SignInDialog from "@/components/SignInDialog";
 import { DetailLoading } from "@/components/loading/DetailLoading";
-import VendorDetail from "../components/VendorDetail";
+import VendorDetail from "../_components/VendorDetail";
 import { useAuth } from "@/context/AuthContext";
 import { useVendorById } from "@/hooks/useVendor";
 import { useState } from "react";

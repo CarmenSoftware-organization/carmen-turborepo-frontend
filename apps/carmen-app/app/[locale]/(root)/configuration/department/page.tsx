@@ -1,4 +1,4 @@
-import DepartmentComponent from "./components/DepartmentComponent";
+import DepartmentComponent from "./_components/DepartmentComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

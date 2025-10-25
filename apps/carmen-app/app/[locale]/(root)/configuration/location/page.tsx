@@ -1,4 +1,4 @@
-import LocationComponent from "./components/LocationComponent";
+import LocationComponent from "./_components/LocationComponent";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
