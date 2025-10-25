@@ -1,4 +1,4 @@
-import Terms from "../components/Terms";
+import Terms from "../_components/Terms";
 export default function TermsOfServicePage() {
     return <Terms />
 }

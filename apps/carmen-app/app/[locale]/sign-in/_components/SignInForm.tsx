@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { SignInFormValues, createSignInSchema } from "@/dtos/sign-in.dto";
-import { useRouter } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import "@/styles/auth.css";
@@ -196,12 +196,12 @@ export default function SignInForm() {
             <LanguageSwitch data-id="language-switch" />
           </div>
           <div className="legal-links">
-            <p>
+            <Link href="/terms" className="hover:underline text-xs">
               {t("termsOfService")}
-            </p>
-            <p>
+            </Link>
+            <Link href="/policy" className="hover:underline text-xs">
               {t("privacyPolicy")}
-            </p>
+            </Link>
           </div>
         </div>
       </div>

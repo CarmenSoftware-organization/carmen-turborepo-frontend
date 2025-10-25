@@ -18,7 +18,7 @@ export default function TenantList() {
 
   return (
     <Select value={tenantId || undefined} onValueChange={handleChangeTenant}>
-      <SelectTrigger className="w-40 bg-muted border border-border focus:ring-ring text-xs h-8">
+      <SelectTrigger className="w-40 border border-border focus:ring-ring text-xs h-8">
         <SelectValue placeholder="Select a tenant" />
       </SelectTrigger>
       <SelectContent>

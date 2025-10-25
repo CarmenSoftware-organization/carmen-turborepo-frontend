@@ -1,6 +1,6 @@
-import HeaderLegal from "./components/HeaderLegal";
-import FooterLegal from "./components/FooterLegal";
-import SidebarLegal from "./components/SidebarLegal";
+import FooterLegal from "./_components/FooterLegal";
+import HeaderLegal from "./_components/HeaderLegal";
+import SidebarLegal from "./_components/SidebarLegal";
 
 export default function LegalLayout({
     children,
