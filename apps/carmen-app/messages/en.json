@@ -816,5 +816,10 @@
     "goBack": "Go Back",
     "supportText": "If you believe this is a mistake, please contact",
     "support": "support"
+  },
+  "PurchaseRequestNotFound": {
+    "title": "Purchase Request Not Found",
+    "description": "The purchase request you are trying to access does not exist or has been removed.",
+    "backToList": "Back to Purchase Request List"
   }
 }

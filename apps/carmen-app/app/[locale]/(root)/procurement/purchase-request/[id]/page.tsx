@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
 import { formType } from "@/dtos/form.dto";
 import { getOnHandOnOrderService } from "@/services/on-hand-on-order.service";
 import { useQuery } from "@tanstack/react-query";
@@ -9,12 +9,20 @@ import { DetailLoading } from "@/components/loading/DetailLoading";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 import MainForm from "../_components/form-pr/MainForm";
 import { usePurchaseRequestById } from "@/hooks/usePurchaseRequest";
+import { useEffect } from "react";
 
 export default function PurchaseRequestIdPage() {
     const { id } = useParams();
     const { token, buCode } = useAuth();
 
-    const { purchaseRequest, isLoading: isPrLoading } = usePurchaseRequestById(token, buCode, id as string);
+    const { purchaseRequest, isLoading: isPrLoading, error } = usePurchaseRequestById(token, buCode, id as string);
+
+    // Trigger not-found page if PR doesn't exist
+    useEffect(() => {
+        if (!isPrLoading && error) {
+            notFound();
+        }
+    }, [isPrLoading, error]);
 
     const { data: prDataWithInventory, isLoading: isInventoryLoading } = useQuery({
         queryKey: ['purchaseRequestWithInventory', id, purchaseRequest?.data],
