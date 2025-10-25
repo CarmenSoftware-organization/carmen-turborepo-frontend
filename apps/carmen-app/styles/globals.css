@@ -65,7 +65,6 @@
     --emerald-primary: 154.9deg 100% 19.2%;
     --rose-primary: 330deg 100% 25%;
     --teal-primary: 180deg 100% 20%;
-
   }
 
   .dark {
@@ -122,12 +121,10 @@
     --emerald-primary: 154.9deg 100% 19.2%;
     --rose-primary: 330deg 100% 25%;
     --teal-primary: 180deg 100% 20%;
-
   }
 }
 
 @layer base {
-
   button,
   input,
   optgroup,
