@@ -808,5 +808,13 @@
     "workflow_history": "Workflow History",
     "no_workflow_history": "No workflow history available",
     "by": "By"
+  },
+  "NotFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for doesn't exist or has been moved.",
+    "goHome": "Go Home",
+    "goBack": "Go Back",
+    "supportText": "If you believe this is a mistake, please contact",
+    "support": "support"
   }
 }
