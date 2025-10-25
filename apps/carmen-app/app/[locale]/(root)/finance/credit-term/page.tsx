@@ -1,4 +1,4 @@
-import CreditTermComponent from "./components/CreditTermComponent";
+import CreditTermComponent from "./_components/CreditTermComponent";
 
 export default function CreditTermPage() {
     return <CreditTermComponent />
