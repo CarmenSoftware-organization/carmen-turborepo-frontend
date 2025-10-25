@@ -11,14 +11,14 @@ import SignInDialog from "@/components/SignInDialog";
 const WorkflowDetailPage = () => {
   const { token, buCode, isLoading: authLoading } = useAuth();
   const params = useParams();
-  const id = typeof params.id === "string" ? params.id : params.id[0];
+  const id = typeof params.id === "string" ? params.id : params.id?.[0];
   const [wfData, setWfdata] = useState<WorkflowCreateModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   useEffect(() => {
     // Only fetch product when token and buCode are available and auth is not loading
-    if (!token || !buCode || authLoading) {
+    if (!token || !buCode || authLoading || !id) {
       return;
     }
     const fetchById = async () => {

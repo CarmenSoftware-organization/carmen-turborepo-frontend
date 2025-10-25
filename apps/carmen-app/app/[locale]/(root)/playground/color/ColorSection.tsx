@@ -3,7 +3,7 @@ import { ColorDto } from "@/constants/colors";
 interface ColorSectionProps {
   title: string;
   colors: ColorDto[];
-  sectionRef: React.RefObject<HTMLDivElement>;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export function ColorSection({ title, colors, sectionRef }: ColorSectionProps) {

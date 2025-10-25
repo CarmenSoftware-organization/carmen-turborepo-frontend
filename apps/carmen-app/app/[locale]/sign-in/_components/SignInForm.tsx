@@ -38,7 +38,7 @@ export default function SignInForm() {
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
-      password: "",
+      password: "12345678",
     },
   });
 
@@ -165,7 +165,6 @@ export default function SignInForm() {
                           placeholder={t("password")}
                           {...field}
                           className="h-11"
-                          defaultValue={'12345678'}
                         />
                       </FormControl>
                       <FormMessage />

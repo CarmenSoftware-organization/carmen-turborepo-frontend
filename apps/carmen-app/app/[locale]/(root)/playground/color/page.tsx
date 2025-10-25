@@ -16,7 +16,7 @@ export default function ColorPage() {
   const chartRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const sectionRefs: Record<string, React.RefObject<HTMLDivElement>> = {
+  const sectionRefs: Record<string, React.RefObject<HTMLDivElement | null>> = {
     Base: baseRef,
     Component: componentRef,
     Brand: brandRef,
