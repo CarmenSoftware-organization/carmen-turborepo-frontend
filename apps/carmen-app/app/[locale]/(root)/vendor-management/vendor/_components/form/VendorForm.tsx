@@ -20,7 +20,7 @@ import { useTranslations } from "next-intl"
 import InfoVendor from "./InfoVendor"
 import AddressVendor from "./AddressVendor"
 import ContactVendor from "./ContactVendor"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form"
 
 const defaultValues: VendorFormValues = {
     id: "",

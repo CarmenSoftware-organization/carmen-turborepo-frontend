@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductFormValues } from "@/dtos/product.dto";
 import { Link } from "@/lib/navigation";

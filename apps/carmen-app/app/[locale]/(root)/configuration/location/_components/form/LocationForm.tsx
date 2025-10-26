@@ -33,7 +33,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import transferHandler from "@/components/form-custom/TransferHandler";
 import { useTranslations } from "next-intl";
 import { useUserList } from "@/hooks/useUserList";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
