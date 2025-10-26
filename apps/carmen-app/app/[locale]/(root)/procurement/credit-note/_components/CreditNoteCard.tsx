@@ -41,7 +41,7 @@ export default function CreditNoteCard({
                 )}
             </div>
             {isLoading ? (
-                <CardLoading />
+                <CardLoading items={5} />
             ) : (
                 creditNotes?.map((cn) => (
                     <Card

@@ -18,6 +18,7 @@ import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/lib/navigation";
+import CardLoading from "@/components/loading/CardLoading";
 
 interface PurchaseRequestGridProps {
   readonly purchaseRequests: GetAllPrDto[];
@@ -63,8 +64,8 @@ export default function PurchaseRequestGrid({
 
   const isAllSelected = purchaseRequests?.length > 0 && selectedItems.length === purchaseRequests.length;
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (!isLoading) {
+    return <CardLoading items={6} />;
   }
 
   return (
@@ -85,7 +86,7 @@ export default function PurchaseRequestGrid({
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {purchaseRequests.map((pr) => (
+        {purchaseRequests?.map((pr) => (
           <Card
             key={pr.id}
             className="transition-all duration-200 hover:shadow-lg hover:border-primary/50 flex flex-col h-full"
