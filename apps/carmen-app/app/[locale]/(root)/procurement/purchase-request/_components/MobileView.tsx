@@ -119,7 +119,7 @@ export const MobileView = ({
                 {formatCurrency(
                   pr.purchase_request_detail?.reduce(
                     (sum: number, item) =>
-                      sum + parseFloat(String(item.total_price || "0")),
+                      sum + Number(String(item.total_price || "0")),
                     0
                   ) ?? 0,
                   "THB"

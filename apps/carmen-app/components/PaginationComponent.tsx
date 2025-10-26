@@ -68,10 +68,10 @@ const PaginationComponent = ({
 
 	return (
 		<Pagination
-			className={`flex ${justifyPositions[position]} items-center`}
+			className={`flex ${justifyPositions[position]} items-center flex-wrap gap-2`}
 			data-id="pagination-container"
 		>
-			<PaginationContent data-id="pagination-content">
+			<PaginationContent data-id="pagination-content" className="flex-wrap">
 
 				<PaginationItem data-id="first-item">
 					<ChevronFirst

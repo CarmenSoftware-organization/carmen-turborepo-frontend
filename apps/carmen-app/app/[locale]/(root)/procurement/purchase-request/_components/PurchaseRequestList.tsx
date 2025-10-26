@@ -39,6 +39,8 @@ interface PurchaseRequestListProps {
   readonly sort?: { field: string; direction: "asc" | "desc" };
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
+  readonly getTypeName: (type: string) => string;
+  readonly convertStatus: (status: string) => string;
 }
 
 export default function PurchaseRequestList({
@@ -52,43 +54,20 @@ export default function PurchaseRequestList({
   sort,
   onSort,
   setPerpage,
+  getTypeName,
+  convertStatus,
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const tStatus = useTranslations("Status");
-  const tPurchaseRequest = useTranslations("PurchaseRequest");
   const { dateFormat, amount, currencyBase } = useAuth();
-
-  const getTypeName = (type: string) => {
-    if (type === "General") {
-      return tPurchaseRequest("general");
-    }
-    return tPurchaseRequest("market_list");
-  };
 
   const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
 
-  const convertStatus = (status: string) => {
-    if (status === 'submit') return tStatus("submit");
-    if (status === 'draft') return tStatus("draft");
-    if (status === 'Completed') return tStatus("completed");
-    if (status === 'in_progress') return tStatus("in_progress");
-    if (status === 'approved') return tStatus("approved");
-    if (status === 'rejected') return tStatus("rejected");
-    if (status === 'voided') return tStatus("voided");
-    return '';
-  };
-
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -97,7 +76,6 @@ export default function PurchaseRequestList({
     [currentPage, perpage]
   );
 
-  // Define columns
   const columns = useMemo<ColumnDef<PurchaseRequestListDto>[]>(
     () => [
       {
@@ -276,7 +254,7 @@ export default function PurchaseRequestList({
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => <span className="text-right">{tTableHeader("action")}</span>,
         cell: ({ row }) => {
           const pr = row.original;
           return (
@@ -333,8 +311,6 @@ export default function PurchaseRequestList({
     [
       tTableHeader,
       tCommon,
-      tStatus,
-      tPurchaseRequest,
       currentPage,
       perpage,
       dateFormat,

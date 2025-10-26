@@ -17,7 +17,7 @@ export default function RootLayout({
                 <div className="flex overflow-hidden h-full">
                     <SidebarComponent />
                     <div className="flex-1 flex flex-col overflow-hidden h-full">
-                        <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 h-0">
+                        <main className="flex-1 overflow-y-auto overflow-x-hidden m-4 h-0">
                             {children}
                         </main>
                     </div>

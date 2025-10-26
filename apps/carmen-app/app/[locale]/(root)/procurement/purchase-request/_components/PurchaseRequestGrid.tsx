@@ -1,16 +1,23 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
-import { MobileView } from "./MobileView";
-import { ActionButtons, prStatusColor } from "./SharePrComponent";
-import { useTranslations } from "next-intl";
-import { format } from "date-fns";
-import { Badge } from "@/components/ui/badge";
-import PaginationComponent from "@/components/PaginationComponent";
 import { GetAllPrDto } from "@/dtos/pr.dto";
-import CardLoading from "@/components/loading/CardLoading";
-import { useRouter } from "@/lib/navigation";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { FileText, Trash2 } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { formatDateFns, formatPriceConf } from "@/utils/config-system";
+import { useAuth } from "@/context/AuthContext";
+import { Badge } from "@/components/ui/badge";
+import { Link } from "@/lib/navigation";
 
 interface PurchaseRequestGridProps {
   readonly purchaseRequests: GetAllPrDto[];
@@ -18,22 +25,30 @@ interface PurchaseRequestGridProps {
   readonly totalPages?: number;
   readonly onPageChange?: (page: number) => void;
   readonly isLoading?: boolean;
+  readonly getTypeName: (type: string) => string;
+  readonly convertStatus: (status: string) => string;
 }
 
 export default function PurchaseRequestGrid({
-  purchaseRequests = [],
+  purchaseRequests,
   currentPage = 1,
   totalPages = 1,
   onPageChange = () => { },
   isLoading = false,
+  getTypeName,
+  convertStatus
 }: PurchaseRequestGridProps) {
-  const t = useTranslations("TableHeader");
+  const { dateFormat, amount, currencyBase } = useAuth();
+  const tTableHeader = useTranslations('TableHeader');
+  const tCommon = useTranslations("Common");
+  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const router = useRouter();
 
   const handleSelectItem = (id: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    setSelectedItems(prev =>
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
+        : [...prev, id]
     );
   };
 
@@ -41,145 +56,219 @@ export default function PurchaseRequestGrid({
     if (selectedItems.length === purchaseRequests.length) {
       setSelectedItems([]);
     } else {
-      const allIds = purchaseRequests.map((pr) => pr.id ?? "").filter(Boolean);
+      const allIds = purchaseRequests.map(pr => pr.id ?? '').filter(Boolean);
       setSelectedItems(allIds);
     }
   };
 
-  const isAllSelected =
-    purchaseRequests.length > 0 &&
-    selectedItems.length === purchaseRequests.length;
+  const isAllSelected = purchaseRequests?.length > 0 && selectedItems.length === purchaseRequests.length;
 
-  const renderGridContent = () => {
-    if (isLoading) {
-      return <CardLoading />;
-    }
-
-    if (purchaseRequests.length === 0) {
-      return (
-        <div className="col-span-full flex justify-center items-center h-40">
-          <div className="text-center">
-            <p className="text-muted-foreground">No purchase requests found</p>
-          </div>
-        </div>
-      );
-    }
-
-    return purchaseRequests.map((pr: GetAllPrDto) => (
-      <Card
-        key={pr.id}
-        onClick={() => router.push(`/procurement/purchase-request/${pr.id}`)}
-      >
-        <CardHeader className="p-2 bg-muted">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id={`grid-checkbox-${pr.id}`}
-                checked={selectedItems.includes(pr.id ?? "")}
-                onCheckedChange={() => handleSelectItem(pr.id ?? "")}
-                aria-label={`Select PR ${pr.pr_no}`}
-                className="mt-1"
-              />
-              <div>
-                <p className="text-sm font-semibold text-primary">{pr.pr_no}</p>
-                <p className="text-xs text-muted-foreground">
-                  {format(new Date(pr.pr_date), "dd MMM yyyy")}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="mt-1">{prStatusColor(pr.pr_status ?? "")}</div>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 pt-2">
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <p className="text-xs text-muted-foreground">
-                {t("description")}
-              </p>
-              <p className="text-xs font-medium line-clamp-2">
-                {pr.description}
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Type</p>
-                <p className="text-xs font-medium">{pr.workflow_name}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  {t("department")}
-                </p>
-                <p className="text-xs font-medium">{pr.department_name}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  {t("requestor")}
-                </p>
-                <p className="text-xs font-medium">{pr.requestor_name}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">
-                  Current Workflow
-                </p>
-                {pr.workflow_current_stage ? (
-                  <Badge>{pr.workflow_current_stage}</Badge>
-                ) : (
-                  <p className="text-xs font-medium">-</p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">{t("amount")}</p>
-                <p className="text-xs font-medium">{pr.total_amount}</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-        <div className="flex items-center justify-end p-2 border-t border-border bg-muted">
-          <ActionButtons prId={pr.id ?? ""} />
-        </div>
-      </Card>
-    ));
-  };
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-4">
-      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div className="col-span-full flex items-center justify-between mb-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleSelectAll}
-            disabled={isLoading || purchaseRequests.length === 0}
-          >
-            {isAllSelected ? "Unselect All" : "Select All"}
-          </Button>
-          {selectedItems.length > 0 && (
-            <span className="text-sm text-muted-foreground">
-              {selectedItems.length} Items Selected
-            </span>
-          )}
-        </div>
-        {renderGridContent()}
+      <div className="flex items-center justify-between">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleSelectAll}
+        >
+          {isAllSelected ? tCommon("un_select_all") : tCommon("select_all")}
+        </Button>
+        {selectedItems.length > 0 && (
+          <span className="text-sm text-muted-foreground">
+            {selectedItems.length} {tCommon("selected")}
+          </span>
+        )}
       </div>
 
-      <MobileView
-        purchaseRequests={purchaseRequests || []}
-        selectedItems={selectedItems}
-        onSelectItem={handleSelectItem}
-        onSelectAll={handleSelectAll}
-        isAllSelected={isAllSelected}
-        isLoading={isLoading}
-      />
+      <div className="grid grid-cols-3 gap-4">
+        {purchaseRequests.map((pr) => (
+          <Card
+            key={pr.id}
+            className="transition-all duration-200 hover:shadow-lg hover:border-primary/50 flex flex-col h-full"
+          >
+            <CardHeader className="p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id={`checkbox-${pr.id}`}
+                    checked={selectedItems.includes(pr.id ?? '')}
+                    onCheckedChange={() => handleSelectItem(pr.id ?? '')}
+                    aria-label={`Select ${pr.pr_no}`}
+                    className="mt-1"
+                  />
+                  <p className="text-base font-semibold">{pr.pr_no}</p>
+                </div>
+                <div>
+                  <Badge variant={pr.pr_status}>
+                    {convertStatus(pr.pr_status)}
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-4 pt-0 flex-grow">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{tTableHeader("date")}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {formatDateFns(pr.pr_date, dateFormat || 'yyyy-MM-dd')}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{tTableHeader("type")}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {getTypeName(pr.workflow_name ?? "-")}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{tTableHeader('requestor')}</p>
+                  <p className="text-sm font-medium text-muted-foreground">{pr.requestor_name}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{tTableHeader('department')}</p>
+                  <p className="text-sm font-medium text-muted-foreground">{pr.department_name}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{tTableHeader("stage")}</p>
+                  {pr.workflow_current_stage ? (
+                    <p className="text-sm font-medium text-muted-foreground">{pr.workflow_current_stage}</p>
+                  ) : (
+                    <p className="text-sm font-medium text-muted-foreground">-</p>
+                  )}
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">{tTableHeader('amount')}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {formatPriceConf(pr.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-1 mt-2">
+                <p className="text-xs text-muted-foreground">{tTableHeader('description')}</p>
+                <p className="text-sm font-medium text-muted-foreground">{pr.description ?? "-"}</p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex items-center justify-end mt-auto px-3">
+              <Button variant={'ghost'} size={'sm'} asChild>
+                <Link href={`/procurement/purchase-request/${pr.id}`}>
+                  <FileText />
+                </Link>
+              </Button>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  console.log("Delete", pr.id);
+                }}
+                className="text-destructive cursor-pointer"
+                size={'sm'}
+                variant={'ghost'}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (currentPage > 1) onPageChange(currentPage - 1);
+              }}
+            />
+          </PaginationItem>
 
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-        perpage={10}
-      />
+          {currentPage > 2 && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPageChange(1);
+                }}
+              >
+                1
+              </PaginationLink>
+            </PaginationItem>
+          )}
+
+          {currentPage > 3 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          {currentPage > 1 && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPageChange(currentPage - 1);
+                }}
+              >
+                {currentPage - 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              {currentPage}
+            </PaginationLink>
+          </PaginationItem>
+
+          {currentPage < totalPages && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPageChange(currentPage + 1);
+                }}
+              >
+                {currentPage + 1}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+
+          {currentPage < totalPages - 2 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+
+          {currentPage < totalPages - 1 && (
+            <PaginationItem>
+              <PaginationLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onPageChange(totalPages);
+                }}
+              >
+                {totalPages}
+              </PaginationLink>
+            </PaginationItem>
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) onPageChange(currentPage + 1);
+              }}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
-  );
+  )
 }

@@ -331,7 +331,10 @@
     "row_per_page": "Rows per page",
     "next_page": "Go to next page",
     "prev_page": "Go to previous page",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "select_all": "Select All",
+    "un_select_all": "Unselect All",
+    "selected": "Selected"
   },
   "TableHeader": {
     "all": "All",
@@ -708,7 +711,10 @@
     "blank_pr": "Blank PR",
     "blank_pr_desc": "Create a new purchase request from scratch",
     "template_pr": "Template PR",
-    "template_pr_desc": "Create a new purchase request from a purchase request"
+    "template_pr_desc": "Create a new purchase request from a purchase request",
+    "swicth_grid_view": "Switch between list and grid view",
+    "table_view": "Table View",
+    "grid_view": "Grid View"
   },
   "Procurement": {
     "title": "Procurement"

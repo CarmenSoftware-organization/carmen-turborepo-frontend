@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
@@ -14,7 +14,6 @@ import DialogNewPr from "./DialogNewPr";
 import { VIEW } from "@/constants/enum";
 import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
-import ToggleView from "@/components/ui-custom/ToggleView";
 import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { parseSortString } from "@/utils/table-sort";
@@ -25,14 +24,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-
-
 export default function PurchaseRequestComponent() {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tTableHeader = useTranslations("TableHeader");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
   const tDataControls = useTranslations("DataControls");
+  const tStatus = useTranslations("Status");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [view, setView] = useState<VIEW>(VIEW.LIST);
   const [search, setSearch] = useURL("search");
@@ -40,6 +38,24 @@ export default function PurchaseRequestComponent() {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
+
+  const getTypeName = (type: string) => {
+    if (type === "General") {
+      return tPurchaseRequest("general");
+    }
+    return tPurchaseRequest("market_list");
+  };
+
+  const convertStatus = (status: string) => {
+    if (status === 'submit') return tStatus("submit");
+    if (status === 'draft') return tStatus("draft");
+    if (status === 'Completed') return tStatus("completed");
+    if (status === 'in_progress') return tStatus("in_progress");
+    if (status === 'approved') return tStatus("approved");
+    if (status === 'rejected') return tStatus("rejected");
+    if (status === 'voided') return tStatus("voided");
+    return '';
+  };
 
   const sortFields = [
     { key: "", label: tTableHeader("all") },
@@ -184,16 +200,38 @@ export default function PurchaseRequestComponent() {
           </Tooltip>
 
           <div className="hidden lg:block">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <ToggleView view={view} setView={setView} />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Switch between list and grid view</p>
-              </TooltipContent>
-            </Tooltip>
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={view === VIEW.LIST ? 'default' : 'outlinePrimary'}
+                    size={'sm'}
+                    onClick={() => setView(VIEW.LIST)}
+                    aria-label="List view"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tPurchaseRequest("table_view")}</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={view === VIEW.GRID ? 'default' : 'outlinePrimary'}
+                    size={'sm'}
+                    onClick={() => setView(VIEW.GRID)}
+                    aria-label="Grid view"
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tPurchaseRequest("grid_view")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
           </div>
         </div>
       </TooltipProvider>
@@ -216,6 +254,8 @@ export default function PurchaseRequestComponent() {
           totalPages={totalPages}
           onPageChange={handlePageChange}
           isLoading={isLoading}
+          getTypeName={getTypeName}
+          convertStatus={convertStatus}
         />
       </div>
 
@@ -232,6 +272,8 @@ export default function PurchaseRequestComponent() {
             sort={parseSortString(sort)}
             onSort={setSort}
             setPerpage={handleSetPerpage}
+            getTypeName={getTypeName}
+            convertStatus={convertStatus}
           />
         ) : (
           <PurchaseRequestGrid
@@ -240,6 +282,8 @@ export default function PurchaseRequestComponent() {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
+            getTypeName={getTypeName}
+            convertStatus={convertStatus}
           />
         )}
       </div>
