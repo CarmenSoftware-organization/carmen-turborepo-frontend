@@ -36,26 +36,21 @@ export function middleware(request: NextRequest) {
 
     const pathname = request.nextUrl.pathname;
 
-    const now = new Date().toLocaleString('en-US', {
-        timeZone: 'Asia/Bangkok',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-    });
+    // const now = new Date().toLocaleString('en-US', {
+    //     timeZone: 'Asia/Bangkok',
+    //     hour: '2-digit',
+    //     minute: '2-digit',
+    //     second: '2-digit',
+    //     day: '2-digit',
+    //     month: '2-digit',
+    //     year: 'numeric',
+    // });
 
-    const logData = {
-        // user_id: user_id,
-        timestamp: now,
-        method: request.method,
-        path: pathname,
-        // language: lang,
-        // buCode: buCode,
-        // headers: headers,
-        // body: body || undefined,
-    };
+    // const logData = {
+    //     timestamp: now,
+    //     method: request.method,
+    //     path: pathname,
+    // };
 
     // Check if the request is for a locale route
     const pathnameIsMissingLocale = locales.every(

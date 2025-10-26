@@ -39,10 +39,11 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                         appendAddress({
                             address_type: "mailing_address",
                             data: {
-                                street: "",
-                                city: "",
-                                state: "",
-                                zip: "",
+                                address_line1: "",
+                                address_line2: "",
+                                district: "",
+                                province: "",
+                                postal_code: "",
                                 country: "",
                             },
                         })
@@ -101,44 +102,57 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                         <div className="grid grid-cols-12 gap-2">
                             <div className="col-span-12 space-y-1">
                                 <Label
-                                    htmlFor={`vendor_address.${index}.data.street`}
+                                    htmlFor={`vendor_address.${index}.data.address_line1`}
                                     className="text-xs font-medium text-foreground"
                                 >
-                                    {tVendor("street")}
+                                    {tVendor("address_line1")}
                                 </Label>
                                 <Input
-                                    id={`vendor_address.${index}.data.street`}
-                                    {...form.register(`vendor_address.${index}.data.street`)}
+                                    id={`vendor_address.${index}.data.address_line1`}
+                                    {...form.register(`vendor_address.${index}.data.address_line1`)}
+                                    className="h-7 text-xs"
+                                />
+                            </div>
+                            <div className="col-span-12 space-y-1">
+                                <Label
+                                    htmlFor={`vendor_address.${index}.data.address_line2`}
+                                    className="text-xs font-medium text-foreground"
+                                >
+                                    {tVendor("address_line2")}
+                                </Label>
+                                <Input
+                                    id={`vendor_address.${index}.data.address_line2`}
+                                    {...form.register(`vendor_address.${index}.data.address_line2`)}
                                     className="h-7 text-xs"
                                 />
                             </div>
                             <div className="col-span-6 space-y-1">
-                                <Label htmlFor={`vendor_address.${index}.data.city`} className="text-xs font-medium text-foreground">
-                                    {tVendor("city")}
+                                <Label htmlFor={`vendor_address.${index}.data.district`} className="text-xs font-medium text-foreground">
+                                    {tVendor("district")}
                                 </Label>
                                 <Input
-                                    id={`vendor_address.${index}.data.city`}
-                                    {...form.register(`vendor_address.${index}.data.city`)}
+                                    id={`vendor_address.${index}.data.district`}
+                                    {...form.register(`vendor_address.${index}.data.district`)}
                                     className="h-7 text-xs"
                                 />
                             </div>
                             <div className="col-span-6 space-y-1">
-                                <Label htmlFor={`vendor_address.${index}.data.state`} className="text-xs font-medium text-foreground">
-                                    {tVendor("state_province")}
+                                <Label htmlFor={`vendor_address.${index}.data.province`} className="text-xs font-medium text-foreground">
+                                    {tVendor("province")}
                                 </Label>
                                 <Input
-                                    id={`vendor_address.${index}.data.state`}
-                                    {...form.register(`vendor_address.${index}.data.state`)}
+                                    id={`vendor_address.${index}.data.province`}
+                                    {...form.register(`vendor_address.${index}.data.province`)}
                                     className="h-7 text-xs"
                                 />
                             </div>
                             <div className="col-span-6 space-y-1">
-                                <Label htmlFor={`vendor_address.${index}.data.zip`} className="text-xs font-medium text-foreground">
-                                    {tVendor("zip_code")}
+                                <Label htmlFor={`vendor_address.${index}.data.postal_code`} className="text-xs font-medium text-foreground">
+                                    {tVendor("postal_code")}
                                 </Label>
                                 <Input
-                                    id={`vendor_address.${index}.data.zip`}
-                                    {...form.register(`vendor_address.${index}.data.zip`)}
+                                    id={`vendor_address.${index}.data.postal_code`}
+                                    {...form.register(`vendor_address.${index}.data.postal_code`)}
                                     className="h-7 text-xs"
                                 />
                             </div>
