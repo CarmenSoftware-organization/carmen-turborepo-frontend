@@ -56,7 +56,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         form.setValue("vendor_contact", [
                             ...currentContacts,
                             {
-                                contact_type: "phone",
+                                contact_type: "phone_number",
                                 description: "",
                                 info: [{ label: "Contact", value: "", data_type: "string" }],
                             }
@@ -94,10 +94,10 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                                             <SelectValue placeholder="Select contact type" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="phone" className="text-xs">
+                                            <SelectItem value="phone_number" className="text-xs">
                                                 {tCommon("phone")}
                                             </SelectItem>
-                                            <SelectItem value="email" className="text-xs">
+                                            <SelectItem value="email_address" className="text-xs">
                                                 {tCommon("email")}
                                             </SelectItem>
                                             <SelectItem value="website" className="text-xs">
@@ -196,23 +196,20 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                                                             )}
                                                         >
                                                             <CalendarIcon className="mr-1 h-3 w-3" />
-                                                            {form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.value`) ? (
-                                                                format(
-                                                                    new Date(form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.value`)),
-                                                                    "PP",
-                                                                )
-                                                            ) : (
-                                                                <span>Pick a date</span>
-                                                            )}
+                                                            {(() => {
+                                                                const value = form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.value`);
+                                                                return value ? format(new Date(value), "PP") : <span>Pick a date</span>;
+                                                            })()}
                                                         </Button>
                                                     </PopoverTrigger>
                                                     <PopoverContent className="w-auto p-0">
                                                         <Calendar
                                                             mode="single"
                                                             selected={
-                                                                form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.value`)
-                                                                    ? new Date(form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.value`))
-                                                                    : undefined
+                                                                (() => {
+                                                                    const value = form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.value`);
+                                                                    return value ? new Date(value) : undefined;
+                                                                })()
                                                             }
                                                             onSelect={(date) =>
                                                                 form.setValue(

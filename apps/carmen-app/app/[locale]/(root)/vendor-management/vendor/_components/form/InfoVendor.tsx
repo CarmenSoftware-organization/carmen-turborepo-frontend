@@ -75,18 +75,20 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                                             )}
                                         >
                                             <CalendarIcon className="mr-1 h-3 w-3" />
-                                            {form.watch(`info.${index}.value`) ? (
-                                                format(new Date(form.watch(`info.${index}.value`)), "PP")
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
+                                            {(() => {
+                                                const value = form.watch(`info.${index}.value`);
+                                                return value ? format(new Date(value), "PP") : <span>Pick a date</span>;
+                                            })()}
                                         </Button>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0">
                                         <Calendar
                                             mode="single"
                                             selected={
-                                                form.watch(`info.${index}.value`) ? new Date(form.watch(`info.${index}.value`)) : undefined
+                                                (() => {
+                                                    const value = form.watch(`info.${index}.value`);
+                                                    return value ? new Date(value) : undefined;
+                                                })()
                                             }
                                             onSelect={(date) => form.setValue(`info.${index}.value`, date ? date.toISOString() : "")}
                                             initialFocus
