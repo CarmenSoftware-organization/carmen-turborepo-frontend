@@ -2,15 +2,29 @@
 
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback, useEffect, useMemo } from "react";
 import {
     DeliveryPointCreateDto,
     DeliveryPointUpdateDto,
     DeliveryPointGetDto,
-    deliveryPointCreateSchema,
-    deliveryPointUpdateSchema
+    createDeliveryPointCreateSchema,
+    createDeliveryPointUpdateSchema
 } from "@/dtos/delivery-point.dto";
-import GenericFormDialog, { FieldConfig } from "./GenericFormDialog";
-import { FORM_FIELD_TYPE } from "@/constants/enum";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
+import FormBoolean from "@/components/form-custom/form-boolean";
 
 interface DeliveryPointDialogProps {
     readonly open: boolean;
@@ -19,7 +33,7 @@ interface DeliveryPointDialogProps {
     readonly deliveryPoint?: DeliveryPointGetDto;
     readonly onSubmit: (data: DeliveryPointCreateDto | DeliveryPointUpdateDto) => void;
     readonly isLoading?: boolean;
-};
+}
 
 export default function DeliveryPointDialog({
     open,
@@ -32,45 +46,124 @@ export default function DeliveryPointDialog({
     const tCommon = useTranslations('Common');
     const tDeliveryPoint = useTranslations('DeliveryPoint');
 
-    const defaultValues = {
+    const defaultValues: DeliveryPointCreateDto = {
         name: '',
         is_active: true,
     };
 
-    const schema = mode === formType.EDIT ? deliveryPointUpdateSchema : deliveryPointCreateSchema;
+    const schema = useMemo(() => {
+        const messages = { nameRequired: tDeliveryPoint('pls_fill_dp_name') };
+        return mode === formType.EDIT
+            ? createDeliveryPointUpdateSchema(messages)
+            : createDeliveryPointCreateSchema(messages);
+    }, [mode, tDeliveryPoint]);
 
-    const fields: FieldConfig<DeliveryPointCreateDto | DeliveryPointUpdateDto>[] = [
-        {
-            name: 'name',
-            label: tCommon("name"),
-            type: FORM_FIELD_TYPE.TEXT,
-        },
-        {
-            name: 'is_active',
-            label: tCommon("status"),
-            type: FORM_FIELD_TYPE.CHECKBOX,
+    const getFormDefaultValues = useCallback((): DeliveryPointCreateDto | DeliveryPointUpdateDto => {
+        if (mode === formType.EDIT && deliveryPoint) {
+            return {
+                id: deliveryPoint.id,
+                name: deliveryPoint.name || '',
+                is_active: deliveryPoint.is_active ?? true,
+            };
         }
-    ];
+        return defaultValues;
+    }, [mode, deliveryPoint]);
+
+    const form = useForm<DeliveryPointCreateDto | DeliveryPointUpdateDto>({
+        resolver: zodResolver(schema),
+        defaultValues: getFormDefaultValues(),
+    });
+
+    useEffect(() => {
+        const newDefaultValues = getFormDefaultValues();
+        form.reset(newDefaultValues);
+    }, [mode, deliveryPoint, open, form, getFormDefaultValues]);
+
+    const handleSubmit = async (formData: DeliveryPointCreateDto | DeliveryPointUpdateDto) => {
+        try {
+            const validatedData = schema.parse(formData);
+            onSubmit(validatedData);
+            form.reset(defaultValues);
+            onOpenChange(false);
+        } catch (error) {
+            console.error('Validation Error:', error);
+        }
+    };
+
+    const handleCancel = useCallback(() => {
+        form.reset(getFormDefaultValues());
+        onOpenChange(false);
+    }, [form, getFormDefaultValues, onOpenChange]);
 
     return (
-        <GenericFormDialog
-            open={open}
-            onOpenChange={onOpenChange}
-            mode={mode}
-            data={deliveryPoint}
-            onSubmit={onSubmit}
-            isLoading={isLoading}
-            schema={schema}
-            defaultValues={defaultValues}
-            fields={fields}
-            title={{
-                add: tDeliveryPoint("add_delivery_point"),
-                edit: tDeliveryPoint("edit_delivery_point")
-            }}
-            description={{
-                add: tDeliveryPoint("add_delivery_point_description"),
-                edit: tDeliveryPoint("edit_delivery_point_description")
-            }}
-        />
+        <Dialog open={open} onOpenChange={handleCancel}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        {mode === formType.ADD ? tDeliveryPoint("add_delivery_point") : tDeliveryPoint("edit_delivery_point")}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {mode === formType.ADD
+                            ? tDeliveryPoint("add_delivery_point_description")
+                            : tDeliveryPoint("edit_delivery_point_description")}
+                    </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            required
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tCommon("name")}</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="is_active"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <FormBoolean
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            label={tCommon("status")}
+                                            type="checkbox"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <DialogFooter>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleCancel}
+                            >
+                                {tCommon('cancel')}
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isLoading || form.formState.isSubmitting}
+                            >
+                                {mode === formType.ADD ? tCommon('add') : tCommon('save')}
+                                {(isLoading || form.formState.isSubmitting) && (
+                                    <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }

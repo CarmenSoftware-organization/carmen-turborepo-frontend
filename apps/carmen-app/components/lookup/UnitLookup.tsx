@@ -21,6 +21,7 @@ import { formType } from "@/dtos/form.dto";
 import { PropsLookup } from "@/dtos/lookup.dto";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 export default function UnitLookup({
     value,
@@ -29,6 +30,7 @@ export default function UnitLookup({
     disabled = false,
     classNames
 }: Readonly<PropsLookup>) {
+    const tCommon = useTranslations("Common");
     const { token, buCode } = useAuth();
     const { units, isLoading } = useUnitQuery({
         token,
@@ -37,8 +39,6 @@ export default function UnitLookup({
             perpage: -1,
         }
     });
-
-    // console.log('units', units?.data);
 
     const [open, setOpen] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -126,7 +126,7 @@ export default function UnitLookup({
                                                 </CommandItem>
                                             ))
                                         ) : (
-                                            <CommandItem disabled>No units available.</CommandItem>
+                                            <CommandItem disabled>{tCommon("no_data")}</CommandItem>
                                         )}
                                     </CommandGroup>
                                 </>

@@ -420,7 +420,8 @@
     "update_success": "Unit updated successfully",
     "update_error": "Failed to update unit",
     "delete_success": "Unit deleted successfully",
-    "delete_error": "Failed to delete unit"
+    "delete_error": "Failed to delete unit",
+    "unit_name_required": "Please enter unit name"
   },
   "Currency": {
     "title": "Currency",
@@ -468,7 +469,8 @@
     "add_delivery_point_description": "Fill in the details to create a new delivery point.",
     "edit_delivery_point_description": "Update the delivery point information below.",
     "del_delivery_point": "Delete Delivery Point",
-    "del_delivery_point_description": "Are you sure you want to delete this delivery point? This action cannot be undone."
+    "del_delivery_point_description": "Are you sure you want to delete this delivery point? This action cannot be undone.",
+    "pls_fill_dp_name": "Please enter delivery point name"
   },
   "Department": {
     "title": "Department",

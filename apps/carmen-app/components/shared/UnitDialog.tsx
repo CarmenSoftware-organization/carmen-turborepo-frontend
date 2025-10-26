@@ -1,10 +1,25 @@
 "use client";
 
-import { unitSchema, UnitDto, CreateUnitDto } from "@/dtos/unit.dto";
+import { createUnitSchema, UnitDto, CreateUnitDto } from "@/dtos/unit.dto";
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
-import GenericFormDialog, { FieldConfig } from "./GenericFormDialog";
-import { FORM_FIELD_TYPE } from "@/constants/enum";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCallback, useEffect, useMemo } from "react";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
+import FormBoolean from "@/components/form-custom/form-boolean";
 
 interface UnitDialogProps {
     readonly open: boolean;
@@ -26,49 +41,134 @@ export default function UnitDialog({
     const tCommon = useTranslations('Common');
     const tUnit = useTranslations('Unit');
 
-    const defaultValues = {
+    const defaultValues: CreateUnitDto = {
         name: '',
         description: '',
         is_active: true,
     };
 
-    const fields: FieldConfig<CreateUnitDto>[] = [
-        {
-            name: 'name',
-            label: tCommon('name'),
-            type: FORM_FIELD_TYPE.TEXT,
-        },
-        {
-            name: 'description',
-            label: tCommon('description'),
-            type: FORM_FIELD_TYPE.TEXTAREA,
-        },
-        {
-            name: 'is_active',
-            label: tCommon('status'),
-            type: FORM_FIELD_TYPE.CHECKBOX,
+    const unitSchema = useMemo(() => createUnitSchema({
+        nameRequired: tUnit('unit_name_required'),
+    }), [tUnit]);
+
+    const getFormDefaultValues = useCallback((): CreateUnitDto => {
+        if (mode === formType.EDIT && unit) {
+            return {
+                name: unit.name || '',
+                description: unit.description || '',
+                is_active: unit.is_active ?? true,
+            };
         }
-    ];
+        return defaultValues;
+    }, [mode, unit]);
+
+    const form = useForm<CreateUnitDto>({
+        resolver: zodResolver(unitSchema),
+        defaultValues: getFormDefaultValues(),
+    });
+
+    useEffect(() => {
+        const newDefaultValues = getFormDefaultValues();
+        form.reset(newDefaultValues);
+    }, [mode, unit, open, form, getFormDefaultValues]);
+
+    const handleSubmit = async (formData: CreateUnitDto) => {
+        try {
+            const validatedData = unitSchema.parse(formData);
+            onSubmit(validatedData);
+            form.reset(defaultValues);
+            onOpenChange(false);
+        } catch (error) {
+            console.error('Validation Error:', error);
+        }
+    };
+
+    const handleCancel = useCallback(() => {
+        form.reset(getFormDefaultValues());
+        onOpenChange(false);
+    }, [form, getFormDefaultValues, onOpenChange]);
 
     return (
-        <GenericFormDialog
-            open={open}
-            onOpenChange={onOpenChange}
-            mode={mode}
-            data={unit}
-            onSubmit={onSubmit}
-            isLoading={isLoading}
-            schema={unitSchema}
-            defaultValues={defaultValues}
-            fields={fields}
-            title={{
-                add: tCommon('add'),
-                edit: tCommon('edit')
-            }}
-            description={{
-                add: tUnit('add_description'),
-                edit: tUnit('edit_description')
-            }}
-        />
+        <Dialog open={open} onOpenChange={handleCancel}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>
+                        {mode === formType.ADD ? tCommon('add') : tCommon('edit')}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {mode === formType.ADD ? tUnit('add_description') : tUnit('edit_description')}
+                    </DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            required
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tCommon('name')}</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tCommon('description')}</FormLabel>
+                                    <FormControl>
+                                        <Textarea {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="is_active"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <FormBoolean
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            label={tCommon('status')}
+                                            type="checkbox"
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <DialogFooter>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={handleCancel}
+                            >
+                                {tCommon('cancel')}
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isLoading || form.formState.isSubmitting}
+                            >
+                                {mode === formType.ADD ? tCommon('add') : tCommon('save')}
+                                {(isLoading || form.formState.isSubmitting) && (
+                                    <Loader2 className="w-4 h-4 ml-2 animate-spin" />
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }

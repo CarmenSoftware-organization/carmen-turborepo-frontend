@@ -1,9 +1,16 @@
 import { z } from "zod";
 
-export const unitSchema = z.object({
-    name: z.string(),
-    description: z.string(),
+export const createUnitSchema = (messages: {
+    nameRequired: string;
+}) => z.object({
+    name: z.string().min(1, messages.nameRequired),
+    description: z.string().optional(),
     is_active: z.boolean(),
+});
+
+// Default schema for backward compatibility
+export const unitSchema = createUnitSchema({
+    nameRequired: "Name is required",
 });
 
 export const unitWithIdSchema = unitSchema.extend({

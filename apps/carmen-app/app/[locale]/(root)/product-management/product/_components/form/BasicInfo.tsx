@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/tooltip";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
-import ButtonLink from "@/components/ButtonLink";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
@@ -25,6 +24,7 @@ import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui-custom/FormCustom";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductFormValues } from "@/dtos/product.dto";
+import { Link } from "@/lib/navigation";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -133,13 +133,20 @@ export default function BasicInfo({
   return (
     <Card>
       <CardHeader className="p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
-            <ButtonLink
-              href="/product-management/product"
+            <Button
+              variant={'outline'}
+              size={'sm'}
+              className="w-8 h-8"
+              asChild
             >
-              <ChevronLeft className="h-4 w-4" />
-            </ButtonLink>
+              <Link
+                href="/product-management/product"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Link>
+            </Button>
 
             {currentMode === formType.VIEW ? (
               <div className="flex items-center gap-3">
