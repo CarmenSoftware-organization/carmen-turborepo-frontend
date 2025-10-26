@@ -6,12 +6,12 @@ import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
+import SearchInput from "../ui-custom/SearchInput";
 
 interface TreeNodeData {
     id: string;
@@ -31,7 +31,6 @@ interface TreeProductLookupProps {
 
 export default function TreeProductLookup({ onSelect, initialSelectedIds = [], initialProducts = [] }: TreeProductLookupProps) {
     const { token, buCode } = useAuth();
-    const [searchQuery, setSearchQuery] = useState("");
     const tCommon = useTranslations("Common");
     const [searchTrigger, setSearchTrigger] = useState("");
     const [selectedIds, setSelectedIds] = useState<Set<string>>(
@@ -39,16 +38,8 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
     );
     const [selectedItemsCache, setSelectedItemsCache] = useState<Record<string, TreeNodeData>>({});
 
-    const handleSearch = useCallback(() => {
-        setSearchTrigger(searchQuery.trim());
-    }, [searchQuery]);
-
-    const handleSearchQueryChange = useCallback((value: string) => {
-        setSearchQuery(value);
-        // Clear search trigger immediately when query is empty
-        if (!value.trim()) {
-            setSearchTrigger("");
-        }
+    const handleSearch = useCallback((value: string) => {
+        setSearchTrigger(value.trim());
     }, []);
 
     // Load all products once (no search param)
@@ -217,20 +208,12 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
     }, [filteredProducts, isLoading, selectedProductIdsArray, products?.data, searchTrigger]);
 
     const searchInput = (
-        <div className="flex gap-2">
-            <Input
-                className="mb-4"
-                placeholder={tCommon("search")}
-                value={searchQuery}
-                onChange={(e) => handleSearchQueryChange(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                        handleSearch();
-                    }
-                }}
-            />
-            <Button onClick={handleSearch} className="mb-4">{tCommon("search")}</Button>
-        </div>
+        <SearchInput
+            defaultValue={searchTrigger}
+            onSearch={handleSearch}
+            placeholder={tCommon("search")}
+            containerClassName="mb-4 w-full"
+        />
     );
 
     if (isLoading) {
@@ -301,10 +284,9 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     setSelectedItemsCache: React.Dispatch<React.SetStateAction<Record<string, TreeNodeData>>>;
     initialProducts?: { key: string; title: string }[];
 }) {
-    // Local search for selected products (left panel)
     const [selectedSearchQuery, setSelectedSearchQuery] = useState("");
     const tCommon = useTranslations("Common");
-    // Get all item IDs recursively
+
     const getAllItemIds = useCallback((itemId: string): string[] => {
         const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return [];
@@ -439,7 +421,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
         return [...initial, ...newlySelected];
     }, [selectedIds, items, selectedItemsCache, initialProducts]);
 
-    // Filter selected products based on search query
     const filteredSelectedProducts = useMemo(() => {
         if (!selectedSearchQuery.trim()) return allProducts;
 
@@ -452,7 +433,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
         });
     }, [allProducts, selectedSearchQuery]);
 
-    // Get only newly selected products for confirm button
     const selectedProducts = useMemo(() => {
         const initialIds = new Set(initialProducts.map(p => p.key));
         return Array.from(selectedIds)
@@ -528,8 +508,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     return (
         <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4 h-54">
-                {/* Left: Selected Products */}
-                <div className="border rounded-lg p-4 flex flex-col">
+                <div className="border border-border rounded-lg p-4 flex flex-col">
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-semibold">
                             {tCommon("init_products")}
@@ -545,20 +524,17 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                     setSelectedItemsCache({});
                                 }}
                             >
-                                remove all
+                                {tCommon("un_select_all")}
                             </Button>
                         )}
                     </div>
 
-                    {/* Search for Selected Products */}
                     <div className="relative mb-3">
-                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            type="text"
+                        <SearchInput
+                            defaultValue={selectedSearchQuery}
+                            onSearch={setSelectedSearchQuery}
                             placeholder={tCommon("search")}
-                            value={selectedSearchQuery}
-                            onChange={(e) => setSelectedSearchQuery(e.target.value)}
-                            className="pl-8 h-9 text-xs"
+                            data-id="product-location-search-input"
                         />
                     </div>
 
@@ -566,7 +542,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                         {filteredSelectedProducts.length === 0 ? (
                             <div className="flex items-center justify-center h-full">
                                 <p className="text-xs text-muted-foreground">
-                                    {selectedSearchQuery ? "No results found" : "No products selected"}
+                                    {selectedSearchQuery ? tCommon("no_data") : tCommon("not_product_selected")}
                                 </p>
                             </div>
                         ) : (
@@ -601,10 +577,8 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                     </div>
                 </div>
 
-                <div className="border rounded-lg p-4 flex flex-col">
+                <div className="h-80 border border-border rounded-lg p-4 flex flex-col">
                     <h3 className="text-sm font-semibold mb-3">{tCommon("available_products")}</h3>
-
-                    {/* Search for Tree */}
                     <div>
                         {searchInput}
                     </div>
@@ -613,14 +587,10 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                         <Tree tree={tree} indent={24} toggleIconType="chevron" className="overflow-auto">
                             {tree.getItems().map((item) => {
                                 const data = item.getItemData();
-
-                                // Skip rendering items without name (fallback items)
                                 if (!data.name) {
                                     return null;
                                 }
-
                                 const checkboxState = getCheckboxState(data.id);
-
                                 return (
                                     <TreeItem key={item.getId()} item={item} asChild>
                                         <div>

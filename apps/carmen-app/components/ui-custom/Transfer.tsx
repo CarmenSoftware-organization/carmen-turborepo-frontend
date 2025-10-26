@@ -72,10 +72,6 @@ export const Transfer: React.FC<TransferProps> = ({
 
   const pageSize = typeof pagination === "object" ? pagination.pageSize : 10;
 
-  // Helper function to get display text from item
-
-
-  // รวมข้อมูลทั้งหมดเพื่อใช้ในการแสดงผล
   const allItems = useMemo(() => {
     const safeDataSource = Array.isArray(dataSource) ? dataSource : [];
     const safeLeftDataSource = Array.isArray(leftDataSource)
@@ -199,13 +195,13 @@ export const Transfer: React.FC<TransferProps> = ({
               }
               disabled={disabled}
             />
-            <span className="text-muted-foreground">{tDataControls("select_all")}</span>
+            <span className="text-muted-foreground text-xs">{tDataControls("select_all")}</span>
           </div>
         )}
 
-        <div className="space-y-1">
+        <div className="space-y-2">
           {paginated.map((item) => (
-            <div key={item.key} className="flex items-center space-x-2">
+            <div key={item.key} className="flex items-center gap-2">
               <Checkbox
                 checked={selected.includes(item.key)}
                 onCheckedChange={(checked) =>
@@ -214,18 +210,20 @@ export const Transfer: React.FC<TransferProps> = ({
                 disabled={disabled || item.disabled}
               />
               <div className="w-full">
-                {direction === "left" && leftRender
-                  ? leftRender(item)
-                  : direction === "right" && rightRender
-                    ? rightRender(item)
-                    : render
-                      ? render(item)
-                      : item.title}
+                <p className="text-xs">
+                  {direction === "left" && leftRender
+                    ? leftRender(item)
+                    : direction === "right" && rightRender
+                      ? rightRender(item)
+                      : render
+                        ? render(item)
+                        : item.title}
+                </p>
               </div>
             </div>
           ))}
           {paginated.length === 0 && (
-            <div className="text-muted-foreground">{tDataControls("data_not_found")}</div>
+            <p className="text-muted-foreground text-xs">{tDataControls("data_not_found")}</p>
           )}
         </div>
 
@@ -253,7 +251,7 @@ export const Transfer: React.FC<TransferProps> = ({
           </div>
         )}
 
-        {footer && <div className="mt-2">{footer({ direction })}</div>}
+        {footer && <p className="mt-2">{footer({ direction })}</p>}
       </Card>
     );
   };
@@ -261,7 +259,7 @@ export const Transfer: React.FC<TransferProps> = ({
   return (
     <div className="flex space-x-4 w-full">
       <div className="flex-1">
-        <div className="mb-2 font-semibold">{titles[0]}</div>
+        <span className="mb-2 font-semibold text-xs">{titles[0]}</span>
         {renderList(
           filteredTargetItems,
           targetSelectedKeys,
@@ -288,12 +286,12 @@ export const Transfer: React.FC<TransferProps> = ({
           onClick={() => moveTo("left")} // move target → source
           disabled={disabled || targetSelectedKeys.length === 0}
         >
-          {operations[1]} {/* ← */}
+          {operations[1]}
         </Button>
       </div>
 
       <div className="flex-1">
-        <div className="mb-2 font-semibold">{titles[1]}</div>
+        <span className="mb-2 font-semibold text-xs">{titles[1]}</span>
         {renderList(
           filteredSourceItems,
           sourceSelectedKeys,

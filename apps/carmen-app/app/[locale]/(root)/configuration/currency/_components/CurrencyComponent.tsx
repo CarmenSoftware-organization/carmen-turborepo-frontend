@@ -52,7 +52,6 @@ export default function CurrencyComponent() {
     const totalPages = data?.paginate?.pages ?? 1;
     const totalItems = data?.paginate?.total ?? 0;
 
-    // Refetch currencies after mutation
     const refetchCurrencies = () => {
         queryClient.invalidateQueries({
             queryKey: ['currencies'],

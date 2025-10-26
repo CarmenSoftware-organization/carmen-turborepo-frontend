@@ -6,10 +6,11 @@ import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useAuth } from "@/context/AuthContext";
+import SearchInput from "@/components/ui-custom/SearchInput";
+import { useTranslations } from "next-intl";
 
 interface TreeNodeData {
     id: string;
@@ -27,21 +28,13 @@ interface TreeProductLookupProps {
 
 export default function TreeProductLookup({ onSelect }: TreeProductLookupProps = {}) {
     const { token, buCode } = useAuth();
-    const [searchQuery, setSearchQuery] = useState("");
+    const tCommon = useTranslations("Common");
     const [searchTrigger, setSearchTrigger] = useState("");
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [selectedItemsCache, setSelectedItemsCache] = useState<Record<string, TreeNodeData>>({});
 
-    const handleSearch = useCallback(() => {
-        setSearchTrigger(searchQuery.trim());
-    }, [searchQuery]);
-
-    const handleSearchQueryChange = useCallback((value: string) => {
-        setSearchQuery(value);
-        // Clear search trigger immediately when query is empty
-        if (!value.trim()) {
-            setSearchTrigger("");
-        }
+    const handleSearch = useCallback((value: string) => {
+        setSearchTrigger(value.trim());
     }, []);
 
     // Load all products once (no search param)
@@ -223,20 +216,12 @@ export default function TreeProductLookup({ onSelect }: TreeProductLookupProps =
     }, [filteredProducts, isLoading, selectedProductIdsKey, products?.data, searchTrigger]);
 
     const searchInput = (
-        <div className="flex gap-2">
-            <Input
-                className="mb-4"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => handleSearchQueryChange(e.target.value)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                        handleSearch();
-                    }
-                }}
-            />
-            <Button onClick={handleSearch} className="mb-4">Search</Button>
-        </div>
+        <SearchInput
+            defaultValue={searchTrigger}
+            onSearch={handleSearch}
+            placeholder={tCommon("search")}
+            containerClassName="mb-4"
+        />
     );
 
     if (isLoading) {

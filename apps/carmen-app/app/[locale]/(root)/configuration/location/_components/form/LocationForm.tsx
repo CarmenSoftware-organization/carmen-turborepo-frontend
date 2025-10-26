@@ -1,5 +1,5 @@
 import {
-  formLocationSchema,
+  createFormLocationSchema,
   FormLocationValues,
   LocationByIdDto,
   PHYSICAL_COUNT_TYPE,
@@ -7,7 +7,7 @@ import {
 } from "@/dtos/config.dto";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { Save, X } from "lucide-react";
+import { ArrowLeft, Save, X } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useRouter } from "@/lib/navigation";
+import { Link, useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
@@ -86,6 +86,11 @@ export default function LocationForm({
   const isPending = createMutation.isPending || updateMutation.isPending;
   const isViewMode = mode === formType.VIEW;
 
+  const formLocationSchema = useMemo(() => createFormLocationSchema({
+    nameRequired: tLocation('location_name_required'),
+    deliveryPointRequired: tLocation('delivery_point_required'),
+  }), [tLocation]);
+
   const initUsers = useMemo(() => {
     return (
       initialData?.user_location?.map((user) => ({
@@ -104,9 +109,6 @@ export default function LocationForm({
     );
   }, [initialData?.product_location]);
 
-  console.log('initProducts', initProducts);
-
-
   const initUserKeys = useMemo(() => {
     return initUsers.map((user) => user.key);
   }, [initUsers]);
@@ -115,7 +117,6 @@ export default function LocationForm({
     return initProducts.map((product) => product.key);
   }, [initProducts]);
 
-  // State สำหรับเก็บ selected items
   const [selectedUsers, setSelectedUsers] = useState<(string | number)[]>([]);
 
   const form = useForm<FormLocationValues>({
@@ -140,14 +141,11 @@ export default function LocationForm({
     },
   });
 
-
-  // Fix Transfer initialization - update when init data changes
   useEffect(() => {
     if (initUserKeys.length > 0) {
       setSelectedUsers(initUserKeys);
     }
   }, [initUserKeys]);
-
 
   const onCancel = () => {
     if (mode === formType.EDIT) {
@@ -159,13 +157,10 @@ export default function LocationForm({
 
   const handleUsersChange = transferHandler({ form, fieldName: "users", setSelected: setSelectedUsers });
 
-  // Handle TreeProductLookup selection
   const handleTreeProductSelect = useCallback((productIds: { id: string }[]) => {
-    // Get current selected product IDs from initProductKeys
     const currentProductIds = initProductKeys.map(key => key.toString());
     const newProductIds = productIds.map(p => p.id);
 
-    // Calculate add and remove
     const toAdd = newProductIds
       .filter(id => !currentProductIds.includes(id))
       .map(id => ({ id }));
@@ -173,7 +168,6 @@ export default function LocationForm({
       .filter(id => !newProductIds.includes(id))
       .map(id => ({ id }));
 
-    // Update form values
     form.setValue("products", {
       add: toAdd,
       remove: toRemove,
@@ -184,18 +178,14 @@ export default function LocationForm({
     try {
       if (mode === formType.EDIT) {
         const res = await updateMutation.mutateAsync(data);
-
         if (res) {
-          toastSuccess({ message: "Location updated successfully" });
-
-          // Invalidate all related queries with correct query keys
+          toastSuccess({ message: tLocation("edit_store_location_description") });
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: ["location", buCode, initialData?.id] }),
             queryClient.invalidateQueries({ queryKey: ["locations", buCode] }),
             queryClient.invalidateQueries({ queryKey: ["users"] }),
             queryClient.invalidateQueries({ queryKey: ["products"] }),
           ]);
-
           onViewMode();
         }
       } else {
@@ -203,7 +193,7 @@ export default function LocationForm({
           data
         )) as LocationResponse;
         if (response?.id) {
-          toastSuccess({ message: "Location created successfully" });
+          toastSuccess({ message: tLocation("add_store_location_description") });
           router.push(`/configuration/location/${response.id}`);
           return;
         }
@@ -220,15 +210,28 @@ export default function LocationForm({
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-20 bg-background border-b">
+    <div className="max-w-3xl mx-auto">
+      <div className="sticky top-0 z-20 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-2 pb-2">
-          <h1 className="text-xl font-semibold">
-            {mode === formType.EDIT
-              ? tLocation("edit_store_location")
-              : tLocation("add_store_location")}
-          </h1>
+          <div className="flex items-center gap-2">
+            <Button
+              size={'sm'}
+              variant={'outline'}
+              className="h-7 w-7"
+              asChild
+            >
+              <Link
+                href="/configuration/location"
+              >
+                <ArrowLeft />
+              </Link>
+            </Button>
+            <h1 className="text-xl font-semibold">
+              {mode === formType.EDIT
+                ? tLocation("edit_store_location")
+                : tLocation("add_store_location")}
+            </h1>
+          </div>
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -333,28 +336,24 @@ export default function LocationForm({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="col-span-2">
+                    <FormLabel>{tCommon("description")}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        {...field}
+                        disabled={isViewMode}
+                        rows={3}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
-
-            {/* Description */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="max-w-md">
-                  <FormLabel>{tCommon("description")}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      disabled={isViewMode}
-                      rows={3}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Status & Physical Count */}
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -411,10 +410,9 @@ export default function LocationForm({
               />
             </div>
 
-            {/* Transfer Components */}
-            <div className="space-y-4 pt-4 border-t">
+            <div className="space-y-4 pt-4 border-t border-border">
               <div>
-                <h3 className="text-sm font-semibold mb-3">{tCommon("users")}</h3>
+                <h3 className="text-xs font-semibold mb-3">{tCommon("users")}</h3>
                 <Transfer
                   dataSource={listUser || []}
                   leftDataSource={initUsers}

@@ -331,7 +331,8 @@
     "loading": "กำลังโหลด...",
     "select_all": "เลือกทั้งหมด",
     "un_select_all": "ยกเลิกการเลือกทั้งหมด",
-    "selected": "เลือก"
+    "selected": "เลือก",
+    "not_product_selected": "ไม่ได้เลือกสินค้า"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -454,7 +455,12 @@
     "update_success": "แก้ไขสกุลเงินเรียบร้อย",
     "update_error": "แก้ไขสกุลเงินไม่สำเร็จ",
     "delete_success": "ลบสกุลเงินเรียบร้อย",
-    "delete_error": "ลบสกุลเงินไม่สำเร็จ"
+    "delete_error": "ลบสกุลเงินไม่สำเร็จ",
+    "currency_code_required": "กรุณากรอกรหัสสกุลเงิน",
+    "currency_name_required": "กรุณากรอกชื่อสกุลเงิน",
+    "currency_symbol_required": "กรุณากรอกสัญลักษณ์สกุลเงิน",
+    "currency_symbol_max": "สัญลักษณ์สกุลเงินต้องไม่เกิน 3 ตัวอักษร",
+    "exchange_rate_positive": "อัตราแลกเปลี่ยนต้องมากกว่า 0"
   },
   "DeliveryPoint": {
     "title": "จุดส่งสินค้า",
@@ -505,7 +511,9 @@
     "physical_count_type": "ประเภทการตรวจนับสินค้า",
     "del_location": "ลบสถานที่เก็บสินค้า",
     "del_location_description": "คุณแน่ใจหรือไม่ที่จะลบสถานที่เก็บสินค้านี้? การลบสถานที่เก็บสินค้าจะส่งผลต่อการซื้อขายสินค้าและการจัดการรายการสินค้า",
-    "no_locations_available": "ไม่มีสถานที่เก็บสินค้า"
+    "no_locations_available": "ไม่มีสถานที่เก็บสินค้า",
+    "location_name_required": "กรุณากรอกชื่อสถานที่",
+    "delivery_point_required": "กรุณาเลือกจุดส่งของ"
   },
   "InventoryManagement": {
     "StockOverview": {

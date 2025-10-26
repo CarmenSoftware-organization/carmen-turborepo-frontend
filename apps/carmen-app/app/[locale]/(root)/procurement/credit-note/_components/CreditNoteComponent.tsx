@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
@@ -11,7 +11,6 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import CreditNoteList from "./CreditNoteList";
 import { VIEW } from "@/constants/enum";
 import CreditNoteGrid from "./CreditNoteGrid";
-import ToggleView from "@/components/ui-custom/ToggleView";
 import { useCreditNoteQuery } from "@/hooks/useCreditNote";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "@/lib/navigation";
@@ -114,7 +113,24 @@ export default function CreditNoteComponent() {
           <Filter className="h-4 w-4" />
           {tDataControls("add_filter")}
         </Button>
-        <ToggleView view={view} setView={setView} />
+        <div className="flex items-center gap-2">
+          <Button
+            variant={view === VIEW.LIST ? 'default' : 'outlinePrimary'}
+            size={'sm'}
+            onClick={() => setView(VIEW.LIST)}
+            aria-label="List view"
+          >
+            <List className="h-4 w-4" />
+          </Button>
+          <Button
+            variant={view === VIEW.GRID ? 'default' : 'outlinePrimary'}
+            size={'sm'}
+            onClick={() => setView(VIEW.GRID)}
+            aria-label="Grid view"
+          >
+            <Grid className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

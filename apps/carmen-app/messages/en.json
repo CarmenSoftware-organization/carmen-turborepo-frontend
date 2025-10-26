@@ -334,7 +334,8 @@
     "loading": "Loading...",
     "select_all": "Select All",
     "un_select_all": "Unselect All",
-    "selected": "Selected"
+    "selected": "Selected",
+    "not_product_selected": "Not Product Selected"
   },
   "TableHeader": {
     "all": "All",
@@ -455,7 +456,12 @@
     "update_success": "Currency updated successfully",
     "update_error": "Failed to update currency",
     "delete_success": "Currency deleted successfully",
-    "delete_error": "Failed to delete currency"
+    "delete_error": "Failed to delete currency",
+    "currency_code_required": "Please enter currency code",
+    "currency_name_required": "Please enter currency name",
+    "currency_symbol_required": "Please enter currency symbol",
+    "currency_symbol_max": "Currency symbol must not exceed 3 characters",
+    "exchange_rate_positive": "Exchange rate must be greater than 0"
   },
   "DeliveryPoint": {
     "title": "Delivery Point",
@@ -506,7 +512,9 @@
     "physical_count_type": "Physical Count Type",
     "del_location": "Delete Store Location",
     "del_location_description": "Are you sure you want to delete this store location? This action cannot be undone.",
-    "no_locations_available": "No locations available"
+    "no_locations_available": "No locations available",
+    "location_name_required": "Please enter location name",
+    "delivery_point_required": "Please select delivery point"
   },
   "InventoryManagement": {
     "StockOverview": {

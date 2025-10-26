@@ -76,14 +76,18 @@ export interface LocationByIdDto {
   info?: any;
 }
 
-export const formLocationSchema = z.object({
+// Schema factory for i18n support
+export const createFormLocationSchema = (messages: {
+  nameRequired: string;
+  deliveryPointRequired: string;
+}) => z.object({
   id: z.string().optional(),
-  name: z.string().min(1, "Please enter name"),
+  name: z.string().min(1, messages.nameRequired),
   location_type: z.nativeEnum(INVENTORY_TYPE),
   description: z.string().optional(),
   physical_count_type: z.nativeEnum(PHYSICAL_COUNT_TYPE),
   is_active: z.boolean(),
-  delivery_point_id: z.string().min(1, "Please select delivery point"),
+  delivery_point_id: z.string().min(1, messages.deliveryPointRequired),
   users: z.object({
     add: z.array(
       z.object({
@@ -108,6 +112,12 @@ export const formLocationSchema = z.object({
       })
     ),
   }),
+});
+
+// Default schema for backward compatibility
+export const formLocationSchema = createFormLocationSchema({
+  nameRequired: "Please enter name",
+  deliveryPointRequired: "Please select delivery point",
 });
 
 export type FormLocationValues = z.infer<typeof formLocationSchema>;

@@ -33,8 +33,8 @@ import {
   CurrencyGetDto,
   CurrencyCreateDto,
   CurrencyUpdateDto,
-  currencyCreateSchema,
-  currencyUpdateSchema
+  createCurrencyCreateSchema,
+  createCurrencyUpdateSchema
 } from "@/dtos/currency.dto";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { useAuth } from "@/context/AuthContext";
@@ -73,7 +73,18 @@ export default function CurrencyDialog({
     []
   );
 
-  const schema = mode === formType.ADD ? currencyCreateSchema : currencyUpdateSchema;
+  const schema = useMemo(() => {
+    const messages = {
+      codeRequired: tCurrency('currency_code_required'),
+      nameRequired: tCurrency('currency_name_required'),
+      symbolRequired: tCurrency('currency_symbol_required'),
+      symbolMax: tCurrency('currency_symbol_max'),
+      exchangeRatePositive: tCurrency('exchange_rate_positive'),
+    };
+    return mode === formType.ADD
+      ? createCurrencyCreateSchema(messages)
+      : createCurrencyUpdateSchema(messages);
+  }, [mode, tCurrency]);
 
   const form = useForm<CurrencyCreateDto | CurrencyUpdateDto>({
     resolver: zodResolver(schema),
