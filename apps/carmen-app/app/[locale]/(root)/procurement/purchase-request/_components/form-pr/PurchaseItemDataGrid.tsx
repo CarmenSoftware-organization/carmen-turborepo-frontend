@@ -41,6 +41,7 @@ import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 interface Props {
     currentFormType: formType;
@@ -622,7 +623,10 @@ export default function PurchaseItemDataGrid({
                                         onAddItem();
                                     }}
                                     size="sm"
-                                    className="w-7 h-7"
+                                    className={cn(
+                                        "w-7 h-7",
+                                        !workflow_id && "bg-muted-foreground"
+                                    )}
                                     disabled={!workflow_id}
                                 >
                                     <Plus className="h-4 w-4" />

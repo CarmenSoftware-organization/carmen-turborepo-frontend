@@ -93,7 +93,6 @@ export default function MainForm({ mode, initValues }: Props) {
 
     const queryClient = useQueryClient();
 
-    // ฟังก์ชันตรวจสอบว่ามีการเปลี่ยนแปลงข้อมูลหรือไม่
     const hasFormChanges = (): boolean => {
         const currentValues = form.getValues();
         const bodyValues = currentValues.body;
@@ -352,6 +351,9 @@ export default function MainForm({ mode, initValues }: Props) {
 
     // const watchForm = form.watch();
 
+    // console.log('form.formState.errors', form.formState.errors);
+
+
     return (
         <>
             <DetailsAndComments
@@ -372,6 +374,7 @@ export default function MainForm({ mode, initValues }: Props) {
                                     isCreatingPr={isCreatingPr || isPending}
                                     prStatus={prStatus ?? ""}
                                     hasFormErrors={Object.keys(form.formState.errors).length > 0}
+                                    workflowId={form.watch('body.workflow_id')}
                                 />
                                 <HeadForm
                                     form={form}
@@ -424,6 +427,7 @@ export default function MainForm({ mode, initValues }: Props) {
                             isNewPr={isNewPr}
                             isDraft={isDraft}
                             isPending={isPending}
+                            isSubmitDisabled={!form.watch('body.workflow_id')}
                             onReject={onReject}
                             onSendBack={onSendBack}
                             onReview={onReview}

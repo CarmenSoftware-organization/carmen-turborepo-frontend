@@ -6,6 +6,7 @@ import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, X } from 
 import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface ActionFieldsProps {
     readonly mode: formType;
@@ -17,6 +18,7 @@ interface ActionFieldsProps {
     readonly isCreatingPr: boolean;
     readonly prStatus: string;
     readonly hasFormErrors: boolean;
+    readonly workflowId?: string;
 }
 
 export default function ActionFields({
@@ -28,12 +30,15 @@ export default function ActionFields({
     hasFormChanges,
     isCreatingPr,
     prStatus,
-    hasFormErrors
+    hasFormErrors,
+    workflowId
 }: ActionFieldsProps) {
     const tPr = useTranslations("PurchaseRequest");
     const router = useRouter();
     const tStatus = useTranslations("Status");
     const tCommon = useTranslations("Common");
+
+    const isDisabled = isCreatingPr || hasFormErrors || (mode === formType.ADD && !workflowId)
 
     const convertStatus = (status: string) => {
         if (status === 'submit') {
@@ -157,7 +162,10 @@ export default function ActionFields({
                                             variant="default"
                                             size={"sm"}
                                             type="submit"
-                                            disabled={isCreatingPr || hasFormErrors}
+                                            disabled={isDisabled}
+                                            className={cn(
+                                                isDisabled && "bg-muted-foreground",
+                                            )}
                                         >
                                             {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
                                         </Button>

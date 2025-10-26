@@ -9,6 +9,7 @@ interface ActionButtonsProps {
     readonly isDraft: boolean;
 
     readonly isPending: boolean;
+    readonly isSubmitDisabled?: boolean;
 
     readonly onReject: () => void;
     readonly onSendBack: () => void;
@@ -25,6 +26,7 @@ export default function ActionButtons({
     isNewPr,
     isDraft,
     isPending,
+    isSubmitDisabled = false,
     onReject,
     onSendBack,
     onReview,
@@ -128,7 +130,7 @@ export default function ActionButtons({
                                 e.stopPropagation();
                                 onSubmitPr();
                             }}
-                            disabled={isPending}
+                            disabled={isPending || isSubmitDisabled}
                         >
                             <SendIcon className="w-4 h-4" />
                             {tAction("submit")}
