@@ -27,7 +27,8 @@ const formatDate = (dateString: string | undefined, includeTime = false) => {
         return dateString
     }
 };
-const formatValue = (value: string, dataType: string) => {
+const formatValue = (value: string | undefined, dataType: string | undefined) => {
+    if (!value) return "N/A"
     switch (dataType) {
         case "date":
         case "datetime":
@@ -39,11 +40,12 @@ const formatValue = (value: string, dataType: string) => {
     }
 };
 
-const getContactIcon = (type: string) => {
+const getContactIcon = (type: string | undefined) => {
+    if (!type) return null
     switch (type) {
-        case "phone":
+        case "phone_number":
             return <Phone className="h-3 w-3" />
-        case "email":
+        case "email_address":
             return <Mail className="h-3 w-3" />
         case "website":
             return <Globe className="h-3 w-3" />
@@ -126,17 +128,20 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                                 <div className="flex items-center gap-1 mb-2">
                                     <MapPin className="h-3 w-3 text-gray-500" />
                                     <p className="text-xs font-medium text-gray-700">
-                                        {address.address_type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                                        {address?.address_type?.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                                     </p>
                                 </div>
                                 <Separator className="my-2" />
-                                <div className="space-y-1 text-xs">
-                                    <p>{address.data.street}</p>
-                                    <p>
-                                        {address.data.city}, {address.data.state} {address.data.zip}
-                                    </p>
-                                    <p>{address.data.country}</p>
-                                </div>
+                                {address?.data && (
+                                    <div className="space-y-1 text-xs">
+                                        <p>{address.data.address_line1}</p>
+                                        {address.data.address_line2 && <p>{address.data.address_line2}</p>}
+                                        <p>
+                                            {address.data.district}, {address.data.province} {address.data.postal_code}
+                                        </p>
+                                        <p>{address.data.country}</p>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -148,9 +153,9 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                         {vendor?.vendor_contact?.map((contact, index) => (
                             <div key={index} className="p-2">
                                 <div className="flex items-center gap-1 mb-1">
-                                    {getContactIcon(contact.contact_type)}
+                                    {contact?.contact_type && getContactIcon(contact.contact_type)}
                                     <p className="text-xs">
-                                        {contact.contact_type.replace(/\b\w/g, (l) => l.toUpperCase())}
+                                        {contact?.contact_type?.replace(/\b\w/g, (l) => l.toUpperCase())}
                                     </p>
                                 </div>
                                 <p className="text-xs mb-2">{contact.description}</p>
