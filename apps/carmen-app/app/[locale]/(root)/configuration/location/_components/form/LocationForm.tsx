@@ -34,6 +34,7 @@ import { useTranslations } from "next-intl";
 import { useUserList } from "@/hooks/useUserList";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 import { TreeProductLookup } from "@/components/lookup/tree-product";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -409,10 +410,12 @@ export default function LocationForm({
                 )}
               />
             </div>
-
-            <div className="space-y-4 pt-4 border-t border-border">
-              <div>
-                <h3 className="text-xs font-semibold mb-3">{tCommon("users")}</h3>
+            <Tabs defaultValue="users">
+              <TabsList>
+                <TabsTrigger value="users">{tCommon("users")}</TabsTrigger>
+                <TabsTrigger value="products">{tCommon("products")}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="users">
                 <Transfer
                   dataSource={listUser || []}
                   leftDataSource={initUsers}
@@ -422,10 +425,8 @@ export default function LocationForm({
                   operations={["<", ">"]}
                   disabled={isViewMode || isLoadingUsers}
                 />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-semibold mb-3">{tCommon("products")}</h3>
+              </TabsContent>
+              <TabsContent value="products">
                 <div className={isViewMode ? "pointer-events-none opacity-50" : ""}>
                   <TreeProductLookup
                     onSelect={handleTreeProductSelect}
@@ -433,8 +434,8 @@ export default function LocationForm({
                     initialProducts={initProducts}
                   />
                 </div>
-              </div>
-            </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </FormProvider>
       </div>

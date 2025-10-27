@@ -35,7 +35,6 @@ export default function TreeProductLookup({
         setSearchTrigger(value.trim());
     }, []);
 
-    // Load all products once (no search param)
     const { products, isLoading } = useProductQuery({
         token,
         buCode,
@@ -44,7 +43,6 @@ export default function TreeProductLookup({
         }
     });
 
-    // Filter products on client side when search is triggered
     const filteredProducts = useMemo(() => {
         if (!products?.data || !searchTrigger.trim()) {
             return products?.data || [];
@@ -64,7 +62,6 @@ export default function TreeProductLookup({
             .sort((a, b) => a.localeCompare(b));
     }, [selectedIds]);
 
-    // Build tree data structure from filtered product data + keep selected items
     const { items, rootItems } = useMemo(() => {
         if (isLoading || !filteredProducts) {
             return { items: {}, rootItems: [] };
@@ -151,7 +148,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
         initialProducts
     });
 
-    // Auto-trigger onSelect when selection changes
     useEffect(() => {
         if (onSelect) {
             const allProductIds = Array.from(selectedIds)
@@ -164,7 +160,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
         }
     }, [selectedIds, items, selectedItemsCache, onSelect]);
 
-    // Initialize tree
     const tree = useTree<TreeNodeData>({
         rootItemId: 'root',
         getItemName: (item) => {

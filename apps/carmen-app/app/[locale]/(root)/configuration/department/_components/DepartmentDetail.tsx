@@ -72,7 +72,7 @@ export default function DepartmentDetail({
     if (currentMode === formType.EDIT) {
       handleChangeMode(formType.VIEW);
     } else {
-      router.push("/configuration/department");
+      router.back();
     }
   };
 

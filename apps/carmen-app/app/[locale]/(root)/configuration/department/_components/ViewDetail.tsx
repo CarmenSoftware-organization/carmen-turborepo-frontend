@@ -22,7 +22,7 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
     const tCommon = useTranslations("Common");
     const tHeader = useTranslations("TableHeader");
     return (
-        <div className="space-y-4 max-w-xl mx-auto">
+        <div className="space-y-4 max-w-3xl mx-auto">
             <div className="flex items-center justify-between">
                 <div className="fxr-c gap-4">
                     <Button
