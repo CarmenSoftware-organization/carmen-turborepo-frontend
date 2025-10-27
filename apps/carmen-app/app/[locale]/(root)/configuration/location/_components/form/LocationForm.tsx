@@ -26,7 +26,6 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Transfer } from "@/components/ui-custom/Transfer";
-import TreeProductLookup from "@/components/lookup/TreeProductLookup";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { useQueryClient } from "@tanstack/react-query";
@@ -34,6 +33,7 @@ import transferHandler from "@/components/form-custom/TransferHandler";
 import { useTranslations } from "next-intl";
 import { useUserList } from "@/hooks/useUserList";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import { TreeProductLookup } from "@/components/lookup/tree-product";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;

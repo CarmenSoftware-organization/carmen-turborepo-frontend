@@ -268,14 +268,13 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
 
         const ids = [itemId];
         if (item.children) {
-            item.children.forEach(childId => {
+            for (const childId of item.children) {
                 ids.push(...getAllItemIds(childId));
-            });
+            }
         }
         return ids;
     }, [items, selectedItemsCache]);
 
-    // Get all product IDs under a node (recursively)
     const getAllProductIds = useCallback((itemId: string): string[] => {
         const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return [];
@@ -285,13 +284,47 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
         }
 
         const productIds: string[] = [];
-        (item.children || []).forEach(childId => {
+        for (const childId of (item.children || [])) {
             productIds.push(...getAllProductIds(childId));
-        });
+        }
         return productIds;
     }, [items, selectedItemsCache]);
 
-    // Handle checkbox change
+    const handleProductSelection = useCallback((itemId: string, item: TreeNodeData, checked: boolean, newSet: Set<string>) => {
+        if (checked) {
+            newSet.add(itemId);
+            setSelectedItemsCache(prevCache => ({
+                ...prevCache,
+                [itemId]: item
+            }));
+        } else {
+            newSet.delete(itemId);
+        }
+    }, [setSelectedItemsCache]);
+
+    const handleGroupSelection = useCallback((itemId: string, checked: boolean, newSet: Set<string>) => {
+        const productIds = getAllProductIds(itemId);
+
+        if (checked) {
+            const newCache: Record<string, TreeNodeData> = {};
+            for (const id of productIds) {
+                newSet.add(id);
+                const productItem = items[id] || selectedItemsCache[id];
+                if (productItem) {
+                    newCache[id] = productItem;
+                }
+            }
+            setSelectedItemsCache(prevCache => ({
+                ...prevCache,
+                ...newCache
+            }));
+        } else {
+            for (const id of productIds) {
+                newSet.delete(id);
+            }
+        }
+    }, [getAllProductIds, items, selectedItemsCache, setSelectedItemsCache]);
+
     const handleCheckboxChange = useCallback((itemId: string, checked: boolean) => {
         const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return;
@@ -300,44 +333,15 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
             const newSet = new Set(prev);
 
             if (item.type === 'product') {
-                // Toggle single product
-                if (checked) {
-                    newSet.add(itemId);
-                    // Cache the product when selected
-                    setSelectedItemsCache(prevCache => ({
-                        ...prevCache,
-                        [itemId]: item
-                    }));
-                } else {
-                    newSet.delete(itemId);
-                }
+                handleProductSelection(itemId, item, checked, newSet);
             } else {
-                // Toggle all products under this node
-                const productIds = getAllProductIds(itemId);
-                if (checked) {
-                    // Cache all products when selecting a category/subcategory/itemgroup
-                    const newCache: Record<string, TreeNodeData> = {};
-                    productIds.forEach(id => {
-                        newSet.add(id);
-                        const productItem = items[id] || selectedItemsCache[id];
-                        if (productItem) {
-                            newCache[id] = productItem;
-                        }
-                    });
-                    setSelectedItemsCache(prevCache => ({
-                        ...prevCache,
-                        ...newCache
-                    }));
-                } else {
-                    productIds.forEach(id => newSet.delete(id));
-                }
+                handleGroupSelection(itemId, checked, newSet);
             }
 
             return newSet;
         });
-    }, [items, selectedItemsCache, getAllProductIds, setSelectedIds, setSelectedItemsCache]);
+    }, [items, selectedItemsCache, setSelectedIds, handleProductSelection, handleGroupSelection]);
 
-    // Check if an item is checked (for indeterminate state)
     const getCheckboxState = useCallback((itemId: string): { checked: boolean; indeterminate: boolean } => {
         const item = items[itemId] || selectedItemsCache[itemId];
         if (!item) return { checked: false, indeterminate: false };
@@ -408,24 +412,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
         });
     }, [allProducts, selectedSearchQuery]);
 
-    const selectedProducts = useMemo(() => {
-        const initialIds = new Set(initialProducts.map(p => p.key));
-        return Array.from(selectedIds)
-            .filter(id => {
-                const item = items[id] || selectedItemsCache[id];
-                const productId = id.replace('product-', '');
-                return item?.type === 'product' && !initialIds.has(productId);
-            })
-            .map(id => {
-                const item = items[id] || selectedItemsCache[id];
-                return {
-                    id: id.replace('product-', ''),
-                    name: item.name,
-                    code: item.code,
-                };
-            });
-    }, [selectedIds, items, selectedItemsCache, initialProducts]);
-
     // Auto-trigger onSelect when selection changes (send ALL selected products including initial)
     useEffect(() => {
         if (onSelect) {
@@ -437,7 +423,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                 .map(id => ({ id: id.replace('product-', '') }));
             onSelect(allProductIds);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedIds]);
 
     const tree = useTree<TreeNodeData>({
@@ -488,14 +473,13 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                         <h3 className="text-sm font-semibold">
                             {tCommon("init_products")}
                         </h3>
-                        {selectedProducts.length > 0 && (
+                        {selectedIds.size > 0 && (
                             <Button
                                 variant="ghost"
                                 size="sm"
                                 data-id="remove-all-selected-products"
                                 onClick={() => {
-                                    const initialIds = new Set(initialProducts.map(p => `product-${p.key}`));
-                                    setSelectedIds(initialIds);
+                                    setSelectedIds(new Set<string>());
                                     setSelectedItemsCache({});
                                 }}
                                 className="text-destructive"
@@ -504,6 +488,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                 {tCommon("un_select_all")}
                             </Button>
                         )}
+
                     </div>
 
                     <SearchInput
@@ -644,7 +629,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                 );
                             }
 
-                            // List view - use items (built from filteredProducts) as source
                             const availableProducts = Object.values(items)
                                 .filter(item => item.type === 'product');
                             const selectedCount = availableProducts.filter(p => selectedIds.has(p.id)).length;
@@ -653,7 +637,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
 
                             return (
                                 <div className="space-y-1">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between border-b border-border pb-2">
                                         <div className="flex items-center gap-2 px-2 py-1">
                                             <Checkbox
                                                 checked={allSelected}
@@ -677,7 +661,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                                     }
                                                 }}
                                             />
-                                            <p className="text-xs font-medium">
+                                            <p className="text-sm font-medium">
                                                 {tCommon("select_all")}
                                             </p>
                                         </div>
