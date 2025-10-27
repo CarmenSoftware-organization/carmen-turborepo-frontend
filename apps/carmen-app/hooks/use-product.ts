@@ -123,10 +123,10 @@ export const useUpdateProductMutation = () => {
       const API_URL_BY_ID = productApiUrl(buCode, id);
       return updateApiRequest(API_URL_BY_ID, token, product, "Error updating product", "PATCH");
     },
-    onSuccess: (_data, variables) => {
-      // Invalidate both list and detail
-      queryClient.invalidateQueries({ queryKey: ["products", variables.buCode] });
-      queryClient.invalidateQueries({ queryKey: ["product", variables.buCode, variables.id] });
+    onSuccess: async (_data, variables) => {
+      // Invalidate both list and detail queries and wait for them to refetch
+      await queryClient.invalidateQueries({ queryKey: ["products", variables.buCode] });
+      await queryClient.invalidateQueries({ queryKey: ["product", variables.buCode, variables.id] });
     },
   });
 };

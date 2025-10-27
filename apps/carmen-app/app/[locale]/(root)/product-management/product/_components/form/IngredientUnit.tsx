@@ -190,6 +190,43 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         appendIngredientUnitRemove({ product_ingredient_unit_id: unitId });
     }, [appendIngredientUnitRemove]);
 
+    // Handler to sync data field changes to update array
+    const handleFieldChange = useCallback((
+        dataIndex: number,
+        field: 'from_unit_id' | 'from_unit_qty' | 'to_unit_id' | 'to_unit_qty',
+        value: string | number
+    ) => {
+        const unitsData = watch('ingredient_units');
+        if (!unitsData?.data || !unitsData.data[dataIndex]) return;
+
+        const currentUnit = unitsData.data[dataIndex];
+        const currentUpdate = unitsData?.update || [];
+
+        // Find if this unit is already in update array
+        const existingUpdateIndex = currentUpdate.findIndex(
+            (u) => u.product_ingredient_unit_id === currentUnit.id
+        );
+
+        const updatedUnit = {
+            product_ingredient_unit_id: currentUnit.id,
+            from_unit_id: field === 'from_unit_id' ? value as string : currentUnit.from_unit_id,
+            from_unit_qty: field === 'from_unit_qty' ? value as number : currentUnit.from_unit_qty,
+            to_unit_id: field === 'to_unit_id' ? value as string : currentUnit.to_unit_id,
+            to_unit_qty: field === 'to_unit_qty' ? value as number : currentUnit.to_unit_qty,
+            description: currentUnit.description || '',
+            is_active: currentUnit.is_active ?? true,
+            is_default: currentUnit.is_default ?? false
+        };
+
+        if (existingUpdateIndex >= 0) {
+            currentUpdate[existingUpdateIndex] = updatedUnit;
+        } else {
+            currentUpdate.push(updatedUnit);
+        }
+
+        setValue('ingredient_units.update', currentUpdate, { shouldDirty: true });
+    }, [watch, setValue]);
+
     const handleDefaultChange = useCallback((index: number, isDataField: boolean, checked: boolean) => {
         if (!checked) return; // Only handle when setting to true
 
@@ -351,7 +388,10 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                             <FormControl>
                                                 <NumberInput
                                                     value={field.value}
-                                                    onChange={field.onChange}
+                                                    onChange={(value) => {
+                                                        field.onChange(value);
+                                                        handleFieldChange(unit.dataIndex!, 'from_unit_qty', value);
+                                                    }}
                                                     min={0}
                                                     step={0}
                                                     disabled
@@ -447,7 +487,10 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                             <FormControl>
                                                 <NumberInput
                                                     value={field.value}
-                                                    onChange={field.onChange}
+                                                    onChange={(value) => {
+                                                        field.onChange(value);
+                                                        handleFieldChange(unit.dataIndex!, 'to_unit_qty', value);
+                                                    }}
                                                     min={0}
                                                     step={0}
                                                     classNames="w-16 h-7"
@@ -465,7 +508,10 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                                             <FormControl>
                                                 <UnitCombobox
                                                     value={field.value}
-                                                    onChange={field.onChange}
+                                                    onChange={(value) => {
+                                                        field.onChange(value);
+                                                        handleFieldChange(unit.dataIndex!, 'to_unit_id', value);
+                                                    }}
                                                     availableUnits={availableUnits}
                                                 />
                                             </FormControl>
@@ -643,7 +689,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 },
             }] : [])
         ],
-        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeIngredientUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits]
+        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeIngredientUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits, handleFieldChange]
     );
 
     const table = useReactTable({

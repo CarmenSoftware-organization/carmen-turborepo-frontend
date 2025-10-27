@@ -11,7 +11,7 @@ import LocationInfo from "./LocationInfo";
 import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
 import ProductAttribute from "./ProductAttribute";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "@/lib/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -181,6 +181,11 @@ export default function FormProduct({ mode, initialValues }: Props) {
     resolver: zodResolver(productFormSchema),
     defaultValues: transformInitialValues as ProductFormValues,
   });
+
+  // Reset form when initialValues changes (after update)
+  useEffect(() => {
+    form.reset(transformInitialValues as ProductFormValues);
+  }, [transformInitialValues, form]);
 
   const onSubmit = useCallback(async (data: ProductFormValues) => {
     try {

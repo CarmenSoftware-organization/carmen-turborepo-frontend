@@ -269,6 +269,43 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         appendOrderUnitRemove({ product_order_unit_id: unitId });
     }, [appendOrderUnitRemove]);
 
+    // Handler to sync data field changes to update array
+    const handleFieldChange = useCallback((
+        dataIndex: number,
+        field: 'from_unit_id' | 'from_unit_qty' | 'to_unit_id' | 'to_unit_qty',
+        value: string | number
+    ) => {
+        const unitsData = watch('order_units');
+        if (!unitsData?.data || !unitsData.data[dataIndex]) return;
+
+        const currentUnit = unitsData.data[dataIndex];
+        const currentUpdate = unitsData?.update || [];
+
+        // Find if this unit is already in update array
+        const existingUpdateIndex = currentUpdate.findIndex(
+            (u) => u.product_order_unit_id === currentUnit.id
+        );
+
+        const updatedUnit = {
+            product_order_unit_id: currentUnit.id,
+            from_unit_id: field === 'from_unit_id' ? value as string : currentUnit.from_unit_id,
+            from_unit_qty: field === 'from_unit_qty' ? value as number : currentUnit.from_unit_qty,
+            to_unit_id: field === 'to_unit_id' ? value as string : currentUnit.to_unit_id,
+            to_unit_qty: field === 'to_unit_qty' ? value as number : currentUnit.to_unit_qty,
+            description: currentUnit.description || '',
+            is_active: currentUnit.is_active ?? true,
+            is_default: currentUnit.is_default ?? false
+        };
+
+        if (existingUpdateIndex >= 0) {
+            currentUpdate[existingUpdateIndex] = updatedUnit;
+        } else {
+            currentUpdate.push(updatedUnit);
+        }
+
+        setValue('order_units.update', currentUpdate, { shouldDirty: true });
+    }, [watch, setValue]);
+
     // Filter available units - exclude units that are already used
     const getAvailableUnits = useCallback((currentUnitId?: string) => {
         if (!units?.data) return [];
@@ -369,7 +406,10 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                             <FormControl>
                                                 <NumberInput
                                                     value={field.value}
-                                                    onChange={field.onChange}
+                                                    onChange={(value) => {
+                                                        field.onChange(value);
+                                                        handleFieldChange(unit.dataIndex!, 'from_unit_qty', value);
+                                                    }}
                                                     min={0}
                                                     step={0}
                                                     disabled
@@ -388,7 +428,10 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                             <FormControl>
                                                 <UnitCombobox
                                                     value={field.value}
-                                                    onChange={field.onChange}
+                                                    onChange={(value) => {
+                                                        field.onChange(value);
+                                                        handleFieldChange(unit.dataIndex!, 'from_unit_id', value);
+                                                    }}
                                                     availableUnits={availableUnits}
                                                 />
                                             </FormControl>
@@ -473,7 +516,10 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                                             <FormControl>
                                                 <NumberInput
                                                     value={field.value}
-                                                    onChange={field.onChange}
+                                                    onChange={(value) => {
+                                                        field.onChange(value);
+                                                        handleFieldChange(unit.dataIndex!, 'to_unit_qty', value);
+                                                    }}
                                                     min={1}
                                                     step={1}
                                                     classNames="w-16 h-7"
@@ -659,7 +705,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 },
             }] : [])
         ],
-        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeOrderUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits]
+        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeOrderUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits, handleFieldChange]
     );
 
     const table = useReactTable({
