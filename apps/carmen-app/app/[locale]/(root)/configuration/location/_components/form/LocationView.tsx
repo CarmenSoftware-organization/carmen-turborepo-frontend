@@ -58,21 +58,25 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
   return (
     <>
       {currentMode === formType.VIEW ? (
-        <div className="space-y-2 mx-auto max-w-xl">
-          <div className="flex items-center gap-4 mb-2">
-            <Button variant="outline" size="sm" asChild className="hover:bg-transparent h-7 w-7">
-              <Link href={`/configuration/location`}>
-                <ChevronLeft className="w-4 h-4" />
-              </Link>
-            </Button>
-            <h1 className="text-xl font-semibold">{initialData?.name}</h1>
+        <div className="space-y-2 mx-auto max-w-3xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" asChild className="hover:bg-transparent h-7 w-7">
+                <Link href={`/configuration/location`}>
+                  <ChevronLeft className="w-4 h-4" />
+                </Link>
+              </Button>
+              <h1 className="text-xl font-semibold">{initialData?.name}</h1>
+            </div>
             <Button
               onClick={handleEditMode}
               size="sm"
+              className="h-7 w-7"
             >
               <SquarePen className="w-4 h-4" />
             </Button>
           </div>
+
           <Separator />
 
           <dl className="grid grid-cols-[160px_1fr] gap-y-2 gap-x-4 text-sm">

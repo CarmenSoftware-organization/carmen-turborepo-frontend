@@ -7,7 +7,7 @@ import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, FolderTree, List, ListTree, Trash2 } from "lucide-react";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
@@ -33,6 +33,7 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
     const { token, buCode } = useAuth();
     const tCommon = useTranslations("Common");
     const [searchTrigger, setSearchTrigger] = useState("");
+    const [viewMode, setViewMode] = useState<'tree' | 'list'>('list');
     const [selectedIds, setSelectedIds] = useState<Set<string>>(
         new Set(initialSelectedIds.map(id => `product-${id}`))
     );
@@ -60,24 +61,10 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         const query = searchTrigger.toLowerCase().trim();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return products.data.filter((product: any) => {
-            // Cache toLowerCase results to avoid multiple calls
+            // Search in product name and local_name
             const nameLC = product.name?.toLowerCase();
-            const codeLC = product.code?.toLowerCase();
-            const descLC = product.description?.toLowerCase();
             const localNameLC = product.local_name?.toLowerCase();
-            const categoryNameLC = product.product_category?.name?.toLowerCase();
-            const subCategoryNameLC = product.product_sub_category?.name?.toLowerCase();
-            const itemGroupNameLC = product.product_item_group?.name?.toLowerCase();
-
-            return (
-                nameLC?.includes(query) ||
-                codeLC?.includes(query) ||
-                descLC?.includes(query) ||
-                localNameLC?.includes(query) ||
-                categoryNameLC?.includes(query) ||
-                subCategoryNameLC?.includes(query) ||
-                itemGroupNameLC?.includes(query)
-            );
+            return nameLC?.includes(query) || localNameLC?.includes(query);
         });
     }, [products?.data, searchTrigger]);
 
@@ -225,26 +212,6 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         );
     }
 
-    if (!products?.data) {
-        return (
-            <div className="p-6 space-y-4">
-                {searchInput}
-                <p className="text-muted-foreground">{tCommon("data_not_found")}</p>
-            </div>
-        );
-    }
-
-    if (rootItems.length === 0) {
-        return (
-            <div className="p-6 space-y-4">
-                {searchInput}
-                <p className="text-muted-foreground">
-                    {tCommon("data_not_found")}
-                </p>
-            </div>
-        );
-    }
-
     return (
         <TreeProductLookupContent
             items={items}
@@ -257,6 +224,8 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
             selectedItemsCache={selectedItemsCache}
             setSelectedItemsCache={setSelectedItemsCache}
             initialProducts={initialProducts}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
         />
     );
 }
@@ -271,7 +240,9 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     setSelectedIds,
     selectedItemsCache,
     setSelectedItemsCache,
-    initialProducts = []
+    initialProducts = [],
+    viewMode,
+    setViewMode
 }: {
     items: Record<string, TreeNodeData>;
     rootItems: string[];
@@ -283,6 +254,8 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     selectedItemsCache: Record<string, TreeNodeData>;
     setSelectedItemsCache: React.Dispatch<React.SetStateAction<Record<string, TreeNodeData>>>;
     initialProducts?: { key: string; title: string }[];
+    viewMode: 'tree' | 'list';
+    setViewMode: React.Dispatch<React.SetStateAction<'tree' | 'list'>>;
 }) {
     const [selectedSearchQuery, setSelectedSearchQuery] = useState("");
     const tCommon = useTranslations("Common");
@@ -506,10 +479,10 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     });
 
     return (
-        <div className="space-y-4">
+        <div>
             <div className="grid grid-cols-2 gap-4 h-54">
                 <div className="border border-border rounded-lg p-4 flex flex-col">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                         <h3 className="text-sm font-semibold">
                             {tCommon("init_products")}
                         </h3>
@@ -523,22 +496,23 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                     setSelectedIds(initialIds);
                                     setSelectedItemsCache({});
                                 }}
+                                className="text-destructive"
                             >
+                                <Trash2 />
                                 {tCommon("un_select_all")}
                             </Button>
                         )}
                     </div>
 
-                    <div className="relative mb-3">
-                        <SearchInput
-                            defaultValue={selectedSearchQuery}
-                            onSearch={setSelectedSearchQuery}
-                            placeholder={tCommon("search")}
-                            data-id="product-location-search-input"
-                        />
-                    </div>
+                    <SearchInput
+                        defaultValue={selectedSearchQuery}
+                        onSearch={setSelectedSearchQuery}
+                        placeholder={tCommon("search")}
+                        data-id="product-location-search-input"
+                        containerClassName="w-full"
+                    />
 
-                    <div className="flex-1 overflow-auto space-y-2">
+                    <div className="flex-1 overflow-auto space-y-2 max-h-80 pt-4">
                         {filteredSelectedProducts.length === 0 ? (
                             <div className="flex items-center justify-center h-full">
                                 <p className="text-xs text-muted-foreground">
@@ -549,7 +523,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                             filteredSelectedProducts.map((product) => (
                                 <div
                                     key={product.id}
-                                    className="flex items-center justify-between"
+                                    className="flex items-center justify-between px-0"
                                 >
                                     <div className="flex-1 space-y-1">
                                         <div className="flex items-center gap-2 flex-wrap">
@@ -568,6 +542,8 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                         onClick={() => {
                                             handleCheckboxChange(`product-${product.id}`, false);
                                         }}
+                                        data-id="remove-selected-product"
+                                        className="text-destructive"
                                     >
                                         <Trash2 />
                                     </Button>
@@ -577,57 +553,168 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                     </div>
                 </div>
 
-                <div className="h-80 border border-border rounded-lg p-4 flex flex-col">
-                    <h3 className="text-sm font-semibold mb-3">{tCommon("available_products")}</h3>
+                <div className="border border-border rounded-lg p-3 flex flex-col">
+                    <div className="flex items-center justify-between mb-1">
+                        <h3 className="text-sm font-semibold">{tCommon("available_products")}</h3>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                size="sm"
+                                variant={viewMode === 'tree' ? 'default' : 'ghost'}
+                                data-id="tree-view"
+                                className="h-7 w-7"
+                                onClick={() => setViewMode('tree')}
+                            >
+                                <FolderTree />
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                                data-id="list-view"
+                                className="h-7 w-7"
+                                onClick={() => setViewMode('list')}
+                            >
+                                <List />
+                            </Button>
+                        </div>
+                    </div>
                     <div>
                         {searchInput}
                     </div>
 
-                    <div className="flex-1 overflow-auto">
-                        <Tree tree={tree} indent={24} toggleIconType="chevron" className="overflow-auto">
-                            {tree.getItems().map((item) => {
-                                const data = item.getItemData();
-                                if (!data.name) {
-                                    return null;
-                                }
-                                const checkboxState = getCheckboxState(data.id);
+                    <div className="flex-1 overflow-auto max-h-80">
+                        {(() => {
+                            // Empty state
+                            if (rootItems.length === 0) {
                                 return (
-                                    <TreeItem key={item.getId()} item={item} asChild>
-                                        <div>
-                                            <TreeItemLabel>
-                                                {data.type === 'product' ? (
-                                                    <div className="w-full">
-                                                        <div className="flex items-center space-x-2 ml-4">
-                                                            <Checkbox
-                                                                checked={checkboxState.checked}
-                                                                onCheckedChange={(checked) => {
-                                                                    handleCheckboxChange(data.id, checked === true);
-                                                                }}
-                                                                onClick={(e) => e.stopPropagation()}
-                                                            />
-                                                            <p className="text-xs">{data.name} - {data.local_name}</p>
-                                                            <Badge>{data.code}</Badge>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex items-center gap-2">
-                                                        <Checkbox
-                                                            checked={checkboxState.indeterminate ? "indeterminate" : checkboxState.checked}
-                                                            onCheckedChange={(checked) => {
-                                                                handleCheckboxChange(data.id, checked === true);
-                                                            }}
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        />
-                                                        <p className="text-xs">{data.name}</p>
-                                                        <Badge variant="secondary">{data.children?.length || 0}</Badge>
-                                                    </div>
-                                                )}
-                                            </TreeItemLabel>
-                                        </div>
-                                    </TreeItem>
+                                    <div className="flex items-center justify-center h-full">
+                                        <p className="text-sm text-muted-foreground">{tCommon("data_not_found")}</p>
+                                    </div>
                                 );
-                            })}
-                        </Tree>
+                            }
+
+                            // Tree view
+                            if (viewMode === 'tree') {
+                                return (
+                                    <Tree tree={tree} indent={24} toggleIconType="chevron" className="overflow-auto">
+                                        {tree.getItems().map((item) => {
+                                            const data = item.getItemData();
+                                            if (!data.name) {
+                                                return null;
+                                            }
+                                            const checkboxState = getCheckboxState(data.id);
+                                            return (
+                                                <TreeItem key={item.getId()} item={item} asChild>
+                                                    <div>
+                                                        <TreeItemLabel>
+                                                            {data.type === 'product' ? (
+                                                                <div className="w-full">
+                                                                    <div className="flex items-center space-x-2 ml-4">
+                                                                        <Checkbox
+                                                                            checked={checkboxState.checked}
+                                                                            onCheckedChange={(checked) => {
+                                                                                handleCheckboxChange(data.id, checked === true);
+                                                                            }}
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                        />
+                                                                        <p className="text-xs">{data.name} - {data.local_name}</p>
+                                                                        <Badge>{data.code}</Badge>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="flex items-center gap-2">
+                                                                    <Checkbox
+                                                                        checked={checkboxState.indeterminate ? "indeterminate" : checkboxState.checked}
+                                                                        onCheckedChange={(checked) => {
+                                                                            handleCheckboxChange(data.id, checked === true);
+                                                                        }}
+                                                                        onClick={(e) => e.stopPropagation()}
+                                                                    />
+                                                                    <p className="text-xs">{data.name}</p>
+                                                                    <Badge variant="secondary">{data.children?.length || 0}</Badge>
+                                                                </div>
+                                                            )}
+                                                        </TreeItemLabel>
+                                                    </div>
+                                                </TreeItem>
+                                            );
+                                        })}
+                                    </Tree>
+                                );
+                            }
+
+                            // List view - use items (built from filteredProducts) as source
+                            const availableProducts = Object.values(items)
+                                .filter(item => item.type === 'product');
+                            const selectedCount = availableProducts.filter(p => selectedIds.has(p.id)).length;
+                            const allSelected = availableProducts.length > 0 && selectedCount === availableProducts.length;
+                            const someSelected = selectedCount > 0 && selectedCount < availableProducts.length;
+
+                            return (
+                                <div className="space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2 px-2 py-1">
+                                            <Checkbox
+                                                checked={allSelected}
+                                                ref={(el) => {
+                                                    if (el) {
+                                                        const inputEl = el.querySelector('input[type="checkbox"]') as HTMLInputElement;
+                                                        if (inputEl) {
+                                                            inputEl.indeterminate = someSelected;
+                                                        }
+                                                    }
+                                                }}
+                                                onCheckedChange={(checked) => {
+                                                    if (checked) {
+                                                        availableProducts.forEach(product => {
+                                                            handleCheckboxChange(product.id, true);
+                                                        });
+                                                    } else {
+                                                        availableProducts.forEach(product => {
+                                                            handleCheckboxChange(product.id, false);
+                                                        });
+                                                    }
+                                                }}
+                                            />
+                                            <p className="text-xs font-medium">
+                                                {tCommon("select_all")}
+                                            </p>
+                                        </div>
+                                        <Badge variant={'active'} className="text-xs">
+                                            {tCommon("result")} {availableProducts.length}
+                                        </Badge>
+                                    </div>
+
+                                    {availableProducts.map((product) => {
+                                        const productId = product.id;
+                                        const isSelected = selectedIds.has(productId);
+                                        return (
+                                            <label
+                                                key={product.id}
+                                                className="flex items-center space-x-2 p-2 hover:bg-muted/50 rounded-sm cursor-pointer"
+                                            >
+                                                <Checkbox
+                                                    checked={isSelected}
+                                                    onCheckedChange={(checked) => {
+                                                        handleCheckboxChange(productId, checked === true);
+                                                    }}
+                                                />
+                                                <div className="flex-1 space-y-1">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <p className="text-xs font-medium">
+                                                            {product.name}
+                                                            {product.local_name && ` - ${product.local_name}`}
+                                                        </p>
+                                                        {product.code && (
+                                                            <Badge className="text-xs">{product.code}</Badge>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
             </div>

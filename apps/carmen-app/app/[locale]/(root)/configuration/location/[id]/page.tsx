@@ -17,6 +17,8 @@ export default function StoreLocationByIdPage() {
     id: id as string,
   });
 
+
+
   if (isLoading) {
     return <DetailSkeleton />;
   }

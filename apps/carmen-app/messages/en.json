@@ -335,7 +335,8 @@
     "select_all": "Select All",
     "un_select_all": "Unselect All",
     "selected": "Selected",
-    "not_product_selected": "Not Product Selected"
+    "not_product_selected": "Not Product Selected",
+    "result": "Result"
   },
   "TableHeader": {
     "all": "All",

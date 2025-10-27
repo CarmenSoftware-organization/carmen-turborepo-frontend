@@ -332,7 +332,8 @@
     "select_all": "เลือกทั้งหมด",
     "un_select_all": "ยกเลิกการเลือกทั้งหมด",
     "selected": "เลือก",
-    "not_product_selected": "ไม่ได้เลือกสินค้า"
+    "not_product_selected": "ไม่ได้เลือกสินค้า",
+    "result": "ผลลัพธ์"
   },
   "TableHeader": {
     "all": "ทั้งหมด",

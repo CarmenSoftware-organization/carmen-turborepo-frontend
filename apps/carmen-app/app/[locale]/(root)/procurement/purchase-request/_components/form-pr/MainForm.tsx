@@ -114,6 +114,7 @@ export default function MainForm({ mode, initValues }: Props) {
             data.body.purchase_request_detail.add = data.body.purchase_request_detail.add.map((item) => {
 
                 const {
+                    id,
                     ...cleanedItem
                 } = item as Record<string, unknown>;
 
