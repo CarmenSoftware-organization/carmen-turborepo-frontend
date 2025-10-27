@@ -47,7 +47,7 @@ const UserItem = ({ item, hodStates, onHodChange }: UserItemProps) => (
     <div className="fxb-c w-full gap-4">
         <p>{item.title}</p>
         <div className="fxr-c gap-2">
-            <span className="text-muted-foreground">Hod</span>
+            <span className="text-muted-foreground">HOD</span>
             <Switch
                 checked={hodStates[item.key.toString()] || false}
                 onCheckedChange={(checked) => onHodChange(item.key.toString(), checked)}
@@ -400,10 +400,15 @@ export default function FormEdit({
     };
 
     return (
-        <div className="space-y-4 max-w-4xl mx-auto">
+        <div className="space-y-4 max-w-xl mx-auto">
             <div className="fxr-c gap-2">
-                <Button onClick={onBack} variant="ghost" size="sm">
-                    <ChevronLeft className="h-4 w-4" />
+                <Button
+                    size={'sm'}
+                    variant={'outline'}
+                    className="h-7 w-7"
+                    onClick={onBack}
+                >
+                    <ChevronLeft />
                 </Button>
                 <h1 className="text-2xl font-bold">
                     {mode === formType.ADD ? tDepartment("add_department") : tDepartment("edit_department")}
@@ -412,12 +417,12 @@ export default function FormEdit({
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
 
-                    <div className="max-w-md space-y-2 mb-6">
+                    <div className="space-y-2 mb-6">
                         <FormField
                             control={form.control}
                             name="name"
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem >
                                     <FormLabel>{tHeader("name")}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />

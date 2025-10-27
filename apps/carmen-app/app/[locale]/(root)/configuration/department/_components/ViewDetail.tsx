@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, SquarePen, WarehouseIcon, } from "lucide-react";
+import { ChevronLeft, SquarePen, } from "lucide-react";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useTranslations } from "next-intl";
 import { Separator } from "@/components/ui/separator";
@@ -22,19 +22,27 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
     const tCommon = useTranslations("Common");
     const tHeader = useTranslations("TableHeader");
     return (
-
-        <div className="space-y-4 p-2">
-            <div className="fxr-c gap-2">
+        <div className="space-y-4 max-w-xl mx-auto">
+            <div className="flex items-center justify-between">
+                <div className="fxr-c gap-4">
+                    <Button
+                        size={'sm'}
+                        variant={'outline'}
+                        className="h-7 w-7"
+                        onClick={onBack}
+                    >
+                        <ChevronLeft />
+                    </Button>
+                    <h1 className="text-xl font-semibold">{data.name}</h1>
+                </div>
                 <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hover:bg-transparent"
-                    onClick={onBack}
+                    onClick={onEdit}
+                    size="sm"
+                    className="fxr-c gap-2 text-sm"
                 >
-                    <ChevronLeft className="w-4 h-4" />
+                    <SquarePen className="w-4 h-4" />
+                    {tCommon("edit")}
                 </Button>
-                <WarehouseIcon />
-                <h1 className="text-xl font-semibold">{data.name}</h1>
             </div>
 
             <Separator />
@@ -69,20 +77,6 @@ export default function ViewDetail({ data, onEdit, onBack }: ViewDetailProps) {
                     </p>
                 )}
             </div>
-
-            <Separator />
-
-            <Button
-                onClick={onEdit}
-                size="sm"
-                variant="outlinePrimary"
-                className="fxr-c gap-1 text-sm"
-            >
-                <SquarePen className="w-4 h-4" />
-                {tCommon("edit")}
-            </Button>
         </div>
-
-
     );
 }

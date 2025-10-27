@@ -58,9 +58,9 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
   return (
     <>
       {currentMode === formType.VIEW ? (
-        <div className="space-y-2 p-2">
+        <div className="space-y-2 mx-auto max-w-xl">
           <div className="flex items-center gap-4 mb-2">
-            <Button variant="ghost" size="sm" asChild className="hover:bg-transparent">
+            <Button variant="outline" size="sm" asChild className="hover:bg-transparent h-7 w-7">
               <Link href={`/configuration/location`}>
                 <ChevronLeft className="w-4 h-4" />
               </Link>
@@ -107,10 +107,10 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
               <TabsTrigger value="users">{tCommon("users")}</TabsTrigger>
               <TabsTrigger value="products">{tCommon("products")}</TabsTrigger>
             </TabsList>
-            <TabsContent value="users" className="w-1/2">
+            <TabsContent value="users">
               <TabUsersLocation users={initialData?.user_location || []} />
             </TabsContent>
-            <TabsContent value="products" className="w-1/2">
+            <TabsContent value="products">
               <TabUsersProduct products={initialData?.product_location || []} />
             </TabsContent>
           </Tabs>
