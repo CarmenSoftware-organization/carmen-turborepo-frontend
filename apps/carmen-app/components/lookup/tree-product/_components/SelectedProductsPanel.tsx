@@ -47,27 +47,19 @@ export function SelectedProductsPanel({
                 <h3 className="text-sm font-semibold">
                     {tCommon("init_products")}
                 </h3>
-                {hasSelectedProducts && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        data-id="remove-all-selected-products"
-                        onClick={onRemoveAll}
-                        className="text-destructive"
-                    >
-                        <Trash2 />
-                        {tCommon("un_select_all")}
-                    </Button>
-                )}
+
             </div>
 
-            <SearchInput
-                defaultValue={selectedSearchQuery}
-                onSearch={setSelectedSearchQuery}
-                placeholder={tCommon("search")}
-                data-id="product-location-search-input"
-                containerClassName="w-full"
-            />
+            <div className='mt-2'>
+                <SearchInput
+                    defaultValue={selectedSearchQuery}
+                    onSearch={setSelectedSearchQuery}
+                    placeholder={tCommon("search")}
+                    data-id="product-location-search-input"
+                    containerClassName="w-full"
+                    inputClassName='h-8'
+                />
+            </div>
 
             <div className="flex-1 overflow-auto space-y-2 max-h-80 pt-4">
                 {filteredSelectedProducts.length === 0 ? (
@@ -77,35 +69,52 @@ export function SelectedProductsPanel({
                         </p>
                     </div>
                 ) : (
-                    filteredSelectedProducts.map((product) => (
-                        <div
-                            key={product.id}
-                            className="flex items-center justify-between px-0"
-                        >
-                            <div className="flex-1 space-y-1">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <p className="text-xs font-medium">
-                                        {product.name}
-                                        {product.local_name && ` - ${product.local_name}`}
-                                    </p>
-                                    {product.code && (
-                                        <Badge variant={'product_badge'} className="text-xs">
-                                            {product.code}
-                                        </Badge>
-                                    )}
-                                </div>
-                            </div>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => onRemoveProduct(product.id)}
-                                data-id="remove-selected-product"
-                                className="text-destructive"
-                            >
-                                <Trash2 />
-                            </Button>
+                    <div>
+                        <div className='flex items-center justify-between border-b border-border pb-2'>
+                            <Badge variant={'active'} className="text-xs">{tCommon("selected")} {filteredSelectedProducts.length}</Badge>
+                            {hasSelectedProducts && (
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    data-id="remove-all-selected-products"
+                                    onClick={onRemoveAll}
+                                    className="text-destructive"
+                                >
+                                    <Trash2 />
+                                    {tCommon("un_select_all")}
+                                </Button>
+                            )}
                         </div>
-                    ))
+                        {filteredSelectedProducts.map((product) => (
+                            <div
+                                key={product.id}
+                                className="flex items-center justify-between px-0"
+                            >
+                                <div className="flex-1 space-y-1">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <p className="text-xs font-medium">
+                                            {product.name}
+                                            {product.local_name && ` - ${product.local_name}`}
+                                        </p>
+                                        {product.code && (
+                                            <Badge variant={'product_badge'} className="text-xs">
+                                                {product.code}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => onRemoveProduct(product.id)}
+                                    data-id="remove-selected-product"
+                                    className="text-destructive"
+                                >
+                                    <Trash2 />
+                                </Button>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

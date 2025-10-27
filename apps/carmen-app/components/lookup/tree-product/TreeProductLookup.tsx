@@ -76,12 +76,15 @@ export default function TreeProductLookup({
     }, [filteredProducts, isLoading, selectedProductIdsArray, products?.data, searchTrigger]);
 
     const searchInput = (
-        <SearchInput
-            defaultValue={searchTrigger}
-            onSearch={handleSearch}
-            placeholder={tCommon("search")}
-            containerClassName="mb-4 w-full"
-        />
+        <div className="mt-2">
+            <SearchInput
+                defaultValue={searchTrigger}
+                onSearch={handleSearch}
+                placeholder={tCommon("search")}
+                containerClassName="mb-2 w-full"
+                inputClassName="h-8"
+            />
+        </div>
     );
 
     if (isLoading) {
@@ -217,7 +220,6 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                     onRemoveAll={handleRemoveAll}
                     hasSelectedProducts={selectedIds.size > 0}
                 />
-
                 <AvailableProductsPanel
                     searchInput={searchInput}
                     viewMode={viewMode}

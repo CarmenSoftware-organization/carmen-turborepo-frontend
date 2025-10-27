@@ -32,7 +32,6 @@ export function AvailableProductsPanel({
     const tCommon = useTranslations("Common");
 
     const renderContent = () => {
-        // Empty state
         if (rootItems.length === 0) {
             return (
                 <div className="flex items-center justify-center h-full">
@@ -40,8 +39,6 @@ export function AvailableProductsPanel({
                 </div>
             );
         }
-
-        // Tree view
         if (viewMode === 'tree') {
             return (
                 <TreeView
@@ -51,8 +48,6 @@ export function AvailableProductsPanel({
                 />
             );
         }
-
-        // List view
         const availableProducts = Object.values(items).filter(item => item.type === 'product');
         return (
             <ListView

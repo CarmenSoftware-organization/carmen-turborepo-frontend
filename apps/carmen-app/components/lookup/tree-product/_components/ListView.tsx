@@ -19,7 +19,7 @@ export function ListView({ availableProducts, selectedIds, handleCheckboxChange 
     return (
         <div className="space-y-1">
             <div className="flex items-center justify-between border-b border-border pb-2">
-                <div className="flex items-center gap-2 px-2 py-1">
+                <div className="flex items-center gap-2 p-1 mb-1">
                     <Checkbox
                         checked={allSelected}
                         ref={(el) => {
