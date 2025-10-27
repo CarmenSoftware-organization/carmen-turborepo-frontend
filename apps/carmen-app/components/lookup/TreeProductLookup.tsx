@@ -7,7 +7,7 @@ import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowDown, ArrowUp, FolderTree, List, ListTree, Trash2 } from "lucide-react";
+import { FolderTree, List, Trash2 } from "lucide-react";
 import { useProductQuery } from "@/hooks/useProductQuery";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
@@ -69,7 +69,9 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
     }, [products?.data, searchTrigger]);
 
     const selectedProductIdsArray = useMemo(() => {
-        return Array.from(selectedIds).filter(id => id.startsWith('product-')).sort();
+        return Array.from(selectedIds)
+            .filter(id => id.startsWith('product-'))
+            .sort((a, b) => a.localeCompare(b));
     }, [selectedIds]);
 
     // Build tree data structure from filtered product data + keep selected items
@@ -165,8 +167,8 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
         }
 
         if (searchTrigger.trim() && products?.data && selectedProductIdsArray.length > 0) {
-            selectedProductIdsArray.forEach(productId => {
-                if (itemsMap[productId]) return;
+            for (const productId of selectedProductIdsArray) {
+                if (itemsMap[productId]) continue;
                 const productIdNumber = productId.replace('product-', '');
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const product = products.data.find((p: any) => p.id === productIdNumber);
@@ -174,20 +176,20 @@ export default function TreeProductLookup({ onSelect, initialSelectedIds = [], i
                 if (product) {
                     addProductToTree(product);
                 }
-            });
+            }
         }
 
-        categoryMap.forEach((subCategoryIds, categoryId) => {
+        for (const [categoryId, subCategoryIds] of categoryMap) {
             itemsMap[categoryId].children = Array.from(subCategoryIds);
-        });
+        }
 
-        subCategoryMap.forEach((itemGroupIds, subCategoryId) => {
+        for (const [subCategoryId, itemGroupIds] of subCategoryMap) {
             itemsMap[subCategoryId].children = Array.from(itemGroupIds);
-        });
+        }
 
-        itemGroupMap.forEach((productIds, itemGroupId) => {
+        for (const [itemGroupId, productIds] of itemGroupMap) {
             itemsMap[itemGroupId].children = Array.from(productIds);
-        });
+        }
 
         const roots = Array.from(categoryMap.keys());
 
@@ -532,7 +534,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                                 {product.local_name && ` - ${product.local_name}`}
                                             </p>
                                             {product.code && (
-                                                <Badge className="text-xs">{product.code}</Badge>
+                                                <Badge variant={'product_badge'} className="text-xs">{product.code}</Badge>
                                             )}
                                         </div>
                                     </div>
@@ -665,13 +667,13 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                                 }}
                                                 onCheckedChange={(checked) => {
                                                     if (checked) {
-                                                        availableProducts.forEach(product => {
+                                                        for (const product of availableProducts) {
                                                             handleCheckboxChange(product.id, true);
-                                                        });
+                                                        }
                                                     } else {
-                                                        availableProducts.forEach(product => {
+                                                        for (const product of availableProducts) {
                                                             handleCheckboxChange(product.id, false);
-                                                        });
+                                                        }
                                                     }
                                                 }}
                                             />
@@ -705,7 +707,7 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                                                             {product.local_name && ` - ${product.local_name}`}
                                                         </p>
                                                         {product.code && (
-                                                            <Badge className="text-xs">{product.code}</Badge>
+                                                            <Badge variant={'product_badge'} className="text-xs">{product.code}</Badge>
                                                         )}
                                                     </div>
                                                 </div>
