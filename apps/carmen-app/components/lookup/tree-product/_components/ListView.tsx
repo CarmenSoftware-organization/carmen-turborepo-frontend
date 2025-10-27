@@ -57,7 +57,7 @@ export function ListView({ availableProducts, selectedIds, handleCheckboxChange 
                 return (
                     <label
                         key={product.id}
-                        className="flex items-center space-x-2 p-2 hover:bg-muted/50 rounded-sm cursor-pointer"
+                        className="flex items-center space-x-2 p-1 hover:bg-muted/50 rounded-sm cursor-pointer"
                     >
                         <Checkbox
                             checked={isSelected}
