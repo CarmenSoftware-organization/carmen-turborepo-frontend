@@ -107,12 +107,12 @@ const FormLabel = React.forwardRef<
       {icon ? (
         <div className="flex items-center gap-1.5">
           {icon}
-          <span className="text-muted-foreground">{props.children}</span>
+          <span className={cn(error && "text-destructive")}>{props.children}</span>
           {required && <span className="text-destructive">*</span>}
         </div>
       ) : (
         <>
-          <span className="text-muted-foreground">{props.children}</span>
+          <span className={cn(error && "text-destructive")}>{props.children}</span>
           {required && <span className="ml-1 text-destructive">*</span>}
         </>
       )}

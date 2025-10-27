@@ -494,7 +494,9 @@
     "edit_success": "Department updated successfully",
     "edit_error": "Failed to update department",
     "delete_success": "Department deleted successfully",
-    "delete_error": "Failed to delete department"
+    "delete_error": "Failed to delete department",
+    "name_required": "Department name is required",
+    "description_required": "Description is required"
   },
   "StoreLocation": {
     "title": "Store Location",

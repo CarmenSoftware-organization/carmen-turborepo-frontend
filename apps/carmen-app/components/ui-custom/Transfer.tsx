@@ -210,7 +210,7 @@ export const Transfer: React.FC<TransferProps> = ({
                 disabled={disabled || item.disabled}
               />
               <div className="w-full">
-                <p className="text-xs">
+                <div className="text-xs">
                   {direction === "left" && leftRender
                     ? leftRender(item)
                     : direction === "right" && rightRender
@@ -218,7 +218,7 @@ export const Transfer: React.FC<TransferProps> = ({
                       : render
                         ? render(item)
                         : item.title}
-                </p>
+                </div>
               </div>
             </div>
           ))}

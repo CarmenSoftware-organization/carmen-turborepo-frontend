@@ -493,7 +493,9 @@
     "edit_success": "แผนกแก้ไขเรียบร้อย",
     "edit_error": "แผนกแก้ไขไม่สำเร็จ",
     "delete_success": "แผนกลบเรียบร้อย",
-    "delete_error": "แผนกลบไม่สำเร็จ"
+    "delete_error": "แผนกลบไม่สำเร็จ",
+    "name_required": "กรุณากรอกชื่อแผนก",
+    "description_required": "กรุณากรอกคำอธิบาย"
   },
   "StoreLocation": {
     "title": "สถานที่เก็บสินค้า",

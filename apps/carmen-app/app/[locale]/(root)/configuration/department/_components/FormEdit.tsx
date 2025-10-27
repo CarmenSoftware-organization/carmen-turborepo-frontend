@@ -8,7 +8,8 @@ import {
     FormField,
     FormItem,
     FormLabel,
-} from "@/components/ui/form";
+    FormMessage,
+} from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/context/AuthContext";
@@ -26,9 +27,9 @@ import { z } from "zod";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import {
-    departmentCreateSchema,
+    createDepartmentSchema,
+    createDepartmentUpdateSchema,
     DepartmentGetByIdDto,
-    departmentUpdateSchema
 } from "@/dtos/department.dto";
 import { ChevronLeft } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,7 +46,7 @@ interface UserItemProps {
 
 const UserItem = ({ item, hodStates, onHodChange }: UserItemProps) => (
     <div className="fxb-c w-full gap-4">
-        <p>{item.title}</p>
+        <span>{item.title}</span>
         <div className="fxr-c gap-2">
             <span className="text-muted-foreground">HOD</span>
             <Switch
@@ -76,6 +77,18 @@ export default function FormEdit({
     const tDepartment = useTranslations("Department");
     const tHeader = useTranslations("TableHeader");
     const tDataControls = useTranslations("DataControls");
+
+    const departmentSchema = useMemo(() => {
+        if (mode === formType.ADD) {
+            return createDepartmentSchema({
+                nameRequired: tDepartment('name_required'),
+            });
+        }
+        return createDepartmentUpdateSchema({
+            nameRequired: tDepartment('name_required'),
+        });
+    }, [mode, tDepartment]);
+
     const availableUsers = useMemo(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return userList?.map((user: any) => ({
@@ -90,8 +103,6 @@ export default function FormEdit({
         buCode,
         defaultValues?.id ?? ""
     );
-
-    const currentSchema = mode === formType.ADD ? departmentCreateSchema : departmentUpdateSchema;
 
     const initUsers = useMemo(() => {
         return (
@@ -111,14 +122,14 @@ export default function FormEdit({
     // เก็บ isHod state สำหรับแต่ละ user
     const [hodStates, setHodStates] = useState<Record<string, boolean>>(() => {
         const initialState: Record<string, boolean> = {};
-        initUsers.forEach((user) => {
+        for (const user of initUsers) {
             initialState[user.key.toString()] = user.isHod || false;
-        });
+        }
         return initialState;
     });
 
-    const form = useForm<z.infer<typeof departmentCreateSchema> & { id?: string }>({
-        resolver: zodResolver(currentSchema),
+    const form = useForm<z.infer<typeof departmentSchema>>({
+        resolver: zodResolver(departmentSchema),
         defaultValues: {
             ...(mode === formType.EDIT && { id: defaultValues?.id }),
             name: defaultValues?.name || "",
@@ -161,13 +172,81 @@ export default function FormEdit({
         form.reset(resetValues);
 
         const newHodStates: Record<string, boolean> = {};
-        initUsers.forEach((user) => {
+        for (const user of initUsers) {
             newHodStates[user.key.toString()] = user.isHod || false;
-        });
+        }
         setHodStates(newHodStates);
 
         setTargetKeys(initUsers.map((user) => user.key.toString()));
     }, [mode, defaultValues, form, initUsers]);
+
+    const handleMoveToRight = useCallback((
+        moveKeys: (string | number)[],
+        currentUsers: { add: any[]; update: any[]; remove: any[] }
+    ) => {
+        const newAddArray = [...(currentUsers.add || [])];
+        const newRemoveArray = [...(currentUsers.remove || [])];
+
+        for (const key of moveKeys) {
+            const keyStr = key.toString();
+            const existingRemoveIndex = newRemoveArray.findIndex(
+                (item) => item.id === keyStr
+            );
+
+            if (existingRemoveIndex >= 0) {
+                newRemoveArray.splice(existingRemoveIndex, 1);
+            } else {
+                newAddArray.push({
+                    id: keyStr,
+                    isHod: hodStates[keyStr] || false,
+                });
+            }
+
+            if (!hodStates.hasOwnProperty(keyStr)) {
+                setHodStates((prev) => ({ ...prev, [keyStr]: false }));
+            }
+        }
+
+        form.setValue("users.add", newAddArray);
+        form.setValue("users.remove", newRemoveArray);
+    }, [hodStates, form, setHodStates]);
+
+    const handleMoveToLeft = useCallback((
+        moveKeys: (string | number)[],
+        currentUsers: { add: any[]; update: any[]; remove: any[] }
+    ) => {
+        const newAddArray = [...(currentUsers.add || [])];
+        const newRemoveArray = [...(currentUsers.remove || [])];
+
+        for (const key of moveKeys) {
+            const keyStr = key.toString();
+            const existingAddIndex = newAddArray.findIndex(
+                (item) => item.id === keyStr
+            );
+
+            if (existingAddIndex >= 0) {
+                newAddArray.splice(existingAddIndex, 1);
+            } else {
+                newRemoveArray.push({ id: keyStr });
+            }
+
+            setHodStates((prev) => {
+                const newState = { ...prev };
+                delete newState[keyStr];
+                return newState;
+            });
+        }
+
+        const currentUpdateArray = currentUsers.update || [];
+        const updatedUpdateArray = currentUpdateArray.filter(
+            (user: { id: string; isHod: boolean }) =>
+                !moveKeys.some((key) => key.toString() === user.id)
+        );
+
+        form.setValue("users.add", newAddArray);
+        form.setValue("users.remove", newRemoveArray);
+        form.setValue("users.update", updatedUpdateArray);
+    }, [form, setHodStates]);
 
     const handleTransferChange = (
         targetKeys: (string | number)[],
@@ -176,76 +255,17 @@ export default function FormEdit({
     ) => {
         setTargetKeys(targetKeys as string[]);
 
-        const currentUsers = form.getValues("users") || {
-            add: [],
-            update: [],
-            remove: [],
+        const users = form.getValues("users");
+        const currentUsers = {
+            add: users?.add || [],
+            update: users?.update || [],
+            remove: users?.remove || [],
         };
 
         if (direction === "right") {
-            const newAddArray = [...(currentUsers.add || [])];
-            const newRemoveArray = [...(currentUsers.remove || [])];
-
-            moveKeys.forEach((key) => {
-                const keyStr = key.toString();
-                // ถ้าเคยอยู่ใน remove array แล้ว ให้ลบออกจาก remove array (ย้อนกลับ)
-                const existingRemoveIndex = newRemoveArray.findIndex(
-                    (item) => item.id === keyStr
-                );
-                if (existingRemoveIndex >= 0) {
-                    newRemoveArray.splice(existingRemoveIndex, 1);
-                } else {
-                    // ถ้าไม่เคยอยู่ใน remove array ให้เพิ่มใน add array
-                    newAddArray.push({
-                        id: keyStr,
-                        isHod: hodStates[keyStr] || false,
-                    });
-                }
-
-                // ตั้งค่า isHod เริ่มต้นเป็น false สำหรับผู้ใช้ใหม่
-                if (!hodStates.hasOwnProperty(keyStr)) {
-                    setHodStates((prev) => ({ ...prev, [keyStr]: false }));
-                }
-            });
-
-            form.setValue("users.add", newAddArray);
-            form.setValue("users.remove", newRemoveArray);
+            handleMoveToRight(moveKeys, currentUsers);
         } else if (direction === "left") {
-            // ย้ายจาก init user ไป available user -> remove
-            const newAddArray = [...(currentUsers.add || [])];
-            const newRemoveArray = [...(currentUsers.remove || [])];
-
-            moveKeys.forEach((key) => {
-                const keyStr = key.toString();
-                // ถ้าเคยอยู่ใน add array แล้ว ให้ลบออกจาก add array (ย้อนกลับ)
-                const existingAddIndex = newAddArray.findIndex(
-                    (item) => item.id === keyStr
-                );
-                if (existingAddIndex >= 0) {
-                    newAddArray.splice(existingAddIndex, 1);
-                } else {
-                    // ถ้าไม่เคยอยู่ใน add array ให้เพิ่มใน remove array
-                    newRemoveArray.push({ id: keyStr });
-                }
-
-                // ลบ isHod state เมื่อย้ายออกจาก init users
-                setHodStates((prev) => {
-                    const newState = { ...prev };
-                    delete newState[keyStr];
-                    return newState;
-                });
-            });
-
-            // ลบจาก update array ถ้ามีการเปลี่ยนแปลง isHod ไว้
-            const currentUpdateArray = currentUsers.update || [];
-            const updatedUpdateArray = currentUpdateArray.filter(
-                (user: { id: string; isHod: boolean }) =>
-                    !moveKeys.some((key) => key.toString() === user.id)
-            );
-
-            form.setValue("users.add", newAddArray);
-            form.setValue("users.remove", newRemoveArray);
-            form.setValue("users.update", updatedUpdateArray);
+            handleMoveToLeft(moveKeys, currentUsers);
         }
     };
 
@@ -255,23 +275,24 @@ export default function FormEdit({
             [key]: checked,
         }));
 
-        const currentUsers = form.getValues("users") || {
-            add: [],
-            update: [],
-            remove: [],
+        const users = form.getValues("users");
+        const currentUsers = {
+            add: users?.add || [],
+            update: users?.update || [],
+            remove: users?.remove || [],
         };
 
         // ตรวจสอบว่า user นี้เป็น existing user (ใน initUsers เดิม) หรือ new user (ใน add array)
         const isExistingUser = initUsers.some(
             (user) => user.key.toString() === key
         );
-        const isNewUser = (currentUsers.add || []).some(
+        const isNewUser = currentUsers.add.some(
             (user) => user.id === key
         );
 
         if (isExistingUser && !isNewUser) {
             // ถ้าเป็น existing user ให้ใส่ใน update array
-            const currentUpdateArray = currentUsers.update || [];
+            const currentUpdateArray = currentUsers.update;
             const existingUpdateIndex = currentUpdateArray.findIndex(
                 (user) => user.id === key
             );
@@ -303,7 +324,7 @@ export default function FormEdit({
             form.setValue("users.update", updatedUpdateArray);
         } else if (isNewUser) {
             // ถ้าเป็น new user ให้อัพเดท add array
-            const currentAddArray = currentUsers.add || [];
+            const currentAddArray = currentUsers.add;
             const updatedAddArray = currentAddArray.map((user) =>
                 user.id === key ? { ...user, isHod: checked } : user
             );
@@ -320,22 +341,26 @@ export default function FormEdit({
     ), [hodStates, handleHodChange]);
 
     const onSubmit = (
-        data: z.infer<typeof departmentCreateSchema> & { id?: string }
+        data: z.infer<typeof departmentSchema>
     ) => {
         // อัพเดท isHod สำหรับผู้ใช้ใน add และ update array
-        const currentUsers = data.users || { add: [], update: [], remove: [] };
+        const currentUsers = {
+            add: data.users?.add || [],
+            update: data.users?.update || [],
+            remove: data.users?.remove || [],
+        };
         const updatedData = {
             ...data,
             users: {
-                ...currentUsers,
-                add: (currentUsers.add || []).map((user) => ({
+                add: currentUsers.add.map((user) => ({
                     ...user,
                     isHod: hodStates[user.id || ""] || false,
                 })),
-                update: (currentUsers.update || []).map((user) => ({
+                update: currentUsers.update.map((user) => ({
                     ...user,
                     isHod: hodStates[user.id || ""] || false,
                 })),
+                remove: currentUsers.remove,
             },
         };
 
@@ -416,17 +441,18 @@ export default function FormEdit({
             </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
-
                     <div className="space-y-2 mb-6">
                         <FormField
                             control={form.control}
                             name="name"
+                            required
                             render={({ field }) => (
                                 <FormItem >
                                     <FormLabel>{tHeader("name")}</FormLabel>
                                     <FormControl>
                                         <Input {...field} />
                                     </FormControl>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />
@@ -472,7 +498,7 @@ export default function FormEdit({
                         leftRender={renderUserItem}
                     />
 
-                    <div className="flex gap-2 mt-4">
+                    <div className="flex justify-end gap-2 mt-4">
                         <Button type="button" variant="outlinePrimary" onClick={onBack}>
                             {tDataControls("cancel")}
                         </Button>

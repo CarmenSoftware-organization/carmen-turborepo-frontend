@@ -80,10 +80,10 @@ export default function ActionFields({
             if (hasFormChanges()) {
                 onCancel(e, 'back');
             } else {
-                router.push("/procurement/purchase-request");
+                router.back();
             }
         } else {
-            router.push("/procurement/purchase-request");
+            router.back();
         }
     };
 

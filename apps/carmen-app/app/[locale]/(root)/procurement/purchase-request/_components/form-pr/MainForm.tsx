@@ -104,7 +104,6 @@ export default function MainForm({ mode, initValues }: Props) {
             bodyValues.workflow_id !== (initValues?.workflow_id || "") ||
             bodyValues.note !== (initValues?.note || "");
 
-        // ตรวจสอบการเปลี่ยนแปลงใน items (เฉพาะ CREATE mode)
         const hasItemChanges = (bodyValues.purchase_request_detail?.add?.length ?? 0) > 0;
         return hasMainFieldChanges || hasItemChanges;
     };
@@ -118,11 +117,11 @@ export default function MainForm({ mode, initValues }: Props) {
                     ...cleanedItem
                 } = item as Record<string, unknown>;
 
-                Object.keys(cleanedItem).forEach(key => {
+                for (const key of Object.keys(cleanedItem)) {
                     if (cleanedItem[key] === "" || cleanedItem[key] === null) {
                         delete cleanedItem[key];
                     }
-                });
+                }
 
                 if (cleanedItem.requested_qty !== undefined) {
                     cleanedItem.requested_qty = Number(cleanedItem.requested_qty);

@@ -1,16 +1,12 @@
 import { z } from "zod";
 
-export const departmentBaseSchema = z.object({
-    name: z.string().min(1),
-    description: z.string().min(1),
+// Schema factory for i18n support
+export const createDepartmentSchema = (messages: {
+    nameRequired: string;
+}) => z.object({
+    name: z.string().min(1, messages.nameRequired),
+    description: z.string().optional(),
     is_active: z.boolean(),
-});
-
-/**
- * 🔹 Schema สำหรับสร้าง Department (POST)
- * สามารถแนบข้อมูล users ที่จะเพิ่มเข้ามาได้ในรูปแบบ add/update/remove
- */
-export const departmentCreateSchema = departmentBaseSchema.extend({
     users: z
         .object({
             add: z
@@ -40,6 +36,46 @@ export const departmentCreateSchema = departmentBaseSchema.extend({
         .optional(),                          // users สามารถไม่มีได้
 });
 
+// Legacy schemas (deprecated - use createDepartmentSchema instead)
+export const departmentBaseSchema = z.object({
+    name: z.string().min(1),
+    description: z.string().min(1),
+    is_active: z.boolean(),
+});
+
+/**
+ * @deprecated Use createDepartmentSchema instead for i18n support
+ */
+export const departmentCreateSchema = departmentBaseSchema.extend({
+    users: z
+        .object({
+            add: z
+                .array(
+                    z.object({
+                        id: z.string().min(1),
+                        isHod: z.boolean(),
+                    })
+                )
+                .optional(),
+            update: z
+                .array(
+                    z.object({
+                        id: z.string().min(1),
+                        isHod: z.boolean(),
+                    })
+                )
+                .optional(),
+            remove: z
+                .array(
+                    z.object({
+                        id: z.string().min(1),
+                    })
+                )
+                .optional(),
+        })
+        .optional(),
+});
+
 /**
  * 🔹 Schema สำหรับการแสดงรายการ Department (GET list)
  */
@@ -63,8 +99,16 @@ export const departmentGetByIdSchema = departmentGetSchema.extend({
 });
 
 /**
- * 🔹 Schema สำหรับการแก้ไข Department (PUT/PATCH)
- * โครงสร้างเดียวกับ create แต่ต้องมี id
+ * Schema factory for update with i18n support
+ */
+export const createDepartmentUpdateSchema = (messages: {
+    nameRequired: string;
+}) => createDepartmentSchema(messages).extend({
+    id: z.string().uuid(),
+});
+
+/**
+ * @deprecated Use createDepartmentUpdateSchema instead for i18n support
  */
 export const departmentUpdateSchema = departmentCreateSchema.extend({
     id: z.string().uuid(),
