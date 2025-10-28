@@ -32,7 +32,7 @@ import { useCreditTermQuery } from "@/hooks/useCreditTerm";
 import { useAuth } from "@/context/AuthContext";
 import CalendarButton from "@/components/form-custom/CalendarButton";
 import DateInput from "@/components/form-custom/DateInput";
-import { useCurrenciesQuery } from "@/hooks/useCurrencie";
+import { useCurrenciesQuery } from "@/hooks/use-currency";
 
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;

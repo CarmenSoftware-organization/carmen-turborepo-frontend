@@ -32,10 +32,12 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import {
   CurrencyGetDto,
   CurrencyCreateDto,
-  CurrencyUpdateDto,
+  CurrencyUpdateDto
+} from "@/dtos/currency.dto";
+import {
   createCurrencyCreateSchema,
   createCurrencyUpdateSchema
-} from "@/dtos/currency.dto";
+} from "../_schemas/currency-form.schema";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { useAuth } from "@/context/AuthContext";
 

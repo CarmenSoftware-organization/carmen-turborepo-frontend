@@ -36,7 +36,7 @@ import { useGrn } from "@/hooks/useGrn";
 import DateInput from "@/components/form-custom/DateInput";
 import CalendarButton from "@/components/form-custom/CalendarButton";
 import { useAuth } from "@/context/AuthContext";
-import { useCurrenciesQuery } from "@/hooks/useCurrencie";
+import { useCurrenciesQuery } from "@/hooks/use-currency";
 
 interface HeadCnFormProps {
   readonly control: Control<CreditNoteFormDto>;

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
-import { useCurrenciesQuery } from "@/hooks/useCurrencie";
+import { useCurrenciesQuery } from "@/hooks/use-currency";
 
 interface Props {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

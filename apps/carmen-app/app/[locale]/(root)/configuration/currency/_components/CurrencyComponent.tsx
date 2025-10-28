@@ -14,7 +14,7 @@ import SignInDialog from "@/components/SignInDialog";
 import { useState } from "react";
 import { parseSortString } from "@/utils/table-sort";
 import { useAuth } from "@/context/AuthContext";
-import { useCurrenciesQuery, useCurrencyMutation, useCurrencyUpdateMutation, useCurrencyDeleteMutation } from "@/hooks/useCurrencie";
+import { useCurrenciesQuery, useCurrencyMutation, useCurrencyUpdateMutation, useCurrencyDeleteMutation } from "@/hooks/use-currency";
 import { useURL } from "@/hooks/useURL";
 import { CurrencyGetDto, CurrencyCreateDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 import { useQueryClient } from "@tanstack/react-query";

@@ -22,7 +22,7 @@ import { useExchangeRate } from "@/hooks/useExchangeRate";
 import currenciesIso from "@/constants/currency";
 import { CurrencyGetDto } from "@/dtos/currency.dto";
 import { useAuth } from "@/context/AuthContext";
-import { useCurrenciesQuery } from "@/hooks/useCurrencie";
+import { useCurrenciesQuery } from "@/hooks/use-currency";
 
 type ExchangeRateLookupProps = PropsLookup & {
   baseCurrency?: string;
