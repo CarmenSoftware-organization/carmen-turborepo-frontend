@@ -1,8 +1,5 @@
 import { z } from "zod";
 
-/**
- * Factory function สำหรับสร้าง Tax Profile Form Schema พร้อม i18n messages
- */
 export const createTaxProfileFormSchema = (messages: {
   nameRequired: string;
   taxRateRequired: string;
@@ -24,9 +21,6 @@ export const createTaxProfileFormSchema = (messages: {
     is_active: z.boolean().default(true),
   });
 
-/**
- * Factory function สำหรับสร้าง Tax Profile Edit Schema พร้อม i18n messages
- */
 export const createTaxProfileEditSchema = (messages: {
   nameRequired: string;
   taxRateRequired: string;

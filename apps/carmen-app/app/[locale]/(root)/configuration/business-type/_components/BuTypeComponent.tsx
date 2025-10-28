@@ -196,16 +196,22 @@ export default function BusinessTypeComponent() {
     });
   };
 
+  const updateBuTypeInList = (prev: BuTypeGetAllDto[], updatedData: BuTypeEditDto) => {
+    return prev.map((bu) =>
+      bu.id === updatedData.id ? { ...bu, ...updatedData } : bu
+    );
+  };
+
+  const handleUpdateSuccess = (data: BuTypeEditDto) => {
+    setBuTypesData((prev) => updateBuTypeInList(prev, data));
+    toastSuccess({ message: tBusinessType("business_type_updated") });
+    setIsDialogOpen(false);
+    setEditingProfileId(null);
+  };
+
   const handleUpdate = (data: BuTypeEditDto) => {
     updateBuType(data, {
-      onSuccess: () => {
-        setBuTypesData((prev) =>
-          prev.map((bu) => (bu.id === data.id ? { ...bu, ...data } : bu))
-        );
-        toastSuccess({ message: tBusinessType("business_type_updated") });
-        setIsDialogOpen(false);
-        setEditingProfileId(null);
-      },
+      onSuccess: () => handleUpdateSuccess(data),
     });
   };
 
@@ -213,16 +219,18 @@ export default function BusinessTypeComponent() {
     setDeleteProfileId(id);
   };
 
+  const handleDeleteSuccess = (deletedId: string) => {
+    setBuTypesData((prev) => prev.filter((bu) => bu.id !== deletedId));
+    toastSuccess({ message: tBusinessType("business_type_deleted") });
+    setDeleteProfileId(null);
+  };
+
   const confirmDelete = () => {
-    if (deleteProfileId) {
-      deleteBuType(deleteProfileId, {
-        onSuccess: () => {
-          setBuTypesData((prev) => prev.filter((bu) => bu.id !== deleteProfileId));
-          toastSuccess({ message: tBusinessType("business_type_deleted") });
-          setDeleteProfileId(null);
-        },
-      });
-    }
+    if (!deleteProfileId) return;
+
+    deleteBuType(deleteProfileId, {
+      onSuccess: () => handleDeleteSuccess(deleteProfileId),
+    });
   };
 
   const content = (
