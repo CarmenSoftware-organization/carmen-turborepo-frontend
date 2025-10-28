@@ -42,6 +42,7 @@ export default function CategoryComponent() {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
   const [signInOpen, setSignInOpen] = useState(false);
+
   const {
     categories,
     isPending: isCategoriesPending,
@@ -421,7 +422,7 @@ export default function CategoryComponent() {
 
     return (
       <div className="flex flex-col h-screen">
-        <div className="sticky top-0 z-10 space-y-4 pb-4">
+        <div className="sticky top-0 z-10 bg-background space-y-4 pb-4">
           <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
           <div className="flex items-center justify-between">
             <div className="relative w-72">

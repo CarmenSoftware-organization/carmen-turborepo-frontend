@@ -81,7 +81,7 @@ export default function TreeNode({
                         />
                     </button>
                 ) : (
-                    <div className="w-6 ml-4"></div>
+                    <div className="w-6 mr-1"></div>
                 )}
 
                 <div className="flex-1">

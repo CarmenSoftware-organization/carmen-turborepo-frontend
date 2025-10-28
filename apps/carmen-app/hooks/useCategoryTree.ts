@@ -103,9 +103,9 @@ export const useCategoryTree = ({
 
             // Initialize expanded state
             const initialExpanded: Record<string, boolean> = {};
-            tree.forEach(category => {
+            for (const category of tree) {
                 initialExpanded[category.id] = true;
-            });
+            }
             setExpanded(initialExpanded);
         }
     }, [isLoading, buildCategoryTree]);
@@ -126,12 +126,12 @@ export const useCategoryTree = ({
         const allExpanded: Record<string, boolean> = {};
 
         const addAllNodes = (nodes: CategoryNode[]) => {
-            nodes.forEach((node) => {
+            for (const node of nodes) {
                 allExpanded[node.id] = true;
                 if (node.children && node.children.length > 0) {
                     addAllNodes(node.children);
                 }
-            });
+            }
         };
 
         addAllNodes(categoryData);
@@ -140,9 +140,9 @@ export const useCategoryTree = ({
 
     const collapseAll = useCallback(() => {
         const topLevelOnly: Record<string, boolean> = {};
-        categoryData.forEach((category) => {
+        for (const category of categoryData) {
             topLevelOnly[category.id] = false;
-        });
+        }
         setExpanded(topLevelOnly);
     }, [categoryData]);
 

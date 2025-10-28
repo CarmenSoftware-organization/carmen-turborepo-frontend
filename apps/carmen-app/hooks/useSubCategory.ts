@@ -1,78 +1,145 @@
-"use client";
-
-import { useAuth } from "@/context/AuthContext";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { backendApi } from "@/lib/backend-api";
+import { ParamsGetDto } from "@/dtos/param.dto";
+import { getAllApiRequest, postApiRequest, updateApiRequest, requestHeaders } from "@/lib/config.api";
+import { useCallback, useMemo } from "react";
 import { SubCategoryDto } from "@/dtos/category.dto";
-import { createSubCategoryService, deleteSubCategoryService, getSubCategoryService, updateSubCategoryService } from "@/services/sub-category.service";
 import { formType } from "@/dtos/form.dto";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthContext";
+import axios from "axios";
 
-export const useSubCategoriesQuery = () => {
-    const { token, buCode } = useAuth();
+const subCategoryApiUrl = (buCode: string, id?: string) => {
+    const baseUrl = `${backendApi}/api/config/${buCode}/products/sub-category`;
+    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
-    return useQuery({
-        queryKey: ['subCategories', buCode],
+export const useSubCategoryQuery = ({
+    token,
+    buCode,
+    params
+}: {
+    token: string;
+    buCode: string;
+    params?: ParamsGetDto;
+}) => {
+
+    const API_URL = subCategoryApiUrl(buCode);
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["subcategory", buCode, params],
         queryFn: async () => {
-            const response = await getSubCategoryService(token, buCode);
-            if (response.statusCode === 401) {
-                throw new Error('Unauthorized');
+            try {
+                const result = await getAllApiRequest(
+                    API_URL,
+                    token,
+                    "Error fetching subcategory",
+                    params
+                );
+                return result;
+            } catch (error) {
+                console.log('error', error);
+                throw error;
             }
-            return response.data as SubCategoryDto[];
         },
         enabled: !!token && !!buCode,
         staleTime: 60000,
     });
+
+    const getSubCategoryName = useCallback((subCategoryId: string) => {
+        const subCategory = data?.data?.find((subCat: SubCategoryDto) => subCat.id === subCategoryId);
+        return subCategory?.name ?? "";
+    }, [data]);
+
+    return { subCategories: data, isLoading, error, getSubCategoryName };
 };
 
-export const useCreateSubCategoryMutation = () => {
-    const { token, buCode } = useAuth();
+export const useSubCategoryMutation = (
+    token: string,
+    buCode: string,
+) => {
     const queryClient = useQueryClient();
-
+    const API_URL = subCategoryApiUrl(buCode);
     return useMutation({
         mutationFn: async (data: SubCategoryDto) => {
-            return await createSubCategoryService(token, buCode, data);
+            if (!token || !buCode) throw new Error("Unauthorized");
+            return await postApiRequest(
+                API_URL,
+                token,
+                data,
+                "Error creating subcategory"
+            );
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['subCategories', buCode] });
+            queryClient.invalidateQueries({ queryKey: ['subcategory', buCode] });
         },
     });
 };
 
-export const useUpdateSubCategoryMutation = () => {
-    const { token, buCode } = useAuth();
+export const useUpdateSubCategory = (
+    token: string,
+    buCode: string,
+) => {
     const queryClient = useQueryClient();
-
     return useMutation({
         mutationFn: async (data: SubCategoryDto) => {
-            return await updateSubCategoryService(token, buCode, data);
+            if (!token || !buCode || !data.id) throw new Error("Unauthorized");
+            const API_URL_BY_ID = subCategoryApiUrl(buCode, data.id);
+            return await updateApiRequest(
+                API_URL_BY_ID,
+                token,
+                data,
+                "Error updating subcategory",
+                "PUT"
+            );
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['subCategories', buCode] });
+            queryClient.invalidateQueries({ queryKey: ['subcategory', buCode] });
         },
     });
 };
 
-export const useDeleteSubCategoryMutation = () => {
-    const { token, buCode } = useAuth();
+export const useDeleteSubCategory = (
+    token: string,
+    buCode: string,
+) => {
     const queryClient = useQueryClient();
-
     return useMutation({
-        mutationFn: async (subCategoryId: string) => {
-            return await deleteSubCategoryService(token, buCode, subCategoryId);
+        mutationFn: async (id: string) => {
+            if (!token || !buCode || !id) throw new Error("Unauthorized");
+            try {
+                const API_URL_BY_ID = subCategoryApiUrl(buCode, id);
+                const response = await axios.delete(API_URL_BY_ID, {
+                    headers: requestHeaders(token),
+                });
+                return response.data;
+            } catch (error) {
+                console.error("Error deleting subcategory:", error);
+                throw error;
+            }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['subCategories', buCode] });
+            queryClient.invalidateQueries({ queryKey: ['subcategory', buCode] });
         },
     });
 };
 
 // Legacy hook for backward compatibility
+// This hook is used by existing components and uses AuthContext internally
 export const useSubCategory = () => {
-    const { data: subCategories = [], isLoading, error } = useSubCategoriesQuery();
-    const createMutation = useCreateSubCategoryMutation();
-    const updateMutation = useUpdateSubCategoryMutation();
-    const deleteMutation = useDeleteSubCategoryMutation();
+    const { token, buCode } = useAuth();
     const queryClient = useQueryClient();
-    const { buCode } = useAuth();
+
+    const { subCategories, isLoading, error, getSubCategoryName } = useSubCategoryQuery({
+        token,
+        buCode,
+        params: {
+            perpage: -1
+        }
+    });
+
+    const createMutation = useSubCategoryMutation(token, buCode);
+    const updateMutation = useUpdateSubCategory(token, buCode);
+    const deleteMutation = useDeleteSubCategory(token, buCode);
 
     const handleSubmit = async (data: SubCategoryDto, mode: formType, selectedSubCategory?: SubCategoryDto) => {
         if (mode === formType.ADD) {
@@ -88,15 +155,20 @@ export const useSubCategory = () => {
     };
 
     const fetchSubCategories = () => {
-        queryClient.invalidateQueries({ queryKey: ['subCategories', buCode] });
+        queryClient.invalidateQueries({ queryKey: ['subcategory', buCode] });
     };
 
+    const subCategoriesData = useMemo(() => {
+        return subCategories?.data || [];
+    }, [subCategories?.data]);
+
     return {
-        subCategories,
+        subCategories: subCategoriesData,
         isPending: isLoading || createMutation.isPending || updateMutation.isPending || deleteMutation.isPending,
         isUnauthorized: error?.message === 'Unauthorized',
         fetchSubCategories,
         handleSubmit,
-        handleDelete
+        handleDelete,
+        getSubCategoryName
     };
 };
