@@ -32,7 +32,7 @@ import VendorLookup from "@/components/lookup/VendorLookup";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import GrnLookup from "@/components/lookup/GrnLookup";
 import CnReasonLookup from "@/components/lookup/CnReasonLookup";
-import { useGrn } from "@/hooks/useGrn";
+import { useGrnQuery } from "@/hooks/use-grn";
 import DateInput from "@/components/form-custom/DateInput";
 import CalendarButton from "@/components/form-custom/CalendarButton";
 import { useAuth } from "@/context/AuthContext";
@@ -54,7 +54,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
     name: "currency_id",
   });
 
-  const { getGrnNo } = useGrn();
+  const { getGrnNo } = useGrnQuery(token || "", buCode || "");
 
   return (
     <div className="space-y-4 my-4">

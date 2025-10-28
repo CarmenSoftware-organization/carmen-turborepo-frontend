@@ -1,119 +1,124 @@
+/**
+ * GRN DTO - Pure TypeScript interfaces
+ * Zod schemas moved to: app/.../goods-received-note/_schemas/grn-form.schema.ts
+ */
+
 import { ALLOCATE_EXTRA_COST_TYPE, DOC_TYPE, TaxType } from "@/constants/enum";
-import { z } from "zod";
 
-export const goodReceivedNoteDetailItemSchema = z.object({
-  id: z.string().uuid().optional(),
-  sequence_no: z.number(),
-  location_id: z.string().uuid(),
-  product_id: z.string().uuid(),
-  order_qty: z.number(),
-  order_unit_id: z.string().uuid(),
-  received_qty: z.number(),
-  received_unit_id: z.string().uuid(),
-  foc_qty: z.number(),
-  foc_unit_id: z.string().uuid(),
-  price: z.number(),
-  tax_type_inventory_id: z.string().uuid(),
-  tax_type: z.nativeEnum(TaxType),
-  tax_rate: z.number(),
-  tax_amount: z.number(),
-  is_tax_adjustment: z.boolean(),
-  total_amount: z.number(),
-  delivery_point_id: z.string().uuid(),
-  base_price: z.number(),
-  base_qty: z.number(),
-  extra_cost: z.number(),
-  total_cost: z.number(),
-  discount_rate: z.number(),
-  discount_amount: z.number(),
-  expired_date: z.string().datetime()
-});
+/**
+ * Good Received Note Detail Item DTO
+ */
+export interface GoodReceivedNoteDetailItemDto {
+  id?: string;
+  sequence_no: number;
+  location_id: string;
+  product_id: string;
+  order_qty: number;
+  order_unit_id: string;
+  received_qty: number;
+  received_unit_id: string;
+  foc_qty: number;
+  foc_unit_id: string;
+  price: number;
+  tax_type_inventory_id: string;
+  tax_type: TaxType;
+  tax_rate: number;
+  tax_amount: number;
+  is_tax_adjustment: boolean;
+  total_amount: number;
+  delivery_point_id: string;
+  base_price: number;
+  base_qty: number;
+  extra_cost: number;
+  total_cost: number;
+  discount_rate: number;
+  discount_amount: number;
+  expired_date: string;
+}
 
-export type GoodReceivedNoteDetailItemDto = z.infer<
-  typeof goodReceivedNoteDetailItemSchema
->;
+/**
+ * Extra Cost Detail Item DTO
+ */
+export interface ExtraCostDetailFormValues {
+  id?: string;
+  extra_cost_type_id?: string;
+  amount?: number;
+  tax_type_inventory_id?: string;
+  tax_type?: TaxType;
+  tax_rate?: number;
+  tax_amount?: number;
+  is_tax_adjustment?: boolean;
+  note?: string;
+}
 
-export const extraCostDetailItemSchema = z.object({
-  id: z.string().uuid().optional(),
-  extra_cost_type_id: z.string().uuid().optional(),
-  amount: z.number().optional(),
-  tax_type_inventory_id: z.string().uuid().optional(),
-  tax_type: z.nativeEnum(TaxType).optional(),
-  tax_rate: z.number().optional(),
-  tax_amount: z.number().optional(),
-  is_tax_adjustment: z.boolean().optional(),
-  note: z.string().optional(),
-});
+/**
+ * Extra Cost DTO
+ */
+export interface ExtraCostDetailItemDto {
+  name?: string;
+  allocate_extra_cost_type?: ALLOCATE_EXTRA_COST_TYPE;
+  note?: string;
+  extra_cost_detail: {
+    initData?: ExtraCostDetailFormValues[];
+    add: ExtraCostDetailFormValues[];
+    update: ExtraCostDetailFormValues[];
+    delete: string[];
+  };
+}
 
-export type ExtraCostDetailFormValues = z.infer<
-  typeof extraCostDetailItemSchema
->;
+/**
+ * Base GRN DTO
+ */
+export interface BaseGrnDto {
+  name?: string;
+  grn_no?: string;
+  invoice_no?: string;
+  invoice_date?: string;
+  description?: string;
+  doc_status?: string;
+  doc_type?: DOC_TYPE;
+  vendor_id?: string;
+  currency_id?: string;
+  currency_rate?: number;
+  workflow_id: string;
+  workflow_object?: string;
+  workflow_history?: string;
+  current_workflow_status?: string;
+  signature_image_url?: string;
+  received_by_id: string;
+  received_at?: string;
+  credit_term_id?: string;
+  payment_due_date?: string;
+  note?: string;
+  info?: string;
+  dimension?: string;
+  extra_cost?: ExtraCostDetailItemDto;
+}
 
-export const extraCostSchema = z.object({
-  name: z.string().optional(),
-  allocate_extra_cost_type: z.nativeEnum(ALLOCATE_EXTRA_COST_TYPE).optional(),
-  note: z.string().optional(),
-  extra_cost_detail: z.object({
-    initData: z.array(extraCostDetailItemSchema).optional(),
-    add: z.array(extraCostDetailItemSchema),
-    update: z.array(extraCostDetailItemSchema),
-    delete: z.array(z.string().uuid()),
-  }),
-});
+/**
+ * Create GRN DTO
+ */
+export interface CreateGRNDto extends BaseGrnDto {
+  good_received_note_detail?: {
+    initData?: GoodReceivedNoteDetailItemDto[];
+    add?: GoodReceivedNoteDetailItemDto[];
+    update?: GoodReceivedNoteDetailItemDto[];
+    delete?: string[];
+  };
+}
 
-export type ExtraCostDetailItemDto = z.infer<
-  typeof extraCostSchema
->;
+/**
+ * Get GRN By ID DTO
+ */
+export interface GetGrnByIdDto extends BaseGrnDto {
+  id: string;
+  created_at: string;
+  good_received_note_detail: GoodReceivedNoteDetailItemDto[];
+}
 
-export const baseGrnSchema = z.object({
-  name: z.string().optional(),
-  grn_no: z.string().optional(),
-  invoice_no: z.string().optional(),
-  invoice_date: z.string().optional(),
-  description: z.string().optional(),
-  doc_status: z.string().optional(),
-  doc_type: z.nativeEnum(DOC_TYPE).optional(),
-  vendor_id: z.string().uuid().optional(),
-  currency_id: z.string().uuid().optional(),
-  currency_rate: z.number().optional(),
-  workflow_id: z.string().uuid(),
-  workflow_object: z.string().optional(),
-  workflow_history: z.string().optional(),
-  current_workflow_status: z.string().optional(),
-  signature_image_url: z.string().optional(),
-  received_by_id: z.string().uuid(),
-  received_at: z.string().optional(),
-  credit_term_id: z.string().uuid().optional(),
-  payment_due_date: z.string().optional(),
-  note: z.string().optional(),
-  info: z.string().optional(),
-  dimension: z.string().optional(),
-  extra_cost: extraCostSchema.optional(),
-});
-
-// create grn
-export const grnPostSchema = baseGrnSchema.extend({
-  good_received_note_detail: z
-    .object({
-      initData: z.array(goodReceivedNoteDetailItemSchema).optional(),
-      add: z.array(goodReceivedNoteDetailItemSchema).optional(),
-      update: z.array(goodReceivedNoteDetailItemSchema).optional(),
-      delete: z.array(z.string().uuid()).optional(),
-    })
-    .optional(),
-});
-
-export type CreateGRNDto = z.infer<typeof grnPostSchema>;
-
-// get grn by id
-export const grnByIdSchema = baseGrnSchema.extend({
-  id: z.string().uuid(),
-  created_at: z.string(),
-  good_received_note_detail: z.array(goodReceivedNoteDetailItemSchema),
-});
-
-export type GetGrnByIdDto = z.infer<typeof grnByIdSchema>;
-
+/**
+ * GRN List DTO (for listing GRNs)
+ */
 export interface GoodsReceivedNoteListDto {
   id: string;
   grn_no: string;
@@ -123,3 +128,13 @@ export interface GoodsReceivedNoteListDto {
   is_active: boolean;
   created_at: string;
 }
+
+// Re-export Zod schemas for backward compatibility
+export {
+  goodReceivedNoteDetailItemSchema,
+  extraCostDetailItemSchema,
+  extraCostSchema,
+  baseGrnSchema,
+  grnPostSchema,
+  grnByIdSchema,
+} from "@/app/[locale]/(root)/procurement/goods-received-note/_schemas/grn-form.schema";

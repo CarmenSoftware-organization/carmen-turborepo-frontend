@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
-import { VendorFormValues, infoItemSchema, contactSchema } from "@/dtos/vendor.dto"
+import { VendorFormValues } from "@/dtos/vendor.dto"
+import { infoItemSchema, contactSchema } from "@/app/[locale]/(root)/vendor-management/vendor/_schemas/vendor-form.schema"
 import { useTranslations } from "next-intl"
 
 interface ContactVendorProps {

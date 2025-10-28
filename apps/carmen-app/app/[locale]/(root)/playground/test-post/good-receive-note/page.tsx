@@ -8,7 +8,7 @@ import JsonViewer from "@/components/JsonViewer";
 import { postGoodReceiveNote } from "../payload";
 import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import { useGrnMutation } from "@/hooks/useGrn";
+import { useGrnMutation } from "@/hooks/use-grn";
 
 export default function GoodReceiveNotePage() {
   const { token, buCode } = useAuth();

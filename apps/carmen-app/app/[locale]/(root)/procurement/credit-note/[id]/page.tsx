@@ -2,7 +2,7 @@
 
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useAuth } from "@/context/AuthContext";
-import { useCreditNoteByIdQuery } from "@/hooks/useCreditNote";
+import { useCreditNoteByIdQuery } from "../_hooks/use-credit-note";
 import { useParams } from "next/navigation";
 import CnForm from "../_components/form/CnForm";
 import { formType } from "@/dtos/form.dto";

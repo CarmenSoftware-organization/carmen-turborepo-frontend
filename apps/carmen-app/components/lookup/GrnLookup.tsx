@@ -16,8 +16,9 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { useGrn } from "@/hooks/useGrn";
+import { useGrnQuery } from "@/hooks/use-grn";
 import { GoodsReceivedNoteListDto } from "@/dtos/grn.dto";
+import { useAuth } from "@/context/AuthContext";
 
 export default function GrnLookup({
   value,
@@ -25,9 +26,10 @@ export default function GrnLookup({
   placeholder = "Select GRN",
   disabled = false,
 }: Readonly<PropsLookup>) {
-  const { grns, isLoading } = useGrn();
+  const { token, buCode } = useAuth();
+  const { data: grns, isLoading } = useGrnQuery(token || "", buCode || "");
 
-  const grnDatas = grns.data;
+  const grnDatas = grns?.data;
 
   const [open, setOpen] = useState(false);
 

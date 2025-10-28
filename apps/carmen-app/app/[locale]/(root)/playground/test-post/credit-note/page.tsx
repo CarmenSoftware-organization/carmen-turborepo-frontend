@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { useCreateCreditNote } from "@/hooks/useCreditNote";
+import { useCreateCreditNote } from "@/app/[locale]/(root)/procurement/credit-note/_hooks/use-credit-note";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

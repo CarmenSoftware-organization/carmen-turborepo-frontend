@@ -11,7 +11,7 @@ import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import CreditNoteList from "./CreditNoteList";
 import { VIEW } from "@/constants/enum";
 import CreditNoteGrid from "./CreditNoteGrid";
-import { useCreditNoteQuery } from "@/hooks/useCreditNote";
+import { useCreditNoteQuery } from "../_hooks/use-credit-note";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "@/lib/navigation";
 import { parseSortString } from "@/utils/table-sort";

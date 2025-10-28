@@ -27,7 +27,7 @@ export default function ItemGroupLookup({
     classNames
 }: Readonly<PropsLookup>) {
     // เรียกใช้ hook โดยเฉพาะเจาะจงแต่ละตัวที่ต้องการ
-    const { itemGroups, isLoading } = useItemGroup();
+    const { itemGroups, isPending: isLoading } = useItemGroup();
     const [open, setOpen] = useState(false);
 
     // ใช้ useMemo เพื่อหาชื่อกลุ่มที่เลือก และป้องกันการคำนวณซ้ำ
@@ -80,7 +80,8 @@ export default function ItemGroupLookup({
                                 <CommandEmpty>No item group found.</CommandEmpty>
                                 <CommandGroup>
                                     {filterItemGroup && filterItemGroup.length > 0 ? (
-                                        filterItemGroup.map((group) => (
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        filterItemGroup.map((group: any) => (
                                             <CommandItem
                                                 key={group.id}
                                                 value={group.name}

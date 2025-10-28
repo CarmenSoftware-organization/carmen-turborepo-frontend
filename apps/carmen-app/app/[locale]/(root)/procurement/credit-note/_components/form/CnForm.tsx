@@ -25,15 +25,15 @@ import {
   CreditNoteByIdDto,
   CreditNoteFormDto,
   CreditNoteSubmitDto,
-  creditNoteSubmitSchemaDto,
 } from "@/dtos/credit-note.dto";
+import { creditNoteSubmitSchemaDto } from "../../_schemas/credit-note.schema";
 import ItemsCn from "./ItemsCn";
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import {
   useCreateCreditNote,
   useUpdateCreditNote,
-} from "@/hooks/useCreditNote";
+} from "../../_hooks/use-credit-note";
 import { format } from "date-fns";
 import { useCnReasonQuery } from "@/hooks/useCnReason";
 import DetailsAndComments from "@/components/DetailsAndComments";

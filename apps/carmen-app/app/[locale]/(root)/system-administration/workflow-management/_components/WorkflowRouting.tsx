@@ -42,7 +42,8 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
     );
   });
 
-  const categoryList = categories.map((el) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const categoryList = categories.map((el: any) => {
     return Object.assign(
       {},
       {
