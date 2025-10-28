@@ -1,27 +1,27 @@
-import { z } from "zod";
+/**
+ * Tax Profile DTO - Pure TypeScript interfaces
+ * Zod schemas moved to: app/.../tax-profile/_schemas/tax-profile-form.schema.ts
+ */
 
-export const taxProfileSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Name is required")
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name must be less than 50 characters"),
-  tax_rate: z
-    .number({
-      required_error: "Tax rate is required",
-      invalid_type_error: "Tax rate must be a number",
-    })
-    .min(0, "Tax rate must be 0 or greater")
-    .max(100, "Tax rate cannot exceed 100%"),
-  is_active: z.boolean().default(true),
-});
+/**
+ * Tax Profile Form DTO
+ */
+export interface TaxProfileFormData {
+  name: string;
+  tax_rate: number;
+  is_active: boolean;
+}
 
-export const taxProfileEditSchema = taxProfileSchema.extend({
-  id: z.string().uuid({ message: "Invalid ID format" }),
-});
-
-export type TaxProfileFormData = z.infer<typeof taxProfileSchema>;
-export type TaxProfileGetAllDto = TaxProfileFormData & {
+/**
+ * Tax Profile GetAll DTO (with id)
+ */
+export interface TaxProfileGetAllDto extends TaxProfileFormData {
   id: string;
-};
-export type TaxProfileEditDto = z.infer<typeof taxProfileEditSchema>;
+}
+
+/**
+ * Tax Profile Edit DTO (with id)
+ */
+export interface TaxProfileEditDto extends TaxProfileFormData {
+  id: string;
+}

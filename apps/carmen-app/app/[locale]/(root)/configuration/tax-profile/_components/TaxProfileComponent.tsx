@@ -29,7 +29,7 @@ import {
   useTaxProfileMutation,
   useTaxProfileQuery,
   useUpdateTaxProfile,
-} from "@/hooks/useTaxProfile";
+} from "../_hooks/use-tax-profile";
 import TaxProfileList from "./TaxProfileList";
 import { configurationPermission } from "@/lib/permission";
 

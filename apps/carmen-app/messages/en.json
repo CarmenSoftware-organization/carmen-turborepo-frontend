@@ -599,7 +599,12 @@
     "tax_profile_updated": "Tax profile updated successfully",
     "tax_profile_deleted": "Tax profile deleted successfully",
     "del_tax_profile": "Delete Tax Profile",
-    "del_tax_profile_description": "Cannot delete this tax profile as it is associated with existing records."
+    "del_tax_profile_description": "Cannot delete this tax profile as it is associated with existing records.",
+    "name_required": "Name is required",
+    "tax_rate_required": "Tax rate is required",
+    "tax_rate_invalid": "Tax rate is invalid",
+    "tax_rate_min": "Tax rate must be greater than or equal to 0",
+    "tax_rate_max": "Tax rate must be less than or equal to 100"
   },
   "ExtraCost": {
     "title": "Extra Cost",

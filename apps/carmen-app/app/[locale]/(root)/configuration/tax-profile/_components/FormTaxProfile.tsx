@@ -4,14 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -20,9 +12,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import NumberInput from "@/components/form-custom/NumberInput";
-import { TaxProfileFormData, taxProfileSchema } from "@/dtos/tax-profile.dto";
-import { useEffect } from "react";
+import { TaxProfileFormData } from "@/dtos/tax-profile.dto";
+import { createTaxProfileFormSchema } from "../_schemas/tax-profile-form.schema";
+import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 
 interface FormTaxProfileProps {
   open: boolean;
@@ -41,6 +35,18 @@ export const FormTaxProfile = ({
 }: FormTaxProfileProps) => {
   const tCommon = useTranslations("Common");
   const tTaxProfile = useTranslations("TaxProfile");
+
+  const taxProfileSchema = useMemo(
+    () =>
+      createTaxProfileFormSchema({
+        nameRequired: tTaxProfile("name_required"),
+        taxRateRequired: tTaxProfile("tax_rate_required"),
+        taxRateInvalid: tTaxProfile("tax_rate_invalid"),
+        taxRateMin: tTaxProfile("tax_rate_min"),
+        taxRateMax: tTaxProfile("tax_rate_max"),
+      }),
+    [tTaxProfile]
+  );
 
   const form = useForm<TaxProfileFormData>({
     resolver: zodResolver(taxProfileSchema),
@@ -95,6 +101,7 @@ export const FormTaxProfile = ({
             <FormField
               control={form.control}
               name="name"
+              required
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{tTaxProfile("name")}</FormLabel>
@@ -109,6 +116,7 @@ export const FormTaxProfile = ({
             <FormField
               control={form.control}
               name="tax_rate"
+              required
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{tTaxProfile("rate")} %</FormLabel>
