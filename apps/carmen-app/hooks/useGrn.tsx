@@ -62,9 +62,8 @@ export const useGrn = () => {
   };
 
   const handleSort = useCallback((field: string) => {
-    if (!sort) {
-      setSort(`${field}:asc`);
-    } else {
+    if (sort) {
+
       const [currentField, currentDirection] = sort.split(':');
 
       if (currentField === field) {
@@ -74,6 +73,8 @@ export const useGrn = () => {
         setSort(`${field}:asc`);
       }
       setPage("1");
+    } else {
+      setSort(`${field}:asc`);
     }
   }, [setSort, sort]);
 

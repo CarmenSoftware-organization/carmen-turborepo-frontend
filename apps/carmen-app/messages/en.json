@@ -582,7 +582,9 @@
     "confirm_edit": "Are you sure you want to edit this category?",
     "confirm_edit_description": "You are about to change the category type. This action may affect related items. Do you want to proceed?",
     "no_search_results": "No search results found",
-    "try_different_keywords": "Try different keywords"
+    "try_different_keywords": "Try different keywords",
+    "name_required": "Please enter name",
+    "code_required": "Please enter code"
   },
   "TaxProfile": {
     "title": "Tax Profile",

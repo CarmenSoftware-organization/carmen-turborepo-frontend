@@ -1,24 +1,17 @@
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CategoryNode,
-  SubCategoryFormSchema,
+  createSubCategorySchema,
   type SubCategoryFormData,
 } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,6 +23,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
+import FormBoolean from "@/components/form-custom/form-boolean";
 interface SubCategoryFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -72,6 +66,11 @@ export function SubCategoryForm({
       setParentName(parentNode.name);
     }
   }, [mode, selectedNode, parentNode]);
+
+  const SubCategoryFormSchema = useMemo(() => createSubCategorySchema({
+    codeRequired: tCategory("code_required"),
+    nameRequired: tCategory("name_required"),
+  }), [tCategory]).omit({ id: true });
 
   const form = useForm<SubCategoryFormData>({
     resolver: zodResolver(SubCategoryFormSchema),
@@ -129,7 +128,7 @@ export function SubCategoryForm({
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
           <FormField
             control={form.control}
             name="product_category_id"
@@ -151,6 +150,7 @@ export function SubCategoryForm({
           <FormField
             control={form.control}
             name="code"
+            required
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tCommon("code")}</FormLabel>
@@ -164,6 +164,7 @@ export function SubCategoryForm({
           <FormField
             control={form.control}
             name="name"
+            required
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tCommon("name")}</FormLabel>
@@ -282,16 +283,13 @@ export function SubCategoryForm({
             control={form.control}
             name="is_active"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    {tCommon("status")}
-                  </FormLabel>
-                </div>
+              <FormItem className="py-2">
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
+                  <FormBoolean
+                    value={field.value}
+                    onChange={field.onChange}
+                    label={tCommon("status")}
+                    type="checkbox"
                   />
                 </FormControl>
               </FormItem>

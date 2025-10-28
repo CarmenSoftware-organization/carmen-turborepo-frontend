@@ -1,16 +1,8 @@
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CategoryDto, CategoryNode, CategorySchema } from "@/dtos/category.dto";
+import { CategoryDto, CategoryNode, createCategorySchema } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,8 +16,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import FormBoolean from "@/components/form-custom/form-boolean";
 interface CategoryFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -45,6 +39,11 @@ export function CategoryForm({
 
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingData, setPendingData] = useState<CategoryDto | null>(null);
+
+  const CategorySchema = useMemo(() => createCategorySchema({
+    codeRequired: tCategory("name_required"),
+    nameRequired: tCategory("code_required"),
+  }), [tCommon]);
 
   const form = useForm<CategoryDto>({
     resolver: zodResolver(CategorySchema),
@@ -88,12 +87,13 @@ export function CategoryForm({
   };
 
   return (
-    <>
+    <div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
           <FormField
             control={form.control}
             name="code"
+            required
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tCommon("code")}</FormLabel>
@@ -107,6 +107,7 @@ export function CategoryForm({
           <FormField
             control={form.control}
             name="name"
+            required
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tCommon("name")}</FormLabel>
@@ -225,16 +226,13 @@ export function CategoryForm({
             control={form.control}
             name="is_active"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4">
-                <div className="space-y-0.5">
-                  <FormLabel className="text-base">
-                    {tCommon("status")}
-                  </FormLabel>
-                </div>
+              <FormItem className="py-2">
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
+                  <FormBoolean
+                    value={field.value}
+                    onChange={field.onChange}
+                    label={tCommon("status")}
+                    type="checkbox"
                   />
                 </FormControl>
               </FormItem>
@@ -267,6 +265,6 @@ export function CategoryForm({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }

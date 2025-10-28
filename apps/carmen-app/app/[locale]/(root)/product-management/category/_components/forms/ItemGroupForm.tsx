@@ -1,25 +1,19 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   CategoryNode,
-  ItemGroupFormSchema,
+  createItemGroupSchema,
   type ItemGroupFormData,
 } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import FormBoolean from "@/components/form-custom/form-boolean";
 interface ItemGroupFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -42,22 +36,22 @@ export function ItemGroupForm({
   const [parentName, setParentName] = useState("");
   const [parentId, setParentId] = useState("");
 
-  // Set parent information when editing or creating
   useEffect(() => {
     if (mode === formType.EDIT && selectedNode) {
-      // When editing, get the parent ID from the selected node
       setParentId(selectedNode.product_subcategory_id || "");
-
-      // For edit mode, we need to find the parent name from the parent_subcategory_id
       if (parentNode && selectedNode.product_subcategory_id === parentNode.id) {
         setParentName(parentNode.name);
       }
     } else if (parentNode) {
-      // When creating, use the parent node provided
       setParentId(parentNode.id);
       setParentName(parentNode.name);
     }
   }, [mode, selectedNode, parentNode]);
+
+  const ItemGroupFormSchema = useMemo(() => createItemGroupSchema({
+    codeRequired: tCategory("code_required"),
+    nameRequired: tCategory("name_required"),
+  }), [tCategory]).omit({ id: true });
 
   const form = useForm<ItemGroupFormData>({
     resolver: zodResolver(ItemGroupFormSchema),
@@ -79,7 +73,6 @@ export function ItemGroupForm({
     },
   });
 
-  // Update form values when parent information changes
   useEffect(() => {
     if (parentId) {
       form.setValue("product_subcategory_id", parentId);
@@ -88,7 +81,7 @@ export function ItemGroupForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
         <FormField
           control={form.control}
           name="product_subcategory_id"
@@ -107,6 +100,7 @@ export function ItemGroupForm({
         <FormField
           control={form.control}
           name="code"
+          required
           render={({ field }) => (
             <FormItem>
               <FormLabel>{tCommon("code")}</FormLabel>
@@ -121,6 +115,7 @@ export function ItemGroupForm({
         <FormField
           control={form.control}
           name="name"
+          required
           render={({ field }) => (
             <FormItem>
               <FormLabel>{tCommon("name")}</FormLabel>
@@ -241,14 +236,13 @@ export function ItemGroupForm({
           control={form.control}
           name="is_active"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-4">
-              <div className="space-y-0.5">
-                <FormLabel className="text-base">{tCommon("status")}</FormLabel>
-              </div>
+            <FormItem className="py-2">
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+                <FormBoolean
+                  value={field.value}
+                  onChange={field.onChange}
+                  label={tCommon("status")}
+                  type="checkbox"
                 />
               </FormControl>
             </FormItem>

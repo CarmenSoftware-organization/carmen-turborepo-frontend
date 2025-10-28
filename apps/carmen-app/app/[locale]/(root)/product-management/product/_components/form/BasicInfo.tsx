@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
-import { useItemGroupsQuery } from "@/hooks/useItemGroup";
+import { useItemGroup } from "@/hooks/useItemGroup";
+import { ItemGroupDto } from "@/dtos/category.dto";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,7 +50,7 @@ export default function BasicInfo({
   const productItemGroupId = watch("product_info.product_item_group_id");
   const hasInitialized = useRef(false);
 
-  const { data: itemGroups = [] } = useItemGroupsQuery();
+  const { itemGroups } = useItemGroup();
 
   useEffect(() => {
     if (!hasInitialized.current) {
@@ -132,7 +133,7 @@ export default function BasicInfo({
 
   return (
     <Card>
-      <CardHeader className="p-4">
+      <CardHeader className="p-2">
         <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
             <Button
@@ -228,7 +229,7 @@ export default function BasicInfo({
         </div>
       </CardHeader>
       <CardContent className="space-y-2 pt-0">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           <FormField
             control={control}
             name="code"
@@ -345,7 +346,7 @@ export default function BasicInfo({
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
-                          const selectedItemGroup = itemGroups.find(ig => ig.id === value);
+                          const selectedItemGroup = itemGroups.find((ig: ItemGroupDto) => ig.id === value);
                           if (selectedItemGroup) {
                             setValue("product_item_group", {
                               id: selectedItemGroup.id,
