@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, Plus, Search, X } from "lucide-react";
 import TreeNode from "./TreeNode";
 import { CategoryDialog } from "./CategoryDialog";
-import { useCategory } from "@/hooks/useCategory";
-import { useSubCategory } from "@/hooks/useSubCategory";
-import { useItemGroup } from "@/hooks/useItemGroup";
+import { useCategory } from "@/hooks/use-category";
+import { useSubCategory } from "@/app/[locale]/(root)/product-management/category/_hooks/use-subcategory";
+import { useItemGroup } from "@/hooks/use-item-group";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import SignInDialog from "@/components/SignInDialog";
 import { formType } from "@/dtos/form.dto";
@@ -28,9 +28,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { useCategoryTree } from "@/hooks/useCategoryTree";
-import { useCategoryDialog } from "@/hooks/useCategoryDialog";
-import { useCategoryDelete } from "@/hooks/useCategoryDelete";
+import { useCategoryTree } from "@/app/[locale]/(root)/product-management/category/_hooks/use-category-tree";
+import { useCategoryDialog } from "@/app/[locale]/(root)/product-management/category/_hooks/use-category-dialog";
+import { useCategoryDelete } from "@/app/[locale]/(root)/product-management/category/_hooks/use-category-delete";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CategoryLoading from "@/components/loading/CategoryLoading";
 import { useTranslations } from "next-intl";

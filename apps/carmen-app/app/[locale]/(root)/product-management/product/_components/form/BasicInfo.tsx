@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
-import { useItemGroup } from "@/hooks/useItemGroup";
+import { useItemGroup } from "@/hooks/use-item-group";
 import { ItemGroupDto } from "@/dtos/category.dto";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

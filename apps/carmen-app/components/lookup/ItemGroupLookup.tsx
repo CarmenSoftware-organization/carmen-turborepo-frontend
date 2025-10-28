@@ -15,7 +15,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
-import { useItemGroup } from "@/hooks/useItemGroup";
+import { useItemGroup } from "@/hooks/use-item-group";
 import { PropsLookup } from "@/dtos/lookup.dto";
 
 
