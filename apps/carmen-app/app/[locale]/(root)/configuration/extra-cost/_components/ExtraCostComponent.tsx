@@ -4,7 +4,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { useExtraCostTypeQuery, useCreateExtraCostType, useUpdateExtraCostType, useDeleteExtraCostType } from "@/hooks/useExtraCostType";
+import { useExtraCostTypeQuery, useCreateExtraCostType, useUpdateExtraCostType, useDeleteExtraCostType } from "@/hooks/use-extra-cost-type";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useState } from "react";
@@ -249,8 +249,8 @@ export default function ExtraCostComponent() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title={tExtraCost("del_extra_cost")}
-        description={tExtraCost("del_extra_cost_description")}
+        title={tExtraCost("delete_extra_cost")}
+        description={tExtraCost("delete_extra_cost_description")}
         isLoading={isLoading}
       />
     </>

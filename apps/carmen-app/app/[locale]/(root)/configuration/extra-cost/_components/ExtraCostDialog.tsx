@@ -1,21 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "@/components/form-custom/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { formType } from "@/dtos/form.dto";
 import { useTranslations } from "next-intl";
-import { Checkbox } from "@/components/ui/checkbox";
+import FormBoolean from "@/components/form-custom/form-boolean";
+import {
+    createExtraCostFormSchema,
+    createExtraCostUpdateSchema,
+} from "../_schemas/extra-cost-form.schema";
 
 interface ExtraCostDialogProps {
     open: boolean;
@@ -34,18 +46,23 @@ export default function ExtraCostDialog({
     onSubmit,
     isLoading = false,
 }: ExtraCostDialogProps) {
-
     const tExtraCost = useTranslations("ExtraCost");
     const tCommon = useTranslations("Common");
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        watch,
-        reset,
-        formState: { errors },
-    } = useForm<ExtraCostTypeDto>({
+    // Create schema with i18n messages
+    const schema = useMemo(() => {
+        const messages = {
+            nameRequired: tExtraCost("name_required"),
+        };
+        return mode === formType.EDIT
+            ? createExtraCostUpdateSchema(messages)
+            : createExtraCostFormSchema(messages);
+    }, [mode, tExtraCost]);
+
+    type FormData = Omit<ExtraCostTypeDto, 'id' | 'doc_version'>;
+
+    const form = useForm<FormData>({
+        resolver: zodResolver(schema),
         defaultValues: {
             name: "",
             description: "",
@@ -56,19 +73,18 @@ export default function ExtraCostDialog({
         },
     });
 
-    const watchedIsActive = watch("is_active");
-
     useEffect(() => {
         if (open) {
             if (mode === formType.EDIT && extraCost) {
-                setValue("name", extraCost.name);
-                setValue("description", extraCost.description || "");
-                setValue("note", extraCost.note || "");
-                setValue("is_active", extraCost.is_active);
-                setValue("info", extraCost.info || "");
-                setValue("dimension", extraCost.dimension || "");
+                form.reset({
+                    ...extraCost,
+                    description: extraCost.description || "",
+                    note: extraCost.note || "",
+                    info: extraCost.info || "",
+                    dimension: extraCost.dimension || "",
+                });
             } else if (mode === formType.ADD) {
-                reset({
+                form.reset({
                     name: "",
                     description: "",
                     note: "",
@@ -78,10 +94,10 @@ export default function ExtraCostDialog({
                 });
             }
         }
-    }, [open, mode, extraCost, setValue, reset]);
+    }, [open, mode, extraCost, form]);
 
-    const handleFormSubmit = (data: ExtraCostTypeDto) => {
-        const submitData = {
+    const handleFormSubmit = (data: FormData) => {
+        const submitData: ExtraCostTypeDto = {
             ...data,
             id: mode === formType.EDIT && extraCost ? extraCost.id : "",
         };
@@ -89,14 +105,7 @@ export default function ExtraCostDialog({
     };
 
     const handleClose = () => {
-        reset({
-            name: "",
-            description: "",
-            note: "",
-            is_active: true,
-            info: "",
-            dimension: "",
-        });
+        form.reset();
         onOpenChange(false);
     };
 
@@ -105,90 +114,132 @@ export default function ExtraCostDialog({
             <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                     <DialogTitle>
-                        {mode === formType.ADD ? tExtraCost("add_extra_cost") : tExtraCost("edit_extra_cost")}
+                        {mode === formType.ADD
+                            ? tExtraCost("add_extra_cost")
+                            : tExtraCost("edit_extra_cost")}
                     </DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="name">{tExtraCost("name")} <span className="text-destructive">*</span></Label>
-                        <Input
-                            id="name"
-                            {...register("name", { required: tCommon("name") })}
-                            placeholder={tExtraCost("name_placeholder")}
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-2">
+                        <FormField
+                            control={form.control}
+                            name="name"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tExtraCost("name")}</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            placeholder={tExtraCost("name_placeholder")}
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                            required
                         />
-                        {errors.name && (
-                            <p className="text-sm text-destructive">{errors.name.message}</p>
-                        )}
-                    </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="description">{tCommon("description")}</Label>
-                        <Textarea
-                            id="description"
-                            {...register("description")}
-                            placeholder={tCommon("description")}
-                            maxLength={200}
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tCommon("description")}</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder={tCommon("description")}
+                                            maxLength={200}
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="note">{tCommon("note")}</Label>
-                        <Textarea
-                            id="note"
-                            {...register("note")}
-                            placeholder={tCommon("note")}
-                            maxLength={200}
+                        <FormField
+                            control={form.control}
+                            name="note"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tCommon("note")}</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder={tCommon("note")}
+                                            maxLength={200}
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="info">{tCommon("info")}</Label>
-                        <Input
-                            id="info"
-                            {...register("info")}
-                            placeholder={tCommon("info")}
+                        <FormField
+                            control={form.control}
+                            name="info"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tCommon("info")}</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={tCommon("info")} {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="dimension">{tCommon("dimension")}</Label>
-                        <Input
-                            id="dimension"
-                            {...register("dimension")}
-                            placeholder={tCommon("dimension")}
+                        <FormField
+                            control={form.control}
+                            name="dimension"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{tCommon("dimension")}</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder={tCommon("dimension")} {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
                         />
-                    </div>
 
-                    <div className="fxr-c space-x-2">
-                        <Checkbox
-                            id="is_active"
-                            checked={watchedIsActive}
-                            onCheckedChange={(checked) => {
-                                setValue("is_active", checked as boolean)
-                            }}
+                        <FormField
+                            control={form.control}
+                            name="is_active"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <FormBoolean
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            label={tCommon("active")}
+                                            type="checkbox"
+                                        />
+                                    </FormControl>
+                                </FormItem>
+                            )}
                         />
-                        <Label htmlFor="is_active">{tCommon("status")}</Label>
-                    </div>
 
-                    <div className="flex justify-end space-x-2 pt-4">
-                        <Button
-                            type="button"
-                            variant="outlinePrimary"
-                            onClick={handleClose}
-                            disabled={isLoading}
-                        >
-                            {tCommon("cancel")}
-                        </Button>
-                        <Button type="submit" disabled={isLoading}>
-                            {(() => {
-                                if (isLoading) return tCommon("saving");
-                                if (mode === formType.ADD) return tCommon("add");
-                                return tCommon("edit");
-                            })()}
-                        </Button>
-                    </div>
-                </form>
+                        <div className="flex justify-end space-x-2 pt-4">
+                            <Button
+                                type="button"
+                                variant="outlinePrimary"
+                                onClick={handleClose}
+                                disabled={isLoading}
+                            >
+                                {tCommon("cancel")}
+                            </Button>
+                            <Button type="submit" disabled={isLoading}>
+                                {(() => {
+                                    if (isLoading) return tCommon("saving");
+                                    if (mode === formType.ADD) return tCommon("add");
+                                    return tCommon("edit");
+                                })()}
+                            </Button>
+                        </div>
+                    </form>
+                </Form>
             </DialogContent>
         </Dialog>
     );

@@ -9,7 +9,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
-import { useExtraCostTypeQuery } from "@/hooks/useExtraCostType";
+import { useExtraCostTypeQuery } from "@/hooks/use-extra-cost-type";
 
 export default function ExtraCostTypeLookup({
   value,
