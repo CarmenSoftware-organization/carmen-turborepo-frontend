@@ -20,7 +20,7 @@ import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
-import { StoreLocationDto } from "@/dtos/config.dto";
+import { StoreLocationDto } from "@/dtos/location.dto";
 
 interface Location {
   readonly id: string;

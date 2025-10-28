@@ -1,10 +1,11 @@
 import {
-  createFormLocationSchema,
   FormLocationValues,
   LocationByIdDto,
+  LocationResponse,
   PHYSICAL_COUNT_TYPE,
   UserItemTransfer,
-} from "@/dtos/config.dto";
+} from "@/dtos/location.dto";
+import { createLocationFormSchema } from "../../_schemas/location-form.schema";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Save, X } from "lucide-react";
@@ -23,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { useLocationMutation, useUpdateLocation } from "@/hooks/use-location";
+import { useLocationMutation, useUpdateLocation } from "@/hooks/use-locations";
 import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
 import { Transfer } from "@/components/ui-custom/Transfer";
 import { useMemo, useState, useEffect, useCallback } from "react";
@@ -43,21 +44,6 @@ interface LocationFormProps {
   readonly token: string;
   readonly buCode: string;
 }
-
-interface LocationResponse {
-  id: string;
-  name: string;
-  location_type: INVENTORY_TYPE;
-  physical_count_type: PHYSICAL_COUNT_TYPE;
-  description: string;
-  is_active: boolean;
-  delivery_point: {
-    id: string;
-    name: string;
-    is_active: boolean;
-  };
-};
-
 
 export default function LocationForm({
   initialData,
@@ -87,7 +73,7 @@ export default function LocationForm({
   const isPending = createMutation.isPending || updateMutation.isPending;
   const isViewMode = mode === formType.VIEW;
 
-  const formLocationSchema = useMemo(() => createFormLocationSchema({
+  const formLocationSchema = useMemo(() => createLocationFormSchema({
     nameRequired: tLocation('location_name_required'),
     deliveryPointRequired: tLocation('delivery_point_required'),
   }), [tLocation]);

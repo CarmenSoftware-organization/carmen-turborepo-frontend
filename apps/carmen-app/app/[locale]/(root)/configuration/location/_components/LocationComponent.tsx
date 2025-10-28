@@ -2,8 +2,7 @@
 
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { useAuth } from "@/context/AuthContext";
-import { useLocationsQuery } from "@/hooks/useLocation";
-import { useDeleteLocation } from "@/hooks/use-location";
+import { useLocationsQuery, useDeleteLocation } from "@/hooks/use-locations";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import { FileDown, Plus, Printer } from "lucide-react";
@@ -18,7 +17,7 @@ import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import { parseSortString } from "@/utils/table-sort";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
-import { StoreLocationDto } from "@/dtos/config.dto";
+import { StoreLocationDto } from "@/dtos/location.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 

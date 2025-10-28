@@ -1,4 +1,4 @@
-import { ProductLocationDto } from "@/dtos/config.dto";
+import { ProductLocationDto } from "@/dtos/location.dto";
 import { useTranslations } from "next-intl";
 import { useState, useMemo } from "react";
 import SearchInput from "@/components/ui-custom/SearchInput";

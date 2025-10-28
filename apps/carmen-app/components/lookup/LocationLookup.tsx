@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
 import { useAuth } from "@/context/AuthContext";
-import { useLocationQuery } from "@/hooks/use-location";
-import { StoreLocationDto } from "@/dtos/config.dto";
+import { useLocationQuery } from "@/hooks/use-locations";
+import { StoreLocationDto } from "@/dtos/location.dto";
 
 interface LocationLookupProps extends Omit<PropsLookup, 'onValueChange'> {
     onValueChange: (value: string, selectedLocation?: StoreLocationDto) => void;

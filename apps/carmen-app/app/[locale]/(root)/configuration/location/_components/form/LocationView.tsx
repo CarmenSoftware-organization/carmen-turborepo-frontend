@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LocationByIdDto, PHYSICAL_COUNT_TYPE } from "@/dtos/config.dto";
+import { LocationByIdDto, PHYSICAL_COUNT_TYPE } from "@/dtos/location.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState } from "react";
 import LocationForm from "./LocationForm";

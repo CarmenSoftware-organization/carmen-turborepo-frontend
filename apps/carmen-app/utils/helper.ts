@@ -1,4 +1,4 @@
-import { TransferItem } from "@/dtos/config.dto";
+import { TransferItem } from "@/dtos/transfer.dto";
 import { UnitDto } from "@/dtos/unit.dto";
 
 export const getDisplayText = (

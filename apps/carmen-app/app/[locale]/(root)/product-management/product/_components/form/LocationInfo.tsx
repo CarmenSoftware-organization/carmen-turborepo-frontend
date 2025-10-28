@@ -6,7 +6,7 @@ import { FormField, FormItem, FormControl } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useLocationsQuery } from "@/hooks/useLocation";
+import { useLocationsQuery } from "@/hooks/use-locations";
 import { useAuth } from "@/context/AuthContext";
 import {
     AlertDialog,

@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
-import { useLocationByIdQuery } from "@/hooks/useLocation";
+import { useLocationByIdQuery } from "@/hooks/use-locations";
 import { useParams } from "next/navigation";
 import LocationView from "../_components/form/LocationView";
 import { DetailSkeleton } from "@/components/loading/DetailSkeleton";

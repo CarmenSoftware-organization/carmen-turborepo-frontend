@@ -23,7 +23,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import { useURL } from "@/hooks/useURL";
 import { useTranslations } from "next-intl";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { useLocationsQuery } from "@/hooks/useLocation";
+import { useLocationsQuery } from "@/hooks/use-locations";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
