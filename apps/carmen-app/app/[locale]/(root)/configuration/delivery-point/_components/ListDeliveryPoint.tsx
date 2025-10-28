@@ -56,16 +56,11 @@ export default function ListDeliveryPoint({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -74,7 +69,6 @@ export default function ListDeliveryPoint({
     [currentPage, perpage]
   );
 
-  // Define columns
   const columns = useMemo<ColumnDef<DeliveryPointGetDto>[]>(
     () => [
       {
@@ -87,11 +81,11 @@ export default function ListDeliveryPoint({
       },
       {
         id: "no",
-        header: () => <div className="text-center">#</div>,
+        header: () => <span className="text-center">#</span>,
         cell: ({ row }) => (
-          <div className="text-center">
+          <span className="text-center">
             {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          </span>
         ),
         enableSorting: false,
         size: 20,
@@ -150,7 +144,7 @@ export default function ListDeliveryPoint({
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => <span className="text-right">{t("action")}</span>,
         cell: ({ row }) => {
           const deliveryPoint = row.original;
 

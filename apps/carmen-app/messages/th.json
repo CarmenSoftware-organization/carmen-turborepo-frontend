@@ -631,7 +631,8 @@
     "confirm_delete_description": "คุณแน่ใจหรือไม่ที่จะลบประเภทธุรกิจนี้? การลบจะไม่สามารถยกเลิกได้",
     "business_type_created": "สร้างประเภทธุรกิจเรียบร้อย",
     "business_type_updated": "แก้ไขประเภทธุรกิจเรียบร้อย",
-    "business_type_deleted": "ลบประเภทธุรกิจเรียบร้อย"
+    "business_type_deleted": "ลบประเภทธุรกิจเรียบร้อย",
+    "bu_name_require": "กรุณากรอกชื่อประเภทธุรกิจ"
   },
   "DataControls": {
     "myPening": "รายการที่รอการอนุมัติ",

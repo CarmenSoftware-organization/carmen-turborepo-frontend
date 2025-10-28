@@ -58,7 +58,6 @@ export default function DeliveryPointDialog({
         is_active: true,
     }), []);
 
-    // เลือก schema ตาม mode
     const schema = mode === formType.EDIT ? deliveryPointUpdateSchema : deliveryPointCreateSchema;
 
     const form = useForm<DeliveryPointCreateDto | DeliveryPointUpdateDto>({

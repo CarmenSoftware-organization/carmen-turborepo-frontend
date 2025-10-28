@@ -29,7 +29,7 @@ import {
   useBuTypeQuery,
   useDeleteBuType,
   useUpdateBuType,
-} from "@/hooks/useBuType";
+} from "../_hooks/use-bu-type";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import BuTypeList from "./BuTypeList";
 import { parseSortString } from "@/utils/table-sort";
@@ -39,8 +39,6 @@ import { configurationPermission } from "@/lib/permission";
 
 export default function BusinessTypeComponent() {
   const { token, buCode, permissions } = useAuth();
-
-  // Get permissions for business_type resource
   const businessTypePerms = configurationPermission.get(permissions, "business_type");
   const tCommon = useTranslations("Common");
   const tHeader = useTranslations("TableHeader");

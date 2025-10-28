@@ -1,9 +1,10 @@
 "use client";
 
-import { BuTypeFormDto, buTypeSchema } from "@/dtos/bu-type.dto";
+import { BuTypeFormDto } from "@/dtos/bu-type.dto";
+import { createBuTypeFormSchema } from "../_schemas/bu-type-form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -42,8 +43,15 @@ export const FormBuTypeDialog = ({
   const tCommon = useTranslations("Common");
   const tBusinessType = useTranslations("BusinessType");
 
+  const buTypeFormSchema = useMemo(
+    () => createBuTypeFormSchema({
+      nameRequired: tBusinessType("bu_name_require"),
+    }),
+    [tBusinessType]
+  );
+
   const form = useForm<BuTypeFormDto>({
-    resolver: zodResolver(buTypeSchema),
+    resolver: zodResolver(buTypeFormSchema),
     defaultValues: {
       name: "",
       description: "",
@@ -95,7 +103,7 @@ export const FormBuTypeDialog = ({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
+            className="space-y-2"
           >
             <FormField
               control={form.control}
