@@ -37,7 +37,7 @@ import {
   useCreditTermQuery,
   useDeleteCreditTerm,
   useUpdateCreditTerm,
-} from "@/hooks/useCreditTerm";
+} from "@/hooks/use-credit-term";
 import { useQueryClient } from "@tanstack/react-query";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
@@ -70,9 +70,9 @@ export default function CreditTermComponent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<formType | undefined>(undefined);
 
-  const title = "Credit Term";
+  const tCreditTerm = useTranslations("CreditTerm");
+  const title = tCreditTerm("title");
 
-  // Parse sort string
   const parsedSort = sort
     ? {
       field: sort.split(":")[0],
@@ -85,7 +85,7 @@ export default function CreditTermComponent() {
       onSuccess: () => {
         setDialogOpen(false);
         queryClient.invalidateQueries({ queryKey: ["credit-term", buCode] });
-        toastSuccess({ message: "Credit term created successfully" });
+        toastSuccess({ message: tCreditTerm("create_credit_term_success") });
       },
     });
   };
@@ -97,7 +97,7 @@ export default function CreditTermComponent() {
         setDialogOpen(false);
         setSelectedCreditTerm(null);
         queryClient.invalidateQueries({ queryKey: ["credit-term", buCode] });
-        toastSuccess({ message: "Credit term updated successfully" });
+        toastSuccess({ message: tCreditTerm("update_credit_term_success") });
       },
     });
   };
@@ -109,7 +109,7 @@ export default function CreditTermComponent() {
         setDeleteDialogOpen(false);
         setSelectedCreditTerm(null);
         queryClient.invalidateQueries({ queryKey: ["credit-term", buCode] });
-        toastSuccess({ message: "Credit term deleted successfully" });
+        toastSuccess({ message: tCreditTerm("delete_credit_term_success") });
       },
     });
   };
@@ -135,7 +135,7 @@ export default function CreditTermComponent() {
     <div className="action-btn-container" data-id="credit-term-action-buttons">
       <Button size={"sm"} onClick={handleOpenCreateDialog}>
         <Plus className="h-4 w-4" />
-        New Credit Term
+        {tCommon("add")}
       </Button>
       <Button
         variant="outline"
@@ -181,7 +181,6 @@ export default function CreditTermComponent() {
         />
         <Button size={"sm"}>
           <Filter className="h-4 w-4" />
-          Add Filter
         </Button>
       </div>
     </div>
@@ -223,20 +222,21 @@ export default function CreditTermComponent() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Delete Credit Term</AlertDialogTitle>
+            <AlertDialogTitle>{tCreditTerm("confirm_del_credit_term")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete Credit Term &quot;
-              {selectedCreditTerm?.name}&quot;? This action cannot be undone.
+              {tCreditTerm("confirm_del_credit_term_desc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>
+              {tCommon("cancel")}
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteCreditTerm}
               disabled={isDeleting}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

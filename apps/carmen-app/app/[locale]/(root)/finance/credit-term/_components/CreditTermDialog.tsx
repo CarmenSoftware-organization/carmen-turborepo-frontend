@@ -17,20 +17,20 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  createCreditTermSchema,
   CreateCreditTermFormValues,
   CreditTermGetAllDto,
 } from "@/dtos/credit-term.dto";
-import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { createCreditTermFormSchema } from "../_schemas/credit-term-form.schema";
+import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { formType } from "@/dtos/form.dto";
+import NumberInput from "@/components/form-custom/NumberInput";
+import FormBoolean from "@/components/form-custom/form-boolean";
 
 interface CreditTermDialogProps {
   readonly open: boolean;
@@ -50,9 +50,19 @@ export default function CreditTermDialog({
   mode,
 }: CreditTermDialogProps) {
   const tCommon = useTranslations("Common");
+  const tCreditTerm = useTranslations("CreditTerm");
+
+  const creditTermSchema = useMemo(
+    () =>
+      createCreditTermFormSchema({
+        nameRequired: tCreditTerm("credit_term_required"),
+        valueMin: tCreditTerm("credit_term_value_required"),
+      }),
+    [tCreditTerm]
+  );
 
   const form = useForm<CreateCreditTermFormValues>({
-    resolver: zodResolver(createCreditTermSchema),
+    resolver: zodResolver(creditTermSchema),
     defaultValues: {
       name: "",
       value: 0,
@@ -92,13 +102,12 @@ export default function CreditTermDialog({
   };
 
   const dialogTitle =
-    mode === formType.EDIT ? "Edit Credit Term" : "New Credit Term";
+    mode === formType.EDIT ? tCreditTerm("dialog_title_edit") : tCreditTerm("dialog_title_add");
+
   const dialogDescription =
     mode === formType.EDIT
-      ? "Update the credit term details"
-      : "Create a new credit term with payment conditions";
-  const submitButtonText =
-    mode === formType.EDIT ? "Update Credit Term" : "Create Credit Term";
+      ? tCreditTerm("dialog_title_desc_edit")
+      : tCreditTerm("dialog_title_desc_add");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -110,16 +119,17 @@ export default function CreditTermDialog({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
+            className="space-y-2"
           >
             <FormField
               control={form.control}
               name="name"
+              required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tCommon("name")}</FormLabel>
+                  <FormLabel>{tCreditTerm("title")}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter credit term name" />
+                    <Input {...field} placeholder={tCreditTerm("title")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,16 +139,16 @@ export default function CreditTermDialog({
             <FormField
               control={form.control}
               name="value"
+              required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Value (Days)</FormLabel>
+                  <FormLabel>{tCreditTerm("days")}</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      min="0"
-                      placeholder="Enter number of days"
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    <NumberInput
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={0}
+                      placeholder={tCreditTerm("days")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -155,8 +165,7 @@ export default function CreditTermDialog({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="Enter description"
-                      rows={3}
+                      placeholder={tCommon("description")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -169,9 +178,9 @@ export default function CreditTermDialog({
               name="note"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>{tCommon("note")}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Enter note" rows={2} />
+                    <Textarea {...field} placeholder={tCommon("note")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,17 +191,14 @@ export default function CreditTermDialog({
               control={form.control}
               name="is_active"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Status</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Enable this credit term
-                    </div>
-                  </div>
+                <FormItem>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
+                    <FormBoolean
+                      value={field.value}
+                      onChange={field.onChange}
+                      label={tCommon("status")}
+                      type="checkbox"
+                      required
                     />
                   </FormControl>
                 </FormItem>
@@ -212,14 +218,7 @@ export default function CreditTermDialog({
                 type="submit"
                 disabled={isLoading || form.formState.isSubmitting}
               >
-                {isLoading || form.formState.isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {mode === formType.EDIT ? "Updating..." : "Creating..."}
-                  </>
-                ) : (
-                  submitButtonText
-                )}
+                {tCommon("save")}
               </Button>
             </DialogFooter>
           </form>

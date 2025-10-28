@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useCreditTermQuery } from "@/hooks/useCreditTerm";
+import { useCreditTermQuery } from "@/hooks/use-credit-term";
 import { CreditTermGetAllDto } from "@/dtos/credit-term.dto";
 
 export default function CreditTermLookup({

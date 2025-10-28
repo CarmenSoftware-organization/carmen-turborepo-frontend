@@ -1,21 +1,29 @@
-import { z } from "zod";
+/**
+ * Credit Term DTO - Pure TypeScript interfaces
+ * Zod schemas moved to: app/.../credit-term/_schemas/credit-term-form.schema.ts
+ */
 
-const creditTermBaseSchema = z.object({
-    name: z.string().min(1, "Name is required"),
-    value: z.number().min(0, "Value must be a positive number"),
-    description: z.string().optional(),
-    is_active: z.boolean(),
-    note: z.string().optional(),
-});
+/**
+ * Credit Term Form DTO (for create)
+ */
+export interface CreateCreditTermFormValues {
+  name: string;
+  value: number;
+  description?: string;
+  is_active: boolean;
+  note?: string;
+}
 
-export const createCreditTermSchema = creditTermBaseSchema;
+/**
+ * Credit Term GetAll DTO (with id)
+ */
+export interface CreditTermGetAllDto extends CreateCreditTermFormValues {
+  id: string;
+}
 
-export const getAllCreditTermSchema = creditTermBaseSchema.extend({
-    id: z.string().uuid("Invalid ID format"),
-});
-
-export const updateCreditTermSchema = createCreditTermSchema;
-
-export type CreditTermGetAllDto = z.infer<typeof getAllCreditTermSchema>;
-export type CreateCreditTermFormValues = z.infer<typeof createCreditTermSchema>;
-export type UpdateCreditTermDto = z.infer<typeof updateCreditTermSchema>;
+/**
+ * Credit Term Update DTO
+ */
+export interface UpdateCreditTermDto extends CreateCreditTermFormValues {
+  id: string;
+}

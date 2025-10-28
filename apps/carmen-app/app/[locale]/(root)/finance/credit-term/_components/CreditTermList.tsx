@@ -42,10 +42,6 @@ export default function CreditTermList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
 
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{t("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
@@ -157,7 +153,7 @@ export default function CreditTermList({
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => <span className="text-right">{t("action")}</span>,
         cell: ({ row }) => {
           const creditTerm = row.original;
 
@@ -187,7 +183,7 @@ export default function CreditTermList({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 120,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",

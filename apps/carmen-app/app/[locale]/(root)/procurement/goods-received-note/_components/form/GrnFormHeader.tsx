@@ -28,7 +28,7 @@ import { useVendor } from "@/hooks/useVendor";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import CreditTermLookup from "@/components/lookup/CreditTermLookup";
 import { Label } from "@/components/ui/label";
-import { useCreditTermQuery } from "@/hooks/useCreditTerm";
+import { useCreditTermQuery } from "@/hooks/use-credit-term";
 import { useAuth } from "@/context/AuthContext";
 import CalendarButton from "@/components/form-custom/CalendarButton";
 import DateInput from "@/components/form-custom/DateInput";

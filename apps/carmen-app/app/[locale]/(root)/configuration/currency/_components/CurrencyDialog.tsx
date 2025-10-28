@@ -192,7 +192,10 @@ export default function CurrencyDialog({
                   <FormItem>
                     <FormLabel>{tCurrency("currency_name")}</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        {...field}
+                        placeholder={tCurrency("currency_name")}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -211,7 +214,7 @@ export default function CurrencyDialog({
                         {...field}
                         disabled
                         className="bg-muted"
-                        placeholder="Currency symbol"
+                        placeholder={tCurrency("currency_symbol")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -234,7 +237,7 @@ export default function CurrencyDialog({
                         step={0.01}
                         disabled
                         classNames="bg-muted"
-                        placeholder="Exchange rate"
+                        placeholder={tCurrency("currency_exchange_rate")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -250,7 +253,10 @@ export default function CurrencyDialog({
                 <FormItem>
                   <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} />
+                    <Textarea
+                      {...field}
+                      placeholder={tCommon("description")}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
