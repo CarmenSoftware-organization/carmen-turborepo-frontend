@@ -1,7 +1,7 @@
-// hooks/usePrActions.ts
+// hooks/use-pr-actions.ts
 
 import { PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
-import { useUpdateUPr } from "./usePurchaseRequest";
+import { useUpdateUPr } from "@/hooks/use-purchase-request";
 
 type ActionPr = 'save' | 'submit' | 'approve' | 'purchase' | 'review' | 'reject' | 'send_back';
 
@@ -59,7 +59,6 @@ const usePrActions = (
     prId: string
 ): PrActionsReturn => {
 
-    // Initialize all mutations
     const saveMutation = useUpdateUPr(token, buCode, prId, 'save' as ActionPr);
     const submitMutation = useUpdateUPr(token, buCode, prId, 'submit' as ActionPr);
     const approveMutation = useUpdateUPr(token, buCode, prId, 'approve' as ActionPr);
@@ -126,7 +125,7 @@ const usePrActions = (
     };
 
     // Overall loading state
-    const isPending = Object.values(loadingStates).some(state => state);
+    const isPending = Object.values(loadingStates).some(Boolean);
 
     // Aggregate error states
     const errors = {

@@ -38,13 +38,11 @@ export const usePurchaseItemManagement = ({
     initValues = []
 }: UsePurchaseItemManagementProps): UsePurchaseItemManagementReturn => {
 
-    // State for tracking updates and deletions
     const [state, setState] = useState<PurchaseItemState>({
         updatedItems: {},
         removedItems: new Set()
     });
 
-    // Field array for new items
     const {
         fields: addFields,
         append: addAppend,
@@ -80,6 +78,122 @@ export const usePurchaseItemManagement = ({
         }, 100);
     }, [addAppend, form]);
 
+    // Helper: Process quantity field values
+    const processQuantityValue = useCallback((fieldName: string, value: any): any => {
+        if (!['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)) {
+            return value;
+        }
+        if (value === undefined || value === null || value === '') {
+            return 0;
+        }
+        return Number(value);
+    }, []);
+
+    // Helper: Get product selection fields
+    const getProductFields = useCallback((fieldName: string, selectedProduct?: any) => {
+        if (!selectedProduct || fieldName !== 'product_id') {
+            return {};
+        }
+        return {
+            product_name: selectedProduct.name,
+            inventory_unit_id: selectedProduct.inventory_unit_id,
+            inventory_unit_name: selectedProduct.inventory_unit_name,
+        };
+    }, []);
+
+    // Helper: Update new item in add array
+    const updateNewItemInForm = useCallback((
+        fieldIndex: number,
+        fieldName: string,
+        value: any,
+        selectedProduct?: any
+    ) => {
+        const currentValues = form.getValues();
+        const updatedAddItems = [...(currentValues.body.purchase_request_detail?.add || [])];
+
+        if (!updatedAddItems[fieldIndex]) return;
+
+        const processedValue = processQuantityValue(fieldName, value);
+        const productFields = getProductFields(fieldName, selectedProduct);
+
+        updatedAddItems[fieldIndex] = {
+            ...updatedAddItems[fieldIndex],
+            [fieldName]: processedValue,
+            ...productFields
+        };
+
+        form.setValue('body.purchase_request_detail.add', updatedAddItems, {
+            shouldValidate: false,
+            shouldDirty: true,
+            shouldTouch: true
+        });
+
+        // Clear and re-trigger validation
+        setTimeout(async () => {
+            form.clearErrors();
+            await form.trigger();
+        }, 50);
+    }, [form, processQuantityValue, getProductFields]);
+
+    // Helper: Update existing item in update array
+    const updateExistingItemInForm = useCallback((
+        itemId: string,
+        fieldName: string,
+        value: any,
+        selectedProduct?: any
+    ) => {
+        const currentValues = form.getValues();
+        const updateItems = currentValues.body.purchase_request_detail?.update || [];
+
+        let existingUpdateIndex = updateItems.findIndex((updateItem: any) => updateItem.id === itemId);
+
+        if (existingUpdateIndex === -1) {
+            const originalItem = initValues.find(item => item.id === itemId);
+            if (!originalItem) return;
+
+            updateItems.push({ ...originalItem } as any);
+            existingUpdateIndex = updateItems.length - 1;
+        }
+
+        const processedValue = processQuantityValue(fieldName, value);
+        const productFields = getProductFields(fieldName, selectedProduct);
+
+        updateItems[existingUpdateIndex] = {
+            ...updateItems[existingUpdateIndex],
+            [fieldName]: processedValue,
+            ...productFields
+        };
+
+        form.setValue('body.purchase_request_detail.update', updateItems, {
+            shouldValidate: false,
+            shouldDirty: true,
+            shouldTouch: false
+        });
+    }, [form, initValues, processQuantityValue, getProductFields]);
+
+    // Helper: Update state for UI display
+    const updateStateForDisplay = useCallback((
+        itemId: string,
+        fieldName: string,
+        value: any,
+        selectedProduct?: any
+    ) => {
+        const processedValue = processQuantityValue(fieldName, value);
+        const productFields = getProductFields(fieldName, selectedProduct);
+
+        setState(prev => ({
+            ...prev,
+            updatedItems: {
+                ...prev.updatedItems,
+                [itemId]: {
+                    ...prev.updatedItems[itemId],
+                    [fieldName]: processedValue,
+                    ...productFields
+                }
+            }
+        }));
+    }, [processQuantityValue, getProductFields]);
+
     // Update item field
     const updateItem = useCallback((
         itemId: string,
@@ -87,132 +201,23 @@ export const usePurchaseItemManagement = ({
         value: any,
         selectedProduct?: any
     ) => {
-        // Check if this is a new item (from addFields)
-        const isNewItem = addFields.some((field: any) => field.id === itemId);
+        const fieldIndex = addFields.findIndex((field: any) => field.id === itemId);
+        const isNewItem = fieldIndex >= 0;
 
         if (isNewItem) {
-            // Update the form directly for new items
-            const fieldIndex = addFields.findIndex((field: any) => field.id === itemId);
-            if (fieldIndex >= 0) {
-                const currentValues = form.getValues();
-                const updatedAddItems = [...(currentValues.body.purchase_request_detail?.add || [])];
-
-                if (updatedAddItems[fieldIndex]) {
-                    // Convert string to number for quantity fields
-                    let processedValue = value;
-                    if (['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)) {
-                        // Allow 0 as a valid value
-                        if (value === undefined || value === null || value === '') {
-                            processedValue = 0;
-                        } else {
-                            processedValue = Number(value);
-                        }
-                    }
-
-                    // Update only the changed field, keep others unchanged
-                    updatedAddItems[fieldIndex] = {
-                        ...updatedAddItems[fieldIndex],
-                        [fieldName]: processedValue,
-                        // Handle product selection
-                        ...(selectedProduct && fieldName === 'product_id' ? {
-                            product_name: selectedProduct.name,
-                            inventory_unit_id: selectedProduct.inventory_unit_id,
-                            inventory_unit_name: selectedProduct.inventory_unit_name,
-                        } : {})
-                    };
-
-                    form.setValue('body.purchase_request_detail.add', updatedAddItems, {
-                        shouldValidate: false,
-                        shouldDirty: true,
-                        shouldTouch: true
-                    });
-
-                    // Clear and re-trigger validation to ensure errors are updated
-                    setTimeout(async () => {
-                        form.clearErrors();
-                        await form.trigger();
-                    }, 50);
-                }
-            }
+            updateNewItemInForm(fieldIndex, fieldName, value, selectedProduct);
         } else {
-            // Update existing items
             const currentValues = form.getValues();
-
-            // Check if form supports update array
             const hasUpdateField = currentValues.body.purchase_request_detail && 'update' in currentValues.body.purchase_request_detail;
 
             if (hasUpdateField) {
-                // Use update array for forms that support it
-                const updateItems = currentValues.body.purchase_request_detail?.update || [];
-
-                // Find existing update item or create new one
-                let existingUpdateIndex = updateItems.findIndex((updateItem: any) => updateItem.id === itemId);
-
-                if (existingUpdateIndex === -1) {
-                    // Create new update item with current item data
-                    const originalItem = initValues.find(item => item.id === itemId);
-                    if (originalItem) {
-                        const newUpdateItem = { ...originalItem } as any;
-                        updateItems.push(newUpdateItem);
-                        existingUpdateIndex = updateItems.length - 1;
-                    }
-                }
-
-                if (existingUpdateIndex >= 0) {
-                    // Convert string to number for quantity fields
-                    let processedValue = value;
-                    if (['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)) {
-                        // Allow 0 as a valid value
-                        if (value === undefined || value === null || value === '') {
-                            processedValue = 0;
-                        } else {
-                            processedValue = Number(value);
-                        }
-                    }
-
-                    updateItems[existingUpdateIndex] = {
-                        ...updateItems[existingUpdateIndex],
-                        [fieldName]: processedValue,
-                        // Handle product selection
-                        ...(selectedProduct && fieldName === 'product_id' ? {
-                            product_name: selectedProduct.name,
-                            inventory_unit_id: selectedProduct.inventory_unit_id,
-                            inventory_unit_name: selectedProduct.inventory_unit_name,
-                        } : {})
-                    };
-
-                    // Update form with new update array
-                    form.setValue('body.purchase_request_detail.update', updateItems, {
-                        shouldValidate: false,
-                        shouldDirty: true,
-                        shouldTouch: false
-                    });
-                }
+                updateExistingItemInForm(itemId, fieldName, value, selectedProduct);
             }
 
-            // Always update state for UI display
-            setState(prev => ({
-                ...prev,
-                updatedItems: {
-                    ...prev.updatedItems,
-                    [itemId]: {
-                        ...prev.updatedItems[itemId],
-                        [fieldName]: ['requested_qty', 'approved_qty', 'foc_qty'].includes(fieldName)
-                            ? (value !== undefined && value !== null && value !== '' ? Number(value) : 0)
-                            : value,
-                        // Handle product selection
-                        ...(selectedProduct && fieldName === 'product_id' ? {
-                            product_name: selectedProduct.name,
-                            inventory_unit_id: selectedProduct.inventory_unit_id,
-                            inventory_unit_name: selectedProduct.inventory_unit_name,
-                        } : {})
-                    }
-                }
-            }));
+            updateStateForDisplay(itemId, fieldName, value, selectedProduct);
         }
-    }, [addFields, form, initValues]);
+    }, [addFields, form, updateNewItemInForm, updateExistingItemInForm, updateStateForDisplay]);
 
-    // Remove item
     const removeItem = useCallback((
         itemId: string,
         isNewItem: boolean = false,

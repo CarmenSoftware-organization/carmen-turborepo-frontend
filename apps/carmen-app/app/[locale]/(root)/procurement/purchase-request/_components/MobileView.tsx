@@ -8,10 +8,10 @@ import {
   SelectionProps,
 } from "./SharePrComponent";
 import { format } from "date-fns";
-import { GetAllPrDto } from "@/dtos/pr.dto";
+import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { formatCurrency } from "@/lib/utils";
 interface MobileViewProps extends SelectionProps {
-  readonly purchaseRequests: GetAllPrDto[];
+  readonly purchaseRequests: PurchaseRequestListDto[];
   readonly isLoading?: boolean;
 }
 

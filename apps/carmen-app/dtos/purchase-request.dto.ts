@@ -1,22 +1,10 @@
-import { z } from "zod";
-import {
-    EmbeddedDepartmentSchema,
-    EmbeddedLocationSchema,
-    EmbeddedProductSchema,
-    EmbeddedInventoryUnitSchema,
-    EmbeddedWorkflowSchema,
-    EmbeddedVendorSchema,
-    EmbeddedCurrencySchema,
-    EmbeddedDiscountSchema,
-    EmbeddedTaxSchema,
-    // EmbeddedPriceListSchema,
-    RequestedQuantityAndUnitSchema,
-    ApproveQuantityAndUnitSchema,
-    PriceSchema,
-    InfoSchema,
-    FocSchema,
-    ValidateSchema
-} from "./embedded.dto";
+/**
+ * Purchase Request DTO - Pure TypeScript interfaces
+ * Zod schemas moved to: app/.../purchase-request/_schemas/purchase-request-form.schema.ts
+ */
+
+// Import STAGE_ROLE enum for use in interfaces
+import { STAGE_ROLE } from "@/app/[locale]/(root)/procurement/purchase-request/_schemas/purchase-request-form.schema";
 
 // ========== Base Interfaces ==========
 export interface AuditInfo {
@@ -205,7 +193,6 @@ export interface PurchaseRequestDetail extends
     purchase_request_id: string;
 }
 
-
 export interface PurchaseRequestByIdDto extends
     BasePurchaseRequest,
     WorkflowInfo,
@@ -218,197 +205,107 @@ export interface PurchaseRequestByIdDto extends
     purchase_request_detail: PurchaseRequestDetail[];
 }
 
-// ========== Zod Schemas with Shared Components ==========
-export const CreatePurchaseRequestDetailSchema = z.object({
-    id: z.string().optional(),
-    description: z.string().optional().nullable(),
-    comment: z.string().optional().nullable(),
-    sequence_no: z.number().optional(),
-})
-    .merge(EmbeddedProductSchema)
-    .merge(EmbeddedInventoryUnitSchema)
-    .merge(EmbeddedLocationSchema.extend({
-        delivery_point_id: ValidateSchema.shape.uuid.optional(),
-        delivery_date: ValidateSchema.shape.date.optional(),
-    }))
-    .merge(EmbeddedVendorSchema)
-    .merge(RequestedQuantityAndUnitSchema)
-    .merge(PriceSchema)
-    .merge(EmbeddedTaxSchema.partial())
-    .merge(EmbeddedDiscountSchema)
-    .merge(EmbeddedCurrencySchema)
-    .merge(InfoSchema);
+// ========== Form DTOs ==========
+export interface CreatePurchaseRequestDetailDto {
+    id?: string;
+    description?: string | null;
+    comment?: string | null;
+    sequence_no?: number;
+    product_id?: string;
+    inventory_unit_id?: string;
+    location_id?: string;
+    delivery_point_id?: string;
+    delivery_date?: string;
+    vendor_id?: string;
+    requested_qty?: number;
+    requested_unit_id?: string;
+    requested_unit_conversion_factor?: number;
+    price?: number;
+    tax_profile_id?: string;
+    tax_profile_name?: string;
+    tax_rate?: number;
+    tax_amount?: number;
+    is_tax_adjustment?: boolean;
+    discount_rate?: number;
+    discount_amount?: number;
+    is_discount_adjustment?: boolean;
+    currency_id?: string;
+    exchange_rate?: number;
+    exchange_rate_date?: string;
+    note?: string | null;
+    info?: any | null;
+    dimension?: any | null;
+}
 
-export enum STAGE_ROLE {
-    CREATE = "create",
-    APPROVE = "approve",
-    PURCHASE = "purchase",
-    REJECT = "reject",
-    SEND_BACK = "send_back",
-};
+export interface UpdatePurchaseRequestDetailDto extends CreatePurchaseRequestDetailDto {
+    id: string;
+    approved_qty?: number;
+    approved_unit_id?: string;
+    approved_base_qty?: number;
+    approved_unit_conversion_factor?: number;
+    total_price?: number;
+    sub_total_price?: number;
+    net_amount?: number;
+    base_sub_total_price?: number;
+    base_total_price?: number;
+    base_net_amount?: number;
+    base_price?: number;
+    base_tax_amount?: number;
+    total_amount?: number;
+    base_discount_amount?: number;
+    foc_qty?: number;
+    foc_unit_id?: string;
+    foc_unit_conversion_rate?: number;
+}
 
-export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
+export interface PurchaseRequestCreateFormDto {
+    description?: string | null;
+    requestor_id?: string;
+    pr_date: string;
+    workflow_id?: string;
+    department_id?: string;
+    info?: any | null;
+    dimension?: any | null;
+    purchase_request_detail?: {
+        add?: CreatePurchaseRequestDetailDto[];
+    };
+}
 
-export const CreatePrSchema = z.object({
-    state_role: StageRoleSchema,
-    body: z.object({
-        pr_date: z.string(),
-        requestor_id: z.string().uuid(),
-        department_id: z.string().uuid(),
-        workflow_id: z.string().uuid(),
-        description: z.string().optional().nullable(),
-        note: z.string().optional().nullable(),
-    })
-        .extend({
-            purchase_request_detail: z.object({
-                add: z.array(CreatePurchaseRequestDetailSchema).optional(),
-                update: z.array(CreatePurchaseRequestDetailSchema).optional(),
-                remove: z.array(z.object({ id: z.string().uuid() })).optional(),
-            }).optional()
-        })
-}).superRefine((data, ctx) => {
-    // Validate that items in add array have required fields filled
-    const addItems = data.body.purchase_request_detail?.add;
-    console.log('Validating add items:', addItems);
-    if (addItems && addItems.length > 0) {
-        addItems.forEach((item, index) => {
-            console.log(`Item ${index}:`, item);
-            if (!item.location_id) {
-                console.log(`Item ${index} missing location_id`);
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Location is required",
-                    path: ['body', 'purchase_request_detail', 'add', index, 'location_id']
-                });
-            }
-            if (!item.product_id) {
-                console.log(`Item ${index} missing product_id`);
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Product is required",
-                    path: ['body', 'purchase_request_detail', 'add', index, 'product_id']
-                });
-            }
-            if (item.requested_qty === undefined || item.requested_qty === null) {
-                console.log(`Item ${index} missing requested_qty:`, item.requested_qty);
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Quantity is required",
-                    path: ['body', 'purchase_request_detail', 'add', index, 'requested_qty']
-                });
-            } else if (typeof item.requested_qty !== 'number' || item.requested_qty < 0) {
-                console.log(`Item ${index} invalid requested_qty:`, item.requested_qty);
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Quantity must be a valid number and not negative",
-                    path: ['body', 'purchase_request_detail', 'add', index, 'requested_qty']
-                });
-            }
-            if (!item.requested_unit_id) {
-                console.log(`Item ${index} missing requested_unit_id`);
-                ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message: "Unit is required",
-                    path: ['body', 'purchase_request_detail', 'add', index, 'requested_unit_id']
-                });
-            }
-        });
-    }
-})
+export interface PurchaseRequestUpdateFormDto extends PurchaseRequestCreateFormDto {
+    doc_version?: number;
+    purchase_request_detail?: {
+        add?: CreatePurchaseRequestDetailDto[];
+        update?: UpdatePurchaseRequestDetailDto[];
+        remove?: { id: string }[];
+    };
+}
 
-export type CreatePrDto = z.infer<typeof CreatePrSchema>;
+export interface CreatePrDto {
+    state_role: STAGE_ROLE;
+    body: {
+        pr_date: string;
+        requestor_id: string;
+        department_id: string;
+        workflow_id: string;
+        description?: string | null;
+        note?: string | null;
+        purchase_request_detail?: {
+            add?: CreatePurchaseRequestDetailDto[];
+            update?: CreatePurchaseRequestDetailDto[];
+            remove?: { id: string }[];
+        };
+    };
+}
 
-export const CreatePurchaseRequestSchema = z.object({
-    description: z.string().optional().nullable(), // Fixed typo: desceiption -> description
-    requestor_id: z.string().uuid().optional(),
-    pr_date: z.string(),
-})
-    .merge(EmbeddedWorkflowSchema)
-    .merge(EmbeddedDepartmentSchema)
-    .merge(InfoSchema)
-    .extend({
-        purchase_request_detail: z.object({
-            add: z.array(CreatePurchaseRequestDetailSchema).optional(),
-        }).optional()
-    });
-
-export type PurchaseRequestCreateFormDto = z.infer<typeof CreatePurchaseRequestSchema>;
-
-// แก้ไข: สร้าง UpdatePurchaseRequestDetailSchema แยกแทนการ extend เพื่อลด type complexity
-const UpdatePurchaseRequestDetailSchema = z.object({
-    id: z.string().uuid(),
-    description: z.string().optional().nullable(),
-    comment: z.string().optional().nullable(),
-    sequence_no: z.number().optional(),
-    // จาก EmbeddedProductSchema
-    product_id: ValidateSchema.shape.uuid.optional(),
-    // จาก EmbeddedInventoryUnitSchema
-    inventory_unit_id: ValidateSchema.shape.uuid.optional(),
-    // จาก EmbeddedLocationSchema + delivery point
-    location_id: ValidateSchema.shape.uuid.optional(),
-    delivery_point_id: ValidateSchema.shape.uuid.optional(),
-    delivery_date: ValidateSchema.shape.date.optional(),
-    // จาก EmbeddedVendorSchema
-    vendor_id: ValidateSchema.shape.uuid.optional(),
-    // จาก RequestedQuantityAndUnitSchema
-    requested_qty: ValidateSchema.shape.quantity.optional(),
-    requested_unit_id: ValidateSchema.shape.uuid.optional(),
-    requested_unit_conversion_factor: ValidateSchema.shape.price.optional(),
-    // จาก ApproveQuantityAndUnitSchema
-    approved_qty: ValidateSchema.shape.quantity.optional(),
-    approved_unit_id: ValidateSchema.shape.uuid.optional(),
-    approved_base_qty: ValidateSchema.shape.quantity.optional(),
-    approved_unit_conversion_factor: ValidateSchema.shape.price.optional(),
-    // จาก PriceSchema
-    total_price: ValidateSchema.shape.price.optional(),
-    sub_total_price: ValidateSchema.shape.price.optional(),
-    net_amount: ValidateSchema.shape.price.optional(),
-    price: ValidateSchema.shape.price.optional(),
-    base_sub_total_price: ValidateSchema.shape.price.optional(),
-    base_total_price: ValidateSchema.shape.price.optional(),
-    base_net_amount: ValidateSchema.shape.price.optional(),
-    base_price: ValidateSchema.shape.price.optional(),
-    // จาก EmbeddedTaxSchema (partial)
-    tax_profile_id: z.string().uuid().optional(),
-    tax_profile_name: z.string().optional(),
-    tax_rate: ValidateSchema.shape.price.optional(),
-    tax_amount: ValidateSchema.shape.price.optional(),
-    is_tax_adjustment: z.boolean().optional(),
-    base_tax_amount: ValidateSchema.shape.price.optional(),
-    total_amount: ValidateSchema.shape.price.optional(),
-    // จาก EmbeddedDiscountSchema
-    discount_rate: ValidateSchema.shape.price.optional(),
-    discount_amount: ValidateSchema.shape.price.optional(),
-    is_discount_adjustment: z.boolean().optional(),
-    base_discount_amount: ValidateSchema.shape.price.optional(),
-    // จาก EmbeddedCurrencySchema
-    currency_id: z.string().uuid().optional(),
-    exchange_rate: z.number().optional(),
-    exchange_rate_date: ValidateSchema.shape.date.optional(),
-    // จาก InfoSchema
-    note: z.string().optional().nullable(),
-    info: z.any().optional().nullable(),
-    dimension: z.any().optional().nullable(),
-    // จาก FocSchema (partial)
-    foc_qty: ValidateSchema.shape.quantity.optional(),
-    foc_unit_id: z.string().uuid().optional(),
-    foc_unit_conversion_rate: ValidateSchema.shape.price.optional(),
-});
-
-export const UpdatePurchaseRequestSchema = CreatePurchaseRequestSchema
-    .extend({
-        doc_version: z.number().optional().readonly(),
-        purchase_request_detail: z.object({
-            add: z.array(CreatePurchaseRequestDetailSchema).optional(),
-            update: z.array(UpdatePurchaseRequestDetailSchema).optional(),
-            remove: z.array(z.object({ id: z.string().uuid() })).optional(),
-        }).optional(),
-    });
-
-export type PurchaseRequestUpdateFormDto = z.infer<typeof UpdatePurchaseRequestSchema>;
-
-// ========== Additional Type Exports ==========
-export type CreatePurchaseRequestDetailDto = z.infer<typeof CreatePurchaseRequestDetailSchema>;
-export type UpdatePurchaseRequestDetailDto = z.infer<typeof UpdatePurchaseRequestDetailSchema>;
-
+// ========== Action Types ==========
 export type ActionPr = "save" | "approve" | "reject" | "review" | 'submit' | 'purchase' | 'send_back';
+
+// Re-export Zod schemas for backward compatibility
+export {
+    CreatePurchaseRequestDetailSchema,
+    STAGE_ROLE,
+    StageRoleSchema,
+    CreatePrSchema,
+    CreatePurchaseRequestSchema,
+    UpdatePurchaseRequestSchema,
+} from "@/app/[locale]/(root)/procurement/purchase-request/_schemas/purchase-request-form.schema";

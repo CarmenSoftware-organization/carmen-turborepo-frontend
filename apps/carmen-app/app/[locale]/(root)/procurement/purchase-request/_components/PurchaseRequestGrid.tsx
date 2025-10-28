@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { GetAllPrDto } from "@/dtos/pr.dto";
+import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { FileText, Trash2 } from "lucide-react";
@@ -21,7 +21,7 @@ import { Link } from "@/lib/navigation";
 import CardLoading from "@/components/loading/CardLoading";
 
 interface PurchaseRequestGridProps {
-  readonly purchaseRequests: GetAllPrDto[];
+  readonly purchaseRequests: PurchaseRequestListDto[];
   readonly currentPage?: number;
   readonly totalPages?: number;
   readonly onPageChange?: (page: number) => void;

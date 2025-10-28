@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
 import MainForm from "../_components/form-pr/MainForm";
-import { usePurchaseRequestById } from "@/hooks/usePurchaseRequest";
+import { usePurchaseRequestById } from "@/hooks/use-purchase-request";
 import { useEffect } from "react";
 
 export default function PurchaseRequestIdPage() {

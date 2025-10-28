@@ -14,7 +14,7 @@ import DialogNewPr from "./DialogNewPr";
 import { VIEW } from "@/constants/enum";
 import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
-import { usePurchaseRequest } from "@/hooks/usePurchaseRequest";
+import { usePurchaseRequest } from "@/hooks/use-purchase-request";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { parseSortString } from "@/utils/table-sort";
 import {
