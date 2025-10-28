@@ -1,4 +1,4 @@
-import { useDepartmentsQuery } from "@/hooks/useDepartments";
+import { useDepartmentsQuery } from "@/hooks/use-departments";
 import { useMemo, useState } from "react";
 import {
     Command,

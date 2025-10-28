@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import DepartmentDetail from "../_components/DepartmentDetail";
 import { formType } from "@/dtos/form.dto";
-import { useDepartmentByIdQuery } from "@/hooks/useDepartments";
+import { useDepartmentByIdQuery } from "@/hooks/use-departments";
 
 export default function DepartmentIdPage() {
   const { token, buCode } = useAuth();

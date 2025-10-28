@@ -7,7 +7,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { useDepartmentsQuery, useDepartmentDeleteMutation } from "@/hooks/useDepartments";
+import { useDepartmentsQuery, useDepartmentDeleteMutation } from "@/hooks/use-departments";
 import { useURL } from "@/hooks/useURL";
 import { useRouter } from "@/lib/navigation";
 import { FileDown, Plus, Printer } from "lucide-react";

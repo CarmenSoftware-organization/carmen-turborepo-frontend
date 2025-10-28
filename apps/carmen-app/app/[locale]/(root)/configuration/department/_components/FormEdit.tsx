@@ -17,7 +17,7 @@ import { formType } from "@/dtos/form.dto";
 import {
     useDepartmentMutation,
     useDepartmentUpdateMutation,
-} from "@/hooks/useDepartments";
+} from "@/hooks/use-departments";
 import { useUserList } from "@/hooks/useUserList";
 import { useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,11 +26,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import { DepartmentGetByIdDto } from "@/dtos/department.dto";
 import {
     createDepartmentSchema,
     createDepartmentUpdateSchema,
-    DepartmentGetByIdDto,
-} from "@/dtos/department.dto";
+} from "../_schemas/department-form.schema";
 import { ChevronLeft } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "next-intl";

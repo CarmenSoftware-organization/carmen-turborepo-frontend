@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2 } from "lucide-react";
 import { WorkflowCreateModel } from "@/dtos/workflows.dto";
 import { useCategory } from "@/hooks/useCategory";
-import { useDepartmentsQuery } from "@/hooks/useDepartments";
+import { useDepartmentsQuery } from "@/hooks/use-departments";
 import { useAuth } from "@/context/AuthContext";
 
 interface WorkflowRoutingProps {

@@ -1,103 +1,65 @@
-import { z } from "zod";
-export const createDepartmentSchema = (messages: {
-    nameRequired: string;
-}) => z.object({
-    name: z.string().min(1, messages.nameRequired),
-    description: z.string().optional(),
-    is_active: z.boolean(),
-    users: z
-        .object({
-            add: z
-                .array(
-                    z.object({
-                        id: z.string().min(1),
-                        isHod: z.boolean(),
-                    })
-                )
-                .optional(),
-            update: z
-                .array(
-                    z.object({
-                        id: z.string().min(1),
-                        isHod: z.boolean(),
-                    })
-                )
-                .optional(),
-            remove: z
-                .array(
-                    z.object({
-                        id: z.string().min(1),
-                    })
-                )
-                .optional(),
-        })
-        .optional(),
-});
+/**
+ * Department DTO Types
+ * API Data Transfer Objects - Pure TypeScript types (no Zod)
+ */
 
-export const departmentBaseSchema = z.object({
-    name: z.string().min(1),
-    description: z.string().min(1),
-    is_active: z.boolean(),
-});
+/**
+ * User ใน Department
+ */
+export interface DepartmentUser {
+  id: string;
+  isHod: boolean;
+}
 
-export const departmentCreateSchema = departmentBaseSchema.extend({
-    users: z
-        .object({
-            add: z
-                .array(
-                    z.object({
-                        id: z.string().min(1),
-                        isHod: z.boolean(),
-                    })
-                )
-                .optional(),
-            update: z
-                .array(
-                    z.object({
-                        id: z.string().min(1),
-                        isHod: z.boolean(),
-                    })
-                )
-                .optional(),
-            remove: z
-                .array(
-                    z.object({
-                        id: z.string().min(1),
-                    })
-                )
-                .optional(),
-        })
-        .optional(),
-});
+/**
+ * Users operations สำหรับ Create/Update
+ */
+export interface DepartmentUsersOperation {
+  add?: DepartmentUser[];
+  update?: DepartmentUser[];
+  remove?: { id: string }[];
+}
 
-export const departmentGetSchema = departmentBaseSchema.extend({
-    id: z.string().uuid(),
-});
+/**
+ * DTO สำหรับ Create request
+ */
+export interface DepartmentCreateDto {
+  name: string;
+  description?: string;
+  is_active: boolean;
+  users?: DepartmentUsersOperation;
+}
 
-const departmentUserDisplaySchema = z.object({
-    user_id: z.string().uuid(),
-    is_hod: z.boolean(),
-    firstname: z.string().optional(),
-    lastname: z.string().optional(),
-});
+/**
+ * DTO สำหรับ Update request (รวม id)
+ */
+export interface DepartmentUpdateDto extends DepartmentCreateDto {
+  id: string;
+}
 
-export const departmentGetByIdSchema = departmentGetSchema.extend({
-    tb_department_user: z.array(departmentUserDisplaySchema),
-});
+/**
+ * DTO สำหรับ GET list response
+ */
+export interface DepartmentGetListDto {
+  id: string;
+  name: string;
+  description: string;
+  is_active: boolean;
+}
 
+/**
+ * User display ใน Department detail
+ */
+export interface DepartmentUserDisplay {
+  user_id: string;
+  is_hod: boolean;
+  firstname?: string;
+  lastname?: string;
+}
 
-export const createDepartmentUpdateSchema = (messages: {
-    nameRequired: string;
-}) => createDepartmentSchema(messages).extend({
-    id: z.string().uuid(),
-});
-
-
-export const departmentUpdateSchema = departmentCreateSchema.extend({
-    id: z.string().uuid(),
-});
-
-export type DepartmentCreateDto = z.infer<typeof departmentCreateSchema>;     // สำหรับ POST
-export type DepartmentUpdateDto = z.infer<typeof departmentUpdateSchema>;     // สำหรับ PUT
-export type DepartmentGetListDto = z.infer<typeof departmentGetSchema>;       // สำหรับแสดง list
-export type DepartmentGetByIdDto = z.infer<typeof departmentGetByIdSchema>;   // สำหรับแสดงแบบละเอียด
+/**
+ * DTO สำหรับ GET by ID response (รายละเอียด)
+ */
+export interface DepartmentGetByIdDto extends DepartmentGetListDto {
+  tb_department_user: DepartmentUserDisplay[];
+}
