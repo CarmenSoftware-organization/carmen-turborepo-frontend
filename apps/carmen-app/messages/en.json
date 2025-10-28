@@ -113,7 +113,11 @@
     "vendor_contact_placeholder": "E.g., Primary Contact, Support, etc.",
     "contact_details": "Contact Details",
     "add_detail": "Add Detail",
-    "detail_type": "Detail Type"
+    "detail_type": "Detail Type",
+    "vendor_name_required": "Vendor name is required",
+    "add_success": "Add vendor successfully",
+    "update_success": "Update vendor successfully",
+    "delete_success": "Delete vendor successfully"
   },
   "Modules": {
     "dashboard": "Dashboard",

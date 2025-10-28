@@ -97,7 +97,11 @@
     "vendor_contact_placeholder": "ติดต่อหลัก, สนับสนุน, ฯลฯ",
     "contact_details": "รายละเอียดติดต่อ",
     "add_detail": "เพิ่มรายละเอียด",
-    "detail_type": "ประเภทรายละเอียด"
+    "detail_type": "ประเภทรายละเอียด",
+    "vendor_name_required": "กรุณากรอกชื่อผู้จัดจำหน่าย",
+    "add_success": "เพิ่มผู้จัดจำหน่ายสําเร็จ",
+    "update_success": "แก้ไขผู้จัดจำหน่ายสําเร็จ",
+    "delete_success": "ลบผู้จัดจำหน่ายสําเร็จ"
   },
   "Modules": {
     "dashboard": "แดชบอร์ด",

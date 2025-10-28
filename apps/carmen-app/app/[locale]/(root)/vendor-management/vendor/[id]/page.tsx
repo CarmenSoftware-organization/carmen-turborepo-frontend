@@ -5,7 +5,7 @@ import SignInDialog from "@/components/SignInDialog";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import VendorDetail from "../_components/VendorDetail";
 import { useAuth } from "@/context/AuthContext";
-import { useVendorById } from "@/hooks/useVendor";
+import { useVendorById } from "@/hooks/use-vendor";
 import { useState } from "react";
 
 export default function VendorPage() {

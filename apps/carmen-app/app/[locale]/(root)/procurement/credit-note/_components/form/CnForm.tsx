@@ -37,7 +37,7 @@ import {
 import { format } from "date-fns";
 import { useCnReasonQuery } from "@/hooks/useCnReason";
 import DetailsAndComments from "@/components/DetailsAndComments";
-import { useVendor } from "@/hooks/useVendor";
+import { useVendor } from "@/hooks/use-vendor";
 interface CnFormProps {
   readonly mode: formType;
   readonly initialValues?: CreditNoteByIdDto;

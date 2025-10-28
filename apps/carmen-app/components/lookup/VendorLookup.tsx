@@ -1,5 +1,5 @@
 import { PropsLookup } from "@/dtos/lookup.dto";
-import { useVendor } from "@/hooks/useVendor";
+import { useVendor } from "@/hooks/use-vendor";
 import { useMemo, useState } from "react";
 import {
     Command,

@@ -1,62 +1,86 @@
-import { z } from "zod";
 import { VendorGetDto } from "./vendor-management";
 
-export const infoItemSchema = z.object({
-    label: z.string().optional(),
-    value: z.string().optional(),
-    data_type: z.enum(["string", "number", "date", "datetime", "boolean", "dataset"]).optional(),
-})
+/**
+ * Vendor DTO - Pure TypeScript interfaces
+ * Zod schemas moved to: app/.../vendor/_schemas/vendor-form.schema.ts
+ */
 
-const addressSchema = z.object({
-    address_type: z.string().optional(),
-    data: z.object({
-        address_line1: z.string().optional(),
-        address_line2: z.string().optional(),
-        district: z.string().optional(),
-        province: z.string().optional(),
-        postal_code: z.string().optional(),
-        country: z.string().optional(),
-    }).optional(),
-}).optional()
+/**
+ * Info Item DTO
+ */
+export interface InfoItemDto {
+  label?: string;
+  value?: string;
+  data_type?: "string" | "number" | "date" | "datetime" | "boolean" | "dataset";
+}
 
-export const contactSchema = z.object({
-    contact_type: z.string().optional(),
-    description: z.string().optional(),
-    info: z.array(infoItemSchema).optional(),
-})
+/**
+ * Address Data DTO
+ */
+export interface AddressDataDto {
+  address_line1?: string;
+  address_line2?: string;
+  district?: string;
+  province?: string;
+  postal_code?: string;
+  country?: string;
+}
 
-export const vendorFormSchema = z.object({
-    id: z.string().optional(),
-    name: z.string().min(1, "Vendor name is required"),
-    description: z.string().nullish().transform(val => val ?? ""),
-    info: z.array(infoItemSchema).nullish().transform(val => val ?? []),
-    vendor_address: z.array(addressSchema).nullish().transform(val => val ?? []),
-    vendor_contact: z.array(contactSchema).nullish().transform(val => val ?? []),
-})
+/**
+ * Address DTO
+ */
+export interface AddressDto {
+  address_type?: string;
+  data?: AddressDataDto;
+}
 
-export type VendorFormValues = z.infer<typeof vendorFormSchema>;
+/**
+ * Contact DTO
+ */
+export interface ContactDto {
+  contact_type?: string;
+  description?: string;
+  info?: InfoItemDto[];
+}
 
+/**
+ * Vendor Form Values DTO
+ */
+export interface VendorFormValues {
+  id?: string;
+  name: string;
+  description?: string | null;
+  info?: InfoItemDto[] | null;
+  vendor_address?: (AddressDto | undefined)[] | null;
+  vendor_contact?: ContactDto[] | null;
+}
+
+/**
+ * Transform Vendor API response to Form values
+ */
 export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
-    return {
-        id: data.id,
-        name: data.name,
-        description: data.description ?? "",
-        info: data.info ?? [],
-        vendor_address: data.vendor_address?.map(addr => ({
-            address_type: addr.address_type,
-            data: {
-                address_line1: addr.address.line_1 ?? "",
-                address_line2: addr.address.line_2 ?? "",
-                district: addr.address.sub_district ?? "",
-                province: addr.address.province ?? "",
-                postal_code: addr.address.postal_code ?? "",
-                country: addr.address.country ?? "",
-            }
-        })) || [],
-        vendor_contact: data.vendor_contact?.map(contact => ({
-            contact_type: contact.contact_type,
-            description: contact.description || "",
-            info: contact.info || []
-        })) || []
-    };
+  return {
+    id: data.id,
+    name: data.name,
+    description: data.description ?? "",
+    info: data.info ?? [],
+    vendor_address:
+      data.vendor_address?.map((addr) => ({
+        address_type: addr.address_type,
+        data: {
+          address_line1: addr.address.line_1 ?? "",
+          address_line2: addr.address.line_2 ?? "",
+          district: addr.address.sub_district ?? "",
+          province: addr.address.province ?? "",
+          postal_code: addr.address.postal_code ?? "",
+          country: addr.address.country ?? "",
+        },
+      })) || [],
+    vendor_contact:
+      data.vendor_contact?.map((contact) => ({
+        contact_type: contact.contact_type,
+        description: contact.description || "",
+        info: contact.info || [],
+      })) || [],
+  };
 };

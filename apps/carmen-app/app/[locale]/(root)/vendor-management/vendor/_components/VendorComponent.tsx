@@ -8,7 +8,7 @@ import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import VendorList from "./VendorList";
 import SignInDialog from "@/components/SignInDialog";
-import { useVendor } from "@/hooks/useVendor";
+import { useVendor } from "@/hooks/use-vendor";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";

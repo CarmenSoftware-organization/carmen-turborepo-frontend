@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { ChevronLeft, Save, X } from "lucide-react"
@@ -10,10 +10,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { formType } from "@/dtos/form.dto"
 import { useAuth } from "@/context/AuthContext"
-import { useVendorMutation, useUpdateVendor } from "@/hooks/useVendor"
+import { useVendorMutation, useUpdateVendor } from "@/hooks/use-vendor"
 import { useQueryClient } from "@tanstack/react-query"
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast"
-import { vendorFormSchema, VendorFormValues } from "@/dtos/vendor.dto"
+import { VendorFormValues } from "@/dtos/vendor.dto"
+import { createVendorFormSchema } from "../../_schemas/vendor-form.schema"
 import { useRouter, Link } from "@/lib/navigation"
 import { Card } from "@/components/ui/card"
 import { useTranslations } from "next-intl"
@@ -48,6 +49,13 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     const { mutate: updateVendor, isPending: isUpdating } = useUpdateVendor(token, buCode, initData?.id ?? "");
 
     const isSubmitting = isCreating || isUpdating;
+
+    const vendorFormSchema = useMemo(
+        () => createVendorFormSchema({
+            nameRequired: tVendor("vendor_name_required"),
+        }),
+        [tVendor]
+    );
 
     const form = useForm<VendorFormValues>({
         resolver: zodResolver(vendorFormSchema),
