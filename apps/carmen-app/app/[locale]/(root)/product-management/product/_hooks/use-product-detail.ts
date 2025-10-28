@@ -26,7 +26,6 @@ export const useProductDetail = ({
 }: UseProductDetailProps): UseProductDetailReturn => {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
-  // Use the new useProductByIdQuery hook
   const { data, isLoading, error, refetch } = useProductByIdQuery({
     token: token || "",
     buCode: buCode || "",
@@ -34,7 +33,6 @@ export const useProductDetail = ({
     enabled: !!token && !!buCode && !authLoading,
   });
 
-  // Check for 401 status
   useEffect(() => {
     if (error) {
       setLoginDialogOpen(true);

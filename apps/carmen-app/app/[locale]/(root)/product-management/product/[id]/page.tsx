@@ -8,7 +8,7 @@ import FormProduct from "../_components/form/FormProduct";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useProductDetail } from "@/app/[locale]/(root)/product-management/product/_hooks/use-product-detail";
 
-export default function ProductEdit() {
+export default function ProductIdPage() {
   const { token, buCode, isLoading: authLoading } = useAuth();
   const params = useParams();
   const id = params.id as string;

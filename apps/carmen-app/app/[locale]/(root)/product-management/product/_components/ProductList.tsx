@@ -19,10 +19,10 @@ import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
+import { ProductListDto } from "@/dtos/product.dto";
 
 interface ProductListProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly products: any[];
+  readonly products: ProductListDto[];
   readonly isLoading: boolean;
   readonly currentPage: number;
   readonly totalPages: number;

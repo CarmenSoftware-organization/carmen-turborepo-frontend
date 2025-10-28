@@ -1,6 +1,27 @@
-// Pure TypeScript interfaces for Product entities
+export interface ProductListDto {
+    id: string;
+    code: string;
+    name: string;
+    local_name?: string;
+    description?: string;
+    product_status_type?: string;
+    inventory_unit_id: string;
+    inventory_unit_name: string;
+    product_item_group: {
+        id: string;
+        name: string;
+    };
+    product_sub_category: {
+        id: string;
+        name: string;
+    };
+    product_category: {
+        id: string;
+        name: string;
+    };
+}
 
-// Form type (inferred from schema)
+
 export interface ProductFormValues {
     id?: string;
     name: string;
