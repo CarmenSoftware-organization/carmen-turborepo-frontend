@@ -51,7 +51,9 @@ export default function transferHandler({
         };
 
 
-        moveKeys.forEach((key) => processItemMove(String(key)));
+        for (const key of moveKeys) {
+            processItemMove(String(key));
+        }
 
         const newAddArray = Array.from(addMap.values());
         const newRemoveArray = Array.from(removeMap.values());

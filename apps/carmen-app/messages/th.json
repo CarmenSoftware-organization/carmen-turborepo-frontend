@@ -66,7 +66,8 @@
     "review": "ตรวจสอบ",
     "approve": "อนุมัติ",
     "purchase_approve": "อนุมัติซื้อ",
-    "submit": "ส่งอนุมัติ"
+    "submit": "ส่งอนุมัติ",
+    "select_date": "เลือกวัน"
   },
   "Vendor": {
     "title": "ผู้จัดจำหน่าย",
@@ -426,7 +427,8 @@
     "update_error": "ไม่สามารถอัพเดตหน่วยนับ",
     "delete_success": "หน่วยนับลบเรียบร้อย",
     "delete_error": "ไม่สามารถลบหน่วยนับ",
-    "unit_name_required": "กรุณากรอกชื่อหน่วยนับ"
+    "unit_name_required": "กรุณากรอกชื่อหน่วยนับ",
+    "select_unit": "เลือกหน่วยนับ"
   },
   "Currency": {
     "title": "สกุลเงิน",
@@ -480,7 +482,11 @@
     "edit_delivery_point_description": "อัพเดตข้อมูลจุดส่งสินค้าด้านล่าง",
     "del_delivery_point": "ลบจุดส่งสินค้า",
     "del_delivery_point_description": "คุณแน่ใจหรือไม่ที่จะลบจุดส่งสินค้านี้? การลบจุดส่งสินค้าจะส่งผลต่อการซื้อขายสินค้าและการจัดการรายการสินค้า",
-    "pls_fill_dp_name": "กรุณากรอกชื่อจุดส่งสินค้า"
+    "pls_fill_dp_name": "กรุณากรอกชื่อจุดส่งสินค้า",
+    "select_delivery_point": "เลือกจุดส่งสินค้า",
+    "search_delivery_point": "ค้นหาจุดส่งสินค้า...",
+    "not_found_delivery_point": "ไม่พบจุดส่งสินค้า",
+    "not_ava_delivery_point": "ไม่พบจุดส่งสินค้าที่พร้อมใช้งาน"
   },
   "Department": {
     "title": "แผนก",
@@ -520,7 +526,10 @@
     "del_location_description": "คุณแน่ใจหรือไม่ที่จะลบสถานที่เก็บสินค้านี้? การลบสถานที่เก็บสินค้าจะส่งผลต่อการซื้อขายสินค้าและการจัดการรายการสินค้า",
     "no_locations_available": "ไม่มีสถานที่เก็บสินค้า",
     "location_name_required": "กรุณากรอกชื่อสถานที่",
-    "delivery_point_required": "กรุณาเลือกจุดส่งของ"
+    "delivery_point_required": "กรุณาเลือกจุดส่งของ",
+    "select_location": "เลือกสถานที่เก็บสินค้า",
+    "location_not_found": "ไม่พบสถานที่เก็บสินค้า",
+    "search_location": "ค้นหาสถานที่เก็บสินค้า..."
   },
   "InventoryManagement": {
     "StockOverview": {
@@ -795,7 +804,14 @@
     "select_unit": "เลือกหน่วย",
     "auto_fill_from_item_group": "ข้อมูลกรอกอัตโนมัติจากหมวดสินค้ากลุ่ม",
     "auto_fill_sub_category": "ข้อมูลกรอกอัตโนมัติจากหมวดสินค้าย่อย",
-    "no_order_unit_set": "ยังไม่มีการตั้งค่าหน่วยสั่งซื้อ"
+    "no_order_unit_set": "ยังไม่มีการตั้งค่าหน่วยสั่งซื้อ",
+    "select_product": "เลือกสินค้า",
+    "no_product_found": "ไม่พบสินค้า",
+    "no_product_location": "ไม่มีสินค้าสำหรับสถานที่นี้",
+    "err_load_product": "ไม่สามารถโหลดสินค้าได้",
+    "pls_select_location": "กรุณาเลือกสถานที่",
+    "loading": "กําลังโหลด...",
+    "search_product": "ค้นหาสินค้า..."
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",

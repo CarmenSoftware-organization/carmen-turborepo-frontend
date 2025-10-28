@@ -713,6 +713,7 @@ const UnitSelectCell = ({
     buCode: string;
 }) => {
     const [open, setOpen] = useState(false);
+    const t = useTranslations('Unit');
     const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
         token,
         buCode,
@@ -752,7 +753,7 @@ const UnitSelectCell = ({
             disabled={!productId || isLoadingOrderUnits}
         >
             <SelectTrigger className="h-7 text-xs" onKeyDown={handleKeyDown}>
-                <SelectValue placeholder={isLoadingOrderUnits ? <Loader className="w-3 h-3" /> : "Select unit"} />
+                <SelectValue placeholder={isLoadingOrderUnits ? <Loader className="w-3 h-3" /> : t("select_unit")} />
             </SelectTrigger>
             <SelectContent>
                 {orderUnitsData?.map((unit: UnitOderProduct) => (

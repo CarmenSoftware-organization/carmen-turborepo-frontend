@@ -17,6 +17,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useTranslations } from "next-intl";
 
 interface InventoryUnit {
     id: string;
@@ -33,7 +34,6 @@ interface ProductLocationLookupProps {
     readonly location_id: string;
     readonly value: string;
     readonly onValueChange: (value: string, selectedProduct?: ProductLocation) => void;
-    readonly placeholder?: string;
     readonly disabled?: boolean;
     readonly classNames?: string;
 }
@@ -42,12 +42,12 @@ export default function ProductLocationLookup({
     location_id,
     value,
     onValueChange,
-    placeholder = "Select Product",
     disabled = false,
     classNames = "max-w-40"
 }: ProductLocationLookupProps) {
     const { token, buCode } = useAuth();
     const [open, setOpen] = useState(false);
+    const t = useTranslations("Products");
 
     const { productLocation, isLoading, error } = useProductLocation(
         token,
@@ -67,39 +67,36 @@ export default function ProductLocationLookup({
 
     const selectedProduct = productLocationData.find(p => p.id === value);
 
-    // Determine button label
     const getButtonLabel = () => {
         if (isLoading) {
             return (
                 <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    <span className="truncate">Loading...</span>
+                    <span className="truncate text-muted-foreground/90 font-thin">{t("loading")}</span>
                 </>
             );
         }
         if (selectedProduct) {
             return <span className="truncate">{selectedProduct.name}</span>;
         }
-        return <span className="truncate">{placeholder}</span>;
+        return <span className="truncate text-muted-foreground/90 font-thin">{t("select_product")}</span>;
     };
 
-    // Get title for tooltip
     const getButtonTitle = () => {
         if (selectedProduct) {
             return selectedProduct.name;
         }
-        return placeholder;
+        return t("select_product");
     };
 
     // Determine empty message
     const getEmptyMessage = () => {
         if (productLocationData.length === 0) {
-            return "No products found for this location";
+            return t("no_product_location");
         }
-        return "No product found.";
+        return t("no_product_found");
     };
 
-    // Error state
     if (error) {
         return (
             <Button
@@ -108,13 +105,12 @@ export default function ProductLocationLookup({
                 className={cn("justify-between", classNames)}
                 title="Error loading data"
             >
-                <span className="truncate">Error loading data</span>
+                <span className="truncate  text-muted-foreground/90 font-thin">{t("err_load_product")}</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
         );
     }
 
-    // No location selected
     if (!location_id) {
         return (
             <Button
@@ -123,7 +119,7 @@ export default function ProductLocationLookup({
                 className={cn("justify-between", classNames)}
                 title="Please select a location first"
             >
-                <span className="truncate">Please select a location first</span>
+                <span className="truncate text-muted-foreground/90 font-thin">{t("pls_select_location")}</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
         );
@@ -138,7 +134,7 @@ export default function ProductLocationLookup({
                     aria-haspopup="listbox"
                     disabled={disabled || isLoading}
                     className={cn("justify-between", classNames)}
-                    title={!isLoading ? getButtonTitle() : "Loading..."}
+                    title={isLoading ? t("loading") : getButtonTitle()}
                 >
                     {getButtonLabel()}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -146,7 +142,7 @@ export default function ProductLocationLookup({
             </PopoverTrigger>
             <PopoverContent className="w-[300px] p-0" align="start">
                 <Command>
-                    <CommandInput placeholder="Search product..." />
+                    <CommandInput placeholder={t("search_product")} />
                     <CommandList>
                         <CommandEmpty>
                             {getEmptyMessage()}

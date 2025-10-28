@@ -2,14 +2,16 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { ControllerRenderProps, FieldValues, Path } from "react-hook-form";
+import { useTranslations } from "next-intl";
 
-interface CalendarButtonProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly field: any;
+interface CalendarButtonProps<T extends FieldValues = FieldValues> {
+    readonly field: ControllerRenderProps<T, Path<T>>;
     readonly classNames?: string;
 }
 
-export default function CalendarButton({ field, classNames }: CalendarButtonProps) {
+export default function CalendarButton<T extends FieldValues = FieldValues>({ field, classNames }: CalendarButtonProps<T>) {
+    const t = useTranslations("Action");
     return (
         <Button
             variant="outline"
@@ -23,7 +25,7 @@ export default function CalendarButton({ field, classNames }: CalendarButtonProp
             {field.value ? (
                 format(new Date(field.value), "PPP")
             ) : (
-                <span className="text-muted-foreground">Select date</span>
+                <span className="text-muted-foreground">{t("select_date")}</span>
             )}
             <CalendarIcon className="ml-auto h-3 w-3 opacity-50" />
         </Button>

@@ -48,12 +48,11 @@ export default function NumberInput({
       return;
     }
 
-    const numericValue = parseFloat(localValue);
+    const numericValue = Number(localValue);
 
-    if (!isNaN(numericValue) && isFinite(numericValue)) {
+    if (!Number.isNaN(numericValue) && Number.isFinite(numericValue)) {
       onChange(numericValue);
     } else {
-      // Reset to previous value if invalid
       setLocalValue(String(value || 0));
     }
   };

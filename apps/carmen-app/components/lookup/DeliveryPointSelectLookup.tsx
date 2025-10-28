@@ -20,11 +20,11 @@ import { cn } from "@/lib/utils";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
 import { DeliveryPointGetDto } from "@/dtos/delivery-point.dto";
+import { useTranslations } from "next-intl";
 
 interface Props {
     readonly value?: string;
     readonly onValueChange?: (value: string) => void;
-    readonly placeholder?: string;
     readonly className?: string;
     readonly disabled?: boolean;
 }
@@ -32,13 +32,12 @@ interface Props {
 export function DeliveryPointSelectLookup({
     value = "",
     onValueChange,
-    placeholder = "Select delivery point...",
     className = "",
     disabled = false,
 }: Props) {
     const [open, setOpen] = useState(false);
     const { token, buCode } = useAuth();
-
+    const t = useTranslations("DeliveryPoint");
     const { deliveryPoints, isLoading } = useDeliveryPointQuery({
         token: token,
         buCode: buCode,
@@ -63,10 +62,10 @@ export function DeliveryPointSelectLookup({
                     aria-expanded={open}
                     className="w-full justify-between"
                     disabled={disabled || isLoading}
-                    title={value && selectedDeliveryPointName ? selectedDeliveryPointName : placeholder}
+                    title={value && selectedDeliveryPointName ? selectedDeliveryPointName : t("select_delivery_point")}
                 >
-                    <span className="truncate">
-                        {value && selectedDeliveryPointName ? selectedDeliveryPointName : placeholder}
+                    <span className="truncate text-muted-foreground/90">
+                        {value && selectedDeliveryPointName ? selectedDeliveryPointName : t("select_delivery_point")}
                     </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -77,7 +76,7 @@ export function DeliveryPointSelectLookup({
                     if (value.toLowerCase().includes(search.toLowerCase())) return 1;
                     return 0;
                 }}>
-                    <CommandInput placeholder="Search delivery point..." className="w-full pr-10" />
+                    <CommandInput placeholder={t("search_delivery_point")} className="w-full pr-10" />
                     <CommandList>
                         {isLoading ? (
                             <div className="flex items-center justify-center py-6">
@@ -85,7 +84,7 @@ export function DeliveryPointSelectLookup({
                             </div>
                         ) : (
                             <>
-                                <CommandEmpty>No delivery points found.</CommandEmpty>
+                                <CommandEmpty>{t("not_found_delivery_point")}</CommandEmpty>
                                 <CommandGroup>
                                     {deliveryPointsData && deliveryPointsData.length > 0 ? (
                                         deliveryPointsData.map((item: DeliveryPointGetDto) => (
@@ -109,7 +108,7 @@ export function DeliveryPointSelectLookup({
                                             </CommandItem>
                                         ))
                                     ) : (
-                                        <CommandItem disabled>No delivery points available.</CommandItem>
+                                        <CommandItem disabled>{t("not_ava_delivery_point")}</CommandItem>
                                     )}
                                 </CommandGroup>
                             </>

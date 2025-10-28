@@ -19,6 +19,7 @@ import { PropsLookup } from "@/dtos/lookup.dto";
 import { useAuth } from "@/context/AuthContext";
 import { useLocationQuery } from "@/hooks/use-locations";
 import { StoreLocationDto } from "@/dtos/location.dto";
+import { useTranslations } from "next-intl";
 
 interface LocationLookupProps extends Omit<PropsLookup, 'onValueChange'> {
     onValueChange: (value: string, selectedLocation?: StoreLocationDto) => void;
@@ -27,13 +28,12 @@ interface LocationLookupProps extends Omit<PropsLookup, 'onValueChange'> {
 export default function LocationLookup({
     value,
     onValueChange,
-    placeholder = "Select location",
     disabled = false,
     classNames = ""
 }: Readonly<LocationLookupProps>) {
     const [open, setOpen] = useState(false);
     const { token, buCode } = useAuth();
-
+    const t = useTranslations("StoreLocation");
     const { data, isLoading } = useLocationQuery(token, buCode);
 
     const storeLocations = data?.data;
@@ -52,10 +52,10 @@ export default function LocationLookup({
                     aria-expanded={open}
                     className="w-full justify-between"
                     disabled={disabled}
-                    title={value && selectedLocationName ? selectedLocationName : placeholder}
+                    title={value && selectedLocationName ? selectedLocationName : t("select_location")}
                 >
-                    <span className="truncate">
-                        {value && selectedLocationName ? selectedLocationName : placeholder}
+                    <span className="truncate text-muted-foreground/90">
+                        {selectedLocationName ?? t("select_location")}
                     </span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -66,7 +66,7 @@ export default function LocationLookup({
                     if (value.toLowerCase().includes(search.toLowerCase())) return 1;
                     return 0;
                 }}>
-                    <CommandInput placeholder="Search location..." className="w-full pr-10" />
+                    <CommandInput placeholder={t("search_location")} className="w-full pr-10" />
                     <CommandList>
                         {isLoading ? (
                             <div className="flex items-center justify-center py-6">
@@ -74,7 +74,7 @@ export default function LocationLookup({
                             </div>
                         ) : (
                             <>
-                                <CommandEmpty>No locations found.</CommandEmpty>
+                                <CommandEmpty>{t("location_not_found")}</CommandEmpty>
                                 <CommandGroup>
                                     {storeLocations && storeLocations.length > 0 ? (
                                         storeLocations.map((storeLocation: StoreLocationDto) => (
@@ -98,7 +98,7 @@ export default function LocationLookup({
                                             </CommandItem>
                                         ))
                                     ) : (
-                                        <CommandItem disabled>No locations available.</CommandItem>
+                                        <CommandItem disabled>{t("no_locations_available")}</CommandItem>
                                     )}
                                 </CommandGroup>
                             </>
