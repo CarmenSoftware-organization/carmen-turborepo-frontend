@@ -1,129 +1,125 @@
-import { z } from "zod";
+// Pure TypeScript interfaces for Product entities
 
-// Form Schema Definition
-export const productFormSchema = z.object({
-    id: z.string().uuid().optional(),
-    name: z.string().min(1, "Name is required"),
-    code: z.string().min(1, "Code is required"),
-    inventory_unit_id: z.string().uuid(),
-    product_status_type: z.literal("active"),
-    local_name: z.string().min(1, "Local name is required"),
-    description: z.string().optional(),
-    product_info: z.object({
-        id: z.union([z.string().uuid(), z.literal("")]).optional(),
-        product_item_group_id: z.string().uuid(),
-        is_used_in_recipe: z.boolean(),
-        is_sold_directly: z.boolean(),
-        barcode: z.string().optional(),
-        price_deviation_limit: z.number().optional(),
-        qty_deviation_limit: z.number().optional(),
-        is_ingredients: z.boolean(),
-        price: z.number().optional(),
-        tax_type: z.enum(["none", "included", "excluded"]).default("none"),
-        tax_rate: z.number().optional(),
-        info: z.array(z.object({
-            label: z.string(),
-            value: z.string(),
-            data_type: z.string()
-        }))
-    }),
-    locations: z.object({
-        add: z.array(z.object({
-            location_id: z.string().uuid()
-        })),
-        remove: z.array(z.object({
-            id: z.string().uuid()
-        })).optional()
-    }),
-    order_units: z.object({
-        data: z.array(z.object({
-            id: z.union([z.string().uuid(), z.literal("")]),
-            from_unit_id: z.union([z.string().uuid(), z.literal("")]),
-            from_unit_name: z.string().optional(),
-            from_unit_qty: z.number(),
-            to_unit_id: z.union([z.string().uuid(), z.literal("")]),
-            to_unit_name: z.string().optional(),
-            to_unit_qty: z.number(),
-            description: z.string().optional(),
-            is_active: z.boolean(),
-            is_default: z.boolean()
-        })).optional(),
-        add: z.array(z.object({
-            from_unit_id: z.string().uuid(),
-            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
-            to_unit_id: z.string().uuid(),
-            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
-            description: z.string().optional(),
-            is_active: z.boolean(),
-            is_default: z.boolean()
-        })),
-        update: z.array(z.object({
-            product_order_unit_id: z.string().uuid(),
-            from_unit_id: z.string().uuid(),
-            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
-            to_unit_id: z.string().uuid(),
-            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
-            description: z.string().optional(),
-            is_active: z.boolean(),
-            is_default: z.boolean()
-        })).optional(),
-        remove: z.array(z.object({
-            product_order_unit_id: z.string().uuid()
-        })).optional()
-    }),
-    ingredient_units: z.object({
-        data: z.array(z.object({
-            id: z.union([z.string().uuid(), z.literal("")]),
-            from_unit_id: z.union([z.string().uuid(), z.literal("")]),
-            from_unit_name: z.string().optional(),
-            from_unit_qty: z.number(),
-            to_unit_id: z.union([z.string().uuid(), z.literal("")]),
-            to_unit_name: z.string().optional(),
-            to_unit_qty: z.number(),
-            description: z.string().optional(),
-            is_active: z.boolean(),
-            is_default: z.boolean()
-        })).optional(),
-        add: z.array(z.object({
-            from_unit_id: z.union([z.string().uuid(), z.literal("")]),
-            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
-            to_unit_id: z.union([z.string().uuid(), z.literal("")]),
-            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
-            description: z.string().optional(),
-            is_active: z.boolean(),
-            is_default: z.boolean()
-        })),
-        update: z.array(z.object({
-            product_ingredient_unit_id: z.string().uuid(),
-            from_unit_id: z.string().uuid(),
-            from_unit_qty: z.number().min(1, "From unit quantity must be greater than or equal to 1"),
-            to_unit_id: z.string().uuid(),
-            to_unit_qty: z.number().min(1, "To unit quantity must be greater than or equal to 1"),
-            description: z.string().optional(),
-            is_active: z.boolean(),
-            is_default: z.boolean()
-        })).optional(),
-        remove: z.array(z.object({
-            product_ingredient_unit_id: z.string().uuid()
-        })).optional()
-    }),
-    product_category: z.object({
-        id: z.string().uuid(),
-        name: z.string()
-    }),
-    product_sub_category: z.object({
-        id: z.string().uuid(),
-        name: z.string()
-    }),
-    product_item_group: z.object({
-        id: z.string().uuid(),
-        name: z.string()
-    })
-});
-
-// Form type from schema
-export type ProductFormValues = z.infer<typeof productFormSchema>;
-
+// Form type (inferred from schema)
+export interface ProductFormValues {
+    id?: string;
+    name: string;
+    code: string;
+    inventory_unit_id: string;
+    product_status_type: "active";
+    local_name: string;
+    description?: string;
+    product_info: {
+        id?: string | "";
+        product_item_group_id: string;
+        is_used_in_recipe: boolean;
+        is_sold_directly: boolean;
+        barcode?: string;
+        price_deviation_limit?: number;
+        qty_deviation_limit?: number;
+        is_ingredients: boolean;
+        price?: number;
+        tax_type: "none" | "included" | "excluded";
+        tax_rate?: number;
+        info: Array<{
+            label: string;
+            value: string;
+            data_type: string;
+        }>;
+    };
+    locations: {
+        add: Array<{
+            location_id: string;
+        }>;
+        remove?: Array<{
+            id: string;
+        }>;
+    };
+    order_units: {
+        data?: Array<{
+            id: string | "";
+            from_unit_id: string | "";
+            from_unit_name?: string;
+            from_unit_qty: number;
+            to_unit_id: string | "";
+            to_unit_name?: string;
+            to_unit_qty: number;
+            description?: string;
+            is_active: boolean;
+            is_default: boolean;
+        }>;
+        add: Array<{
+            from_unit_id: string;
+            from_unit_qty: number;
+            to_unit_id: string;
+            to_unit_qty: number;
+            description?: string;
+            is_active: boolean;
+            is_default: boolean;
+        }>;
+        update?: Array<{
+            product_order_unit_id: string;
+            from_unit_id: string;
+            from_unit_qty: number;
+            to_unit_id: string;
+            to_unit_qty: number;
+            description?: string;
+            is_active: boolean;
+            is_default: boolean;
+        }>;
+        remove?: Array<{
+            product_order_unit_id: string;
+        }>;
+    };
+    ingredient_units: {
+        data?: Array<{
+            id: string | "";
+            from_unit_id: string | "";
+            from_unit_name?: string;
+            from_unit_qty: number;
+            to_unit_id: string | "";
+            to_unit_name?: string;
+            to_unit_qty: number;
+            description?: string;
+            is_active: boolean;
+            is_default: boolean;
+        }>;
+        add: Array<{
+            from_unit_id: string | "";
+            from_unit_qty: number;
+            to_unit_id: string | "";
+            to_unit_qty: number;
+            description?: string;
+            is_active: boolean;
+            is_default: boolean;
+        }>;
+        update?: Array<{
+            product_ingredient_unit_id: string;
+            from_unit_id: string;
+            from_unit_qty: number;
+            to_unit_id: string;
+            to_unit_qty: number;
+            description?: string;
+            is_active: boolean;
+            is_default: boolean;
+        }>;
+        remove?: Array<{
+            product_ingredient_unit_id: string;
+        }>;
+    };
+    product_category: {
+        id: string;
+        name: string;
+    };
+    product_sub_category: {
+        id: string;
+        name: string;
+    };
+    product_item_group: {
+        id: string;
+        name: string;
+    };
+}
 
 export interface ProductInitialValues {
     id?: string;
@@ -225,7 +221,6 @@ export interface ProductInitialValues {
     product_sub_category?: { id: string; name: string };
 }
 
-
 export interface StockLocationDto {
     code: string;
     name: string;
@@ -307,3 +302,5 @@ export interface ProductUnit {
     is_default: boolean;
 }
 
+// Re-export Zod schema for backward compatibility
+export { productFormSchema } from "@/app/[locale]/(root)/product-management/product/_schemas/product-form.schema";

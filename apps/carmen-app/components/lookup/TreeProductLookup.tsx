@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { FolderTree, List, Trash2 } from "lucide-react";
-import { useProductQuery } from "@/hooks/useProductQuery";
+import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import SearchInput from "../ui-custom/SearchInput";

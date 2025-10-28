@@ -16,7 +16,7 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
-import { useProductQuery } from "@/hooks/useProductQuery";
+import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
 
 

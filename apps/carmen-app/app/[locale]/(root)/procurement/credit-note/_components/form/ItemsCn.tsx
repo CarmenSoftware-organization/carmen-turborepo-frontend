@@ -27,7 +27,7 @@ import { useLocationsQuery } from "@/hooks/use-locations";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
-import { useProductQuery } from "@/hooks/useProductQuery";
+import { useProductQuery } from "@/hooks/use-product-query";
 
 interface ItemsCnProps {
   readonly control: Control<CreditNoteFormDto>;

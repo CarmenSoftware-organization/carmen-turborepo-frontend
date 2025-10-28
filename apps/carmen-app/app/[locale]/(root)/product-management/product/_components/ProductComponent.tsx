@@ -5,7 +5,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { useProductQuery } from "@/hooks/useProductQuery";
+import { useProductQuery } from "@/hooks/use-product-query";
 import { useURL } from "@/hooks/useURL";
 import { Link } from "@/lib/navigation";
 import { parseSortString } from "@/utils/table-sort";

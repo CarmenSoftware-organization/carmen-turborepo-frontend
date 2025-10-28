@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { useProductLocation } from "@/hooks/useProductLocation";
+import { useProductLocation } from "@/hooks/use-product-location";
 import { useState } from "react";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";

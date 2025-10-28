@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo, memo, useEffect } from "react";
 import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
-import { useProductQuery } from "@/hooks/useProductQuery";
+import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";

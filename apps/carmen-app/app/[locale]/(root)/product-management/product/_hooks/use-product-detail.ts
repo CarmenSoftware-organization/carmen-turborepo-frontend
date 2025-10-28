@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useProductByIdQuery } from "./use-product";
+import { useProductByIdQuery } from "@/hooks/use-product";
 import { ProductFormValues } from "@/dtos/product.dto";
 
 type UseProductDetailProps = {
@@ -36,7 +36,7 @@ export const useProductDetail = ({
 
   // Check for 401 status
   useEffect(() => {
-    if (error && error.message.includes("401")) {
+    if (error) {
       setLoginDialogOpen(true);
     }
   }, [error]);
@@ -47,6 +47,6 @@ export const useProductDetail = ({
     error: error instanceof Error ? error : null,
     loginDialogOpen,
     setLoginDialogOpen,
-    refetch,
+    refetch: () => { refetch(); },
   };
 };
