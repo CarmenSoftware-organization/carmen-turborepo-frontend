@@ -117,19 +117,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         setValue
     });
 
-    // Get updated unit IDs to check which rows are being edited
-    const updatedUnits = watch("ingredient_units.update") || [];
-    const updatedUnitIds = useMemo(() => {
-        return new Set(updatedUnits.map(u => u.product_ingredient_unit_id));
-    }, [updatedUnits]);
-
-    const getRowBgClass = useCallback((unit: UnitRow) => {
-        if (unit.isNew) return 'bg-active/30';
-        if (!unit.isNew && unit.id && updatedUnitIds.has(unit.id) && currentMode === formType.EDIT) {
-            return 'bg-amber-100 dark:bg-amber-800';
-        }
-        return '';
-    }, [updatedUnitIds, currentMode]);
 
     const { fields: ingredientUnitFields, prepend: prependIngredientUnit, remove: removeIngredientUnit } = useFieldArray({
         control,
@@ -424,9 +411,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 },
                 enableSorting: false,
                 size: 180,
-                meta: {
-                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
-                },
             },
             {
                 accessorKey: "to_unit",
@@ -539,9 +523,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 },
                 enableSorting: false,
                 size: 180,
-                meta: {
-                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
-                },
             },
             {
                 accessorKey: "is_default",
@@ -612,7 +593,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 enableSorting: false,
                 size: 100,
                 meta: {
-                    cellClassName: (rowData: any) => rowData ? `text-center ${getRowBgClass(rowData)}` : 'text-center',
+                    cellClassName: 'text-center',
                     headerClassName: "text-center",
                 },
             },
@@ -636,9 +617,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 },
                 enableSorting: false,
                 size: 180,
-                meta: {
-                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
-                },
             },
             ...(currentMode !== formType.VIEW ? [{
                 id: "action",
@@ -700,12 +678,12 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 enableSorting: false,
                 size: 100,
                 meta: {
-                    cellClassName: (rowData: any) => rowData ? `text-right ${getRowBgClass(rowData)}` : 'text-right',
+                    cellClassName: 'text-right',
                     headerClassName: "text-right",
                 },
             }] : [])
         ],
-        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeIngredientUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits, handleFieldChange, getRowBgClass]
+        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeIngredientUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits, handleFieldChange]
     );
 
     const table = useReactTable({

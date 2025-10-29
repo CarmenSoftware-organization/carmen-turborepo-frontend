@@ -402,7 +402,6 @@ export default function MainForm({ mode, initValues }: Props) {
                                             items={purchaseItemManager.items}
                                             initValues={initValues?.purchase_request_detail}
                                             addFields={purchaseItemManager.addFields}
-                                            updatedItems={purchaseItemManager.updatedItems}
                                             onItemUpdate={purchaseItemManager.updateItem}
                                             onItemRemove={purchaseItemManager.removeItem}
                                             onAddItem={purchaseItemManager.addItem}

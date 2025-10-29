@@ -47,7 +47,6 @@ interface Props {
     items: PurchaseRequestDetail[];
     initValues?: PurchaseRequestDetail[];
     addFields: unknown[];
-    updatedItems?: Record<string, Partial<PurchaseRequestDetail>>;
     onItemUpdate: (itemId: string, fieldName: string, value: unknown, selectedProduct?: unknown) => void;
     onItemRemove: (itemId: string, isNewItem?: boolean, itemIndex?: number) => void;
     onAddItem: () => void;
@@ -61,7 +60,6 @@ export default function PurchaseItemDataGrid({
     items,
     initValues = [],
     addFields,
-    updatedItems = {},
     onItemUpdate,
     onItemRemove,
     onAddItem,
@@ -78,30 +76,6 @@ export default function PurchaseItemDataGrid({
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
-
-    // Create Set of updated item IDs for quick lookup
-    const updatedItemIds = useMemo(() => {
-        return new Set(Object.keys(updatedItems));
-    }, [updatedItems]);
-
-    // Helper to check if item is new and add isNew property
-    const enrichedItems = useMemo(() => {
-        return items.map(item => ({
-            ...item,
-            isNew: !initValues.some(initItem => initItem.id === item.id)
-        }));
-    }, [items, initValues]);
-
-    // Get row background class for new/edited items
-    const getRowBgClass = useCallback((item: PurchaseRequestDetail & { isNew?: boolean }) => {
-        if (item.isNew) {
-            return 'bg-active/30';
-        }
-        if (!item.isNew && item.id && updatedItemIds.has(item.id) && currentFormType === formType.EDIT) {
-            return 'bg-amber-100 dark:bg-amber-800';
-        }
-        return '';
-    }, [updatedItemIds, currentFormType]);
 
     const handleRemoveItemClick = (id: string, isNewItem: boolean = false, itemIndex?: number) => {
         setItemToDelete({ id, isAddItem: isNewItem, addIndex: itemIndex });
@@ -226,7 +200,6 @@ export default function PurchaseItemDataGrid({
                                 )}
                             </Card>
                         ),
-                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -247,9 +220,6 @@ export default function PurchaseItemDataGrid({
                     enableSorting: false,
                     enableHiding: false,
                     size: 30,
-                    meta: {
-                        cellClassName: (rowData: any) => getRowBgClass(rowData),
-                    },
                 },
                 {
                     id: "no",
@@ -258,7 +228,7 @@ export default function PurchaseItemDataGrid({
                     enableSorting: false,
                     size: 30,
                     meta: {
-                        cellClassName: (rowData: any) => `text-center ${getRowBgClass(rowData)}`,
+                        cellClassName: "text-center",
                         headerClassName: "text-center",
                     },
                 },
@@ -297,7 +267,6 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 120 : 200,
                     meta: {
                         headerTitle: tHeader("location"),
-                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -350,7 +319,6 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 150 : 250,
                     meta: {
                         headerTitle: tHeader("product"),
-                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -392,7 +360,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 100 : 180,
                     meta: {
                         headerTitle: tHeader("requested"),
-                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
+                        cellClassName: "text-right",
                         headerClassName: "text-right",
                     },
                 },
@@ -460,7 +428,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 100 : 180,
                     meta: {
                         headerTitle: tHeader("approved"),
-                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
+                        cellClassName: "text-right",
                         headerClassName: "text-right",
                     },
                 },
@@ -497,7 +465,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 110 : 155,
                     meta: {
                         headerTitle: tHeader("date_required"),
-                        cellClassName: (rowData: any) => `text-center ${getRowBgClass(rowData)}`,
+                        cellClassName: "text-center",
                         headerClassName: "text-center",
                     },
                 },
@@ -528,7 +496,6 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 130 : 200,
                     meta: {
                         headerTitle: tHeader("delivery_point"),
-                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -556,7 +523,7 @@ export default function PurchaseItemDataGrid({
                     size: 90,
                     meta: {
                         headerTitle: tHeader("pricing"),
-                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
+                        cellClassName: "text-right",
                         headerClassName: "text-right",
                     },
                 },
@@ -593,7 +560,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 60 : 100,
                     meta: {
                         headerTitle: tHeader("action"),
-                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
+                        cellClassName: "text-right",
                         headerClassName: "text-right",
                     },
                 },
@@ -622,7 +589,7 @@ export default function PurchaseItemDataGrid({
     );
 
     const table = useReactTable({
-        data: enrichedItems,
+        data: items,
         columns,
         getRowId: (row) => row.id,
         state: {

@@ -230,9 +230,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         });
     }, [allLocations, searchQuery, storeLocationsMap, getLocationType]);
 
-    const getRowBgClass = useCallback((location: LocationDisplayData) => {
-        return location.isNew ? 'bg-active/30' : '';
-    }, []);
 
     const columns = useMemo<ColumnDef<LocationDisplayData>[]>(
         () => [
@@ -297,9 +294,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 250,
-                meta: {
-                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
-                },
             },
             {
                 id: "type",
@@ -321,9 +315,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 150,
-                meta: {
-                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
-                },
             },
             {
                 id: "description",
@@ -345,9 +336,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 150,
-                meta: {
-                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
-                },
             },
             {
                 id: "delivery_point",
@@ -369,9 +357,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 200,
-                meta: {
-                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
-                },
             },
             {
                 id: "status",
@@ -399,7 +384,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 enableSorting: false,
                 size: 120,
                 meta: {
-                    cellClassName: (rowData: any) => rowData ? `text-center ${getRowBgClass(rowData)}` : 'text-center',
+                    cellClassName: 'text-center',
                     headerClassName: "text-center",
                 },
             },
@@ -459,12 +444,12 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 enableSorting: false,
                 size: 100,
                 meta: {
-                    cellClassName: (rowData: any) => rowData ? `text-right ${getRowBgClass(rowData)}` : 'text-right',
+                    cellClassName: 'text-right',
                     headerClassName: "text-right",
                 },
             }] : [])
         ],
-        [tProducts, tCommon, storeLocationsMap, control, currentMode, filteredStoreLocations, getLocationType, removeLocation, appendLocationRemove, getRowBgClass]
+        [tProducts, tCommon, storeLocationsMap, control, currentMode, filteredStoreLocations, getLocationType, removeLocation, appendLocationRemove]
     );
 
     const table = useReactTable({
