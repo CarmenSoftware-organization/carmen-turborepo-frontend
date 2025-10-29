@@ -36,7 +36,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { Link } from "@/lib/navigation";
 import { ProductFormValues } from "@/dtos/product.dto";
-import { useRowBgClass } from "../../../../../../../hooks/use-row-bg-class";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -111,6 +110,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const { data: locationsData, isLoading } = useLocationsQuery({ token, buCode });
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Use useWatch instead of watch() to prevent infinite re-renders
     const locations = useWatch({
         control,
         name: "locations"
@@ -118,6 +118,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
 
     const storeLocations = useMemo(() => locationsData?.data || [], [locationsData?.data]);
 
+    // Create lookup map for O(1) access instead of O(n) find operations
     const storeLocationsMap = useMemo(() => {
         const map = new Map<string, StoreLocation>();
         for (const loc of storeLocations) {
@@ -229,7 +230,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         });
     }, [allLocations, searchQuery, storeLocationsMap, getLocationType]);
 
-    const getRowBgClass = useRowBgClass();
+    const getRowBgClass = useCallback((location: LocationDisplayData) => {
+        return location.isNew ? 'bg-active/30' : '';
+    }, []);
 
     const columns = useMemo<ColumnDef<LocationDisplayData>[]>(
         () => [

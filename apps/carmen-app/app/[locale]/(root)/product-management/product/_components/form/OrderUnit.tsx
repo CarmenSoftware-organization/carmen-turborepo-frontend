@@ -8,7 +8,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto, UnitRow, UnitFormData, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
-import { useUnitManagement } from "../../_hooks/use-unit-management";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -36,12 +35,14 @@ import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
 import NumberInput from "@/components/form-custom/NumberInput";
-import { useRowBgClass } from "@/hooks/use-row-bg-class";
+import { useUnitManagement } from "../../_hooks/use-unit-management";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
+
+// Component to watch and display conversion preview with real-time updates
 interface ConversionPreviewWatcherProps {
     control: Control<ProductFormValues>;
     unit: UnitRow;
@@ -124,10 +125,13 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         return new Set(updatedUnits.map(u => u.product_order_unit_id));
     }, [updatedUnits]);
 
-    const getRowBgClass = useRowBgClass({
-        updatedIds: updatedUnitIds,
-        currentMode
-    });
+    const getRowBgClass = useCallback((unit: UnitRow) => {
+        if (unit.isNew) return 'bg-active/30';
+        if (!unit.isNew && unit.id && updatedUnitIds.has(unit.id) && currentMode === formType.EDIT) {
+            return 'bg-amber-100 dark:bg-amber-800';
+        }
+        return '';
+    }, [updatedUnitIds, currentMode]);
 
     const { fields: orderUnitFields, prepend: prependOrderUnit, remove: removeOrderUnit } = useFieldArray({
         control,

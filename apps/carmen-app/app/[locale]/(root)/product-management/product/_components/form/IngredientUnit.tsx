@@ -8,7 +8,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto, UnitRow, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
-import { useUnitManagement } from "../../_hooks/use-unit-management";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
@@ -36,7 +35,7 @@ import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
 import NumberInput from "@/components/form-custom/NumberInput";
-import { useRowBgClass } from "@/hooks/use-row-bg-class";
+import { useUnitManagement } from "../../_hooks/use-unit-management";
 
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -124,10 +123,13 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         return new Set(updatedUnits.map(u => u.product_ingredient_unit_id));
     }, [updatedUnits]);
 
-    const getRowBgClass = useRowBgClass({
-        updatedIds: updatedUnitIds,
-        currentMode
-    });
+    const getRowBgClass = useCallback((unit: UnitRow) => {
+        if (unit.isNew) return 'bg-active/30';
+        if (!unit.isNew && unit.id && updatedUnitIds.has(unit.id) && currentMode === formType.EDIT) {
+            return 'bg-amber-100 dark:bg-amber-800';
+        }
+        return '';
+    }, [updatedUnitIds, currentMode]);
 
     const { fields: ingredientUnitFields, prepend: prependIngredientUnit, remove: removeIngredientUnit } = useFieldArray({
         control,
@@ -153,24 +155,18 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
 
     const inventoryUnitName = getUnitName(inventoryUnitId);
 
-    // Filter function for available units - prevents duplicate to_unit_id selections
     const getAvailableUnits = useCallback((currentUnitId?: string) => {
         if (!units?.data) return [];
 
-        // Create Set of used to_unit_ids
         const usedUnitIds = new Set<string>();
+        const allUnits = [...displayUnits, ...ingredientUnitFields];
 
-        // Add to_unit_ids from existing units
-        displayUnits.forEach((unit: UnitData) => {
-            if (unit.to_unit_id) usedUnitIds.add(unit.to_unit_id);
-        });
+        for (const item of allUnits) {
+            if (item.to_unit_id) {
+                usedUnitIds.add(item.to_unit_id);
+            }
+        }
 
-        // Add to_unit_ids from new units
-        ingredientUnitFields.forEach((field) => {
-            if (field.to_unit_id) usedUnitIds.add(field.to_unit_id);
-        });
-
-        // Filter units: exclude used ones unless it's the current unit being edited
         return units.data.filter((unit: UnitDto) =>
             !usedUnitIds.has(unit.id) || unit.id === currentUnitId
         );
@@ -197,7 +193,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         appendIngredientUnitRemove({ product_ingredient_unit_id: unitId });
     }, [appendIngredientUnitRemove]);
 
-    // Handler to sync data field changes to update array
     const handleFieldChange = useCallback((
         dataIndex: number,
         field: 'from_unit_id' | 'from_unit_qty' | 'to_unit_id' | 'to_unit_qty',
@@ -233,6 +228,8 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
 
         setValue('ingredient_units.update', currentUpdate, { shouldDirty: true });
     }, [watch, setValue]);
+
+
 
     const handleDefaultChange = useCallback((index: number, isDataField: boolean, checked: boolean) => {
         if (!checked) return; // Only handle when setting to true
@@ -441,6 +438,8 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
+
+
                     if (unit.isNew) {
                         const availableUnits = getAvailableUnits(unit.to_unit_id);
                         return (
@@ -759,6 +758,10 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 >
                     <div className="w-full">
                         <DataGridContainer>
+                            {/* <ScrollArea className="max-h-96">
+                                <DataGridTable />
+                                <ScrollBar orientation="horizontal" />
+                            </ScrollArea> */}
                             <DataGridTable />
                         </DataGridContainer>
                     </div>
