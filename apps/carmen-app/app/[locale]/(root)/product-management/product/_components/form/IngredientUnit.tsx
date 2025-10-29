@@ -31,7 +31,7 @@ import {
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+// import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
@@ -120,7 +120,22 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         setValue
     });
 
-    const { fields: ingredientUnitFields, append: appendIngredientUnit, remove: removeIngredientUnit } = useFieldArray({
+    // Get updated unit IDs to check which rows are being edited
+    const updatedUnits = watch("ingredient_units.update") || [];
+    const updatedUnitIds = useMemo(() => {
+        return new Set(updatedUnits.map(u => u.product_ingredient_unit_id));
+    }, [updatedUnits]);
+
+    // Helper function to get row background color
+    const getRowBgClass = useCallback((unit: UnitRow) => {
+        if (unit.isNew) return 'bg-green-50';
+        if (!unit.isNew && unit.id && updatedUnitIds.has(unit.id) && currentMode === formType.EDIT) {
+            return 'bg-amber-50';
+        }
+        return '';
+    }, [updatedUnitIds, currentMode]);
+
+    const { fields: ingredientUnitFields, prepend: prependIngredientUnit, remove: removeIngredientUnit } = useFieldArray({
         control,
         name: "ingredient_units.add"
     });
@@ -175,7 +190,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
             e.stopPropagation();
         }
 
-        appendIngredientUnit({
+        prependIngredientUnit({
             from_unit_id: inventoryUnitId,
             from_unit_qty: 1,
             to_unit_id: inventoryUnitId,
@@ -184,7 +199,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
             is_active: true,
             is_default: false
         });
-    }, [appendIngredientUnit, inventoryUnitId]);
+    }, [prependIngredientUnit, inventoryUnitId]);
 
     const handleRemoveUnit = useCallback((unitId: string) => {
         appendIngredientUnitRemove({ product_ingredient_unit_id: unitId });
@@ -309,7 +324,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
 
 
     const allUnits: UnitRow[] = useMemo(() => [
-        ...displayUnits.map((unit: UnitData, index: number) => ({ ...unit, isNew: false, dataIndex: index })),
         ...ingredientUnitFields.map((field, index) => ({
             ...field,
             to_unit_id: field.to_unit_id || "",
@@ -319,7 +333,8 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
             is_active: true,
             isNew: true,
             fieldIndex: index
-        }))
+        })),
+        ...displayUnits.map((unit: UnitData, index: number) => ({ ...unit, isNew: false, dataIndex: index }))
     ], [displayUnits, ingredientUnitFields]);
 
     const columns = useMemo<ColumnDef<UnitRow>[]>(
@@ -334,6 +349,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
+                    
                     if (unit.isNew) {
                         return (
                             <div className="flex items-center gap-2">
@@ -420,6 +436,9 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 },
                 enableSorting: false,
                 size: 180,
+                meta: {
+                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
+                },
             },
             {
                 accessorKey: "to_unit",
@@ -431,6 +450,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
+                    
 
                     if (unit.isNew) {
                         const availableUnits = getAvailableUnits(unit.to_unit_id);
@@ -531,6 +551,9 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 },
                 enableSorting: false,
                 size: 180,
+                meta: {
+                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
+                },
             },
             {
                 accessorKey: "is_default",
@@ -542,6 +565,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
+                    
 
                     if (unit.isNew) {
                         return (
@@ -600,7 +624,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 enableSorting: false,
                 size: 100,
                 meta: {
-                    cellClassName: "text-center",
+                    cellClassName: (rowData: any) => rowData ? `text-center ${getRowBgClass(rowData)}` : 'text-center',
                     headerClassName: "text-center",
                 },
             },
@@ -624,6 +648,9 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 },
                 enableSorting: false,
                 size: 180,
+                meta: {
+                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
+                },
             },
             ...(currentMode !== formType.VIEW ? [{
                 id: "action",
@@ -632,6 +659,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }: { row: { original: UnitRow } }) => {
                     const unit = row.original;
+                    
                     if (unit.isNew) {
                         return (
                             <div className="text-right">
@@ -684,12 +712,12 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 enableSorting: false,
                 size: 100,
                 meta: {
-                    cellClassName: "text-right",
+                    cellClassName: (rowData: any) => rowData ? `text-right ${getRowBgClass(rowData)}` : 'text-right',
                     headerClassName: "text-right",
                 },
             }] : [])
         ],
-        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeIngredientUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits, handleFieldChange]
+        [tProducts, control, getUnitName, currentMode, handleRemoveUnit, removeIngredientUnit, inventoryUnitId, inventoryUnitName, handleDefaultChange, getAvailableUnits, handleFieldChange, getRowBgClass]
     );
 
     const table = useReactTable({
@@ -733,20 +761,20 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     loadingMode="skeleton"
                     emptyMessage={tCommon("no_data")}
                     tableLayout={{
-                        headerSticky: false,
+                        headerSticky: true,
                         dense: true,
                         rowBorder: true,
-                        headerBackground: false,
+                        headerBackground: true,
                         headerBorder: true,
-                        width: "fixed",
                     }}
                 >
                     <div className="w-full">
                         <DataGridContainer>
-                            <ScrollArea className="max-h-96">
+                            {/* <ScrollArea className="max-h-96">
                                 <DataGridTable />
                                 <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
+                            </ScrollArea> */}
+                            <DataGridTable />
                         </DataGridContainer>
                     </div>
                 </DataGrid>

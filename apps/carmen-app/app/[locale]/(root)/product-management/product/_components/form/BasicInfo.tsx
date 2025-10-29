@@ -25,7 +25,7 @@ import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductFormValues } from "@/dtos/product.dto";
-import { Link } from "@/lib/navigation";
+import { useRouter } from "@/lib/navigation";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -41,6 +41,7 @@ export default function BasicInfo({
   handleCancelClick,
 }: BasicInfoProps) {
   const { token, buCode } = useAuth();
+  const router = useRouter();
   const tCommon = useTranslations("Common");
   const tProducts = useTranslations("Products");
 
@@ -140,13 +141,13 @@ export default function BasicInfo({
               variant={'outline'}
               size={'sm'}
               className="w-8 h-8"
-              asChild
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                router.back();
+              }}
             >
-              <Link
-                href="/product-management/product"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Link>
+              <ChevronLeft className="h-4 w-4" />
             </Button>
 
             {currentMode === formType.VIEW ? (
@@ -176,6 +177,7 @@ export default function BasicInfo({
                       type="button"
                       size="sm"
                       onClick={handleEditClick}
+                      className="h-8 w-8"
                     >
                       <Edit />
                     </Button>
@@ -195,6 +197,7 @@ export default function BasicInfo({
                         variant="outlinePrimary"
                         size="sm"
                         onClick={handleCancelClick}
+                        className="h-8 w-8"
                       >
                         <X />
                       </Button>
@@ -212,7 +215,8 @@ export default function BasicInfo({
                         type="submit"
                         disabled={!isFormValid}
                         className={cn(
-                          !isFormValid && "bg-muted-foreground/60 cursor-not-allowed"
+                          !isFormValid && "bg-muted-foreground/60 cursor-not-allowed",
+                          "h-8 w-8"
                         )}
                       >
                         <Save />

@@ -313,6 +313,11 @@ function DataGridTableBodyRowCell<TData>({
     size: props.tableLayout?.dense ? 'dense' : 'default',
   });
 
+  // Handle dynamic cellClassName
+  const cellClassName = typeof cell.column.columnDef.meta?.cellClassName === 'function'
+    ? cell.column.columnDef.meta.cellClassName(row.original)
+    : cell.column.columnDef.meta?.cellClassName;
+
   return (
     <td
       key={cell.id}
@@ -329,7 +334,7 @@ function DataGridTableBodyRowCell<TData>({
         bodyCellSpacing,
         props.tableLayout?.cellBorder && 'border-e border-border',
         props.tableLayout?.columnsResizable && column.getCanResize() && 'truncate',
-        cell.column.columnDef.meta?.cellClassName,
+        cellClassName,
         props.tableLayout?.columnsPinnable &&
         column.getCanPin() &&
         '[&[data-pinned=left][data-last-col=left]]:border-e! [&[data-pinned=left][data-last-col=left]]:border-border! [&[data-pinned=right][data-last-col=right]]:border-s! [&[data-pinned=right][data-last-col=right]]:border-border! [&[data-pinned][data-last-col]]:border-border data-pinned:bg-background/90 data-pinned:backdrop-blur-xs"',

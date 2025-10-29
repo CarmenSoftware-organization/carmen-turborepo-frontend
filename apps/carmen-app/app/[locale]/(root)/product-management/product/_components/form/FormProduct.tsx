@@ -182,7 +182,7 @@ export default function FormProduct({ mode, initialValues }: Props) {
     defaultValues: transformInitialValues as ProductFormValues,
   });
 
-  // Reset form when initialValues changes (after update)
+
   useEffect(() => {
     form.reset(transformInitialValues as ProductFormValues);
   }, [transformInitialValues, form]);
@@ -297,7 +297,10 @@ export default function FormProduct({ mode, initialValues }: Props) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-2">
+      <form
+        onSubmit={form.handleSubmit(onSubmit, onInvalid)}
+        className="space-y-2"
+      >
         <BasicInfo
           control={form.control}
           currentMode={currentMode}

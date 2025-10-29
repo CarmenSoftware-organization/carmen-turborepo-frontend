@@ -31,7 +31,6 @@ import {
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -132,7 +131,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const newLocations = useMemo(() => locations?.add || [], [locations?.add]);
     const removedLocations = useMemo(() => locations?.remove || [], [locations?.remove]);
 
-    const { fields: locationFields, append: appendLocation, remove: removeLocation } = useFieldArray({
+    const { fields: locationFields, prepend: prependLocation, remove: removeLocation } = useFieldArray({
         control,
         name: "locations.add"
     });
@@ -201,13 +200,13 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     }, [tStoreLocation]);
 
     const allLocations: LocationDisplayData[] = useMemo(() => [
-        ...displayLocations.map((loc: LocationData) => ({ ...loc, isNew: false })),
         ...locationFields.map((field, index) => ({
             ...newLocations[index],
             id: field.id,
             isNew: true,
             fieldIndex: index
-        }))
+        })),
+        ...displayLocations.map((loc: LocationData) => ({ ...loc, isNew: false }))
     ], [displayLocations, locationFields, newLocations]);
 
     const filteredLocations = useMemo(() => {
@@ -230,6 +229,11 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
             );
         });
     }, [allLocations, searchQuery, storeLocationsMap, getLocationType]);
+
+    // Helper function to get row background class
+    const getRowBgClass = useCallback((location: LocationDisplayData) => {
+        return location.isNew ? 'bg-green-50' : '';
+    }, []);
 
     const columns = useMemo<ColumnDef<LocationDisplayData>[]>(
         () => [
@@ -294,6 +298,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 250,
+                meta: {
+                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
+                },
             },
             {
                 id: "type",
@@ -315,6 +322,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 150,
+                meta: {
+                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
+                },
             },
             {
                 id: "description",
@@ -336,6 +346,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 150,
+                meta: {
+                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
+                },
             },
             {
                 id: "delivery_point",
@@ -357,6 +370,9 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 },
                 enableSorting: false,
                 size: 200,
+                meta: {
+                    cellClassName: (rowData: any) => rowData ? getRowBgClass(rowData) : '',
+                },
             },
             {
                 id: "status",
@@ -384,7 +400,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 enableSorting: false,
                 size: 120,
                 meta: {
-                    cellClassName: "text-center",
+                    cellClassName: (rowData: any) => rowData ? `text-center ${getRowBgClass(rowData)}` : 'text-center',
                     headerClassName: "text-center",
                 },
             },
@@ -444,12 +460,12 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 enableSorting: false,
                 size: 100,
                 meta: {
-                    cellClassName: "text-right",
+                    cellClassName: (rowData: any) => rowData ? `text-right ${getRowBgClass(rowData)}` : 'text-right',
                     headerClassName: "text-right",
                 },
             }] : [])
         ],
-        [tProducts, tCommon, storeLocationsMap, control, currentMode, filteredStoreLocations, getLocationType, removeLocation, appendLocationRemove]
+        [tProducts, tCommon, storeLocationsMap, control, currentMode, filteredStoreLocations, getLocationType, removeLocation, appendLocationRemove, getRowBgClass]
     );
 
     const table = useReactTable({
@@ -485,7 +501,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                                             e.preventDefault();
                                             e.stopPropagation();
                                         }
-                                        appendLocation({ location_id: "" });
+                                        prependLocation({ location_id: "" });
                                     }}
                                     disabled={isLoading}
                                 >
@@ -517,10 +533,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
                 >
                     <div className="w-full">
                         <DataGridContainer>
-                            <ScrollArea className="max-h-52">
-                                <DataGridTable />
-                                <ScrollBar orientation="horizontal" />
-                            </ScrollArea>
+                            <DataGridTable />
                         </DataGridContainer>
                     </div>
                 </DataGrid>
