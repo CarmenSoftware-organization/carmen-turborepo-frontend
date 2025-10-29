@@ -36,6 +36,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { Link } from "@/lib/navigation";
 import { ProductFormValues } from "@/dtos/product.dto";
+import { useRowBgClass } from "../../_hooks/use-row-bg-class";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;
@@ -230,10 +231,7 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         });
     }, [allLocations, searchQuery, storeLocationsMap, getLocationType]);
 
-    // Helper function to get row background class
-    const getRowBgClass = useCallback((location: LocationDisplayData) => {
-        return location.isNew ? 'bg-green-50' : '';
-    }, []);
+    const getRowBgClass = useRowBgClass();
 
     const columns = useMemo<ColumnDef<LocationDisplayData>[]>(
         () => [

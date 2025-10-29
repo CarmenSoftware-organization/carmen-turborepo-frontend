@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto, UnitRow, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
-import { useUnitManagement } from "./hooks/useUnitManagement";
+import { useUnitManagement } from "../../_hooks/use-unit-management";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
@@ -37,6 +37,7 @@ import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
 import NumberInput from "@/components/form-custom/NumberInput";
+import { useRowBgClass } from "../../_hooks/use-row-bg-class";
 
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -126,21 +127,15 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
         return new Set(updatedUnits.map(u => u.product_ingredient_unit_id));
     }, [updatedUnits]);
 
-    // Helper function to get row background color
-    const getRowBgClass = useCallback((unit: UnitRow) => {
-        if (unit.isNew) return 'bg-green-50';
-        if (!unit.isNew && unit.id && updatedUnitIds.has(unit.id) && currentMode === formType.EDIT) {
-            return 'bg-amber-50';
-        }
-        return '';
-    }, [updatedUnitIds, currentMode]);
+    const getRowBgClass = useRowBgClass({
+        updatedIds: updatedUnitIds,
+        currentMode
+    });
 
     const { fields: ingredientUnitFields, prepend: prependIngredientUnit, remove: removeIngredientUnit } = useFieldArray({
         control,
         name: "ingredient_units.add"
     });
-
-
 
     const { append: appendIngredientUnitRemove } = useFieldArray({
         control,
@@ -280,7 +275,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
             });
         }
 
-        // Update all new units to false if not the current one
         if (unitsData?.add) {
             unitsData.add.forEach((_, i: number) => {
                 if (!isDataField && i === index) return;
@@ -349,7 +343,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    
+
                     if (unit.isNew) {
                         return (
                             <div className="flex items-center gap-2">
@@ -450,7 +444,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    
+
 
                     if (unit.isNew) {
                         const availableUnits = getAvailableUnits(unit.to_unit_id);
@@ -565,7 +559,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    
+
 
                     if (unit.isNew) {
                         return (
@@ -659,7 +653,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }: { row: { original: UnitRow } }) => {
                     const unit = row.original;
-                    
+
                     if (unit.isNew) {
                         return (
                             <div className="text-right">

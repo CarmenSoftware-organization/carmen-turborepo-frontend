@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useUnitQuery } from "@/hooks/use-unit";
 import { UnitDto, UnitRow, UnitFormData, UnitData } from "@/dtos/unit.dto";
 import { useTranslations } from "next-intl";
-import { useUnitManagement } from "./hooks/useUnitManagement";
+import { useUnitManagement } from "../../_hooks/use-unit-management";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,7 @@ import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
 import NumberInput from "@/components/form-custom/NumberInput";
+import { useRowBgClass } from "../../_hooks/use-row-bg-class";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
@@ -127,14 +128,10 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         return new Set(updatedUnits.map(u => u.product_order_unit_id));
     }, [updatedUnits]);
 
-    // Helper function to get row background color
-    const getRowBgClass = useCallback((unit: UnitRow) => {
-        if (unit.isNew) return 'bg-green-50';
-        if (!unit.isNew && unit.id && updatedUnitIds.has(unit.id) && currentMode === formType.EDIT) {
-            return 'bg-amber-50';
-        }
-        return '';
-    }, [updatedUnitIds, currentMode]);
+    const getRowBgClass = useRowBgClass({
+        updatedIds: updatedUnitIds,
+        currentMode
+    });
 
     const { fields: orderUnitFields, prepend: prependOrderUnit, remove: removeOrderUnit } = useFieldArray({
         control,
@@ -579,7 +576,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-                    
+
 
                     if (unit.isNew) {
                         return (
@@ -673,7 +670,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 ),
                 cell: ({ row }: { row: { original: UnitRow } }) => {
                     const unit = row.original;
-                    
+
                     if (unit.isNew) {
                         return (
                             <div className="text-right">
