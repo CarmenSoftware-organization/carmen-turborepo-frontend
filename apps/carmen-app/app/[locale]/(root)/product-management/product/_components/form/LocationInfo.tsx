@@ -111,7 +111,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
     const { data: locationsData, isLoading } = useLocationsQuery({ token, buCode });
     const [searchQuery, setSearchQuery] = useState("");
 
-    // Use useWatch instead of watch() to prevent infinite re-renders
     const locations = useWatch({
         control,
         name: "locations"
@@ -119,7 +118,6 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
 
     const storeLocations = useMemo(() => locationsData?.data || [], [locationsData?.data]);
 
-    // Create lookup map for O(1) access instead of O(n) find operations
     const storeLocationsMap = useMemo(() => {
         const map = new Map<string, StoreLocation>();
         for (const loc of storeLocations) {

@@ -32,19 +32,16 @@ import {
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
-// import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
 import NumberInput from "@/components/form-custom/NumberInput";
-import { useRowBgClass } from "../../../../../../../hooks/use-row-bg-class";
+import { useRowBgClass } from "@/hooks/use-row-bg-class";
 
 interface OrderUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
-
-// Component to watch and display conversion preview with real-time updates
 interface ConversionPreviewWatcherProps {
     control: Control<ProductFormValues>;
     unit: UnitRow;
@@ -122,7 +119,6 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         setValue
     });
 
-    // Get updated unit IDs to check which rows are being edited
     const updatedUnits = watch("order_units.update") || [];
     const updatedUnitIds = useMemo(() => {
         return new Set(updatedUnits.map(u => u.product_order_unit_id));
@@ -281,7 +277,6 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
         appendOrderUnitRemove({ product_order_unit_id: unitId });
     }, [appendOrderUnitRemove]);
 
-    // Handler to sync data field changes to update array
     const handleFieldChange = useCallback((
         dataIndex: number,
         field: 'from_unit_id' | 'from_unit_qty' | 'to_unit_id' | 'to_unit_qty',
@@ -787,10 +782,6 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
                 >
                     <div className="w-full">
                         <DataGridContainer>
-                            {/* <ScrollArea className="max-h-96">
-                                <DataGridTable />
-                                <ScrollBar orientation="horizontal" />
-                            </ScrollArea> */}
                             <DataGridTable />
                         </DataGridContainer>
                     </div>

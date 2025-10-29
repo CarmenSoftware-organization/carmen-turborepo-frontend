@@ -31,20 +31,17 @@ import {
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
-// import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ProductFormValues } from "@/dtos/product.dto";
 import UnitCombobox from "@/components/lookup/UnitCombobox";
 import ConversionPreview from "@/components/ConversionPreview";
 import NumberInput from "@/components/form-custom/NumberInput";
-import { useRowBgClass } from "../../../../../../../hooks/use-row-bg-class";
+import { useRowBgClass } from "@/hooks/use-row-bg-class";
 
 interface IngredientUnitProps {
     readonly control: Control<ProductFormValues>;
     readonly currentMode: formType;
 }
-
-// Component to watch and display conversion preview with real-time updates
 interface ConversionPreviewWatcherProps {
     control: Control<ProductFormValues>;
     unit: UnitRow;
@@ -444,8 +441,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 ),
                 cell: ({ row }) => {
                     const unit = row.original;
-
-
                     if (unit.isNew) {
                         const availableUnits = getAvailableUnits(unit.to_unit_id);
                         return (
@@ -764,10 +759,6 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                 >
                     <div className="w-full">
                         <DataGridContainer>
-                            {/* <ScrollArea className="max-h-96">
-                                <DataGridTable />
-                                <ScrollBar orientation="horizontal" />
-                            </ScrollArea> */}
                             <DataGridTable />
                         </DataGridContainer>
                     </div>
