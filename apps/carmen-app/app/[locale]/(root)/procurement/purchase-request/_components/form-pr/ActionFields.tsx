@@ -6,7 +6,6 @@ import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, X } from 
 import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 interface ActionFieldsProps {
     readonly mode: formType;
@@ -163,9 +162,6 @@ export default function ActionFields({
                                             size={"sm"}
                                             type="submit"
                                             disabled={isDisabled}
-                                            className={cn(
-                                                isDisabled && "bg-muted-foreground",
-                                            )}
                                         >
                                             {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
                                         </Button>
