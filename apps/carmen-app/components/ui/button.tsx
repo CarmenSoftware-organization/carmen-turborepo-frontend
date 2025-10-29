@@ -49,7 +49,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(
           buttonVariants({ variant, size }),
-          props.disabled && "bg-muted-foreground",
           className
         )}
         ref={ref}
