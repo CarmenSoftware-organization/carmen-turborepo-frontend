@@ -54,7 +54,7 @@ export default function FormBoolean({
   switch (positionLabel) {
     case "top":
       return (
-        <div className="flex flex-col space-y-2">
+        <div className="flex flex-col gap-2">
           {renderLabel()}
           <div className="flex justify-start">{renderControl()}</div>
         </div>
@@ -62,7 +62,7 @@ export default function FormBoolean({
 
     case "bottom":
       return (
-        <div className="flex flex-col space-y-2">
+        <div className="flex flex-col gap-2">
           <div className="flex justify-start">{renderControl()}</div>
           {renderLabel()}
         </div>
@@ -70,7 +70,7 @@ export default function FormBoolean({
 
     case "right":
       return (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           {renderControl()}
           {renderLabel()}
         </div>
@@ -79,7 +79,7 @@ export default function FormBoolean({
     case "left":
     default:
       return (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           {renderLabel()}
           {renderControl()}
         </div>

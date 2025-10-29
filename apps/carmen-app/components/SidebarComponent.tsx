@@ -278,19 +278,7 @@ const SidebarContent = () => {
             )}
             aria-label="Sidebar Navigation"
         >
-            {!isActuallyCollapsed && (
-                <Button
-                    variant={'ghost'}
-                    onClick={handleToggleCollapse}
-                    className={cn(
-                        "sidebar-toggle-button",
-                        !isActuallyCollapsed ? 'bg-muted' : 'bg-background'
-                    )}
-                    aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                >
-                    <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
-                </Button>
-            )}
+
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 <MotionDiv
@@ -309,8 +297,28 @@ const SidebarContent = () => {
 
 
                 </MotionDiv>
-                {activeModuleData.children && renderSubMenu(activeModuleData.children)}
+                <div>
+                    {activeModuleData.children && renderSubMenu(activeModuleData.children)}
+                </div>
+
             </div>
+            <div className='p-4'>
+                {!isActuallyCollapsed && (
+                    <Button
+                        variant={'ghost'}
+                        onClick={handleToggleCollapse}
+                        className={cn(
+                            // "sidebar-toggle-button",
+                            "w-full mt-40",
+                            isActuallyCollapsed ? 'bg-background' : 'bg-muted'
+                        )}
+                        aria-label={isActuallyCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                    >
+                        <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                )}
+            </div>
+
         </MotionDiv>
     );
 };

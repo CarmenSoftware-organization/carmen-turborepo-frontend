@@ -14,7 +14,7 @@
     }
 
     .motion-wrapper {
-        @apply flex flex-col border-r border-border h-screen hidden md:block relative;
+        @apply flex flex-col border-r border-border h-[calc(100vh-4rem)] hidden md:block relative overflow-y-auto;
     }
 
     .error-div {

@@ -10,19 +10,19 @@ export default function RootLayout({
 }>) {
     return (
         <ProtectedRoute>
-            <div className="h-screen grid grid-rows-[auto_1fr] overflow-hidden">
-                <div className="z-20">
+            <div className="h-screen overflow-scroll">
+                <div className="fixed top-0 left-0 right-0 z-50">
                     <Navbar />
                 </div>
-                <div className="flex overflow-hidden h-full">
-                    <SidebarComponent />
-                    <div className="flex-1 flex flex-col overflow-hidden h-full">
-                        <main className="flex-1 overflow-y-auto overflow-x-hidden m-4 h-0">
-                            {children}
-                        </main>
-                    </div>
+                <div className="grid w-full md:grid-cols-[auto_1fr] pt-16">
+                    <aside className="hidden md:block z-30 relative">
+                        <SidebarComponent />
+                    </aside>
+                    <main className="h-[calc(100vh-4rem)] overflow-auto p-4 relative z-0">
+                        {children}
+                    </main>
                 </div>
             </div>
         </ProtectedRoute>
     );
-} 
+}

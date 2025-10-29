@@ -1,6 +1,6 @@
 import { Control, useFieldArray } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
-import { FormField, FormItem, FormControl, FormMessage, FormLabel } from "@/components/ui/form";
+import { FormField, FormItem, FormControl, FormMessage, FormLabel } from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
@@ -137,7 +137,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                {tProducts("price")} <span className="text-destructive">*</span>
+                                {tProducts("price")}
                             </FormLabel>
                             <FormControl>
                                 <NumberInput
@@ -159,7 +159,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                {tProducts("price_deviation_limit")} (%) <span className="text-destructive">*</span>
+                                {tProducts("price_deviation_limit")} (%)
                             </FormLabel>
                             <FormControl>
                                 <NumberInput
@@ -181,7 +181,7 @@ export default function ProductAttribute({ control, currentMode }: ProductAttrib
                     render={({ field }) => (
                         <FormItem>
                             <FormLabel>
-                                {tProducts("qty_deviation_limit")} (%) <span className="text-destructive">*</span>
+                                {tProducts("qty_deviation_limit")} (%)
                             </FormLabel>
                             <FormControl>
                                 <NumberInput
