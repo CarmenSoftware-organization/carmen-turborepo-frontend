@@ -36,7 +36,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { Link } from "@/lib/navigation";
 import { ProductFormValues } from "@/dtos/product.dto";
-import { useRowBgClass } from "../../_hooks/use-row-bg-class";
+import { useRowBgClass } from "../../../../../../../hooks/use-row-bg-class";
 
 interface LocationInfoProps {
     readonly control: Control<ProductFormValues>;
