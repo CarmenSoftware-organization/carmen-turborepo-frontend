@@ -428,7 +428,7 @@
     "delete_success": "หน่วยนับลบเรียบร้อย",
     "delete_error": "ไม่สามารถลบหน่วยนับ",
     "unit_name_required": "กรุณากรอกชื่อหน่วยนับ",
-    "select_unit": "เลือกหน่วยนับ"
+    "select_unit": "เลือกหน่วย"
   },
   "Currency": {
     "title": "สกุลเงิน",

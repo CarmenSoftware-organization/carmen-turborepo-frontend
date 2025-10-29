@@ -45,17 +45,17 @@ export const usePurchaseItemManagement = ({
 
     const {
         fields: addFields,
-        append: addAppend,
+        prepend: addPrepend,
         remove: addRemove,
     } = useFieldArray({
         control: form.control,
         name: "body.purchase_request_detail.add",
     });
 
-    // Combined items (existing + new)
+    // Combined items (new + existing)
     const items = [
-        ...initValues.filter(item => !state.removedItems.has(item.id)),
-        ...(addFields as unknown as PurchaseRequestDetail[])
+        ...(addFields as unknown as PurchaseRequestDetail[]),
+        ...initValues.filter(item => !state.removedItems.has(item.id))
     ];
 
     // Add new item
@@ -70,13 +70,13 @@ export const usePurchaseItemManagement = ({
             requested_unit_id: undefined,
             delivery_date: undefined,
         };
-        addAppend(newItem);
+        addPrepend(newItem);
 
         // Trigger validation after adding item to show errors immediately
         setTimeout(async () => {
             await form.trigger();
         }, 100);
-    }, [addAppend, form]);
+    }, [addPrepend, form]);
 
     // Helper: Process quantity field values
     const processQuantityValue = useCallback((fieldName: string, value: any): any => {
@@ -295,7 +295,7 @@ export const usePurchaseItemManagement = ({
 
         // Field array helpers
         addFields,
-        appendField: addAppend,
+        appendField: addPrepend,
         removeField: addRemove,
 
         // Helper

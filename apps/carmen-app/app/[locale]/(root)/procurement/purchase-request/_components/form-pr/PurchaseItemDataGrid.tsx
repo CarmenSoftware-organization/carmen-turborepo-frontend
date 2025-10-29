@@ -3,11 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
-import { useState, useMemo, useEffect } from "react";
-import { ChevronDown, ChevronRight, Loader, Plus, Trash2 } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { formatDateFns, formatPriceConf } from "@/utils/config-system";
 import { useAuth } from "@/context/AuthContext";
-import { useOrderUnitByProduct } from "@/hooks/use-unit";
 import {
     Accordion,
     AccordionContent,
@@ -16,7 +15,6 @@ import {
 } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import VendorComparison from "./VendorComparison";
 import LocationLookup from "@/components/lookup/LocationLookup";
 import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
@@ -42,12 +40,14 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { UnitSelectCell } from "../UnitSelectCell";
 
 interface Props {
     currentFormType: formType;
     items: PurchaseRequestDetail[];
     initValues?: PurchaseRequestDetail[];
     addFields: unknown[];
+    updatedItems?: Record<string, Partial<PurchaseRequestDetail>>;
     onItemUpdate: (itemId: string, fieldName: string, value: unknown, selectedProduct?: unknown) => void;
     onItemRemove: (itemId: string, isNewItem?: boolean, itemIndex?: number) => void;
     onAddItem: () => void;
@@ -55,17 +55,13 @@ interface Props {
     workflow_id?: string;
 }
 
-interface UnitOderProduct {
-    id: string
-    name: string
-    conversion: number
-};
 
 export default function PurchaseItemDataGrid({
     currentFormType,
     items,
     initValues = [],
     addFields,
+    updatedItems = {},
     onItemUpdate,
     onItemRemove,
     onAddItem,
@@ -82,6 +78,30 @@ export default function PurchaseItemDataGrid({
     const [sorting, setSorting] = useState<SortingState>([]);
 
     const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
+
+    // Create Set of updated item IDs for quick lookup
+    const updatedItemIds = useMemo(() => {
+        return new Set(Object.keys(updatedItems));
+    }, [updatedItems]);
+
+    // Helper to check if item is new and add isNew property
+    const enrichedItems = useMemo(() => {
+        return items.map(item => ({
+            ...item,
+            isNew: !initValues.some(initItem => initItem.id === item.id)
+        }));
+    }, [items, initValues]);
+
+    // Get row background class for new/edited items
+    const getRowBgClass = useCallback((item: PurchaseRequestDetail & { isNew?: boolean }) => {
+        if (item.isNew) {
+            return 'bg-active/30';
+        }
+        if (!item.isNew && item.id && updatedItemIds.has(item.id) && currentFormType === formType.EDIT) {
+            return 'bg-amber-100 dark:bg-amber-800';
+        }
+        return '';
+    }, [updatedItemIds, currentFormType]);
 
     const handleRemoveItemClick = (id: string, isNewItem: boolean = false, itemIndex?: number) => {
         setItemToDelete({ id, isAddItem: isNewItem, addIndex: itemIndex });
@@ -206,6 +226,7 @@ export default function PurchaseItemDataGrid({
                                 )}
                             </Card>
                         ),
+                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -226,6 +247,9 @@ export default function PurchaseItemDataGrid({
                     enableSorting: false,
                     enableHiding: false,
                     size: 30,
+                    meta: {
+                        cellClassName: (rowData: any) => getRowBgClass(rowData),
+                    },
                 },
                 {
                     id: "no",
@@ -234,7 +258,7 @@ export default function PurchaseItemDataGrid({
                     enableSorting: false,
                     size: 30,
                     meta: {
-                        cellClassName: "text-center",
+                        cellClassName: (rowData: any) => `text-center ${getRowBgClass(rowData)}`,
                         headerClassName: "text-center",
                     },
                 },
@@ -273,6 +297,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 120 : 200,
                     meta: {
                         headerTitle: tHeader("location"),
+                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -325,6 +350,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 150 : 250,
                     meta: {
                         headerTitle: tHeader("product"),
+                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -366,7 +392,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 100 : 180,
                     meta: {
                         headerTitle: tHeader("requested"),
-                        cellClassName: "text-right",
+                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
                         headerClassName: "text-right",
                     },
                 },
@@ -412,7 +438,7 @@ export default function PurchaseItemDataGrid({
                                     <UnitLookup
                                         value={getItemValue(item, 'approved_unit_id') as string || ''}
                                         onValueChange={(value) => onItemUpdate(item.id, 'approved_unit_id', value)}
-                                        classNames="h-7 text-xs min-w-16"
+                                        classNames="h-7 text-xs w-24"
                                     />
                                 </div>
                                 <div className="flex items-center gap-1 justify-end">
@@ -424,7 +450,7 @@ export default function PurchaseItemDataGrid({
                                     <UnitLookup
                                         value={getItemValue(item, 'foc_unit_id') as string || ''}
                                         onValueChange={(value) => onItemUpdate(item.id, 'foc_unit_id', value)}
-                                        classNames="h-7 text-xs min-w-16"
+                                        classNames="h-7 text-xs w-24"
                                     />
                                 </div>
                             </div>
@@ -434,7 +460,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 100 : 180,
                     meta: {
                         headerTitle: tHeader("approved"),
-                        cellClassName: "text-right",
+                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
                         headerClassName: "text-right",
                     },
                 },
@@ -471,7 +497,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 110 : 155,
                     meta: {
                         headerTitle: tHeader("date_required"),
-                        cellClassName: "text-center",
+                        cellClassName: (rowData: any) => `text-center ${getRowBgClass(rowData)}`,
                         headerClassName: "text-center",
                     },
                 },
@@ -502,6 +528,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 130 : 200,
                     meta: {
                         headerTitle: tHeader("delivery_point"),
+                        cellClassName: (rowData: any) => getRowBgClass(rowData),
                     },
                 },
                 {
@@ -529,7 +556,7 @@ export default function PurchaseItemDataGrid({
                     size: 90,
                     meta: {
                         headerTitle: tHeader("pricing"),
-                        cellClassName: "text-right",
+                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
                         headerClassName: "text-right",
                     },
                 },
@@ -566,7 +593,7 @@ export default function PurchaseItemDataGrid({
                     size: currentFormType === formType.VIEW ? 60 : 100,
                     meta: {
                         headerTitle: tHeader("action"),
-                        cellClassName: "text-right",
+                        cellClassName: (rowData: any) => `text-right ${getRowBgClass(rowData)}`,
                         headerClassName: "text-right",
                     },
                 },
@@ -595,7 +622,7 @@ export default function PurchaseItemDataGrid({
     );
 
     const table = useReactTable({
-        data: items,
+        data: enrichedItems,
         columns,
         getRowId: (row) => row.id,
         state: {
@@ -656,9 +683,9 @@ export default function PurchaseItemDataGrid({
                     width: "fixed",
                 }}
             >
-                <div className="w-full space-y-2.5">
+                <div className="w-full space-y-2">
                     <DataGridContainer>
-                        <ScrollArea className="max-h-[calc(100vh-350px)] pb-2">
+                        <ScrollArea>
                             <DataGridTable />
                             <ScrollBar orientation="horizontal" />
                         </ScrollArea>
@@ -697,71 +724,3 @@ const PrLabelItem = ({
     );
 };
 
-const UnitSelectCell = ({
-    item,
-    productId,
-    currentUnitId,
-    onItemUpdate,
-    token,
-    buCode
-}: {
-    item: PurchaseRequestDetail;
-    productId: string;
-    currentUnitId: string | undefined;
-    onItemUpdate: (itemId: string, fieldName: string, value: unknown) => void;
-    token: string;
-    buCode: string;
-}) => {
-    const [open, setOpen] = useState(false);
-    const t = useTranslations('Unit');
-    const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
-        token,
-        buCode,
-        productId: productId,
-        enabled: !!productId
-    });
-
-    useEffect(() => {
-        if (orderUnitsData && orderUnitsData.length > 0 && !currentUnitId) {
-            const firstUnit = orderUnitsData[0];
-            onItemUpdate(item.id, 'requested_unit_id', firstUnit.id);
-            onItemUpdate(item.id, 'requested_unit_name', firstUnit.name);
-        }
-    }, [orderUnitsData, currentUnitId, item.id, onItemUpdate]);
-
-    const selectValue = currentUnitId || orderUnitsData?.[0]?.id || '';
-
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Tab') {
-            setOpen(false);
-        }
-    };
-
-    return (
-        <Select
-            value={selectValue}
-            open={open}
-            onOpenChange={setOpen}
-            onValueChange={(value) => {
-                const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
-                if (selectedUnit) {
-                    onItemUpdate(item.id, 'requested_unit_name', selectedUnit.name);
-                    onItemUpdate(item.id, 'requested_unit_id', selectedUnit.id);
-                }
-                setOpen(false);
-            }}
-            disabled={!productId || isLoadingOrderUnits}
-        >
-            <SelectTrigger className="h-7 text-xs" onKeyDown={handleKeyDown}>
-                <SelectValue placeholder={isLoadingOrderUnits ? <Loader className="w-3 h-3" /> : t("select_unit")} />
-            </SelectTrigger>
-            <SelectContent>
-                {orderUnitsData?.map((unit: UnitOderProduct) => (
-                    <SelectItem key={unit.id} value={unit.id}>
-                        {unit.name}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
-    );
-};

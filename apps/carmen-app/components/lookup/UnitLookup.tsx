@@ -66,7 +66,7 @@ export default function UnitLookup({
                     <Button
                         variant="outline"
                         aria-expanded={open}
-                        className={cn("flex justify-between items-center pl-1 pr-1", classNames)}
+                        className={cn("flex justify-end items-center pl-1 pr-1", classNames)}
                         disabled={disabled}
                     >
                         <p className="pl-2">
