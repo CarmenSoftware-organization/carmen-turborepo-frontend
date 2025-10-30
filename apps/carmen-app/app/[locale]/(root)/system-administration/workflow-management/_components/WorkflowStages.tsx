@@ -4,7 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import * as Form from "@/components/ui/form";
 import { Control, useFieldArray, UseFormReturn } from "react-hook-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -151,7 +157,12 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
     form.setValue("data.stages", updatedStages);
   };
 
-  const handleAssignUser = (user: { id: number; name: string; department: string; location: string }) => {
+  const handleAssignUser = (user: {
+    id: number;
+    name: string;
+    department: string;
+    location: string;
+  }) => {
     if (!selectedStage) return;
 
     const updatedStages = fields.map((stage) => {
@@ -183,7 +194,9 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Workflow Stages</h2>
-        <p className="text-sm text-muted-foreground">Configure workflow stages and their settings</p>
+        <p className="text-sm text-muted-foreground">
+          Configure workflow stages and their settings
+        </p>
       </div>
 
       <div className="grid grid-cols-3 gap-6">
@@ -210,7 +223,7 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                 <li
                   key={field.id}
                   draggable={idx !== fields.length - 1 && idx !== 0}
-                  // can't drag "Completed" or first
+                  // can"t drag "Completed" or first
                   onDragStart={() => {
                     if (idx !== 0 && idx !== fields.length - 1) onDragStart(idx);
                   }}
@@ -218,26 +231,28 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                     if (
                       draggedIndex !== null &&
                       idx !== draggedIndex &&
-                      idx !== 0 && // can't drag over first
-                      idx !== fields.length - 1 // can't drag over "Completed"
+                      idx !== 0 && // can"t drag over first
+                      idx !== fields.length - 1 // can"t drag over "Completed"
                     )
                       onDragEnter(idx);
                   }}
                   onDragEnd={onDragEnd}
                   onDrop={() => {
-                    if (draggedIndex !== null && idx !== 0 && idx !== fields.length - 1) onDrop(idx);
+                    if (draggedIndex !== null && idx !== 0 && idx !== fields.length - 1)
+                      onDrop(idx);
                   }}
                   onDragOver={(e) => {
                     if (idx !== 0 && idx !== fields.length - 1) e.preventDefault();
                   }}
                   className={`
                p-2 rounded-md flex items-center gap-2 transition
-                ${draggedIndex === idx
-                      ? "bg-primary text-primary-foreground opacity-80 shadow-lg scale-105 ring-2 ring-primary"
-                      : dragOverIndex === idx
-                        ? "bg-secondary text-secondary-foreground scale-100 shadow-inner"
-                        : "bg-transparent hover:bg-secondary/60 cursor-grab"
-                    }
+                ${
+                  draggedIndex === idx
+                    ? "bg-primary text-primary-foreground opacity-80 shadow-lg scale-105 ring-2 ring-primary"
+                    : dragOverIndex === idx
+                      ? "bg-secondary text-secondary-foreground scale-100 shadow-inner"
+                      : "bg-transparent hover:bg-secondary/60 cursor-grab"
+                }
                 select-none
               `}
                   style={{
@@ -264,12 +279,17 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
 
             {selectedStage && isEditing && (
               <div className="flex space-x-2">
-                {selectedStage.name !== "Request Creation" && selectedStage.name !== "Completed" && (
-                  <Button variant="outline" size="sm" onClick={() => handleDeleteStage(selectedStageName || "")}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete Stage
-                  </Button>
-                )}
+                {selectedStage.name !== "Request Creation" &&
+                  selectedStage.name !== "Completed" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteStage(selectedStageName || "")}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete Stage
+                    </Button>
+                  )}
               </div>
             )}
           </CardHeader>
@@ -293,7 +313,11 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                               <Form.FormItem>
                                 <Form.FormLabel>Stage Name</Form.FormLabel>
                                 <Form.FormControl>
-                                  <Input {...field} placeholder="Enter Stage Name" disabled={!isEditing} />
+                                  <Input
+                                    {...field}
+                                    placeholder="Enter Stage Name"
+                                    disabled={!isEditing}
+                                  />
                                 </Form.FormControl>
                               </Form.FormItem>
                             )}
@@ -305,7 +329,11 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                               <Form.FormItem>
                                 <Form.FormLabel>Description</Form.FormLabel>
                                 <Form.FormControl>
-                                  <Input {...field} placeholder="Enter Description" disabled={!isEditing} />
+                                  <Input
+                                    {...field}
+                                    placeholder="Enter Description"
+                                    disabled={!isEditing}
+                                  />
                                 </Form.FormControl>
                               </Form.FormItem>
                             )}
@@ -318,7 +346,11 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                                 <Form.FormItem>
                                   <Form.FormLabel>SLA</Form.FormLabel>
                                   <Form.FormControl>
-                                    <Input {...field} placeholder="Enter SLA" disabled={!isEditing} />
+                                    <Input
+                                      {...field}
+                                      placeholder="Enter SLA"
+                                      disabled={!isEditing}
+                                    />
                                   </Form.FormControl>
                                 </Form.FormItem>
                               )}
@@ -341,7 +373,11 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                                     </Form.FormControl>
                                     <SelectContent>
                                       {slaUnitField.map(({ label, value }) => (
-                                        <SelectItem key={value} value={value} className="cursor-pointer">
+                                        <SelectItem
+                                          key={value}
+                                          value={value}
+                                          className="cursor-pointer"
+                                        >
                                           {label}
                                         </SelectItem>
                                       ))}
@@ -359,12 +395,16 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                               {selectedStage.name === "Request Creation" ? (
                                 <Button
                                   variant={
-                                    selectedStage.available_actions[enum_available_actions["submit"]]?.is_active
+                                    selectedStage.available_actions[
+                                      enum_available_actions["submit"]
+                                    ]?.is_active
                                       ? "default"
                                       : "outline"
                                   }
                                   size="sm"
-                                  onClick={() => handleActionToggle(enum_available_actions["submit"])}
+                                  onClick={() =>
+                                    handleActionToggle(enum_available_actions["submit"])
+                                  }
                                   disabled={!isEditing}
                                 >
                                   Submit
@@ -372,17 +412,23 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                               ) : (
                                 <>
                                   {(
-                                    Object.keys(enum_available_actions) as Array<keyof typeof enum_available_actions>
+                                    Object.keys(enum_available_actions) as Array<
+                                      keyof typeof enum_available_actions
+                                    >
                                   ).map((action) => (
                                     <Button
                                       key={action}
                                       variant={
-                                        selectedStage.available_actions[enum_available_actions[action]]?.is_active
+                                        selectedStage.available_actions[
+                                          enum_available_actions[action]
+                                        ]?.is_active
                                           ? "default"
                                           : "outline"
                                       }
                                       size="sm"
-                                      onClick={() => handleActionToggle(enum_available_actions[action])}
+                                      onClick={() =>
+                                        handleActionToggle(enum_available_actions[action])
+                                      }
                                       disabled={!isEditing}
                                     >
                                       {action}
@@ -460,7 +506,9 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                     <div className="flex justify-between items-center">
                       <div>
                         <h2 className="text-lg font-semibold">Stage Users</h2>
-                        <p className="text-sm text-muted-foreground">Manage users assigned to this stage</p>
+                        <p className="text-sm text-muted-foreground">
+                          Manage users assigned to this stage
+                        </p>
                       </div>
                     </div>
 
@@ -473,7 +521,9 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
                       />
                       <Select
                         value={userFilter}
-                        onValueChange={(value: "all" | "assigned" | "unassigned") => setUserFilter(value)}
+                        onValueChange={(value: "all" | "assigned" | "unassigned") =>
+                          setUserFilter(value)
+                        }
                         disabled={!isEditing}
                       >
                         <SelectTrigger className="w-[180px]">
@@ -497,12 +547,19 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
 
                         <div className="space-y-4">
                           {filteredUsers.map((user) => {
-                            const isAssigned = selectedStage.assigned_users.some((u) => u.id === user.id);
+                            const isAssigned = selectedStage.assigned_users.some(
+                              (u) => u.id === user.id
+                            );
                             return (
-                              <Card key={user.id} className={`p-4 ${isAssigned ? "border-primary" : ""}`}>
+                              <Card
+                                key={user.id}
+                                className={`p-4 ${isAssigned ? "border-primary" : ""}`}
+                              >
                                 <div className="flex items-center space-x-4">
                                   <Avatar>
-                                    <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`} />
+                                    <AvatarImage
+                                      src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`}
+                                    />
                                     <AvatarFallback>
                                       {user.name
                                         .split(" ")

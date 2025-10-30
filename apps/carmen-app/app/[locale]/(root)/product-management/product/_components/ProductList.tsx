@@ -3,7 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Activity, Box, Layers, List, MoreHorizontal, Ruler, Tag, Trash2 } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import {
@@ -14,7 +19,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -77,9 +86,7 @@ export default function ProductList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -91,16 +98,17 @@ export default function ProductList({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("name")} icon={<List className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("name")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const product = row.original;
           return (
             <div className="max-w-[300px] truncate">
-              <Link
-                href={`/product-management/product/${product.id}`}
-                className="link-primary"
-              >
+              <Link href={`/product-management/product/${product.id}`} className="link-primary">
                 {product.name}
               </Link>
             </div>
@@ -114,17 +122,13 @@ export default function ProductList({
       },
       {
         id: "code",
-        accessorKey: 'code',
+        accessorKey: "code",
         header: ({ column }) => (
           <DataGridColumnHeader column={column} title="SKU" icon={<Tag className="h-4 w-4" />} />
         ),
         cell: ({ row }) => {
           const product = row.original;
-          return (
-            <span className="text-sm">
-              {product.code}
-            </span>
-          );
+          return <span className="text-sm">{product.code}</span>;
         },
         enableSorting: true,
         size: 120,
@@ -132,7 +136,11 @@ export default function ProductList({
       {
         accessorKey: "product_category.name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("category")} icon={<Tag className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("category")}
+            icon={<Tag className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[150px] inline-block">
@@ -148,7 +156,11 @@ export default function ProductList({
       {
         accessorKey: "product_sub_category.name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("sub_category")} icon={<Layers className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("sub_category")}
+            icon={<Layers className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[150px] inline-block">
@@ -164,7 +176,11 @@ export default function ProductList({
       {
         accessorKey: "product_item_group.name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("item_group")} icon={<Box className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("item_group")}
+            icon={<Box className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[150px] inline-block">
@@ -180,7 +196,11 @@ export default function ProductList({
       {
         accessorKey: "inventory_unit_name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("inventory_unit")} icon={<Ruler className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("inventory_unit")}
+            icon={<Ruler className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="text-sm">{row.original.inventory_unit_name || "-"}</span>
@@ -197,13 +217,19 @@ export default function ProductList({
         accessorKey: "product_status_type",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={t("status")}
+              icon={<Activity className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
           <div className="flex justify-center">
             <StatusCustom is_active={row.original.product_status_type === "active"}>
-              {row.original.product_status_type === "active" ? tCommon("active") : tCommon("inactive")}
+              {row.original.product_status_type === "active"
+                ? tCommon("active")
+                : tCommon("inactive")}
             </StatusCustom>
           </div>
         ),
@@ -264,8 +290,7 @@ export default function ProductList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

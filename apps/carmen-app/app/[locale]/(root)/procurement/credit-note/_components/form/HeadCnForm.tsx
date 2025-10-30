@@ -1,22 +1,9 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formType } from "@/dtos/form.dto";
-import {
-  Hash,
-  CalendarIcon,
-  FileText,
-  Store,
-  DollarSign,
-  Quote,
-} from "lucide-react";
+import { Hash, CalendarIcon, FileText, Store, DollarSign, Quote } from "lucide-react";
 import { Control, useWatch } from "react-hook-form";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { CreditNoteFormDto } from "@/dtos/credit-note.dto";
@@ -46,7 +33,13 @@ interface HeadCnFormProps {
   readonly getVendorName: (id: string) => string | null;
 }
 
-export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVendorName }: HeadCnFormProps) {
+export default function HeadCnForm({
+  control,
+  mode,
+  cnNo,
+  getCnReasonName,
+  getVendorName,
+}: HeadCnFormProps) {
   const { token, buCode } = useAuth();
   const { getCurrencyCode, getCurrencyExchangeRate } = useCurrenciesQuery(token, buCode);
   const currencyId = useWatch({
@@ -109,10 +102,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
                   disabled={mode === formType.VIEW}
                 >
                   <SelectTrigger
-                    className={cn(
-                      "text-xs mt-1",
-                      mode === formType.VIEW && "bg-muted"
-                    )}
+                    className={cn("text-xs mt-1", mode === formType.VIEW && "bg-muted")}
                   >
                     <SelectValue placeholder="Select credit note type" />
                   </SelectTrigger>
@@ -143,16 +133,13 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
               </FormLabel>
               {mode === formType.VIEW ? (
                 <Input
-                  value={getVendorName(field.value ?? "") ?? ''}
+                  value={getVendorName(field.value ?? "") ?? ""}
                   disabled
                   className="bg-muted"
                 />
               ) : (
                 <FormControl>
-                  <VendorLookup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
+                  <VendorLookup onValueChange={field.onChange} value={field.value} />
                 </FormControl>
               )}
               <FormMessage />
@@ -172,17 +159,10 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Input
-                  value={getCurrencyCode(field.value ?? "")}
-                  disabled
-                  className="bg-muted"
-                />
+                <Input value={getCurrencyCode(field.value ?? "")} disabled className="bg-muted" />
               ) : (
                 <FormControl>
-                  <CurrencyLookup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
+                  <CurrencyLookup onValueChange={field.onChange} value={field.value} />
                 </FormControl>
               )}
               <FormMessage />
@@ -197,11 +177,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
               Exchange Rate
             </div>
           </Label>
-          <Input
-            value={getCurrencyExchangeRate(currencyId ?? "")}
-            disabled
-            className="bg-muted"
-          />
+          <Input value={getCurrencyExchangeRate(currencyId ?? "")} disabled className="bg-muted" />
         </div>
 
         <FormField
@@ -224,10 +200,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
                     placeholder="Select GRN"
                   />
                 ) : (
-                  <GrnLookup
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                  />
+                  <GrnLookup onValueChange={field.onChange} value={field.value ?? ""} />
                 )}
               </FormControl>
               <FormMessage />
@@ -275,10 +248,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
                     placeholder="Select reason"
                   />
                 ) : (
-                  <CnReasonLookup
-                    onValueChange={field.onChange}
-                    value={field.value ?? ""}
-                  />
+                  <CnReasonLookup onValueChange={field.onChange} value={field.value ?? ""} />
                 )}
               </FormControl>
               <FormMessage />
@@ -301,10 +271,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
                 <Input
                   {...field}
                   value={field.value ?? ""}
-                  className={cn(
-                    "text-xs",
-                    mode === formType.VIEW && "bg-muted"
-                  )}
+                  className={cn("text-xs", mode === formType.VIEW && "bg-muted")}
                   placeholder="Enter invoice number..."
                   disabled={mode === formType.VIEW}
                 />
@@ -348,10 +315,7 @@ export default function HeadCnForm({ control, mode, cnNo, getCnReasonName, getVe
                 <Input
                   {...field}
                   value={field.value ?? ""}
-                  className={cn(
-                    "text-xs",
-                    mode === formType.VIEW && "bg-muted"
-                  )}
+                  className={cn("text-xs", mode === formType.VIEW && "bg-muted")}
                   placeholder="Enter tax invoice number..."
                   disabled={mode === formType.VIEW}
                 />

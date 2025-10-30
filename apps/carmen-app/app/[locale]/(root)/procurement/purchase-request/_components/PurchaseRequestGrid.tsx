@@ -34,22 +34,20 @@ export default function PurchaseRequestGrid({
   purchaseRequests,
   currentPage = 1,
   totalPages = 1,
-  onPageChange = () => { },
+  onPageChange = () => {},
   isLoading = false,
   getTypeName,
-  convertStatus
+  convertStatus,
 }: PurchaseRequestGridProps) {
   const { dateFormat, amount, currencyBase } = useAuth();
-  const tTableHeader = useTranslations('TableHeader');
+  const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
+  const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const handleSelectItem = (id: string) => {
-    setSelectedItems(prev =>
-      prev.includes(id)
-        ? prev.filter(item => item !== id)
-        : [...prev, id]
+    setSelectedItems((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
   };
 
@@ -57,12 +55,13 @@ export default function PurchaseRequestGrid({
     if (selectedItems.length === purchaseRequests.length) {
       setSelectedItems([]);
     } else {
-      const allIds = purchaseRequests.map(pr => pr.id ?? '').filter(Boolean);
+      const allIds = purchaseRequests.map((pr) => pr.id ?? "").filter(Boolean);
       setSelectedItems(allIds);
     }
   };
 
-  const isAllSelected = purchaseRequests?.length > 0 && selectedItems.length === purchaseRequests.length;
+  const isAllSelected =
+    purchaseRequests?.length > 0 && selectedItems.length === purchaseRequests.length;
 
   if (!isLoading) {
     return <CardLoading items={6} />;
@@ -71,11 +70,7 @@ export default function PurchaseRequestGrid({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleSelectAll}
-        >
+        <Button variant="outline" size="sm" onClick={handleSelectAll}>
           {isAllSelected ? tCommon("un_select_all") : tCommon("select_all")}
         </Button>
         {selectedItems.length > 0 && (
@@ -96,17 +91,15 @@ export default function PurchaseRequestGrid({
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id={`checkbox-${pr.id}`}
-                    checked={selectedItems.includes(pr.id ?? '')}
-                    onCheckedChange={() => handleSelectItem(pr.id ?? '')}
+                    checked={selectedItems.includes(pr.id ?? "")}
+                    onCheckedChange={() => handleSelectItem(pr.id ?? "")}
                     aria-label={`Select ${pr.pr_no}`}
                     className="mt-1"
                   />
                   <p className="text-base font-semibold">{pr.pr_no}</p>
                 </div>
                 <div>
-                  <Badge variant={pr.pr_status}>
-                    {convertStatus(pr.pr_status)}
-                  </Badge>
+                  <Badge variant={pr.pr_status}>{convertStatus(pr.pr_status)}</Badge>
                 </div>
               </div>
             </CardHeader>
@@ -115,7 +108,7 @@ export default function PurchaseRequestGrid({
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">{tTableHeader("date")}</p>
                   <p className="text-sm font-medium text-muted-foreground">
-                    {formatDateFns(pr.pr_date, dateFormat || 'yyyy-MM-dd')}
+                    {formatDateFns(pr.pr_date, dateFormat || "yyyy-MM-dd")}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -125,35 +118,41 @@ export default function PurchaseRequestGrid({
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{tTableHeader('requestor')}</p>
+                  <p className="text-xs text-muted-foreground">{tTableHeader("requestor")}</p>
                   <p className="text-sm font-medium text-muted-foreground">{pr.requestor_name}</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{tTableHeader('department')}</p>
+                  <p className="text-xs text-muted-foreground">{tTableHeader("department")}</p>
                   <p className="text-sm font-medium text-muted-foreground">{pr.department_name}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">{tTableHeader("stage")}</p>
                   {pr.workflow_current_stage ? (
-                    <p className="text-sm font-medium text-muted-foreground">{pr.workflow_current_stage}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      {pr.workflow_current_stage}
+                    </p>
                   ) : (
                     <p className="text-sm font-medium text-muted-foreground">-</p>
                   )}
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">{tTableHeader('amount')}</p>
+                  <p className="text-xs text-muted-foreground">{tTableHeader("amount")}</p>
                   <p className="text-sm font-medium text-muted-foreground">
-                    {formatPriceConf(pr.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
+                    {formatPriceConf(
+                      pr.total_amount,
+                      amount ?? defaultAmount,
+                      currencyBase ?? "THB"
+                    )}
                   </p>
                 </div>
               </div>
               <div className="space-y-1 mt-2">
-                <p className="text-xs text-muted-foreground">{tTableHeader('description')}</p>
+                <p className="text-xs text-muted-foreground">{tTableHeader("description")}</p>
                 <p className="text-sm font-medium text-muted-foreground">{pr.description ?? "-"}</p>
               </div>
             </CardContent>
             <CardFooter className="flex items-center justify-end mt-auto px-3">
-              <Button variant={'ghost'} size={'sm'} asChild>
+              <Button variant={"ghost"} size={"sm"} asChild>
                 <Link href={`/procurement/purchase-request/${pr.id}`}>
                   <FileText />
                 </Link>
@@ -164,8 +163,8 @@ export default function PurchaseRequestGrid({
                   console.log("Delete", pr.id);
                 }}
                 className="text-destructive cursor-pointer"
-                size={'sm'}
-                variant={'ghost'}
+                size={"sm"}
+                variant={"ghost"}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -271,5 +270,5 @@ export default function PurchaseRequestGrid({
         </PaginationContent>
       </Pagination>
     </div>
-  )
+  );
 }

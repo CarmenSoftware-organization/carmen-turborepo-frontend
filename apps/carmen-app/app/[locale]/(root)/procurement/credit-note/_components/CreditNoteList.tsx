@@ -1,7 +1,16 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Calendar, FileText, FileType2, Info, MoreHorizontal, StickyNote, Trash2, User } from "lucide-react";
+import {
+  Calendar,
+  FileText,
+  FileType2,
+  Info,
+  MoreHorizontal,
+  StickyNote,
+  Trash2,
+  User,
+} from "lucide-react";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import ButtonLink from "@/components/ButtonLink";
 import { useAuth } from "@/context/AuthContext";
@@ -24,7 +33,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -71,20 +84,17 @@ export default function CreditNoteList({
     if (selectedItems.length === creditNotes.length) {
       setSelectedItems([]);
     } else {
-      const allIds = creditNotes
-        .filter((cn) => cn && cn.id)
-        .map((cn) => cn.id as string);
+      const allIds = creditNotes.filter((cn) => cn && cn.id).map((cn) => cn.id as string);
       setSelectedItems(allIds);
     }
   };
 
-  const isAllSelected =
-    creditNotes?.length > 0 && selectedItems.length === creditNotes.length;
+  const isAllSelected = creditNotes?.length > 0 && selectedItems.length === creditNotes.length;
 
   const getStatusText = (status: string) => {
-    if (status === 'in_progress') return tStatus("in_progress");
-    if (status === 'completed') return tStatus("completed");
-    if (status === 'cancelled') return tStatus("cancelled");
+    if (status === "in_progress") return tStatus("in_progress");
+    if (status === "completed") return tStatus("completed");
+    if (status === "cancelled") return tStatus("cancelled");
     return tStatus("draft");
   };
 
@@ -121,9 +131,7 @@ export default function CreditNoteList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -135,7 +143,11 @@ export default function CreditNoteList({
       {
         accessorKey: "cn_no",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("reference")} icon={<FileText className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("reference")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="max-w-[150px] truncate">
@@ -154,7 +166,11 @@ export default function CreditNoteList({
         accessorKey: "doc_status",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("status")} icon={<FileText className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("status")}
+              icon={<FileText className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
@@ -176,12 +192,16 @@ export default function CreditNoteList({
         accessorKey: "cn_date",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("date")} icon={<Calendar className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("date")}
+              icon={<Calendar className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
           <div className="text-center">
-            {formatDateFns(row.original.cn_date, dateFormat || 'yyyy/MM/dd')}
+            {formatDateFns(row.original.cn_date, dateFormat || "yyyy/MM/dd")}
           </div>
         ),
         enableSorting: false,
@@ -195,13 +215,13 @@ export default function CreditNoteList({
       {
         accessorKey: "note",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("note")} icon={<Info className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("note")}
+            icon={<Info className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <p className="max-w-[128px] truncate">
-            {row.original.note || "-"}
-          </p>
-        ),
+        cell: ({ row }) => <p className="max-w-[128px] truncate">{row.original.note || "-"}</p>,
         enableSorting: false,
         size: 130,
         meta: {
@@ -211,7 +231,11 @@ export default function CreditNoteList({
       {
         accessorKey: "current_workflow_status",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("workflow_status")} icon={<FileType2 className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("workflow_status")}
+            icon={<FileType2 className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[150px] inline-block">
@@ -227,7 +251,11 @@ export default function CreditNoteList({
       {
         accessorKey: "last_action_name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("last_action")} icon={<StickyNote className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("last_action")}
+            icon={<StickyNote className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[150px] inline-block">
@@ -243,7 +271,11 @@ export default function CreditNoteList({
       {
         accessorKey: "last_action_by_name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("last_action_by")} icon={<User className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("last_action_by")}
+            icon={<User className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[150px] inline-block">
@@ -259,11 +291,13 @@ export default function CreditNoteList({
       {
         accessorKey: "last_action_date",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("last_action_date")} icon={<Calendar className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("last_action_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <span>{row.original.last_action_date || "-"}</span>
-        ),
+        cell: ({ row }) => <span>{row.original.last_action_date || "-"}</span>,
         enableSorting: false,
         size: 150,
         meta: {
@@ -320,8 +354,7 @@ export default function CreditNoteList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

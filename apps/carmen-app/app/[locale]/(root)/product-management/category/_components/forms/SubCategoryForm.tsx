@@ -1,4 +1,11 @@
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
@@ -46,9 +53,7 @@ export function SubCategoryForm({
   const [parentName, setParentName] = useState("");
   const [parentId, setParentId] = useState("");
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [pendingData, setPendingData] = useState<SubCategoryFormData | null>(
-    null,
-  );
+  const [pendingData, setPendingData] = useState<SubCategoryFormData | null>(null);
 
   // Set parent information when editing or creating
   useEffect(() => {
@@ -67,10 +72,14 @@ export function SubCategoryForm({
     }
   }, [mode, selectedNode, parentNode]);
 
-  const SubCategoryFormSchema = useMemo(() => createSubCategorySchema({
-    codeRequired: tCategory("code_required"),
-    nameRequired: tCategory("name_required"),
-  }), [tCategory]).omit({ id: true });
+  const SubCategoryFormSchema = useMemo(
+    () =>
+      createSubCategorySchema({
+        codeRequired: tCategory("code_required"),
+        nameRequired: tCategory("name_required"),
+      }),
+    [tCategory]
+  ).omit({ id: true });
 
   const form = useForm<SubCategoryFormData>({
     resolver: zodResolver(SubCategoryFormSchema),
@@ -78,17 +87,12 @@ export function SubCategoryForm({
       code: selectedNode?.code ?? "",
       name: selectedNode?.name ?? "",
       description: selectedNode?.description ?? "",
-      product_category_id:
-        selectedNode?.product_category_id || parentNode?.id || "",
+      product_category_id: selectedNode?.product_category_id || parentNode?.id || "",
       is_active: selectedNode?.is_active ?? true,
       price_deviation_limit: selectedNode?.price_deviation_limit ?? 0,
       qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0,
-      is_used_in_recipe:
-        selectedNode?.is_used_in_recipe ??
-        parentNode?.is_used_in_recipe ??
-        false,
-      is_sold_directly:
-        selectedNode?.is_sold_directly ?? parentNode?.is_sold_directly ?? false,
+      is_used_in_recipe: selectedNode?.is_used_in_recipe ?? parentNode?.is_used_in_recipe ?? false,
+      is_sold_directly: selectedNode?.is_sold_directly ?? parentNode?.is_sold_directly ?? false,
     },
   });
 
@@ -101,12 +105,9 @@ export function SubCategoryForm({
 
   const handleSubmit = (data: SubCategoryFormData) => {
     // Check if is_used_in_recipe or is_sold_directly has changed
-    const isRecipeChanged =
-      selectedNode?.is_used_in_recipe !== data.is_used_in_recipe;
-    const isSoldChanged =
-      selectedNode?.is_sold_directly !== data.is_sold_directly;
+    const isRecipeChanged = selectedNode?.is_used_in_recipe !== data.is_used_in_recipe;
+    const isSoldChanged = selectedNode?.is_sold_directly !== data.is_sold_directly;
 
-    // If either has changed and we're in edit mode, show confirmation dialog
     if ((isRecipeChanged || isSoldChanged) && mode === formType.EDIT) {
       setPendingData(data);
       setShowConfirmDialog(true);
@@ -138,11 +139,7 @@ export function SubCategoryForm({
                 <FormControl>
                   <Input value={parentName} disabled className="bg-muted" />
                 </FormControl>
-                <input
-                  type="hidden"
-                  {...field}
-                  value={parentId || field.value}
-                />
+                <input type="hidden" {...field} value={parentId || field.value} />
                 <FormMessage />
               </FormItem>
             )}
@@ -232,15 +229,10 @@ export function SubCategoryForm({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
                   <div>
-                    <FormLabel className="text-xs">
-                      {tCategory("used_in_recipe")}
-                    </FormLabel>
+                    <FormLabel className="text-xs">{tCategory("used_in_recipe")}</FormLabel>
                   </div>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                 </FormItem>
               )}
@@ -251,15 +243,10 @@ export function SubCategoryForm({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
                   <div>
-                    <FormLabel className="text-xs">
-                      {tCategory("sold_directly")}
-                    </FormLabel>
+                    <FormLabel className="text-xs">{tCategory("sold_directly")}</FormLabel>
                   </div>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                 </FormItem>
               )}
@@ -311,15 +298,11 @@ export function SubCategoryForm({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{tCategory("confirm_edit")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tCategory("confirm_edit_description")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{tCategory("confirm_edit_description")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm}>
-              {tAction("continue")}
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleConfirm}>{tAction("continue")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

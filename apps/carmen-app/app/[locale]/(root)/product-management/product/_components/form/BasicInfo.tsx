@@ -10,19 +10,20 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 import { Textarea } from "@/components/ui/textarea";
 import { ProductFormValues } from "@/dtos/product.dto";
 import { useRouter } from "@/lib/navigation";
@@ -96,40 +97,23 @@ export default function BasicInfo({
 
   const watchedFields = useWatch({
     control,
-    name: [
-      "name",
-      "code",
-      "local_name",
-      "inventory_unit_id",
-      "product_info.product_item_group_id",
-    ],
+    name: ["name", "code", "local_name", "inventory_unit_id", "product_info.product_item_group_id"],
   });
 
   const orderUnits = watch("order_units");
 
-  const defaultUnit = useMemo(() =>
-    Array.isArray(orderUnits)
-      ? orderUnits.find((unit) => unit.is_default === true)
-      : orderUnits?.data?.find((unit) => unit.is_default === true),
+  const defaultUnit = useMemo(
+    () =>
+      Array.isArray(orderUnits)
+        ? orderUnits.find((unit) => unit.is_default === true)
+        : orderUnits?.data?.find((unit) => unit.is_default === true),
     [orderUnits]
   );
 
   const isFormValid = useMemo(() => {
-    const [
-      name,
-      code,
-      localName,
-      inventoryUnitId,
-      itemGroupId,
-    ] = watchedFields;
+    const [name, code, localName, inventoryUnitId, itemGroupId] = watchedFields;
 
-    return Boolean(
-      name &&
-      code &&
-      localName &&
-      inventoryUnitId &&
-      itemGroupId
-    );
+    return Boolean(name && code && localName && inventoryUnitId && itemGroupId);
   }, [watchedFields]);
 
   return (
@@ -138,8 +122,8 @@ export default function BasicInfo({
         <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
             <Button
-              variant={'outline'}
-              size={'sm'}
+              variant={"outline"}
+              size={"sm"}
               className="w-8 h-8"
               onClick={(e) => {
                 e.preventDefault();
@@ -163,7 +147,9 @@ export default function BasicInfo({
               </div>
             ) : (
               <h1 className="text-xl font-semibold text-foreground">
-                {currentMode === formType.ADD ? tProducts("add_product") : tProducts("edit_product")}
+                {currentMode === formType.ADD
+                  ? tProducts("add_product")
+                  : tProducts("edit_product")}
               </h1>
             )}
           </div>
@@ -173,12 +159,7 @@ export default function BasicInfo({
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={handleEditClick}
-                      className="h-8 w-8"
-                    >
+                    <Button type="button" size="sm" onClick={handleEditClick} className="h-8 w-8">
                       <Edit />
                     </Button>
                   </TooltipTrigger>
@@ -240,17 +221,13 @@ export default function BasicInfo({
             required
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {tProducts("product_code")}
-                </FormLabel>
+                <FormLabel>{tProducts("product_code")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder={tProducts("product_code")}
                     {...field}
                     disabled={currentMode === formType.VIEW}
-                    className={cn(
-                      currentMode === formType.VIEW && "bg-muted"
-                    )}
+                    className={cn(currentMode === formType.VIEW && "bg-muted")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -264,17 +241,13 @@ export default function BasicInfo({
             required
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {tProducts("product_name")}
-                </FormLabel>
+                <FormLabel>{tProducts("product_name")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder={tProducts("product_name")}
                     {...field}
                     disabled={currentMode === formType.VIEW}
-                    className={cn(
-                      currentMode === formType.VIEW && "bg-muted"
-                    )}
+                    className={cn(currentMode === formType.VIEW && "bg-muted")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -287,17 +260,13 @@ export default function BasicInfo({
             name="local_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>
-                  {tProducts("local_name")}
-                </FormLabel>
+                <FormLabel>{tProducts("local_name")}</FormLabel>
                 <FormControl>
                   <Input
                     placeholder={tProducts("local_name")}
                     {...field}
                     disabled={currentMode === formType.VIEW}
-                    className={cn(
-                      currentMode === formType.VIEW && "bg-muted"
-                    )}
+                    className={cn(currentMode === formType.VIEW && "bg-muted")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -309,20 +278,14 @@ export default function BasicInfo({
             control={control}
             name="description"
             render={({ field }) => (
-              <FormItem
-                className="col-span-full"
-              >
-                <FormLabel>
-                  {tProducts("description")}
-                </FormLabel>
+              <FormItem className="col-span-full">
+                <FormLabel>{tProducts("description")}</FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder={tProducts("description")}
                     {...field}
                     disabled={currentMode === formType.VIEW}
-                    className={cn(
-                      currentMode === formType.VIEW && "bg-muted"
-                    )}
+                    className={cn(currentMode === formType.VIEW && "bg-muted")}
                   />
                 </FormControl>
                 <FormMessage />
@@ -339,29 +302,29 @@ export default function BasicInfo({
                 name="product_info.product_item_group_id"
                 required
                 render={({ field }) => (
-                  <FormItem
-                    className="col-span-full"
-                  >
-                    <FormLabel>
-                      {tProducts("item_group")}
-                    </FormLabel>
+                  <FormItem className="col-span-full">
+                    <FormLabel>{tProducts("item_group")}</FormLabel>
                     <FormControl>
                       <ItemGroupLookup
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
-                          const selectedItemGroup = itemGroups.find((ig: ItemGroupDto) => ig.id === value);
+                          const selectedItemGroup = itemGroups.find(
+                            (ig: ItemGroupDto) => ig.id === value
+                          );
                           if (selectedItemGroup) {
-                            setValue("product_item_group", {
-                              id: selectedItemGroup.id,
-                              name: selectedItemGroup.name,
-                            }, { shouldValidate: false });
+                            setValue(
+                              "product_item_group",
+                              {
+                                id: selectedItemGroup.id,
+                                name: selectedItemGroup.name,
+                              },
+                              { shouldValidate: false }
+                            );
                           }
                         }}
                         disabled={currentMode === formType.VIEW}
-                        classNames={cn(
-                          currentMode === formType.VIEW && "bg-muted"
-                        )}
+                        classNames={cn(currentMode === formType.VIEW && "bg-muted")}
                         placeholder={tProducts("item_group")}
                       />
                     </FormControl>
@@ -426,9 +389,7 @@ export default function BasicInfo({
                 required
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {tProducts("inventory_unit")}
-                    </FormLabel>
+                    <FormLabel>{tProducts("inventory_unit")}</FormLabel>
                     <FormControl>
                       <UnitLookup
                         value={field.value}
@@ -437,10 +398,7 @@ export default function BasicInfo({
                         }}
                         placeholder={tProducts("inventory_unit")}
                         disabled={currentMode === formType.VIEW}
-                        classNames={cn(
-                          'h-9 text-xs',
-                          currentMode === formType.VIEW && "bg-muted"
-                        )}
+                        classNames={cn("h-9 text-xs", currentMode === formType.VIEW && "bg-muted")}
                       />
                     </FormControl>
                     <FormMessage />
@@ -455,7 +413,10 @@ export default function BasicInfo({
               </Label>
               <div>
                 {defaultUnit ? (
-                  <Badge variant="outline" className="h-9 bg-muted border-border text-muted-foreground rounded-md">
+                  <Badge
+                    variant="outline"
+                    className="h-9 bg-muted border-border text-muted-foreground rounded-md"
+                  >
                     {defaultUnit.from_unit_name}
                   </Badge>
                 ) : (

@@ -383,7 +383,7 @@ export const sampleWorkflows: Workflow[] = [
           id: 5,
           event: "SLA Warning",
           event_trigger: "onSLA",
-          recipients: ["Current Approver", "Approver's Manager"],
+          recipients: ["Current Approver", "Approver Manager"],
           channels: ["Email", "System"],
         },
       ],

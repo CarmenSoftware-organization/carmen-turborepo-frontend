@@ -58,9 +58,13 @@ export default function CreditNoteComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="credit-note-action-buttons">
-      <Button size={"sm"} data-id="credit-note-new-button" onClick={() => {
-        router.push("/procurement/credit-note/new");
-      }}>
+      <Button
+        size={"sm"}
+        data-id="credit-note-new-button"
+        onClick={() => {
+          router.push("/procurement/credit-note/new");
+        }}
+      >
         <Plus className="h-4 w-4" />
         {tCommon("add")}
       </Button>
@@ -76,11 +80,7 @@ export default function CreditNoteComponent() {
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button
-        variant="outlinePrimary"
-        size={"sm"}
-        data-id="credit-note-list-print-button"
-      >
+      <Button variant="outlinePrimary" size={"sm"} data-id="credit-note-list-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>
@@ -115,16 +115,16 @@ export default function CreditNoteComponent() {
         </Button>
         <div className="flex items-center gap-2">
           <Button
-            variant={view === VIEW.LIST ? 'default' : 'outlinePrimary'}
-            size={'sm'}
+            variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+            size={"sm"}
             onClick={() => setView(VIEW.LIST)}
             aria-label="List view"
           >
             <List className="h-4 w-4" />
           </Button>
           <Button
-            variant={view === VIEW.GRID ? 'default' : 'outlinePrimary'}
-            size={'sm'}
+            variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+            size={"sm"}
             onClick={() => setView(VIEW.GRID)}
             aria-label="Grid view"
           >

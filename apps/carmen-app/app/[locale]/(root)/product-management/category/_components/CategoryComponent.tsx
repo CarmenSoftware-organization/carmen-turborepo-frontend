@@ -72,16 +72,14 @@ export default function CategoryComponent() {
     handleDelete: deleteItemGroup,
   } = useItemGroup();
 
-  const isLoading =
-    isCategoriesPending || isSubCategoriesPending || isItemGroupsPending;
+  const isLoading = isCategoriesPending || isSubCategoriesPending || isItemGroupsPending;
 
-  const { categoryData, expanded, expandAll, collapseAll, toggleExpand } =
-    useCategoryTree({
-      categories,
-      subCategories,
-      itemGroups,
-      isLoading,
-    });
+  const { categoryData, expanded, expandAll, collapseAll, toggleExpand } = useCategoryTree({
+    categories,
+    subCategories,
+    itemGroups,
+    isLoading,
+  });
 
   const nodeMatchesSearch = useCallback((node: CategoryNode, searchLower: string) => {
     return (
@@ -91,26 +89,31 @@ export default function CategoryComponent() {
     );
   }, []);
 
-  const subcategoryMatchesSearch = useCallback((subcategory: CategoryNode, searchLower: string) => {
-    const subcategoryMatches = nodeMatchesSearch(subcategory, searchLower);
-    const hasMatchingItemGroup = subcategory.children?.some(
-      (itemGroup: CategoryNode) => nodeMatchesSearch(itemGroup, searchLower)
-    );
-    return subcategoryMatches || hasMatchingItemGroup;
-  }, [nodeMatchesSearch]);
-
-  const categoryMatchesSearch = useCallback((category: CategoryNode, searchLower: string) => {
-    const categoryMatches = nodeMatchesSearch(category, searchLower);
-    const hasMatchingSubcategory = category.children?.some(
-      (subcategory: CategoryNode) => subcategoryMatchesSearch(subcategory, searchLower)
-    );
-    const hasMatchingItemGroup = category.children?.some(
-      (itemGroup: CategoryNode) =>
-        itemGroup.type === NODE_TYPE.ITEM_GROUP &&
+  const subcategoryMatchesSearch = useCallback(
+    (subcategory: CategoryNode, searchLower: string) => {
+      const subcategoryMatches = nodeMatchesSearch(subcategory, searchLower);
+      const hasMatchingItemGroup = subcategory.children?.some((itemGroup: CategoryNode) =>
         nodeMatchesSearch(itemGroup, searchLower)
-    );
-    return categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup;
-  }, [nodeMatchesSearch, subcategoryMatchesSearch]);
+      );
+      return subcategoryMatches || hasMatchingItemGroup;
+    },
+    [nodeMatchesSearch]
+  );
+
+  const categoryMatchesSearch = useCallback(
+    (category: CategoryNode, searchLower: string) => {
+      const categoryMatches = nodeMatchesSearch(category, searchLower);
+      const hasMatchingSubcategory = category.children?.some((subcategory: CategoryNode) =>
+        subcategoryMatchesSearch(subcategory, searchLower)
+      );
+      const hasMatchingItemGroup = category.children?.some(
+        (itemGroup: CategoryNode) =>
+          itemGroup.type === NODE_TYPE.ITEM_GROUP && nodeMatchesSearch(itemGroup, searchLower)
+      );
+      return categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup;
+    },
+    [nodeMatchesSearch, subcategoryMatchesSearch]
+  );
 
   const filteredCategoryData = useMemo(() => {
     if (!debouncedSearch) return categoryData;
@@ -118,22 +121,21 @@ export default function CategoryComponent() {
     return categoryData.filter((category) => categoryMatchesSearch(category, searchLower));
   }, [categoryData, debouncedSearch, categoryMatchesSearch]);
 
-  const processSubcategoryExpansion = useCallback((
-    subcategory: CategoryNode,
-    searchLower: string,
-    expandedNodes: Record<string, boolean>
-  ) => {
-    const subcategoryMatches = nodeMatchesSearch(subcategory, searchLower);
-    const hasMatchingItemGroup = subcategory.children?.some(
-      (itemGroup: CategoryNode) => nodeMatchesSearch(itemGroup, searchLower)
-    );
+  const processSubcategoryExpansion = useCallback(
+    (subcategory: CategoryNode, searchLower: string, expandedNodes: Record<string, boolean>) => {
+      const subcategoryMatches = nodeMatchesSearch(subcategory, searchLower);
+      const hasMatchingItemGroup = subcategory.children?.some((itemGroup: CategoryNode) =>
+        nodeMatchesSearch(itemGroup, searchLower)
+      );
 
-    if (subcategoryMatches || hasMatchingItemGroup) {
-      expandedNodes[subcategory.id] = true;
-    }
+      if (subcategoryMatches || hasMatchingItemGroup) {
+        expandedNodes[subcategory.id] = true;
+      }
 
-    return subcategoryMatches || hasMatchingItemGroup;
-  }, [nodeMatchesSearch]);
+      return subcategoryMatches || hasMatchingItemGroup;
+    },
+    [nodeMatchesSearch]
+  );
 
   const searchExpanded = useMemo(() => {
     if (!debouncedSearch) return {};
@@ -144,14 +146,13 @@ export default function CategoryComponent() {
     for (const category of filteredCategoryData) {
       const categoryMatches = nodeMatchesSearch(category, searchLower);
 
-      const hasMatchingSubcategory = category.children?.some(
-        subcategory => processSubcategoryExpansion(subcategory, searchLower, expandedNodes)
+      const hasMatchingSubcategory = category.children?.some((subcategory) =>
+        processSubcategoryExpansion(subcategory, searchLower, expandedNodes)
       );
 
       const hasMatchingItemGroup = category.children?.some(
-        itemGroup =>
-          itemGroup.type === NODE_TYPE.ITEM_GROUP &&
-          nodeMatchesSearch(itemGroup, searchLower)
+        (itemGroup) =>
+          itemGroup.type === NODE_TYPE.ITEM_GROUP && nodeMatchesSearch(itemGroup, searchLower)
       );
 
       if (categoryMatches || hasMatchingSubcategory || hasMatchingItemGroup) {
@@ -201,18 +202,13 @@ export default function CategoryComponent() {
               name: data.name,
               description: data.description,
               is_active: true,
-              product_category_id:
-                parentNode?.id ?? selectedNode.product_category_id ?? "",
+              product_category_id: parentNode?.id ?? selectedNode.product_category_id ?? "",
               price_deviation_limit: data.price_deviation_limit ?? 0,
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
             };
-            result = await submitSubCategory(
-              subCategoryDto,
-              dialogMode,
-              subCategoryDto,
-            );
+            result = await submitSubCategory(subCategoryDto, dialogMode, subCategoryDto);
             success = !!result;
           } else {
             const itemGroupDto: ItemGroupDto = {
@@ -221,18 +217,13 @@ export default function CategoryComponent() {
               name: data.name,
               description: data.description,
               is_active: true,
-              product_subcategory_id:
-                parentNode?.id ?? selectedNode.product_subcategory_id ?? "",
+              product_subcategory_id: parentNode?.id ?? selectedNode.product_subcategory_id ?? "",
               price_deviation_limit: data.price_deviation_limit ?? 0,
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
             };
-            result = await submitItemGroup(
-              itemGroupDto,
-              dialogMode,
-              itemGroupDto,
-            );
+            result = await submitItemGroup(itemGroupDto, dialogMode, itemGroupDto);
             success = !!result;
           }
         } else {
@@ -363,15 +354,14 @@ export default function CategoryComponent() {
 
         // Check if result indicates success
         // API typically returns { statusCode: 200, data: ... } for success
-        const isSuccess = result && (
-          result.statusCode === 200 ||
-          result.statusCode === 201 ||
-          result.statusCode === 204 ||
-          (result.data && !result.error)
-        );
+        const isSuccess =
+          result &&
+          (result.statusCode === 200 ||
+            result.statusCode === 201 ||
+            result.statusCode === 204 ||
+            (result.data && !result.error));
 
-        console.log('isSuccess', isSuccess);
-
+        console.log("isSuccess", isSuccess);
 
         if (isSuccess) {
           toastSuccess({ message: tCategory("delete_success") });
@@ -426,10 +416,7 @@ export default function CategoryComponent() {
           <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
           <div className="flex items-center justify-between">
             <div className="relative w-72">
-              <Search
-                className="absolute inset-y-0 left-0 my-auto ml-2 text-gray-400"
-                size={16}
-              />
+              <Search className="absolute inset-y-0 left-0 my-auto ml-2 text-gray-400" size={16} />
 
               <input
                 value={search}
@@ -450,19 +437,11 @@ export default function CategoryComponent() {
               )}
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                onClick={expandAll}
-                size={"sm"}
-                variant={"outlinePrimary"}
-              >
+              <Button onClick={expandAll} size={"sm"} variant={"outlinePrimary"}>
                 <ChevronDown className="h-4 w-4" />
                 {tCategory("expand_all")}
               </Button>
-              <Button
-                onClick={collapseAll}
-                size={"sm"}
-                variant={"outlinePrimary"}
-              >
+              <Button onClick={collapseAll} size={"sm"} variant={"outlinePrimary"}>
                 <ChevronUp className="h-4 w-4" />
                 {tCategory("collapse_all")}
               </Button>
@@ -502,9 +481,7 @@ export default function CategoryComponent() {
                   </p>
                 </div>
               ) : (
-                <p className="text-muted-foreground">
-                  {tCategory("no_category")}
-                </p>
+                <p className="text-muted-foreground">{tCategory("no_category")}</p>
               )}
             </div>
           )}
@@ -519,10 +496,7 @@ export default function CategoryComponent() {
           onSubmit={handleFormSubmit}
         />
 
-        <AlertDialog
-          open={deleteDialogOpen}
-          onOpenChange={handleDeleteDialogChange}
-        >
+        <AlertDialog open={deleteDialogOpen} onOpenChange={handleDeleteDialogChange}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>

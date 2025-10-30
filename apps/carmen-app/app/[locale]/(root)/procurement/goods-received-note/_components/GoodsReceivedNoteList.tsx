@@ -31,7 +31,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -64,7 +68,7 @@ export default function GoodsReceivedNoteList({
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const { dateFormat, amount, currencyBase } = useAuth();
-  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
+  const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
   // Action header component
   const ActionHeader = () => <div className="text-right">{t("action")}</div>;
@@ -99,9 +103,7 @@ export default function GoodsReceivedNoteList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -113,7 +115,11 @@ export default function GoodsReceivedNoteList({
       {
         accessorKey: "grn_no",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("grn_number")} icon={<FileText className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("grn_number")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="max-w-[150px] truncate">
@@ -131,7 +137,11 @@ export default function GoodsReceivedNoteList({
       {
         accessorKey: "vendor_name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={t("vendor")} icon={<Building className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={t("vendor")}
+            icon={<Building className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[200px] inline-block">
@@ -148,12 +158,16 @@ export default function GoodsReceivedNoteList({
         accessorKey: "created_at",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("date")} icon={<Calendar className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={t("date")}
+              icon={<Calendar className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
           <div className="text-center">
-            {formatDateFns(row.original.created_at, dateFormat || 'yyyy-MM-dd')}
+            {formatDateFns(row.original.created_at, dateFormat || "yyyy-MM-dd")}
           </div>
         ),
         enableSorting: false,
@@ -168,13 +182,21 @@ export default function GoodsReceivedNoteList({
         accessorKey: "total_amount",
         header: ({ column }) => (
           <div className="flex justify-end">
-            <DataGridColumnHeader column={column} title={t("amount")} icon={<DollarSign className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={t("amount")}
+              icon={<DollarSign className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
           <div className="text-right">
             <span className="font-mono text-sm">
-              {formatPriceConf(row.original.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
+              {formatPriceConf(
+                row.original.total_amount,
+                amount ?? defaultAmount,
+                currencyBase ?? "THB"
+              )}
             </span>
           </div>
         ),
@@ -190,7 +212,11 @@ export default function GoodsReceivedNoteList({
         accessorKey: "is_active",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={t("status")} icon={<Activity className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={t("status")}
+              icon={<Activity className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
@@ -261,8 +287,7 @@ export default function GoodsReceivedNoteList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

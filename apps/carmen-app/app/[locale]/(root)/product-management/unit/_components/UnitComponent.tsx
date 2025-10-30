@@ -48,7 +48,7 @@ export default function UnitComponent() {
       sort,
       page: page ? Number(page) : 1,
       perpage: perpage ? Number(perpage) : 10,
-    }
+    },
   });
 
   const { mutate: createUnit } = useUnitMutation(token, buCode);
@@ -66,55 +66,55 @@ export default function UnitComponent() {
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
-  }
+  };
 
   const handleAdd = () => {
     setDialogMode(formType.ADD);
     setSelectedUnit(undefined);
     setDialogOpen(true);
-  }
+  };
 
   const handleEdit = (unit: UnitDto) => {
     setDialogMode(formType.EDIT);
     setSelectedUnit(unit);
     setDialogOpen(true);
-  }
+  };
 
   const handleDelete = (unit: UnitDto) => {
     setUnitToDelete(unit);
     setDeleteDialogOpen(true);
-  }
+  };
 
   const handleConfirmDelete = () => {
     if (unitToDelete) {
       deleteUnit(unitToDelete.id, {
         onSuccess: () => {
-          toastSuccess({ message: tUnit('delete_success') });
+          toastSuccess({ message: tUnit("delete_success") });
           queryClient.invalidateQueries({ queryKey: ["units"] });
           setDeleteDialogOpen(false);
           setUnitToDelete(undefined);
         },
         onError: (error) => {
-          toastError({ message: tUnit('delete_error') });
+          toastError({ message: tUnit("delete_error") });
           console.error("Failed to delete unit:", error);
-        }
+        },
       });
     }
-  }
+  };
 
   const handleDialogSubmit = (data: CreateUnitDto) => {
     if (dialogMode === formType.ADD) {
       createUnit(data, {
         onSuccess: () => {
-          toastSuccess({ message: tUnit('add_success') });
+          toastSuccess({ message: tUnit("add_success") });
           // Invalidate all "units" queries to refetch data
           queryClient.invalidateQueries({ queryKey: ["units"] });
           setDialogOpen(false);
         },
         onError: (error) => {
-          toastError({ message: tUnit('add_error') });
+          toastError({ message: tUnit("add_error") });
           console.error("Failed to create unit:", error);
-        }
+        },
       });
     } else if (dialogMode === formType.EDIT && selectedUnit) {
       const updateData: UpdateUnitDto = {
@@ -126,17 +126,17 @@ export default function UnitComponent() {
 
       updateUnit(updateData, {
         onSuccess: () => {
-          toastSuccess({ message: tUnit('update_success') });
+          toastSuccess({ message: tUnit("update_success") });
           queryClient.invalidateQueries({ queryKey: ["units"] });
           setDialogOpen(false);
         },
         onError: (error) => {
-          toastError({ message: tUnit('update_error') });
+          toastError({ message: tUnit("update_error") });
           console.error("Failed to update unit:", error);
-        }
+        },
       });
     }
-  }
+  };
 
   const sortFields = [
     { key: "name", label: "Name" },
@@ -165,11 +165,7 @@ export default function UnitComponent() {
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button
-        variant="outlinePrimary"
-        size={"sm"}
-        data-id="delivery-point-print-button"
-      >
+      <Button variant="outlinePrimary" size={"sm"} data-id="delivery-point-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>
@@ -219,7 +215,7 @@ export default function UnitComponent() {
       canUpdate={unitPerms.canUpdate}
       canDelete={unitPerms.canDelete}
     />
-  )
+  );
 
   return (
     <>
@@ -242,5 +238,5 @@ export default function UnitComponent() {
         onConfirm={handleConfirmDelete}
       />
     </>
-  )
+  );
 }

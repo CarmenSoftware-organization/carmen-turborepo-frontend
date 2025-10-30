@@ -38,12 +38,10 @@ const WorkflowDetailPage = () => {
     fetchById();
   }, [token, buCode, id, authLoading]);
 
-  // Show loading state if auth is still loading or we're fetching product data
   if (authLoading || (loading && token && buCode)) {
     return <div>Loading product information...</div>;
   }
 
-  // Show loading state if auth is still loading or we're fetching product data
   if (authLoading || (loading && token && buCode)) {
     return <div>Loading product information...</div>;
   }

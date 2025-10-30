@@ -1,6 +1,19 @@
 "use client";
 
-import { Activity, Building, Calendar, DollarSign, FileDown, FileText, MoreHorizontal, Printer, Trash2, TypeIcon, User, Workflow } from "lucide-react";
+import {
+  Activity,
+  Building,
+  Calendar,
+  DollarSign,
+  FileDown,
+  FileText,
+  MoreHorizontal,
+  Printer,
+  Trash2,
+  TypeIcon,
+  User,
+  Workflow,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   DropdownMenu,
@@ -20,7 +33,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -61,7 +78,7 @@ export default function PurchaseRequestList({
   const tCommon = useTranslations("Common");
   const { dateFormat, amount, currencyBase } = useAuth();
 
-  const defaultAmount = { locales: 'en-US', minimumFractionDigits: 2 };
+  const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
@@ -90,9 +107,7 @@ export default function PurchaseRequestList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -104,7 +119,11 @@ export default function PurchaseRequestList({
       {
         accessorKey: "pr_no",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("pr_no")} icon={<FileText className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("pr_no")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="max-w-[200px] truncate">
@@ -125,11 +144,15 @@ export default function PurchaseRequestList({
       {
         accessorKey: "pr_date",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("date")} icon={<Calendar className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="text-left">
-            {formatDateFns(row.original.pr_date, dateFormat || 'yyyy-MM-dd')}
+            {formatDateFns(row.original.pr_date, dateFormat || "yyyy-MM-dd")}
           </div>
         ),
         enableSorting: true,
@@ -141,11 +164,13 @@ export default function PurchaseRequestList({
       {
         accessorKey: "workflow_name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("type")} icon={<TypeIcon className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("type")}
+            icon={<TypeIcon className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <p>{getTypeName(row.original.workflow_name)}</p>
-        ),
+        cell: ({ row }) => <p>{getTypeName(row.original.workflow_name)}</p>,
         enableSorting: true,
         size: 120,
         meta: {
@@ -156,7 +181,11 @@ export default function PurchaseRequestList({
         accessorKey: "pr_status",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("status")} icon={<Activity className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("status")}
+              icon={<Activity className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
@@ -180,14 +209,16 @@ export default function PurchaseRequestList({
         accessorKey: "workflow_current_stage",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("stage")} icon={<Workflow className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("stage")}
+              icon={<Workflow className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
           <div className="flex justify-center">
-            {row.original.pr_status !== 'voided' && (
-              <p>{row.original.workflow_current_stage}</p>
-            )}
+            {row.original.pr_status !== "voided" && <p>{row.original.workflow_current_stage}</p>}
           </div>
         ),
         enableSorting: true,
@@ -201,12 +232,14 @@ export default function PurchaseRequestList({
       {
         accessorKey: "requestor_name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("requestor")} icon={<User className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("requestor")}
+            icon={<User className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
-          <span className="truncate max-w-[150px] inline-block">
-            {row.original.requestor_name}
-          </span>
+          <span className="truncate max-w-[150px] inline-block">{row.original.requestor_name}</span>
         ),
         enableSorting: true,
         size: 150,
@@ -217,7 +250,11 @@ export default function PurchaseRequestList({
       {
         accessorKey: "department_name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("department")} icon={<Building className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("department")}
+            icon={<Building className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[150px] inline-block">
@@ -234,13 +271,21 @@ export default function PurchaseRequestList({
         accessorKey: "total_amount",
         header: ({ column }) => (
           <div className="flex justify-end">
-            <DataGridColumnHeader column={column} title={tTableHeader("amount")} icon={<DollarSign className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("amount")}
+              icon={<DollarSign className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
           <div className="text-right">
             <span>
-              {formatPriceConf(row.original.total_amount, amount ?? defaultAmount, currencyBase ?? 'THB')}
+              {formatPriceConf(
+                row.original.total_amount,
+                amount ?? defaultAmount,
+                currencyBase ?? "THB"
+              )}
             </span>
           </div>
         ),
@@ -333,8 +378,7 @@ export default function PurchaseRequestList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

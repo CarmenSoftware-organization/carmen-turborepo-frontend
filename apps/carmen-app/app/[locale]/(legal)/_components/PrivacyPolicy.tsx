@@ -233,7 +233,6 @@ export default function PrivacyPolicy() {
         <p>{t("privacy.international.description")}</p>
       </section>
 
-      {/* Children's Privacy */}
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-4">10. {t("privacy.children.title")}</h2>
         <p>{t("privacy.children.description")}</p>

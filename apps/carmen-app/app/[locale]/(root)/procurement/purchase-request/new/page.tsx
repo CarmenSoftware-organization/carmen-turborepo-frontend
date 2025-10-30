@@ -5,8 +5,8 @@ import { formType } from "@/dtos/form.dto";
 import MainForm from "../_components/form-pr/MainForm";
 
 export default function PurchaseRequestNewPage() {
-    // const searchParams = useSearchParams();
-    // const type = searchParams.get('type');
+  // const searchParams = useSearchParams();
+  // const type = searchParams.get("type");
 
-    return <MainForm mode={formType.ADD} />
+  return <MainForm mode={formType.ADD} />;
 }

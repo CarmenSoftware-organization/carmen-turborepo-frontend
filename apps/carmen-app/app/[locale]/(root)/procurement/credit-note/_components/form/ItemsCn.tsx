@@ -1,10 +1,7 @@
 "use client";
 
 import { Control, useWatch, useFieldArray } from "react-hook-form";
-import {
-  CreditNoteDetailFormItemDto,
-  CreditNoteFormDto,
-} from "@/dtos/credit-note.dto";
+import { CreditNoteDetailFormItemDto, CreditNoteFormDto } from "@/dtos/credit-note.dto";
 import { formType } from "@/dtos/form.dto";
 import {
   Table,
@@ -56,12 +53,10 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
     buCode,
   });
 
-  const itemsDetail =
-    useWatch({ control, name: "credit_note_detail.data" }) || [];
+  const itemsDetail = useWatch({ control, name: "credit_note_detail.data" }) || [];
 
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedItem, setSelectedItem] =
-    useState<CreditNoteDetailFormItemDto | null>(null);
+  const [selectedItem, setSelectedItem] = useState<CreditNoteDetailFormItemDto | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | undefined>();
   const [search, setSearch] = useURL("search");
 
@@ -122,11 +117,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
     onDiaLogFormOpen(true);
   };
 
-  const onDiaLogFormOpen = (
-    open: boolean,
-    item?: CreditNoteDetailFormItemDto,
-    index?: number
-  ) => {
+  const onDiaLogFormOpen = (open: boolean, item?: CreditNoteDetailFormItemDto, index?: number) => {
     setOpenDialog(open);
     if (open && item && index !== undefined) {
       setSelectedItem(item);
@@ -137,20 +128,12 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
     }
   };
 
-  const handleSaveItem = (
-    item: CreditNoteDetailFormItemDto,
-    isEdit: boolean
-  ) => {
+  const handleSaveItem = (item: CreditNoteDetailFormItemDto, isEdit: boolean) => {
     if (isEdit && selectedIndex !== undefined) {
       // Edit existing item
       updateData(selectedIndex, item);
 
-      // Add to update array if it's not a new item (has real ID)
-      if (
-        item.id &&
-        !item.id.startsWith("temp_") &&
-        !item.id.includes("nanoid")
-      ) {
+      if (item.id && !item.id.startsWith("temp_") && !item.id.includes("nanoid")) {
         appendUpdate(item);
       }
     } else {
@@ -200,9 +183,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
             <TableHead className="text-right">Tax Amount</TableHead>
             <TableHead className="text-right">Total Amount</TableHead>
 
-            {mode !== formType.VIEW && (
-              <TableHead className="text-right">Action</TableHead>
-            )}
+            {mode !== formType.VIEW && <TableHead className="text-right">Action</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -217,10 +198,14 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
               <TableCell className="font-semibold text-xs">
                 {getProductName(item.product_id ?? "")}
               </TableCell>
-              <TableCell className="text-right">{item.return_qty}  {getUnitName(item.return_unit_id ?? "-")}</TableCell>
+              <TableCell className="text-right">
+                {item.return_qty} {getUnitName(item.return_unit_id ?? "-")}
+              </TableCell>
               <TableCell className="text-right">{formatCurrency(item.price, "THB")}</TableCell>
               <TableCell className="text-right">{formatCurrency(item.tax_amount, "THB")}</TableCell>
-              <TableCell className="text-right">{formatCurrency(item.total_price, "THB")}</TableCell>
+              <TableCell className="text-right">
+                {formatCurrency(item.total_price, "THB")}
+              </TableCell>
               {mode !== formType.VIEW && (
                 <TableCell className="text-right">
                   <Button
@@ -234,13 +219,7 @@ export default function ItemsCn({ control, mode }: ItemsCnProps) {
                     variant="ghost"
                     size="sm"
                     className="hover:text-destructive"
-                    onClick={() =>
-                      handleDeleteClick(
-                        item.id ?? "",
-                        index,
-                        item.product_id ?? ""
-                      )
-                    }
+                    onClick={() => handleDeleteClick(item.id ?? "", index, item.product_id ?? "")}
                   >
                     <Trash2 />
                   </Button>

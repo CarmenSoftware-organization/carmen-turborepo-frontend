@@ -15,14 +15,15 @@ import { VIEW } from "@/constants/enum";
 import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
 import { usePurchaseRequest } from "@/hooks/use-purchase-request";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { parseSortString } from "@/utils/table-sort";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { parseSortString } from "@/utils/table-sort";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode } = useAuth();
@@ -47,14 +48,14 @@ export default function PurchaseRequestComponent() {
   };
 
   const convertStatus = (status: string) => {
-    if (status === 'submit') return tStatus("submit");
-    if (status === 'draft') return tStatus("draft");
-    if (status === 'Completed') return tStatus("completed");
-    if (status === 'in_progress') return tStatus("in_progress");
-    if (status === 'approved') return tStatus("approved");
-    if (status === 'rejected') return tStatus("rejected");
-    if (status === 'voided') return tStatus("voided");
-    return '';
+    if (status === "submit") return tStatus("submit");
+    if (status === "draft") return tStatus("draft");
+    if (status === "Completed") return tStatus("completed");
+    if (status === "in_progress") return tStatus("in_progress");
+    if (status === "approved") return tStatus("approved");
+    if (status === "rejected") return tStatus("rejected");
+    if (status === "voided") return tStatus("voided");
+    return "";
   };
 
   const sortFields = [
@@ -85,7 +86,6 @@ export default function PurchaseRequestComponent() {
     }
   }, [search, setPage]);
 
-
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
   };
@@ -98,10 +98,7 @@ export default function PurchaseRequestComponent() {
 
   const actionButtons = (
     <TooltipProvider>
-      <div
-        className="action-btn-container"
-        data-id="purchase-request-action-buttons"
-      >
+      <div className="action-btn-container" data-id="purchase-request-action-buttons">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button size={"sm"} onClick={handleOpenDialog}>
@@ -155,14 +152,14 @@ export default function PurchaseRequestComponent() {
         <Button size={"sm"} className="h-8">
           {tDataControls("myPening")}
         </Button>
-        <Button size={"sm"} className="h-8" variant={'outlinePrimary'}>
+        <Button size={"sm"} className="h-8" variant={"outlinePrimary"}>
           {tDataControls("allDoc")}
         </Button>
         <Select>
           <SelectTrigger className="w-[120px] h-8 bg-muted">
             <SelectValue placeholder={tDataControls("allStage")} />
           </SelectTrigger>
-          <SelectContent >
+          <SelectContent>
             <SelectItem value="all">{tDataControls("allStage")}</SelectItem>
             <SelectItem value="requestor">{tDataControls("requestor")}</SelectItem>
             <SelectItem value="approver">{tDataControls("department_head_approval")}</SelectItem>
@@ -194,9 +191,7 @@ export default function PurchaseRequestComponent() {
                 <Filter className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent>
-              {tDataControls("filter")}
-            </TooltipContent>
+            <TooltipContent>{tDataControls("filter")}</TooltipContent>
           </Tooltip>
 
           <div className="hidden lg:block">
@@ -204,8 +199,8 @@ export default function PurchaseRequestComponent() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={view === VIEW.LIST ? 'default' : 'outlinePrimary'}
-                    size={'sm'}
+                    variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+                    size={"sm"}
                     onClick={() => setView(VIEW.LIST)}
                     aria-label="List view"
                   >
@@ -219,8 +214,8 @@ export default function PurchaseRequestComponent() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
-                    variant={view === VIEW.GRID ? 'default' : 'outlinePrimary'}
-                    size={'sm'}
+                    variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+                    size={"sm"}
                     onClick={() => setView(VIEW.GRID)}
                     aria-label="Grid view"
                   >
@@ -235,7 +230,6 @@ export default function PurchaseRequestComponent() {
           </div>
         </div>
       </TooltipProvider>
-
     </div>
   );
 

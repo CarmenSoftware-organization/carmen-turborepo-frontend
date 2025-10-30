@@ -18,7 +18,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useState, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 import FormBoolean from "@/components/form-custom/form-boolean";
 interface CategoryFormProps {
   readonly mode: formType;
@@ -27,12 +34,7 @@ interface CategoryFormProps {
   readonly onCancel: () => void;
 }
 
-export function CategoryForm({
-  mode,
-  selectedNode,
-  onSubmit,
-  onCancel,
-}: CategoryFormProps) {
+export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: CategoryFormProps) {
   const tCategory = useTranslations("Category");
   const tCommon = useTranslations("Common");
   const tAction = useTranslations("Action");
@@ -40,10 +42,14 @@ export function CategoryForm({
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingData, setPendingData] = useState<CategoryDto | null>(null);
 
-  const CategorySchema = useMemo(() => createCategorySchema({
-    codeRequired: tCategory("name_required"),
-    nameRequired: tCategory("code_required"),
-  }), [tCommon]);
+  const CategorySchema = useMemo(
+    () =>
+      createCategorySchema({
+        codeRequired: tCategory("name_required"),
+        nameRequired: tCategory("code_required"),
+      }),
+    [tCommon]
+  );
 
   const form = useForm<CategoryDto>({
     resolver: zodResolver(CategorySchema),
@@ -62,12 +68,9 @@ export function CategoryForm({
 
   const handleSubmit = (data: CategoryDto) => {
     // Check if is_used_in_recipe or is_sold_directly has changed
-    const isRecipeChanged =
-      selectedNode?.is_used_in_recipe !== data.is_used_in_recipe;
-    const isSoldChanged =
-      selectedNode?.is_sold_directly !== data.is_sold_directly;
+    const isRecipeChanged = selectedNode?.is_used_in_recipe !== data.is_used_in_recipe;
+    const isSoldChanged = selectedNode?.is_sold_directly !== data.is_sold_directly;
 
-    // If either has changed and we're in edit mode, show confirmation dialog
     if ((isRecipeChanged || isSoldChanged) && mode === formType.EDIT) {
       setPendingData(data);
       setShowConfirmDialog(true);
@@ -175,15 +178,10 @@ export function CategoryForm({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
                   <div>
-                    <FormLabel className="text-xs">
-                      {tCategory("used_in_recipe")}
-                    </FormLabel>
+                    <FormLabel className="text-xs">{tCategory("used_in_recipe")}</FormLabel>
                   </div>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                 </FormItem>
               )}
@@ -194,15 +192,10 @@ export function CategoryForm({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
                   <div>
-                    <FormLabel className="text-xs">
-                      {tCategory("sold_directly")}
-                    </FormLabel>
+                    <FormLabel className="text-xs">{tCategory("sold_directly")}</FormLabel>
                   </div>
                   <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                 </FormItem>
               )}
@@ -253,15 +246,11 @@ export function CategoryForm({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{tCategory("confirm_edit")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tCategory("confirm_edit_description")}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{tCategory("confirm_edit_description")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirm}>
-              {tCommon("continue")}
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleConfirm}>{tCommon("continue")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

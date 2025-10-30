@@ -1,7 +1,14 @@
 "use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 import Link from "next/link";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -42,7 +49,7 @@ const sortFields: FieldConfig<WorkflowListProps>[] = [
   // {
   // 	key: WorkflowField.lastModified,
   // 	label: `Last Modified`,
-  // 	className: 'w-40',
+  // 	className: "w-40",
   // },
 ];
 
@@ -57,7 +64,9 @@ const renderFieldValue = (field: FieldConfig<WorkflowListProps>, wf: WorkflowLis
   switch (field.type) {
     case "badge":
       if (typeof value === "boolean") {
-        return <Badge variant={value ? "default" : "destructive"}>{value ? `Active` : `Inactive`}</Badge>;
+        return (
+          <Badge variant={value ? "default" : "destructive"}>{value ? `Active` : `Inactive`}</Badge>
+        );
       }
       return <Badge>{String(value)}</Badge>;
 
@@ -90,7 +99,10 @@ const WorkflowList = () => {
   const actionButtons = (
     <div className="flex items-center gap-2">
       <Button asChild size="sm" data-id="workflow-list-new-workflow-button">
-        <Link href="/system-administration/workflow-management/new" data-id="workflow-list-new-workflow-button">
+        <Link
+          href="/system-administration/workflow-management/new"
+          data-id="workflow-list-new-workflow-button"
+        >
           <PlusCircle className="h-4 w-4" />
           New Workflow
         </Link>
@@ -115,7 +127,12 @@ const WorkflowList = () => {
           data-id="workflow-status-search-dropdown"
         />
 
-        <SortComponent fieldConfigs={sortFields} sort={sort} setSort={setSort} data-id="workflow-list-sort-dropdown" />
+        <SortComponent
+          fieldConfigs={sortFields}
+          sort={sort}
+          setSort={setSort}
+          data-id="workflow-list-sort-dropdown"
+        />
       </div>
     </div>
   );
@@ -157,7 +174,12 @@ const WorkflowList = () => {
                     </TableCell>
                   ))}
                   <TableCell className="text-right">
-                    <Button asChild variant="ghost" size="sm" aria-label={`View workflow ${w.id} details`}>
+                    <Button
+                      asChild
+                      variant="ghost"
+                      size="sm"
+                      aria-label={`View workflow ${w.id} details`}
+                    >
                       <Link href={`/system-administration/workflow-management/${w.id}`}>
                         <Eye className="h-4 w-4" />
                       </Link>
@@ -168,7 +190,12 @@ const WorkflowList = () => {
           </TableBody>
         )}
       </Table>
-      <PaginationComponent currentPage={+page} totalPages={totalPages} onPageChange={handlePageChange} perpage={10} />
+      <PaginationComponent
+        currentPage={+page}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        perpage={10}
+      />
     </>
   );
 
