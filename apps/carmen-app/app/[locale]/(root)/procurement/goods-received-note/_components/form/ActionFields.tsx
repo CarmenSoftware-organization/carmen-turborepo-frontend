@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { formType } from "@/dtos/form.dto";
 import { Link, useRouter } from "@/lib/navigation";
-import { formatDateFns } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
 import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -79,7 +79,7 @@ export default function ActionFields({
               <div className="flex flex-col gap-1">
                 <p className="text-xl font-bold">{grnNo}</p>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Created at: {formatDateFns(createdAt, dateFormat || "yyyy/MM/dd")}
+                  Created at: {formatDate(createdAt, dateFormat || "yyyy/MM/dd")}
                 </p>
               </div>
             )}

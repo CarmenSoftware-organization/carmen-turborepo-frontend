@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ProgressCustom } from "@/components/ui-custom/progress-custom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
-import { calculateProgress } from "@/utils/calculate";
+import { calculateProgress } from "@/utils/format/number";
 
 interface SpotCheckGridProps {
   readonly spotCheckData: SpotCheckDto[];

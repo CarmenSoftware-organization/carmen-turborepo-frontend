@@ -13,19 +13,13 @@ import { useAuth } from "@/context/AuthContext";
 import { usePriceList } from "@/hooks/usePriceList";
 import SignInDialog from "@/components/SignInDialog";
 import FormDialogPriceList from "./FormDialogPriceList";
-import { SortConfig } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 const sortFields = [
   { key: "name", label: "Name" },
   { key: "is_active", label: "Status" },
 ];
-
-const parseSortString = (sortString: string | null): SortConfig => {
-  if (!sortString) return { field: "", direction: "asc" };
-  const [field, direction] = sortString.split(":");
-  return { field: field || "", direction: (direction as "asc" | "desc") || "asc" };
-};
 
 export default function PriceListComponent() {
   const tCommon = useTranslations("Common");

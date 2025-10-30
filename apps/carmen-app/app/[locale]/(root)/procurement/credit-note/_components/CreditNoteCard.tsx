@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/context/AuthContext";
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import { Link } from "@/lib/navigation";
-import { formatDateFns } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
 import { FileText, Trash2 } from "lucide-react";
 
 interface CreditNoteCardProps {
@@ -85,7 +85,7 @@ export default function CreditNoteCard({
                 <div className="space-y-1">
                   <p className="text-sm text-muted-foreground">Date</p>
                   <p className="text-sm font-medium">
-                    {formatDateFns(cn?.cn_date, dateFormat || "yyyy-MM-dd")}
+                    {formatDate(cn?.cn_date, dateFormat || "yyyy-MM-dd")}
                   </p>
                 </div>
                 <div className="space-y-1">

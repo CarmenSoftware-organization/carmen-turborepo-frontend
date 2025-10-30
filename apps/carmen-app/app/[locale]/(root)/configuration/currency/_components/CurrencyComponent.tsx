@@ -12,7 +12,7 @@ import CurrencyDialog from "./CurrencyDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
 import SignInDialog from "@/components/SignInDialog";
 import { useState } from "react";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import { useAuth } from "@/context/AuthContext";
 import {
   useCurrenciesQuery,

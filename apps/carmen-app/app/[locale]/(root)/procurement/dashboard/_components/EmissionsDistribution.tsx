@@ -4,7 +4,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { currentYearBreakdown } from "@/mock-data/environment";
-import { formatLargeNumber } from "@/utils/formatLargeNumber";
+import { formatLargeNumber } from "@/utils/format/number";
 
 const COLORS = ["#0ea5e9", "#6366f1", "#7dd3fc"];
 

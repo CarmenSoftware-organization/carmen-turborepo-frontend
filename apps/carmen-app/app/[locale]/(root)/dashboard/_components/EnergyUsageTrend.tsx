@@ -13,7 +13,7 @@ import {
   YAxis,
 } from "recharts";
 import { energyWithChanges } from "@/mock-data/environment";
-import { formatLargeNumber } from "@/utils/formatLargeNumber";
+import { formatLargeNumber } from "@/utils/format/number";
 
 const EnergyUsageTrend = () => {
   return (

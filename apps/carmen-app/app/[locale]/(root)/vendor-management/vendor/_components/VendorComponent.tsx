@@ -13,7 +13,7 @@ import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useURL } from "@/hooks/useURL";
 import { useEffect, useState } from "react";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { vendorManagementPermission } from "@/lib/permission";
 

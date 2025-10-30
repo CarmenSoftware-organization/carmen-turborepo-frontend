@@ -25,7 +25,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatDateFns } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
 import { useTranslations } from "next-intl";
 import {
   ColumnDef,
@@ -180,7 +180,7 @@ export default function ListPriceList({
           </div>
         ),
         cell: ({ row }) => (
-          <span>{formatDateFns(row.original.from_date ?? "", dateFormat ?? "dd/MM/yyyy")}</span>
+          <span>{formatDate(row.original.from_date ?? "", dateFormat ?? "dd/MM/yyyy")}</span>
         ),
         enableSorting: false,
         size: 150,
@@ -194,7 +194,7 @@ export default function ListPriceList({
           </div>
         ),
         cell: ({ row }) => (
-          <span>{formatDateFns(row.original.to_date ?? "", dateFormat ?? "dd/MM/yyyy")}</span>
+          <span>{formatDate(row.original.to_date ?? "", dateFormat ?? "dd/MM/yyyy")}</span>
         ),
         enableSorting: false,
         size: 150,

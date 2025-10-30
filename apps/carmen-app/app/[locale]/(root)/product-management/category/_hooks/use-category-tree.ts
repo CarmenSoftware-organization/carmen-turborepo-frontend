@@ -6,7 +6,7 @@ import {
   CategoryNode,
   NODE_TYPE,
 } from "@/dtos/category.dto";
-import { generateNanoid } from "@/utils/nano-id";
+import { generateNanoId } from "@/utils/id/generator";
 
 interface UseCategoryTreeProps {
   categories: CategoryDto[];
@@ -52,7 +52,7 @@ export const useCategoryTree = ({
       return itemGroups
         .filter((item) => item.product_subcategory_id === subcategoryId)
         .map((item) => ({
-          id: item.id || generateNanoid(),
+          id: item.id || generateNanoId(),
           name: item.name,
           code: item.code,
           description: item.description,
@@ -74,7 +74,7 @@ export const useCategoryTree = ({
       return subCategories
         .filter((sub) => sub.product_category_id === categoryId)
         .map((sub) => ({
-          id: sub.id || generateNanoid(),
+          id: sub.id || generateNanoId(),
           name: sub.name,
           code: sub.code,
           description: sub.description,
@@ -91,7 +91,7 @@ export const useCategoryTree = ({
 
     // Map Category to CategoryNode
     return categories.map((cat) => ({
-      id: cat.id || generateNanoid(),
+      id: cat.id || generateNanoId(),
       name: cat.name,
       code: cat.code,
       description: cat.description,

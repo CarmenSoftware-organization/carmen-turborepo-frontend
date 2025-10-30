@@ -279,16 +279,13 @@ const SidebarContent = () => {
       aria-label="Sidebar Navigation"
     >
       <div className="flex-1 overflow-y-auto p-4 space-y-1">
-        {/* {!isActuallyCollapsed && (
-
-                )} */}
         <Button
           variant={"ghost"}
           onClick={handleToggleCollapse}
           className={cn(
             // "sidebar-toggle-button",
-            "w-full",
-            isActuallyCollapsed ? "bg-background" : "bg-muted"
+            "bg-muted mb-4 border border-border",
+            isActuallyCollapsed ? "w-8 " : "w-full"
           )}
           aria-label={isActuallyCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -298,9 +295,9 @@ const SidebarContent = () => {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className={cn("sidebar-header", isActuallyCollapsed && "justify-center")}
+          className={cn("sidebar-header ml-2", isActuallyCollapsed && "justify-center ml-0")}
         >
-          {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
+          {Icon && <Icon className="h-5 w-5" />}
           {!isActuallyCollapsed && <h2 className="module-name">{t(moduleKey)}</h2>}
         </MotionDiv>
 

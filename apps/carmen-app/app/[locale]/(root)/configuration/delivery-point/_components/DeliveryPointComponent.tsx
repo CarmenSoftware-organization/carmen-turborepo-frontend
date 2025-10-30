@@ -15,7 +15,7 @@ import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ListDeliveryPoint from "./ListDeliveryPoint";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import {
   DeliveryPointCreateDto,

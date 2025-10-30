@@ -11,7 +11,7 @@ import PurchaseOrderList from "./PurchaseOrderList";
 import { mockPurchaseOrders } from "@/mock-data/procurement";
 import DialogNewPo from "./DialogNewPo";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 
 export default function PurchaseOrderComponent() {
   const tCommon = useTranslations("Common");

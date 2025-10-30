@@ -13,7 +13,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Calculator, Percent, DollarSign } from "lucide-react";
 import CalculationResults from "./CalculationResults";
-import { calculateTaxes } from "@/utils/tax-calculations";
+import { calculateTaxes } from "@/utils/calculation/tax";
 import { useEffect, useState } from "react";
 
 export default function TaxCalculattion() {

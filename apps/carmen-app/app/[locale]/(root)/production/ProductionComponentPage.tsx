@@ -1,7 +1,7 @@
 "use client";
 
 import { GenericMenuPage, MenuCardItem } from "@/components/ui/menu-card";
-import { convertModuleChildrenToMenuItems } from "@/utils/module-utils";
+import { convertModuleChildrenToMenuItems } from "@/utils/module";
 import { Factory } from "lucide-react";
 import { useTranslations } from "next-intl";
 

@@ -6,7 +6,7 @@ import { Eye, Trash, Building, MapPin, User, Calendar, Activity } from "lucide-r
 import { Badge } from "@/components/ui/badge";
 import { ProgressCustom } from "@/components/ui-custom/progress-custom";
 import { Link } from "@/lib/navigation";
-import { calculateProgress } from "@/utils/calculate";
+import { calculateProgress } from "@/utils/format/number";
 import { useMemo } from "react";
 import {
     ColumnDef,

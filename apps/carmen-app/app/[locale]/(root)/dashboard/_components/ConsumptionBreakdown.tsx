@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatLargeNumber } from "@/utils/formatLargeNumber";
+import { formatLargeNumber } from "@/utils/format/number";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { consumptionData } from "@/mock-data/environment";
 

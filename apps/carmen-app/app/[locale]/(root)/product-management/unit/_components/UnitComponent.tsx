@@ -17,7 +17,7 @@ import UnitDialog from "@/components/shared/UnitDialog";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import DeleteConfirmDialog from "./DeleteConfirmDialog";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { productManagementPermission } from "@/lib/permission";
 

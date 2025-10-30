@@ -11,7 +11,7 @@ import {
 import { ProductPriceListCompareDto } from "@/dtos/price-list.dto";
 import { mockProductPriceListCompare } from "@/mock-data/priceList";
 import { Button } from "@/components/ui/button";
-import { formatDateFns } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
 import { useAuth } from "@/context/AuthContext";
 import { Card } from "@/components/ui/card";
 import { Clock10, Star } from "lucide-react";
@@ -109,9 +109,9 @@ export default function VendorComparison({
         header: () => <div className="text-center">Valid Period</div>,
         cell: ({ row }) => (
           <div className="flex flex-col items-center text-xs">
-            <span>{formatDateFns(row.original.valid_from, dateFormat || "yyyy-MM-dd")}</span>
+            <span>{formatDate(row.original.valid_from, dateFormat || "yyyy-MM-dd")}</span>
             <span className="text-muted-foreground">to</span>
-            <span>{formatDateFns(row.original.valid_to, dateFormat || "yyyy-MM-dd")}</span>
+            <span>{formatDate(row.original.valid_to, dateFormat || "yyyy-MM-dd")}</span>
           </div>
         ),
         size: 120,

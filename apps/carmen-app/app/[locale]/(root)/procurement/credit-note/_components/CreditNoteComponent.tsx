@@ -14,7 +14,7 @@ import CreditNoteGrid from "./CreditNoteGrid";
 import { useCreditNoteQuery } from "../_hooks/use-credit-note";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "@/lib/navigation";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 
 const sortFields = [{ key: "name", label: "Name" }];

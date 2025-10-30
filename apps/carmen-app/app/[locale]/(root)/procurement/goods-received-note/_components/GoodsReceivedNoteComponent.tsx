@@ -11,7 +11,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import GoodsReceivedNoteList from "./GoodsReceivedNoteList";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import GoodsReceivedNoteDialog from "./GoodsReceivedNoteDialog";
 import SignInDialog from "@/components/SignInDialog";

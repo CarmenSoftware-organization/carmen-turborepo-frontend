@@ -5,7 +5,8 @@ import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { useState, useMemo } from "react";
 import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
-import { formatDateFns, formatPriceConf } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
+import { formatPrice } from "@/utils/format/currency";
 import { useAuth } from "@/context/AuthContext";
 import {
   Accordion,
@@ -160,7 +161,7 @@ export default function PurchaseItemDataGrid({
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 px-2">
                       <PrLabelItem
                         label={tPr("unit_price")}
-                        value={formatPriceConf(
+                        value={formatPrice(
                           Number(getItemValue(item, "pricelist_price")) || item.base_price || 0,
                           defaultAmount,
                           currencyBase ?? "THB"
@@ -498,7 +499,7 @@ export default function PurchaseItemDataGrid({
 
           return currentFormType === formType.VIEW ? (
             <p className="text-sm text-center text-xs">
-              {formatDateFns(item.delivery_date, dateFormat || "yyyy-MM-dd")}
+              {formatDate(item.delivery_date, dateFormat || "yyyy-MM-dd")}
             </p>
           ) : (
             <div className="flex justify-center min-w-[120px] pr-4">
@@ -564,7 +565,7 @@ export default function PurchaseItemDataGrid({
               {isNewItem ? (
                 <p>-</p>
               ) : (
-                <p>{formatPriceConf(item.total_price, defaultAmount, currencyBase ?? "THB")}</p>
+                <p>{formatPrice(item.total_price, defaultAmount, currencyBase ?? "THB")}</p>
               )}
             </div>
           );

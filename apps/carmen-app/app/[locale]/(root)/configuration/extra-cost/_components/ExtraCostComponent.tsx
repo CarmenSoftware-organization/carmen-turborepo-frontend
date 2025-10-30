@@ -9,7 +9,7 @@ import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useState } from "react";
 import ListExtraCost from "./ListExtraCost";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
 import { formType } from "@/dtos/form.dto";

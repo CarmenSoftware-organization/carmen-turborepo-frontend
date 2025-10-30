@@ -14,7 +14,7 @@ import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import DepartmentList from "./DepartmentList";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
 import { DepartmentGetListDto } from "@/dtos/department.dto";

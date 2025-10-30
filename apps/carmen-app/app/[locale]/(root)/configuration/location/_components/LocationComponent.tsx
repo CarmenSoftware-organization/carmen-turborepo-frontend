@@ -14,7 +14,7 @@ import ListLocations from "./ListLocations";
 import { useRouter } from "@/lib/navigation";
 import SignInDialog from "@/components/SignInDialog";
 import DeleteConfirmDialog from "@/components/ui-custom/DeleteConfirmDialog";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
 import { StoreLocationDto } from "@/dtos/location.dto";
