@@ -9,9 +9,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogDescription,
-} from "@/components/ui/dialog";
+  DialogFooter,
+} from "@/components/animate-ui/components/radix/dialog";
 import {
   Form,
   FormControl,
