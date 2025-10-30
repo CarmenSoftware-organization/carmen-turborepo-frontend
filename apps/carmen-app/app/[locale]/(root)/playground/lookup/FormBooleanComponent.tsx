@@ -15,9 +15,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import FormBoolean from "../../../../../components/form-custom/form-boolean";
+import FormBoolean from "@/components/form-custom/form-boolean";
 import NumberInput from "@/components/form-custom/NumberInput";
 import JsonViewer from "@/components/JsonViewer";
+import { useTranslations } from "next-intl";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -38,6 +39,7 @@ const formSchema = z.object({
 });
 
 export default function FormBooleanComponent() {
+  const tCommon = useTranslations("Common");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,9 +65,7 @@ export default function FormBooleanComponent() {
 
   return (
     <div className="max-w-lg mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-center mb-6">
-        Form Component
-      </h1>
+      <h1 className="text-2xl font-bold text-center mb-6">Form Component</h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -78,9 +78,7 @@ export default function FormBooleanComponent() {
                 <FormControl>
                   <Input placeholder="shadcn" {...field} />
                 </FormControl>
-                <FormDescription>
-                  This is your public display name.
-                </FormDescription>
+                <FormDescription>This is your public display name.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -95,7 +93,7 @@ export default function FormBooleanComponent() {
                   <FormBoolean
                     value={field.value}
                     onChange={field.onChange}
-                    label="Is Active"
+                    label={tCommon("active")}
                     type="checkbox"
                   />
                 </FormControl>
@@ -113,7 +111,7 @@ export default function FormBooleanComponent() {
                     value={field.value}
                     onChange={field.onChange}
                     viewStage="hidden"
-                  // showContent={false}
+                    // showContent={false}
                   />
                 </FormControl>
                 <FormMessage />
