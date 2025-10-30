@@ -3,7 +3,7 @@
 import { useRouter } from "@/lib/navigation";
 import { usePathname } from "next/dist/client/components/navigation";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { moduleItems } from "@/constants/modules-list";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -41,7 +41,7 @@ export default function ModuleMobile() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button variant="outline">
-          {activeModule?.icon && React.createElement(activeModule.icon, { className: "h-4 w-4" })}
+          {activeModule?.icon && <activeModule.icon className="h-4 w-4" />}
           {activeModule ? t(activeModule.labelKey.split(".").pop() ?? "") : t("dashboard")}
         </Button>
       </SheetTrigger>

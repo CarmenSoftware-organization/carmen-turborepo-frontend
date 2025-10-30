@@ -445,8 +445,7 @@ const SidebarGroupLabel = React.forwardRef<
   const Comp = asChild ? Slot : "div"
 
   return (
-    // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
-      <Comp
+    <Comp
       ref={ref}
       data-sidebar="group-label"
       className={cn(
@@ -467,8 +466,7 @@ const SidebarGroupAction = React.forwardRef<
   const Comp = asChild ? Slot : "button"
 
   return (
-    // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
-      <Comp
+    <Comp
       ref={ref}
       data-sidebar="group-action"
       className={cn(
@@ -569,7 +567,6 @@ const SidebarMenuButton = React.forwardRef<
     const { isMobile, state } = useSidebar()
 
     const button = (
-      // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
       <Comp
         ref={ref}
         data-sidebar="menu-button"
@@ -615,8 +612,7 @@ const SidebarMenuAction = React.forwardRef<
   const Comp = asChild ? Slot : "button"
 
   return (
-    // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
-      <Comp
+    <Comp
       ref={ref}
       data-sidebar="menu-action"
       className={cn(
@@ -730,8 +726,7 @@ const SidebarMenuSubButton = React.forwardRef<
   const Comp = asChild ? Slot : "a"
 
   return (
-    // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
-      <Comp
+    <Comp
       ref={ref}
       data-sidebar="menu-sub-button"
       data-size={size}

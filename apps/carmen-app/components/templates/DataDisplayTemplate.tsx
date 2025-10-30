@@ -47,24 +47,33 @@ const DataDisplayTemplate: React.FC<Props> = ({
       >
         <MotionDiv className="md:flex justify-between items-start" {...fadeIn}>
           <MotionDiv className="text-2xl font-bold tracking-wide" {...fadeInUp}>
+            {/* @ts-ignore - Type conflict between React 19 RC and framer-motion */}
             {title}
           </MotionDiv>
           {actionButtons && (
             <MotionDiv className="mt-4 md:mt-0" {...fadeInUp}>
+              {/* @ts-ignore - Type conflict between React 19 RC and framer-motion */}
               {actionButtons}
             </MotionDiv>
           )}
         </MotionDiv>
         <AnimatePresence>
-          {filters && <MotionDiv {...fadeIn}>{filters}</MotionDiv>}
+          {filters && (
+            <MotionDiv {...fadeIn}>
+              {/* @ts-ignore - Type conflict between React 19 RC and framer-motion */}
+              {filters}
+            </MotionDiv>
+          )}
           {bulkActions && (
             <MotionDiv className="mb-4" {...fadeIn}>
+              {/* @ts-ignore - Type conflict between React 19 RC and framer-motion */}
               {bulkActions}
             </MotionDiv>
           )}
         </AnimatePresence>
       </MotionDiv>
       <MotionDiv className="flex-1 overflow-y-auto bg-background" {...fadeInUp}>
+        {/* @ts-ignore - Type conflict between React 19 RC and framer-motion */}
         <AnimatePresence mode="wait">{isLoading ? <SkeltonLoad /> : content}</AnimatePresence>
       </MotionDiv>
     </MotionDiv>

@@ -102,7 +102,6 @@ function TreeItem<T = any>({
 
   return (
     <TreeContext.Provider value={{ ...parentContext, currentItem: item }}>
-      // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
       <Comp
         data-slot="tree-item"
         style={mergedStyle}

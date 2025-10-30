@@ -49,8 +49,7 @@ const BreadcrumbLink = React.forwardRef<
 
   return (
     // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
-    // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
-      <Comp
+    <Comp
       ref={ref}
       className={cn("transition-colors hover:text-foreground", className)}
       {...props}

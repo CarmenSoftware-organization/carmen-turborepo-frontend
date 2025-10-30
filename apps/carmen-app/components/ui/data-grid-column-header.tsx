@@ -149,6 +149,7 @@ function DataGridColumnHeader<TData, TValue>({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>{headerButton()}</DropdownMenuTrigger>
           <DropdownMenuContent className="w-40" align="start">
+            {/* @ts-ignore - Type conflict between React 19 RC and Radix UI */}
             {filter && <DropdownMenuLabel>{filter}</DropdownMenuLabel>}
 
             {filter && (column.getCanSort() || column.getCanPin() || visibility) && <DropdownMenuSeparator />}
