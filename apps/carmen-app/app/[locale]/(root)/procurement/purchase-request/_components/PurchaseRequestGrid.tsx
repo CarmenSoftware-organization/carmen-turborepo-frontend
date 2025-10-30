@@ -141,8 +141,9 @@ export default function PurchaseRequestGrid({
                   <p className="text-sm font-medium text-muted-foreground">
                     {formatPrice(
                       pr.total_amount,
-                      amount ?? defaultAmount,
-                      currencyBase ?? "THB"
+                      currencyBase ?? "THB",
+                      amount?.locales ?? defaultAmount.locales,
+                      amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
                     )}
                   </p>
                 </div>

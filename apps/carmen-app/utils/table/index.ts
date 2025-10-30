@@ -1,7 +1,3 @@
-/**
- * Table utilities barrel export
- */
-
 export {
   renderSortIcon,
   parseSortString,

@@ -163,8 +163,9 @@ export default function PurchaseItemDataGrid({
                         label={tPr("unit_price")}
                         value={formatPrice(
                           Number(getItemValue(item, "pricelist_price")) || item.base_price || 0,
-                          defaultAmount,
-                          currencyBase ?? "THB"
+                          currencyBase ?? "THB",
+                          defaultAmount.locales,
+                          defaultAmount.minimumFractionDigits
                         )}
                         position="text-right"
                       />
@@ -565,7 +566,7 @@ export default function PurchaseItemDataGrid({
               {isNewItem ? (
                 <p>-</p>
               ) : (
-                <p>{formatPrice(item.total_price, defaultAmount, currencyBase ?? "THB")}</p>
+                <p>{formatPrice(item.total_price, currencyBase ?? "THB", defaultAmount.locales, defaultAmount.minimumFractionDigits)}</p>
               )}
             </div>
           );

@@ -1,8 +1,3 @@
-/**
- * Main utilities barrel export
- * Central entry point for all utility functions
- */
-
 // Constants
 export * from "./constants";
 

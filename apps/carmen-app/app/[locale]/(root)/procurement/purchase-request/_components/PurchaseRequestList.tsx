@@ -284,8 +284,9 @@ export default function PurchaseRequestList({
             <span>
               {formatPrice(
                 row.original.total_amount,
-                amount ?? defaultAmount,
-                currencyBase ?? "THB"
+                currencyBase ?? "THB",
+                amount?.locales ?? defaultAmount.locales,
+                amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
               )}
             </span>
           </div>

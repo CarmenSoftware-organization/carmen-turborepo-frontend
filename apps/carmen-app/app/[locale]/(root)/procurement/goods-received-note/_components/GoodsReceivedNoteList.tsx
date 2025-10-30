@@ -195,8 +195,9 @@ export default function GoodsReceivedNoteList({
             <span className="font-mono text-sm">
               {formatPrice(
                 row.original.total_amount,
-                amount ?? defaultAmount,
-                currencyBase ?? "THB"
+                currencyBase ?? "THB",
+                amount?.locales ?? defaultAmount.locales,
+                amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
               )}
             </span>
           </div>

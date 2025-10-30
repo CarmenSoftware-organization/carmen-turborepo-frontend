@@ -1,9 +1,3 @@
-/**
- * Utility Constants
- * Centralized constants used across utility functions
- */
-
-// Number formatting constants
 export const MILLION = 1_000_000;
 export const THOUSAND = 1_000;
 
