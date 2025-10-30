@@ -89,7 +89,8 @@ function TreeItem<T = any>({
   const mergedProps = { ...props, ...itemProps };
 
   // Extract style from mergedProps to merge with our custom styles
-  const { style: propStyle, ...otherProps } = mergedProps;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { style: propStyle, popover, ...otherProps } = mergedProps;
 
   // Merge styles with inline padding
   const paddingLeft = item.getItemMeta().level * indent;
@@ -102,7 +103,6 @@ function TreeItem<T = any>({
 
   return (
     <TreeContext.Provider value={{ ...parentContext, currentItem: item }}>
-      // @ts-ignore - Type conflict between React 19 RC and Radix UI Slot types
       <Comp
         data-slot="tree-item"
         style={mergedStyle}
@@ -124,7 +124,7 @@ function TreeItem<T = any>({
         aria-expanded={item.isExpanded()}
         {...otherProps}
       >
-        {children}
+        <>{children}</>
       </Comp>
     </TreeContext.Provider>
   );

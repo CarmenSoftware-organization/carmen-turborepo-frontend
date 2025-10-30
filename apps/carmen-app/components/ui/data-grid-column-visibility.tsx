@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import * as React from 'react';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -8,10 +8,17 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table } from '@tanstack/react-table';
 
-function DataGridColumnVisibility<TData>({ table, trigger }: { table: Table<TData>; trigger: ReactNode }) {
+interface DataGridColumnVisibilityProps<TData> {
+  table: Table<TData>;
+  trigger: React.ReactNode;
+}
+
+function DataGridColumnVisibility<TData>({ table, trigger }: DataGridColumnVisibilityProps<TData>) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
+        <>{trigger}</>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[150px]">
         <DropdownMenuLabel className="font-medium">Toggle Columns</DropdownMenuLabel>
         {table
