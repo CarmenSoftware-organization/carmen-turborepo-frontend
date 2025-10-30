@@ -25,7 +25,11 @@ export default async function RootLayout({
   const { locale } = await params;
   const messages = await getMessages({ locale });
   return (
-    <html lang={locale} suppressHydrationWarning className="h-screen overflow-hidden">
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className="h-screen overflow-hidden"
+    >
       <body className="antialiased h-screen overflow-hidden">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers>{children}</Providers>
