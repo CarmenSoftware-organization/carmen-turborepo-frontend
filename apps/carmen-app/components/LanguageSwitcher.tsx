@@ -44,7 +44,7 @@ export default function LanguageSwitcher() {
             value={currentLocale}
             onValueChange={handleLocaleChange}
         >
-            <SelectTrigger className="border border-border w-12 h-8 px-1.5">
+            <SelectTrigger className="border border-border w-12 h-8 px-1.5 text-muted-foreground">
                 <SelectValue>
                     <p>{currentLocale.toUpperCase()}</p>
                 </SelectValue>

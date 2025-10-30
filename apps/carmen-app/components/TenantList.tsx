@@ -8,8 +8,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 export default function TenantList() {
+  const t = useTranslations("HomePage");
   const { user, tenantId, handleChangeTenant, isLoading } = useAuth();
 
   if (isLoading || !user?.business_unit?.length) {
@@ -18,13 +20,13 @@ export default function TenantList() {
 
   return (
     <Select value={tenantId || undefined} onValueChange={handleChangeTenant}>
-      <SelectTrigger className="w-40 border border-border focus:ring-ring text-xs h-8">
-        <SelectValue placeholder="Select a tenant" />
+      <SelectTrigger className="w-40 border border-border focus:ring-ring text-xs h-8 text-muted-foreground">
+        <SelectValue placeholder={t("select_bu")} />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           {user.business_unit.map((bu) => (
-            <SelectItem key={bu.id} value={bu.id}>
+            <SelectItem key={bu.id} value={bu.id} >
               {bu.name}
             </SelectItem>
           ))}

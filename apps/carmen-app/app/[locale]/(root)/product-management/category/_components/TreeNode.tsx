@@ -64,24 +64,31 @@ export default function TreeNode({
 
     return (
         <div className="tree-node">
-            <div
+            <button
+                type="button"
                 className={cn(
-                    "fxr-c p-2 hover:bg-muted/50 rounded-md group transition-colors",
+                    "fxr-c p-2 hover:bg-muted/50 rounded-md group transition-colors w-full text-left",
                     level > 0 ? "ml-8" : "",
                 )}
                 style={{ paddingLeft: `${level * 12 + 8}px` }}
+                onClick={() => toggleExpand(node.id)}
+                aria-expanded={hasChildren ? isExpanded : undefined}
+                aria-label={`${getTypeLabel(node.type)}: ${node.name}`}
             >
                 {hasChildren ? (
-                    <button onClick={() => toggleExpand(node.id)} className="mr-1 p-1 rounded-full hover:bg-muted">
+                    <div
+                        className="mr-1 p-1 rounded-full hover:bg-muted"
+                        aria-hidden="true"
+                    >
                         <ChevronRight
                             className={cn(
                                 "h-4 w-4 transition-transform",
                                 isExpanded ? "rotate-90" : ""
                             )}
                         />
-                    </button>
+                    </div>
                 ) : (
-                    <div className="w-6 mr-1"></div>
+                    <div className="w-6 mr-1" aria-hidden="true"></div>
                 )}
 
                 <div className="flex-1">
@@ -99,7 +106,7 @@ export default function TreeNode({
                     {node.type === NODE_TYPE.ITEM_GROUP && <p className="text-muted-foreground">{node.itemCount}</p>}
                 </div>
 
-                <div className="fxr-c gap-1 group-hover:block hidden">
+                <div className="flex items-center gap-2 group-hover:block hidden">
                     {node.type !== NODE_TYPE.ITEM_GROUP && (
                         <TooltipProvider>
                             <Tooltip>
@@ -147,11 +154,10 @@ export default function TreeNode({
                         <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
-
-            </div>
+            </button>
 
             {hasChildren && isExpanded && (
-                <div className="children">
+                <div className="children ml-6">
                     {node.children?.map((child) => (
                         <TreeNode
                             key={child.id}

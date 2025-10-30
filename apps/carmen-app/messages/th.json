@@ -5,7 +5,8 @@
     "CarmenSoftware": "คาร์เมน ซอฟแวร์",
     "HotelFinanceManagementSoftware": "ซอฟต์แวร์การบริหารการกิจการโรงแรม",
     "carmenTitle": "Carmen",
-    "HospitalitySupplyChain": "Supply Chain อุตสาหกรรมที่มีคุณภาพ"
+    "HospitalitySupplyChain": "Supply Chain อุตสาหกรรมที่มีคุณภาพ",
+    "select_bu": "เลือกหน่วยงาน"
   },
   "SignInPage": {
     "title": "เข้าสู่ระบบ",

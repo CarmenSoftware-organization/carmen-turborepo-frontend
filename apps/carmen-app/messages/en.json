@@ -5,7 +5,8 @@
     "CarmenSoftware": "Carmen Software",
     "HotelFinanceManagementSoftware": "Hotel finance management software",
     "carmenTitle": "Carmen",
-    "HospitalitySupplyChain": "Hospitality Supply Chain"
+    "HospitalitySupplyChain": "Hospitality Supply Chain",
+    "select_bu": "Select Business Unit"
   },
   "SignInPage": {
     "title": "Sign In",
