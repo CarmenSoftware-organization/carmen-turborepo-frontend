@@ -12,7 +12,12 @@ import OrderUnit from "./OrderUnit";
 import IngredientUnit from "./IngredientUnit";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { useRouter } from "@/lib/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/animate-ui/components/radix/tabs";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useTranslations } from "next-intl";
 import { productFormSchema, ProductFormValues, ProductInitialValues } from "@/dtos/product.dto";
