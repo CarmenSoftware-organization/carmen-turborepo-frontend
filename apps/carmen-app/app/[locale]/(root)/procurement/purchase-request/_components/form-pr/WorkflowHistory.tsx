@@ -8,7 +8,7 @@ import {
 } from "@/components/ui-custom/timeline";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
-import { formatDateFns } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
 import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -48,7 +48,7 @@ export default function WorkflowHistory({ workflow_history }: Props) {
         <TimelineItem key={`${item.datetime}-${item.user.id}-${item.action}`}>
           <TimelineHeader>
             <TimelineTime variant="outline" className="bg-transparent">
-              {formatDateFns(item.datetime, dateFormat || "yyyy-MM-dd")}
+              {formatDate(item.datetime, dateFormat || "yyyy-MM-dd")}
             </TimelineTime>
             <TimelineTitle className="text-primary">{item.action.toUpperCase()}</TimelineTitle>
           </TimelineHeader>

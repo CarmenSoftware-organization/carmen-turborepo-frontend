@@ -1,13 +1,16 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  CategoryNode,
-  createItemGroupSchema,
-  type ItemGroupFormData,
-} from "@/dtos/category.dto";
+import { CategoryNode, createItemGroupSchema, type ItemGroupFormData } from "@/dtos/category.dto";
 import { formType } from "@/dtos/form.dto";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -48,10 +51,14 @@ export function ItemGroupForm({
     }
   }, [mode, selectedNode, parentNode]);
 
-  const ItemGroupFormSchema = useMemo(() => createItemGroupSchema({
-    codeRequired: tCategory("code_required"),
-    nameRequired: tCategory("name_required"),
-  }), [tCategory]).omit({ id: true });
+  const ItemGroupFormSchema = useMemo(
+    () =>
+      createItemGroupSchema({
+        codeRequired: tCategory("code_required"),
+        nameRequired: tCategory("name_required"),
+      }),
+    [tCategory]
+  ).omit({ id: true });
 
   const form = useForm<ItemGroupFormData>({
     resolver: zodResolver(ItemGroupFormSchema),
@@ -59,17 +66,12 @@ export function ItemGroupForm({
       code: selectedNode?.code ?? "",
       name: selectedNode?.name ?? "",
       description: selectedNode?.description ?? "",
-      product_subcategory_id:
-        selectedNode?.product_subcategory_id || parentNode?.id || "",
+      product_subcategory_id: selectedNode?.product_subcategory_id || parentNode?.id || "",
       is_active: selectedNode?.is_active ?? true,
       price_deviation_limit: selectedNode?.price_deviation_limit ?? 0,
       qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0,
-      is_used_in_recipe:
-        selectedNode?.is_used_in_recipe ??
-        parentNode?.is_used_in_recipe ??
-        false,
-      is_sold_directly:
-        selectedNode?.is_sold_directly ?? parentNode?.is_sold_directly ?? false,
+      is_used_in_recipe: selectedNode?.is_used_in_recipe ?? parentNode?.is_used_in_recipe ?? false,
+      is_sold_directly: selectedNode?.is_sold_directly ?? parentNode?.is_sold_directly ?? false,
     },
   });
 
@@ -184,15 +186,10 @@ export function ItemGroupForm({
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
                 <div>
-                  <FormLabel className="text-xs">
-                    {tCategory("used_in_recipe")}
-                  </FormLabel>
+                  <FormLabel className="text-xs">{tCategory("used_in_recipe")}</FormLabel>
                 </div>
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
               </FormItem>
             )}
@@ -203,15 +200,10 @@ export function ItemGroupForm({
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border p-2">
                 <div>
-                  <FormLabel className="text-xs">
-                    {tCategory("sold_directly")}
-                  </FormLabel>
+                  <FormLabel className="text-xs">{tCategory("sold_directly")}</FormLabel>
                 </div>
                 <FormControl>
-                  <Switch
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
                 </FormControl>
               </FormItem>
             )}
@@ -241,7 +233,7 @@ export function ItemGroupForm({
                 <FormBoolean
                   value={field.value}
                   onChange={field.onChange}
-                  label={tCommon("status")}
+                  label={tCommon("active")}
                   type="checkbox"
                 />
               </FormControl>
@@ -253,9 +245,7 @@ export function ItemGroupForm({
           <Button variant="outline" onClick={onCancel}>
             {tCommon("cancel")}
           </Button>
-          <Button type="submit">
-            {mode === formType.EDIT ? tAction("edit") : tAction("add")}
-          </Button>
+          <Button type="submit">{mode === formType.EDIT ? tAction("edit") : tAction("add")}</Button>
         </div>
       </form>
     </Form>

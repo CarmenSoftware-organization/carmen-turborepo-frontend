@@ -10,7 +10,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { FileDown, Filter, Plus, Printer } from "lucide-react";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 
 export default function VendorComparisonComponent() {
   const tCommon = useTranslations("Common");

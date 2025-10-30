@@ -416,7 +416,9 @@
     "no_vendor_available": "ไม่มีผู้จัดจำหน่าย",
     "date_required": "วันที่ต้องการ",
     "pricing": "ราคา",
-    "value": "ค่า"
+    "value": "ค่า",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน"
   },
   "Unit": {
     "title": "หน่วยนับ",

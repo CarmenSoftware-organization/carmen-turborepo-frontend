@@ -21,10 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  CreateCreditTermFormValues,
-  CreditTermGetAllDto,
-} from "@/dtos/credit-term.dto";
+import { CreateCreditTermFormValues, CreditTermGetAllDto } from "@/dtos/credit-term.dto";
 import { createCreditTermFormSchema } from "../_schemas/credit-term-form.schema";
 import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
@@ -117,10 +114,7 @@ export default function CreditTermDialog({
           <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-2"
-          >
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
             <FormField
               control={form.control}
               name="name"
@@ -163,10 +157,7 @@ export default function CreditTermDialog({
                 <FormItem>
                   <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={tCommon("description")}
-                    />
+                    <Textarea {...field} placeholder={tCommon("description")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -196,7 +187,7 @@ export default function CreditTermDialog({
                     <FormBoolean
                       value={field.value}
                       onChange={field.onChange}
-                      label={tCommon("status")}
+                      label={tCommon("active")}
                       type="checkbox"
                       required
                     />
@@ -214,10 +205,7 @@ export default function CreditTermDialog({
               >
                 {tCommon("cancel")}
               </Button>
-              <Button
-                type="submit"
-                disabled={isLoading || form.formState.isSubmitting}
-              >
+              <Button type="submit" disabled={isLoading || form.formState.isSubmitting}>
                 {tCommon("save")}
               </Button>
             </DialogFooter>

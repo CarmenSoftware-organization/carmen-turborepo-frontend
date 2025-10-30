@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ButtonLink from "@/components/ButtonLink";
 import { useAuth } from "@/context/AuthContext";
-import { formatDateFns, formatPriceConf } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
+import { formatPrice } from "@/utils/format/currency";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import {
@@ -167,7 +168,7 @@ export default function GoodsReceivedNoteList({
         ),
         cell: ({ row }) => (
           <div className="text-center">
-            {formatDateFns(row.original.created_at, dateFormat || "yyyy-MM-dd")}
+            {formatDate(row.original.created_at, dateFormat || "yyyy-MM-dd")}
           </div>
         ),
         enableSorting: false,
@@ -192,10 +193,11 @@ export default function GoodsReceivedNoteList({
         cell: ({ row }) => (
           <div className="text-right">
             <span className="font-mono text-sm">
-              {formatPriceConf(
+              {formatPrice(
                 row.original.total_amount,
-                amount ?? defaultAmount,
-                currencyBase ?? "THB"
+                currencyBase ?? "THB",
+                amount?.locales ?? defaultAmount.locales,
+                amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
               )}
             </span>
           </div>

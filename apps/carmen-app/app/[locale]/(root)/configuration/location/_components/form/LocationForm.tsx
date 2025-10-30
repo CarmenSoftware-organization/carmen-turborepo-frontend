@@ -337,7 +337,7 @@ export default function LocationForm({
                       <FormBoolean
                         value={field.value}
                         onChange={field.onChange}
-                        label={tCommon("status")}
+                        label={tCommon("active")}
                         type="checkbox"
                         disabled={isViewMode}
                       />

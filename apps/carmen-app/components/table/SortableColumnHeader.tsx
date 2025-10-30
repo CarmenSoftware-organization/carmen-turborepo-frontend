@@ -1,6 +1,6 @@
 "use client";
 
-import { SortConfig } from "@/utils/table-sort";
+import { SortConfig } from "@/utils/table";
 import React from "react";
 
 interface SortableColumnHeaderProps {

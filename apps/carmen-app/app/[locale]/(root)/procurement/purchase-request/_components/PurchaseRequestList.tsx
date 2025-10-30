@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { useAuth } from "@/context/AuthContext";
-import { formatDateFns, formatPriceConf } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
+import { formatPrice } from "@/utils/format/currency";
 import { useMemo } from "react";
 import {
   ColumnDef,
@@ -152,7 +153,7 @@ export default function PurchaseRequestList({
         ),
         cell: ({ row }) => (
           <div className="text-left">
-            {formatDateFns(row.original.pr_date, dateFormat || "yyyy-MM-dd")}
+            {formatDate(row.original.pr_date, dateFormat || "yyyy-MM-dd")}
           </div>
         ),
         enableSorting: true,
@@ -281,10 +282,11 @@ export default function PurchaseRequestList({
         cell: ({ row }) => (
           <div className="text-right">
             <span>
-              {formatPriceConf(
+              {formatPrice(
                 row.original.total_amount,
-                amount ?? defaultAmount,
-                currencyBase ?? "THB"
+                currencyBase ?? "THB",
+                amount?.locales ?? defaultAmount.locales,
+                amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
               )}
             </span>
           </div>

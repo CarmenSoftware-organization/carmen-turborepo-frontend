@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/context/AuthContext";
-import { convertPrStatus } from "@/utils/badge-status-color";
+import { convertPrStatusToLabel } from "@/utils/data/status";
 import { format } from "date-fns"
 import { useTranslations } from "next-intl";
 
@@ -61,7 +61,7 @@ export default function StatusPrInfo({
               <StatusBadge
                 status={status}
               >
-                {convertPrStatus(status)}
+                {convertPrStatusToLabel(status)}
               </StatusBadge>
             </div>
           )}

@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useProductQuery } from "@/hooks/use-product-query";
 import { useURL } from "@/hooks/useURL";
 import { Link } from "@/lib/navigation";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";

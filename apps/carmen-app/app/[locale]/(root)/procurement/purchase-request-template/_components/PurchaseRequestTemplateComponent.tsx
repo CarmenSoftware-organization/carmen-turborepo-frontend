@@ -12,7 +12,7 @@ import PurchaseRequestTemplateList from "./PurchaseRequestTemplateList";
 import { mockPurchaseRequestTemplates } from "@/mock-data/procurement";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { useRouter } from "@/lib/navigation";
-import { parseSortString } from "@/utils/table-sort";
+import { parseSortString } from "@/utils/table";
 
 export default function PurchaseRequestTemplateComponent() {
   const tCommon = useTranslations("Common");

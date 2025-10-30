@@ -275,7 +275,7 @@ export function SubCategoryForm({
                   <FormBoolean
                     value={field.value}
                     onChange={field.onChange}
-                    label={tCommon("status")}
+                    label={tCommon("active")}
                     type="checkbox"
                   />
                 </FormControl>

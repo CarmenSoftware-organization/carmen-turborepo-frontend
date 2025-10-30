@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { formatLargeNumber } from "@/utils/formatLargeNumber";
+import { formatLargeNumber } from "@/utils/format/number";
 import React from "react";
 
 interface Props {

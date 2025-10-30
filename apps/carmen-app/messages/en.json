@@ -417,7 +417,9 @@
     "country": "Country",
     "date_required": "Date Required",
     "pricing": "Pricing",
-    "value": "Value"
+    "value": "Value",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "Unit": {
     "title": "Unit",

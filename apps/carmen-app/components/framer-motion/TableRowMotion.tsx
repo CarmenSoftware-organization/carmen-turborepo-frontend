@@ -1,4 +1,4 @@
-import { rowVariants } from "@/utils/framer-variants";
+import { rowVariants } from "@/utils/ui/animation";
 import { motion } from "framer-motion";
 interface TableRowMotionProps {
     readonly children: React.ReactNode;

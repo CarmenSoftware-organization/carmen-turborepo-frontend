@@ -14,7 +14,7 @@ import {
 import { CreditNoteGetAllDto } from "@/dtos/credit-note.dto";
 import ButtonLink from "@/components/ButtonLink";
 import { useAuth } from "@/context/AuthContext";
-import { formatDateFns } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
 import CreditNoteCard from "./CreditNoteCard";
 import {
   DropdownMenu,
@@ -201,7 +201,7 @@ export default function CreditNoteList({
         ),
         cell: ({ row }) => (
           <div className="text-center">
-            {formatDateFns(row.original.cn_date, dateFormat || "yyyy/MM/dd")}
+            {formatDate(row.original.cn_date, dateFormat || "yyyy/MM/dd")}
           </div>
         ),
         enableSorting: false,

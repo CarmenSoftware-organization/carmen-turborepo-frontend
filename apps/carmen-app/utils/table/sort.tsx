@@ -1,6 +1,5 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import React from "react";
-
 export type SortDirection = "asc" | "desc";
 
 export interface SortConfig {
@@ -8,9 +7,6 @@ export interface SortConfig {
   direction: SortDirection;
 }
 
-/**
- * Renders a sort icon based on sort configuration
- */
 export const renderSortIcon = (field: string, sort?: SortConfig) => {
   if (!sort || sort.field !== field) {
     return null;
@@ -23,11 +19,6 @@ export const renderSortIcon = (field: string, sort?: SortConfig) => {
   return <ArrowDown className="ml-1 h-4 w-4 inline" />;
 };
 
-/**
- * Converts sort string to SortConfig object
- * @param sortString - String in format "field:direction" (e.g., "name:asc")
- * @returns SortConfig object or undefined if invalid
- */
 export const parseSortString = (sortString?: string): SortConfig | undefined => {
   if (!sortString) return undefined;
 
@@ -42,18 +33,10 @@ export const parseSortString = (sortString?: string): SortConfig | undefined => 
   };
 };
 
-/**
- * Converts SortConfig object to sort string
- * @param sortConfig - SortConfig object
- * @returns String in format "field:direction"
- */
 export const stringifySortConfig = (sortConfig: SortConfig): string => {
   return `${sortConfig.field}:${sortConfig.direction}`;
 };
 
-/**
- * Gets props for a sortable table column
- */
 export const getSortableColumnProps = (
   field: string,
   sort: SortConfig | undefined,
@@ -85,4 +68,16 @@ export const getSortableColumnProps = (
     },
     className: `cursor-pointer hover:bg-accent/50 transition-colors ${additionalClassName ?? ""}`,
   };
+};
+
+export const toggleSort = (field: string, currentSort?: SortConfig): SortConfig | undefined => {
+  if (!currentSort || currentSort.field !== field) {
+    return { field, direction: "asc" };
+  }
+
+  if (currentSort.direction === "asc") {
+    return { field, direction: "desc" };
+  }
+
+  return undefined;
 };

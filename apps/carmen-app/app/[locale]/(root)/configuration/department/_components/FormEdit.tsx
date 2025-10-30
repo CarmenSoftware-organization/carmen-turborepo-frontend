@@ -67,8 +67,8 @@ export default function FormEdit({ defaultValues, mode, onSuccess, onBack }: For
   const { userList } = useUserList(token, buCode);
 
   const tDepartment = useTranslations("Department");
-  const tHeader = useTranslations("TableHeader");
   const tDataControls = useTranslations("DataControls");
+  const tCommon = useTranslations("Common");
 
   const departmentSchema = useMemo(() => {
     if (mode === formType.ADD) {
@@ -415,7 +415,7 @@ export default function FormEdit({ defaultValues, mode, onSuccess, onBack }: For
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tHeader("name")}</FormLabel>
+                  <FormLabel>{tCommon("name")}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -429,7 +429,7 @@ export default function FormEdit({ defaultValues, mode, onSuccess, onBack }: For
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tHeader("description")}</FormLabel>
+                  <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -446,7 +446,7 @@ export default function FormEdit({ defaultValues, mode, onSuccess, onBack }: For
                     <FormBoolean
                       value={field.value}
                       onChange={field.onChange}
-                      label={tHeader("status")}
+                      label={tCommon("active")}
                       type="checkbox"
                     />
                   </FormControl>

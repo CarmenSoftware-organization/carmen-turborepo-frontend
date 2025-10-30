@@ -3,7 +3,7 @@ import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
-import { getDisplayText } from "@/utils/helper";
+import { getDisplayText } from "@/utils/data/transform";
 import { useTranslations } from "next-intl";
 import { TransferItem } from "@/dtos/transfer.dto";
 export interface TransferProps {

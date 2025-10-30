@@ -3,12 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import NumberInput from "@/components/form-custom/NumberInput";
@@ -16,7 +11,14 @@ import { TaxProfileFormData } from "@/dtos/tax-profile.dto";
 import { createTaxProfileFormSchema } from "../_schemas/tax-profile-form.schema";
 import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 
 interface FormTaxProfileProps {
   open: boolean;
@@ -94,10 +96,7 @@ export const FormTaxProfile = ({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -121,13 +120,7 @@ export const FormTaxProfile = ({
                 <FormItem>
                   <FormLabel>{tTaxProfile("rate")} %</FormLabel>
                   <FormControl>
-                    <NumberInput
-                      {...field}
-                      placeholder="e.g. 7"
-                      min={0}
-                      max={100}
-                      step={1}
-                    />
+                    <NumberInput {...field} placeholder="e.g. 7" min={0} max={100} step={1} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

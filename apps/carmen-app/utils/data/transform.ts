@@ -1,28 +1,6 @@
 import { TransferItem } from "@/dtos/transfer.dto";
 import { UnitDto } from "@/dtos/unit.dto";
 
-export const getDisplayText = (
-  item: TransferItem | { name?: string; [key: string]: unknown }
-): string => {
-  if ("title" in item && typeof item.title === "string") return item.title;
-  if ("name" in item && typeof item.name === "string") return item.name;
-  return "";
-};
-
-export const convertPrStatus = (status: string) => {
-  if (status === "draft") {
-    return "Draft";
-  } else if (status === "work_in_process") {
-    return "Work in Progress";
-  } else if (status === "approved") {
-    return "Approved";
-  } else if (status === "rejected") {
-    return "Rejected";
-  } else if (status === "cancelled") {
-    return "Cancelled";
-  }
-};
-
 interface UnitFilterParams {
   units?: { data?: UnitDto[] };
   excludedUnitId?: string;
@@ -30,6 +8,14 @@ interface UnitFilterParams {
   editingId?: string;
   compareField: "from_unit_id" | "to_unit_id";
 }
+
+export const getDisplayText = (
+  item: TransferItem | { name?: string; [key: string]: unknown }
+): string => {
+  if ("title" in item && typeof item.title === "string") return item.title;
+  if ("name" in item && typeof item.name === "string") return item.name;
+  return "";
+};
 
 export const filterUnits = ({
   units,
@@ -47,4 +33,17 @@ export const filterUnits = ({
     if (!unit.id || unit.id === excludedUnitId) return false;
     return !existingCompareIds.includes(unit.id);
   });
+};
+
+export const capitalizeFirstLetter = (str: string): string => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+export const safeJsonParse = <T>(jsonString: string, fallback: T): T => {
+  try {
+    return JSON.parse(jsonString);
+  } catch {
+    return fallback;
+  }
 };

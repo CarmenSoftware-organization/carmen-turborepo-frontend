@@ -14,7 +14,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { formatDateFns, formatPriceConf } from "@/utils/config-system";
+import { formatDate } from "@/utils/format/date";
+import { formatPrice } from "@/utils/format/currency";
 import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/lib/navigation";
@@ -108,7 +109,7 @@ export default function PurchaseRequestGrid({
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">{tTableHeader("date")}</p>
                   <p className="text-sm font-medium text-muted-foreground">
-                    {formatDateFns(pr.pr_date, dateFormat || "yyyy-MM-dd")}
+                    {formatDate(pr.pr_date, dateFormat || "yyyy-MM-dd")}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -138,10 +139,11 @@ export default function PurchaseRequestGrid({
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">{tTableHeader("amount")}</p>
                   <p className="text-sm font-medium text-muted-foreground">
-                    {formatPriceConf(
+                    {formatPrice(
                       pr.total_amount,
-                      amount ?? defaultAmount,
-                      currencyBase ?? "THB"
+                      currencyBase ?? "THB",
+                      amount?.locales ?? defaultAmount.locales,
+                      amount?.minimumFractionDigits ?? defaultAmount.minimumFractionDigits
                     )}
                   </p>
                 </div>
