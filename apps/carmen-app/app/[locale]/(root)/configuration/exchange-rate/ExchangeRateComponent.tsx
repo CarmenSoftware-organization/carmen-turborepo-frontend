@@ -22,11 +22,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { Button } from "@/components/ui/button";
-import {
-  RefreshCw,
-  Search,
-  X,
-} from "lucide-react";
+import { RefreshCw, Search, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
@@ -45,9 +41,7 @@ const CodeCell = ({ value }: { value: string }) => (
   <div className="font-medium text-center">{value}</div>
 );
 
-const SymbolCell = ({ value }: { value: string }) => (
-  <div className="text-center">{value}</div>
-);
+const SymbolCell = ({ value }: { value: string }) => <div className="text-center">{value}</div>;
 
 const NameCell = ({ value }: { value: string }) => value;
 
@@ -57,7 +51,7 @@ const RateCell = ({
   code,
   rate,
   isLoading,
-  currencyBase
+  currencyBase,
 }: {
   code: string;
   rate: number | undefined;
@@ -68,10 +62,7 @@ const RateCell = ({
     {isLoading ? (
       <Skeleton className="h-4 w-16" />
     ) : (
-      <span
-        className={`font-mono ${code === currencyBase ? "font-semibold" : ""
-          }`}
-      >
+      <span className={`font-mono ${code === currencyBase ? "font-semibold" : ""}`}>
         {rate ? rate.toFixed(4) : "-"}
       </span>
     )}
@@ -113,21 +104,14 @@ export default function ExchangeRateComponent() {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }]);
+  const [sorting, setSorting] = useState<SortingState>([{ id: "name", desc: true }]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  const {
-    exchangeRates,
-    lastUpdated,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    isRefetching,
-  } = useExchangeRate({ baseCurrency: currencyBase ?? "USD" });
+  const { exchangeRates, lastUpdated, isLoading, isError, error, refetch, isRefetching } =
+    useExchangeRate({ baseCurrency: currencyBase ?? "USD" });
 
   // Filter and prepare data
   const filteredData = useMemo(() => {
@@ -143,78 +127,83 @@ export default function ExchangeRateComponent() {
   }, [searchQuery]);
 
   // Create column definitions
-  const columns = useMemo<ColumnDef<Currency>[]>(() => [
-    {
-      accessorKey: "index",
-      id: "index",
-      header: "#",
-      cell: ({ row }) => {
-        const pageIndex = pagination.pageIndex;
-        const pageSize = pagination.pageSize;
-        return pageIndex * pageSize + row.index + 1;
+  const columns = useMemo<ColumnDef<Currency>[]>(
+    () => [
+      {
+        accessorKey: "index",
+        id: "index",
+        header: "#",
+        cell: ({ row }) => {
+          const pageIndex = pagination.pageIndex;
+          const pageSize = pagination.pageSize;
+          return pageIndex * pageSize + row.index + 1;
+        },
+        enableSorting: false,
+        size: 50,
       },
-      enableSorting: false,
-      size: 50,
-    },
-    {
-      accessorKey: "code",
-      id: "code",
-      header: ({ column }) => renderCodeHeader(tTableHeader("code"), column),
-      cell: ({ row }) => {
-        const value = row.getValue("code") as string;
-        return renderCodeCell(value);
+      {
+        accessorKey: "code",
+        id: "code",
+        header: ({ column }) => renderCodeHeader(tTableHeader("code"), column),
+        cell: ({ row }) => {
+          const value = row.getValue("code") as string;
+          return renderCodeCell(value);
+        },
+        size: 100,
+        enableSorting: true,
       },
-      size: 100,
-      enableSorting: true,
-    },
-    {
-      accessorKey: "symbol",
-      id: "symbol",
-      header: ({ column }) => renderSymbolHeader(tTableHeader("symbol"), column),
-      cell: ({ row }) => {
-        const value = row.getValue("symbol") as string;
-        return renderSymbolCell(value);
+      {
+        accessorKey: "symbol",
+        id: "symbol",
+        header: ({ column }) => renderSymbolHeader(tTableHeader("symbol"), column),
+        cell: ({ row }) => {
+          const value = row.getValue("symbol") as string;
+          return renderSymbolCell(value);
+        },
+        size: 100,
+        enableSorting: true,
       },
-      size: 100,
-      enableSorting: true,
-    },
-    {
-      accessorKey: "name",
-      id: "name",
-      header: ({ column }) => renderNameHeader(tTableHeader("name"), column),
-      cell: ({ row }) => {
-        const value = row.getValue("name") as string;
-        return renderNameCell(value);
+      {
+        accessorKey: "name",
+        id: "name",
+        header: ({ column }) => renderNameHeader(tTableHeader("name"), column),
+        cell: ({ row }) => {
+          const value = row.getValue("name") as string;
+          return renderNameCell(value);
+        },
+        size: 200,
+        enableSorting: true,
       },
-      size: 200,
-      enableSorting: true,
-    },
-    {
-      accessorKey: "country",
-      id: "country",
-      header: ({ column }) => renderCountryHeader(tTableHeader("country"), column),
-      cell: ({ row }) => {
-        const value = row.getValue("country") as string;
-        return renderCountryCell(value);
+      {
+        accessorKey: "country",
+        id: "country",
+        header: ({ column }) => renderCountryHeader(tTableHeader("country"), column),
+        cell: ({ row }) => {
+          const value = row.getValue("country") as string;
+          return renderCountryCell(value);
+        },
+        size: 150,
+        enableSorting: true,
       },
-      size: 150,
-      enableSorting: true,
-    },
-    {
-      accessorKey: "rate",
-      id: "rate",
-      header: ({ column }) => renderRateHeader(tTableHeader("exchangeRate"), column),
-      cell: ({ row }) => {
-        const code = row.original.code;
-        const rate = exchangeRates[code];
-        return renderRateCell(code, rate, isLoading, currencyBase);
+      {
+        accessorKey: "rate",
+        id: "rate",
+        header: ({ column }) => renderRateHeader(tTableHeader("exchangeRate"), column),
+        cell: ({ row }) => {
+          const code = row.original.code;
+          const rate = exchangeRates[code];
+          return renderRateCell(code, rate, isLoading, currencyBase);
+        },
+        enableSorting: false,
+        size: 120,
       },
-      enableSorting: false,
-      size: 120,
-    },
-  ], [tTableHeader, exchangeRates, isLoading, currencyBase, pagination]);
+    ],
+    [tTableHeader, exchangeRates, isLoading, currencyBase, pagination]
+  );
 
-  const [columnOrder, setColumnOrder] = useState<string[]>(columns.map((column) => column.id as string));
+  const [columnOrder, setColumnOrder] = useState<string[]>(
+    columns.map((column) => column.id as string)
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -235,7 +224,7 @@ export default function ExchangeRateComponent() {
     state: {
       sorting,
       pagination,
-      columnOrder
+      columnOrder,
     },
     onColumnOrderChange: setColumnOrder,
     onSortingChange: setSorting,
@@ -296,23 +285,15 @@ export default function ExchangeRateComponent() {
       <div className="w-full p-4">
         <div className=" justify-between">
           <p className="text-xl font-semibold">{tExchangeRate("title")}</p>
-          <Button
-            onClick={handleRefresh}
-            variant="outline"
-            className="fxr-c gap-2"
-          >
+          <Button onClick={handleRefresh} variant="outline" className="fxr-c gap-2">
             <RefreshCw className="h-4 w-4" />
             Retry
           </Button>
         </div>
         <div className="mt-4 p-4 bg-destructive/10 border border-destructive/20 rounded-md">
-          <p className="text-destructive font-medium">
-            Error loading exchange rates
-          </p>
+          <p className="text-destructive font-medium">Error loading exchange rates</p>
           <p className="text-sm text-muted-foreground mt-1">
-            {error instanceof Error
-              ? error.message
-              : "An unexpected error occurred"}
+            {error instanceof Error ? error.message : "An unexpected error occurred"}
           </p>
         </div>
       </div>
@@ -334,9 +315,7 @@ export default function ExchangeRateComponent() {
               aria-label="Refresh exchange rates"
               tabIndex={0}
             >
-              <RefreshCw
-                className={`h-4 w-4 ${isLoading || isRefetching ? "animate-spin" : ""}`}
-              />
+              <RefreshCw className={`h-4 w-4 ${isLoading || isRefetching ? "animate-spin" : ""}`} />
             </Button>
             <span className="text-xs font-medium whitespace-nowrap">
               {isLoading ? (

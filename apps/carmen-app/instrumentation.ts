@@ -3,7 +3,7 @@
 
 export async function register() {
   // SENTRY DISABLED - No initialization needed
-  console.log('Sentry is disabled');
+  console.log("Sentry is disabled");
 }
 
 // SENTRY DISABLED - No request error capturing

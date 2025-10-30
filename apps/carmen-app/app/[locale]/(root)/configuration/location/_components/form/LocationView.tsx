@@ -5,10 +5,7 @@ import { LocationByIdDto, PHYSICAL_COUNT_TYPE } from "@/dtos/location.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState } from "react";
 import LocationForm from "./LocationForm";
-import {
-  ChevronLeft,
-  SquarePen,
-} from "lucide-react";
+import { ChevronLeft, SquarePen } from "lucide-react";
 import { useDeliveryPointQuery } from "@/hooks/use-delivery-point";
 import { useAuth } from "@/context/AuthContext";
 import { Link } from "@/lib/navigation";
@@ -16,12 +13,7 @@ import { useTranslations } from "next-intl";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { Separator } from "@/components/ui/separator";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TabUsersLocation from "./TabUsersLocation";
 import TabUsersProduct from "./TabUsersProduct";
 
@@ -45,7 +37,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
       return tStoreLocation("consignment");
     }
     return tStoreLocation("inventory");
-  }
+  };
 
   const handleViewMode = () => {
     setCurrentMode(formType.VIEW);
@@ -68,11 +60,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
               </Button>
               <h1 className="text-xl font-semibold">{initialData?.name}</h1>
             </div>
-            <Button
-              onClick={handleEditMode}
-              size="sm"
-              className="h-7 w-7"
-            >
+            <Button onClick={handleEditMode} size="sm" className="h-7 w-7">
               <SquarePen className="w-4 h-4" />
             </Button>
           </div>
@@ -84,7 +72,7 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
             <dd>{getDeliveryPointName(initialData?.delivery_point.id ?? "")}</dd>
 
             <dt className="font-medium text-muted-foreground">{tHeader("description")}</dt>
-            <dd>{initialData?.description ?? '-'}</dd>
+            <dd>{initialData?.description ?? "-"}</dd>
 
             <dt className="font-medium text-muted-foreground">{tHeader("type")}</dt>
             <dd>{initialData?.location_type && getLocationType(initialData.location_type)}</dd>
@@ -96,7 +84,9 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
               </StatusCustom>
             </dd>
 
-            <dt className="font-medium text-muted-foreground">{tStoreLocation("physical_count_type")}</dt>
+            <dt className="font-medium text-muted-foreground">
+              {tStoreLocation("physical_count_type")}
+            </dt>
             <dd className="capitalize">
               {initialData?.physical_count_type === PHYSICAL_COUNT_TYPE.YES
                 ? tCommon("yes")

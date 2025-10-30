@@ -33,7 +33,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import transferHandler from "@/components/form-custom/TransferHandler";
 import { useTranslations } from "next-intl";
 import { useUserList } from "@/hooks/useUserList";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/form-custom/form";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 import { TreeProductLookup } from "@/components/lookup/tree-product";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -64,19 +70,19 @@ export default function LocationForm({
   }));
 
   const createMutation = useLocationMutation(token, buCode);
-  const updateMutation = useUpdateLocation(
-    token,
-    buCode,
-    initialData?.id || ""
-  );
+  const updateMutation = useUpdateLocation(token, buCode, initialData?.id || "");
 
   const isPending = createMutation.isPending || updateMutation.isPending;
   const isViewMode = mode === formType.VIEW;
 
-  const formLocationSchema = useMemo(() => createLocationFormSchema({
-    nameRequired: tLocation('location_name_required'),
-    deliveryPointRequired: tLocation('delivery_point_required'),
-  }), [tLocation]);
+  const formLocationSchema = useMemo(
+    () =>
+      createLocationFormSchema({
+        nameRequired: tLocation("location_name_required"),
+        deliveryPointRequired: tLocation("delivery_point_required"),
+      }),
+    [tLocation]
+  );
 
   const initUsers = useMemo(() => {
     return (
@@ -113,8 +119,7 @@ export default function LocationForm({
       name: initialData?.name || "",
       location_type: initialData?.location_type || INVENTORY_TYPE.CONSIGNMENT,
       description: initialData?.description || "",
-      physical_count_type:
-        initialData?.physical_count_type || PHYSICAL_COUNT_TYPE.NO,
+      physical_count_type: initialData?.physical_count_type || PHYSICAL_COUNT_TYPE.NO,
       is_active: initialData?.is_active || true,
       delivery_point_id: initialData?.delivery_point.id || "",
       users: {
@@ -142,24 +147,31 @@ export default function LocationForm({
     }
   };
 
-  const handleUsersChange = transferHandler({ form, fieldName: "users", setSelected: setSelectedUsers });
+  const handleUsersChange = transferHandler({
+    form,
+    fieldName: "users",
+    setSelected: setSelectedUsers,
+  });
 
-  const handleTreeProductSelect = useCallback((productIds: { id: string }[]) => {
-    const currentProductIds = initProductKeys.map(key => key.toString());
-    const newProductIds = productIds.map(p => p.id);
+  const handleTreeProductSelect = useCallback(
+    (productIds: { id: string }[]) => {
+      const currentProductIds = initProductKeys.map((key) => key.toString());
+      const newProductIds = productIds.map((p) => p.id);
 
-    const toAdd = newProductIds
-      .filter(id => !currentProductIds.includes(id))
-      .map(id => ({ id }));
-    const toRemove = currentProductIds
-      .filter(id => !newProductIds.includes(id))
-      .map(id => ({ id }));
+      const toAdd = newProductIds
+        .filter((id) => !currentProductIds.includes(id))
+        .map((id) => ({ id }));
+      const toRemove = currentProductIds
+        .filter((id) => !newProductIds.includes(id))
+        .map((id) => ({ id }));
 
-    form.setValue("products", {
-      add: toAdd,
-      remove: toRemove,
-    });
-  }, [initProductKeys, form]);
+      form.setValue("products", {
+        add: toAdd,
+        remove: toRemove,
+      });
+    },
+    [initProductKeys, form]
+  );
 
   const handleSubmit = async (data: FormLocationValues) => {
     try {
@@ -176,9 +188,7 @@ export default function LocationForm({
           onViewMode();
         }
       } else {
-        const response = (await createMutation.mutateAsync(
-          data
-        )) as LocationResponse;
+        const response = (await createMutation.mutateAsync(data)) as LocationResponse;
         if (response?.id) {
           toastSuccess({ message: tLocation("add_store_location_description") });
           router.push(`/configuration/location/${response.id}`);
@@ -190,7 +200,7 @@ export default function LocationForm({
         error instanceof Error ? error.message : tCommon("error_something_went_wrong");
       toastError({ message: errorMessage });
 
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.error("Location form error:", error);
       }
     }
@@ -201,15 +211,8 @@ export default function LocationForm({
       <div className="sticky top-0 z-20 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-2 pb-2">
           <div className="flex items-center gap-2">
-            <Button
-              size={'sm'}
-              variant={'outline'}
-              className="h-7 w-7"
-              asChild
-            >
-              <Link
-                href="/configuration/location"
-              >
+            <Button size={"sm"} variant={"outline"} className="h-7 w-7" asChild>
+              <Link href="/configuration/location">
                 <ArrowLeft />
               </Link>
             </Button>
@@ -220,11 +223,7 @@ export default function LocationForm({
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onCancel}
-            >
+            <Button variant="outline" size="sm" onClick={onCancel}>
               <X className="w-4 h-4" />
               {tCommon("cancel")}
             </Button>
@@ -249,14 +248,9 @@ export default function LocationForm({
                 required
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {tLocation("store_location_name")}
-                    </FormLabel>
+                    <FormLabel>{tLocation("store_location_name")}</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        disabled={isViewMode}
-                      />
+                      <Input {...field} disabled={isViewMode} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -269,9 +263,7 @@ export default function LocationForm({
                 required
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {tLocation("delivery_point")}
-                    </FormLabel>
+                    <FormLabel>{tLocation("delivery_point")}</FormLabel>
                     <FormControl>
                       <div className={isViewMode ? "pointer-events-none opacity-50" : ""}>
                         <LookupDeliveryPoint
@@ -292,9 +284,7 @@ export default function LocationForm({
                 required
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>
-                      {tLocation("location_type")}
-                    </FormLabel>
+                    <FormLabel>{tLocation("location_type")}</FormLabel>
                     <FormControl>
                       <Select
                         onValueChange={field.onChange}
@@ -330,11 +320,7 @@ export default function LocationForm({
                   <FormItem className="col-span-2">
                     <FormLabel>{tCommon("description")}</FormLabel>
                     <FormControl>
-                      <Textarea
-                        {...field}
-                        disabled={isViewMode}
-                        rows={3}
-                      />
+                      <Textarea {...field} disabled={isViewMode} rows={3} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -416,7 +402,7 @@ export default function LocationForm({
                 <div className={isViewMode ? "pointer-events-none opacity-50" : ""}>
                   <TreeProductLookup
                     onSelect={handleTreeProductSelect}
-                    initialSelectedIds={initProductKeys.map(key => key.toString())}
+                    initialSelectedIds={initProductKeys.map((key) => key.toString())}
                     initialProducts={initProducts}
                   />
                 </div>

@@ -29,14 +29,10 @@ import ExchangeRateLookup from "@/components/lookup/ExchangeRateLookup";
 import currenciesIso from "@/constants/currency";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import NumberInput from "@/components/form-custom/NumberInput";
-import {
-  CurrencyGetDto,
-  CurrencyCreateDto,
-  CurrencyUpdateDto
-} from "@/dtos/currency.dto";
+import { CurrencyGetDto, CurrencyCreateDto, CurrencyUpdateDto } from "@/dtos/currency.dto";
 import {
   createCurrencyCreateSchema,
-  createCurrencyUpdateSchema
+  createCurrencyUpdateSchema,
 } from "../_schemas/currency-form.schema";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { useAuth } from "@/context/AuthContext";
@@ -77,11 +73,11 @@ export default function CurrencyDialog({
 
   const schema = useMemo(() => {
     const messages = {
-      codeRequired: tCurrency('currency_code_required'),
-      nameRequired: tCurrency('currency_name_required'),
-      symbolRequired: tCurrency('currency_symbol_required'),
-      symbolMax: tCurrency('currency_symbol_max'),
-      exchangeRatePositive: tCurrency('exchange_rate_positive'),
+      codeRequired: tCurrency("currency_code_required"),
+      nameRequired: tCurrency("currency_name_required"),
+      symbolRequired: tCurrency("currency_symbol_required"),
+      symbolMax: tCurrency("currency_symbol_max"),
+      exchangeRatePositive: tCurrency("exchange_rate_positive"),
     };
     return mode === formType.ADD
       ? createCurrencyCreateSchema(messages)
@@ -90,10 +86,7 @@ export default function CurrencyDialog({
 
   const form = useForm<CurrencyCreateDto | CurrencyUpdateDto>({
     resolver: zodResolver(schema),
-    defaultValues:
-      mode === formType.EDIT && currency
-        ? { ...currency }
-        : defaultCurrencyValues,
+    defaultValues: mode === formType.EDIT && currency ? { ...currency } : defaultCurrencyValues,
   });
 
   const watchedCode = form.watch("code");
@@ -114,19 +107,14 @@ export default function CurrencyDialog({
 
   useEffect(() => {
     if (watchedCode && mode === formType.ADD) {
-      const selectedCurrency = currenciesIso.find(
-        (currency) => currency.code === watchedCode
-      );
+      const selectedCurrency = currenciesIso.find((currency) => currency.code === watchedCode);
 
       if (selectedCurrency) {
         const exchangeRate = exchangeRates[selectedCurrency.code] || 0.01;
         form.setValue("name", selectedCurrency.name);
         form.setValue("symbol", selectedCurrency.symbol);
         form.setValue("exchange_rate", exchangeRate);
-        form.setValue(
-          "description",
-          `${selectedCurrency.name} (${selectedCurrency.country})`
-        );
+        form.setValue("description", `${selectedCurrency.name} (${selectedCurrency.country})`);
       }
     }
   }, [watchedCode, mode, form, exchangeRates]);
@@ -147,9 +135,7 @@ export default function CurrencyDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {mode === formType.ADD
-              ? tCurrency("add_currency")
-              : tCurrency("edit_currency")}
+            {mode === formType.ADD ? tCurrency("add_currency") : tCurrency("edit_currency")}
           </DialogTitle>
           <DialogDescription>
             {mode === formType.ADD
@@ -158,10 +144,7 @@ export default function CurrencyDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-4"
-          >
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -192,10 +175,7 @@ export default function CurrencyDialog({
                   <FormItem>
                     <FormLabel>{tCurrency("currency_name")}</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={tCurrency("currency_name")}
-                      />
+                      <Input {...field} placeholder={tCurrency("currency_name")} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -253,10 +233,7 @@ export default function CurrencyDialog({
                 <FormItem>
                   <FormLabel>{tCommon("description")}</FormLabel>
                   <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder={tCommon("description")}
-                    />
+                    <Textarea {...field} placeholder={tCommon("description")} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -282,17 +259,10 @@ export default function CurrencyDialog({
             />
 
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 {tCommon("cancel")}
               </Button>
-              <Button
-                type="submit"
-                disabled={isLoading || form.formState.isSubmitting}
-              >
+              <Button type="submit" disabled={isLoading || form.formState.isSubmitting}>
                 {tCommon("save")}
                 {(isLoading || form.formState.isSubmitting) && (
                   <Loader2 className="w-4 h-4 ml-2 animate-spin" />
