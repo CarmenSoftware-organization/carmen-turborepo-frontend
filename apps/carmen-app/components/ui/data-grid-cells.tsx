@@ -3,7 +3,12 @@ import { DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/
 import { DataGridColumnHeader } from "./data-grid-column-header";
 import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import React from "react";
 
@@ -36,9 +41,7 @@ interface NumberCellProps<TData> {
 }
 
 export const NumberCell = <TData,>({ row, currentPage, perpage }: NumberCellProps<TData>) => (
-  <div className="text-center">
-    {(currentPage - 1) * perpage + row.index + 1}
-  </div>
+  <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
 );
 
 /**
@@ -66,7 +69,6 @@ export const createNumberCellWrapper = <TData,>(props: NumberCellWrapperProps) =
   };
 };
 
-
 interface DataGridHeaderConfig {
   title: string;
   icon?: React.ReactNode;
@@ -74,7 +76,7 @@ interface DataGridHeaderConfig {
    * Header alignment position
    * @default 'left'
    */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
 }
 
 /**
@@ -92,27 +94,22 @@ interface DataGridHeaderConfig {
  */
 export const DataGridHeaderRenderer = <T,>(config: DataGridHeaderConfig) => {
   const HeaderComponent = ({ column }: { column: Column<T> }) => {
-    const alignClass = config.align === 'center'
-      ? 'flex justify-center'
-      : config.align === 'right'
-      ? 'flex justify-end'
-      : '';
+    const alignClass =
+      config.align === "center"
+        ? "flex justify-center"
+        : config.align === "right"
+          ? "flex justify-end"
+          : "";
 
-    const header = (
-      <DataGridColumnHeader
-        column={column}
-        title={config.title}
-        icon={config.icon}
-      />
-    );
+    const header = <DataGridColumnHeader column={column} title={config.title} icon={config.icon} />;
 
-    if (config.align && config.align !== 'left') {
+    if (config.align && config.align !== "left") {
       return <div className={alignClass}>{header}</div>;
     }
 
     return header;
   };
-  HeaderComponent.displayName = 'DataGridHeaderComponent';
+  HeaderComponent.displayName = "DataGridHeaderComponent";
   return HeaderComponent;
 };
 
@@ -129,7 +126,7 @@ interface DataGridCellConfig<T> {
    * Cell content alignment
    * @default 'left'
    */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
   /**
    * Additional CSS classes
    */
@@ -161,13 +158,14 @@ export const DataGridCellRenderer = <T,>(config: DataGridCellConfig<T>) => {
   const CellComponent = ({ row }: CellContext<T, unknown>) => {
     const content = config.getValue(row.original);
 
-    const alignClass = config.align === 'center'
-      ? 'flex justify-center'
-      : config.align === 'right'
-      ? 'flex justify-end'
-      : '';
+    const alignClass =
+      config.align === "center"
+        ? "flex justify-center"
+        : config.align === "right"
+          ? "flex justify-end"
+          : "";
 
-    const className = [alignClass, config.className].filter(Boolean).join(' ');
+    const className = [alignClass, config.className].filter(Boolean).join(" ");
 
     if (className) {
       return <div className={className}>{content}</div>;
@@ -175,7 +173,7 @@ export const DataGridCellRenderer = <T,>(config: DataGridCellConfig<T>) => {
 
     return <>{content}</>;
   };
-  CellComponent.displayName = 'DataGridCellComponent';
+  CellComponent.displayName = "DataGridCellComponent";
   return CellComponent;
 };
 
@@ -194,7 +192,7 @@ const LinkCell = ({
   canUpdate,
   href,
   value,
-  className
+  className,
 }: {
   canUpdate: boolean;
   href: string;
@@ -205,7 +203,10 @@ const LinkCell = ({
     return (
       <Link
         href={href}
-        className={className || "hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"}
+        className={
+          className ||
+          "hover:underline hover:underline-offset text-primary dark:text-primary-foreground hover:text-primary/80"
+        }
       >
         {value}
       </Link>
@@ -227,7 +228,7 @@ export const LinkCellRenderer = <T,>(config: LinkCellConfig<T>) => {
       />
     );
   };
-  CellComponent.displayName = 'LinkCellComponent';
+  CellComponent.displayName = "LinkCellComponent";
   return CellComponent;
 };
 
@@ -254,7 +255,7 @@ interface DataGridActionCellConfig<T> {
    * Align position
    * @default 'right'
    */
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
 }
 
 /**
@@ -281,17 +282,18 @@ interface DataGridActionCellConfig<T> {
 export const DataGridActionCellRenderer = <T,>(config: DataGridActionCellConfig<T>) => {
   const CellComponent = ({ row }: CellContext<T, unknown>) => {
     const item = row.original;
-    const visibleActions = config.actions.filter(action => action.show !== false);
+    const visibleActions = config.actions.filter((action) => action.show !== false);
 
     if (!config.showAlways && visibleActions.length === 0) {
       return null;
     }
 
-    const alignClass = config.align === 'left'
-      ? 'flex justify-start'
-      : config.align === 'center'
-      ? 'flex justify-center'
-      : 'flex justify-end';
+    const alignClass =
+      config.align === "left"
+        ? "flex justify-start"
+        : config.align === "center"
+          ? "flex justify-center"
+          : "flex justify-end";
 
     return (
       <div className={alignClass}>
@@ -301,7 +303,9 @@ export const DataGridActionCellRenderer = <T,>(config: DataGridActionCellConfig<
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align={config.align === 'left' ? 'start' : config.align === 'center' ? 'center' : 'end'}>
+          <DropdownMenuContent
+            align={config.align === "left" ? "start" : config.align === "center" ? "center" : "end"}
+          >
             {visibleActions.map((action, index) => (
               <DropdownMenuItem
                 key={index}
@@ -317,6 +321,6 @@ export const DataGridActionCellRenderer = <T,>(config: DataGridActionCellConfig<
       </div>
     );
   };
-  CellComponent.displayName = 'DataGridActionCellComponent';
+  CellComponent.displayName = "DataGridActionCellComponent";
   return CellComponent;
 };

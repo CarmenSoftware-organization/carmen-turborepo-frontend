@@ -102,7 +102,11 @@ export const useWorkflow = () => {
   };
 
   // Check if a button is active in a specific stage
-  const isButtonActive = (workflowId: string, stageName: string, buttonType: keyof AvailableActions) => {
+  const isButtonActive = (
+    workflowId: string,
+    stageName: string,
+    buttonType: keyof AvailableActions
+  ) => {
     const stage = getCurrentStage(workflowId, stageName);
 
     if (!stage) {
@@ -177,7 +181,7 @@ export const useWorkflow = () => {
 
   const getWorkflowName = (workflowId: string) => {
     const workflow = workflows.find((w) => w.id === workflowId);
-    return workflow?.name ?? '';
+    return workflow?.name ?? "";
   };
 
   return {

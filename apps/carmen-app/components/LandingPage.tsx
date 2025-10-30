@@ -15,35 +15,35 @@ import PricingSection from "./tailark/pricing-section";
 import FaqsSection from "./tailark/faqs-section";
 
 export default function LandingPage() {
-    const router = useRouter();
-    const { isAuthenticated } = useAuth();
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            router.push('/dashboard');
-        }
-    }, [isAuthenticated, router]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
-    return (
-        <div>
-            {/* <HomeNavbar /> */}
-            <HeroHeader />
-            <HeroSection />
-            <FeaturesSection />
-            <StatsSection />
-            <TeamSection />
-            <TestimonialSection />
-            <PricingSection />
-            <FaqsSection />
-            <ContactSection />
-            <FooterSection />
-            {/* <main>
+  return (
+    <div>
+      {/* <HomeNavbar /> */}
+      <HeroHeader />
+      <HeroSection />
+      <FeaturesSection />
+      <StatsSection />
+      <TeamSection />
+      <TestimonialSection />
+      <PricingSection />
+      <FaqsSection />
+      <ContactSection />
+      <FooterSection />
+      {/* <main>
                 <Hero />
                 <Features />
                 <Testimonials />
-               
+
             </main> */}
-            {/* <HomeFooter /> */}
-        </div>
-    )
+      {/* <HomeFooter /> */}
+    </div>
+  );
 }

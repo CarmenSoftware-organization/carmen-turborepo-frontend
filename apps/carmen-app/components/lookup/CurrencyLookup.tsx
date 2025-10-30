@@ -7,11 +7,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -35,44 +31,38 @@ export default function CurrencyLookup({
   const scrollRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    error
-  } = useInfiniteQuery({
-    queryKey: ["currencies", buCode, debouncedSearchTerm],
-    queryFn: async ({ pageParam = 1 }) => {
-      if (!token || !buCode) {
-        throw new Error("Unauthorized: Missing token or buCode");
-      }
-      const result = await getAllApiRequest(
-        `${backendApi}/api/config/${buCode}/currencies`,
-        token,
-        "Error fetching currency",
-        {
-          page: pageParam,
-          perpage: 5,
-          search: debouncedSearchTerm,
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
+    useInfiniteQuery({
+      queryKey: ["currencies", buCode, debouncedSearchTerm],
+      queryFn: async ({ pageParam = 1 }) => {
+        if (!token || !buCode) {
+          throw new Error("Unauthorized: Missing token or buCode");
         }
-      );
-      return result;
-    },
-    getNextPageParam: (lastPage, allPages) => {
-      if (!lastPage?.data || lastPage.data.length < 5) {
-        return undefined;
-      }
-      return allPages.length + 1;
-    },
-    enabled: !!token && !!buCode,
-    initialPageParam: 1,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
+        const result = await getAllApiRequest(
+          `${backendApi}/api/config/${buCode}/currencies`,
+          token,
+          "Error fetching currency",
+          {
+            page: pageParam,
+            perpage: 5,
+            search: debouncedSearchTerm,
+          }
+        );
+        return result;
+      },
+      getNextPageParam: (lastPage, allPages) => {
+        if (!lastPage?.data || lastPage.data.length < 5) {
+          return undefined;
+        }
+        return allPages.length + 1;
+      },
+      enabled: !!token && !!buCode,
+      initialPageParam: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+    });
 
   const currenciesData: CurrencyGetDto[] = useMemo(() => {
-    const result = data?.pages?.flatMap(page => page?.data || []) ?? [];
+    const result = data?.pages?.flatMap((page) => page?.data || []) ?? [];
     return result;
   }, [data]);
 
@@ -82,14 +72,17 @@ export default function CurrencyLookup({
     return found?.code ?? null;
   }, [value, currenciesData]);
 
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    const scrollBottom = scrollHeight - scrollTop - clientHeight;
+  const handleScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+      const scrollBottom = scrollHeight - scrollTop - clientHeight;
 
-    if (scrollBottom <= 5 && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+      if (scrollBottom <= 5 && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
+    },
+    [hasNextPage, isFetchingNextPage, fetchNextPage]
+  );
 
   const handleSearchChange = useCallback((search: string) => {
     setSearchTerm(search);
@@ -116,7 +109,7 @@ export default function CurrencyLookup({
       },
       {
         threshold: 0.1,
-        rootMargin: '50px',
+        rootMargin: "50px",
         root: null,
       }
     );

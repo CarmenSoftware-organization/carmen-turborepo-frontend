@@ -44,7 +44,6 @@ export enum CREDIT_NOTE_TYPE {
   AMOUNT_DISCOUNT = "amount_discount",
 }
 
-
 export enum BUSINESS_UNIT_CONFIG_KEY {
   CALCULATION_METHOD = "calculation_method",
   CURRENCY_BASE = "currency_base",
@@ -56,24 +55,24 @@ export enum BUSINESS_UNIT_CONFIG_KEY {
 }
 
 export enum FORM_FIELD_TYPE {
-  TEXT = 'text',
-  TEXTAREA = 'textarea',
-  SWITCH = 'switch',
-  CHECKBOX = 'checkbox',
-  NUMBER = 'number',
-  EMAIL = 'email',
-  PASSWORD = 'password',
-  DATE = 'date',
-  DATETIME_LOCAL = 'datetime-local',
-  TIME = 'time',
-  URL = 'url',
-  TEL = 'tel',
-  SEARCH = 'search',
-  COLOR = 'color',
-  RANGE = 'range',
-  FILE = 'file',
-  CUSTOM = 'custom',
-};
+  TEXT = "text",
+  TEXTAREA = "textarea",
+  SWITCH = "switch",
+  CHECKBOX = "checkbox",
+  NUMBER = "number",
+  EMAIL = "email",
+  PASSWORD = "password",
+  DATE = "date",
+  DATETIME_LOCAL = "datetime-local",
+  TIME = "time",
+  URL = "url",
+  TEL = "tel",
+  SEARCH = "search",
+  COLOR = "color",
+  RANGE = "range",
+  FILE = "file",
+  CUSTOM = "custom",
+}
 
 export enum PLATFORM_ROLE {
   SUPER_ADMIN = "super_admin",

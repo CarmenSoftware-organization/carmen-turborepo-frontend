@@ -6,13 +6,7 @@ import { Link, useRouter } from "@/lib/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import "@/styles/auth.css";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
@@ -20,7 +14,14 @@ import Image from "next/image";
 import { toast } from "sonner";
 // import InputCustom from "@/components/ui-custom/InputCustom";
 import { useSignInMutation } from "@/hooks/use-auth-query";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { userList } from "./user-list";
 import { Input } from "@/components/ui/input";
 
@@ -47,7 +48,7 @@ export default function SignInForm() {
       { email: values.email, password: values.password },
       {
         onSuccess: (result) => {
-          console.log('result', result);
+          console.log("result", result);
           if (result?.access_token && result?.refresh_token) {
             setSession(result.access_token, result.refresh_token);
             form.reset();
@@ -67,7 +68,7 @@ export default function SignInForm() {
             message: t("signInError"),
           });
           toast.error(t("signInError"));
-        }
+        },
       }
     );
   };
@@ -87,20 +88,13 @@ export default function SignInForm() {
                 data-id="sidebar-logo-avatar-image"
               />
             </div>
-            <p className="app-name">
-              {tHome("CarmenSoftware")}
-            </p>
-            <p className="app-description">
-              {tHome("HotelFinanceManagementSoftware")}
-            </p>
+            <p className="app-name">{tHome("CarmenSoftware")}</p>
+            <p className="app-description">{tHome("HotelFinanceManagementSoftware")}</p>
           </div>
 
           <div className="login-form-wrapper">
             <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(handleSubmit)}
-                className="space-y-4"
-              >
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
                 <FormField
                   control={form.control}
                   name="email"
@@ -121,7 +115,7 @@ export default function SignInForm() {
                           onValueChange={(value) => {
                             field.onChange(value);
                             // Auto-fill password when email is selected
-                            form.setValue('password', '12345678');
+                            form.setValue("password", "12345678");
                           }}
                           defaultValue={field.value}
                         >
@@ -172,9 +166,7 @@ export default function SignInForm() {
                   )}
                 />
                 {form.formState.errors.root && (
-                  <div className="text-error">
-                    {form.formState.errors.root.message}
-                  </div>
+                  <div className="text-error">{form.formState.errors.root.message}</div>
                 )}
                 <div className="submit-container">
                   <Button

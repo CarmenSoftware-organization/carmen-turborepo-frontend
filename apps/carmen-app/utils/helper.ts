@@ -2,13 +2,12 @@ import { TransferItem } from "@/dtos/transfer.dto";
 import { UnitDto } from "@/dtos/unit.dto";
 
 export const getDisplayText = (
-  item: TransferItem | { name?: string;[key: string]: unknown }
+  item: TransferItem | { name?: string; [key: string]: unknown }
 ): string => {
   if ("title" in item && typeof item.title === "string") return item.title;
   if ("name" in item && typeof item.name === "string") return item.name;
   return "";
 };
-
 
 export const convertPrStatus = (status: string) => {
   if (status === "draft") {
@@ -29,7 +28,7 @@ interface UnitFilterParams {
   excludedUnitId?: string;
   existingUnits: { id?: string; from_unit_id?: string; to_unit_id?: string }[];
   editingId?: string;
-  compareField: 'from_unit_id' | 'to_unit_id';
+  compareField: "from_unit_id" | "to_unit_id";
 }
 
 export const filterUnits = ({

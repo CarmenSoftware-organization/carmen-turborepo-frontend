@@ -11,15 +11,20 @@ class SentryExampleAPIError extends Error {
 // A faulty API route to test Sentry's error monitoring
 export function GET() {
   try {
-    throw new SentryExampleAPIError("This error is raised on the backend called by the example page.");
+    throw new SentryExampleAPIError(
+      "This error is raised on the backend called by the example page."
+    );
   } catch (error) {
     // Capture the error with Sentry
     Sentry.captureException(error);
-    console.log('📤 API Error captured by Sentry:', error);
+    console.log("📤 API Error captured by Sentry:", error);
 
     // Return error response
     return NextResponse.json(
-      { error: "Internal Server Error", message: "This error is raised on the backend called by the example page." },
+      {
+        error: "Internal Server Error",
+        message: "This error is raised on the backend called by the example page.",
+      },
       { status: 500 }
     );
   }

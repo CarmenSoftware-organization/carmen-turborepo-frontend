@@ -1,25 +1,24 @@
 import { z } from "zod";
 
-export const createUnitSchema = (messages: {
-    nameRequired: string;
-}) => z.object({
+export const createUnitSchema = (messages: { nameRequired: string }) =>
+  z.object({
     name: z.string().min(1, messages.nameRequired),
     description: z.string().optional(),
     is_active: z.boolean(),
-});
+  });
 
 // Default schema for backward compatibility
 export const unitSchema = createUnitSchema({
-    nameRequired: "Name is required",
+  nameRequired: "Name is required",
 });
 
 export const unitWithIdSchema = unitSchema.extend({
-    id: z.string(),
+  id: z.string(),
 });
 
 export const unitWithTimestampsSchema = unitWithIdSchema.extend({
-    created_at: z.string().optional(),
-    updated_at: z.string().optional(),
+  created_at: z.string().optional(),
+  updated_at: z.string().optional(),
 });
 
 // For API responses (includes all fields)
@@ -31,71 +30,69 @@ export type CreateUnitDto = z.infer<typeof unitSchema>;
 // For updating units (includes id and timestamps for version checking)
 export type UpdateUnitDto = z.infer<typeof unitWithTimestampsSchema>;
 
-
 export interface UnitValueItem {
-    id: string;
-    from_unit_id: string;
-    from_unit_qty: number;
-    to_unit_id: string;
-    to_unit_qty: number;
-    description?: string;
-    is_active?: boolean;
-    is_default?: boolean;
+  id: string;
+  from_unit_id: string;
+  from_unit_qty: number;
+  to_unit_id: string;
+  to_unit_qty: number;
+  description?: string;
+  is_active?: boolean;
+  is_default?: boolean;
 }
 
 export interface UnitData {
-    id?: string;
-    from_unit_id: string;
-    from_unit_name?: string;
-    from_unit_qty: number;
-    to_unit_id: string;
-    to_unit_name?: string;
-    to_unit_qty: number;
-    description: string;
-    is_active: boolean;
-    is_default: boolean;
+  id?: string;
+  from_unit_id: string;
+  from_unit_name?: string;
+  from_unit_qty: number;
+  to_unit_id: string;
+  to_unit_name?: string;
+  to_unit_qty: number;
+  description: string;
+  is_active: boolean;
+  is_default: boolean;
 }
 
 export interface UnitFormData {
-    description: string;
-    is_active: boolean;
-    from_unit_id: string;
-    from_unit_qty: number;
-    to_unit_id: string;
-    to_unit_qty: number;
-    is_default: boolean;
+  description: string;
+  is_active: boolean;
+  from_unit_id: string;
+  from_unit_qty: number;
+  to_unit_id: string;
+  to_unit_qty: number;
+  is_default: boolean;
 }
 
 export type UnitUpdate<T extends string> = {
-    [K in T]: string;
-} & UnitFormData
+  [K in T]: string;
+} & UnitFormData;
 
 export type UnitRemove<T extends string> = {
-    [K in T]: string;
-}
+  [K in T]: string;
+};
 
 export interface UnitsFormData<TIdField extends string> {
-    data?: UnitData[];
-    add: UnitFormData[];
-    update: UnitUpdate<TIdField>[];
-    remove: UnitRemove<TIdField>[];
+  data?: UnitData[];
+  add: UnitFormData[];
+  update: UnitUpdate<TIdField>[];
+  remove: UnitRemove<TIdField>[];
 }
 
 export type OrderUnitInitialValues = {
-    order_units?: UnitValueItem[];
+  order_units?: UnitValueItem[];
 };
 
-export type OrderUnitsFormData = UnitsFormData<'product_order_unit_id'>;
+export type OrderUnitsFormData = UnitsFormData<"product_order_unit_id">;
 
 export type IngredientUnitInitialValues = {
-    ingredient_units?: UnitValueItem[];
+  ingredient_units?: UnitValueItem[];
 };
 
-export type IngredientUnitsFormData = UnitsFormData<'product_ingredient_unit_id'>;
-
+export type IngredientUnitsFormData = UnitsFormData<"product_ingredient_unit_id">;
 
 export interface UnitRow extends UnitData {
-    isNew: boolean;
-    fieldIndex?: number;
-    dataIndex?: number;
+  isNew: boolean;
+  fieldIndex?: number;
+  dataIndex?: number;
 }

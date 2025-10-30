@@ -20,7 +20,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -85,9 +89,7 @@ export default function VendorList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -99,7 +101,11 @@ export default function VendorList({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("name")} icon={<List className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("name")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const vendor = row.original;
@@ -132,9 +138,7 @@ export default function VendorList({
           </div>
         ),
         cell: ({ row }) => (
-          <span className="truncate max-w-[200px] inline-block">
-            {row.original.description}
-          </span>
+          <span className="truncate max-w-[200px] inline-block">{row.original.description}</span>
         ),
         enableSorting: false,
         size: 200,
@@ -162,7 +166,7 @@ export default function VendorList({
         cell: ({ row }) => (
           <div className="flex justify-center">
             <StatusCustom is_active={row.original.is_active}>
-              {row.original.is_active ? tCommon('active') : tCommon('inactive')}
+              {row.original.is_active ? tCommon("active") : tCommon("inactive")}
             </StatusCustom>
           </div>
         ),
@@ -229,8 +233,7 @@ export default function VendorList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

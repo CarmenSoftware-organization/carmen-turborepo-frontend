@@ -1,14 +1,13 @@
-import { toast } from 'sonner';
+import { toast } from "sonner";
 
 type ToastProps = {
-    message: string;
+  message: string;
 };
 
 export const toastSuccess = ({ message }: ToastProps) => {
-    toast.success(message);
+  toast.success(message);
 };
 
-
 export const toastError = ({ message }: ToastProps) => {
-    toast.error(message);
+  toast.error(message);
 };

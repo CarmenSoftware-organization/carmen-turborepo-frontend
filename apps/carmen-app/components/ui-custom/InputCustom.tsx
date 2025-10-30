@@ -18,8 +18,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-interface InputProps
-  extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
   id?: string;
   label: string;
   labelPlacement?: "top" | "left" | "right" | "inside" | "overTheLine";
@@ -83,10 +82,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
     const inputId = useMemo(() => id ?? generatedId, [id, generatedId]);
 
     // Use isRequired over required if provided
-    const inputIsRequired = useMemo(
-      () => isRequired || required,
-      [isRequired, required]
-    );
+    const inputIsRequired = useMemo(() => isRequired || required, [isRequired, required]);
 
     // Handle the ref with useCallback to prevent unnecessary re-renders
     const handleRef = useCallback(
@@ -109,20 +105,15 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         if (inputIsRequired && inputValue.trim().length === 0) {
           return {
             isValid: false,
-            errorMessage: validationMessages?.fieldRequired || t("fieldRequired")
+            errorMessage: validationMessages?.fieldRequired || t("fieldRequired"),
           };
         }
 
         // Check minimum length
-        if (
-          minLength &&
-          inputValue.length < minLength &&
-          inputValue.length > 0
-        ) {
+        if (minLength && inputValue.length < minLength && inputValue.length > 0) {
           return {
             isValid: false,
-            errorMessage: validationMessages?.minLength ||
-              t("minLength", { min: minLength }),
+            errorMessage: validationMessages?.minLength || t("minLength", { min: minLength }),
           };
         }
 
@@ -130,20 +121,15 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         if (maxLength && inputValue.length > maxLength) {
           return {
             isValid: false,
-            errorMessage: validationMessages?.maxLength ||
-              t("maxLength", { max: maxLength }),
+            errorMessage: validationMessages?.maxLength || t("maxLength", { max: maxLength }),
           };
         }
 
         // Check pattern validation
-        if (
-          pattern &&
-          inputValue.length > 0 &&
-          !new RegExp(pattern).test(inputValue)
-        ) {
+        if (pattern && inputValue.length > 0 && !new RegExp(pattern).test(inputValue)) {
           return {
             isValid: false,
-            errorMessage: validationMessages?.invalidFormat || t("invalidFormat")
+            errorMessage: validationMessages?.invalidFormat || t("invalidFormat"),
           };
         }
 
@@ -175,9 +161,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
         // Validate on mount if there's a value
         if (currentValue.trim().length > 0) {
           const validation = validateInput(currentValue);
-          setValidationError(
-            validation.isValid ? "" : validation.errorMessage || ""
-          );
+          setValidationError(validation.isValid ? "" : validation.errorMessage || "");
           onValidation?.(validation.isValid, validation.errorMessage);
         }
       };
@@ -217,8 +201,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       const isPassword = type === "password";
       const shouldShowPasswordToggle = isPassword && showPasswordToggle;
       const actualType = isPassword && showPassword ? "text" : type;
-      const needsTopPadding =
-        labelPlacement === "inside" && (focused || hasValue);
+      const needsTopPadding = labelPlacement === "inside" && (focused || hasValue);
       const shouldShrinkLabel = focused || hasValue;
       const finalError = error || validationError;
 
@@ -269,11 +252,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
 
       // Handle different label placements
       if (labelPlacement === "top") {
-        return cn(
-          baseClasses,
-          "block mb-2",
-          derivedStates.finalError && "text-destructive"
-        );
+        return cn(baseClasses, "block mb-2", derivedStates.finalError && "text-destructive");
       }
 
       if (labelPlacement === "left") {
@@ -298,8 +277,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
           "absolute left-3 pointer-events-none transform-gpu text-muted-foreground",
           derivedStates.shouldShrinkLabel
             ? "text-[10px] top-1 -translate-y-0"
-            : "top-3 text-sm translate-y-0",
-
+            : "top-3 text-sm translate-y-0"
         );
       }
 
@@ -308,17 +286,13 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
           baseClasses,
           "absolute left-2 pointer-events-none transform-gpu z-20 text-muted-foreground text-xs",
           "top-0 -translate-y-1/2",
-          "bg-background px-1",
+          "bg-background px-1"
         );
       }
 
       // Default fallback
       return cn(baseClasses, derivedStates.finalError && "text-destructive");
-    }, [
-      labelPlacement,
-      derivedStates.shouldShrinkLabel,
-      derivedStates.finalError,
-    ]);
+    }, [labelPlacement, derivedStates.shouldShrinkLabel, derivedStates.finalError]);
 
     const handleInputChange = useCallback(
       (e: ChangeEvent<HTMLInputElement>) => {
@@ -327,9 +301,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
 
         // Perform validation
         const validation = validateInput(newValue);
-        setValidationError(
-          validation.isValid ? "" : validation.errorMessage || ""
-        );
+        setValidationError(validation.isValid ? "" : validation.errorMessage || "");
         onValidation?.(validation.isValid, validation.errorMessage);
 
         onChange?.(e);
@@ -356,9 +328,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
 
         // Perform validation on blur
         const validation = validateInput(e.target.value);
-        setValidationError(
-          validation.isValid ? "" : validation.errorMessage || ""
-        );
+        setValidationError(validation.isValid ? "" : validation.errorMessage || "");
         onValidation?.(validation.isValid, validation.errorMessage);
 
         onBlur?.(e);
@@ -392,25 +362,19 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
       [handleTogglePassword]
     );
 
-    const handleKeyDownOnInput = useCallback(
-      (e: React.KeyboardEvent<HTMLInputElement>) => {
-        // When Tab is pressed, immediately set focused to true for instant label animation
-        if (e.key === "Tab") {
-          setFocused(true);
-        }
-      },
-      []
-    );
+    const handleKeyDownOnInput = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+      // When Tab is pressed, immediately set focused to true for instant label animation
+      if (e.key === "Tab") {
+        setFocused(true);
+      }
+    }, []);
 
-    const handleKeyUpOnInput = useCallback(
-      (e: React.KeyboardEvent<HTMLInputElement>) => {
-        // Additional handling for Tab key on keyup to ensure focus state
-        if (e.key === "Tab") {
-          setFocused(true);
-        }
-      },
-      []
-    );
+    const handleKeyUpOnInput = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+      // Additional handling for Tab key on keyup to ensure focus state
+      if (e.key === "Tab") {
+        setFocused(true);
+      }
+    }, []);
 
     const renderPasswordToggle = useCallback(() => {
       if (!derivedStates.shouldShowPasswordToggle) return null;
@@ -431,12 +395,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
           )}
         </button>
       );
-    }, [
-      derivedStates.shouldShowPasswordToggle,
-      showPassword,
-      handleTogglePassword,
-      handleKeyDown,
-    ]);
+    }, [derivedStates.shouldShowPasswordToggle, showPassword, handleTogglePassword, handleKeyDown]);
 
     const renderInput = useCallback(
       () => (
@@ -449,9 +408,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
           <Input
             id={inputId}
             ref={handleRef}
-            placeholder={
-              labelPlacement === "inside" && label ? "" : placeholder
-            }
+            placeholder={labelPlacement === "inside" && label ? "" : placeholder}
             className={inputClassName}
             disabled={disabled}
             required={inputIsRequired}
@@ -468,9 +425,7 @@ const InputCustom = forwardRef<HTMLInputElement, InputProps>(
             onKeyDown={handleKeyDownOnInput}
             onKeyUp={handleKeyUpOnInput}
             aria-invalid={!!derivedStates.finalError}
-            aria-describedby={
-              derivedStates.finalError ? `${inputId}-error` : undefined
-            }
+            aria-describedby={derivedStates.finalError ? `${inputId}-error` : undefined}
             {...props}
           />
           <div className="absolute right-3 flex items-center z-10">
