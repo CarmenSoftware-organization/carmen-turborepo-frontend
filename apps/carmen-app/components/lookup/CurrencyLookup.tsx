@@ -1,4 +1,5 @@
 import { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import type * as React from "react";
 import {
   Command,
   CommandEmpty,
@@ -28,7 +29,7 @@ export default function CurrencyLookup({
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<React.ElementRef<typeof CommandList>>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =

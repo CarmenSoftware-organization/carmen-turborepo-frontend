@@ -306,16 +306,23 @@ export const DataGridActionCellRenderer = <T,>(config: DataGridActionCellConfig<
           <DropdownMenuContent
             align={config.align === "left" ? "start" : config.align === "center" ? "center" : "end"}
           >
-            {visibleActions.map((action, index) => (
-              <DropdownMenuItem
-                key={index}
-                className={action.className || "cursor-pointer"}
-                onClick={() => action.onClick(item)}
-              >
-                {action.icon}
-                {action.label}
-              </DropdownMenuItem>
-            ))}
+            {visibleActions.map((action, index) => {
+              const itemContent = (
+                <>
+                  {action.icon}
+                  {action.label}
+                </>
+              );
+              // @ts-ignore - Type conflict between React 19 RC and Radix UI
+              return (
+                <DropdownMenuItem
+                  key={index}
+                  className={action.className || "cursor-pointer"}
+                  onClick={() => action.onClick(item)}
+                  children={itemContent}
+                />
+              );
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

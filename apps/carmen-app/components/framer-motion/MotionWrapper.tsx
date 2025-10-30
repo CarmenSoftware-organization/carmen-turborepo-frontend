@@ -1,73 +1,32 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import React, { ReactNode } from "react";
-import { TargetAndTransition, VariantLabels, Transition } from "framer-motion";
 
-// Interface สำหรับ motion props
-interface MotionProps {
-    initial?: boolean | TargetAndTransition | VariantLabels;
-    animate?: boolean | TargetAndTransition | VariantLabels;
-    exit?: TargetAndTransition | VariantLabels;
-    transition?: Transition;
-    variants?: Record<string, TargetAndTransition>;
-    layout?: boolean;
-    whileHover?: TargetAndTransition | VariantLabels;
-    whileTap?: TargetAndTransition | VariantLabels;
-    whileFocus?: TargetAndTransition | VariantLabels;
-    children: ReactNode;
-    className?: string;
-    onMouseEnter?: () => void;
-    onMouseLeave?: () => void;
-    onClick?: () => void;
-}
-
-// Dynamic import สำหรับ motion components
+// Dynamic import for motion components
+// Note: Types are intentionally left implicit to avoid conflicts between React 19 RC
+// and framer-motion's ReactNode type expectations. The components will work correctly
+// at runtime even though there are type mismatches at compile time.
 export const MotionDiv = dynamic(
-    () => import("framer-motion").then((mod) => {
-        const Component: React.FC<MotionProps> = ({ children, ...props }) => {
-            const MotionDiv = mod.motion.div;
-            return <MotionDiv {...props}>{children}</MotionDiv>;
-        };
-        return Component;
-    }),
-    { ssr: false }
+  () => import("framer-motion").then((mod) => mod.motion.div),
+  { ssr: false }
 );
 
 export const MotionTr = dynamic(
-    () => import("framer-motion").then((mod) => {
-        const Component: React.FC<MotionProps> = ({ children, ...props }) => {
-            const MotionTr = mod.motion.tr;
-            return <MotionTr {...props}>{children}</MotionTr>;
-        };
-        return Component;
-    }),
-    { ssr: false }
+  () => import("framer-motion").then((mod) => mod.motion.tr),
+  { ssr: false }
 );
 
 export const MotionSpan = dynamic(
-    () => import("framer-motion").then((mod) => {
-        const Component: React.FC<MotionProps> = ({ children, ...props }) => {
-            const MotionSpan = mod.motion.span;
-            return <MotionSpan {...props}>{children}</MotionSpan>;
-        };
-        return Component;
-    }),
-    { ssr: false }
+  () => import("framer-motion").then((mod) => mod.motion.span),
+  { ssr: false }
 );
 
 export const AnimatePresence = dynamic(
-    () => import("framer-motion").then((mod) => mod.AnimatePresence),
-    { ssr: false }
+  () => import("framer-motion").then((mod) => mod.AnimatePresence),
+  { ssr: false }
 );
 
 export const MotionP = dynamic(
-    () => import("framer-motion").then((mod) => {
-        const Component: React.FC<MotionProps> = ({ children, ...props }) => {
-            const MotionP = mod.motion.p;
-            return <MotionP {...props}>{children}</MotionP>;
-        };
-        return Component;
-    }),
-    { ssr: false }
+  () => import("framer-motion").then((mod) => mod.motion.p),
+  { ssr: false }
 );

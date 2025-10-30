@@ -28,6 +28,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@formatjs/intl-localematcher": "^0.6.2",
     "vercel": "^44.2.12"
   }
 }

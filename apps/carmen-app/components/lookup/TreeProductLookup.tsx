@@ -675,12 +675,12 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
                     <div className="flex items-center gap-2 px-2 py-1">
                       <Checkbox
                         checked={allSelected}
-                        ref={(el) => {
+                        ref={(el: HTMLButtonElement | null) => {
                           if (el) {
                             const inputEl = el.querySelector(
                               'input[type="checkbox"]'
-                            ) as HTMLInputElement;
-                            if (inputEl) {
+                            );
+                            if (inputEl instanceof HTMLInputElement) {
                               inputEl.indeterminate = someSelected;
                             }
                           }
