@@ -29,6 +29,8 @@ import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
 import { ProductListDto } from "@/dtos/product.dto";
+import { useSearchParams } from "next/navigation";
+import { returnUrl } from "@/utils/url";
 
 interface ProductListProps {
   readonly products: ProductListDto[];
@@ -57,6 +59,7 @@ export default function ProductList({
 }: ProductListProps) {
   const t = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const searchParams = useSearchParams();
 
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
@@ -108,7 +111,14 @@ export default function ProductList({
           const product = row.original;
           return (
             <div className="max-w-[300px] truncate">
-              <Link href={`/product-management/product/${product.id}`} className="link-primary">
+              <Link
+                href={returnUrl(
+                  `/product-management/product/${product.id}`,
+                  `/product-management/product`,
+                  searchParams
+                )}
+                className="link-primary"
+              >
                 {product.name}
               </Link>
             </div>

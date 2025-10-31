@@ -27,6 +27,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { ProductFormValues } from "@/dtos/product.dto";
 import { useRouter } from "@/lib/navigation";
+import { useSearchParams } from "next/navigation";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -45,6 +46,7 @@ export default function BasicInfo({
   const router = useRouter();
   const tCommon = useTranslations("Common");
   const tProducts = useTranslations("Products");
+  const searchParams = useSearchParams();
 
   const { watch, setValue } = useFormContext<ProductFormValues>();
 
@@ -116,21 +118,20 @@ export default function BasicInfo({
     return Boolean(name && code && localName && inventoryUnitId && itemGroupId);
   }, [watchedFields]);
 
+  const onBack = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const returnUrl = searchParams.get("returnUrl");
+    const backUrl = returnUrl || "/product-management/product";
+    router.push(backUrl);
+  };
+
   return (
     <Card>
       <CardHeader className="p-2">
         <div className="flex items-center justify-between p-2">
           <div className="flex items-center gap-2">
-            <Button
-              variant={"outline"}
-              size={"sm"}
-              className="w-8 h-8"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                router.back();
-              }}
-            >
+            <Button variant={"outline"} size={"sm"} className="w-8 h-8" onClick={onBack}>
               <ChevronLeft className="h-4 w-4" />
             </Button>
 

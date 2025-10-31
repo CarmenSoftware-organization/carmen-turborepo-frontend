@@ -12,36 +12,31 @@ export const useURL = (paramName: string, options: URLStateOptions = {}) => {
   const isUpdatingRef = useRef(false);
 
   const [value, setValue] = useState(() => {
-    if (typeof window !== "undefined") {
-      return (
-        new URLSearchParams(window.location.search).get(paramName) ??
-        defaultValue
-      );
+    if (globalThis.window !== undefined) {
+      return new URLSearchParams(globalThis.window.location.search).get(paramName) ?? defaultValue;
     }
     return defaultValue;
   });
 
   const updateValue = useCallback(
     (newValue: string) => {
-      // Prevent infinite loops
       if (isUpdatingRef.current) return;
 
       setValue(newValue);
 
-      if (typeof window !== "undefined") {
+      if (globalThis.window !== undefined) {
         isUpdatingRef.current = true;
 
-        const url = new URL(window.location.href);
+        const url = new URL(globalThis.window.location.href);
         if (newValue) {
           url.searchParams.set(paramName, newValue);
         } else {
           url.searchParams.delete(paramName);
         }
 
-        // Only update if URL actually changed
-        if (url.toString() !== window.location.href) {
-          window.history.replaceState(
-            { ...window.history.state },
+        if (url.toString() !== globalThis.window.location.href) {
+          globalThis.window.history.replaceState(
+            { ...globalThis.window.history.state },
             "",
             url.toString()
           );
@@ -54,29 +49,45 @@ export const useURL = (paramName: string, options: URLStateOptions = {}) => {
     [paramName, onUpdate]
   );
 
-  // Sync with URL when browser back/forward is used
   useEffect(() => {
-    // SSR safety check
-    if (typeof window === "undefined") return;
+    if (globalThis.window === undefined) return;
 
     const handlePopState = () => {
-      // Prevent infinite loops
       if (isUpdatingRef.current) return;
 
       const newValue =
-        new URLSearchParams(window.location.search).get(paramName) ??
-        defaultValue;
+        new URLSearchParams(globalThis.window.location.search).get(paramName) ?? defaultValue;
       setValue(newValue);
       onUpdate?.(newValue);
     };
 
-    window.addEventListener("popstate", handlePopState);
+    globalThis.window.addEventListener("popstate", handlePopState);
     return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("popstate", handlePopState);
+      if (globalThis.window !== undefined) {
+        globalThis.window.removeEventListener("popstate", handlePopState);
       }
     };
   }, [paramName, defaultValue, onUpdate]);
+
+  useEffect(() => {
+    if (globalThis.window === undefined) return;
+
+    const checkURLChange = () => {
+      if (isUpdatingRef.current) return;
+      const currentValue =
+        new URLSearchParams(globalThis.window.location.search).get(paramName) ?? defaultValue;
+
+      if (currentValue !== value) {
+        console.log(`🔄 [useURL] Syncing ${paramName}: ${value} → ${currentValue}`);
+        setValue(currentValue);
+        onUpdate?.(currentValue);
+      }
+    };
+
+    const interval = setInterval(checkURLChange, 100);
+
+    return () => clearInterval(interval);
+  }, [paramName, defaultValue, value, onUpdate]);
 
   return [value, updateValue] as const;
 };
