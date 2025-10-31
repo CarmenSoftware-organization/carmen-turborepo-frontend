@@ -15,8 +15,6 @@ interface Notification {
   type: "info" | "error" | "warning" | "success";
   created_at: string;
 }
-
-// Helper function to get notification icon based on type
 const getNotificationIcon = (type: Notification["type"]): string => {
   switch (type) {
     case "error":
@@ -30,7 +28,6 @@ const getNotificationIcon = (type: Notification["type"]): string => {
   }
 };
 
-// NotificationItem component
 interface NotificationItemProps {
   notification: Notification;
   onMarkAsRead: (id: string) => void;
@@ -75,7 +72,7 @@ interface EmptyNotificationStateProps {
 
 const EmptyNotificationState = ({ isConnected, tNoti }: EmptyNotificationStateProps) => {
   return (
-    <div className="p-8 text-center text-muted-foreground">
+    <div className="p-8 text-center text-xs text-muted-foreground">
       <p>{tNoti("no_notifications")}</p>
       {!isConnected && <p className="text-xs mt-2">{tNoti("connecting")}</p>}
     </div>
@@ -192,11 +189,11 @@ export default function Notification() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 max-h-[450px] overflow-y-auto p-0 shadow-lg">
+      <PopoverContent className="w-80 max-h-[250px] overflow-y-auto p-0 shadow-lg">
         <div className="p-4 border-b border-border bg-muted/50">
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-lg">{tNoti("notification")}</h4>
-            <span>
+            <h4 className="font-medium text-sm">{tNoti("notification")}</h4>
+            <span className="text-sm">
               {notificationCount} {tNoti("new")}
             </span>
           </div>
