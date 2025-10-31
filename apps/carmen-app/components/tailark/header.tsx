@@ -24,10 +24,10 @@ export const HeroHeader = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(globalThis.window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    globalThis.window.addEventListener("scroll", handleScroll);
+    return () => globalThis.window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
