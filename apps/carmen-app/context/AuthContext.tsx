@@ -30,17 +30,13 @@ enum LOCAL_STORAGE {
 export type BasePermissionAction =
   | "view_all"
   | "view"
-  | "view_dp"  // view by department
+  | "view_dp" // view by department
   | "create"
   | "update"
   | "delete";
 
 // Workflow actions สำหรับ document ที่มี approval flow
-export type WorkflowPermissionAction =
-  | "approve"
-  | "reject"
-  | "send_back"
-  | "submit";
+export type WorkflowPermissionAction = "approve" | "reject" | "send_back" | "submit";
 
 // รวม action ทั้งหมด
 export type PermissionAction = BasePermissionAction | WorkflowPermissionAction;
@@ -63,28 +59,22 @@ export type ConfigurationResource =
   | "extra_cost"
   | "business_type";
 
-export type ProductManagementResource =
-  | "product"
-  | "category"
-  | "report"
-  | "unit";
+export type ProductManagementResource = "product" | "category" | "report" | "unit";
 
-export type VendorManagementResource =
-  | "vendor"
-  | "vendor_contact";
+export type VendorManagementResource = "vendor" | "vendor_contact";
 
-export type ProcurementResource =
-  | "purchase_order"
-  | "purchase_request"
-  | "grn";
+export type ProcurementResource = "purchase_order" | "purchase_request" | "grn";
 
 // Helper type: ดึง resource type ตาม module
-export type ResourceByModule<T extends PermissionModule> =
-  T extends "configuration" ? ConfigurationResource :
-  T extends "product_management" ? ProductManagementResource :
-  T extends "vendor_management" ? VendorManagementResource :
-  T extends "procurement" ? ProcurementResource :
-  never;
+export type ResourceByModule<T extends PermissionModule> = T extends "configuration"
+  ? ConfigurationResource
+  : T extends "product_management"
+    ? ProductManagementResource
+    : T extends "vendor_management"
+      ? VendorManagementResource
+      : T extends "procurement"
+        ? ProcurementResource
+        : never;
 
 // Permission structure - ใช้ string[] เพื่อรองรับ dynamic actions
 export type Permissions = {
@@ -133,7 +123,6 @@ interface BusinessUnit {
   };
 }
 
-
 interface User {
   id: string;
   email: string;
@@ -156,13 +145,9 @@ interface AuthContextType {
   departments: BusinessUnit["department"] | null;
   currencyBase: NonNullable<BusinessUnit["config"]>["currency_base"] | null;
   dateFormat: NonNullable<BusinessUnit["config"]>["date_format"] | null;
-  longTimeFormat:
-  | NonNullable<BusinessUnit["config"]>["long_time_format"]
-  | null;
+  longTimeFormat: NonNullable<BusinessUnit["config"]>["long_time_format"] | null;
   perpage: NonNullable<BusinessUnit["config"]>["perpage"] | null;
-  shortTimeFormat:
-  | NonNullable<BusinessUnit["config"]>["short_time_format"]
-  | null;
+  shortTimeFormat: NonNullable<BusinessUnit["config"]>["short_time_format"] | null;
   timezone: NonNullable<BusinessUnit["config"]>["timezone"] | null;
   amount: NonNullable<BusinessUnit["config"]>["amount"] | null;
   quantity: NonNullable<BusinessUnit["config"]>["quantity"] | null;
@@ -176,12 +161,12 @@ export const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   user: null,
   permissions: undefined,
-  setSession: () => { },
-  logout: () => { },
+  setSession: () => {},
+  logout: () => {},
   token: "",
   getServerSideToken: () => "",
   tenantId: "",
-  handleChangeTenant: () => { },
+  handleChangeTenant: () => {},
   departments: null,
   currencyBase: null,
   dateFormat: null,
@@ -197,7 +182,7 @@ export const AuthContext = createContext<AuthContextType>({
 
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
 export function getServerSideToken(): string {
-  if (typeof window !== "undefined") {
+  if (globalThis.window !== undefined) {
     return localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
   }
   return "";
@@ -217,11 +202,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
   // Hydration effect - รันครั้งเดียวหลัง mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedTenantId =
-        localStorage.getItem(LOCAL_STORAGE.TENANT_ID) ?? "";
-      const storedToken =
-        localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
+    if (globalThis.window !== undefined) {
+      const storedTenantId = localStorage.getItem(LOCAL_STORAGE.TENANT_ID) ?? "";
+      const storedToken = localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
       const storedBuCode = localStorage.getItem(LOCAL_STORAGE.BU_CODE) ?? "";
       setTenantId(storedTenantId);
       setToken(storedToken);
@@ -239,7 +222,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // ใช้ TanStack Query สำหรับ user profile - รอให้ hydrated ก่อน
   const { data: user, isLoading: isUserLoading } = useUserProfileQuery(
     token,
-    isHydrated && !isSignInPage && !!token,
+    isHydrated && !isSignInPage && !!token
   );
 
   const updateBusinessUnitMutation = useUpdateBusinessUnitMutation();
@@ -257,16 +240,10 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     quantity,
     recipe,
   } = useMemo(() => {
-
-    // console.log('user', user);
-
-    const defaultBu = user?.business_unit?.find(
-      (bu: BusinessUnit) => bu.is_default === true,
-    );
+    const defaultBu = user?.business_unit?.find((bu: BusinessUnit) => bu.is_default === true);
 
     const firstBu = user?.business_unit?.[0];
     const selectedBu = defaultBu || firstBu;
-
 
     return {
       departments: defaultBu?.department || null,
@@ -284,9 +261,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
   useEffect(() => {
     if (user?.business_unit?.length && isHydrated) {
-      const defaultBu = user.business_unit.find(
-        (bu: BusinessUnit) => bu.is_default === true,
-      );
+      const defaultBu = user.business_unit.find((bu: BusinessUnit) => bu.is_default === true);
       const firstBu = user.business_unit[0];
       const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
       const newBuCode = defaultBu?.code ?? firstBu?.code ?? "";
@@ -308,19 +283,16 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   }, [user, isHydrated]);
 
   // จัดการการเข้าสู่ระบบ
-  const setSession = useCallback(
-    async (accessToken: string, refreshToken: string) => {
-      if (accessToken && typeof window !== "undefined") {
-        localStorage.setItem(LOCAL_STORAGE.ACCESS_TOKEN, accessToken);
-        setToken(accessToken);
-      }
+  const setSession = useCallback(async (accessToken: string, refreshToken: string) => {
+    if (accessToken && globalThis.window !== undefined) {
+      localStorage.setItem(LOCAL_STORAGE.ACCESS_TOKEN, accessToken);
+      setToken(accessToken);
+    }
 
-      if (refreshToken && typeof window !== "undefined") {
-        localStorage.setItem(LOCAL_STORAGE.REFRESH_TOKEN, refreshToken);
-      }
-    },
-    [],
-  );
+    if (refreshToken && globalThis.window !== undefined) {
+      localStorage.setItem(LOCAL_STORAGE.REFRESH_TOKEN, refreshToken);
+    }
+  }, []);
 
   // จัดการการออกจากระบบ
   const logout = useCallback(() => {
@@ -330,7 +302,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     }
 
     // ลบ tokens และ cache
-    if (typeof window !== "undefined") {
+    if (globalThis.window !== undefined) {
       localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
@@ -349,7 +321,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
   // ดึง token สำหรับ server actions
   const getServerSideToken = useCallback(() => {
-    if (typeof window !== "undefined") {
+    if (globalThis.window !== undefined) {
       return localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN) ?? "";
     }
     return "";
@@ -366,9 +338,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       }
 
       // หา business unit ที่เลือกเพื่อดึง bu_code
-      const selectedBu = user.business_unit.find(
-        (bu: BusinessUnit) => bu.id === id,
-      );
+      const selectedBu = user.business_unit.find((bu: BusinessUnit) => bu.id === id);
 
       if (!selectedBu) {
         console.error("Business unit not found for id:", id);
@@ -383,29 +353,24 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             setBuCode(selectedBu.code);
 
             // อัปเดต localStorage เพื่อ sync กับ tabs อื่น
-            if (typeof window !== "undefined") {
+            if (globalThis.window !== undefined) {
               localStorage.setItem(LOCAL_STORAGE.TENANT_ID, id);
               localStorage.setItem(LOCAL_STORAGE.BU_CODE, selectedBu.code);
             }
             router.push(dashboardPage);
             toastSuccess({ message: "Changed Business Unit Success" });
           },
-        },
+        }
       );
     },
-    [
-      token,
-      updateBusinessUnitMutation,
-      isFromStorageEvent,
-      user?.business_unit,
-    ],
+    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.business_unit]
   );
 
   // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
   useEffect(() => {
     if (isSignInPage && isHydrated && !token) {
       // ล้าง session เฉพาะเมื่อไม่มี token (ไม่ได้กำลัง login)
-      if (typeof window !== "undefined") {
+      if (globalThis.window !== undefined) {
         localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
         localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
         localStorage.removeItem(LOCAL_STORAGE.TENANT_ID);
@@ -425,10 +390,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
 
     const handleStorageChange = (event: StorageEvent) => {
       // ตรวจสอบเฉพาะ keys ที่เกี่ยวข้องกับ auth
-      if (
-        !event.key ||
-        !["access_token", "refresh_token", "tenant_id"].includes(event.key)
-      ) {
+      if (!event.key || !["access_token", "refresh_token", "tenant_id"].includes(event.key)) {
         return;
       }
 
@@ -456,7 +418,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
             setTenantId(event.newValue);
             // Auto refresh page เพื่อโหลดข้อมูลใหม่ตาม tenant ที่เปลี่ยน
             setTimeout(() => {
-              window.location.reload();
+              globalThis.window.location.reload();
             }, 1000); // รอ 1 วินาทีให้ user เห็น toast ก่อน
           }
           break;
@@ -471,29 +433,19 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     };
 
     // เพิ่ม event listener
-    window.addEventListener("storage", handleStorageChange);
+    globalThis.window.addEventListener("storage", handleStorageChange);
 
     // Cleanup
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
+      globalThis.window.removeEventListener("storage", handleStorageChange);
     };
-  }, [
-    isHydrated,
-    token,
-    tenantId,
-    isSignInPage,
-    signInPage,
-    router,
-    clearAuthCache,
-    buCode,
-  ]);
+  }, [isHydrated, token, tenantId, isSignInPage, signInPage, router, clearAuthCache, buCode]);
 
   // ตรวจสอบว่า user เข้าสู่ระบบหรือไม่
   const hasToken = isHydrated && !!token;
 
   // รวม loading states - แสดง loading ขณะ hydrating หรือ query loading
-  const isLoading =
-    !isHydrated || isUserLoading || updateBusinessUnitMutation.isPending;
+  const isLoading = !isHydrated || isUserLoading || updateBusinessUnitMutation.isPending;
 
   // Context value
   const value = useMemo(
@@ -541,10 +493,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       quantity,
       recipe,
       buCode,
-    ],
+    ]
   );
-
-  // console.log('value', value);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
