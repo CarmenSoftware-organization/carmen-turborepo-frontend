@@ -37,7 +37,7 @@ export default function NotificationPlayground() {
     type: "info" | "error" | "warning" | "success";
     created_at?: string;
   }) => {
-    window.dispatchEvent(
+    globalThis.window.dispatchEvent(
       new CustomEvent("notification-sent", {
         detail: {
           id: data.id,

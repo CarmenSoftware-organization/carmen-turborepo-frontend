@@ -4,16 +4,8 @@ import { formType } from "@/dtos/form.dto";
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  ChevronLeft,
-  Pencil,
-  Save,
-  X,
-  Printer,
-  FileDown,
-  Share,
-} from "lucide-react";
-import { Link } from "@/lib/navigation";
+import { ChevronLeft, Pencil, Save, X, Printer, FileDown, Share } from "lucide-react";
+import { Link, useRouter } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import HeadCnForm from "./HeadCnForm";
@@ -21,19 +13,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { useAuth } from "@/context/AuthContext";
-import {
-  CreditNoteByIdDto,
-  CreditNoteFormDto,
-  CreditNoteSubmitDto,
-} from "@/dtos/credit-note.dto";
+import { CreditNoteByIdDto, CreditNoteFormDto, CreditNoteSubmitDto } from "@/dtos/credit-note.dto";
 import { creditNoteSubmitSchemaDto } from "../../_schemas/credit-note.schema";
 import ItemsCn from "./ItemsCn";
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import {
-  useCreateCreditNote,
-  useUpdateCreditNote,
-} from "../../_hooks/use-credit-note";
+import { useCreateCreditNote, useUpdateCreditNote } from "../../_hooks/use-credit-note";
 import { format } from "date-fns";
 import { useCnReasonQuery } from "@/hooks/useCnReason";
 import DetailsAndComments from "@/components/DetailsAndComments";
@@ -45,13 +30,11 @@ interface CnFormProps {
 
 export default function CnForm({ initialValues, mode }: CnFormProps) {
   const { token, buCode } = useAuth();
+  const router = useRouter();
+
   const { getVendorName } = useVendor(token, buCode);
   const createMutation = useCreateCreditNote(token, buCode);
-  const updateMutation = useUpdateCreditNote(
-    token,
-    buCode,
-    initialValues?.id ?? ""
-  );
+  const updateMutation = useUpdateCreditNote(token, buCode, initialValues?.id ?? "");
   const { getCnReasonName } = useCnReasonQuery({
     token: token || "",
     buCode: buCode || "",
@@ -62,21 +45,18 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
   const defaultValues: CreditNoteFormDto = {
     cn_date: initialValues?.cn_date ?? new Date().toISOString(),
     credit_note_type:
-      (initialValues?.credit_note_type as CREDIT_NOTE_TYPE) ??
-      CREDIT_NOTE_TYPE.QUANTITY_RETURN,
+      (initialValues?.credit_note_type as CREDIT_NOTE_TYPE) ?? CREDIT_NOTE_TYPE.QUANTITY_RETURN,
     vendor_id: initialValues?.vendor_id ?? "",
     currency_id: initialValues?.currency_id ?? "",
     exchange_rate: initialValues?.exchange_rate ?? 1,
-    exchange_rate_date:
-      initialValues?.exchange_rate_date ?? new Date().toISOString(),
+    exchange_rate_date: initialValues?.exchange_rate_date ?? new Date().toISOString(),
     grn_id: initialValues?.grn_id ?? "",
     grn_date: initialValues?.grn_date ?? new Date().toISOString(),
     cn_reason_id: initialValues?.cn_reason_id ?? "",
     invoice_no: initialValues?.invoice_no ?? "",
     invoice_date: initialValues?.invoice_date ?? new Date().toISOString(),
     tax_invoice_no: initialValues?.tax_invoice_no ?? "",
-    tax_invoice_date:
-      initialValues?.tax_invoice_date ?? new Date().toISOString(),
+    tax_invoice_date: initialValues?.tax_invoice_date ?? new Date().toISOString(),
     note: initialValues?.note ?? "",
     description: initialValues?.description ?? null,
     credit_note_detail: {
@@ -155,9 +135,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
       console.error("Error saving credit note:", error);
       toastError({
         message:
-          mode === formType.ADD
-            ? "Failed to create credit note"
-            : "Failed to update credit note",
+          mode === formType.ADD ? "Failed to create credit note" : "Failed to update credit note",
       });
     } finally {
       setCurrentMode(formType.VIEW);
@@ -180,10 +158,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
   }, [isDirty, isValid, errors, watchCnForm]);
 
   return (
-    <DetailsAndComments
-      activityComponent={<p>hello 2</p>}
-      commentComponent={<p>hello 2</p>}
-    >
+    <DetailsAndComments activityComponent={<p>hello 2</p>} commentComponent={<p>hello 2</p>}>
       <Card className="p-4 mb-2">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -196,23 +171,14 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                   <p className="text-base font-bold">Credit Note</p>
                 ) : (
                   <div className="flex flex-col gap-1">
-                    <p className="text-base font-bold">
-                      {initialValues?.cn_no}
-                    </p>
+                    <p className="text-base font-bold">{initialValues?.cn_no}</p>
                     <p className="text-xs text-muted-foreground">
-                      Created at{" "}
-                      {format(
-                        new Date(initialValues?.cn_date ?? ""),
-                        "PPP"
-                      )}
+                      Created at {format(new Date(initialValues?.cn_date ?? ""), "PPP")}
                     </p>
                   </div>
                 )}
                 {initialValues?.doc_status && (
-                  <Badge
-                    variant={initialValues?.doc_status}
-                    className="rounded-full text-xs"
-                  >
+                  <Badge variant={initialValues?.doc_status} className="rounded-full text-xs">
                     {convertStatus(initialValues?.doc_status)}
                   </Badge>
                 )}
@@ -224,7 +190,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                       variant="outline"
                       size="sm"
                       className="px-2 text-xs"
-                      onClick={() => window.history.back()}
+                      onClick={() => router.back()}
                     >
                       <ChevronLeft /> Back
                     </Button>
@@ -244,42 +210,23 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                       size="sm"
                       className="px-2 text-xs"
                       onClick={() =>
-                        currentMode === formType.ADD
-                          ? window.history.back()
-                          : setCurrentMode(formType.VIEW)
+                        currentMode === formType.ADD ? router.back() : setCurrentMode(formType.VIEW)
                       }
                     >
                       <X /> Cancel
                     </Button>
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="px-2 text-xs"
-                      type="submit"
-                    >
+                    <Button variant="default" size="sm" className="px-2 text-xs" type="submit">
                       <Save /> Save
                     </Button>
                   </>
                 )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-2 text-xs"
-                >
+                <Button variant="outline" size="sm" className="px-2 text-xs">
                   <Printer /> Print
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-2 text-xs"
-                >
+                <Button variant="outline" size="sm" className="px-2 text-xs">
                   <FileDown /> Export
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="px-2 text-xs"
-                >
+                <Button variant="outline" size="sm" className="px-2 text-xs">
                   <Share /> Share
                 </Button>
               </div>
@@ -296,16 +243,10 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                 <TabsTrigger className="w-full text-xs" value="items">
                   Items
                 </TabsTrigger>
-                <TabsTrigger
-                  className="w-full text-xs"
-                  value="stock_movement"
-                >
+                <TabsTrigger className="w-full text-xs" value="stock_movement">
                   Stock Movement
                 </TabsTrigger>
-                <TabsTrigger
-                  className="w-full text-xs"
-                  value="journal_entries"
-                >
+                <TabsTrigger className="w-full text-xs" value="journal_entries">
                   Journal Entries
                 </TabsTrigger>
                 <TabsTrigger className="w-full text-xs" value="tax_entries">
@@ -329,5 +270,5 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
         </Form>
       </Card>
     </DetailsAndComments>
-  )
+  );
 }

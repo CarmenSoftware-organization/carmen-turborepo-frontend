@@ -886,5 +886,17 @@
     "create_credit_term_success": "Credit term created successfully",
     "update_credit_term_success": "Credit term updated successfully",
     "delete_credit_term_success": "Credit term deleted successfully"
+  },
+  "Notification": {
+    "notification": "Notifications",
+    "notification_history": "Notification History",
+    "no_notification_history": "No notification history",
+    "by": "By",
+    "new": "new",
+    "no_notifications": "No notifications yet",
+    "connecting": "Connecting to notification server...",
+    "mark_read": "Mark Read",
+    "mark_all_read": "Mark all as read",
+    "view_all": "View all"
   }
 }

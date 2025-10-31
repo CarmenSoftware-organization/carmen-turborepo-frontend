@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import "@/styles/auth.css";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import LanguageSwitch from "@/components/home-page/LanguageSwitch";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -24,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { userList } from "./user-list";
 import { Input } from "@/components/ui/input";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function SignInForm() {
   const router = useRouter();
@@ -184,7 +184,7 @@ export default function SignInForm() {
         </div>
         <div className="form-footer">
           <div>
-            <LanguageSwitch data-id="language-switch" />
+            <LanguageSwitcher data-id="language-switch" />
           </div>
           <div className="legal-links">
             <Link href="/terms" className="hover:underline text-xs">

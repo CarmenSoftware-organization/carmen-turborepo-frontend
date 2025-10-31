@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { wsUrl, backendApi } from "@/lib/backend-api";
+import { useTranslations } from "next-intl";
 
 interface Notification {
   id: string;
@@ -15,8 +16,73 @@ interface Notification {
   created_at: string;
 }
 
-export default function Notification() {
-  const { user } = useAuth();
+// Helper function to get notification icon based on type
+const getNotificationIcon = (type: Notification["type"]): string => {
+  switch (type) {
+    case "error":
+      return "❌";
+    case "warning":
+      return "⚠️";
+    case "success":
+      return "✅";
+    default:
+      return "📘";
+  }
+};
+
+// NotificationItem component
+interface NotificationItemProps {
+  notification: Notification;
+  onMarkAsRead: (id: string) => void;
+  tNoti: (key: string) => string;
+}
+
+const NotificationItem = ({ notification, onMarkAsRead, tNoti }: NotificationItemProps) => {
+  const icon = getNotificationIcon(notification.type);
+
+  return (
+    <div className="p-4 hover:bg-muted/50 transition-colors border-l-2 border-l-primary">
+      <div className="flex items-start gap-3">
+        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
+          {icon}
+        </div>
+        <div className="flex-1">
+          <div className="flex justify-between items-start">
+            <h5 className="font-medium text-sm">{notification.title}</h5>
+            <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
+              {new Date(notification.created_at).toLocaleTimeString()}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1 mb-2">{notification.message}</p>
+          <div className="flex justify-between items-center">
+            <span className="text-xs font-medium capitalize">{notification.type}</span>
+            <button
+              onClick={() => onMarkAsRead(notification.id)}
+              className="text-xs px-2 py-1 border rounded hover:bg-muted"
+            >
+              {tNoti("mark_read")}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+interface EmptyNotificationStateProps {
+  isConnected: boolean;
+  tNoti: (key: string) => string;
+}
+
+const EmptyNotificationState = ({ isConnected, tNoti }: EmptyNotificationStateProps) => {
+  return (
+    <div className="p-8 text-center text-muted-foreground">
+      <p>{tNoti("no_notifications")}</p>
+      {!isConnected && <p className="text-xs mt-2">{tNoti("connecting")}</p>}
+    </div>
+  );
+};
+
+const useNotificationWebSocket = (userId: string | undefined) => {
   const [isConnected, setIsConnected] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -29,22 +95,22 @@ export default function Notification() {
       }
     };
 
-    window.addEventListener("notification-sent", handleNotificationSent);
+    globalThis.window.addEventListener("notification-sent", handleNotificationSent);
 
     return () => {
-      window.removeEventListener("notification-sent", handleNotificationSent);
+      globalThis.window.removeEventListener("notification-sent", handleNotificationSent);
     };
   }, []);
 
   useEffect(() => {
-    if (!user?.id || !wsUrl) return;
+    if (!userId || !wsUrl) return;
 
     const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
       setIsConnected(true);
       setSocket(ws);
-      ws.send(JSON.stringify({ type: "register", user_id: user.id }));
+      ws.send(JSON.stringify({ type: "register", user_id: userId }));
     };
 
     ws.onmessage = (event) => {
@@ -72,7 +138,7 @@ export default function Notification() {
         ws.close();
       }
     };
-  }, [user?.id]);
+  }, [userId]);
 
   const markAsRead = (notificationId: string) => {
     if (socket) {
@@ -82,10 +148,10 @@ export default function Notification() {
   };
 
   const markAllAsRead = async () => {
-    if (!user?.id) return;
+    if (!userId) return;
 
     try {
-      const response = await fetch(`${backendApi}/api/notifications/mark-all-read/${user.id}`, {
+      const response = await fetch(`${backendApi}/api/notifications/mark-all-read/${userId}`, {
         method: "POST",
       });
 
@@ -96,6 +162,16 @@ export default function Notification() {
       console.error("Failed to mark all notifications as read:", error);
     }
   };
+
+  return { isConnected, notifications, markAsRead, markAllAsRead };
+};
+
+export default function Notification() {
+  const { user } = useAuth();
+  const tNoti = useTranslations("Notification");
+  const { isConnected, notifications, markAsRead, markAllAsRead } = useNotificationWebSocket(
+    user?.id
+  );
 
   const notificationCount = notifications.length;
   const displayCount = notificationCount > 10 ? "9+" : notificationCount.toString();
@@ -117,59 +193,26 @@ export default function Notification() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-96 max-h-[450px] overflow-y-auto p-0 shadow-lg">
-        <div className="p-4 border-b bg-muted/50">
+        <div className="p-4 border-b border-border bg-muted/50">
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-lg">Notifications</h4>
-            <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
-              {notificationCount} new
+            <h4 className="font-medium text-lg">{tNoti("notification")}</h4>
+            <span>
+              {notificationCount} {tNoti("new")}
             </span>
           </div>
         </div>
 
         <div className="divide-y">
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              <p>No notifications yet</p>
-              {!isConnected && <p className="text-xs mt-2">Connecting to notification server...</p>}
-            </div>
+            <EmptyNotificationState isConnected={isConnected} tNoti={tNoti} />
           ) : (
             notifications.map((notification) => (
-              <div
+              <NotificationItem
                 key={notification.id}
-                className="p-4 hover:bg-muted/50 transition-colors border-l-2 border-l-primary"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
-                    {notification.type === "error"
-                      ? "❌"
-                      : notification.type === "warning"
-                        ? "⚠️"
-                        : notification.type === "success"
-                          ? "✅"
-                          : "📘"}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <h5 className="font-medium text-sm">{notification.title}</h5>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap ml-2">
-                        {new Date(notification.created_at).toLocaleTimeString()}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1 mb-2">
-                      {notification.message}
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium capitalize">{notification.type}</span>
-                      <button
-                        onClick={() => markAsRead(notification.id)}
-                        className="text-xs px-2 py-1 border rounded hover:bg-muted"
-                      >
-                        Mark Read
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                notification={notification}
+                onMarkAsRead={markAsRead}
+                tNoti={tNoti}
+              />
             ))
           )}
         </div>
@@ -177,10 +220,10 @@ export default function Notification() {
         {notificationCount > 0 && (
           <div className="p-3 border-t bg-muted/30 flex justify-between">
             <Button variant="ghost" className="text-xs" size="sm" onClick={markAllAsRead}>
-              Mark all as read
+              {tNoti("mark_all_read")}
             </Button>
             <Button variant="outline" className="text-xs" size="sm">
-              View all
+              {tNoti("view_all")}
             </Button>
           </div>
         )}

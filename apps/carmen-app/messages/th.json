@@ -882,5 +882,17 @@
     "create_credit_term_success": "สร้างระยะเวลาการชำระเงินเรียบร้อย",
     "update_credit_term_success": "แก้ไขระยะเวลาการชำระเงินเรียบร้อย",
     "delete_credit_term_success": "ลบระยะเวลาการชำระเงินเรียบร้อย"
+  },
+  "Notification": {
+    "notification": "แจ้งเตือน",
+    "notification_history": "ประวัติการแจ้งเตือน",
+    "no_notification_history": "ไม่มีประวัติการแจ้งเตือน",
+    "by": "โดย",
+    "new": "ใหม่",
+    "no_notifications": "ยังไม่มีการแจ้งเตือน",
+    "connecting": "กำลังเชื่อมต่อกับเซิร์ฟเวอร์...",
+    "mark_read": "ทำเครื่องหมายว่าอ่านแล้ว",
+    "mark_all_read": "ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว",
+    "view_all": "ดูทั้งหมด"
   }
 }

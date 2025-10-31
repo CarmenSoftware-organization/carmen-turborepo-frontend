@@ -57,6 +57,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 
 const clusterSchema = z.object({
   code: z.string().min(1, "Code is required"),
@@ -67,6 +68,7 @@ const clusterSchema = z.object({
 export default function ClusterComponent() {
   const { token } = useAuth();
   const tCommon = useTranslations("Common");
+  const router = useRouter();
   const { data: clusters, isLoading, isError, error } = useClusterQuery(token);
   const { mutate: createCluster, isPending } = useClusterMutation(token);
 
@@ -250,7 +252,7 @@ export default function ClusterComponent() {
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="text-destructive text-lg font-semibold">Error loading clusters</div>
             <p className="text-muted-foreground">{error?.message}</p>
-            <Button onClick={() => window.location.reload()}>Retry</Button>
+            <Button onClick={() => globalThis.window.location.reload()}>Retry</Button>
           </div>
         </Card>
       </div>

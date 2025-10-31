@@ -98,7 +98,7 @@ export const HeroHeader = () => {
                   <Link href="/sign-in">{t("navbar.signIn")}</Link>
                 </Button>
                 <div className={cn(isScrolled && "lg:hidden")}>
-                  <LanguageSwitcher />
+                  <LanguageSwitcher dense />
                 </div>
                 <div className={cn(isScrolled && "lg:hidden")}>
                   <SwitchTheme />

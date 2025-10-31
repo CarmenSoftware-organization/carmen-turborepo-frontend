@@ -10,39 +10,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/utils";
 
-export default function LanguageSwitcher() {
+interface Props {
+  dense?: boolean;
+}
+
+export default function LanguageSwitcher({ dense = false }: Props = {}) {
   const currentPathname = usePathname();
   const currentLocale = useLocale();
 
-  // ฟังก์ชันสำหรับเปลี่ยนภาษาโดยใช้การ reload หน้า
   const handleLocaleChange = (newLocale: string) => {
     if (currentLocale === newLocale) return;
 
-    // คำนวณ URL ใหม่อย่างระมัดระวัง
-    const baseUrl = window.location.origin;
+    const baseUrl = globalThis.window.location.origin;
 
-    // แยก pathname ออกจาก locale
     let pathname = currentPathname;
     const localePrefix = `/${currentLocale}`;
 
-    // ตัด locale ปัจจุบันออก
     if (pathname.startsWith(localePrefix)) {
       pathname = pathname.substring(localePrefix.length) || "/";
     }
 
-    // ถ้าเป็น root path ให้ใช้แค่ locale
     const newPath = pathname === "/" ? `/${newLocale}` : `/${newLocale}${pathname}`;
 
-    // ใช้การ reload หน้าเพื่อให้แน่ใจว่าทุกอย่างถูกโหลดใหม่
-    window.location.href = baseUrl + newPath;
+    globalThis.window.location.href = baseUrl + newPath;
   };
 
   return (
     <Select value={currentLocale} onValueChange={handleLocaleChange}>
-      <SelectTrigger className="border border-border w-12 h-8 px-1.5 text-muted-foreground">
+      <SelectTrigger
+        className={cn(
+          "border border-border text-muted-foreground",
+          dense ? "w-12 h-8 px-1.5" : "w-[100px] focus:ring-ring"
+        )}
+      >
         <SelectValue>
-          <p>{currentLocale.toUpperCase()}</p>
+          {dense ? (
+            <p>{currentLocale.toUpperCase()}</p>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span>{currentLocale === "en" ? "English" : "ไทย"}</span>
+            </div>
+          )}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>
