@@ -853,7 +853,8 @@
     "workflow": "กระบวนการ",
     "workflow_history": "ประวัติกระบวนการ",
     "no_workflow_history": "ไม่มีประวัติกระบวนการ",
-    "by": "โดย"
+    "by": "โดย",
+    "select_workflow": "เลือกระบวนการ"
   },
   "NotFound": {
     "title": "ไม่พบหน้าที่ต้องการ",

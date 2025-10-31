@@ -299,8 +299,6 @@ export default function FormProduct({ mode, initialValues }: Props) {
     toastError({ message: "กรุณากรอกข้อมูลให้ครบถ้วน" });
   }, []);
 
-  console.log("form error: ", form.formState.errors);
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-2">

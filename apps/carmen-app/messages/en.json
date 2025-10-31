@@ -857,7 +857,8 @@
     "workflow": "Workflow",
     "workflow_history": "Workflow History",
     "no_workflow_history": "No workflow history available",
-    "by": "By"
+    "by": "By",
+    "select_workflow": "Select Workflow"
   },
   "NotFound": {
     "title": "Page Not Found",

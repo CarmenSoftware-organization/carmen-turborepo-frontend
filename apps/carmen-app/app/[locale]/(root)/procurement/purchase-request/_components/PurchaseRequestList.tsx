@@ -45,6 +45,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
+import { useSearchParams } from "next/navigation";
+import { returnUrl } from "@/utils/url";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -77,6 +79,8 @@ export default function PurchaseRequestList({
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const searchParams = useSearchParams();
+
   const { dateFormat, amount, currencyBase } = useAuth();
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
@@ -129,7 +133,11 @@ export default function PurchaseRequestList({
         cell: ({ row }) => (
           <div className="max-w-[200px] truncate">
             <Link
-              href={`/procurement/purchase-request/${row.original.id}`}
+              href={returnUrl(
+                `/procurement/purchase-request/${row.original.id}`,
+                `/procurement/purchase-request`,
+                searchParams
+              )}
               className="link-primary"
             >
               {row.original.pr_no ?? "-"}

@@ -6,6 +6,7 @@ import { ChevronLeft, FileDown, Loader2, Pencil, Printer, Save, Share, X } from 
 import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
+import { useSearchParams } from "next/navigation";
 
 interface ActionFieldsProps {
   readonly mode: formType;
@@ -36,7 +37,7 @@ export default function ActionFields({
   const router = useRouter();
   const tStatus = useTranslations("Status");
   const tCommon = useTranslations("Common");
-
+  const searchParams = useSearchParams();
   const isDisabled = isCreatingPr || hasFormErrors || (mode === formType.ADD && !workflowId);
 
   const convertStatus = (status: string) => {
@@ -74,15 +75,16 @@ export default function ActionFields({
   const handleBack = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-
+    const returnUrl = searchParams.get("returnUrl");
+    const backUrl = returnUrl || "/procurement/purchase-request";
     if (currentMode === formType.EDIT) {
       if (hasFormChanges()) {
         onCancel(e, "back");
       } else {
-        router.back();
+        router.push(backUrl);
       }
     } else {
-      router.back();
+      router.push(backUrl);
     }
   };
 

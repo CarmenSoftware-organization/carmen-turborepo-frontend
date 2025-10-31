@@ -566,7 +566,14 @@ export default function PurchaseItemDataGrid({
               {isNewItem ? (
                 <p>-</p>
               ) : (
-                <p>{formatPrice(item.total_price, currencyBase ?? "THB", defaultAmount.locales, defaultAmount.minimumFractionDigits)}</p>
+                <p>
+                  {formatPrice(
+                    item.total_price,
+                    currencyBase ?? "THB",
+                    defaultAmount.locales,
+                    defaultAmount.minimumFractionDigits
+                  )}
+                </p>
               )}
             </div>
           );
@@ -697,7 +704,7 @@ export default function PurchaseItemDataGrid({
         }}
       >
         <div className="w-full space-y-2">
-          <DataGridContainer>
+          <DataGridContainer className="">
             <ScrollArea>
               <DataGridTable />
               <ScrollBar orientation="horizontal" />
