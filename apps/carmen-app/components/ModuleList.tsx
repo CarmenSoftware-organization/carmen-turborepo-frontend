@@ -1,18 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { moduleItems } from "@/constants/modules-list";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useRouter } from "@/lib/navigation";
 import { LayoutGrid } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function ModuleList() {
   const t = useTranslations("Modules");
@@ -28,19 +24,14 @@ export default function ModuleList() {
     }
   }, [isMobile]);
 
-  // ตัด locale ออกจาก pathname ถ้ามี
   const pathWithoutLocale = pathname.split("/").slice(2).join("/");
 
-  // หา active module จาก pathname ปัจจุบัน
   const activeModule = moduleItems.find(
-    (module) =>
-      ("/" + pathWithoutLocale).startsWith(module.href) && module.href !== "/"
+    (module) => ("/" + pathWithoutLocale).startsWith(module.href) && module.href !== "/"
   );
 
   const handleModuleClick = (href: string) => {
-    // ปิด popover
     setOpen(false);
-    // นำทางไปยังหน้านั้น
     router.push(href);
   };
 
@@ -51,7 +42,7 @@ export default function ModuleList() {
           <LayoutGrid className="h-5 w-5" strokeWidth={0.95} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="max-w-[360px]">
+      <PopoverContent className="max-w-fit">
         <div className="grid grid-cols-3 gap-2">
           {moduleItems.map((module) => {
             const key = module.labelKey.split(".").pop() ?? "";
@@ -61,15 +52,14 @@ export default function ModuleList() {
             return (
               <button
                 key={module.labelKey}
-                className={`w-full text-left cursor-pointer rounded-md p-3 ${isActive
-                  ? "bg-accent border-primary"
-                  : "hover:bg-accent/50 border-gray-200"
-                  }`}
+                className={`w-full h-fit text-left cursor-pointer rounded-md p-2 ${
+                  isActive ? "bg-accent border-primary" : "hover:bg-accent/50 border-gray-200"
+                }`}
                 onClick={() => handleModuleClick(module.href)}
                 aria-label={t(key)}
               >
                 <div className="flex flex-col items-center justify-center gap-2">
-                  {Icon && <Icon className="h-8 w-8" />}
+                  {Icon && <Icon className="h-7 w-7" />}
                   <span className="text-xs text-center">{t(key)}</span>
                 </div>
               </button>

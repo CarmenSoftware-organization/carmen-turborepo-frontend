@@ -175,7 +175,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
       prependIngredientUnit({
         from_unit_id: inventoryUnitId,
         from_unit_qty: 1,
-        to_unit_id: inventoryUnitId,
+        to_unit_id: "",
         to_unit_qty: 1,
         description: "",
         is_active: true,

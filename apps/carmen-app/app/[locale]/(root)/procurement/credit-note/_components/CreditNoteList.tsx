@@ -243,7 +243,7 @@ export default function CreditNoteList({
           </span>
         ),
         enableSorting: false,
-        size: 150,
+        size: 180,
         meta: {
           headerTitle: tTableHeader("workflow_status"),
         },
@@ -263,7 +263,7 @@ export default function CreditNoteList({
           </span>
         ),
         enableSorting: false,
-        size: 150,
+        size: 180,
         meta: {
           headerTitle: tTableHeader("last_action"),
         },
@@ -283,7 +283,7 @@ export default function CreditNoteList({
           </span>
         ),
         enableSorting: false,
-        size: 150,
+        size: 180,
         meta: {
           headerTitle: tTableHeader("last_action_by"),
         },
@@ -299,7 +299,7 @@ export default function CreditNoteList({
         ),
         cell: ({ row }) => <span>{row.original.last_action_date || "-"}</span>,
         enableSorting: false,
-        size: 150,
+        size: 180,
         meta: {
           headerTitle: tTableHeader("last_action_date"),
         },

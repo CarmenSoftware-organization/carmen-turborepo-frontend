@@ -136,24 +136,25 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
   const isInitializingRef = useRef(false);
   const previousLengthRef = useRef(newUnits.length);
 
-  useEffect(() => {
-    if (!inventoryUnitId || isInitializingRef.current) return;
-    if (previousLengthRef.current === newUnits.length) return;
+  // Remove auto-fill logic for from_unit_id - let user select manually
+  // useEffect(() => {
+  //   if (!inventoryUnitId || isInitializingRef.current) return;
+  //   if (previousLengthRef.current === newUnits.length) return;
 
-    isInitializingRef.current = true;
+  //   isInitializingRef.current = true;
 
-    newUnits.forEach((field: UnitFormData, index: number) => {
-      if (!field.from_unit_id) {
-        setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId, { shouldDirty: false });
-      }
-    });
+  //   newUnits.forEach((field: UnitFormData, index: number) => {
+  //     if (!field.from_unit_id) {
+  //       setValue(`order_units.add.${index}.from_unit_id`, inventoryUnitId, { shouldDirty: false });
+  //     }
+  //   });
 
-    previousLengthRef.current = newUnits.length;
+  //   previousLengthRef.current = newUnits.length;
 
-    setTimeout(() => {
-      isInitializingRef.current = false;
-    }, 0);
-  }, [inventoryUnitId, newUnits.length, setValue]);
+  //   setTimeout(() => {
+  //     isInitializingRef.current = false;
+  //   }, 0);
+  // }, [inventoryUnitId, newUnits.length, setValue]);
 
   useEffect(() => {
     if (isInitializingRef.current) return;
@@ -280,7 +281,7 @@ const OrderUnit = ({ control, currentMode }: OrderUnitProps) => {
       }
 
       prependOrderUnit({
-        from_unit_id: inventoryUnitId,
+        from_unit_id: "",
         from_unit_qty: 1,
         to_unit_id: inventoryUnitId,
         to_unit_qty: 1,
