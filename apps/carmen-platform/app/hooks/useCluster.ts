@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { backendApi } from "@/lib/backend-api";
-import { ClusterDto, ClusterDtoId, GetClusterDto, } from "@/dto/cluster.dto";
+import { ClusterDtoId, GetClusterDto, ClusterPayloadDto } from "@/dto/cluster.dto";
 import { useCallback } from "react";
 
 const apiUrl = `${backendApi}/api-system/cluster`;
@@ -57,7 +57,7 @@ export const useCreateCluster = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async (payload: ClusterDto) => {
+        mutationFn: async (payload: ClusterPayloadDto) => {
             const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
@@ -84,7 +84,7 @@ export const useUpdateCluster = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ id, payload }: { id: string; payload: ClusterDto }) => {
+        mutationFn: async ({ id, payload }: { id: string; payload: ClusterPayloadDto }) => {
             const response = await fetch(`${apiUrl}/${id}`, {
                 method: 'PUT',
                 headers: {

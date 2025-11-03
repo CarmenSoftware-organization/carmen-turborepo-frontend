@@ -1,8 +1,12 @@
-// Get All Clusters
-export interface ClusterDto {
+// Create/Update Cluster Payload
+export interface ClusterPayloadDto {
     name: string;
     code: string;
     is_active: boolean;
+}
+
+// Get All Clusters
+export interface ClusterDto extends ClusterPayloadDto {
     _count: {
         tb_business_unit: number;
         tb_cluster_user: number;
