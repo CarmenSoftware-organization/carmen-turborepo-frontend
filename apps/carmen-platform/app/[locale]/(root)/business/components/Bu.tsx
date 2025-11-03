@@ -1,9 +1,8 @@
 "use client";
 
 import { useBu } from "@/app/hooks/useBu";
-import { Code, CrownIcon, Info, List, Printer, Share, Share2, Trash2 } from "lucide-react";
+import { Code, CrownIcon, Info, List, Printer, Share, Share2, Trash2, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import SearchInput from "@/components/SearchInput";
 import { useURL } from "@/app/hooks/useURL";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
@@ -22,7 +21,7 @@ export default function Bu() {
 
     const title = (
         <div className="flex items-center gap-2">
-            <Image src="/icons/business.svg" alt="business" width={40} height={40} />
+            <Building2 className="w-10 h-10" />
             <h1 className="text-2xl font-bold">Business Unit</h1>
         </div>
     );

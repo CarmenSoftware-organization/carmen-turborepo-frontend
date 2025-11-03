@@ -3,9 +3,8 @@
 import { useURL } from "@/app/hooks/useURL";
 import { useUserCluster } from "@/app/hooks/useUserCluster";
 import { useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Grid, List, Plus, Printer, Share } from "lucide-react";
+import { Grid, List, Plus, Printer, Share, User } from "lucide-react";
 import SearchInput from "@/components/SearchInput";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
 import UserClusterData from "./UserClusterData";
@@ -24,7 +23,7 @@ export default function ClusterUser() {
 
     const title = (
         <div className="flex items-center gap-2">
-            <Image src="/icons/user.svg" alt="cluster" width={40} height={40} />
+            <User className="w-10 h-10" />
             <h1 className="text-2xl font-bold">User Cluster</h1>
         </div>
     );

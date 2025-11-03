@@ -6,16 +6,16 @@ import {
     SheetHeader,
     SheetTitle,
     SheetTrigger,
-} from "@/components/ui/sheet"
-import Image from 'next/image'
+} from "@/components/ui/sheet";
+import { FileText, MessageSquare } from "lucide-react";
 
 export default function RightSidebar() {
     return (
         <div className="w-14 flex flex-col space-y-2 p-1">
             <Sheet>
                 <SheetTrigger asChild>
-                    <Button size={'sm'} variant={'ghost'} className="hover:bg-transparent">
-                        <Image src={'/icons/file-text.svg'} alt="logo" width={24} height={24} />
+                    <Button size={"sm"} variant={"ghost"} className="hover:bg-transparent">
+                        <FileText className="h-6 w-6" />
                     </Button>
                 </SheetTrigger>
                 <SheetContent>
@@ -31,8 +31,8 @@ export default function RightSidebar() {
 
             <Sheet>
                 <SheetTrigger asChild>
-                    <Button size={'sm'} variant={'ghost'} className="hover:bg-transparent">
-                        <Image src={'/icons/message.svg'} alt="logo" width={24} height={24} />
+                    <Button size={"sm"} variant={"ghost"} className="hover:bg-transparent">
+                        <MessageSquare className="h-6 w-6" />
                     </Button>
                 </SheetTrigger>
                 <SheetContent>
@@ -46,5 +46,5 @@ export default function RightSidebar() {
                 </SheetContent>
             </Sheet>
         </div>
-    )
+    );
 }

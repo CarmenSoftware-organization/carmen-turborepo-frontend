@@ -4,8 +4,7 @@ import { useCluster } from "@/app/hooks/useCluster";
 import { useURL } from "@/app/hooks/useURL";
 import SearchInput from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
-import { Grid, List, Plus, Printer, Share } from "lucide-react";
-import Image from "next/image";
+import { Grid, List, Plus, Printer, Share, Network } from "lucide-react";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
 import ClusterData from "./ClusterData";
@@ -34,7 +33,7 @@ export default function Cluster() {
 
     const title = (
         <div className="flex items-center gap-2">
-            <Image src="/icons/cluster.svg" alt="cluster" width={40} height={40} />
+            <Network className="w-10 h-10" />
             <h1 className="text-2xl font-bold">Cluster</h1>
         </div>
     )

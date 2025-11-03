@@ -7,17 +7,21 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "../ui/avatar"
-import Image from 'next/image'
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "../ui/avatar";
+import { UserCircle, LogOut } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
 
 export default function Profile() {
     const { handleLogout, user } = useAuth();
     const userEmail = user?.email;
-    const userFullName = user?.user_info.firstname + ' ' + user?.user_info.lastname;
+    const userFullName = user?.user_info.firstname + " " + user?.user_info.lastname;
 
-    const userInitials = userFullName.split(' ').map(name => name[0]).join('').toUpperCase();
+    const userInitials = userFullName
+        .split(" ")
+        .map((name) => name[0])
+        .join("")
+        .toUpperCase();
 
     return (
         <DropdownMenu>
@@ -40,15 +44,15 @@ export default function Profile() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer">
-                    <Image src="/icons/profile.svg" alt="logo" width={25} height={25} />
+                    <UserCircle className="mr-2 h-5 w-5" />
                     Profile
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                    <Image src="/icons/logout.svg" alt="logo" width={25} height={25} />
+                    <LogOut className="mr-2 h-5 w-5" />
                     Logout
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
-    )
+    );
 }
