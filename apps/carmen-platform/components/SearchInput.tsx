@@ -18,7 +18,6 @@ export default function SearchInput({
   placeholder,
   buttonClassName = "absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent hover:text-muted-foreground/80",
 }: Props) {
-
   const [inputValue, setInputValue] = useState(defaultValue);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
@@ -49,7 +48,7 @@ export default function SearchInput({
         value={inputValue}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        className="h-8 pr-10 w-full"
+        className="h-8 pr-10 w-full border border-border"
       />
       <Button
         type="button"
@@ -59,11 +58,7 @@ export default function SearchInput({
         className={buttonClassName}
         aria-label={inputValue ? "Clear search" : "Search"}
       >
-        {inputValue ? (
-          <X className="h-4 w-4" />
-        ) : (
-          <Search className="h-4 w-4" />
-        )}
+        {inputValue ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
       </Button>
     </div>
   );
