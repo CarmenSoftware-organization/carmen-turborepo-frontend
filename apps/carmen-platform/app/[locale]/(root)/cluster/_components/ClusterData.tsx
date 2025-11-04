@@ -25,7 +25,6 @@ export default function ClusterData({ clusterData, view }: Props) {
 
   return (
     <div>
-      {/* Table View - Hidden on mobile, shows grid instead */}
       <div className={`${isTable ? "block max-md:hidden" : "hidden"}`}>
         <Table>
           <TableHeader>
@@ -121,19 +120,19 @@ export default function ClusterData({ clusterData, view }: Props) {
               </Badge>
             </CardHeader>
             <CardContent className="space-y-2">
-              <div className="flex items-center gap-2 rounded-lg">
-                <List className="w-4 h-4 text-primary" />
-                <p className="text-sm font-semibold truncate">{cluster.name}</p>
+              <div className="flex items-center gap-2">
+                <List className="w-4 h-4" />
+                <p className="text-sm font-medium truncate">{cluster.name}</p>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="flex items-center gap-2 rounded-lg">
-                  <Building2 className="w-4 h-4  text-orange-700" />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
                   <p className="font-bold text-lg leading-none">
                     {cluster._count.tb_business_unit}
                   </p>
                 </div>
-                <div className="flex items-center gap-2 rounded-lg">
-                  <Users className="w-4 h-4 text-purple-700" />
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4" />
                   <p className="font-bold text-lg leading-none">{cluster._count.tb_cluster_user}</p>
                 </div>
               </div>
