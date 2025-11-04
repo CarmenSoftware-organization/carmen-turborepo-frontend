@@ -1,6 +1,5 @@
 "use client";
 
-import { useCluster } from "@/app/hooks/useCluster";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,25 +12,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useRouter } from "@/i18n/routing";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import type { ControllerRenderProps } from "react-hook-form";
-import type { GetClusterDto } from "@/dto/cluster.dto";
+import { useState } from "react";
+import LookupCluster from "@/components/lookup/LookupCluster";
+import { useCreateBu, useUpdateBu } from "@/app/hooks/useBu";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 
 const businessUnitSchema = z.object({
   cluster_id: z.string().min(1, "Cluster is required"),
-  code: z.string().min(1, "Code is required"),
+  code: z.string().min(3, "Code is required"),
   name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
   is_hq: z.boolean(),
   is_active: z.boolean(),
 });
@@ -43,9 +39,12 @@ interface BuFormProps {
   mode: "add" | "edit" | "view";
 }
 
-export default function BuForm({ businessData, mode = "edit" }: BuFormProps) {
-  const { data: clusterData } = useCluster();
+export default function BuForm({ businessData, mode }: BuFormProps) {
   const router = useRouter();
+  const [currentMode, setCurrentMode] = useState<"add" | "edit" | "view">(mode);
+  const [savedData, setSavedData] = useState<IBuDto | undefined>(businessData);
+  const createBu = useCreateBu();
+  const updateBu = useUpdateBu();
 
   const form = useForm<BusinessUnitFormData>({
     resolver: zodResolver(businessUnitSchema),
@@ -53,69 +52,69 @@ export default function BuForm({ businessData, mode = "edit" }: BuFormProps) {
       cluster_id: businessData?.cluster_id || "",
       code: businessData?.code || "",
       name: businessData?.name || "",
+      description: businessData?.description || "",
       is_hq: businessData?.is_hq ?? false,
       is_active: businessData?.is_active ?? true,
     },
   });
 
-  const clusters = clusterData?.data || [];
-
   const onSubmit = async (data: BusinessUnitFormData) => {
     try {
-      console.log("Form data:", data);
-      // TODO: Add API call here
-      // if (mode === "edit" && businessData?.id) {
-      //   await updateBusinessUnit({ id: businessData.id, payload: data });
-      // } else {
-      //   await createBusinessUnit(data);
-      // }
-      router.push("/business");
+      if (currentMode === "edit" && savedData?.id) {
+        const response = await updateBu.mutateAsync({ id: savedData.id, payload: data });
+        toast.success("Business unit updated successfully!");
+        setSavedData(response);
+        form.reset(data);
+        setCurrentMode("view");
+      } else {
+        const response = await createBu.mutateAsync(data);
+        toast.success("Business unit created successfully!");
+        setSavedData(response);
+        form.reset(data);
+        setCurrentMode("view");
+      }
     } catch (error) {
       console.error("Error saving business unit:", error);
+      toast.error("Failed to save business unit");
     }
+  };
+
+  const getSubmitButtonText = () => {
+    if (form.formState.isSubmitting) return "Saving...";
+    return currentMode === "add" ? "Create" : "Update";
   };
 
   return (
     <div className="space-y-8 max-w-lg mx-auto">
-      {/* Header */}
       <div className="space-y-4">
-        <Button variant="ghost" size="sm" onClick={() => router.push("/business")} className="mb-2">
+        <Button size="sm" onClick={() => router.push("/business")} className="mb-2">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Business Units
         </Button>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {mode === "add"
-              ? "Add New Business Unit"
-              : mode === "edit"
-                ? "Edit Business Unit"
-                : "View Business Unit"}
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            {mode === "add"
-              ? "Create a new business unit with the required information"
-              : mode === "edit"
-                ? "Update business unit information"
-                : "View business unit details"}
-          </p>
-        </div>
+
+        {currentMode !== "add" && (
+          <div className="flex justify-end">
+            <Button size={"sm"} onClick={() => setCurrentMode("edit")}>
+              Edit
+            </Button>
+          </div>
+        )}
       </div>
 
-      {/* Form */}
       <div className="max-w-2xl">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="name"
+              name="cluster_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Business Unit Name</FormLabel>
+                  <FormLabel required>Cluster</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter business unit name"
-                      {...field}
-                      disabled={mode === "view"}
+                    <LookupCluster
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={currentMode === "view"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -123,18 +122,35 @@ export default function BuForm({ businessData, mode = "edit" }: BuFormProps) {
               )}
             />
 
-            {/* Code Field */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel required>Business Unit Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter business unit name"
+                      {...field}
+                      disabled={currentMode === "view"}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="code"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Code</FormLabel>
+                  <FormLabel required>Code</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter business unit code"
                       {...field}
-                      disabled={mode === "view"}
+                      disabled={currentMode === "view"}
                     />
                   </FormControl>
                   <FormMessage />
@@ -142,35 +158,19 @@ export default function BuForm({ businessData, mode = "edit" }: BuFormProps) {
               )}
             />
 
-            {/* Cluster Field */}
             <FormField
               control={form.control}
-              name="cluster_id"
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<BusinessUnitFormData, "cluster_id">;
-              }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>Cluster</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={mode === "view"}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a cluster" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {clusters.map((cluster: GetClusterDto) => (
-                        <SelectItem key={cluster.id} value={cluster.id}>
-                          {cluster.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter business unit description"
+                      {...field}
+                      disabled={currentMode === "view"}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -190,7 +190,7 @@ export default function BuForm({ businessData, mode = "edit" }: BuFormProps) {
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      disabled={mode === "view"}
+                      disabled={currentMode === "view"}
                     />
                   </FormControl>
                 </FormItem>
@@ -211,16 +211,15 @@ export default function BuForm({ businessData, mode = "edit" }: BuFormProps) {
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      disabled={mode === "view"}
+                      disabled={currentMode === "view"}
                     />
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            {/* Action Buttons */}
-            {mode !== "view" && (
-              <div className="flex gap-3 pt-6">
+            {currentMode !== "view" && (
+              <div className="flex justify-end gap-2">
                 <Button
                   type="button"
                   variant="outline"
@@ -230,8 +229,7 @@ export default function BuForm({ businessData, mode = "edit" }: BuFormProps) {
                   Cancel
                 </Button>
                 <Button type="submit" disabled={form.formState.isSubmitting}>
-                  <Save className="h-4 w-4 mr-2" />
-                  {form.formState.isSubmitting ? "Saving..." : mode === "add" ? "Create" : "Update"}
+                  {getSubmitButtonText()}
                 </Button>
               </div>
             )}

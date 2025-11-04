@@ -17,9 +17,9 @@ export default function DashboardComponent() {
   }, []);
 
   return (
-    <div className="space-y-8 p-6 max-w-xl mx-auto">
+    <div className="space-y-8 pt-4 max-w-xl mx-auto">
       <div className="space-y-4">
-        <h1 className="text-3xl font-semibold">
+        <h1 className="text-3xl font-medium">
           {greeting}, {userFullName}
         </h1>
         <p className="text-base text-muted-foreground">
