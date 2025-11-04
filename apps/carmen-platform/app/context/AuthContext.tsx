@@ -1,9 +1,17 @@
 "use client";
 
-import React, { useContext, useState, useEffect, createContext, ReactNode, useMemo, useCallback } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from '@/i18n/routing';
-import { backendApi } from '@/lib/backend-api';
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  createContext,
+  ReactNode,
+  useMemo,
+  useCallback,
+} from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "@/i18n/routing";
+import { backendApi } from "@/lib/backend-api";
 
 enum LOCAL_STORAGE {
   ACCESS_TOKEN = "access_token",
@@ -57,12 +65,37 @@ interface User {
   business_unit: BusinessUnit[];
 }
 
-const AuthContext = createContext<any>(undefined);
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
 
-export const useAuth = () => {
+interface LoginResponse {
+  access_token: string;
+  refresh_token: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  isLoading: boolean;
+  isLoginLoading: boolean;
+  error: Error | null;
+  loginError: Error | null;
+  login: (credentials: LoginCredentials) => Promise<LoginResponse>;
+  isAuthenticated: () => boolean;
+  loginMutation: ReturnType<typeof useMutation<LoginResponse, Error, LoginCredentials>>;
+  handleLogout: () => void;
+  clearValue: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -77,7 +110,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Initialize tokens from localStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (globalThis.window !== undefined) {
       const storedAccessToken = localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN);
       const storedRefreshToken = localStorage.getItem(LOCAL_STORAGE.REFRESH_TOKEN);
 
@@ -93,27 +126,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const fetchUserProfile = async () => {
     const token = localStorage.getItem(LOCAL_STORAGE.ACCESS_TOKEN);
     if (!token) {
-      throw new Error('No access token');
+      throw new Error("No access token");
     }
 
     const profileUrl = `${backendApi}/api/user/profile`;
 
     const response = await fetch(profileUrl, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch user profile');
+      throw new Error("Failed to fetch user profile");
     }
 
     const userData = await response.json();
     return userData; // ไม่ setUser ที่นี่ ให้ useEffect handle
   };
 
-  const { data: userData, isLoading, error } = useQuery({
-    queryKey: ['user-profile'],
+  const {
+    data: userData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["user-profile"],
     queryFn: fetchUserProfile,
     enabled: !!accessToken,
     retry: false,
@@ -130,32 +167,55 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [userData]);
 
-  const loginMutation = useMutation({
-    mutationFn: async (credentials: any) => {
+  const loginMutation = useMutation<LoginResponse, Error, LoginCredentials>({
+    mutationFn: async (credentials: LoginCredentials) => {
       const loginUrl = `${backendApi}/api/auth/login`;
-      const response = await fetch(loginUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(credentials),
-      });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Login response not ok:', response.status, errorText);
-        throw new Error(`Login failed: ${response.status} ${errorText}`);
+      console.log("loginUrl", loginUrl);
+
+      try {
+        const response = await fetch(loginUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(credentials),
+        });
+
+        console.log("res", response);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Login response not ok:", response.status, errorText);
+          throw new Error(`Login failed: ${response.status} ${errorText}`);
+        }
+
+        const data: LoginResponse = await response.json();
+        return data;
+      } catch (error) {
+        // Handle network errors, CORS issues, or fetch failures
+        if (error instanceof TypeError && error.message === "Failed to fetch") {
+          console.error("Network error: Unable to connect to backend API", {
+            url: loginUrl,
+            backendApi,
+            error,
+            possibleCauses: [
+              "Backend server is not running",
+              "CORS configuration issue",
+              "SSL certificate problem (check browser console)",
+              "Network/firewall blocking the connection",
+            ],
+          });
+        }
+        throw error;
       }
-
-      const data = await response.json();
-      return data;
     },
 
-    onSuccess: async (data: any) => {
+    onSuccess: async (data: LoginResponse) => {
       const { access_token, refresh_token } = data;
 
       if (!access_token || !refresh_token) {
-        console.error('Missing required data from login response');
+        console.error("Missing required data from login response");
         return;
       }
 
@@ -167,17 +227,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Invalidate และ refetch user profile
       try {
-        await queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-        await queryClient.refetchQueries({ queryKey: ['user-profile'] });
+        await queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+        await queryClient.refetchQueries({ queryKey: ["user-profile"] });
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
+        console.error("Failed to fetch user profile:", error);
       }
 
       router.push("/dashboard");
     },
 
-    onError: (error: any) => {
-      console.error('Login error:', error);
+    onError: (error: Error) => {
+      console.error("Login error:", error);
     },
   });
 
@@ -188,7 +248,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setRefreshToken(null);
 
     // Clear localStorage
-    if (typeof window !== "undefined") {
+    if (globalThis.window !== undefined) {
       localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.USER);
@@ -201,57 +261,57 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [router, queryClient]);
 
   // Helper functions
-  const login = (credentials: any) => {
-    return loginMutation.mutateAsync(credentials);
-  };
+  const login = useCallback(
+    (credentials: LoginCredentials): Promise<LoginResponse> => {
+      return loginMutation.mutateAsync(credentials);
+    },
+    [loginMutation]
+  );
 
-  const isAuthenticated = () => {
+  const isAuthenticated = useCallback((): boolean => {
     return !!accessToken;
-  };
+  }, [accessToken]);
 
-  const clearValue = () => {
+  const clearValue = useCallback((): void => {
     setUser(null);
     setAccessToken(null);
     setRefreshToken(null);
-    if (typeof window !== "undefined") {
+    if (globalThis.window !== undefined) {
       localStorage.removeItem(LOCAL_STORAGE.ACCESS_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.REFRESH_TOKEN);
       localStorage.removeItem(LOCAL_STORAGE.USER);
     }
     queryClient.clear();
-  }
+  }, [queryClient]);
 
-  const value = useMemo(() => ({
-    user,
-    accessToken,
-    refreshToken,
-    isLoading: isLoading || loginMutation.isPending,
-    isLoginLoading: loginMutation.isPending,
-    error,
-    loginError: loginMutation.error,
-    login,
-    isAuthenticated,
-    loginMutation,
-    handleLogout,
-    clearValue
-  }), [
-    user,
-    accessToken,
-    refreshToken,
-    isLoading,
-    loginMutation.isPending,
-    error,
-    loginMutation.error,
-    login,
-    isAuthenticated,
-    loginMutation,
-    handleLogout,
-    clearValue
-  ]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value: AuthContextType = useMemo(
+    () => ({
+      user,
+      accessToken,
+      refreshToken,
+      isLoading: isLoading || loginMutation.isPending,
+      isLoginLoading: loginMutation.isPending,
+      error,
+      loginError: loginMutation.error,
+      login,
+      isAuthenticated,
+      loginMutation,
+      handleLogout,
+      clearValue,
+    }),
+    [
+      user,
+      accessToken,
+      refreshToken,
+      isLoading,
+      error,
+      login,
+      isAuthenticated,
+      loginMutation,
+      handleLogout,
+      clearValue,
+    ]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
