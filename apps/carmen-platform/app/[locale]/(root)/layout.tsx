@@ -13,9 +13,9 @@ export default function RootLayout({
     <SidebarProvider defaultOpen={true}>
       <div className="flex h-screen w-full">
         <AppSidebar />
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 min-w-0">
           <Navbar />
-          <SidebarInset className="flex-1">
+          <SidebarInset className="flex-1 overflow-hidden">
             <main className="h-full overflow-y-auto p-4">{children}</main>
           </SidebarInset>
         </div>

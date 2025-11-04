@@ -11,5 +11,5 @@ export default function BuDetail() {
   if (error instanceof Error) return <div>Error: {error.message}</div>;
   if (isLoading) return <div>Loading...</div>;
 
-  return <BuForm businessData={data} />;
+  return <BuForm businessData={data} mode="view" />;
 }

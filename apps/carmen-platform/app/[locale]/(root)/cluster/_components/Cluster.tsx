@@ -4,6 +4,7 @@ import { useCluster } from "@/app/hooks/useCluster";
 import { useURL } from "@/app/hooks/useURL";
 import SearchInput from "@/components/SearchInput";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Grid, List, Plus, Printer, Share } from "lucide-react";
 import { useState } from "react";
 import DataDisplayTemplate from "@/components/template/DataDisplayTemplate";
@@ -32,17 +33,42 @@ export default function Cluster() {
   const title = <h1 className="text-2xl font-bold">Cluster</h1>;
 
   const actionButtons = (
-    <div className="flex items-center gap-2">
-      <Button variant="outline" size="sm" onClick={() => router.push("/cluster/new")}>
-        <Plus className="w-4 h-4" />
-      </Button>
-      <Button variant="outline" size="sm">
-        <Share className="w-4 h-4" />
-      </Button>
-      <Button variant="outline" size="sm">
-        <Printer className="w-4 h-4" />
-      </Button>
-    </div>
+    <TooltipProvider>
+      <div className="flex items-center gap-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={() => router.push("/cluster/new")}>
+              <Plus className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Add new cluster</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Share className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Share</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Printer className="w-4 h-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Print</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
   );
 
   const filters = (
@@ -50,22 +76,39 @@ export default function Cluster() {
       <div className="flex-1">
         <SearchInput defaultValue={search} onSearch={setSearch} placeholder="Search clusters..." />
       </div>
-      <div className="hidden md:flex gap-2">
-        <Button
-          variant={view === "list" ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleView("list")}
-        >
-          <List className="w-4 h-4" />
-        </Button>
-        <Button
-          variant={view === "grid" ? "default" : "outline"}
-          size="sm"
-          onClick={() => handleView("grid")}
-        >
-          <Grid className="w-4 h-4" />
-        </Button>
-      </div>
+      <TooltipProvider>
+        <div className="hidden md:flex gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={view === "list" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleView("list")}
+              >
+                <List className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>List view</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant={view === "grid" ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleView("grid")}
+              >
+                <Grid className="w-4 h-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Grid view</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
     </div>
   );
 
