@@ -23,7 +23,7 @@ export default function DashboardComponent() {
           {greeting}, {userFullName}
         </h1>
         <p className="text-base text-muted-foreground">
-          Here&apos;s what&apos;s happening with {user?.business_unit?.[0]?.name || "your business"}
+          Here&apos;s what&apos;s happening with your business
         </p>
       </div>
     </div>
