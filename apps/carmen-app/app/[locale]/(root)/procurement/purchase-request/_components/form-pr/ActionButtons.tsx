@@ -54,7 +54,7 @@ export default function ActionButtons({
             <>
               <Button
                 size="sm"
-                className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)]"
+                className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -67,7 +67,7 @@ export default function ActionButtons({
               </Button>
               <Button
                 size="sm"
-                className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)]"
+                className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)] h-7"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -80,7 +80,7 @@ export default function ActionButtons({
               </Button>
               <Button
                 size="sm"
-                className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)]"
+                className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -93,7 +93,7 @@ export default function ActionButtons({
               </Button>
               <Button
                 size="sm"
-                className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)]"
+                className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -106,7 +106,7 @@ export default function ActionButtons({
               </Button>
               <Button
                 size="sm"
-                className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)]"
+                className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)] h-7"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -123,7 +123,7 @@ export default function ActionButtons({
           {prStatus !== "in_progress" && (
             <Button
               size="sm"
-              className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)]"
+              className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)] h-7"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();

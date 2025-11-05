@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { useWorkflowQuery } from "@/hooks/useWorkflowQuery";
 import { useTranslations } from "next-intl";
+import { cn } from "@/utils";
 
 interface WorkflowDto {
   id: string;
@@ -65,7 +66,9 @@ export default function WorkflowLookup({
 
   return (
     <Select value={value || ""} onValueChange={onValueChange} disabled={disabled || isLoading}>
-      <SelectTrigger className="w-full text-sm">
+      <SelectTrigger
+        className={cn("w-full text-sm", disabled ? "bg-muted cursor-not-allowed" : "")}
+      >
         <SelectValue placeholder={t("select_workflow")} />
       </SelectTrigger>
       <SelectContent>{selectContent}</SelectContent>
