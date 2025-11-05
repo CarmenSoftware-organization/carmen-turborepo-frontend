@@ -343,7 +343,9 @@
     "selected": "Selected",
     "not_product_selected": "Not Product Selected",
     "result": "Result",
-    "items": "Items"
+    "items": "Items",
+    "list_view": "List View",
+    "grid_view": "Grid View"
   },
   "TableHeader": {
     "all": "All",
@@ -420,7 +422,10 @@
     "pricing": "Pricing",
     "value": "Value",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "local_name": "Local Name",
+    "filter_by_status": "Filter By Status",
+    "sort_by": "Sort By"
   },
   "Unit": {
     "title": "Unit",

@@ -340,7 +340,11 @@
     "selected": "เลือก",
     "not_product_selected": "ไม่ได้เลือกสินค้า",
     "result": "ผลลัพธ์",
-    "items": "รายการ"
+    "items": "รายการ",
+    "list_view": "แสดงผลตาราง",
+    "grid_view": "แสดงผลรายการ",
+    "filter_by_status": "กรองตามสถานะ",
+    "sort_by": "เรียงตาม"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -419,7 +423,8 @@
     "pricing": "ราคา",
     "value": "ค่า",
     "active": "ใช้งาน",
-    "inactive": "ไม่ใช้งาน"
+    "inactive": "ไม่ใช้งาน",
+    "local_name": "ชื่อภาษาไทย"
   },
   "Unit": {
     "title": "หน่วยนับ",
