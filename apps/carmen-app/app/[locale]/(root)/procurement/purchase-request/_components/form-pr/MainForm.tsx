@@ -354,21 +354,29 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const onReview = () => {
-    review(
-      {},
-      {
-        onSuccess: () => {
-          toastSuccess({
-            message: tPR("purchase_request_reviewed"),
-          });
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_reviewed_failed"),
-          });
-        },
-      }
-    );
+    const reviewData = {
+      stage_role: STAGE_ROLE.CREATE,
+      des_stage: "HOD",
+      body:
+        initValues?.purchase_request_detail?.map((item) => ({
+          id: item.id,
+          stage_status: "review",
+          stage_message: "กลับไป HOD",
+        })) || [],
+    };
+
+    review(reviewData, {
+      onSuccess: () => {
+        toastSuccess({
+          message: tPR("purchase_request_reviewed"),
+        });
+      },
+      onError: () => {
+        toastError({
+          message: tPR("purchase_request_reviewed_failed"),
+        });
+      },
+    });
   };
 
   const isNewPr = currentFormType === formType.ADD;
