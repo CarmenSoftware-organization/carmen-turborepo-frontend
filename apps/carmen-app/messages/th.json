@@ -339,7 +339,8 @@
     "un_select_all": "ยกเลิกการเลือกทั้งหมด",
     "selected": "เลือก",
     "not_product_selected": "ไม่ได้เลือกสินค้า",
-    "result": "ผลลัพธ์"
+    "result": "ผลลัพธ์",
+    "items": "รายการ"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -747,7 +748,11 @@
     "template_pr_desc": "สร้างใบขอซื้อใหม่จากแม่แบบใบขอซื้อ",
     "swicth_grid_view": "สลับแสดงการแสดงผล",
     "table_view": "แสดงผลตาราง",
-    "grid_view": "แสดงผลรายการ"
+    "grid_view": "แสดงผลรายการ",
+    "select_pr_item": "เลือกรายการใบขอซื้อ",
+    "select_pr_items_desc": "เลือกวิธีการเลือกรายการใบขอซื้อจากรายการ",
+    "select_all_pr_items": "เลือกรายการใบขอซื้อทั้งหมด",
+    "select_only_pending_status": "เลือกรายการใบขอซื้อเฉพาะสถานะรอการอนุมัติ"
   },
   "Procurement": {
     "title": "การจัดซื้อ"
@@ -854,7 +859,9 @@
     "workflow_history": "ประวัติกระบวนการ",
     "no_workflow_history": "ไม่มีประวัติกระบวนการ",
     "by": "โดย",
-    "select_workflow": "เลือกระบวนการ"
+    "select_workflow": "เลือกระบวนการ",
+    "general": "ทั่วไป",
+    "market_list": "รายการตลาด"
   },
   "NotFound": {
     "title": "ไม่พบหน้าที่ต้องการ",

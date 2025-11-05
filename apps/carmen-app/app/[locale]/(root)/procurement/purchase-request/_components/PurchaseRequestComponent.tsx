@@ -248,7 +248,6 @@ export default function PurchaseRequestComponent() {
           totalPages={totalPages}
           onPageChange={handlePageChange}
           isLoading={isLoading}
-          getTypeName={getTypeName}
           convertStatus={convertStatus}
         />
       </div>
@@ -266,7 +265,6 @@ export default function PurchaseRequestComponent() {
             sort={parseSortString(sort)}
             onSort={setSort}
             setPerpage={handleSetPerpage}
-            getTypeName={getTypeName}
             convertStatus={convertStatus}
           />
         ) : (
@@ -276,7 +274,6 @@ export default function PurchaseRequestComponent() {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
-            getTypeName={getTypeName}
             convertStatus={convertStatus}
           />
         )}

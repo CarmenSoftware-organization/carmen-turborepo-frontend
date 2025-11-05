@@ -48,7 +48,6 @@ export default function SignInForm() {
       { email: values.email, password: values.password },
       {
         onSuccess: (result) => {
-          console.log("result", result);
           if (result?.access_token && result?.refresh_token) {
             setSession(result.access_token, result.refresh_token);
             form.reset();

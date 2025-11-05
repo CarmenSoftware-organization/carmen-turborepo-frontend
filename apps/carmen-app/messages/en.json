@@ -342,7 +342,8 @@
     "un_select_all": "Unselect All",
     "selected": "Selected",
     "not_product_selected": "Not Product Selected",
-    "result": "Result"
+    "result": "Result",
+    "items": "Items"
   },
   "TableHeader": {
     "all": "All",
@@ -751,7 +752,11 @@
     "template_pr_desc": "Create a new purchase request from a purchase request",
     "swicth_grid_view": "Switch between list and grid view",
     "table_view": "Table View",
-    "grid_view": "Grid View"
+    "grid_view": "Grid View",
+    "select_pr_item": "Select Purchase Request Items",
+    "select_pr_items_desc": "Choose how you want to select purchase request items from the list",
+    "select_all_pr_items": "Select All Purchase Request Items",
+    "select_only_pending_status": "Select Only Purchase Request Status Pending"
   },
   "Procurement": {
     "title": "Procurement"
@@ -858,7 +863,9 @@
     "workflow_history": "Workflow History",
     "no_workflow_history": "No workflow history available",
     "by": "By",
-    "select_workflow": "Select Workflow"
+    "select_workflow": "Select Workflow",
+    "general": "General",
+    "market_list": "Market List"
   },
   "NotFound": {
     "title": "Page Not Found",

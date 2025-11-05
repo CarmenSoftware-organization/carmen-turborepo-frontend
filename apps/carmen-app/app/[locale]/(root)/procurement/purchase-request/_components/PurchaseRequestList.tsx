@@ -47,6 +47,7 @@ import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 import { returnUrl } from "@/utils/url";
+import { useWorkflowTypeTranslation } from "@/utils/workflow-helpers";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -59,7 +60,6 @@ interface PurchaseRequestListProps {
   readonly sort?: { field: string; direction: "asc" | "desc" };
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
-  readonly getTypeName: (type: string) => string;
   readonly convertStatus: (status: string) => string;
 }
 
@@ -74,12 +74,12 @@ export default function PurchaseRequestList({
   sort,
   onSort,
   setPerpage,
-  getTypeName,
   convertStatus,
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
   const searchParams = useSearchParams();
+  const { workflowTypeName } = useWorkflowTypeTranslation();
 
   const { dateFormat, amount, currencyBase } = useAuth();
 
@@ -179,7 +179,7 @@ export default function PurchaseRequestList({
             icon={<TypeIcon className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <p>{getTypeName(row.original.workflow_name)}</p>,
+        cell: ({ row }) => <p>{workflowTypeName(row.original.workflow_name)}</p>,
         enableSorting: true,
         size: 120,
         meta: {
@@ -363,17 +363,7 @@ export default function PurchaseRequestList({
         },
       },
     ],
-    [
-      tTableHeader,
-      tCommon,
-      currentPage,
-      perpage,
-      dateFormat,
-      amount,
-      currencyBase,
-      getTypeName,
-      convertStatus,
-    ]
+    [tTableHeader, tCommon, currentPage, perpage, dateFormat, amount, currencyBase, convertStatus]
   );
 
   // Initialize table

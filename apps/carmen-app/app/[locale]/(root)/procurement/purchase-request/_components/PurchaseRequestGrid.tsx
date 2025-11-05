@@ -20,6 +20,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "@/lib/navigation";
 import CardLoading from "@/components/loading/CardLoading";
+import { useWorkflowTypeTranslation } from "@/utils/workflow-helpers";
 
 interface PurchaseRequestGridProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -27,7 +28,6 @@ interface PurchaseRequestGridProps {
   readonly totalPages?: number;
   readonly onPageChange?: (page: number) => void;
   readonly isLoading?: boolean;
-  readonly getTypeName: (type: string) => string;
   readonly convertStatus: (status: string) => string;
 }
 
@@ -37,7 +37,6 @@ export default function PurchaseRequestGrid({
   totalPages = 1,
   onPageChange = () => {},
   isLoading = false,
-  getTypeName,
   convertStatus,
 }: PurchaseRequestGridProps) {
   const { dateFormat, amount, currencyBase } = useAuth();
@@ -45,6 +44,7 @@ export default function PurchaseRequestGrid({
   const tCommon = useTranslations("Common");
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const { workflowTypeName } = useWorkflowTypeTranslation();
 
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
@@ -115,7 +115,7 @@ export default function PurchaseRequestGrid({
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">{tTableHeader("type")}</p>
                   <p className="text-sm font-medium text-muted-foreground">
-                    {getTypeName(pr.workflow_name ?? "-")}
+                    {workflowTypeName(pr.workflow_name ?? "-")}
                   </p>
                 </div>
                 <div className="space-y-1">

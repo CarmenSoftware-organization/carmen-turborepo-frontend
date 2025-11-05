@@ -47,7 +47,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePrActions } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-pr-actions";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
-// import JsonViewer from "@/components/JsonViewer";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
   mode: formType;
@@ -382,7 +382,7 @@ export default function MainForm({ mode, initValues }: Props) {
   const isNewPr = currentFormType === formType.ADD;
   const prStatus = initValues?.pr_status;
 
-  // const watchForm = form.watch();
+  const watchForm = form.watch();
 
   // console.log("form.formState.errors", form.formState.errors);
 
@@ -451,7 +451,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 </Tabs>
               </form>
             </Form>
-            {/* <JsonViewer data={watchForm} title="Form Data" /> */}
+            <JsonViewer data={watchForm} title="Form Data" />
           </Card>
 
           {prStatus !== "voided" && (

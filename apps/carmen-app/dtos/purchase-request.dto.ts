@@ -191,6 +191,8 @@ export interface PurchaseRequestDetail
     OnHandOnOrder,
     AuditInfo {
   purchase_request_id: string;
+  stage_status?: string;
+  stage_message?: string;
 }
 
 export interface PurchaseRequestByIdDto

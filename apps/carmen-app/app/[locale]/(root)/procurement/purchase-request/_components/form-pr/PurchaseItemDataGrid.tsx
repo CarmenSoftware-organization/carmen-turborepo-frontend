@@ -46,6 +46,24 @@ import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { UnitSelectCell } from "../UnitSelectCell";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
+import PrLabelItem from "./PrLabelItem";
+import { Badge } from "@/components/ui/badge";
+
+enum PR_ITEM_BULK_ACTION {
+  APPROVED = "approved",
+  REVIEW = "review",
+  REJECTED = "rejected",
+}
 
 interface Props {
   currentFormType: formType;
@@ -79,6 +97,7 @@ export default function PurchaseItemDataGrid({
   const tPr = useTranslations("PurchaseRequest");
   const tHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
+  const tAction = useTranslations("Action");
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<{
@@ -86,6 +105,8 @@ export default function PurchaseItemDataGrid({
     isAddItem: boolean;
     addIndex?: number;
   } | null>(null);
+  const [selectAllDialogOpen, setSelectAllDialogOpen] = useState(false);
+  const [selectMode, setSelectMode] = useState<"all" | "pending">("all");
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
@@ -101,6 +122,33 @@ export default function PurchaseItemDataGrid({
     }
     setDeleteDialogOpen(false);
     setItemToDelete(null);
+  };
+
+  const getPrItemName = (type: string) => {
+    if (type === PR_ITEM_BULK_ACTION.APPROVED) {
+      return tAction("approve");
+    } else if (type === PR_ITEM_BULK_ACTION.REVIEW) {
+      return tAction("review");
+    } else if (type === PR_ITEM_BULK_ACTION.REJECTED) {
+      return tAction("reject");
+    } else {
+      return "-";
+    }
+  };
+
+  const getBadgeVariant = (status: string) => {
+    switch (status) {
+      case "approved":
+        return "active";
+      case "rejected":
+        return "destructive";
+      case "review":
+        return "warning";
+      case "pending":
+        return "outline";
+      default:
+        return "default";
+    }
   };
 
   const columns = useMemo<ColumnDef<PurchaseRequestDetail>[]>(() => {
@@ -269,17 +317,40 @@ export default function PurchaseItemDataGrid({
       },
       {
         id: "select",
-        header: () => {
+        header: ({ table }) => {
           if (currentFormType === formType.VIEW) {
             return null;
           }
-          return <DataGridTableRowSelectAll />;
+          return (
+            <Checkbox
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() && "indeterminate")
+              }
+              disabled={items.length === 0}
+              onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+              aria-label="Select all"
+              className="align-[inherit]"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setSelectAllDialogOpen(true);
+              }}
+            />
+          );
         },
         cell: ({ row }) => {
           if (currentFormType === formType.VIEW) {
             return null;
           }
-          return <DataGridTableRowSelect row={row} />;
+          return (
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Select row"
+              className="align-[inherit]"
+            />
+          );
         },
 
         enableSorting: false,
@@ -379,6 +450,26 @@ export default function PurchaseItemDataGrid({
         size: currentFormType === formType.VIEW ? 150 : 250,
         meta: {
           headerTitle: tHeader("product"),
+        },
+      },
+      {
+        accessorKey: "stage_status",
+        header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("status")} />,
+        cell: ({ row }) => {
+          const item = row.original;
+          const stageStatus = getItemValue(item, "stage_status") as string | undefined;
+          const status = stageStatus || item.stage_status;
+
+          if (!status) {
+            return <span className="text-xs text-muted-foreground">-</span>;
+          }
+
+          return <Badge variant={getBadgeVariant(status)}>{getPrItemName(status)}</Badge>;
+        },
+        enableSorting: false,
+        size: 100,
+        meta: {
+          headerTitle: tHeader("status"),
         },
       },
       {
@@ -659,35 +750,75 @@ export default function PurchaseItemDataGrid({
     getRowCanExpand: () => true,
   });
 
+  const selectedRowsCount = table.getFilteredSelectedRowModel().rows.length;
+
+  const handleBulkStatusUpdate = (status: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    for (const row of selectedRows) {
+      onItemUpdate(row.original.id, "stage_status", status);
+    }
+    table.resetRowSelection();
+  };
+
   return (
     <div className="mt-4 space-y-4">
       <div className="flex items-center justify-between">
         <p className="font-semibold text-muted-foreground ">{tPr("items")}</p>
-        {currentFormType !== formType.VIEW && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onAddItem();
-                  }}
-                  size="sm"
-                  className={cn("w-7 h-7", !workflow_id && "bg-muted-foreground")}
-                  disabled={!workflow_id}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{tPr("add_item")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
+        <div className="flex items-center gap-2">
+          {currentFormType !== formType.VIEW && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onAddItem();
+                    }}
+                    size="sm"
+                    className={cn("w-7 h-7", !workflow_id && "bg-muted-foreground")}
+                    disabled={!workflow_id}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tPr("add_item")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
       </div>
-
+      {selectedRowsCount > 0 && currentFormType !== formType.VIEW && (
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleBulkStatusUpdate(PR_ITEM_BULK_ACTION.APPROVED)}
+            size="sm"
+            className="h-7"
+          >
+            {tAction("approve")}
+          </Button>
+          <Button
+            onClick={handleBulkStatusUpdate(PR_ITEM_BULK_ACTION.REVIEW)}
+            size="sm"
+            className="h-7"
+            variant={"outlinePrimary"}
+          >
+            {tAction("review")}
+          </Button>
+          <Button
+            onClick={handleBulkStatusUpdate(PR_ITEM_BULK_ACTION.REJECTED)}
+            size="sm"
+            className="h-7"
+            variant={"destructive"}
+          >
+            {tAction("reject")}
+          </Button>
+        </div>
+      )}
       <DataGrid
         table={table}
         recordCount={items.length}
@@ -718,26 +849,56 @@ export default function PurchaseItemDataGrid({
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
       />
+
+      <Dialog open={selectAllDialogOpen} onOpenChange={setSelectAllDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{tPr("select_pr_item")}</DialogTitle>
+            <DialogDescription>{tPr("select_pr_items_desc")}</DialogDescription>
+          </DialogHeader>
+          <RadioGroup
+            value={selectMode}
+            onValueChange={(value: "all" | "pending") => setSelectMode(value)}
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="all" id="all" />
+              <Label htmlFor="all" className="cursor-pointer">
+                {tPr("select_all_pr_items")} ({items.length} {tCommon("items")})
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="pending" id="pending" />
+              <Label htmlFor="pending" className="cursor-pointer">
+                {tPr("select_only_pending_status")} (
+                {items.filter((item) => item.stage_status === "pending").length} {tCommon("items")})
+              </Label>
+            </div>
+          </RadioGroup>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectAllDialogOpen(false)}>
+              {tCommon("cancel")}
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectMode === "all") {
+                  table.toggleAllRowsSelected(true);
+                } else {
+                  // Select only pending items
+                  for (const row of table.getRowModel().rows) {
+                    const item = row.original;
+                    if (item.stage_status === "pending") {
+                      row.toggleSelected(true);
+                    }
+                  }
+                }
+                setSelectAllDialogOpen(false);
+              }}
+            >
+              {tCommon("confirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
-const PrLabelItem = ({
-  label,
-  value,
-  position = "text-left",
-  sub_value,
-}: {
-  label: string;
-  value: string | number | null;
-  position?: "text-left" | "text-right";
-  sub_value?: string | number | null;
-}) => {
-  return (
-    <div className={position}>
-      <Label className="text-muted-foreground text-xs">{label}</Label>
-      <p className="font-bold text-sm text-muted-foreground">{value}</p>
-      {sub_value && <p className="text-xs text-muted-foreground">{sub_value}</p>}
-    </div>
-  );
-};
