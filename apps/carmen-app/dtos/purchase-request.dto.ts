@@ -142,12 +142,20 @@ export interface PriceCalculation {
   base_total_price: number;
 }
 
+// ========== Stage Status Interface ==========
+export interface StageStatus {
+  seq?: number;
+  name?: string | null;
+  status?: string;
+  message?: string;
+}
+
 export interface DetailCommonInfo {
   sequence_no: number;
   description: string;
   comment: string | null;
   history?: any;
-  stages_status?: any;
+  stages_status?: string | StageStatus[];
   info?: any;
   dimension?: any;
 }
@@ -191,7 +199,6 @@ export interface PurchaseRequestDetail
     OnHandOnOrder,
     AuditInfo {
   purchase_request_id: string;
-  stage_status?: string;
   stage_message?: string;
 }
 

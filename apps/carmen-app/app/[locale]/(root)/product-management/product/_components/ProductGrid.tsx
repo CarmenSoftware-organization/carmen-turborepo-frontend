@@ -37,8 +37,6 @@ export default function ProductGrid({
   const tCommon = useTranslations("Common");
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
-  console.log("product", products);
-
   const handleSelectItem = (id: string) => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]

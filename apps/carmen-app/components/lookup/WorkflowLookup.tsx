@@ -33,13 +33,16 @@ export default function WorkflowLookup({
   const { token, buCode } = useAuth();
   const { workflows, isLoading } = useWorkflowQuery(token, buCode, type);
   const t = useTranslations("Workflow");
+
   let selectContent;
 
   const getTypeName = (type: string) => {
     if (type === "General") {
       return t("general");
+    } else if (type === "Market list") {
+      return t("market_list");
     }
-    return t("market_list");
+    return type;
   };
 
   if (isLoading) {

@@ -6,6 +6,7 @@ import {
   CreatePrSchema,
   PurchaseRequestByIdDto,
   STAGE_ROLE,
+  StageStatus,
 } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useMemo } from "react";
@@ -105,6 +106,26 @@ export default function MainForm({ mode, initValues }: Props) {
     initValues: initValues?.purchase_request_detail,
   });
 
+  console.log("current stage", initValues?.purchase_request_detail);
+
+  // Helper function to get current status from stages_status
+  const getCurrentStatus = (stagesStatusValue: string | StageStatus[] | undefined): string => {
+    if (!stagesStatusValue) return "pending";
+
+    // ถ้า stages_status เป็น array ให้เอาตัวล่าสุด (status จาก object)
+    if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
+      const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
+      return lastStage?.status || "pending";
+    }
+
+    // ถ้าเป็น string ให้ return เลย
+    if (typeof stagesStatusValue === "string") {
+      return stagesStatusValue;
+    }
+
+    return "pending";
+  };
+
   const itemsStatusSummary = useMemo(() => {
     const summary = {
       approved: 0,
@@ -123,19 +144,16 @@ export default function MainForm({ mode, initValues }: Props) {
       if (isNewItem) {
         summary.newItems++;
       } else {
-        const stageStatusValue: any =
-          purchaseItemManager.getItemValue(item, "stage_status") || item.stage_status;
+        const stagesStatusValue: string | StageStatus[] | undefined =
+          purchaseItemManager.getItemValue(item, "stages_status") || item.stages_status;
 
-        // ถ้า stage_status เป็น array ให้เอาตัวล่าสุด
-        const stageStatus = Array.isArray(stageStatusValue)
-          ? stageStatusValue[stageStatusValue.length - 1]
-          : stageStatusValue;
+        const currentStatus = getCurrentStatus(stagesStatusValue);
 
-        if (stageStatus === "approved") {
+        if (currentStatus === "approved" || currentStatus === "approve") {
           summary.approved++;
-        } else if (stageStatus === "review") {
+        } else if (currentStatus === "review") {
           summary.review++;
-        } else if (stageStatus === "rejected") {
+        } else if (currentStatus === "rejected" || currentStatus === "reject") {
           summary.rejected++;
         } else {
           summary.pending++;
@@ -480,6 +498,7 @@ export default function MainForm({ mode, initValues }: Props) {
                       onItemRemove={purchaseItemManager.removeItem}
                       onAddItem={purchaseItemManager.addItem}
                       getItemValue={purchaseItemManager.getItemValue}
+                      getCurrentStatus={getCurrentStatus}
                       workflow_id={form.watch("body.workflow_id")}
                     />
                   </TabsContent>

@@ -56,12 +56,7 @@ export default function ActionButtons({
   }, [itemsStatusSummary]);
 
   // ตรวจสอบสถานะของ items
-  const hasOnlyPending = itemsStatusSummary
-    ? itemsStatusSummary.approved === 0 &&
-      itemsStatusSummary.review === 0 &&
-      itemsStatusSummary.rejected === 0 &&
-      itemsStatusSummary.newItems === 0
-    : false;
+  const hasPending = itemsStatusSummary ? itemsStatusSummary.pending > 0 : false;
 
   const hasOnlyRejected = itemsStatusSummary
     ? itemsStatusSummary.approved === 0 &&
@@ -71,12 +66,7 @@ export default function ActionButtons({
       itemsStatusSummary.newItems === 0
     : false;
 
-  const hasReview = itemsStatusSummary
-    ? itemsStatusSummary.review > 0 &&
-      itemsStatusSummary.approved === 0 &&
-      itemsStatusSummary.rejected === 0 &&
-      itemsStatusSummary.newItems === 0
-    : false;
+  const hasReview = itemsStatusSummary ? itemsStatusSummary.review > 0 : false;
 
   const hasOnlyApproved = itemsStatusSummary
     ? itemsStatusSummary.approved > 0 &&
@@ -86,8 +76,8 @@ export default function ActionButtons({
       itemsStatusSummary.newItems === 0
     : false;
 
-  // ถ้ามีแต่ pending ให้ return null ไม่ต้องแสดง
-  if (hasOnlyPending) {
+  // ถ้ามี pending และไม่ใช่ draft ให้ return null ไม่ต้องแสดง
+  if (hasPending && !isDraft) {
     return null;
   }
 
@@ -232,7 +222,7 @@ export default function ActionButtons({
             </>
           )}
 
-          {prStatus !== "in_progress" && (
+          {(prStatus === "draft" || prStatus !== "in_progress") && (
             <Button
               size="sm"
               className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)] h-7"

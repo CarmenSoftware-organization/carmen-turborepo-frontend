@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
-import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
 import { useState, useMemo } from "react";
 import { ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { formatDate } from "@/utils/format/date";
@@ -79,6 +79,7 @@ interface Props {
   onItemRemove: (itemId: string, isNewItem?: boolean, itemIndex?: number) => void;
   onAddItem: () => void;
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
+  getCurrentStatus: (stagesStatusValue: string | StageStatus[] | undefined) => string;
   workflow_id?: string;
 }
 
@@ -91,6 +92,7 @@ export default function PurchaseItemDataGrid({
   onItemRemove,
   onAddItem,
   getItemValue,
+  getCurrentStatus,
   workflow_id,
 }: Props) {
   const { dateFormat, currencyBase, token, buCode } = useAuth();
@@ -463,12 +465,15 @@ export default function PurchaseItemDataGrid({
             return <p className="text-center text-xs">-</p>;
           }
 
-          const stageStatus = getItemValue(item, "stage_status") as string | undefined;
-          const status = stageStatus || item.stage_status;
+          // ใช้ getCurrentStatus เพื่อดึง status จาก stages_status
+          const stagesStatusValue = (getItemValue(item, "stages_status") || item.stages_status) as
+            | string
+            | StageStatus[]
+            | undefined;
 
-          return (
-            <Badge variant={getBadgeVariant(status ?? "")}>{getPrItemName(status ?? "")}</Badge>
-          );
+          const status = getCurrentStatus(stagesStatusValue);
+
+          return <Badge variant={getBadgeVariant(status)}>{getPrItemName(status)}</Badge>;
         },
         enableSorting: false,
         size: 100,
@@ -731,6 +736,7 @@ export default function PurchaseItemDataGrid({
     currentFormType,
     initValues,
     getItemValue,
+    getCurrentStatus,
     onItemUpdate,
     addFields,
     dateFormat,
@@ -761,7 +767,37 @@ export default function PurchaseItemDataGrid({
     e.stopPropagation();
     const selectedRows = table.getFilteredSelectedRowModel().rows;
     for (const row of selectedRows) {
-      onItemUpdate(row.original.id, "stage_status", status);
+      const item = row.original;
+      const currentStagesStatus = (getItemValue(item, "stages_status") ||
+        item.stages_status) as string | StageStatus[] | undefined;
+
+      // สร้าง stages_status ใหม่โดย append status ใหม่เข้าไปใน array
+      let newStagesStatus: StageStatus[];
+
+      if (Array.isArray(currentStagesStatus)) {
+        // ถ้าเป็น array อยู่แล้ว ให้ append เข้าไป
+        newStagesStatus = [
+          ...currentStagesStatus,
+          {
+            seq: currentStagesStatus.length + 1,
+            name: null,
+            status: status,
+            message: "",
+          },
+        ];
+      } else {
+        // ถ้ายังไม่เป็น array หรือเป็น string ให้สร้าง array ใหม่
+        newStagesStatus = [
+          {
+            seq: 1,
+            name: null,
+            status: status,
+            message: "",
+          },
+        ];
+      }
+
+      onItemUpdate(item.id, "stages_status", newStagesStatus);
     }
     table.resetRowSelection();
   };
@@ -874,7 +910,14 @@ export default function PurchaseItemDataGrid({
               <RadioGroupItem value="pending" id="pending" />
               <Label htmlFor="pending" className="cursor-pointer">
                 {tPr("select_only_pending_status")} (
-                {items.filter((item) => item.stage_status === "pending").length} {tCommon("items")})
+                {
+                  items.filter((item) => {
+                    const stagesStatusValue = (getItemValue(item, "stages_status") ||
+                      item.stages_status) as string | StageStatus[] | undefined;
+                    return getCurrentStatus(stagesStatusValue) === "pending";
+                  }).length
+                }{" "}
+                {tCommon("items")})
               </Label>
             </div>
           </RadioGroup>
@@ -890,7 +933,11 @@ export default function PurchaseItemDataGrid({
                   // Select only pending items
                   for (const row of table.getRowModel().rows) {
                     const item = row.original;
-                    if (item.stage_status === "pending") {
+                    const stagesStatusValue = (getItemValue(item, "stages_status") ||
+                      item.stages_status) as string | StageStatus[] | undefined;
+                    const currentStatus = getCurrentStatus(stagesStatusValue);
+
+                    if (currentStatus === "pending") {
                       row.toggleSelected(true);
                     }
                   }
