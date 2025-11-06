@@ -8,7 +8,7 @@ import {
   STAGE_ROLE,
 } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-purchase-item-management";
 import { useAuth } from "@/context/AuthContext";
@@ -104,6 +104,47 @@ export default function MainForm({ mode, initValues }: Props) {
     form,
     initValues: initValues?.purchase_request_detail,
   });
+
+  const itemsStatusSummary = useMemo(() => {
+    const summary = {
+      approved: 0,
+      review: 0,
+      rejected: 0,
+      pending: 0,
+      newItems: 0,
+      total: purchaseItemManager.items.length,
+    };
+
+    for (const item of purchaseItemManager.items) {
+      const isNewItem = !initValues?.purchase_request_detail?.some(
+        (initItem) => initItem.id === item.id
+      );
+
+      if (isNewItem) {
+        summary.newItems++;
+      } else {
+        const stageStatusValue: any =
+          purchaseItemManager.getItemValue(item, "stage_status") || item.stage_status;
+
+        // ถ้า stage_status เป็น array ให้เอาตัวล่าสุด
+        const stageStatus = Array.isArray(stageStatusValue)
+          ? stageStatusValue[stageStatusValue.length - 1]
+          : stageStatusValue;
+
+        if (stageStatus === "approved") {
+          summary.approved++;
+        } else if (stageStatus === "review") {
+          summary.review++;
+        } else if (stageStatus === "rejected") {
+          summary.rejected++;
+        } else {
+          summary.pending++;
+        }
+      }
+    }
+
+    return summary;
+  }, [purchaseItemManager.items, initValues?.purchase_request_detail, purchaseItemManager]);
 
   const queryClient = useQueryClient();
 
@@ -461,6 +502,7 @@ export default function MainForm({ mode, initValues }: Props) {
               isDraft={isDraft}
               isPending={isPending}
               isSubmitDisabled={!form.watch("body.workflow_id")}
+              itemsStatusSummary={itemsStatusSummary}
               onReject={onReject}
               onSendBack={onSendBack}
               onReview={onReview}

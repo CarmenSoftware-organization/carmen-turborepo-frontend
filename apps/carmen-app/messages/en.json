@@ -84,7 +84,8 @@
     "approve": "Approve",
     "purchase_approve": "Purchase Approve",
     "submit": "Submit",
-    "select_date": "Select Date"
+    "select_date": "Select Date",
+    "pending": "Pending"
   },
   "Vendor": {
     "title": "Vendor",

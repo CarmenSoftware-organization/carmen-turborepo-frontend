@@ -68,7 +68,8 @@
     "approve": "อนุมัติ",
     "purchase_approve": "อนุมัติซื้อ",
     "submit": "ส่งอนุมัติ",
-    "select_date": "เลือกวัน"
+    "select_date": "เลือกวัน",
+    "pending": "รอการอนุมัติ"
   },
   "Vendor": {
     "title": "ผู้จัดจำหน่าย",

@@ -132,7 +132,7 @@ export default function PurchaseItemDataGrid({
     } else if (type === PR_ITEM_BULK_ACTION.REJECTED) {
       return tAction("reject");
     } else {
-      return "-";
+      return tAction("pending");
     }
   };
 
@@ -145,9 +145,9 @@ export default function PurchaseItemDataGrid({
       case "review":
         return "warning";
       case "pending":
-        return "outline";
+        return "work_in_process";
       default:
-        return "default";
+        return "work_in_process";
     }
   };
 
@@ -457,14 +457,18 @@ export default function PurchaseItemDataGrid({
         header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("status")} />,
         cell: ({ row }) => {
           const item = row.original;
+          const isNewItem = !initValues.some((initItem) => initItem.id === item.id);
+
+          if (isNewItem) {
+            return <p className="text-center text-xs">-</p>;
+          }
+
           const stageStatus = getItemValue(item, "stage_status") as string | undefined;
           const status = stageStatus || item.stage_status;
 
-          if (!status) {
-            return <span className="text-xs text-muted-foreground">-</span>;
-          }
-
-          return <Badge variant={getBadgeVariant(status)}>{getPrItemName(status)}</Badge>;
+          return (
+            <Badge variant={getBadgeVariant(status ?? "")}>{getPrItemName(status ?? "")}</Badge>
+          );
         },
         enableSorting: false,
         size: 100,

@@ -2,6 +2,16 @@ import { X, ArrowLeftIcon, Eye, CheckCircleIcon, ShoppingCart, SendIcon, Save } 
 import { Button } from "@/components/ui/button";
 import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
+
+interface ItemsStatusSummary {
+  approved: number;
+  review: number;
+  rejected: number;
+  pending: number;
+  newItems: number;
+  total: number;
+}
 
 interface ActionButtonsProps {
   readonly prStatus: string;
@@ -10,6 +20,7 @@ interface ActionButtonsProps {
 
   readonly isPending: boolean;
   readonly isSubmitDisabled?: boolean;
+  readonly itemsStatusSummary?: ItemsStatusSummary;
 
   readonly onReject: () => void;
   readonly onSendBack: () => void;
@@ -26,6 +37,7 @@ export default function ActionButtons({
   isDraft,
   isPending,
   isSubmitDisabled = false,
+  itemsStatusSummary,
   onReject,
   onSendBack,
   onReview,
@@ -35,6 +47,50 @@ export default function ActionButtons({
   onSave,
 }: ActionButtonsProps) {
   const tAction = useTranslations("Action");
+
+  // Log items status summary เมื่อมีการเปลี่ยนแปลง
+  useEffect(() => {
+    if (itemsStatusSummary) {
+      console.log("Summary:", itemsStatusSummary);
+    }
+  }, [itemsStatusSummary]);
+
+  // ตรวจสอบสถานะของ items
+  const hasOnlyPending = itemsStatusSummary
+    ? itemsStatusSummary.approved === 0 &&
+      itemsStatusSummary.review === 0 &&
+      itemsStatusSummary.rejected === 0 &&
+      itemsStatusSummary.newItems === 0
+    : false;
+
+  const hasOnlyRejected = itemsStatusSummary
+    ? itemsStatusSummary.approved === 0 &&
+      itemsStatusSummary.review === 0 &&
+      itemsStatusSummary.rejected > 0 &&
+      itemsStatusSummary.pending === 0 &&
+      itemsStatusSummary.newItems === 0
+    : false;
+
+  const hasReview = itemsStatusSummary
+    ? itemsStatusSummary.review > 0 &&
+      itemsStatusSummary.approved === 0 &&
+      itemsStatusSummary.rejected === 0 &&
+      itemsStatusSummary.newItems === 0
+    : false;
+
+  const hasOnlyApproved = itemsStatusSummary
+    ? itemsStatusSummary.approved > 0 &&
+      itemsStatusSummary.review === 0 &&
+      itemsStatusSummary.rejected === 0 &&
+      itemsStatusSummary.pending === 0 &&
+      itemsStatusSummary.newItems === 0
+    : false;
+
+  // ถ้ามีแต่ pending ให้ return null ไม่ต้องแสดง
+  if (hasOnlyPending) {
+    return null;
+  }
+
   return (
     <MotionDiv
       className={`fixed bottom-8 right-20 w-fit flex items-center justify-end gap-2 bg-background shadow-lg border border-border rounded-md p-2`}
@@ -52,71 +108,127 @@ export default function ActionButtons({
         <>
           {!isDraft && (
             <>
-              <Button
-                size="sm"
-                className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onReject();
-                }}
-                disabled={isPending}
-              >
-                <X className="w-4 h-4" />
-                {tAction("reject")}
-              </Button>
-              <Button
-                size="sm"
-                className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)] h-7"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onSendBack();
-                }}
-                disabled={isPending}
-              >
-                <ArrowLeftIcon className="w-4 h-4" />
-                {tAction("send_back")}
-              </Button>
-              <Button
-                size="sm"
-                className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onReview();
-                }}
-                disabled={isPending}
-              >
-                <Eye className="w-4 h-4" />
-                {tAction("review")}
-              </Button>
-              <Button
-                size="sm"
-                className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onApprove();
-                }}
-                disabled={isPending}
-              >
-                <CheckCircleIcon className="w-4 h-4" />
-                {tAction("approve")}
-              </Button>
-              <Button
-                size="sm"
-                className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)] h-7"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onPurchaseApprove();
-                }}
-                disabled={isPending}
-              >
-                <ShoppingCart className="w-4 h-4" />
-                {tAction("purchase_approve")}
-              </Button>
+              {/* ถ้ามี review ให้แสดงเฉพาะปุ่ม review */}
+              {hasReview && (
+                <Button
+                  size="sm"
+                  className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onReview();
+                  }}
+                  disabled={isPending}
+                >
+                  <Eye className="w-4 h-4" />
+                  {tAction("review")}
+                </Button>
+              )}
+
+              {/* ถ้ามีแต่ approved และไม่มี review ให้แสดงเฉพาะปุ่ม approve */}
+              {!hasReview && hasOnlyApproved && (
+                <Button
+                  size="sm"
+                  className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onApprove();
+                  }}
+                  disabled={isPending}
+                >
+                  <CheckCircleIcon className="w-4 h-4" />
+                  {tAction("approve")}
+                </Button>
+              )}
+
+              {/* ถ้ามีแต่ rejected ให้แสดงเฉพาะปุ่ม reject */}
+              {!hasReview && !hasOnlyApproved && hasOnlyRejected && (
+                <Button
+                  size="sm"
+                  className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onReject();
+                  }}
+                  disabled={isPending}
+                >
+                  <X className="w-4 h-4" />
+                  {tAction("reject")}
+                </Button>
+              )}
+
+              {/* แสดงปุ่มทั้งหมด */}
+              {!hasReview && !hasOnlyApproved && !hasOnlyRejected && (
+                <>
+                  <Button
+                    size="sm"
+                    className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onReject();
+                    }}
+                    disabled={isPending}
+                  >
+                    <X className="w-4 h-4" />
+                    {tAction("reject")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)] h-7"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onSendBack();
+                    }}
+                    disabled={isPending}
+                  >
+                    <ArrowLeftIcon className="w-4 h-4" />
+                    {tAction("send_back")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onReview();
+                    }}
+                    disabled={isPending}
+                  >
+                    <Eye className="w-4 h-4" />
+                    {tAction("review")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onApprove();
+                    }}
+                    disabled={isPending}
+                  >
+                    <CheckCircleIcon className="w-4 h-4" />
+                    {tAction("approve")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)] h-7"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      onPurchaseApprove();
+                    }}
+                    disabled={isPending}
+                  >
+                    <ShoppingCart className="w-4 h-4" />
+                    {tAction("purchase_approve")}
+                  </Button>
+                </>
+              )}
             </>
           )}
 
