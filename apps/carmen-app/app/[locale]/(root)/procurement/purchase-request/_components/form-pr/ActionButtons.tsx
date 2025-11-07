@@ -2,7 +2,6 @@ import { X, ArrowLeftIcon, Eye, CheckCircleIcon, ShoppingCart, SendIcon, Save } 
 import { Button } from "@/components/ui/button";
 import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
 
 interface ItemsStatusSummary {
   approved: number;
@@ -48,14 +47,6 @@ export default function ActionButtons({
 }: ActionButtonsProps) {
   const tAction = useTranslations("Action");
 
-  // Log items status summary เมื่อมีการเปลี่ยนแปลง
-  useEffect(() => {
-    if (itemsStatusSummary) {
-      console.log("Summary:", itemsStatusSummary);
-    }
-  }, [itemsStatusSummary]);
-
-  // ตรวจสอบสถานะของ items
   const hasPending = itemsStatusSummary ? itemsStatusSummary.pending > 0 : false;
 
   const hasOnlyRejected = itemsStatusSummary

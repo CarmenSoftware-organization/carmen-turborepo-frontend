@@ -64,7 +64,7 @@ export default function PurchaseRequestGrid({
   const isAllSelected =
     purchaseRequests?.length > 0 && selectedItems.length === purchaseRequests.length;
 
-  if (!isLoading) {
+  if (isLoading) {
     return <CardLoading items={6} />;
   }
 

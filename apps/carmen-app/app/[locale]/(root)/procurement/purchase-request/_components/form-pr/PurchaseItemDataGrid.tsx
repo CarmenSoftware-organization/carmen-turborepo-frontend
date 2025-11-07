@@ -58,6 +58,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import PrLabelItem from "./PrLabelItem";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 
 enum PR_ITEM_BULK_ACTION {
   APPROVED = "approved",
@@ -81,6 +82,7 @@ interface Props {
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
   getCurrentStatus: (stagesStatusValue: string | StageStatus[] | undefined) => string;
   workflow_id?: string;
+  prStatus?: string;
 }
 
 export default function PurchaseItemDataGrid({
@@ -94,6 +96,7 @@ export default function PurchaseItemDataGrid({
   getItemValue,
   getCurrentStatus,
   workflow_id,
+  prStatus,
 }: Props) {
   const { dateFormat, currencyBase, token, buCode } = useAuth();
   const tPr = useTranslations("PurchaseRequest");
@@ -110,6 +113,9 @@ export default function PurchaseItemDataGrid({
   const [selectAllDialogOpen, setSelectAllDialogOpen] = useState(false);
   const [selectMode, setSelectMode] = useState<"all" | "pending">("all");
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [bulkActionDialogOpen, setBulkActionDialogOpen] = useState(false);
+  const [bulkActionType, setBulkActionType] = useState<PR_ITEM_BULK_ACTION | null>(null);
+  const [bulkActionMessage, setBulkActionMessage] = useState("");
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
@@ -152,6 +158,8 @@ export default function PurchaseItemDataGrid({
         return "work_in_process";
     }
   };
+
+  console.log("pr status", prStatus);
 
   const columns = useMemo<ColumnDef<PurchaseRequestDetail>[]>(() => {
     const baseColumns: ColumnDef<PurchaseRequestDetail>[] = [
@@ -319,42 +327,31 @@ export default function PurchaseItemDataGrid({
       },
       {
         id: "select",
-        header: ({ table }) => {
-          if (currentFormType === formType.VIEW) {
-            return null;
-          }
-          return (
-            <Checkbox
-              checked={
-                table.getIsAllPageRowsSelected() ||
-                (table.getIsSomePageRowsSelected() && "indeterminate")
-              }
-              disabled={items.length === 0}
-              onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-              aria-label="Select all"
-              className="align-[inherit]"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setSelectAllDialogOpen(true);
-              }}
-            />
-          );
-        },
-        cell: ({ row }) => {
-          if (currentFormType === formType.VIEW) {
-            return null;
-          }
-          return (
-            <Checkbox
-              checked={row.getIsSelected()}
-              onCheckedChange={(value) => row.toggleSelected(!!value)}
-              aria-label="Select row"
-              className="align-[inherit]"
-            />
-          );
-        },
-
+        header: ({ table }) => (
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            disabled={items.length === 0}
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+            className="align-[inherit]"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setSelectAllDialogOpen(true);
+            }}
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className="align-[inherit]"
+          />
+        ),
         enableSorting: false,
         enableHiding: false,
         size: 30,
@@ -688,11 +685,11 @@ export default function PurchaseItemDataGrid({
       },
       {
         id: "action",
-        header: ({ column }) => (
-          <div className="flex justify-end">
-            <DataGridColumnHeader column={column} title={tHeader("action")} />
-          </div>
-        ),
+        // header: ({ column }) => (
+        //   <div className="flex justify-end">
+        //     <DataGridColumnHeader column={column} title={tHeader("action")} />
+        //   </div>
+        // ),
         cell: ({ row }) => {
           if (currentFormType === formType.VIEW) return null;
           const item = row.original;
@@ -716,20 +713,34 @@ export default function PurchaseItemDataGrid({
           );
         },
         enableSorting: false,
-        size: currentFormType === formType.VIEW ? 60 : 100,
+        size: 40,
         meta: {
           headerTitle: tHeader("action"),
-          cellClassName: "text-right",
-          headerClassName: "text-right",
+          cellClassName: "text-right sticky right-0 bg-background z-10 shadow-md border-l",
+          headerClassName: "text-right sticky right-0 bg-muted z-10 border-l",
         },
       },
     ];
 
+    // Start with base columns
+    let filteredColumns = baseColumns;
+
+    // Handle VIEW mode - remove action column
     if (currentFormType === formType.VIEW) {
-      return baseColumns.filter((col) => col.id !== "action");
+      filteredColumns = filteredColumns.filter((col) => col.id !== "action");
     }
 
-    return baseColumns;
+    // Handle prStatus condition - remove select, stage_status, approved_qty columns
+    if (prStatus !== "in_progress") {
+      filteredColumns = filteredColumns.filter(
+        (col) =>
+          col.id !== "select" &&
+          (col as any).accessorKey !== "stage_status" &&
+          (col as any).accessorKey !== "approved_qty"
+      );
+    }
+
+    return filteredColumns;
   }, [
     tHeader,
     tPr,
@@ -744,6 +755,7 @@ export default function PurchaseItemDataGrid({
     defaultAmount,
     token,
     buCode,
+    prStatus,
   ]);
 
   const table = useReactTable({
@@ -762,14 +774,28 @@ export default function PurchaseItemDataGrid({
 
   const selectedRowsCount = table.getFilteredSelectedRowModel().rows.length;
 
-  const handleBulkStatusUpdate = (status: string) => (e: React.MouseEvent) => {
+  const handleBulkActionClick = (action: PR_ITEM_BULK_ACTION) => (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // สำหรับ approved ไม่ต้องใส่ message
+    if (action === PR_ITEM_BULK_ACTION.APPROVED) {
+      performBulkStatusUpdate(action, "");
+    } else {
+      // สำหรับ review และ reject ให้แสดง dialog เพื่อใส่ message
+      setBulkActionType(action);
+      setBulkActionDialogOpen(true);
+    }
+  };
+
+  const performBulkStatusUpdate = (status: string, message: string) => {
     const selectedRows = table.getFilteredSelectedRowModel().rows;
     for (const row of selectedRows) {
       const item = row.original;
-      const currentStagesStatus = (getItemValue(item, "stages_status") ||
-        item.stages_status) as string | StageStatus[] | undefined;
+      const currentStagesStatus = (getItemValue(item, "stages_status") || item.stages_status) as
+        | string
+        | StageStatus[]
+        | undefined;
 
       // สร้าง stages_status ใหม่โดย append status ใหม่เข้าไปใน array
       let newStagesStatus: StageStatus[];
@@ -782,7 +808,7 @@ export default function PurchaseItemDataGrid({
             seq: currentStagesStatus.length + 1,
             name: null,
             status: status,
-            message: "",
+            message: message,
           },
         ];
       } else {
@@ -792,7 +818,7 @@ export default function PurchaseItemDataGrid({
             seq: 1,
             name: null,
             status: status,
-            message: "",
+            message: message,
           },
         ];
       }
@@ -800,6 +826,15 @@ export default function PurchaseItemDataGrid({
       onItemUpdate(item.id, "stages_status", newStagesStatus);
     }
     table.resetRowSelection();
+  };
+
+  const handleBulkActionConfirm = () => {
+    if (bulkActionType) {
+      performBulkStatusUpdate(bulkActionType, bulkActionMessage);
+      setBulkActionDialogOpen(false);
+      setBulkActionType(null);
+      setBulkActionMessage("");
+    }
   };
 
   return (
@@ -835,14 +870,14 @@ export default function PurchaseItemDataGrid({
       {selectedRowsCount > 0 && currentFormType !== formType.VIEW && (
         <div className="flex items-center gap-2">
           <Button
-            onClick={handleBulkStatusUpdate(PR_ITEM_BULK_ACTION.APPROVED)}
+            onClick={handleBulkActionClick(PR_ITEM_BULK_ACTION.APPROVED)}
             size="sm"
             className="h-7"
           >
             {tAction("approve")}
           </Button>
           <Button
-            onClick={handleBulkStatusUpdate(PR_ITEM_BULK_ACTION.REVIEW)}
+            onClick={handleBulkActionClick(PR_ITEM_BULK_ACTION.REVIEW)}
             size="sm"
             className="h-7"
             variant={"outlinePrimary"}
@@ -850,7 +885,7 @@ export default function PurchaseItemDataGrid({
             {tAction("review")}
           </Button>
           <Button
-            onClick={handleBulkStatusUpdate(PR_ITEM_BULK_ACTION.REJECTED)}
+            onClick={handleBulkActionClick(PR_ITEM_BULK_ACTION.REJECTED)}
             size="sm"
             className="h-7"
             variant={"destructive"}
@@ -947,6 +982,44 @@ export default function PurchaseItemDataGrid({
             >
               {tCommon("confirm")}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={bulkActionDialogOpen} onOpenChange={setBulkActionDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {bulkActionType === PR_ITEM_BULK_ACTION.REVIEW
+                ? tPr("review_reason")
+                : tPr("reject_reason")}
+            </DialogTitle>
+            <DialogDescription>
+              {bulkActionType === PR_ITEM_BULK_ACTION.REVIEW
+                ? "กรุณาระบุเหตุผลในการส่ง Review"
+                : "กรุณาระบุเหตุผลในการ Reject"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              placeholder="ระบุเหตุผล..."
+              value={bulkActionMessage}
+              onChange={(e) => setBulkActionMessage(e.target.value)}
+              rows={4}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setBulkActionDialogOpen(false);
+                setBulkActionType(null);
+                setBulkActionMessage("");
+              }}
+            >
+              {tCommon("cancel")}
+            </Button>
+            <Button onClick={handleBulkActionConfirm}>{tCommon("confirm")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

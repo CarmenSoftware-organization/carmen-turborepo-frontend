@@ -2,11 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslations } from "next-intl";
-import {
-  ActionButtons,
-  prStatusColor,
-  SelectionProps,
-} from "./SharePrComponent";
+import { ActionButtons, prStatusColor, SelectionProps } from "./SharePrComponent";
 import { format } from "date-fns";
 import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { formatCurrency } from "@/lib/utils";
@@ -54,9 +50,7 @@ export const MobileView = ({
       return (
         <Card className="p-8">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              No purchase requests found
-            </p>
+            <p className="text-sm text-muted-foreground">No purchase requests found</p>
           </div>
         </Card>
       );
@@ -92,18 +86,12 @@ export const MobileView = ({
         <CardContent className="p-4 pt-2">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1 col-span-2">
-              <p className="text-xs text-muted-foreground">
-                {t("description")}
-              </p>
-              <p className="text-xs font-medium line-clamp-2">
-                {pr.description}
-              </p>
+              <p className="text-xs text-muted-foreground">{t("description")}</p>
+              <p className="text-xs font-medium line-clamp-2">{pr.description}</p>
             </div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">Current Workflow</p>
-              <p className="text-xs font-medium">
-                {pr.workflow_current_stage}
-              </p>
+              <p className="text-xs font-medium">{pr.workflow_current_stage}</p>
             </div>
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground">{t("requestor")}</p>
@@ -117,9 +105,8 @@ export const MobileView = ({
               <p className="text-xs text-muted-foreground">{t("amount")}</p>
               <p className="text-xs font-medium">
                 {formatCurrency(
-                  pr.purchase_request_detail?.reduce(
-                    (sum: number, item) =>
-                      sum + Number(String(item.total_price || "0")),
+                  pr.details?.reduce(
+                    (sum: number, item) => sum + Number(String(item.total_price || "0")),
                     0
                   ) ?? 0,
                   "THB"

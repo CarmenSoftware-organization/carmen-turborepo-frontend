@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-purchase-item-management";
+import { usePrevWorkflow } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-prev-workflow";
 import { useAuth } from "@/context/AuthContext";
 import { Form } from "@/components/ui/form";
 import {
@@ -24,6 +25,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import {
   Tabs,
   TabsContent,
@@ -48,7 +51,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { usePrActions } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-pr-actions";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
-// import JsonViewer from "@/components/JsonViewer";
+import JsonViewer from "@/components/JsonViewer";
 
 interface Props {
   mode: formType;
@@ -70,6 +73,8 @@ export default function MainForm({ mode, initValues }: Props) {
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [cancelAction, setCancelAction] = useState<CancelAction>({ type: "cancel", event: null });
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [selectedStage, setSelectedStage] = useState<string>("");
 
   const form = useForm<CreatePrDto>({
     resolver: zodResolver(CreatePrSchema),
@@ -106,23 +111,34 @@ export default function MainForm({ mode, initValues }: Props) {
     initValues: initValues?.purchase_request_detail,
   });
 
-  console.log("current stage", initValues?.purchase_request_detail);
+  const requestorName = user?.user_info.firstname + " " + user?.user_info.lastname;
 
-  // Helper function to get current status from stages_status
+  const workflowStages = Array.isArray(initValues?.workflow_history)
+    ? initValues.workflow_history.map((item: { current_stage?: string }) => ({
+        title: item.current_stage ?? "",
+      }))
+    : [];
+
+  const currentStage = workflowStages[workflowStages.length - 1]?.title;
+
+  const { data: prevWorkflowData, isLoading: isPrevWorkflowLoading } = usePrevWorkflow({
+    token,
+    buCode,
+    workflow_id: initValues?.workflow_id || "",
+    stage: currentStage,
+  });
+
+  console.log("details", initValues?.purchase_request_detail);
+
   const getCurrentStatus = (stagesStatusValue: string | StageStatus[] | undefined): string => {
     if (!stagesStatusValue) return "pending";
-
-    // ถ้า stages_status เป็น array ให้เอาตัวล่าสุด (status จาก object)
     if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
       const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
       return lastStage?.status || "pending";
     }
-
-    // ถ้าเป็น string ให้ return เลย
     if (typeof stagesStatusValue === "string") {
       return stagesStatusValue;
     }
-
     return "pending";
   };
 
@@ -293,35 +309,44 @@ export default function MainForm({ mode, initValues }: Props) {
     setCancelDialogOpen(false);
   };
 
-  const requestorName = user?.user_info.firstname + " " + user?.user_info.lastname;
-
-  const workflowStages = Array.isArray(initValues?.workflow_history)
-    ? initValues.workflow_history.map((item: { current_stage?: string }) => ({
-        title: item.current_stage ?? "",
-      }))
-    : [];
-
   const isDraft = initValues?.pr_status === "draft";
 
   const onSubmitPr = () => {
-    submit(
-      {},
-      {
-        onSuccess: () => {
-          toastSuccess({
-            message: tPR("purchase_request_submitted"),
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["purchase-request", buCode, initValues?.id],
-          });
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_submitted_failed"),
-          });
-        },
-      }
-    );
+    const submitData = {
+      state_role: STAGE_ROLE.CREATE,
+      details:
+        purchaseItemManager.items.map((item) => {
+          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
+            item.stages_status) as string | StageStatus[] | undefined;
+
+          let stageMessage = "";
+          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
+            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
+            stageMessage = lastStage?.message || "";
+          }
+
+          return {
+            id: item.id,
+            stage_status: "submit",
+            stage_message: stageMessage || "user submitted",
+          };
+        }) || [],
+    };
+    submit(submitData, {
+      onSuccess: () => {
+        toastSuccess({
+          message: tPR("purchase_request_submitted"),
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["purchase-request", buCode, initValues?.id],
+        });
+      },
+      onError: () => {
+        toastError({
+          message: tPR("purchase_request_submitted_failed"),
+        });
+      },
+    });
   };
 
   const onApprove = () => {
@@ -344,13 +369,24 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const onReject = () => {
     const rejectData = {
-      stage_role: STAGE_ROLE.REJECT,
-      body:
-        initValues?.purchase_request_detail?.map((item) => ({
-          id: item.id,
-          stage_status: "reject",
-          stage_message: "ไม่ต้องซื้อ",
-        })) || [],
+      state_role: STAGE_ROLE.REJECT,
+      details:
+        purchaseItemManager.items.map((item) => {
+          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
+            item.stages_status) as string | StageStatus[] | undefined;
+
+          let stageMessage = "";
+          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
+            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
+            stageMessage = lastStage?.message || "";
+          }
+
+          return {
+            id: item.id,
+            stage_status: "reject",
+            stage_message: stageMessage || "rejected",
+          };
+        }) || [],
     };
     reject(rejectData, {
       onSuccess: () => {
@@ -371,19 +407,33 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const onSendBack = () => {
     const sendBackData = {
-      stage_role: STAGE_ROLE.SEND_BACK,
-      body:
-        initValues?.purchase_request_detail?.map((item) => ({
-          id: item.id,
-          stage_status: "send_back",
-          stage_message: "ส่งกลับ",
-        })) || [],
+      state_role: STAGE_ROLE.SEND_BACK,
+      details:
+        purchaseItemManager.items.map((item) => {
+          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
+            item.stages_status) as string | StageStatus[] | undefined;
+
+          let stageMessage = "";
+          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
+            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
+            stageMessage = lastStage?.message || "";
+          }
+
+          return {
+            id: item.id,
+            stage_status: "send_back",
+            stage_message: stageMessage || "sent back",
+          };
+        }) || [],
     };
 
     sendBack(sendBackData, {
       onSuccess: () => {
         toastSuccess({
           message: tPR("purchase_request_sent_back"),
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["purchase-request", buCode, initValues?.id],
         });
       },
       onError: () => {
@@ -413,21 +463,48 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const onReview = () => {
+    setReviewDialogOpen(true);
+  };
+
+  const handleReviewConfirm = () => {
+    if (!selectedStage) {
+      toastError({
+        message: tPR("please_select_stage"),
+      });
+      return;
+    }
+
     const reviewData = {
-      stage_role: STAGE_ROLE.CREATE,
-      des_stage: "HOD",
-      body:
-        initValues?.purchase_request_detail?.map((item) => ({
-          id: item.id,
-          stage_status: "review",
-          stage_message: "กลับไป HOD",
-        })) || [],
+      state_role: STAGE_ROLE.CREATE,
+      des_stage: selectedStage,
+      details:
+        purchaseItemManager.items.map((item) => {
+          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
+            item.stages_status) as string | StageStatus[] | undefined;
+
+          let stageMessage = "";
+          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
+            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
+            stageMessage = lastStage?.message || "";
+          }
+
+          return {
+            id: item.id,
+            stage_status: "review",
+            stage_message: stageMessage || `กลับไป ${selectedStage}`,
+          };
+        }) || [],
     };
 
     review(reviewData, {
       onSuccess: () => {
         toastSuccess({
           message: tPR("purchase_request_reviewed"),
+        });
+        setReviewDialogOpen(false);
+        setSelectedStage("");
+        queryClient.invalidateQueries({
+          queryKey: ["purchase-request", buCode, initValues?.id],
         });
       },
       onError: () => {
@@ -441,7 +518,7 @@ export default function MainForm({ mode, initValues }: Props) {
   const isNewPr = currentFormType === formType.ADD;
   const prStatus = initValues?.pr_status;
 
-  // const watchForm = form.watch();
+  const watchForm = form.watch();
 
   // console.log("form.formState.errors", form.formState.errors);
 
@@ -500,6 +577,7 @@ export default function MainForm({ mode, initValues }: Props) {
                       getItemValue={purchaseItemManager.getItemValue}
                       getCurrentStatus={getCurrentStatus}
                       workflow_id={form.watch("body.workflow_id")}
+                      prStatus={prStatus ?? ""}
                     />
                   </TabsContent>
                   {/* <TabsContent value="budget" className="mt-2">
@@ -511,7 +589,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 </Tabs>
               </form>
             </Form>
-            {/* <JsonViewer data={watchForm} title="Form Data" /> */}
+            <JsonViewer data={watchForm} title="Form Data" />
           </Card>
 
           {prStatus !== "voided" && (
@@ -551,6 +629,40 @@ export default function MainForm({ mode, initValues }: Props) {
             <AlertDialogAction
               onClick={handleConfirmCancel}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {tAction("confirm")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tPR("select_stage_for_review")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {tPR("select_stage_for_review_description")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <RadioGroup value={selectedStage} onValueChange={setSelectedStage}>
+              {prevWorkflowData?.map((stage: string, index: number) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <RadioGroupItem value={stage} id={`stage-${index}`} />
+                  <Label htmlFor={`stage-${index}`} className="cursor-pointer">
+                    {stage}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSelectedStage("")}>
+              {tAction("cancel")}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleReviewConfirm}
+              className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)]"
             >
               {tAction("confirm")}
             </AlertDialogAction>
