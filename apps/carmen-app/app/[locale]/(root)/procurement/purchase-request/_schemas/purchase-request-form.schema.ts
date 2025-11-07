@@ -63,7 +63,7 @@ export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
 export const CreatePrSchema = z
   .object({
     state_role: StageRoleSchema,
-    body: z
+    details: z
       .object({
         pr_date: z.string(),
         requestor_id: z.string().uuid(),
@@ -84,7 +84,7 @@ export const CreatePrSchema = z
   })
   .superRefine((data, ctx) => {
     // Validate that items in add array have required fields filled
-    const addItems = data.body.purchase_request_detail?.add;
+    const addItems = data.details.purchase_request_detail?.add;
     console.log("Validating add items:", addItems);
     if (addItems && addItems.length > 0) {
       addItems.forEach((item, index) => {
@@ -94,7 +94,7 @@ export const CreatePrSchema = z
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Location is required",
-            path: ["body", "purchase_request_detail", "add", index, "location_id"],
+            path: ["details", "purchase_request_detail", "add", index, "location_id"],
           });
         }
         if (!item.product_id) {
@@ -102,7 +102,7 @@ export const CreatePrSchema = z
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Product is required",
-            path: ["body", "purchase_request_detail", "add", index, "product_id"],
+            path: ["details", "purchase_request_detail", "add", index, "product_id"],
           });
         }
         if (item.requested_qty === undefined || item.requested_qty === null) {
@@ -110,14 +110,14 @@ export const CreatePrSchema = z
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Quantity is required",
-            path: ["body", "purchase_request_detail", "add", index, "requested_qty"],
+            path: ["details", "purchase_request_detail", "add", index, "requested_qty"],
           });
         } else if (typeof item.requested_qty !== "number" || item.requested_qty < 0) {
           console.log(`Item ${index} invalid requested_qty:`, item.requested_qty);
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Quantity must be a valid number and not negative",
-            path: ["body", "purchase_request_detail", "add", index, "requested_qty"],
+            path: ["details", "purchase_request_detail", "add", index, "requested_qty"],
           });
         }
         if (!item.requested_unit_id) {
@@ -125,7 +125,7 @@ export const CreatePrSchema = z
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Unit is required",
-            path: ["body", "purchase_request_detail", "add", index, "requested_unit_id"],
+            path: ["details", "purchase_request_detail", "add", index, "requested_unit_id"],
           });
         }
       });

@@ -105,7 +105,7 @@ export const MobileView = ({
               <p className="text-xs text-muted-foreground">{t("amount")}</p>
               <p className="text-xs font-medium">
                 {formatCurrency(
-                  pr.details?.reduce(
+                  pr.purchase_request_detail?.reduce(
                     (sum: number, item) => sum + Number(String(item.total_price || "0")),
                     0
                   ) ?? 0,

@@ -48,7 +48,7 @@ export const usePurchaseItemManagement = ({
     remove: addRemove,
   } = useFieldArray({
     control: form.control,
-    name: "body.purchase_request_detail.add",
+    name: "details.purchase_request_detail.add",
   });
 
   // Combined items (new + existing)
@@ -104,7 +104,7 @@ export const usePurchaseItemManagement = ({
   const updateNewItemInForm = useCallback(
     (fieldIndex: number, fieldName: string, value: any, selectedProduct?: any) => {
       const currentValues = form.getValues();
-      const updatedAddItems = [...(currentValues.body.purchase_request_detail?.add || [])];
+      const updatedAddItems = [...(currentValues.details.purchase_request_detail?.add || [])];
 
       if (!updatedAddItems[fieldIndex]) return;
 
@@ -117,7 +117,7 @@ export const usePurchaseItemManagement = ({
         ...productFields,
       };
 
-      form.setValue("body.purchase_request_detail.add", updatedAddItems, {
+      form.setValue("details.purchase_request_detail.add", updatedAddItems, {
         shouldValidate: false,
         shouldDirty: true,
         shouldTouch: true,
@@ -136,7 +136,7 @@ export const usePurchaseItemManagement = ({
   const updateExistingItemInForm = useCallback(
     (itemId: string, fieldName: string, value: any, selectedProduct?: any) => {
       const currentValues = form.getValues();
-      const updateItems = currentValues.body.purchase_request_detail?.update || [];
+      const updateItems = currentValues.details.purchase_request_detail?.update || [];
 
       let existingUpdateIndex = updateItems.findIndex(
         (updateItem: any) => updateItem.id === itemId
@@ -159,7 +159,7 @@ export const usePurchaseItemManagement = ({
         ...productFields,
       };
 
-      form.setValue("body.purchase_request_detail.update", updateItems, {
+      form.setValue("details.purchase_request_detail.update", updateItems, {
         shouldValidate: false,
         shouldDirty: true,
         shouldTouch: false,
@@ -200,8 +200,8 @@ export const usePurchaseItemManagement = ({
       } else {
         const currentValues = form.getValues();
         const hasUpdateField =
-          currentValues.body.purchase_request_detail &&
-          "update" in currentValues.body.purchase_request_detail;
+          currentValues.details.purchase_request_detail &&
+          "update" in currentValues.details.purchase_request_detail;
 
         if (hasUpdateField) {
           updateExistingItemInForm(itemId, fieldName, value, selectedProduct);
@@ -221,21 +221,21 @@ export const usePurchaseItemManagement = ({
       } else {
         // Mark existing item as removed and add to form remove array
         const currentValues = form.getValues();
-        const removeItems = currentValues.body.purchase_request_detail?.remove || [];
-        const updateItems = currentValues.body.purchase_request_detail?.update || [];
+        const removeItems = currentValues.details.purchase_request_detail?.remove || [];
+        const updateItems = currentValues.details.purchase_request_detail?.update || [];
 
         // Remove from update array if exists
         const updatedUpdateItems = updateItems.filter(
           (updateItem: any) => updateItem.id !== itemId
         );
         if (updatedUpdateItems.length !== updateItems.length) {
-          form.setValue("body.purchase_request_detail.update", updatedUpdateItems);
+          form.setValue("details.purchase_request_detail.update", updatedUpdateItems);
         }
 
         // Add to remove array if not already there
         if (!removeItems.some((removeItem: any) => removeItem.id === itemId)) {
           removeItems.push({ id: itemId });
-          form.setValue("body.purchase_request_detail.remove", removeItems);
+          form.setValue("details.purchase_request_detail.remove", removeItems);
         }
 
         // Also update state for UI display
@@ -258,7 +258,7 @@ export const usePurchaseItemManagement = ({
         // Get value directly from form for new items
         const fieldIndex = addFields.findIndex((field: any) => field.id === item.id);
         const formValues = form.getValues();
-        const addItems = formValues.body.purchase_request_detail?.add || [];
+        const addItems = formValues.details.purchase_request_detail?.add || [];
         const formItem = addItems[fieldIndex];
         return (
           formItem?.[fieldName as keyof typeof formItem] ??
@@ -267,7 +267,7 @@ export const usePurchaseItemManagement = ({
       } else {
         // Get value from update array in form for existing items
         const formValues = form.getValues();
-        const updateItems = formValues.body.purchase_request_detail?.update || [];
+        const updateItems = formValues.details.purchase_request_detail?.update || [];
         const updateItem = updateItems.find((updateItem: any) => updateItem.id === item.id);
 
         if (updateItem) {

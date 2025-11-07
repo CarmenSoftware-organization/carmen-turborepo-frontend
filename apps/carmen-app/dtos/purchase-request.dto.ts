@@ -291,7 +291,7 @@ export interface PurchaseRequestUpdateFormDto extends PurchaseRequestCreateFormD
 
 export interface CreatePrDto {
   state_role: STAGE_ROLE;
-  body: {
+  details: {
     pr_date: string;
     requestor_id: string;
     department_id: string;

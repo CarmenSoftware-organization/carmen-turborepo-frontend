@@ -80,7 +80,7 @@ export default function MainForm({ mode, initValues }: Props) {
     resolver: zodResolver(CreatePrSchema),
     defaultValues: {
       state_role: STAGE_ROLE.CREATE,
-      body: {
+      details: {
         pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
         requestor_id: user?.id || "",
         department_id: departments?.id || "",
@@ -184,7 +184,7 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const hasFormChanges = (): boolean => {
     const currentValues = form.getValues();
-    const bodyValues = currentValues.body;
+    const bodyValues = currentValues.details;
 
     // ตรวจสอบการเปลี่ยนแปลงในฟิลด์หลัก
     const hasMainFieldChanges =
@@ -200,30 +200,32 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const handleSubmit = (data: CreatePrDto) => {
     if (
-      data.body.purchase_request_detail?.add &&
-      data.body.purchase_request_detail.add.length > 0
+      data.details.purchase_request_detail?.add &&
+      data.details.purchase_request_detail.add.length > 0
     ) {
-      data.body.purchase_request_detail.add = data.body.purchase_request_detail.add.map((item) => {
-        const { id, ...cleanedItem } = item as Record<string, unknown>;
+      data.details.purchase_request_detail.add = data.details.purchase_request_detail.add.map(
+        (item) => {
+          const { id, ...cleanedItem } = item as Record<string, unknown>;
 
-        for (const key of Object.keys(cleanedItem)) {
-          if (cleanedItem[key] === "" || cleanedItem[key] === null) {
-            delete cleanedItem[key];
+          for (const key of Object.keys(cleanedItem)) {
+            if (cleanedItem[key] === "" || cleanedItem[key] === null) {
+              delete cleanedItem[key];
+            }
           }
-        }
 
-        if (cleanedItem.requested_qty !== undefined) {
-          cleanedItem.requested_qty = Number(cleanedItem.requested_qty);
-        }
-        if (cleanedItem.approved_qty !== undefined) {
-          cleanedItem.approved_qty = Number(cleanedItem.approved_qty);
-        }
-        if (cleanedItem.foc_qty !== undefined) {
-          cleanedItem.foc_qty = Number(cleanedItem.foc_qty);
-        }
+          if (cleanedItem.requested_qty !== undefined) {
+            cleanedItem.requested_qty = Number(cleanedItem.requested_qty);
+          }
+          if (cleanedItem.approved_qty !== undefined) {
+            cleanedItem.approved_qty = Number(cleanedItem.approved_qty);
+          }
+          if (cleanedItem.foc_qty !== undefined) {
+            cleanedItem.foc_qty = Number(cleanedItem.foc_qty);
+          }
 
-        return cleanedItem;
-      });
+          return cleanedItem;
+        }
+      );
     }
 
     if (currentFormType === formType.ADD) {
@@ -542,7 +544,7 @@ export default function MainForm({ mode, initValues }: Props) {
                   isCreatingPr={isCreatingPr || isPending}
                   prStatus={prStatus ?? ""}
                   hasFormErrors={Object.keys(form.formState.errors).length > 0}
-                  workflowId={form.watch("body.workflow_id")}
+                  workflowId={form.watch("details.workflow_id")}
                 />
                 <HeadForm
                   form={form}
@@ -576,7 +578,7 @@ export default function MainForm({ mode, initValues }: Props) {
                       onAddItem={purchaseItemManager.addItem}
                       getItemValue={purchaseItemManager.getItemValue}
                       getCurrentStatus={getCurrentStatus}
-                      workflow_id={form.watch("body.workflow_id")}
+                      workflow_id={form.watch("details.workflow_id")}
                       prStatus={prStatus ?? ""}
                     />
                   </TabsContent>
@@ -598,7 +600,7 @@ export default function MainForm({ mode, initValues }: Props) {
               isNewPr={isNewPr}
               isDraft={isDraft}
               isPending={isPending}
-              isSubmitDisabled={!form.watch("body.workflow_id")}
+              isSubmitDisabled={!form.watch("details.workflow_id")}
               itemsStatusSummary={itemsStatusSummary}
               onReject={onReject}
               onSendBack={onSendBack}
