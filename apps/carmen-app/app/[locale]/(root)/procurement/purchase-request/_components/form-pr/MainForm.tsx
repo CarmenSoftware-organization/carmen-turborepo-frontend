@@ -2,7 +2,6 @@
 
 import { formType } from "@/dtos/form.dto";
 import {
-  CreatePrDto,
   CreatePrSchema,
   PurchaseRequestByIdDto,
   STAGE_ROLE,
@@ -13,22 +12,16 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { usePurchaseItemManagement } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-purchase-item-management";
-import { usePrevWorkflow } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-prev-workflow";
+import { z } from "zod";
+import { usePurchaseItemManagement } from "../../_hooks/use-purchase-item-management";
+import { usePrevWorkflow } from "../../_hooks/use-prev-workflow";
 import { useAuth } from "@/context/AuthContext";
 import { Form } from "@/components/ui/form";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+
+type CreatePrDto = z.infer<typeof CreatePrSchema>;
+
+export type StagesStatusValue = string | StageStatus[] | undefined;
+
 import {
   Tabs,
   TabsContent,
@@ -37,6 +30,8 @@ import {
 } from "@/components/animate-ui/components/radix/tabs";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import PurchaseItemDataGrid from "./PurchaseItemDataGrid";
+import ReviewStageDialog from "./dialogs/ReviewStageDialog";
+import CancelConfirmDialog from "./dialogs/CancelConfirmDialog";
 import { Card } from "@/components/ui/card";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
@@ -50,7 +45,7 @@ import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
 import ActionButtons from "./ActionButtons";
 import { useQueryClient } from "@tanstack/react-query";
-import { usePrActions } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-pr-actions";
+import { usePrActions } from "../../_hooks/use-pr-actions";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import JsonViewer from "@/components/JsonViewer";
@@ -69,7 +64,6 @@ export default function MainForm({ mode, initValues }: Props) {
   const router = useRouter();
   const { token, buCode, user, departments, dateFormat } = useAuth();
   const tPR = useTranslations("PurchaseRequest");
-  const tAction = useTranslations("Action");
   const [currentFormType, setCurrentFormType] = useState<formType>(mode);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
@@ -99,7 +93,6 @@ export default function MainForm({ mode, initValues }: Props) {
     mode: "onBlur",
   });
 
-
   const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
 
   const { save, submit, approve, purchase, review, reject, sendBack, isPending } = usePrActions(
@@ -124,7 +117,6 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const currentStage = workflowStages[workflowStages.length - 1]?.title;
 
-
   const { data: prevWorkflowData, isLoading: isPrevWorkflowLoading } = usePrevWorkflow({
     token,
     buCode,
@@ -133,7 +125,7 @@ export default function MainForm({ mode, initValues }: Props) {
     enabled: reviewDialogOpen,
   });
 
-  const getCurrentStatus = useCallback((stagesStatusValue: string | StageStatus[] | undefined): string => {
+  const getCurrentStatus = useCallback((stagesStatusValue: StagesStatusValue): string => {
     if (!stagesStatusValue) return "pending";
     if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
       const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
@@ -163,7 +155,7 @@ export default function MainForm({ mode, initValues }: Props) {
       if (isNewItem) {
         summary.newItems++;
       } else {
-        const stagesStatusValue: string | StageStatus[] | undefined =
+        const stagesStatusValue: StagesStatusValue =
           purchaseItemManager.getItemValue(item, "stages_status") || item.stages_status;
 
         const currentStatus = getCurrentStatus(stagesStatusValue);
@@ -202,7 +194,6 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const handleSubmit = (data: CreatePrDto) => {
-
     if (
       data.details.purchase_request_detail?.add &&
       data.details.purchase_request_detail.add.length > 0
@@ -227,7 +218,7 @@ export default function MainForm({ mode, initValues }: Props) {
             cleanedItem.foc_qty = Number(cleanedItem.foc_qty);
           }
 
-          return cleanedItem;
+          return cleanedItem as typeof item;
         }
       );
     }
@@ -323,7 +314,7 @@ export default function MainForm({ mode, initValues }: Props) {
       details:
         purchaseItemManager.items.map((item) => {
           const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as string | StageStatus[] | undefined;
+            item.stages_status) as StagesStatusValue;
 
           let stageMessage = "";
           if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
@@ -375,11 +366,11 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const onReject = () => {
     const rejectData = {
-      state_role: STAGE_ROLE.REJECT,
+      state_role: STAGE_ROLE.ISSUE,
       details:
         purchaseItemManager.items.map((item) => {
           const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as string | StageStatus[] | undefined;
+            item.stages_status) as StagesStatusValue;
 
           let stageMessage = "";
           if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
@@ -413,11 +404,11 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const onSendBack = () => {
     const sendBackData = {
-      state_role: STAGE_ROLE.SEND_BACK,
+      state_role: STAGE_ROLE.ISSUE,
       details:
         purchaseItemManager.items.map((item) => {
           const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as string | StageStatus[] | undefined;
+            item.stages_status) as StagesStatusValue;
 
           let stageMessage = "";
           if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
@@ -486,7 +477,7 @@ export default function MainForm({ mode, initValues }: Props) {
       details:
         purchaseItemManager.items.map((item) => {
           const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as string | StageStatus[] | undefined;
+            item.stages_status) as StagesStatusValue;
 
           let stageMessage = "";
           if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
@@ -526,6 +517,7 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const watchForm = form.watch();
 
+  console.log("eerr", form.formState.errors);
 
   return (
     <>
@@ -537,14 +529,11 @@ export default function MainForm({ mode, initValues }: Props) {
           <Card className="p-4">
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(
-                  handleSubmit,
-                  (errors) => {
-                    toastError({
-                      message: "กรุณากรอกข้อมูลให้ครบถ้วน",
-                    });
-                  }
-                )}
+                onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+                  toastError({
+                    message: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                  });
+                })}
               >
                 <ActionFields
                   mode={mode}
@@ -603,7 +592,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 </Tabs>
               </form>
             </Form>
-            {/* <JsonViewer data={watchForm} title="Form Data" /> */}
+            <JsonViewer data={watchForm} title="Form Data" />
           </Card>
 
           {prStatus !== "voided" && (
@@ -620,14 +609,11 @@ export default function MainForm({ mode, initValues }: Props) {
               onApprove={onApprove}
               onPurchaseApprove={onPurchaseApprove}
               onSubmitPr={onSubmitPr}
-              onSave={form.handleSubmit(
-                handleSubmit,
-                (errors) => {
-                  toastError({
-                    message: "กรุณากรอกข้อมูลให้ครบถ้วน",
-                  });
-                }
-              )}
+              onSave={form.handleSubmit(handleSubmit, (errors) => {
+                toastError({
+                  message: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                });
+              })}
             />
           )}
         </div>
@@ -639,57 +625,21 @@ export default function MainForm({ mode, initValues }: Props) {
         onConfirm={handleConfirmDelete}
       />
 
-      <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tPR("confirm_cancel")}</AlertDialogTitle>
-            <AlertDialogDescription>{tPR("confirm_cancel_description")}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tAction("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleConfirmCancel}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {tAction("confirm")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <CancelConfirmDialog
+        open={cancelDialogOpen}
+        onOpenChange={setCancelDialogOpen}
+        onConfirm={handleConfirmCancel}
+      />
 
-      <AlertDialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{tPR("select_stage_for_review")}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {tPR("select_stage_for_review_description")}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="py-4">
-            <RadioGroup value={selectedStage} onValueChange={setSelectedStage}>
-              {prevWorkflowData?.map((stage: string, index: number) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <RadioGroupItem value={stage} id={`stage-${index}`} />
-                  <Label htmlFor={`stage-${index}`} className="cursor-pointer">
-                    {stage}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setSelectedStage("")}>
-              {tAction("cancel")}
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleReviewConfirm}
-              className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)]"
-            >
-              {tAction("confirm")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <ReviewStageDialog
+        open={reviewDialogOpen}
+        onOpenChange={setReviewDialogOpen}
+        selectedStage={selectedStage}
+        onStageChange={setSelectedStage}
+        stages={prevWorkflowData}
+        isLoading={isPrevWorkflowLoading}
+        onConfirm={handleReviewConfirm}
+      />
     </>
   );
 }

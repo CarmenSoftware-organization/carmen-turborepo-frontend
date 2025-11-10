@@ -152,7 +152,6 @@ export default function ActionFields({
                       type="submit"
                       disabled={isDisabled}
                       onClick={(e) => {
-                        // e.preventDefault();
                         e.stopPropagation();
                       }}
                     >

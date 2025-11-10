@@ -36,6 +36,7 @@ interface ProductLocationLookupProps {
     readonly onValueChange: (value: string, selectedProduct?: ProductLocation) => void;
     readonly disabled?: boolean;
     readonly classNames?: string;
+    readonly excludeProductIds?: string[];
 }
 
 export default function ProductLocationLookup({
@@ -43,7 +44,8 @@ export default function ProductLocationLookup({
     value,
     onValueChange,
     disabled = false,
-    classNames = "max-w-40"
+    classNames = "max-w-40",
+    excludeProductIds = []
 }: ProductLocationLookupProps) {
     const { token, buCode } = useAuth();
     const [open, setOpen] = useState(false);
@@ -55,7 +57,12 @@ export default function ProductLocationLookup({
         location_id
     );
 
-    const productLocationData: ProductLocation[] = productLocation?.data?.data || [];
+    const allProducts: ProductLocation[] = productLocation?.data?.data || [];
+
+    // Filter out excluded products, but keep current selected product
+    const productLocationData = allProducts.filter(
+        p => !excludeProductIds.includes(p.id) || p.id === value
+    );
 
     const handleValueChange = (selectedValue: string) => {
         const selectedProduct = productLocationData.find(

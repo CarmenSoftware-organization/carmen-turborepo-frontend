@@ -34,8 +34,8 @@ export const CreatePurchaseRequestDetailSchema = z
   .merge(EmbeddedInventoryUnitSchema)
   .merge(
     EmbeddedLocationSchema.extend({
-      delivery_point_id: ValidateSchema.shape.uuid.optional(),
-      delivery_date: z.string().datetime().optional(),
+      delivery_point_id: ValidateSchema.shape.uuid,
+      delivery_date: z.string().datetime(),
     })
   )
   .merge(
@@ -64,8 +64,8 @@ export enum STAGE_ROLE {
   CREATE = "create",
   APPROVE = "approve",
   PURCHASE = "purchase",
-  REJECT = "reject",
-  SEND_BACK = "send_back",
+  ISSUE = "issue",
+  VIEW_ONLY = "view_only",
 }
 
 export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
@@ -82,8 +82,8 @@ export const UpdatePurchaseRequestDetailSchema = z.object({
   inventory_unit_id: ValidateSchema.shape.uuid.optional(),
   // จาก EmbeddedLocationSchema + delivery point
   location_id: ValidateSchema.shape.uuid.optional(),
-  delivery_point_id: ValidateSchema.shape.uuid.optional(),
-  delivery_date: z.string().datetime().optional(),
+  delivery_point_id: ValidateSchema.shape.uuid,
+  delivery_date: z.string().datetime(),
   // จาก EmbeddedVendorSchema
   vendor_id: z.string().uuid().nullable().optional(),
   // จาก RequestedQuantityAndUnitSchema
@@ -130,7 +130,10 @@ export const UpdatePurchaseRequestDetailSchema = z.object({
   foc_unit_id: z.string().uuid().nullable().optional(),
   foc_unit_conversion_rate: ValidateSchema.shape.price.optional(),
   // Add stages_status field
-  stages_status: z.union([z.string(), z.array(z.any())]).nullable().optional(),
+  stages_status: z
+    .union([z.string(), z.array(z.any())])
+    .nullable()
+    .optional(),
 });
 
 export const CreatePrSchema = z

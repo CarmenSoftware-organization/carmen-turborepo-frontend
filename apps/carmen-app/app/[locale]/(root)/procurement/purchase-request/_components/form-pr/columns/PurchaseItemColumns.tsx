@@ -38,7 +38,6 @@ interface ColumnConfig {
   token: string;
   buCode: string;
   tHeader: (key: string) => string;
-  tPr: (key: string) => string;
   tAction: (key: string) => string;
 }
 
@@ -69,7 +68,9 @@ const getBadgeVariant = (status: string) => {
   }
 };
 
-export const createPurchaseItemColumns = (config: ColumnConfig): ColumnDef<PurchaseRequestDetail>[] => {
+export const createPurchaseItemColumns = (
+  config: ColumnConfig
+): ColumnDef<PurchaseRequestDetail>[] => {
   const {
     currentFormType,
     initValues,
@@ -85,7 +86,6 @@ export const createPurchaseItemColumns = (config: ColumnConfig): ColumnDef<Purch
     token,
     buCode,
     tHeader,
-    tPr,
     tAction,
   } = config;
 
@@ -187,7 +187,11 @@ export const createPurchaseItemColumns = (config: ColumnConfig): ColumnDef<Purch
                 // Auto-init delivery point from location
                 if (selectedLocation?.delivery_point) {
                   onItemUpdate(item.id, "delivery_point_id", selectedLocation.delivery_point.id);
-                  onItemUpdate(item.id, "delivery_point_name", selectedLocation.delivery_point.name);
+                  onItemUpdate(
+                    item.id,
+                    "delivery_point_name",
+                    selectedLocation.delivery_point.name
+                  );
                 }
               }}
               classNames="text-xs h-7 w-full"
@@ -204,8 +208,16 @@ export const createPurchaseItemColumns = (config: ColumnConfig): ColumnDef<Purch
     {
       accessorKey: "product_name",
       header: ({ column }) => <DataGridColumnHeader column={column} title={tHeader("product")} />,
-      cell: ({ row }) => {
+      cell: ({ row, table }) => {
         const item = row.original;
+
+        // Get all product_ids from other items (exclude current item)
+        const usedProductIds = table
+          .getRowModel()
+          .rows.filter((r) => r.original.id !== item.id)
+          .map((r) => getItemValue(r.original, "product_id") as string)
+          .filter(Boolean);
+
         return currentFormType === formType.VIEW ? (
           <div>
             <p className="font-semibold text-muted-foreground text-xs break-words">
@@ -220,6 +232,7 @@ export const createPurchaseItemColumns = (config: ColumnConfig): ColumnDef<Purch
             <ProductLocationLookup
               location_id={(getItemValue(item, "location_id") as string) || ""}
               value={(getItemValue(item, "product_id") as string) || ""}
+              excludeProductIds={usedProductIds}
               onValueChange={(value, selectedProduct) => {
                 onItemUpdate(item.id, "product_id", value, selectedProduct);
                 onItemUpdate(item.id, "inventory_unit_id", selectedProduct?.inventory_unit?.id);

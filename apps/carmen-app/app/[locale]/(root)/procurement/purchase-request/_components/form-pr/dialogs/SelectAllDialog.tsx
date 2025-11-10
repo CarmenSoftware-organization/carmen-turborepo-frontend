@@ -12,6 +12,7 @@ import {
 import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
 import { Table } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
+import { StagesStatusValue } from "../MainForm";
 
 interface SelectAllDialogProps {
   open: boolean;
@@ -21,7 +22,7 @@ interface SelectAllDialogProps {
   items: PurchaseRequestDetail[];
   table: Table<PurchaseRequestDetail>;
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => unknown;
-  getCurrentStatus: (stagesStatusValue: string | StageStatus[] | undefined) => string;
+  getCurrentStatus: (stagesStatusValue: StagesStatusValue) => string;
 }
 
 export default function SelectAllDialog({

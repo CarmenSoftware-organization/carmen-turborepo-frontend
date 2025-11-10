@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { nanoid } from "nanoid";
-import { PurchaseRequestDetail, CreatePrDto } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 
 interface PurchaseItemState {
   updatedItems: Record<string, Partial<PurchaseRequestDetail>>;
@@ -9,7 +9,7 @@ interface PurchaseItemState {
 }
 
 interface UsePurchaseItemManagementProps {
-  form: UseFormReturn<CreatePrDto>;
+  form: UseFormReturn<any>;
   initValues?: PurchaseRequestDetail[];
 }
 
@@ -96,6 +96,10 @@ export const usePurchaseItemManagement = ({
     if (!selectedProduct || fieldName !== "product_id") {
       return {};
     }
+
+    console.log('[getProductFields] selectedProduct:', selectedProduct);
+    console.log('[getProductFields] inventory_unit_id:', selectedProduct.inventory_unit_id);
+
     return {
       product_name: selectedProduct.name,
       inventory_unit_id: selectedProduct.inventory_unit_id,
@@ -254,8 +258,17 @@ export const usePurchaseItemManagement = ({
   // Helper to get item value (updated or original)
   const getItemValue = useCallback(
     (item: PurchaseRequestDetail, fieldName: string) => {
+      // Debug: log every call for inventory_unit_id
+      if (fieldName === "inventory_unit_id") {
+        console.log(`[getItemValue] START - Item ${item.id}, field: ${fieldName}`);
+      }
+
       // Check if this is a new item (from addFields)
       const isNewItem = addFields.some((field: any) => field.id === item.id);
+
+      if (fieldName === "inventory_unit_id") {
+        console.log(`[getItemValue] isNewItem: ${isNewItem}`);
+      }
 
       if (isNewItem) {
         // Get value directly from form for new items
@@ -274,17 +287,34 @@ export const usePurchaseItemManagement = ({
         const updateItem = updateItems.find((updateItem: any) => updateItem.id === item.id);
 
         if (updateItem) {
-          return (
-            updateItem[fieldName as keyof typeof updateItem] ??
-            item[fieldName as keyof PurchaseRequestDetail]
-          );
+          const value = updateItem[fieldName as keyof typeof updateItem] ?? item[fieldName as keyof PurchaseRequestDetail];
+
+          // Debug log for inventory_unit_id
+          if (fieldName === "inventory_unit_id") {
+            console.log(`[getItemValue] Item ${item.id} (from updateItems):`, {
+              fromUpdate: updateItem[fieldName as keyof typeof updateItem],
+              fromOriginal: item[fieldName as keyof PurchaseRequestDetail],
+              finalValue: value
+            });
+          }
+
+          return value;
         }
 
         // Fallback to updatedItems state or original item
-        return (
-          state.updatedItems[item.id]?.[fieldName as keyof PurchaseRequestDetail] ??
-          item[fieldName as keyof PurchaseRequestDetail]
-        );
+        const fallbackValue = state.updatedItems[item.id]?.[fieldName as keyof PurchaseRequestDetail] ??
+          item[fieldName as keyof PurchaseRequestDetail];
+
+        // Debug log for inventory_unit_id
+        if (fieldName === "inventory_unit_id") {
+          console.log(`[getItemValue] Item ${item.id} (fallback):`, {
+            fromState: state.updatedItems[item.id]?.[fieldName as keyof PurchaseRequestDetail],
+            fromOriginal: item[fieldName as keyof PurchaseRequestDetail],
+            finalValue: fallbackValue
+          });
+        }
+
+        return fallbackValue;
       }
     },
     [state.updatedItems, addFields, form]
