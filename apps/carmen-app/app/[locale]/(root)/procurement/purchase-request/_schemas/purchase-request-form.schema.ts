@@ -38,14 +38,24 @@ export const CreatePurchaseRequestDetailSchema = z
       delivery_date: z.string().datetime().optional(),
     })
   )
-  .merge(EmbeddedVendorSchema)
+  .merge(
+    EmbeddedVendorSchema.extend({
+      vendor_id: z.string().uuid().nullable().optional(),
+    })
+  )
   .merge(RequestedQuantityAndUnitSchema)
   .merge(PriceSchema)
-  .merge(EmbeddedTaxSchema.partial())
+  .merge(
+    EmbeddedTaxSchema.partial().extend({
+      tax_profile_id: z.string().uuid().nullable().optional(),
+      tax_profile_name: z.string().nullable().optional(),
+    })
+  )
   .merge(EmbeddedDiscountSchema)
   .merge(
-    EmbeddedCurrencySchema.omit({ exchange_rate_date: true }).extend({
-      exchange_rate_date: z.string().datetime().optional(),
+    EmbeddedCurrencySchema.extend({
+      currency_id: z.string().uuid().nullable().optional(),
+      exchange_rate_date: z.string().datetime().nullable().optional(),
     })
   )
   .merge(InfoSchema);
@@ -59,6 +69,69 @@ export enum STAGE_ROLE {
 }
 
 export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
+
+// แก้ไข: สร้าง UpdatePurchaseRequestDetailSchema แยกแทนการ extend เพื่อลด type complexity
+export const UpdatePurchaseRequestDetailSchema = z.object({
+  id: z.string().uuid(),
+  description: z.string().optional().nullable(),
+  comment: z.string().optional().nullable(),
+  sequence_no: z.number().optional(),
+  // จาก EmbeddedProductSchema
+  product_id: ValidateSchema.shape.uuid.optional(),
+  // จาก EmbeddedInventoryUnitSchema
+  inventory_unit_id: ValidateSchema.shape.uuid.optional(),
+  // จาก EmbeddedLocationSchema + delivery point
+  location_id: ValidateSchema.shape.uuid.optional(),
+  delivery_point_id: ValidateSchema.shape.uuid.optional(),
+  delivery_date: z.string().datetime().optional(),
+  // จาก EmbeddedVendorSchema
+  vendor_id: z.string().uuid().nullable().optional(),
+  // จาก RequestedQuantityAndUnitSchema
+  requested_qty: ValidateSchema.shape.quantity.optional(),
+  requested_unit_id: ValidateSchema.shape.uuid.optional(),
+  requested_unit_conversion_factor: ValidateSchema.shape.price.optional(),
+  // จาก ApproveQuantityAndUnitSchema
+  approved_qty: ValidateSchema.shape.quantity.optional(),
+  approved_unit_id: z.string().uuid().nullable().optional(),
+  approved_base_qty: ValidateSchema.shape.quantity.optional(),
+  approved_unit_conversion_factor: ValidateSchema.shape.price.optional(),
+  // จาก PriceSchema
+  total_price: ValidateSchema.shape.price.optional(),
+  sub_total_price: z.number().min(0).nullable().optional(),
+  net_amount: ValidateSchema.shape.price.optional(),
+  price: ValidateSchema.shape.price.optional(),
+  base_sub_total_price: z.number().min(0).nullable().optional(),
+  base_total_price: ValidateSchema.shape.price.optional(),
+  base_net_amount: ValidateSchema.shape.price.optional(),
+  base_price: z.number().min(0).nullable().optional(),
+  // จาก EmbeddedTaxSchema (partial)
+  tax_profile_id: z.string().uuid().nullable().optional(),
+  tax_profile_name: z.string().nullable().optional(),
+  tax_rate: ValidateSchema.shape.price.optional(),
+  tax_amount: ValidateSchema.shape.price.optional(),
+  is_tax_adjustment: z.boolean().optional(),
+  base_tax_amount: ValidateSchema.shape.price.optional(),
+  total_amount: ValidateSchema.shape.price.optional(),
+  // จาก EmbeddedDiscountSchema
+  discount_rate: ValidateSchema.shape.price.optional(),
+  discount_amount: ValidateSchema.shape.price.optional(),
+  is_discount_adjustment: z.boolean().optional(),
+  base_discount_amount: ValidateSchema.shape.price.optional(),
+  // จาก EmbeddedCurrencySchema
+  currency_id: z.string().uuid().nullable().optional(),
+  exchange_rate: z.number().optional(),
+  exchange_rate_date: z.string().datetime().nullable().optional(),
+  // จาก InfoSchema
+  note: z.string().optional().nullable(),
+  info: z.any().optional().nullable(),
+  dimension: z.any().optional().nullable(),
+  // จาก FocSchema (partial)
+  foc_qty: ValidateSchema.shape.quantity.optional(),
+  foc_unit_id: z.string().uuid().nullable().optional(),
+  foc_unit_conversion_rate: ValidateSchema.shape.price.optional(),
+  // Add stages_status field
+  stages_status: z.union([z.string(), z.array(z.any())]).nullable().optional(),
+});
 
 export const CreatePrSchema = z
   .object({
@@ -76,7 +149,7 @@ export const CreatePrSchema = z
         purchase_request_detail: z
           .object({
             add: z.array(CreatePurchaseRequestDetailSchema).optional(),
-            update: z.array(CreatePurchaseRequestDetailSchema).optional(),
+            update: z.array(UpdatePurchaseRequestDetailSchema).optional(),
             remove: z.array(z.object({ id: z.string().uuid() })).optional(),
           })
           .optional(),
@@ -85,12 +158,9 @@ export const CreatePrSchema = z
   .superRefine((data, ctx) => {
     // Validate that items in add array have required fields filled
     const addItems = data.details.purchase_request_detail?.add;
-    console.log("Validating add items:", addItems);
     if (addItems && addItems.length > 0) {
       addItems.forEach((item, index) => {
-        console.log(`Item ${index}:`, item);
         if (!item.location_id) {
-          console.log(`Item ${index} missing location_id`);
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Location is required",
@@ -98,7 +168,6 @@ export const CreatePrSchema = z
           });
         }
         if (!item.product_id) {
-          console.log(`Item ${index} missing product_id`);
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Product is required",
@@ -106,14 +175,12 @@ export const CreatePrSchema = z
           });
         }
         if (item.requested_qty === undefined || item.requested_qty === null) {
-          console.log(`Item ${index} missing requested_qty:`, item.requested_qty);
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Quantity is required",
             path: ["details", "purchase_request_detail", "add", index, "requested_qty"],
           });
         } else if (typeof item.requested_qty !== "number" || item.requested_qty < 0) {
-          console.log(`Item ${index} invalid requested_qty:`, item.requested_qty);
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Quantity must be a valid number and not negative",
@@ -121,7 +188,6 @@ export const CreatePrSchema = z
           });
         }
         if (!item.requested_unit_id) {
-          console.log(`Item ${index} missing requested_unit_id`);
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Unit is required",
@@ -148,67 +214,6 @@ export const CreatePurchaseRequestSchema = z
       })
       .optional(),
   });
-
-// แก้ไข: สร้าง UpdatePurchaseRequestDetailSchema แยกแทนการ extend เพื่อลด type complexity
-const UpdatePurchaseRequestDetailSchema = z.object({
-  id: z.string().uuid(),
-  description: z.string().optional().nullable(),
-  comment: z.string().optional().nullable(),
-  sequence_no: z.number().optional(),
-  // จาก EmbeddedProductSchema
-  product_id: ValidateSchema.shape.uuid.optional(),
-  // จาก EmbeddedInventoryUnitSchema
-  inventory_unit_id: ValidateSchema.shape.uuid.optional(),
-  // จาก EmbeddedLocationSchema + delivery point
-  location_id: ValidateSchema.shape.uuid.optional(),
-  delivery_point_id: ValidateSchema.shape.uuid.optional(),
-  delivery_date: z.string().datetime().optional(),
-  // จาก EmbeddedVendorSchema
-  vendor_id: ValidateSchema.shape.uuid.optional(),
-  // จาก RequestedQuantityAndUnitSchema
-  requested_qty: ValidateSchema.shape.quantity.optional(),
-  requested_unit_id: ValidateSchema.shape.uuid.optional(),
-  requested_unit_conversion_factor: ValidateSchema.shape.price.optional(),
-  // จาก ApproveQuantityAndUnitSchema
-  approved_qty: ValidateSchema.shape.quantity.optional(),
-  approved_unit_id: ValidateSchema.shape.uuid.optional(),
-  approved_base_qty: ValidateSchema.shape.quantity.optional(),
-  approved_unit_conversion_factor: ValidateSchema.shape.price.optional(),
-  // จาก PriceSchema
-  total_price: ValidateSchema.shape.price.optional(),
-  sub_total_price: ValidateSchema.shape.price.optional(),
-  net_amount: ValidateSchema.shape.price.optional(),
-  price: ValidateSchema.shape.price.optional(),
-  base_sub_total_price: ValidateSchema.shape.price.optional(),
-  base_total_price: ValidateSchema.shape.price.optional(),
-  base_net_amount: ValidateSchema.shape.price.optional(),
-  base_price: ValidateSchema.shape.price.optional(),
-  // จาก EmbeddedTaxSchema (partial)
-  tax_profile_id: z.string().uuid().optional(),
-  tax_profile_name: z.string().optional(),
-  tax_rate: ValidateSchema.shape.price.optional(),
-  tax_amount: ValidateSchema.shape.price.optional(),
-  is_tax_adjustment: z.boolean().optional(),
-  base_tax_amount: ValidateSchema.shape.price.optional(),
-  total_amount: ValidateSchema.shape.price.optional(),
-  // จาก EmbeddedDiscountSchema
-  discount_rate: ValidateSchema.shape.price.optional(),
-  discount_amount: ValidateSchema.shape.price.optional(),
-  is_discount_adjustment: z.boolean().optional(),
-  base_discount_amount: ValidateSchema.shape.price.optional(),
-  // จาก EmbeddedCurrencySchema
-  currency_id: z.string().uuid().optional(),
-  exchange_rate: z.number().optional(),
-  exchange_rate_date: z.string().datetime().optional(),
-  // จาก InfoSchema
-  note: z.string().optional().nullable(),
-  info: z.any().optional().nullable(),
-  dimension: z.any().optional().nullable(),
-  // จาก FocSchema (partial)
-  foc_qty: ValidateSchema.shape.quantity.optional(),
-  foc_unit_id: z.string().uuid().optional(),
-  foc_unit_conversion_rate: ValidateSchema.shape.price.optional(),
-});
 
 export const UpdatePurchaseRequestSchema = CreatePurchaseRequestSchema.extend({
   doc_version: z.number().optional().readonly(),

@@ -225,22 +225,22 @@ export interface CreatePurchaseRequestDetailDto {
   location_id?: string;
   delivery_point_id?: string;
   delivery_date?: string;
-  vendor_id?: string;
+  vendor_id?: string | null;
   requested_qty?: number;
   requested_unit_id?: string;
   requested_unit_conversion_factor?: number;
   price?: number;
-  tax_profile_id?: string;
-  tax_profile_name?: string;
+  tax_profile_id?: string | null;
+  tax_profile_name?: string | null;
   tax_rate?: number;
   tax_amount?: number;
   is_tax_adjustment?: boolean;
   discount_rate?: number;
   discount_amount?: number;
   is_discount_adjustment?: boolean;
-  currency_id?: string;
+  currency_id?: string | null;
   exchange_rate?: number;
-  exchange_rate_date?: string;
+  exchange_rate_date?: string | null;
   note?: string | null;
   info?: any | null;
   dimension?: any | null;
@@ -249,22 +249,23 @@ export interface CreatePurchaseRequestDetailDto {
 export interface UpdatePurchaseRequestDetailDto extends CreatePurchaseRequestDetailDto {
   id: string;
   approved_qty?: number;
-  approved_unit_id?: string;
+  approved_unit_id?: string | null;
   approved_base_qty?: number;
   approved_unit_conversion_factor?: number;
   total_price?: number;
-  sub_total_price?: number;
+  sub_total_price?: number | null;
   net_amount?: number;
-  base_sub_total_price?: number;
+  base_sub_total_price?: number | null;
   base_total_price?: number;
   base_net_amount?: number;
-  base_price?: number;
+  base_price?: number | null;
   base_tax_amount?: number;
   total_amount?: number;
   base_discount_amount?: number;
   foc_qty?: number;
-  foc_unit_id?: string;
+  foc_unit_id?: string | null;
   foc_unit_conversion_rate?: number;
+  stages_status?: string | any[] | null;
 }
 
 export interface PurchaseRequestCreateFormDto {
@@ -300,7 +301,7 @@ export interface CreatePrDto {
     note?: string | null;
     purchase_request_detail?: {
       add?: CreatePurchaseRequestDetailDto[];
-      update?: CreatePurchaseRequestDetailDto[];
+      update?: UpdatePurchaseRequestDetailDto[];
       remove?: { id: string }[];
     };
   };
@@ -319,6 +320,7 @@ export type ActionPr =
 // Re-export Zod schemas for backward compatibility
 export {
   CreatePurchaseRequestDetailSchema,
+  UpdatePurchaseRequestDetailSchema,
   STAGE_ROLE,
   StageRoleSchema,
   CreatePrSchema,

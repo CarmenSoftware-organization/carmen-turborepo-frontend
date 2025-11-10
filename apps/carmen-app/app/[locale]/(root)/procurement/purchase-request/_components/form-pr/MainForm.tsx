@@ -7,9 +7,11 @@ import {
   PurchaseRequestByIdDto,
   STAGE_ROLE,
   StageStatus,
+  CreatePurchaseRequestDetailDto,
+  UpdatePurchaseRequestDetailDto,
 } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-purchase-item-management";
 import { usePrevWorkflow } from "@/app/[locale]/(root)/procurement/purchase-request/_hooks/use-prev-workflow";
@@ -88,14 +90,15 @@ export default function MainForm({ mode, initValues }: Props) {
         description: initValues?.description || "",
         note: initValues?.note || "",
         purchase_request_detail: {
-          add: [],
-          update: [],
-          remove: [],
+          add: [] as CreatePurchaseRequestDetailDto[],
+          update: [] as UpdatePurchaseRequestDetailDto[],
+          remove: [] as { id: string }[],
         },
       },
     },
     mode: "onBlur",
   });
+
 
   const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
 
@@ -121,16 +124,16 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const currentStage = workflowStages[workflowStages.length - 1]?.title;
 
+
   const { data: prevWorkflowData, isLoading: isPrevWorkflowLoading } = usePrevWorkflow({
     token,
     buCode,
     workflow_id: initValues?.workflow_id || "",
     stage: currentStage,
+    enabled: reviewDialogOpen,
   });
 
-  console.log("details", initValues?.purchase_request_detail);
-
-  const getCurrentStatus = (stagesStatusValue: string | StageStatus[] | undefined): string => {
+  const getCurrentStatus = useCallback((stagesStatusValue: string | StageStatus[] | undefined): string => {
     if (!stagesStatusValue) return "pending";
     if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
       const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
@@ -140,7 +143,7 @@ export default function MainForm({ mode, initValues }: Props) {
       return stagesStatusValue;
     }
     return "pending";
-  };
+  }, []);
 
   const itemsStatusSummary = useMemo(() => {
     const summary = {
@@ -199,6 +202,7 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const handleSubmit = (data: CreatePrDto) => {
+
     if (
       data.details.purchase_request_detail?.add &&
       data.details.purchase_request_detail.add.length > 0
@@ -522,7 +526,6 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const watchForm = form.watch();
 
-  // console.log("form.formState.errors", form.formState.errors);
 
   return (
     <>
@@ -533,7 +536,16 @@ export default function MainForm({ mode, initValues }: Props) {
         <div className="space-y-4">
           <Card className="p-4">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)}>
+              <form
+                onSubmit={form.handleSubmit(
+                  handleSubmit,
+                  (errors) => {
+                    toastError({
+                      message: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                    });
+                  }
+                )}
+              >
                 <ActionFields
                   mode={mode}
                   currentMode={currentFormType}
@@ -591,7 +603,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 </Tabs>
               </form>
             </Form>
-            <JsonViewer data={watchForm} title="Form Data" />
+            {/* <JsonViewer data={watchForm} title="Form Data" /> */}
           </Card>
 
           {prStatus !== "voided" && (
@@ -608,7 +620,14 @@ export default function MainForm({ mode, initValues }: Props) {
               onApprove={onApprove}
               onPurchaseApprove={onPurchaseApprove}
               onSubmitPr={onSubmitPr}
-              onSave={form.handleSubmit(handleSubmit)}
+              onSave={form.handleSubmit(
+                handleSubmit,
+                (errors) => {
+                  toastError({
+                    message: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                  });
+                }
+              )}
             />
           )}
         </div>

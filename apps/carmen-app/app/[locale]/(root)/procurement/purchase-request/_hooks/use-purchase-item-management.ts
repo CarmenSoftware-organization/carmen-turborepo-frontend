@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { UseFormReturn, useFieldArray } from "react-hook-form";
 import { nanoid } from "nanoid";
 import { PurchaseRequestDetail, CreatePrDto } from "@/dtos/purchase-request.dto";
@@ -51,11 +51,14 @@ export const usePurchaseItemManagement = ({
     name: "details.purchase_request_detail.add",
   });
 
-  // Combined items (new + existing)
-  const items = [
-    ...(addFields as unknown as PurchaseRequestDetail[]),
-    ...initValues.filter((item) => !state.removedItems.has(item.id)),
-  ];
+  // Combined items (new + existing) - memoized
+  const items = useMemo(
+    () => [
+      ...(addFields as unknown as PurchaseRequestDetail[]),
+      ...initValues.filter((item) => !state.removedItems.has(item.id)),
+    ],
+    [addFields, initValues, state.removedItems]
+  );
 
   // Add new item
   const addItem = useCallback(() => {
@@ -71,10 +74,10 @@ export const usePurchaseItemManagement = ({
     };
     addPrepend(newItem);
 
-    // Trigger validation after adding item to show errors immediately
-    setTimeout(async () => {
-      await form.trigger();
-    }, 100);
+    // Trigger validation after adding item using queueMicrotask for better performance
+    queueMicrotask(() => {
+      form.trigger().catch(console.error);
+    });
   }, [addPrepend, form]);
 
   // Helper: Process quantity field values
@@ -123,11 +126,11 @@ export const usePurchaseItemManagement = ({
         shouldTouch: true,
       });
 
-      // Clear and re-trigger validation
-      setTimeout(async () => {
+      // Clear and re-trigger validation using queueMicrotask
+      queueMicrotask(() => {
         form.clearErrors();
-        await form.trigger();
-      }, 50);
+        form.trigger().catch(console.error);
+      });
     },
     [form, processQuantityValue, getProductFields]
   );

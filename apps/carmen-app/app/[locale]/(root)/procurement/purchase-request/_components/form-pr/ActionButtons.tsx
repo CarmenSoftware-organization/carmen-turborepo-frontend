@@ -81,7 +81,7 @@ export default function ActionButtons({
       transition={{ duration: 0.2 }}
     >
       {isNewPr ? (
-        <Button onClick={onSave} size="sm">
+        <Button onClick={onSave} size="sm" type="button">
           <Save />
           {tAction("save")}
         </Button>
@@ -93,6 +93,7 @@ export default function ActionButtons({
               {hasReview && (
                 <Button
                   size="sm"
+                  type="button"
                   className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
                   onClick={(e) => {
                     e.preventDefault();
@@ -110,6 +111,7 @@ export default function ActionButtons({
               {!hasReview && hasOnlyApproved && (
                 <Button
                   size="sm"
+                  type="button"
                   className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
                   onClick={(e) => {
                     e.preventDefault();
@@ -127,6 +129,7 @@ export default function ActionButtons({
               {!hasReview && !hasOnlyApproved && hasOnlyRejected && (
                 <Button
                   size="sm"
+                  type="button"
                   className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
                   onClick={(e) => {
                     e.preventDefault();
@@ -145,6 +148,7 @@ export default function ActionButtons({
                 <>
                   <Button
                     size="sm"
+                    type="button"
                     className="bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive)/0.8)] h-7"
                     onClick={(e) => {
                       e.preventDefault();
@@ -158,6 +162,7 @@ export default function ActionButtons({
                   </Button>
                   <Button
                     size="sm"
+                    type="button"
                     className="bg-[hsl(var(--inactive))] hover:bg-[hsl(var(--inactive)/0.8)] h-7"
                     onClick={(e) => {
                       e.preventDefault();
@@ -171,6 +176,7 @@ export default function ActionButtons({
                   </Button>
                   <Button
                     size="sm"
+                    type="button"
                     className="bg-[hsl(var(--azure-primary))] hover:bg-[hsl(var(--azure-primary)/0.8)] h-7"
                     onClick={(e) => {
                       e.preventDefault();
@@ -184,6 +190,7 @@ export default function ActionButtons({
                   </Button>
                   <Button
                     size="sm"
+                    type="button"
                     className="bg-[hsl(var(--emerald-primary))] hover:bg-[hsl(var(--emerald-primary)/0.8)] h-7"
                     onClick={(e) => {
                       e.preventDefault();
@@ -197,6 +204,7 @@ export default function ActionButtons({
                   </Button>
                   <Button
                     size="sm"
+                    type="button"
                     className="bg-[hsl(var(--teal-primary))] hover:bg-[hsl(var(--teal-primary)/0.8)] h-7"
                     onClick={(e) => {
                       e.preventDefault();
@@ -216,6 +224,7 @@ export default function ActionButtons({
           {(prStatus === "draft" || prStatus !== "in_progress") && (
             <Button
               size="sm"
+              type="button"
               className="bg-[hsl(var(--active))] hover:bg-[hsl(var(--active)/0.8)] h-7"
               onClick={(e) => {
                 e.preventDefault();

@@ -1,32 +1,25 @@
 // hooks/use-pr-actions.ts
 
-import { PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestUpdateFormDto, CreatePrDto } from "@/dtos/purchase-request.dto";
 import { useUpdateUPr } from "@/hooks/use-purchase-request";
 
 type ActionPr = "save" | "submit" | "approve" | "purchase" | "review" | "reject" | "send_back";
 
 interface MutationOptions {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
   onSettled?: () => void;
 }
 
 interface PrActionsReturn {
-  // Action functions
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  save: (data: any, options?: MutationOptions) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  submit: (data: any, options?: MutationOptions) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  approve: (data: any, options?: MutationOptions) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  purchase: (data: any, options?: MutationOptions) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  review: (data: any, options?: MutationOptions) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  reject: (data: any, options?: MutationOptions) => void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sendBack: (data: any, options?: MutationOptions) => void;
+  // Action functions - accept flexible data shapes with additional fields
+  save: (data: PurchaseRequestUpdateFormDto | CreatePrDto, options?: MutationOptions) => void;
+  submit: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) => void;
+  approve: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) => void;
+  purchase: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) => void;
+  review: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) => void;
+  reject: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) => void;
+  sendBack: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) => void;
 
   // Loading states
   isPending: boolean;
@@ -64,44 +57,44 @@ const usePrActions = (token: string, buCode: string, prId: string): PrActionsRet
 
   // Action functions
   const actions = {
-    save: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-      saveMutation.mutate(data, {
+    save: (data: PurchaseRequestUpdateFormDto | CreatePrDto, options?: MutationOptions) =>
+      saveMutation.mutate(data as PurchaseRequestUpdateFormDto, {
         onSuccess: options?.onSuccess,
         onError: options?.onError,
         onSettled: options?.onSettled,
       }),
-    submit: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-      submitMutation.mutate(data, {
+    submit: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) =>
+      submitMutation.mutate(data as PurchaseRequestUpdateFormDto, {
         onSuccess: options?.onSuccess,
         onError: options?.onError,
         onSettled: options?.onSettled,
       }),
-    approve: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-      approveMutation.mutate(data, {
+    approve: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) =>
+      approveMutation.mutate(data as PurchaseRequestUpdateFormDto, {
         onSuccess: options?.onSuccess,
         onError: options?.onError,
         onSettled: options?.onSettled,
       }),
-    purchase: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-      purchaseMutation.mutate(data, {
+    purchase: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) =>
+      purchaseMutation.mutate(data as PurchaseRequestUpdateFormDto, {
         onSuccess: options?.onSuccess,
         onError: options?.onError,
         onSettled: options?.onSettled,
       }),
-    review: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-      reviewMutation.mutate(data, {
+    review: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) =>
+      reviewMutation.mutate(data as PurchaseRequestUpdateFormDto, {
         onSuccess: options?.onSuccess,
         onError: options?.onError,
         onSettled: options?.onSettled,
       }),
-    reject: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-      rejectMutation.mutate(data, {
+    reject: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) =>
+      rejectMutation.mutate(data as PurchaseRequestUpdateFormDto, {
         onSuccess: options?.onSuccess,
         onError: options?.onError,
         onSettled: options?.onSettled,
       }),
-    sendBack: (data: PurchaseRequestUpdateFormDto, options?: MutationOptions) =>
-      sendBackMutation.mutate(data, {
+    sendBack: (data: Partial<PurchaseRequestUpdateFormDto> & Record<string, unknown>, options?: MutationOptions) =>
+      sendBackMutation.mutate(data as PurchaseRequestUpdateFormDto, {
         onSuccess: options?.onSuccess,
         onError: options?.onError,
         onSettled: options?.onSettled,

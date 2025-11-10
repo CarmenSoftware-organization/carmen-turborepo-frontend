@@ -146,7 +146,16 @@ export default function ActionFields({
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant="default" size={"sm"} type="submit" disabled={isDisabled}>
+                    <Button
+                      variant="default"
+                      size={"sm"}
+                      type="submit"
+                      disabled={isDisabled}
+                      onClick={(e) => {
+                        // e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    >
                       {isCreatingPr ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save />}
                     </Button>
                   </TooltipTrigger>

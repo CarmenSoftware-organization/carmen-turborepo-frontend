@@ -7,11 +7,13 @@ export const usePrevWorkflow = ({
   buCode,
   workflow_id,
   stage,
+  enabled = true,
 }: {
   token: string;
   buCode: string;
   workflow_id: string;
   stage?: string;
+  enabled?: boolean;
 }) => {
   const baseUrl = `${backendApi}/api/${buCode}/workflow/${workflow_id}/previous_stages`;
   const API_URL = stage ? `${baseUrl}?stage=${stage}` : baseUrl;
@@ -22,7 +24,10 @@ export const usePrevWorkflow = ({
       if (!token || !buCode || !workflow_id) throw new Error("Unauthorized");
       return await getAllApiRequest(API_URL, token, "Error fetching previous workflow stages");
     },
-    enabled: !!token && !!buCode && !!workflow_id,
+    enabled: !!token && !!buCode && !!workflow_id && enabled,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   return { data, isLoading, error };
