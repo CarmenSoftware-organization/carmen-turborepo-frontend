@@ -207,14 +207,7 @@ export default function MainForm({ mode, initValues }: Props) {
     const processedData = prepareSubmitData(data);
     const isCreating = currentFormType === formType.ADD;
     if (isCreating) {
-      createPurchaseRequest(
-        processedData,
-        createPr,
-        router,
-        tPR,
-        toastSuccess,
-        toastError
-      );
+      createPurchaseRequest(processedData, createPr, router, tPR, toastSuccess, toastError);
     } else {
       updatePurchaseRequest(
         processedData,
@@ -434,8 +427,6 @@ export default function MainForm({ mode, initValues }: Props) {
   const prStatus = initValues?.pr_status;
 
   const watchForm = form.watch();
-
-  console.log("eerr", form.formState.errors);
 
   return (
     <>
