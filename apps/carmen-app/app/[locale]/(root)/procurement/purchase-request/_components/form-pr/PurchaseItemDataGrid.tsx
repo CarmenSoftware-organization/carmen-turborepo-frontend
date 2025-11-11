@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
@@ -69,6 +69,7 @@ export default function PurchaseItemDataGrid({
     bulkActionDialogOpen,
     setBulkActionDialogOpen,
     bulkActionType,
+    setBulkActionType,
     bulkActionMessage,
     setBulkActionMessage,
     sorting,
@@ -175,10 +176,19 @@ export default function PurchaseItemDataGrid({
     table.resetRowSelection();
   };
 
+  // Handle approved action when bulkActionType changes
+  useEffect(() => {
+    if (bulkActionType === PR_ITEM_BULK_ACTION.APPROVED) {
+      performBulkStatusUpdate(bulkActionType, "");
+      setBulkActionType(null);
+    }
+  }, [bulkActionType]);
+
   const handleBulkActionConfirm = () => {
     if (bulkActionType) {
       performBulkStatusUpdate(bulkActionType, bulkActionMessage);
       setBulkActionDialogOpen(false);
+      setBulkActionType(null);
       setBulkActionMessage("");
     }
   };

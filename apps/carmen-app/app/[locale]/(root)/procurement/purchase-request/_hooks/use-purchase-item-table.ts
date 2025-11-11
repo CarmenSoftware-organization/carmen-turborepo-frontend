@@ -37,6 +37,7 @@ interface UsePurchaseItemTableReturn {
   bulkActionDialogOpen: boolean;
   setBulkActionDialogOpen: (open: boolean) => void;
   bulkActionType: PR_ITEM_BULK_ACTION | null;
+  setBulkActionType: (type: PR_ITEM_BULK_ACTION | null) => void;
   bulkActionMessage: string;
   setBulkActionMessage: (message: string) => void;
 
@@ -46,8 +47,6 @@ interface UsePurchaseItemTableReturn {
 
   // Bulk actions
   handleBulkActionClick: (action: PR_ITEM_BULK_ACTION) => (e: React.MouseEvent) => void;
-  performBulkStatusUpdate: (status: string, message: string) => void;
-  handleBulkActionConfirm: () => void;
 }
 
 export const usePurchaseItemTable = ({
@@ -96,35 +95,16 @@ export const usePurchaseItemTable = ({
       e.preventDefault();
       e.stopPropagation();
 
-      // For approved action, no message needed
-      if (action === PR_ITEM_BULK_ACTION.APPROVED) {
-        performBulkStatusUpdate(action, "");
-      } else {
-        // For review and reject, show dialog for message input
-        setBulkActionType(action);
+      setBulkActionType(action);
+
+      // For approved action, no message needed - handled in component
+      // For review and reject, show dialog for message input
+      if (action !== PR_ITEM_BULK_ACTION.APPROVED) {
         setBulkActionDialogOpen(true);
       }
     },
     []
   );
-
-  const performBulkStatusUpdate = useCallback(
-    (status: string, message: string) => {
-      // This will be called with the table instance from the component
-      // We'll pass this function to the component to use with the table
-      return { status, message };
-    },
-    []
-  );
-
-  const handleBulkActionConfirm = useCallback(() => {
-    if (bulkActionType) {
-      performBulkStatusUpdate(bulkActionType, bulkActionMessage);
-      setBulkActionDialogOpen(false);
-      setBulkActionType(null);
-      setBulkActionMessage("");
-    }
-  }, [bulkActionType, bulkActionMessage, performBulkStatusUpdate]);
 
   return {
     // Delete dialog
@@ -144,6 +124,7 @@ export const usePurchaseItemTable = ({
     bulkActionDialogOpen,
     setBulkActionDialogOpen,
     bulkActionType,
+    setBulkActionType,
     bulkActionMessage,
     setBulkActionMessage,
 
@@ -153,8 +134,6 @@ export const usePurchaseItemTable = ({
 
     // Bulk actions
     handleBulkActionClick,
-    performBulkStatusUpdate,
-    handleBulkActionConfirm,
   };
 };
 
