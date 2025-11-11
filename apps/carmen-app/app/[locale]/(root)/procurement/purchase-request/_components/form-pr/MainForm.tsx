@@ -49,6 +49,15 @@ import { usePrActions } from "../../_hooks/use-pr-actions";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import JsonViewer from "@/components/JsonViewer";
+import { prepareSubmitData } from "../../_utils/purchase-request.utils";
+import { getLastStageMessage, createStageDetail } from "../../_utils/stage.utils";
+import { createPurchaseRequest } from "../../_handlers/purchase-request-create.handlers";
+import { updatePurchaseRequest } from "../../_handlers/purchase-request-update.handlers";
+import {
+  submitPurchaseRequest,
+  rejectPurchaseRequest,
+  sendBackPurchaseRequest,
+} from "../../_handlers/purchase-request-actions.handlers";
 
 interface Props {
   mode: formType;
@@ -193,70 +202,31 @@ export default function MainForm({ mode, initValues }: Props) {
     return hasMainFieldChanges || hasItemChanges;
   };
 
-  const handleSubmit = (data: CreatePrDto) => {
-    if (
-      data.details.purchase_request_detail?.add &&
-      data.details.purchase_request_detail.add.length > 0
-    ) {
-      data.details.purchase_request_detail.add = data.details.purchase_request_detail.add.map(
-        (item) => {
-          const { id, ...cleanedItem } = item as Record<string, unknown>;
-
-          for (const key of Object.keys(cleanedItem)) {
-            if (cleanedItem[key] === "" || cleanedItem[key] === null) {
-              delete cleanedItem[key];
-            }
-          }
-
-          if (cleanedItem.requested_qty !== undefined) {
-            cleanedItem.requested_qty = Number(cleanedItem.requested_qty);
-          }
-          if (cleanedItem.approved_qty !== undefined) {
-            cleanedItem.approved_qty = Number(cleanedItem.approved_qty);
-          }
-          if (cleanedItem.foc_qty !== undefined) {
-            cleanedItem.foc_qty = Number(cleanedItem.foc_qty);
-          }
-
-          return cleanedItem as typeof item;
-        }
+  /** Main submit handler: prepares data and calls create/update */
+  const handleSubmit = (data: CreatePrDto): void => {
+    const processedData = prepareSubmitData(data);
+    const isCreating = currentFormType === formType.ADD;
+    if (isCreating) {
+      createPurchaseRequest(
+        processedData,
+        createPr,
+        router,
+        tPR,
+        toastSuccess,
+        toastError
       );
-    }
-
-    if (currentFormType === formType.ADD) {
-      createPr(data, {
-        onSuccess: (responseData: unknown) => {
-          const response = responseData as { data?: { id?: string } };
-          if (response?.data?.id) {
-            router.replace(`/procurement/purchase-request/${response.data.id}`);
-            toastSuccess({
-              message: tPR("purchase_request_created"),
-            });
-          }
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_created_failed"),
-          });
-        },
-      });
     } else {
-      save(data, {
-        onSuccess: () => {
-          toastSuccess({
-            message: tPR("purchase_request_updated"),
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["purchase-request", buCode, initValues?.id],
-          });
-          setCurrentFormType(formType.VIEW);
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_updated_failed"),
-          });
-        },
-      });
+      updatePurchaseRequest(
+        processedData,
+        save,
+        queryClient,
+        buCode,
+        initValues?.id,
+        setCurrentFormType,
+        tPR,
+        toastSuccess,
+        toastError
+      );
     }
   };
 
@@ -308,42 +278,25 @@ export default function MainForm({ mode, initValues }: Props) {
 
   const isDraft = initValues?.pr_status === "draft";
 
+  /** Submit PR for workflow approval */
   const onSubmitPr = () => {
-    const submitData = {
-      state_role: STAGE_ROLE.CREATE,
-      details:
-        purchaseItemManager.items.map((item) => {
-          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as StagesStatusValue;
-
-          let stageMessage = "";
-          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
-            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
-            stageMessage = lastStage?.message || "";
-          }
-
-          return {
-            id: item.id,
-            stage_status: "submit",
-            stage_message: stageMessage || "user submitted",
-          };
-        }) || [],
-    };
-    submit(submitData, {
-      onSuccess: () => {
-        toastSuccess({
-          message: tPR("purchase_request_submitted"),
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["purchase-request", buCode, initValues?.id],
-        });
-      },
-      onError: () => {
-        toastError({
-          message: tPR("purchase_request_submitted_failed"),
-        });
-      },
+    const details = purchaseItemManager.items.map((item) => {
+      const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
+        item.stages_status) as StagesStatusValue;
+      const stageMessage = getLastStageMessage(stagesStatusValue);
+      return createStageDetail(item.id, "submit", stageMessage, "user submitted");
     });
+
+    submitPurchaseRequest(
+      details,
+      submit,
+      queryClient,
+      buCode,
+      initValues?.id,
+      tPR,
+      toastSuccess,
+      toastError
+    );
   };
 
   const onApprove = () => {
@@ -364,81 +317,46 @@ export default function MainForm({ mode, initValues }: Props) {
     );
   };
 
+  /** Reject PR items */
   const onReject = () => {
-    const rejectData = {
-      state_role: STAGE_ROLE.ISSUE,
-      details:
-        purchaseItemManager.items.map((item) => {
-          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as StagesStatusValue;
-
-          let stageMessage = "";
-          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
-            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
-            stageMessage = lastStage?.message || "";
-          }
-
-          return {
-            id: item.id,
-            stage_status: "reject",
-            stage_message: stageMessage || "rejected",
-          };
-        }) || [],
-    };
-    reject(rejectData, {
-      onSuccess: () => {
-        toastSuccess({
-          message: tPR("purchase_request_rejected"),
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["purchase-request", buCode, initValues?.id],
-        });
-      },
-      onError: () => {
-        toastError({
-          message: tPR("purchase_request_rejected_failed"),
-        });
-      },
+    const details = purchaseItemManager.items.map((item) => {
+      const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
+        item.stages_status) as StagesStatusValue;
+      const stageMessage = getLastStageMessage(stagesStatusValue);
+      return createStageDetail(item.id, "reject", stageMessage, "rejected");
     });
+
+    rejectPurchaseRequest(
+      details,
+      reject,
+      queryClient,
+      buCode,
+      initValues?.id,
+      tPR,
+      toastSuccess,
+      toastError
+    );
   };
 
+  /** Send back PR items for revision */
   const onSendBack = () => {
-    const sendBackData = {
-      state_role: STAGE_ROLE.ISSUE,
-      details:
-        purchaseItemManager.items.map((item) => {
-          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as StagesStatusValue;
-
-          let stageMessage = "";
-          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
-            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
-            stageMessage = lastStage?.message || "";
-          }
-
-          return {
-            id: item.id,
-            stage_status: "send_back",
-            stage_message: stageMessage || "sent back",
-          };
-        }) || [],
-    };
-
-    sendBack(sendBackData, {
-      onSuccess: () => {
-        toastSuccess({
-          message: tPR("purchase_request_sent_back"),
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["purchase-request", buCode, initValues?.id],
-        });
-      },
-      onError: () => {
-        toastError({
-          message: tPR("purchase_request_sent_back_failed"),
-        });
-      },
+    const details = purchaseItemManager.items.map((item) => {
+      const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
+        item.stages_status) as StagesStatusValue;
+      const stageMessage = getLastStageMessage(stagesStatusValue);
+      return createStageDetail(item.id, "send_back", stageMessage, "sent back");
     });
+
+    sendBackPurchaseRequest(
+      details,
+      sendBack,
+      queryClient,
+      buCode,
+      initValues?.id,
+      tPR,
+      toastSuccess,
+      toastError
+    );
   };
 
   const onPurchaseApprove = () => {

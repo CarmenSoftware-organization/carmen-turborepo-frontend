@@ -98,7 +98,14 @@ export const createPurchaseItemColumns = (
       cell: ({ row }) => {
         return row.getCanExpand() ? (
           <Button
-            onClick={row.getToggleExpandedHandler()}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              row.getToggleExpandedHandler()();
+            }}
             variant={"outline"}
             size={"sm"}
             className="w-6 h-6"
@@ -501,8 +508,12 @@ export const createPurchaseItemColumns = (
             variant="ghost"
             size="icon"
             className="h-7 w-7 text-muted-foreground hover:text-destructive"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               handleRemoveItemClick(item.id, isNewItem, addIndex);
             }}
           >
