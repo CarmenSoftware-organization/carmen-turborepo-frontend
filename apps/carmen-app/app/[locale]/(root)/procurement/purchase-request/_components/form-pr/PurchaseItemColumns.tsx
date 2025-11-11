@@ -15,8 +15,8 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import DateInput from "@/components/form-custom/DateInput";
 import { DeliveryPointSelectLookup } from "@/components/lookup/DeliveryPointSelectLookup";
-import { UnitSelectCell } from "../../UnitSelectCell";
-import ExpandedContent from "../ExpandedContent";
+import { UnitSelectCell } from "../UnitSelectCell";
+import ExpandedContent from "./ExpandedContent";
 
 interface ColumnConfig {
   currentFormType: formType;

@@ -14,7 +14,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import DeleteConfirmDialog from "@/components/DeleteConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { createPurchaseItemColumns } from "./columns/PurchaseItemColumns";
+import { createPurchaseItemColumns } from "./PurchaseItemColumns";
 import { usePurchaseItemTable, PR_ITEM_BULK_ACTION } from "../../_hooks/use-purchase-item-table";
 import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";

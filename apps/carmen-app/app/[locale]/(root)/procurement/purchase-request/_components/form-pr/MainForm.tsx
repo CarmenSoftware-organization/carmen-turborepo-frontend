@@ -520,7 +520,7 @@ export default function MainForm({ mode, initValues }: Props) {
               onSubmitPr={onSubmitPr}
               onSave={form.handleSubmit(handleSubmit, (errors) => {
                 toastError({
-                  message: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                  message: tPR("pls_complete_required_fields"),
                 });
               })}
             />
