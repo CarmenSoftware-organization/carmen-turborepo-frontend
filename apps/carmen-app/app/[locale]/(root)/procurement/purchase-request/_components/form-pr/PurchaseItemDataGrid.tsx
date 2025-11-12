@@ -120,8 +120,22 @@ export default function PurchaseItemDataGrid({
     ]
   );
 
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
+      const isNewA = !initValues.some((initItem) => initItem.id === a.id);
+      const isNewB = !initValues.some((initItem) => initItem.id === b.id);
+
+      if (isNewA && !isNewB) return -1;
+      if (!isNewA && isNewB) return 1;
+
+      const seqA = a.sequence_no ?? 0;
+      const seqB = b.sequence_no ?? 0;
+      return seqA - seqB;
+    });
+  }, [items, initValues]);
+
   const table = useReactTable({
-    data: items,
+    data: sortedItems,
     columns,
     getRowId: (row) => row.id,
     state: {
@@ -176,7 +190,6 @@ export default function PurchaseItemDataGrid({
     table.resetRowSelection();
   };
 
-  // Handle approved action when bulkActionType changes
   useEffect(() => {
     if (bulkActionType === PR_ITEM_BULK_ACTION.APPROVED) {
       performBulkStatusUpdate(bulkActionType, "");

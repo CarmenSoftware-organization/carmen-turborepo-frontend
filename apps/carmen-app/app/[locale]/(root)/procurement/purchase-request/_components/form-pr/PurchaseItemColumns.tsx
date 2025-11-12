@@ -91,6 +91,8 @@ export const createPurchaseItemColumns = (
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
+  console.log("init item", initValues);
+
   const baseColumns: ColumnDef<PurchaseRequestDetail>[] = [
     {
       id: "expander",
@@ -197,7 +199,9 @@ export const createPurchaseItemColumns = (
                 onItemUpdate(item.id, "inventory_unit_id", "");
                 onItemUpdate(item.id, "inventory_unit_name", "");
                 onItemUpdate(item.id, "requested_unit_id", "");
+                onItemUpdate(item.id, "requested_qty", 0);
                 onItemUpdate(item.id, "requested_unit_name", "");
+                onItemUpdate(item.id, "delivery_date", "");
                 // Auto-init delivery point from location
                 if (selectedLocation?.delivery_point) {
                   onItemUpdate(item.id, "delivery_point_id", selectedLocation.delivery_point.id);
