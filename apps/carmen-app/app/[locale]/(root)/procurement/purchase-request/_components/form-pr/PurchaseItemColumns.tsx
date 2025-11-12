@@ -73,7 +73,7 @@ export const createPurchaseItemColumns = (
 ): ColumnDef<PurchaseRequestDetail>[] => {
   const {
     currentFormType,
-    initValues,
+    initValues: unsortedInitValues,
     addFields,
     prStatus,
     getItemValue,
@@ -88,6 +88,8 @@ export const createPurchaseItemColumns = (
     tHeader,
     tAction,
   } = config;
+
+  const initValues = [...unsortedInitValues].sort((a, b) => a.sequence_no - b.sequence_no);
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
@@ -320,7 +322,8 @@ export const createPurchaseItemColumns = (
                 onItemUpdate(item.id, "approved_qty", value);
 
                 // Auto-calculate requested_base_qty
-                const conversionFactor = (getItemValue(item, "requested_unit_conversion_factor") as number) || 1;
+                const conversionFactor =
+                  (getItemValue(item, "requested_unit_conversion_factor") as number) || 1;
                 const baseQty = Number(value) * conversionFactor;
                 onItemUpdate(item.id, "requested_base_qty", baseQty);
                 onItemUpdate(item.id, "approved_base_qty", baseQty);
