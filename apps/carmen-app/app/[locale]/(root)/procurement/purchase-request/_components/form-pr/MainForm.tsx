@@ -81,6 +81,8 @@ export default function MainForm({ mode, initValues }: Props) {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedStage, setSelectedStage] = useState<string>("");
 
+  console.log("initValues", initValues);
+
   const form = useForm<CreatePrDto>({
     resolver: zodResolver(CreatePrSchema),
     defaultValues: {
@@ -501,7 +503,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 </Tabs>
               </form>
             </Form>
-            <JsonViewer data={watchForm} title="Form Data" />
+            {/* <JsonViewer data={watchForm} title="Form Data" /> */}
           </Card>
 
           {prStatus !== "voided" && (

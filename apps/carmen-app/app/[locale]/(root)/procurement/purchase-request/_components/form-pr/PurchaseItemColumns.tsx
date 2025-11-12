@@ -131,6 +131,7 @@ export const createPurchaseItemColumns = (
             currencyBase={currencyBase}
             token={token}
             buCode={buCode}
+            prStatus={prStatus}
           />
         ),
       },
