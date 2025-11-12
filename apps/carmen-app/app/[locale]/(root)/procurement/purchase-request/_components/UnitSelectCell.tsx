@@ -44,6 +44,8 @@ export const UnitSelectCell = ({
     enabled: !!productId,
   });
 
+  console.log(orderUnitsData);
+
   useEffect(() => {
     if (orderUnitsData && orderUnitsData.length > 0 && !currentUnitId) {
       const firstUnit = orderUnitsData[0];
@@ -68,8 +70,21 @@ export const UnitSelectCell = ({
       onValueChange={(value) => {
         const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
         if (selectedUnit) {
+          // requested
           onItemUpdate(item.id, "requested_unit_name", selectedUnit.name);
           onItemUpdate(item.id, "requested_unit_id", selectedUnit.id);
+          onItemUpdate(item.id, "requested_unit_conversion_factor", selectedUnit.conversion);
+          onItemUpdate(item.id, "requested_base_qty", selectedUnit.conversion * item.requested_qty);
+          // approved
+          onItemUpdate(item.id, "approved_unit_name", selectedUnit.name);
+          onItemUpdate(item.id, "approved_unit_id", selectedUnit.id);
+          onItemUpdate(item.id, "approved_unit_conversion_factor", selectedUnit.conversion);
+          onItemUpdate(item.id, "approved_base_qty", selectedUnit.conversion * item.requested_qty);
+          // foc
+          onItemUpdate(item.id, "foc_unit_name", selectedUnit.name);
+          onItemUpdate(item.id, "foc_unit_id", selectedUnit.id);
+          onItemUpdate(item.id, "foc_unit_conversion_factor", selectedUnit.conversion);
+          onItemUpdate(item.id, "foc_base_qty", selectedUnit.conversion * item.requested_qty);
         }
         setOpen(false);
       }}

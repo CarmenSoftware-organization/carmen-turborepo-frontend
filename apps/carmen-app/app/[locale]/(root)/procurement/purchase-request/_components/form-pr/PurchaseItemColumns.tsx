@@ -317,7 +317,10 @@ export const createPurchaseItemColumns = (
           <div className="flex items-center gap-1 justify-end min-w-[120px]">
             <NumberInput
               value={getItemValue(item, "requested_qty") as number}
-              onChange={(value) => onItemUpdate(item.id, "requested_qty", value)}
+              onChange={(value) => {
+                onItemUpdate(item.id, "requested_qty", value);
+                onItemUpdate(item.id, "approved_qty", value);
+              }}
               classNames="h-7 text-xs bg-background w-16"
               disabled={!getItemValue(item, "product_id")}
             />
