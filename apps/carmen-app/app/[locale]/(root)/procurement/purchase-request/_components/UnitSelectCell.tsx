@@ -48,6 +48,11 @@ export const UnitSelectCell = ({
       const firstUnit = orderUnitsData[0];
       onItemUpdate(item.id, "requested_unit_id", firstUnit.id);
       onItemUpdate(item.id, "requested_unit_name", firstUnit.name);
+      onItemUpdate(item.id, "requested_unit_conversion_factor", firstUnit.conversion);
+      // Auto-set approved unit same as requested for new items
+      onItemUpdate(item.id, "approved_unit_id", firstUnit.id);
+      onItemUpdate(item.id, "approved_unit_name", firstUnit.name);
+      onItemUpdate(item.id, "requested_unit_conversion_factor", firstUnit.conversion);
     }
   }, [orderUnitsData, currentUnitId, item.id, onItemUpdate]);
 
@@ -67,8 +72,15 @@ export const UnitSelectCell = ({
       onValueChange={(value) => {
         const selectedUnit = orderUnitsData?.find((unit: UnitOderProduct) => unit.id === value);
         if (selectedUnit) {
+          // requested
           onItemUpdate(item.id, "requested_unit_name", selectedUnit.name);
           onItemUpdate(item.id, "requested_unit_id", selectedUnit.id);
+          onItemUpdate(item.id, "requested_unit_conversion_factor", selectedUnit.conversion);
+
+          // approved
+          onItemUpdate(item.id, "approved_unit_name", selectedUnit.name);
+          onItemUpdate(item.id, "approved_unit_id", selectedUnit.id);
+          onItemUpdate(item.id, "approved_unit_conversion_factor", selectedUnit.conversion);
         }
         setOpen(false);
       }}

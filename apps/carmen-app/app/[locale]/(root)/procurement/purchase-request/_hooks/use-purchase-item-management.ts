@@ -71,6 +71,10 @@ export const usePurchaseItemManagement = ({
       requested_qty: 0,
       requested_unit_id: undefined,
       delivery_date: undefined,
+      // Auto-set approved same as requested for new items
+      approved_qty: 0,
+      approved_unit_id: undefined,
+      approved_unit_name: undefined,
     };
     addPrepend(newItem);
 

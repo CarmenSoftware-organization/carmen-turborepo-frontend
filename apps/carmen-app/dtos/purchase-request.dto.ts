@@ -226,9 +226,17 @@ export interface CreatePurchaseRequestDetailDto {
   delivery_point_id?: string;
   delivery_date?: string;
   vendor_id?: string | null;
+  // requested
   requested_qty?: number;
   requested_unit_id?: string;
   requested_unit_conversion_factor?: number;
+  requested_base_qty?: number;
+  // approved
+  approved_qty?: number;
+  approved_unit_id?: string | null;
+  approved_unit_conversion_factor?: number;
+  approved_base_qty?: number;
+
   price?: number;
   tax_profile_id?: string | null;
   tax_profile_name?: string | null;
