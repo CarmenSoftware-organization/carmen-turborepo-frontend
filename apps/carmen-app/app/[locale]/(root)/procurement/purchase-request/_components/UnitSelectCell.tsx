@@ -46,13 +46,19 @@ export const UnitSelectCell = ({
   useEffect(() => {
     if (orderUnitsData && orderUnitsData.length > 0 && !currentUnitId) {
       const firstUnit = orderUnitsData[0];
+      // Auto-set approved unit same as requested for new items
       onItemUpdate(item.id, "requested_unit_id", firstUnit.id);
       onItemUpdate(item.id, "requested_unit_name", firstUnit.name);
       onItemUpdate(item.id, "requested_unit_conversion_factor", firstUnit.conversion);
-      // Auto-set approved unit same as requested for new items
       onItemUpdate(item.id, "approved_unit_id", firstUnit.id);
       onItemUpdate(item.id, "approved_unit_name", firstUnit.name);
-      onItemUpdate(item.id, "requested_unit_conversion_factor", firstUnit.conversion);
+      onItemUpdate(item.id, "approved_unit_conversion_factor", firstUnit.conversion);
+
+      // Calculate initial base quantities
+      const requestedQty = (item.requested_qty || 0);
+      const approvedQty = (item.approved_qty || 0);
+      onItemUpdate(item.id, "requested_base_qty", requestedQty * firstUnit.conversion);
+      onItemUpdate(item.id, "approved_base_qty", approvedQty * firstUnit.conversion);
     }
   }, [orderUnitsData, currentUnitId, item.id, onItemUpdate]);
 
@@ -81,6 +87,12 @@ export const UnitSelectCell = ({
           onItemUpdate(item.id, "approved_unit_name", selectedUnit.name);
           onItemUpdate(item.id, "approved_unit_id", selectedUnit.id);
           onItemUpdate(item.id, "approved_unit_conversion_factor", selectedUnit.conversion);
+
+          // Recalculate base quantities with new conversion factor
+          const requestedQty = (item.requested_qty || 0);
+          const approvedQty = (item.approved_qty || 0);
+          onItemUpdate(item.id, "requested_base_qty", requestedQty * selectedUnit.conversion);
+          onItemUpdate(item.id, "approved_base_qty", approvedQty * selectedUnit.conversion);
         }
         setOpen(false);
       }}

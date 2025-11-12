@@ -318,6 +318,12 @@ export const createPurchaseItemColumns = (
               onChange={(value) => {
                 onItemUpdate(item.id, "requested_qty", value);
                 onItemUpdate(item.id, "approved_qty", value);
+
+                // Auto-calculate requested_base_qty
+                const conversionFactor = (getItemValue(item, "requested_unit_conversion_factor") as number) || 1;
+                const baseQty = Number(value) * conversionFactor;
+                onItemUpdate(item.id, "requested_base_qty", baseQty);
+                onItemUpdate(item.id, "approved_base_qty", baseQty);
               }}
               classNames="h-7 text-xs bg-background w-16"
               disabled={!getItemValue(item, "product_id")}
