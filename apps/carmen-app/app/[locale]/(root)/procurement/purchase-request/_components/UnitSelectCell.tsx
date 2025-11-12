@@ -36,6 +36,7 @@ export const UnitSelectCell = ({
 }: UnitSelectCellProps) => {
   const [open, setOpen] = useState(false);
   const t = useTranslations("Unit");
+
   const { data: orderUnitsData, isLoading: isLoadingOrderUnits } = useOrderUnitByProduct({
     token,
     buCode,

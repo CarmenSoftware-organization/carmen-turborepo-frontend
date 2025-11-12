@@ -1,6 +1,11 @@
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { useTranslations } from "next-intl";
 import { formatPrice } from "@/utils/format/currency";
@@ -37,8 +42,8 @@ export default function ExpandedContent({
 
   return (
     <Card className="m-2 rounded-md">
-      <Accordion type="single" collapsible defaultValue="item-1">
-        <AccordionItem value="item-1">
+      <Accordion type="single" collapsible defaultValue="vendor-price-list">
+        <AccordionItem value="vendor-price-list">
           <div className="flex items-center justify-between border-b border-border">
             <AccordionTrigger iconPosition="left" className="px-2">
               <h4 className="font-semibold text-xs text-muted-foreground">
