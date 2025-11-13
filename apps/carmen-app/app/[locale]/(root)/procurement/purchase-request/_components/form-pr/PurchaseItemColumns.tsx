@@ -147,7 +147,7 @@ export const createPurchaseItemColumns = (
           disabled={table.getRowModel().rows.length === 0}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
-          className="align-[inherit]"
+          className="align-[inherit] mb-0.5"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -160,7 +160,7 @@ export const createPurchaseItemColumns = (
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
-          className="align-[inherit]"
+          className="align-[inherit] mb-1"
         />
       ),
       enableSorting: false,

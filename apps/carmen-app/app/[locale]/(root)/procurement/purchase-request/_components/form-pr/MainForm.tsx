@@ -5,23 +5,16 @@ import {
   CreatePrSchema,
   PurchaseRequestByIdDto,
   STAGE_ROLE,
-  StageStatus,
   CreatePurchaseRequestDetailDto,
   UpdatePurchaseRequestDetailDto,
 } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { usePurchaseItemManagement } from "../../_hooks/use-purchase-item-management";
 import { usePrevWorkflow } from "../../_hooks/use-prev-workflow";
 import { useAuth } from "@/context/AuthContext";
 import { Form } from "@/components/ui/form";
-
-type CreatePrDto = z.infer<typeof CreatePrSchema>;
-
-export type StagesStatusValue = string | StageStatus[] | undefined;
-
 import {
   Tabs,
   TabsContent,
@@ -57,6 +50,7 @@ import {
   rejectPurchaseRequest,
   sendBackPurchaseRequest,
 } from "../../_handlers/purchase-request-actions.handlers";
+import { CreatePrDtoType, StagesStatusValue } from "../../_schemas/purchase-request-form.schema";
 
 interface Props {
   mode: formType;
@@ -80,9 +74,7 @@ export default function MainForm({ mode, initValues }: Props) {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedStage, setSelectedStage] = useState<string>("");
 
-  console.log("initValues", initValues);
-
-  const form = useForm<CreatePrDto>({
+  const form = useForm<CreatePrDtoType>({
     resolver: zodResolver(CreatePrSchema),
     defaultValues: {
       state_role: STAGE_ROLE.CREATE,
@@ -204,7 +196,7 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   /** Main submit handler: prepares data and calls create/update */
-  const handleSubmit = (data: CreatePrDto): void => {
+  const handleSubmit = (data: CreatePrDtoType): void => {
     const processedData = prepareSubmitData(data);
     const isCreating = currentFormType === formType.ADD;
     if (isCreating) {
@@ -225,7 +217,6 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const handleConfirmDelete = () => {
-    // ใช้ purchaseItemManager แทน
     if (itemToDelete) {
       const index = Number(itemToDelete);
       if (index >= 0) {
@@ -311,7 +302,6 @@ export default function MainForm({ mode, initValues }: Props) {
     );
   };
 
-  /** Reject PR items */
   const onReject = () => {
     const details = purchaseItemManager.items.map((item) => {
       const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
@@ -331,8 +321,6 @@ export default function MainForm({ mode, initValues }: Props) {
       toastError
     );
   };
-
-  /** Send back PR items for revision */
   const onSendBack = () => {
     const details = purchaseItemManager.items.map((item) => {
       const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
