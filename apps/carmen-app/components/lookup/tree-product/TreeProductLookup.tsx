@@ -194,8 +194,11 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
       getChildren: (itemId) => {
         if (itemId === "root") return rootItems;
         const item = items[itemId];
-        if (!item) return [];
-        return item.children ?? [];
+        if (!item) {
+          return [];
+        }
+        const children = item.children ?? [];
+        return children;
       },
     },
     initialState: {
