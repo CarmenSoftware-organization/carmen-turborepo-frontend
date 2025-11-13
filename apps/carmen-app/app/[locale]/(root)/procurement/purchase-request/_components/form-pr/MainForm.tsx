@@ -66,7 +66,9 @@ export default function MainForm({ mode, initValues }: Props) {
   const router = useRouter();
   const { token, buCode, user, departments, dateFormat } = useAuth();
   const tPR = useTranslations("PurchaseRequest");
-  const [currentFormType, setCurrentFormType] = useState<formType>(mode);
+  const queryClient = useQueryClient();
+
+  const [currentMode, setCurrentMode] = useState<formType>(mode);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<string | null>(null);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -96,28 +98,31 @@ export default function MainForm({ mode, initValues }: Props) {
   });
 
   const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
-
   const { save, submit, approve, purchase, review, reject, sendBack, isPending } = usePrActions(
     token,
     buCode,
     initValues?.id || ""
   );
 
-  // ใช้ custom hook สำหรับจัดการ purchase items
   const purchaseItemManager = usePurchaseItemManagement({
     form,
     initValues: initValues?.purchase_request_detail,
   });
 
   const requestorName = user?.user_info.firstname + " " + user?.user_info.lastname;
-
   const workflowStages = Array.isArray(initValues?.workflow_history)
     ? initValues.workflow_history.map((item: { current_stage?: string }) => ({
         title: item.current_stage ?? "",
       }))
     : [];
-
   const currentStage = workflowStages[workflowStages.length - 1]?.title;
+  const isDraft = initValues?.pr_status === "draft";
+  const isNewPr = currentMode === formType.ADD;
+  const prStatus = initValues?.pr_status;
+  const workflowId = form.watch("details.workflow_id");
+  const hasFormErrors = Object.keys(form.formState.errors).length > 0;
+  const isDisabled =
+    isCreatingPr || isPending || hasFormErrors || (mode === formType.ADD && !workflowId);
 
   const { data: prevWorkflowData, isLoading: isPrevWorkflowLoading } = usePrevWorkflow({
     token,
@@ -175,15 +180,17 @@ export default function MainForm({ mode, initValues }: Props) {
     }
 
     return summary;
-  }, [purchaseItemManager.items, initValues?.purchase_request_detail, purchaseItemManager]);
-
-  const queryClient = useQueryClient();
+  }, [
+    purchaseItemManager.items,
+    initValues?.purchase_request_detail,
+    purchaseItemManager,
+    getCurrentStatus,
+  ]);
 
   const hasFormChanges = (): boolean => {
     const currentValues = form.getValues();
     const bodyValues = currentValues.details;
 
-    // ตรวจสอบการเปลี่ยนแปลงในฟิลด์หลัก
     const hasMainFieldChanges =
       bodyValues.pr_date !==
         (initValues?.pr_date || format(new Date(), dateFormat || "dd/MM/yyyy")) ||
@@ -195,10 +202,17 @@ export default function MainForm({ mode, initValues }: Props) {
     return hasMainFieldChanges || hasItemChanges;
   };
 
-  /** Main submit handler: prepares data and calls create/update */
+  const performCancel = () => {
+    if (currentMode === formType.ADD) {
+      router.push("/procurement/purchase-request");
+    } else {
+      setCurrentMode(formType.VIEW);
+    }
+  };
+
   const handleSubmit = (data: CreatePrDtoType): void => {
     const processedData = prepareSubmitData(data);
-    const isCreating = currentFormType === formType.ADD;
+    const isCreating = currentMode === formType.ADD;
     if (isCreating) {
       createPurchaseRequest(processedData, createPr, router, tPR, toastSuccess, toastError);
     } else {
@@ -208,7 +222,7 @@ export default function MainForm({ mode, initValues }: Props) {
         queryClient,
         buCode,
         initValues?.id,
-        setCurrentFormType,
+        setCurrentMode,
         tPR,
         toastSuccess,
         toastError
@@ -244,14 +258,6 @@ export default function MainForm({ mode, initValues }: Props) {
     performCancel();
   };
 
-  const performCancel = () => {
-    if (currentFormType === formType.ADD) {
-      router.push("/procurement/purchase-request");
-    } else {
-      setCurrentFormType(formType.VIEW);
-    }
-  };
-
   const handleConfirmCancel = () => {
     if (cancelAction.type === "back") {
       router.push("/procurement/purchase-request");
@@ -261,9 +267,6 @@ export default function MainForm({ mode, initValues }: Props) {
     setCancelDialogOpen(false);
   };
 
-  const isDraft = initValues?.pr_status === "draft";
-
-  /** Submit PR for workflow approval */
   const onSubmitPr = () => {
     const details = purchaseItemManager.items.map((item) => {
       const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
@@ -321,6 +324,7 @@ export default function MainForm({ mode, initValues }: Props) {
       toastError
     );
   };
+
   const onSendBack = () => {
     const details = purchaseItemManager.items.map((item) => {
       const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
@@ -412,9 +416,6 @@ export default function MainForm({ mode, initValues }: Props) {
     });
   };
 
-  const isNewPr = currentFormType === formType.ADD;
-  const prStatus = initValues?.pr_status;
-
   return (
     <>
       <DetailsAndComments
@@ -425,27 +426,25 @@ export default function MainForm({ mode, initValues }: Props) {
           <Card className="p-4">
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(handleSubmit, (errors) => {
+                onSubmit={form.handleSubmit(handleSubmit, () => {
                   toastError({
-                    message: "กรุณากรอกข้อมูลให้ครบถ้วน",
+                    message: tPR("pls_complete_required_fields"),
                   });
                 })}
               >
                 <ActionFields
-                  mode={mode}
-                  currentMode={currentFormType}
+                  currentMode={currentMode}
                   initValues={initValues}
-                  onModeChange={setCurrentFormType}
+                  onModeChange={setCurrentMode}
                   onCancel={handleCancel}
                   hasFormChanges={hasFormChanges}
                   isCreatingPr={isCreatingPr || isPending}
                   prStatus={prStatus ?? ""}
-                  hasFormErrors={Object.keys(form.formState.errors).length > 0}
-                  workflowId={form.watch("details.workflow_id")}
+                  isDisabled={isDisabled}
                 />
                 <HeadForm
                   form={form}
-                  mode={currentFormType}
+                  mode={currentMode}
                   workflow_id={initValues?.workflow_id}
                   requestor_name={
                     initValues?.requestor_name ? initValues.requestor_name : requestorName
@@ -466,7 +465,7 @@ export default function MainForm({ mode, initValues }: Props) {
                   </TabsList>
                   <TabsContent value="items" className="mt-2">
                     <PurchaseItemDataGrid
-                      currentFormType={currentFormType}
+                      currentMode={currentMode}
                       items={purchaseItemManager.items}
                       initValues={initValues?.purchase_request_detail}
                       addFields={purchaseItemManager.addFields}
@@ -475,7 +474,7 @@ export default function MainForm({ mode, initValues }: Props) {
                       onAddItem={purchaseItemManager.addItem}
                       getItemValue={purchaseItemManager.getItemValue}
                       getCurrentStatus={getCurrentStatus}
-                      workflow_id={form.watch("details.workflow_id")}
+                      workflow_id={workflowId}
                       prStatus={prStatus ?? ""}
                     />
                   </TabsContent>
@@ -496,7 +495,8 @@ export default function MainForm({ mode, initValues }: Props) {
               isNewPr={isNewPr}
               isDraft={isDraft}
               isPending={isPending}
-              isSubmitDisabled={!form.watch("details.workflow_id")}
+              isDisabled={isDisabled}
+              isSubmitDisabled={!workflowId}
               itemsStatusSummary={itemsStatusSummary}
               onReject={onReject}
               onSendBack={onSendBack}

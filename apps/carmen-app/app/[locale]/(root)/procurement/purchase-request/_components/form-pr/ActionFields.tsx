@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 
 interface ActionFieldsProps {
-  readonly mode: formType;
   readonly currentMode: formType;
   readonly initValues?: PurchaseRequestByIdDto;
   readonly onModeChange: (mode: formType) => void;
@@ -17,12 +16,10 @@ interface ActionFieldsProps {
   readonly hasFormChanges: () => boolean;
   readonly isCreatingPr: boolean;
   readonly prStatus: string;
-  readonly hasFormErrors: boolean;
-  readonly workflowId?: string;
+  readonly isDisabled: boolean;
 }
 
 export default function ActionFields({
-  mode,
   currentMode,
   initValues,
   onModeChange,
@@ -30,15 +27,13 @@ export default function ActionFields({
   hasFormChanges,
   isCreatingPr,
   prStatus,
-  hasFormErrors,
-  workflowId,
+  isDisabled,
 }: ActionFieldsProps) {
   const tPr = useTranslations("PurchaseRequest");
   const router = useRouter();
   const tStatus = useTranslations("Status");
   const tCommon = useTranslations("Common");
   const searchParams = useSearchParams();
-  const isDisabled = isCreatingPr || hasFormErrors || (mode === formType.ADD && !workflowId);
 
   const convertStatus = (status: string) => {
     if (status === "submit") {
@@ -109,7 +104,7 @@ export default function ActionFields({
           </Tooltip>
 
           <div className="flex items-center gap-2">
-            {mode === formType.ADD ? (
+            {currentMode === formType.ADD ? (
               <p className="text-xl font-bold">{tPr("title")}</p>
             ) : (
               <p className="text-xl font-bold">{initValues?.pr_no}</p>

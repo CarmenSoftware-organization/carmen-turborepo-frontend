@@ -16,7 +16,7 @@ interface ActionButtonsProps {
   readonly prStatus: string;
   readonly isNewPr: boolean;
   readonly isDraft: boolean;
-
+  readonly isDisabled: boolean;
   readonly isPending: boolean;
   readonly isSubmitDisabled?: boolean;
   readonly itemsStatusSummary?: ItemsStatusSummary;
@@ -35,6 +35,7 @@ export default function ActionButtons({
   isNewPr,
   isDraft,
   isPending,
+  isDisabled,
   isSubmitDisabled = false,
   itemsStatusSummary,
   onReject,
@@ -81,7 +82,7 @@ export default function ActionButtons({
       transition={{ duration: 0.2 }}
     >
       {isNewPr ? (
-        <Button onClick={onSave} size="sm" type="button">
+        <Button onClick={onSave} disabled={isDisabled} size="sm" type="button">
           <Save />
           {tAction("save")}
         </Button>
