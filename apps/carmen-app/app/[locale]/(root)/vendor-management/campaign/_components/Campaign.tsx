@@ -8,28 +8,27 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
-import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SignInDialog from "@/components/SignInDialog";
 import CampaignList from "./CampaignList";
+import CampaignGrid from "./CampaignGrid";
+import { VIEW } from "@/constants/enum";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
 export default function Campaign() {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
-  const tAction = useTranslations("Action");
-
   const router = useRouter();
 
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [status, setStatus] = useURL("status");
-  const [statusOpen, setStatusOpen] = useState(false);
+
+  const [view, setView] = useState<VIEW>(VIEW.LIST);
 
   const { data, isLoading, isUnauthorized } = useCampaigns(token, buCode);
 
@@ -92,26 +91,87 @@ export default function Campaign() {
         placeholder={tCommon("search")}
         data-id="vendor-list-search-input"
       />
-      <div className="flex items-center gap-2">
-        <StatusSearchDropdown
-          value={status}
-          onChange={setStatus}
-          open={statusOpen}
-          onOpenChange={setStatusOpen}
-          data-id="vendor-list-status-search-dropdown"
-        />
-        <SortComponent
-          fieldConfigs={sortFields}
-          sort={sort}
-          setSort={setSort}
-          data-id="vendor-list-sort-dropdown"
-        />
-        <Button size={"sm"}>{tAction("filter")}</Button>
-      </div>
+      <TooltipProvider>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <SortComponent
+                  fieldConfigs={sortFields}
+                  sort={sort}
+                  setSort={setSort}
+                  data-id="pr-list-sort-dropdown"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tCommon("sort")}</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size={"sm"}>
+                <Filter className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{tCommon("filter")}</TooltipContent>
+          </Tooltip>
+
+          <div className="hidden lg:block">
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+                    size={"sm"}
+                    onClick={() => setView(VIEW.LIST)}
+                    aria-label="List view"
+                  >
+                    <List className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tCommon("list_view")}</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+                    size={"sm"}
+                    onClick={() => setView(VIEW.GRID)}
+                    aria-label="Grid view"
+                  >
+                    <Grid className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>{tCommon("grid_view")}</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+        </div>
+      </TooltipProvider>
     </div>
   );
 
-  const content = <CampaignList campaigns={data ?? []} isLoading={isLoading} />;
+  const content = (
+    <>
+      <div className="block lg:hidden">
+        <CampaignGrid campaigns={data ?? []} isLoading={isLoading} />
+      </div>
+
+      <div className="hidden lg:block">
+        {view === VIEW.LIST ? (
+          <CampaignList campaigns={data ?? []} isLoading={isLoading} />
+        ) : (
+          <CampaignGrid campaigns={data ?? []} isLoading={isLoading} />
+        )}
+      </div>
+    </>
+  );
 
   return (
     <>
