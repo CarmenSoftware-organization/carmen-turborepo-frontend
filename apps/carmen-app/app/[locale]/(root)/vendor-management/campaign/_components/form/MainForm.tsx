@@ -27,6 +27,8 @@ import {
 } from "../../_helper/transform-campaign-form";
 import { createCampaign } from "../../_handlers/campaign-create.handlers";
 import { updateCampaign } from "../../_handlers/campaign-update.handlers";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "@/lib/navigation";
 
 interface Props {
   readonly campaignData?: CampaignDetailDto;
@@ -34,6 +36,7 @@ interface Props {
 }
 
 export default function MainForm({ campaignData, mode }: Props) {
+  const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, buCode } = useAuth();
   const { vendors } = useVendor(token, buCode);
@@ -103,72 +106,101 @@ export default function MainForm({ campaignData, mode }: Props) {
   const isViewMode = currentMode === formType.VIEW;
 
   return (
-    <main className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">
-          {currentMode === formType.ADD
-            ? "Create Campaign"
-            : currentMode === formType.EDIT
-              ? "Edit Campaign"
-              : "View Campaign"}
-        </h1>
-        <div className="space-x-2">
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={() => router.push("/vendor-management/campaign")}
+            variant={"outlinePrimary"}
+            size={"sm"}
+            className="h-8 w-8"
+          >
+            <ChevronLeft />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {currentMode === formType.ADD && "Create New Campaign"}
+              {currentMode === formType.EDIT && "Edit Campaign"}
+              {currentMode === formType.VIEW && campaignData?.name}
+            </h1>
+            {campaignData && (
+              <p className="text-sm text-muted-foreground">
+                Last updated: {new Date(campaignData.update_date).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
           {currentMode === formType.VIEW && (
-            <Button onClick={() => setCurrentMode(formType.EDIT)}>Edit</Button>
+            <Button onClick={() => setCurrentMode(formType.EDIT)}>Edit Campaign</Button>
           )}
           {currentMode === formType.EDIT && (
-            <Button variant="outline" onClick={() => setCurrentMode(formType.VIEW)}>
-              Cancel
-            </Button>
+            <>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  form.reset();
+                  setCurrentMode(formType.VIEW);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="button" variant="outline" onClick={() => form.reset()}>
+                Reset Changes
+              </Button>
+              <Button type="submit" form="campaign-form">
+                Save Changes
+              </Button>
+            </>
+          )}
+          {currentMode === formType.ADD && (
+            <>
+              <Button type="button" variant="outline" onClick={() => form.reset()}>
+                Clear Form
+              </Button>
+              <Button type="submit" form="campaign-form">
+                Create Campaign
+              </Button>
+            </>
           )}
         </div>
       </div>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <Tabs defaultValue="overview">
-            <TabsList className={"mt-4"}>
-              <TabsTrigger className={"w-full h-6"} value="overview">
-                Overview
-              </TabsTrigger>
-              <TabsTrigger className="w-full h-6" value="vendor">
-                Vendor
-              </TabsTrigger>
-              <TabsTrigger className="w-full h-6" value="setting">
-                Setting
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="overview" className="mt-2">
-              <TabOverview form={form} isViewMode={isViewMode} campaignData={campaignData} />
-            </TabsContent>
-            <TabsContent value="vendor" className="mt-2">
-              <TabVendor form={form} isViewMode={isViewMode} vendors={vendors} />
-            </TabsContent>
-            <TabsContent value="setting" className="mt-2">
-              <TabSetting
-                form={form}
-                isViewMode={isViewMode}
-                reminderFields={reminderFields}
-                appendReminder={appendReminder}
-                removeReminder={removeReminder}
-                escalationFields={escalationFields}
-                appendEscalation={appendEscalation}
-                removeEscalation={removeEscalation}
-              />
-            </TabsContent>
-          </Tabs>
-
-          {/* Action Buttons */}
-          {!isViewMode && (
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => form.reset()}>
-                Reset
-              </Button>
-              <Button type="submit">{currentMode === formType.ADD ? "Create" : "Update"}</Button>
-            </div>
-          )}
-        </form>
-      </Form>
-    </main>
+      {/* Content Section - Scrollable */}
+      <div className="flex-1 overflow-hidden mt-4">
+        <Form {...form}>
+          <form id="campaign-form" onSubmit={form.handleSubmit(onSubmit)} className="h-full">
+            <Tabs defaultValue="overview" className="flex h-full flex-col">
+              <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="vendor">Vendors</TabsTrigger>
+                <TabsTrigger value="setting">Settings & Automation</TabsTrigger>
+              </TabsList>
+              <div className="flex-1 overflow-y-auto">
+                <TabsContent value="overview" className="mt-0 h-full">
+                  <TabOverview form={form} isViewMode={isViewMode} campaignData={campaignData} />
+                </TabsContent>
+                <TabsContent value="vendor" className="mt-0 h-full">
+                  <TabVendor form={form} isViewMode={isViewMode} vendors={vendors} />
+                </TabsContent>
+                <TabsContent value="setting" className="mt-0 h-full">
+                  <TabSetting
+                    form={form}
+                    isViewMode={isViewMode}
+                    reminderFields={reminderFields}
+                    appendReminder={appendReminder}
+                    removeReminder={removeReminder}
+                    escalationFields={escalationFields}
+                    appendEscalation={appendEscalation}
+                    removeEscalation={removeEscalation}
+                  />
+                </TabsContent>
+              </div>
+            </Tabs>
+          </form>
+        </Form>
+      </div>
+    </div>
   );
 }

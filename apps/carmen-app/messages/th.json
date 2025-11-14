@@ -255,7 +255,9 @@
     "approved": "อนุมัติ",
     "rejected": "ยกเลิก",
     "submit": "ส่งข้อมูล",
-    "voided": "ยกเลิก"
+    "voided": "ยกเลิก",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน"
   },
   "UserManagement": {
     "title": "การจัดการผู้ใช้งาน"

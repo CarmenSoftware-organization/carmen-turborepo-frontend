@@ -64,7 +64,9 @@
     "approved": "APPROVED",
     "rejected": "REJECTED",
     "submit": "SUBMIT",
-    "voided": "VOIDED"
+    "voided": "VOIDED",
+    "active": "ACTIVE",
+    "inactive": "INACTIVE"
   },
   "Action": {
     "title": "Action",

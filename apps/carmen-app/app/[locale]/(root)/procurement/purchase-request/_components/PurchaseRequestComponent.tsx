@@ -40,13 +40,6 @@ export default function PurchaseRequestComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
 
-  const getTypeName = (type: string) => {
-    if (type === "General") {
-      return tPurchaseRequest("general");
-    }
-    return tPurchaseRequest("market_list");
-  };
-
   const convertStatus = (status: string) => {
     if (status === "submit") return tStatus("submit");
     if (status === "draft") return tStatus("draft");

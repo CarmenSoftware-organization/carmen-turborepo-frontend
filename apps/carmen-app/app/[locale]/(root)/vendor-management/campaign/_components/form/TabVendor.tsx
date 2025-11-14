@@ -45,6 +45,14 @@ export default function TabVendor({ form, isViewMode, vendors }: TabVendorProps)
       .filter(Boolean) as VendorTableRow[];
   }, [selectedVendorIds, vendors?.data]);
 
+  const handleRemoveVendor = (vendorId: string) => {
+    const currentVendors = form.getValues("vendors") || [];
+    form.setValue(
+      "vendors",
+      currentVendors.filter((id: string) => id !== vendorId)
+    );
+  };
+
   const columns = useMemo<ColumnDef<VendorTableRow>[]>(
     () => [
       {
@@ -101,13 +109,7 @@ export default function TabVendor({ form, isViewMode, vendors }: TabVendorProps)
                 variant="ghost"
                 size="icon"
                 className="h-7 w-7 hover:text-destructive"
-                onClick={() => {
-                  const currentVendors = form.getValues("vendors") || [];
-                  form.setValue(
-                    "vendors",
-                    currentVendors.filter((id: string) => id !== row.original.id)
-                  );
-                }}
+                onClick={() => handleRemoveVendor(row.original.id)}
               >
                 <Trash2 className="h-4 w-4" />
                 <span className="sr-only">Remove vendor</span>
@@ -123,7 +125,7 @@ export default function TabVendor({ form, isViewMode, vendors }: TabVendorProps)
         },
       },
     ],
-    [isViewMode, form]
+    [isViewMode, handleRemoveVendor]
   );
 
   const table = useReactTable({
@@ -134,54 +136,80 @@ export default function TabVendor({ form, isViewMode, vendors }: TabVendorProps)
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
+      {/* Add Vendor Section */}
       {!isViewMode && (
-        <div className="border rounded-lg p-4 space-y-2">
-          <FormLabel>Add Vendor</FormLabel>
-          <VendorLookup
-            value=""
-            onValueChange={(vendorId) => {
-              const currentVendors = form.getValues("vendors") || [];
-              if (vendorId && !currentVendors.includes(vendorId)) {
-                form.setValue("vendors", [...currentVendors, vendorId]);
-              }
-            }}
-            placeholder="Select vendors to add"
-            disabled={isViewMode}
-          />
+        <div className="space-y-4">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            Add Vendors
+          </h2>
+          <div className="space-y-2">
+            <FormLabel>Vendor Search</FormLabel>
+            <VendorLookup
+              value=""
+              onValueChange={(vendorId) => {
+                const currentVendors = form.getValues("vendors") || [];
+                if (vendorId && !currentVendors.includes(vendorId)) {
+                  form.setValue("vendors", [...currentVendors, vendorId]);
+                }
+              }}
+              placeholder="Search by vendor name, code, or email..."
+              disabled={isViewMode}
+            />
+            <p className="text-xs text-muted-foreground">
+              Selected vendors will appear in the table below
+            </p>
+          </div>
         </div>
       )}
 
-      <div className="border rounded-lg p-4 space-y-4">
+      {/* Selected Vendors List */}
+      <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Selected Vendors</h2>
-          <span className="text-sm text-muted-foreground">
-            {selectedVendors.length} vendor{selectedVendors.length !== 1 ? "s" : ""}
-          </span>
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            Selected Vendors
+          </h2>
+          {selectedVendors.length > 0 && (
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+              {selectedVendors.length}
+            </span>
+          )}
         </div>
 
-        <DataGrid
-          table={table}
-          recordCount={selectedVendors.length}
-          isLoading={false}
-          loadingMode="skeleton"
-          emptyMessage="No vendors selected"
-          tableLayout={{
-            headerSticky: false,
-            dense: false,
-            rowBorder: true,
-            headerBackground: true,
-            headerBorder: true,
-            width: "fixed",
-          }}
-        >
-          <DataGridContainer>
-            <ScrollArea className="max-h-[400px]">
-              <DataGridTable />
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
-          </DataGridContainer>
-        </DataGrid>
+        {selectedVendors.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <User className="h-10 w-10 text-muted-foreground/40 mb-3" />
+            <h3 className="text-sm font-medium mb-1">No vendors selected</h3>
+            <p className="text-xs text-muted-foreground max-w-sm">
+              {isViewMode
+                ? "This campaign has no vendors assigned"
+                : "Start by searching and adding vendors using the search box above"}
+            </p>
+          </div>
+        ) : (
+          <DataGrid
+            table={table}
+            recordCount={selectedVendors.length}
+            isLoading={false}
+            loadingMode="skeleton"
+            emptyMessage="No vendors selected"
+            tableLayout={{
+              headerSticky: false,
+              dense: true,
+              rowBorder: true,
+              headerBackground: true,
+              headerBorder: true,
+              width: "fixed",
+            }}
+          >
+            <DataGridContainer>
+              <ScrollArea className="max-h-[500px]">
+                <DataGridTable />
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </DataGridContainer>
+          </DataGrid>
+        )}
       </div>
     </div>
   );

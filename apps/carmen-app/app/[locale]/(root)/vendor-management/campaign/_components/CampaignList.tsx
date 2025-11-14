@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Activity, Calendar, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
-import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
 import { ColumnDef, getCoreRowModel, useReactTable, SortingState } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
@@ -23,6 +22,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Link } from "@/lib/navigation";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { useTranslations } from "next-intl";
+import { convertStatus } from "@/utils/status";
 
 interface CampaignListProps {
   readonly campaigns: CampaignDto[];
@@ -41,10 +42,13 @@ export default function CampaignList({
   canUpdate = true,
   canDelete = true,
 }: CampaignListProps) {
+  const tStatus = useTranslations("Status");
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
+
+  const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   const columns = useMemo<ColumnDef<CampaignDto>[]>(
     () => [
@@ -107,7 +111,7 @@ export default function CampaignList({
           const status = row.original.status;
           return (
             <div className="flex justify-center">
-              <Badge>{status}</Badge>
+              <Badge variant={status}>{getStatusLabel(status)}</Badge>
             </div>
           );
         },
