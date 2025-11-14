@@ -26,7 +26,7 @@ import {
 } from "../../_helper/transform-campaign-form";
 import { createCampaign } from "../../_handlers/campaign-create.handlers";
 import { updateCampaign } from "../../_handlers/campaign-update.handlers";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, PenBoxIcon, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import VendorTab from "./VendorTab";
 
@@ -132,25 +132,25 @@ export default function MainForm({ campaignData, mode }: Props) {
         </div>
         <div className="flex items-center gap-2">
           {currentMode === formType.VIEW && (
-            <Button onClick={() => setCurrentMode(formType.EDIT)}>Edit Campaign</Button>
+            <Button size="sm" onClick={() => setCurrentMode(formType.EDIT)}>
+              <PenBoxIcon />
+            </Button>
           )}
           {currentMode === formType.EDIT && (
             <>
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
+                size="sm"
                 onClick={() => {
                   form.reset();
                   setCurrentMode(formType.VIEW);
                 }}
               >
-                Cancel
+                <X />
               </Button>
-              <Button type="button" variant="outline" onClick={() => form.reset()}>
-                Reset Changes
-              </Button>
-              <Button type="submit" form="campaign-form">
-                Save Changes
+              <Button type="submit" form="campaign-form" size="sm">
+                <Save />
               </Button>
             </>
           )}
@@ -166,8 +166,6 @@ export default function MainForm({ campaignData, mode }: Props) {
           )}
         </div>
       </div>
-
-      {/* Content Section - Scrollable */}
       <div className="flex-1 overflow-hidden mt-4">
         <Form {...form}>
           <form id="campaign-form" onSubmit={form.handleSubmit(onSubmit)} className="h-full">
