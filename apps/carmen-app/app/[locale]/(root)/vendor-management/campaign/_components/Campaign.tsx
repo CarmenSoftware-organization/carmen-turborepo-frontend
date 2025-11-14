@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useCampaigns } from "@/hooks/campaign";
+import { useCampaigns } from "@/hooks/use-campaign";
 import { useURL } from "@/hooks/useURL";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";

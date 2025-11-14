@@ -2,7 +2,7 @@
 
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useAuth } from "@/context/AuthContext";
-import { useCampaignById } from "@/hooks/campaign";
+import { useCampaignById } from "@/hooks/use-campaign";
 import { useParams } from "next/navigation";
 import MainForm from "../_components/form/MainForm";
 import { formType } from "@/dtos/form.dto";

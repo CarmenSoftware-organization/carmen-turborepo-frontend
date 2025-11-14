@@ -42,7 +42,7 @@ export function SelectedProductsPanel({
   }, [allProducts, selectedSearchQuery]);
 
   return (
-    <div className="border border-border rounded-lg p-4 flex flex-col">
+    <div className="border border-border rounded-lg p-4 flex flex-col h-full">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold">{tCommon("init_products")}</h3>
       </div>
@@ -58,7 +58,7 @@ export function SelectedProductsPanel({
         />
       </div>
 
-      <div className="flex-1 overflow-auto space-y-2 max-h-80 pt-4">
+      <div className="flex-1 overflow-auto space-y-2 pt-4">
         {filteredSelectedProducts.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-xs text-muted-foreground">

@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import { useCreateCampaign, useUpdateCampaign } from "@/hooks/campaign";
+import { useCreateCampaign, useUpdateCampaign } from "@/hooks/use-campaign";
 import { useAuth } from "@/context/AuthContext";
 import { useVendor } from "@/hooks/use-vendor";
 import {

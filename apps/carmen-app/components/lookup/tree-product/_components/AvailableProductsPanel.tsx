@@ -59,7 +59,7 @@ export function AvailableProductsPanel({
   };
 
   return (
-    <div className="border border-border rounded-lg p-3 flex flex-col">
+    <div className="border border-border rounded-lg p-3 flex flex-col h-full">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-sm font-semibold">{tCommon("available_products")}</h3>
         <div className="flex items-center gap-2">
@@ -68,7 +68,11 @@ export function AvailableProductsPanel({
             variant={viewMode === "tree" ? "default" : "ghost"}
             data-id="tree-view"
             className="h-7 w-7"
-            onClick={() => setViewMode("tree")}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setViewMode("tree");
+            }}
           >
             <FolderTree />
           </Button>
@@ -77,14 +81,18 @@ export function AvailableProductsPanel({
             variant={viewMode === "list" ? "default" : "ghost"}
             data-id="list-view"
             className="h-7 w-7"
-            onClick={() => setViewMode("list")}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setViewMode("list");
+            }}
           >
             <List />
           </Button>
         </div>
       </div>
       <div>{searchInput}</div>
-      <div className="flex-1 overflow-auto max-h-96 mt-2">{renderContent()}</div>
+      <div className="flex-1 overflow-auto mt-2">{renderContent()}</div>
     </div>
   );
 }

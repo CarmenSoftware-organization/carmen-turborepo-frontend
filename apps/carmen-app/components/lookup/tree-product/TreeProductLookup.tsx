@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, memo, useEffect } from "react";
+import { useState, useCallback, useMemo, memo, useEffect, useRef } from "react";
 import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { useProductQuery } from "@/hooks/use-product-query";
@@ -150,6 +150,8 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     initialProducts,
   });
 
+  const previousSelectedIdsRef = useRef<string>("");
+
   useEffect(() => {
     if (onSelect) {
       const allProductIds = Array.from(selectedIds)
@@ -158,9 +160,18 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
           return item?.type === "product";
         })
         .map((id) => ({ id: id.replace("product-", "") }));
-      onSelect(allProductIds);
+
+      // Create a string representation for comparison
+      const currentIdsString = allProductIds.map((p) => p.id).sort().join(",");
+
+      // Only call onSelect if the selected products have actually changed
+      if (currentIdsString !== previousSelectedIdsRef.current) {
+        previousSelectedIdsRef.current = currentIdsString;
+        onSelect(allProductIds);
+      }
     }
-  }, [selectedIds, items, selectedItemsCache, onSelect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIds]);
 
   const tree = useTree<TreeNodeData>({
     rootItemId: "root",
@@ -224,8 +235,8 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
   }, [setSelectedIds, setSelectedItemsCache]);
 
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-4 h-54">
+    <div className="h-full flex flex-col">
+      <div className="grid grid-cols-2 gap-4 flex-1 overflow-hidden">
         <SelectedProductsPanel
           allProducts={allProducts}
           onRemoveProduct={handleRemoveProduct}
