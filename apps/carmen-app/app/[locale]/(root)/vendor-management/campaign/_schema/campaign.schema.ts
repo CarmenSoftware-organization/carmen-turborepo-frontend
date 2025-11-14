@@ -1,9 +1,5 @@
 import * as z from "zod";
 
-/**
- * Reminder/Escalation Rule Schema
- * Used for both reminders and escalations in campaign settings
- */
 export const reminderRuleSchema = z.object({
   type: z.enum(["before_deadline", "after_deadline"]),
   days: z.number().min(1),
@@ -17,10 +13,6 @@ export const reminderRuleSchema = z.object({
   enabled: z.boolean(),
 });
 
-/**
- * Main Campaign Form Schema
- * Validates all form fields including nested settings
- */
 export const campaignFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   status: z.enum(["active", "inactive", "draft", "submit", "completed"]),
@@ -39,7 +31,4 @@ export const campaignFormSchema = z.object({
   vendors: z.array(z.string()).optional(),
 });
 
-/**
- * Type inference from schema
- */
 export type CampaignFormValues = z.infer<typeof campaignFormSchema>;
