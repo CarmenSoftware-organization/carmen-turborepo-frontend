@@ -140,7 +140,7 @@ export default function CampaignList({
             <span>Valid Period</span>
           </div>
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.valid_period), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{row.original.valid_period} days</span>,
         enableSorting: false,
         size: 150,
       },
@@ -152,7 +152,7 @@ export default function CampaignList({
             <span>Create Date</span>
           </div>
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.valid_period), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{format(new Date(row.original.create_date), "dd/MM/yyyy")}</span>,
         enableSorting: false,
         size: 150,
       },
@@ -164,7 +164,7 @@ export default function CampaignList({
             <span>Valid Period</span>
           </div>
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.valid_period), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{format(new Date(row.original.update_date), "dd/MM/yyyy")}</span>,
         enableSorting: false,
         size: 150,
       },

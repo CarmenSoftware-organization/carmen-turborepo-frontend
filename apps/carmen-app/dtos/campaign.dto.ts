@@ -5,14 +5,22 @@ export type PriorityType = "high" | "medium" | "low";
 export type CampaignType = "buy" | "sell" | "recurring";
 export type SubmitMethodType = "auto" | "manual";
 
+// Vendor Operations
+export interface VendorOperations {
+  add: string[];
+  update: string[];
+  remove: string[];
+}
+
 // Base Interface
 interface BaseCampaignDto {
   name: string;
   status: StatusCampaign;
   description?: string;
-  valid_period: Date;
+  valid_period: number; // days
   create_date: Date;
   update_date: Date;
+  vendors?: VendorOperations;
 }
 
 // List DTO
@@ -75,5 +83,16 @@ export interface CampaignDetailDto extends CampaignDto {
     submission: string; // "1/3", "2/10" - submitted count / total count
   };
   vendor?: VendorStatus[];
+  settings: CampaignSettings;
+}
+
+// Request DTOs for API calls
+export interface CampaignCreateDto extends Omit<BaseCampaignDto, "create_date" | "update_date"> {
+  template_id?: string;
+  settings: CampaignSettings;
+}
+
+export interface CampaignUpdateDto extends Omit<BaseCampaignDto, "create_date" | "update_date"> {
+  template_id?: string;
   settings: CampaignSettings;
 }

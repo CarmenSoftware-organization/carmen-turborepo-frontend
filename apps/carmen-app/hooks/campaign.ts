@@ -1,9 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { mockCampaigns, getMockCampaignById } from "@/mock-data/campaign";
-import { CampaignDto, CampaignDetailDto } from "@/dtos/campaign.dto";
+import { mockCampaigns, getMockCampaignById } from "@/mock-data/campaign"; // remove when use api
+import {
+  CampaignDto,
+  CampaignDetailDto,
+  CampaignCreateDto,
+  CampaignUpdateDto,
+} from "@/dtos/campaign.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 
-// Simulated delay for realistic async behavior
+// remove when use api
 const delay = (ms: number = 500) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // ============================================================================
@@ -13,13 +18,13 @@ export const useCampaigns = (token: string, buCode: string, params?: ParamsGetDt
   const { data, isLoading, error } = useQuery({
     queryKey: ["campaigns", buCode, params],
     queryFn: async () => {
-      await delay(300);
+      await delay(300); // remove when use api
 
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
-      return mockCampaigns;
+      return mockCampaigns; // remove when use api
     },
     enabled: !!token && !!buCode,
   });
@@ -41,12 +46,13 @@ export const useCampaignById = (token: string, buCode: string, id: string) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["campaign", buCode, id],
     queryFn: async () => {
-      await delay(300);
+      await delay(300); // remove when use api
 
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
+      // remove when use api
       const campaign = getMockCampaignById(id);
 
       if (!campaign) {
@@ -75,18 +81,25 @@ export const useCreateCampaign = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Omit<CampaignDto, "id">) => {
-      await delay(500);
+    mutationFn: async (data: CampaignCreateDto) => {
+      await delay(500); // remove when use api
 
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
+      // remove when use api
       const newId = `rpl-${String(mockCampaigns.length + 1).padStart(3, "0")}`;
 
       const newCampaign: CampaignDto = {
-        ...data,
         id: newId,
+        name: data.name,
+        status: data.status,
+        description: data.description,
+        valid_period: data.valid_period,
+        create_date: new Date(),
+        update_date: new Date(),
+        vendors: data.vendors,
       };
 
       return newCampaign;
@@ -104,13 +117,14 @@ export const useUpdateCampaign = (token: string, buCode: string, id: string) => 
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: Partial<CampaignDto>) => {
-      await delay(500);
+    mutationFn: async (data: CampaignUpdateDto) => {
+      await delay(500); // remove when use api
 
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
 
+      // remove when use api
       const existingCampaign = getMockCampaignById(id);
 
       if (!existingCampaign) {
@@ -119,7 +133,15 @@ export const useUpdateCampaign = (token: string, buCode: string, id: string) => 
 
       const updatedCampaign: CampaignDetailDto = {
         ...existingCampaign,
-        ...data,
+        name: data.name,
+        status: data.status,
+        description: data.description,
+        valid_period: data.valid_period,
+        vendors: data.vendors,
+        template: data.template_id
+          ? { ...existingCampaign.template, id: data.template_id }
+          : existingCampaign.template,
+        settings: data.settings,
         id,
         update_date: new Date(),
       };
@@ -141,12 +163,13 @@ export const useDeleteCampaign = (token: string, buCode: string) => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await delay(500);
+      await delay(500); // remove when use api
 
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
+      // remove when use api
       const campaign = getMockCampaignById(id);
 
       if (!campaign) {
