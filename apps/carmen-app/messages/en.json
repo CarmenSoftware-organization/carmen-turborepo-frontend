@@ -149,7 +149,9 @@
     "VendorManagement": {
       "manageVendors": "Manage Vendors",
       "priceLists": "Price Lists",
-      "priceComparisons": "Price Comparisons"
+      "priceComparisons": "Price Comparisons",
+      "priceListtemplate": "Price List Template",
+      "campaign": "Campaign"
     },
     "storeOperations": "Store Operations",
     "StoreOperations": {

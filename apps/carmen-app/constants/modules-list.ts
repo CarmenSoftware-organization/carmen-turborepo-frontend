@@ -55,6 +55,7 @@ import {
   Hotel,
   Coins,
   Warehouse,
+  File,
 } from "lucide-react";
 
 export const moduleItems: ModuleItem[] = [
@@ -151,6 +152,16 @@ export const moduleItems: ModuleItem[] = [
         labelKey: "Modules.VendorManagement.priceLists",
         href: "/vendor-management/price-list",
         icon: Coins,
+      },
+      {
+        labelKey: "Modules.VendorManagement.priceListtemplate",
+        href: "/vendor-management/price-list-template",
+        icon: File,
+      },
+      {
+        labelKey: "Modules.VendorManagement.campaign",
+        href: "/vendor-management/campaign",
+        icon: FileSpreadsheet,
       },
       // {
       //   labelKey: "Modules.VendorManagement.priceComparisons",

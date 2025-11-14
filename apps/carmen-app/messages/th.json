@@ -133,7 +133,9 @@
     "VendorManagement": {
       "manageVendors": "จัดการผู้จัดจำหน่าย",
       "priceLists": "ราคาสินค้า",
-      "priceComparisons": "เปรียบเทียบราคา"
+      "priceComparisons": "เปรียบเทียบราคา",
+      "priceListtemplate": "แม่แบบราคาสินค้า",
+      "campaign": "แคมเปญ"
     },
     "storeOperations": "การดำเนินการร้านค้า",
     "StoreOperations": {
