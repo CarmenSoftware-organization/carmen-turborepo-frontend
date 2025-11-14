@@ -13,7 +13,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { X } from "lucide-react";
 
-interface TabSettingProps {
+interface Props {
   form: UseFormReturn<any>;
   isViewMode: boolean;
   reminderFields: any[];
@@ -24,7 +24,7 @@ interface TabSettingProps {
   removeEscalation: (index: number) => void;
 }
 
-export default function TabSetting({
+export default function SettingTab({
   form,
   isViewMode,
   reminderFields,
@@ -33,9 +33,9 @@ export default function TabSetting({
   escalationFields,
   appendEscalation,
   removeEscalation,
-}: TabSettingProps) {
+}: Props) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-4">
       {/* Campaign Settings */}
       <div className="space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">

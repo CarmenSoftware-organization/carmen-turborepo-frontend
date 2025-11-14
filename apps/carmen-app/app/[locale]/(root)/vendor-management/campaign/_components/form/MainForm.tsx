@@ -16,9 +16,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/animate-ui/components/radix/tabs";
-import TabVendor from "./TabVendor";
-import TabSetting from "./TabSetting";
-import TabOverview from "./TabOverview";
+import SettingTab from "./SettingTab";
+import OverviewTab from "./OverviewTab";
 import { campaignFormSchema, CampaignFormValues } from "../../_schema/campaign.schema";
 import {
   transformToCreateDto,
@@ -29,6 +28,7 @@ import { createCampaign } from "../../_handlers/campaign-create.handlers";
 import { updateCampaign } from "../../_handlers/campaign-update.handlers";
 import { ChevronLeft } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
+import VendorTab from "./VendorTab";
 
 interface Props {
   readonly campaignData?: CampaignDetailDto;
@@ -179,13 +179,13 @@ export default function MainForm({ campaignData, mode }: Props) {
               </TabsList>
               <div className="flex-1 overflow-y-auto">
                 <TabsContent value="overview" className="mt-0 h-full">
-                  <TabOverview form={form} isViewMode={isViewMode} campaignData={campaignData} />
+                  <OverviewTab form={form} isViewMode={isViewMode} campaignData={campaignData} />
                 </TabsContent>
                 <TabsContent value="vendor" className="mt-0 h-full">
-                  <TabVendor form={form} isViewMode={isViewMode} vendors={vendors} />
+                  <VendorTab form={form} isViewMode={isViewMode} vendors={vendors} />
                 </TabsContent>
                 <TabsContent value="setting" className="mt-0 h-full">
-                  <TabSetting
+                  <SettingTab
                     form={form}
                     isViewMode={isViewMode}
                     reminderFields={reminderFields}

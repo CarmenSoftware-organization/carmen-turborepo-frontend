@@ -17,15 +17,16 @@ import {
 } from "@/components/ui/select";
 import { CampaignDetailDto } from "@/dtos/campaign.dto";
 
-interface TabOverviewProps {
+interface Props {
+  // @ts-ignore
   form: UseFormReturn<any>;
   isViewMode: boolean;
   campaignData?: CampaignDetailDto;
 }
 
-export default function TabOverview({ form, isViewMode, campaignData }: TabOverviewProps) {
+export default function OverviewTab({ form, isViewMode, campaignData }: Props) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-4">
       {/* Performance Metrics - View Only */}
       {campaignData?.performance && isViewMode && (
         <div className="space-y-4">
@@ -88,29 +89,21 @@ export default function TabOverview({ form, isViewMode, campaignData }: TabOverv
 
             <FormField
               control={form.control}
-              name="status"
+              name="valid_period"
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={isViewMode}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="submit">Submit</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Valid Period (days)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      min="1"
+                      disabled={isViewMode}
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      placeholder="90"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -140,32 +133,39 @@ export default function TabOverview({ form, isViewMode, campaignData }: TabOverv
           <div className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
-              name="valid_period"
+              name="status"
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Valid Period (days)</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="number"
-                      min="1"
-                      disabled={isViewMode}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                      placeholder="90"
-                    />
-                  </FormControl>
+                  <FormLabel>Status</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={isViewMode}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="submit">Submit</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="template_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Template ID</FormLabel>
+                  <FormLabel>Price List Template</FormLabel>
                   <FormControl>
                     <Input {...field} disabled={isViewMode} placeholder="Enter template ID" />
                   </FormControl>
@@ -188,10 +188,6 @@ export default function TabOverview({ form, isViewMode, campaignData }: TabOverv
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Template Name</p>
                 <p className="text-sm font-medium">{campaignData.template.name}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">Template ID</p>
-                <p className="font-mono text-sm">{campaignData.template.id}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Created By</p>

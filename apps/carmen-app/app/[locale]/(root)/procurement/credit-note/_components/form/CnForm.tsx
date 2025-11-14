@@ -23,6 +23,8 @@ import { format } from "date-fns";
 import { useCnReasonQuery } from "@/hooks/useCnReason";
 import DetailsAndComments from "@/components/DetailsAndComments";
 import { useVendor } from "@/hooks/use-vendor";
+import { convertStatus } from "@/utils/status";
+import { useTranslations } from "next-intl";
 interface CnFormProps {
   readonly mode: formType;
   readonly initialValues?: CreditNoteByIdDto;
@@ -31,6 +33,7 @@ interface CnFormProps {
 export default function CnForm({ initialValues, mode }: CnFormProps) {
   const { token, buCode } = useAuth();
   const router = useRouter();
+  const tStatus = useTranslations("Status");
 
   const { getVendorName } = useVendor(token, buCode);
   const createMutation = useCreateCreditNote(token, buCode);
@@ -105,16 +108,9 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
     console.log("creditNoteDetail changed:", creditNoteDetail);
   }, [creditNoteDetail]);
 
-  const convertStatus = (status?: string) => {
+  const getStatusLabel = (status?: string) => {
     if (!status) return "Draft";
-    const statusMap: Record<string, string> = {
-      draft: "Draft",
-      work_in_process: "Work in Progress",
-      approved: "Approved",
-      rejected: "Rejected",
-      cancelled: "Cancelled",
-    };
-    return statusMap[status] || status;
+    return convertStatus(status, tStatus);
   };
 
   const handleSubmit = async (data: CreditNoteSubmitDto) => {
@@ -179,7 +175,7 @@ export default function CnForm({ initialValues, mode }: CnFormProps) {
                 )}
                 {initialValues?.doc_status && (
                   <Badge variant={initialValues?.doc_status} className="rounded-full text-xs">
-                    {convertStatus(initialValues?.doc_status)}
+                    {getStatusLabel(initialValues?.doc_status)}
                   </Badge>
                 )}
               </div>

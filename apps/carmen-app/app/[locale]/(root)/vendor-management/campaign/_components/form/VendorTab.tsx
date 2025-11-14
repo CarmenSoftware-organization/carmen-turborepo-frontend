@@ -10,10 +10,11 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Trash2, User } from "lucide-react";
 import { VendorGetDto } from "@/dtos/vendor-management";
 
-interface TabVendorProps {
+interface Props {
   form: UseFormReturn<any>;
   isViewMode: boolean;
-  vendors?: any;
+  // @ts-ignore
+  vendors?: any; // รอ type
 }
 
 interface VendorTableRow {
@@ -23,7 +24,7 @@ interface VendorTableRow {
   phone?: string;
 }
 
-export default function TabVendor({ form, isViewMode, vendors }: TabVendorProps) {
+export default function VendorTab({ form, isViewMode, vendors }: Props) {
   const selectedVendorIds = form.watch("vendors") || [];
 
   // Map selected vendor IDs to full vendor objects
@@ -136,7 +137,7 @@ export default function TabVendor({ form, isViewMode, vendors }: TabVendorProps)
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-4">
       {/* Add Vendor Section */}
       {!isViewMode && (
         <div className="space-y-4">

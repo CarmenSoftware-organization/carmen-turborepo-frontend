@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
+import { convertStatus } from "@/utils/status";
 
 interface ActionFieldsProps {
   readonly currentMode: formType;
@@ -35,31 +36,7 @@ export default function ActionFields({
   const tCommon = useTranslations("Common");
   const searchParams = useSearchParams();
 
-  const convertStatus = (status: string) => {
-    if (status === "submit") {
-      return tStatus("submit");
-    }
-    if (status === "draft") {
-      return tStatus("draft");
-    }
-    if (status === "Completed") {
-      return tStatus("completed");
-    }
-
-    if (status === "in_progress") {
-      return tStatus("in_progress");
-    }
-    if (status === "approved") {
-      return tStatus("approved");
-    }
-    if (status === "rejected") {
-      return tStatus("rejected");
-    }
-    if (status === "voided") {
-      return tStatus("voided");
-    }
-    return "";
-  };
+  const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   const onEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -110,7 +87,7 @@ export default function ActionFields({
               <p className="text-xl font-bold">{initValues?.pr_no}</p>
             )}
             {initValues?.pr_status && (
-              <Badge variant={initValues?.pr_status}>{convertStatus(initValues?.pr_status)}</Badge>
+              <Badge variant={initValues?.pr_status}>{getStatusLabel(initValues?.pr_status)}</Badge>
             )}
           </div>
         </div>

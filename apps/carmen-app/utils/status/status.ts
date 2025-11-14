@@ -8,6 +8,8 @@ export const STATUS_MAP = {
   voided: "voided",
   active: "active",
   inactive: "inactive",
+  cancelled: "cancelled",
+  pending: "pending",
 } as const;
 
 export type StatusKey = keyof typeof STATUS_MAP;
