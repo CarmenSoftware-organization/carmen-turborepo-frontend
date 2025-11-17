@@ -135,6 +135,7 @@
     "no_vendors_selected": "No vendors selected",
     "no_vendors_assigned": "This campaign has no vendors assigned",
     "start_adding_vendors": "Start by searching and adding vendors using the search box above",
-    "no_vendors_selected_empty": "No vendors selected"
+    "no_vendors_selected_empty": "No vendors selected",
+    "priority": "Priority"
   }
 }
