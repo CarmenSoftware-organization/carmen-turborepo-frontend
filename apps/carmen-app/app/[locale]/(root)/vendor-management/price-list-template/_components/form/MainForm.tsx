@@ -18,9 +18,9 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/animate-ui/components/radix/tabs";
-import TabOverview from "./TabOverview";
-import TabProducts from "./TabProducts";
-import TabRFP from "./TabRFP";
+import OverviewTab from "./OverviewTab";
+import ProductsTab from "./ProductsTab";
+import RFPTabs from "./RFPTabs";
 import {
   priceListTemplateFormSchema,
   PriceListTemplateFormValues,
@@ -197,10 +197,10 @@ export default function MainForm({ templateData, mode }: Props) {
               </TabsList>
               <div className="flex-1 overflow-y-auto">
                 <TabsContent value="overview" className="mt-0">
-                  <TabOverview form={form} isViewMode={isViewMode} templateData={templateData} />
+                  <OverviewTab form={form} isViewMode={isViewMode} templateData={templateData} />
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
-                  <TabProducts
+                  <ProductsTab
                     onProductSelect={handleTreeProductSelect}
                     products={templateData?.products}
                     isViewMode={isViewMode}
@@ -208,7 +208,7 @@ export default function MainForm({ templateData, mode }: Props) {
                 </TabsContent>
                 {templateData && (
                   <TabsContent value="rfps" className="mt-0">
-                    <TabRFP rfps={templateData.rfps || []} />
+                    <RFPTabs rfps={templateData.rfps || []} />
                   </TabsContent>
                 )}
               </div>

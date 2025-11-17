@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
+import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 
 interface Props {
   // @ts-ignore
@@ -134,23 +135,7 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Currency</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={isViewMode}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select currency" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="thb">THB - Thai Baht</SelectItem>
-                      <SelectItem value="usd">USD - US Dollar</SelectItem>
-                      <SelectItem value="eur">EUR - Euro</SelectItem>
-                      <SelectItem value="jpy">JPY - Japanese Yen</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <CurrencyLookup onValueChange={field.onChange} value={field.value} />
                   <FormMessage />
                 </FormItem>
               )}
