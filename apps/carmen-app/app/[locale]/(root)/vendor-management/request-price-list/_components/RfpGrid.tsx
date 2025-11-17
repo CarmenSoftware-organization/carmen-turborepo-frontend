@@ -15,6 +15,7 @@ import { Link } from "@/lib/navigation";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
+import CardLoading from "@/components/loading/CardLoading";
 
 interface RfpGridProps {
   readonly rfps: RfpDto[];
@@ -30,33 +31,19 @@ export default function RfpGrid({
   canDelete = true,
 }: RfpGridProps) {
   const tStatus = useTranslations("Status");
+  const tRfp = useTranslations("RFP");
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[...Array(6)].map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardHeader>
-              <div className="h-6 bg-muted rounded w-3/4" />
-              <div className="h-4 bg-muted rounded w-1/2 mt-2" />
-            </CardHeader>
-            <CardContent>
-              <div className="h-4 bg-muted rounded w-full mb-2" />
-              <div className="h-4 bg-muted rounded w-5/6" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
+    return <CardLoading items={6} />;
   }
 
   if (rfps.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <FileText className="h-12 w-12 text-muted-foreground/50 mb-4" />
-        <h3 className="text-lg font-medium mb-1">No RFPs found</h3>
-        <p className="text-sm text-muted-foreground">Get started by creating your first RFP</p>
+        <h3 className="text-lg font-medium mb-1">{tRfp("no_rfps_found")}</h3>
+        <p className="text-sm text-muted-foreground">{tRfp("get_started")}</p>
       </div>
     );
   }
@@ -88,7 +75,7 @@ export default function RfpGrid({
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 -mt-1">
                       <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">More options</span>
+                      <span className="sr-only">{tRfp("more_options")}</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
@@ -97,7 +84,7 @@ export default function RfpGrid({
                       onClick={() => console.log(rfp.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
+                      {tRfp("delete")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -109,18 +96,24 @@ export default function RfpGrid({
               <CardDescription className="line-clamp-2 text-xs">{rfp.description}</CardDescription>
             )}
 
-            <div className="space-y-2 pt-2 border-t">
+            <div className="space-y-2 pt-2">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
-                <span>Valid: {rfp.valid_period} days</span>
+                <span>
+                  {tRfp("valid")}: {rfp.valid_period} {tRfp("days")}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
-                <span>Created: {format(new Date(rfp.create_date), "dd/MM/yyyy")}</span>
+                <span>
+                  {tRfp("created")}: {format(new Date(rfp.create_date), "dd/MM/yyyy")}
+                </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
-                <span>Updated: {format(new Date(rfp.update_date), "dd/MM/yyyy")}</span>
+                <span>
+                  {tRfp("updated")}: {format(new Date(rfp.update_date), "dd/MM/yyyy")}
+                </span>
               </div>
             </div>
           </CardContent>

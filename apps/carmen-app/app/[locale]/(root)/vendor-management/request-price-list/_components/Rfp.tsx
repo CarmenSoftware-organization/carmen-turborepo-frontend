@@ -22,6 +22,7 @@ const sortFields = [{ key: "name", label: "Name" }];
 export default function Rfp() {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
+  const tRfp = useTranslations("RFP");
   const router = useRouter();
 
   const [search, setSearch] = useURL("search");
@@ -38,7 +39,7 @@ export default function Rfp() {
     }
   }, [isUnauthorized]);
 
-  const title = "Request for Pricing (RFP)";
+  const title = tRfp("title");
 
   const actionButtons = (
     <TooltipProvider>
@@ -54,7 +55,7 @@ export default function Rfp() {
               <Plus className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Add Request for Pricing</TooltipContent>
+          <TooltipContent>{tRfp("add_rfp")}</TooltipContent>
         </Tooltip>
 
         <Tooltip>

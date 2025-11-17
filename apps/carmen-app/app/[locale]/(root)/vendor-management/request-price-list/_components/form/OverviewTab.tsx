@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { RfpDetailDto } from "@/dtos/rfp.dto";
 import LookupPrt from "@/components/lookup/LookupPrt";
+import { useTranslations } from "next-intl";
 
 interface Props {
   // @ts-ignore
@@ -26,36 +27,38 @@ interface Props {
 }
 
 export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
+  const tRfp = useTranslations("RFP");
+
   return (
     <div className="space-y-8 mt-4">
       {/* Performance Metrics - View Only */}
       {rfpData?.performance && isViewMode && (
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Performance Metrics
+            {tRfp("performance_metrics")}
           </h2>
           <div className="grid gap-3 md:grid-cols-4">
             <div className="bg-muted/30 p-4 space-y-2">
-              <p className="text-xs text-muted-foreground uppercase">Response Rate</p>
+              <p className="text-xs text-muted-foreground uppercase">{tRfp("response_rate")}</p>
               <p className="text-2xl font-bold">{rfpData.performance.res_rate}%</p>
               <p className="text-xs text-muted-foreground">
-                {rfpData.performance.submission} submissions
+                {rfpData.performance.submission} {tRfp("submissions")}
               </p>
             </div>
             <div className="bg-muted/30 p-4 space-y-2">
-              <p className="text-xs text-muted-foreground uppercase">Avg Response Time</p>
+              <p className="text-xs text-muted-foreground uppercase">{tRfp("avg_response_time")}</p>
               <p className="text-2xl font-bold">{rfpData.performance.avg_time}</p>
-              <p className="text-xs text-muted-foreground">days to respond</p>
+              <p className="text-xs text-muted-foreground">{tRfp("days_to_respond")}</p>
             </div>
             <div className="bg-muted/30 p-4 space-y-2">
-              <p className="text-xs text-muted-foreground uppercase">Completion Rate</p>
+              <p className="text-xs text-muted-foreground uppercase">{tRfp("completion_rate")}</p>
               <p className="text-2xl font-bold">{rfpData.performance.comp_rate}%</p>
-              <p className="text-xs text-muted-foreground">of total vendors</p>
+              <p className="text-xs text-muted-foreground">{tRfp("of_total_vendors")}</p>
             </div>
             <div className="bg-muted/30 p-4 space-y-2">
-              <p className="text-xs text-muted-foreground uppercase">Total Submissions</p>
+              <p className="text-xs text-muted-foreground uppercase">{tRfp("total_submissions")}</p>
               <p className="text-2xl font-bold">{rfpData.performance.submission}</p>
-              <p className="text-xs text-muted-foreground">completed / total</p>
+              <p className="text-xs text-muted-foreground">{tRfp("completed_total")}</p>
             </div>
           </div>
         </div>
@@ -64,7 +67,7 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
       {/* Basic Information */}
       <div className="space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          RFP Information
+          {tRfp("rfp_information")}
         </h2>
 
         <div className="space-y-4">
@@ -75,12 +78,12 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>RFP Name</FormLabel>
+                  <FormLabel>{tRfp("rfp_name")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isViewMode}
-                      placeholder="e.g., Q1 2025 Beverage Price Request"
+                      placeholder={tRfp("rfp_name_placeholder")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -94,7 +97,7 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Valid Period (days)</FormLabel>
+                  <FormLabel>{tRfp("valid_period_days")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -116,12 +119,12 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{tRfp("description")}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     disabled={isViewMode}
-                    placeholder="Provide a detailed description of this campaign..."
+                    placeholder={tRfp("description_placeholder")}
                     rows={3}
                     className="resize-none"
                   />
@@ -138,7 +141,7 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{tRfp("status")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -146,15 +149,15 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder={tRfp("select_status")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="submit">Submit</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="draft">{tRfp("status_draft")}</SelectItem>
+                      <SelectItem value="active">{tRfp("status_active")}</SelectItem>
+                      <SelectItem value="submit">{tRfp("status_submit")}</SelectItem>
+                      <SelectItem value="completed">{tRfp("status_completed")}</SelectItem>
+                      <SelectItem value="inactive">{tRfp("status_inactive")}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -166,7 +169,7 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
               name="template_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price List Template</FormLabel>
+                  <FormLabel>{tRfp("price_list_template")}</FormLabel>
                   <FormControl>
                     <LookupPrt {...field} disabled={isViewMode} onValueChange={field.onChange} />
                   </FormControl>
@@ -182,20 +185,20 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
       {rfpData?.template && isViewMode && (
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Template Information
+            {tRfp("template_information")}
           </h2>
           <div className="bg-muted/30 p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Template Name</p>
+                <p className="text-xs text-muted-foreground mb-1">{tRfp("template_name")}</p>
                 <p className="text-sm font-medium">{rfpData.template.name}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Created By</p>
+                <p className="text-xs text-muted-foreground mb-1">{tRfp("created_by")}</p>
                 <p className="text-sm">{rfpData.template.created.user}</p>
               </div>
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Created Date</p>
+                <p className="text-xs text-muted-foreground mb-1">{tRfp("created_date")}</p>
                 <p className="text-sm">
                   {new Date(rfpData.template.created.date).toLocaleDateString()}
                 </p>

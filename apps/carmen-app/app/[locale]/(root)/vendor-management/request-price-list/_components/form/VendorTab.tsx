@@ -9,6 +9,7 @@ import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Trash2, User } from "lucide-react";
 import { VendorGetDto } from "@/dtos/vendor-management";
+import { useTranslations } from "next-intl";
 
 interface Props {
   form: UseFormReturn<any>;
@@ -25,6 +26,7 @@ interface VendorTableRow {
 }
 
 export default function VendorTab({ form, isViewMode, vendors }: Props) {
+  const tRfp = useTranslations("RFP");
   const selectedVendorIds = form.watch("vendors") || [];
 
   // Map selected vendor IDs to full vendor objects
@@ -72,7 +74,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
         header: () => (
           <div className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            <span>Vendor Name</span>
+            <span>{tRfp("vendor_name")}</span>
           </div>
         ),
         cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
@@ -81,7 +83,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
       },
       {
         accessorKey: "email",
-        header: () => <span>Email</span>,
+        header: () => <span>{tRfp("email")}</span>,
         cell: ({ row }) => (
           <span className="text-muted-foreground">{row.original.email || "-"}</span>
         ),
@@ -90,7 +92,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
       },
       {
         accessorKey: "phone",
-        header: () => <span>Phone</span>,
+        header: () => <span>{tRfp("phone")}</span>,
         cell: ({ row }) => (
           <span className="text-muted-foreground">{row.original.phone || "-"}</span>
         ),
@@ -99,7 +101,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
       },
       {
         id: "action",
-        header: () => <span className="text-right">Action</span>,
+        header: () => <span className="text-right">{tRfp("action")}</span>,
         cell: ({ row }) => {
           if (isViewMode) return null;
 
@@ -113,7 +115,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
                 onClick={() => handleRemoveVendor(row.original.id)}
               >
                 <Trash2 className="h-4 w-4" />
-                <span className="sr-only">Remove vendor</span>
+                <span className="sr-only">{tRfp("remove_vendor")}</span>
               </Button>
             </div>
           );
@@ -126,7 +128,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
         },
       },
     ],
-    [isViewMode, handleRemoveVendor]
+    [isViewMode, handleRemoveVendor, tRfp]
   );
 
   const table = useReactTable({
@@ -142,10 +144,10 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
       {!isViewMode && (
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Add Vendors
+            {tRfp("add_vendors")}
           </h2>
           <div className="space-y-2">
-            <FormLabel>Vendor Search</FormLabel>
+            <FormLabel>{tRfp("vendor_search")}</FormLabel>
             <VendorLookup
               value=""
               onValueChange={(vendorId) => {
@@ -154,11 +156,11 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
                   form.setValue("vendors", [...currentVendors, vendorId]);
                 }
               }}
-              placeholder="Search by vendor name, code, or email..."
+              placeholder={tRfp("vendor_search_placeholder")}
               disabled={isViewMode}
             />
             <p className="text-xs text-muted-foreground">
-              Selected vendors will appear in the table below
+              {tRfp("selected_vendors_note")}
             </p>
           </div>
         </div>
@@ -168,7 +170,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Selected Vendors
+            {tRfp("selected_vendors")}
           </h2>
           {selectedVendors.length > 0 && (
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
@@ -180,11 +182,11 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
         {selectedVendors.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <User className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <h3 className="text-sm font-medium mb-1">No vendors selected</h3>
+            <h3 className="text-sm font-medium mb-1">{tRfp("no_vendors_selected")}</h3>
             <p className="text-xs text-muted-foreground max-w-sm">
               {isViewMode
-                ? "This campaign has no vendors assigned"
-                : "Start by searching and adding vendors using the search box above"}
+                ? tRfp("no_vendors_assigned")
+                : tRfp("start_adding_vendors")}
             </p>
           </div>
         ) : (
@@ -193,7 +195,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
             recordCount={selectedVendors.length}
             isLoading={false}
             loadingMode="skeleton"
-            emptyMessage="No vendors selected"
+            emptyMessage={tRfp("no_vendors_selected_empty")}
             tableLayout={{
               headerSticky: false,
               dense: true,

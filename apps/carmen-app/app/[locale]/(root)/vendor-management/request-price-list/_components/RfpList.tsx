@@ -43,6 +43,9 @@ export default function RfpList({
   canDelete = true,
 }: RfpListProps) {
   const tStatus = useTranslations("Status");
+  const tHeader = useTranslations("TableHeader");
+  const tRfp = useTranslations("RFP");
+
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
@@ -74,7 +77,11 @@ export default function RfpList({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Name" icon={<List className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("name")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const rfp = row.original;
@@ -100,13 +107,13 @@ export default function RfpList({
       },
       {
         accessorKey: "status",
-        header: () => (
-          <div className="flex items-center gap-2 justify-center">
-            <Activity className="h-4 w-4" />
-            <span>Status</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
-
         cell: ({ row }) => {
           const status = row.original.status;
           return (
@@ -124,11 +131,12 @@ export default function RfpList({
       },
       {
         accessorKey: "description",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Info className="h-4 w-4" />
-            <span>Description</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("description")}
+            icon={<Info className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[200px] inline-block">{row.original.description}</span>
@@ -138,23 +146,25 @@ export default function RfpList({
       },
       {
         accessorKey: "valid_period",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Valid Period</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("valid_period")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => <span>{row.original.valid_period} days</span>,
+        cell: ({ row }) => <span>{row.original.valid_period} {tRfp("days")}</span>,
         enableSorting: false,
         size: 150,
       },
       {
         accessorKey: "create_date",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Create Date</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("create_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => <span>{format(new Date(row.original.create_date), "dd/MM/yyyy")}</span>,
         enableSorting: false,
@@ -162,11 +172,12 @@ export default function RfpList({
       },
       {
         accessorKey: "update_date",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Valid Period</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("update_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => <span>{format(new Date(row.original.update_date), "dd/MM/yyyy")}</span>,
         enableSorting: false,
@@ -175,7 +186,7 @@ export default function RfpList({
 
       {
         id: "action",
-        header: () => <span className="text-right">Action</span>,
+        header: () => <span className="text-right">{tHeader("action")}</span>,
         cell: ({ row }) => {
           const rfp = row.original;
 
@@ -188,7 +199,6 @@ export default function RfpList({
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-7 w-7">
                     <MoreHorizontal className="h-4 w-4" />
-                    <span className="sr-only">More options</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -198,7 +208,6 @@ export default function RfpList({
                       onClick={() => console.log(rfp.id)}
                     >
                       <Trash2 className="h-4 w-4" />
-                      Delete
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>
@@ -214,7 +223,7 @@ export default function RfpList({
         },
       },
     ],
-    [canUpdate, canDelete]
+    [canUpdate, canDelete, tHeader, tRfp]
   );
 
   // Initialize table
@@ -249,7 +258,7 @@ export default function RfpList({
       recordCount={rfps.length}
       isLoading={isLoading}
       loadingMode="skeleton"
-      emptyMessage="No data"
+      emptyMessage={tRfp("no_data")}
       tableLayout={{
         headerSticky: true,
         dense: false,

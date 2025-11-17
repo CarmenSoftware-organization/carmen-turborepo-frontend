@@ -29,6 +29,7 @@ import { updateRfp } from "../../_handlers/rfp-update.handlers";
 import { ChevronLeft, PenBoxIcon, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import VendorTab from "./VendorTab";
+import { useTranslations } from "next-intl";
 
 interface Props {
   readonly rfpData?: RfpDetailDto;
@@ -37,6 +38,7 @@ interface Props {
 
 export default function MainForm({ rfpData, mode }: Props) {
   const router = useRouter();
+  const tRfp = useTranslations("RFP");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, buCode } = useAuth();
   const { vendors } = useVendor(token, buCode);
@@ -119,13 +121,13 @@ export default function MainForm({ rfpData, mode }: Props) {
           </Button>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              {currentMode === formType.ADD && "Create New Request for Pricing"}
-              {currentMode === formType.EDIT && "Edit Request for Pricing"}
+              {currentMode === formType.ADD && tRfp("create_new")}
+              {currentMode === formType.EDIT && tRfp("edit")}
               {currentMode === formType.VIEW && rfpData?.name}
             </h1>
             {rfpData && (
               <p className="text-sm text-muted-foreground">
-                Last updated: {new Date(rfpData.update_date).toLocaleDateString()}
+                {tRfp("last_updated")}: {new Date(rfpData.update_date).toLocaleDateString()}
               </p>
             )}
           </div>
@@ -156,7 +158,7 @@ export default function MainForm({ rfpData, mode }: Props) {
           )}
           {currentMode === formType.ADD && (
             <Button type="submit" size={"sm"} form="rfp-form">
-              Create RFP
+              {tRfp("create_rfp")}
             </Button>
           )}
         </div>
@@ -166,9 +168,9 @@ export default function MainForm({ rfpData, mode }: Props) {
           <form id="rfp-form" onSubmit={form.handleSubmit(onSubmit)} className="h-full">
             <Tabs defaultValue="overview" className="flex h-full flex-col">
               <TabsList>
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="vendor">Vendors</TabsTrigger>
-                <TabsTrigger value="setting">Settings & Automation</TabsTrigger>
+                <TabsTrigger value="overview">{tRfp("tab_overview")}</TabsTrigger>
+                <TabsTrigger value="vendor">{tRfp("tab_vendors")}</TabsTrigger>
+                <TabsTrigger value="setting">{tRfp("tab_settings")}</TabsTrigger>
               </TabsList>
               <div className="flex-1 overflow-y-auto">
                 <TabsContent value="overview" className="mt-0 h-full">

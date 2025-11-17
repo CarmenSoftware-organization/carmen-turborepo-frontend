@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   form: UseFormReturn<any>;
@@ -34,12 +35,14 @@ export default function SettingTab({
   appendEscalation,
   removeEscalation,
 }: Props) {
+  const tRfp = useTranslations("RFP");
+
   return (
     <div className="space-y-8 mt-4">
       {/* RFP Settings */}
       <div className="space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          RFP Settings
+          {tRfp("rfp_settings")}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -48,7 +51,7 @@ export default function SettingTab({
             name="rfp_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>RFP Type</FormLabel>
+                <FormLabel>{tRfp("rfp_type")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -56,13 +59,13 @@ export default function SettingTab({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select RFP type" />
+                      <SelectValue placeholder={tRfp("select_rfp_type")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="buy">Buy</SelectItem>
-                    <SelectItem value="sell">Sell</SelectItem>
-                    <SelectItem value="recurring">Recurring</SelectItem>
+                    <SelectItem value="buy">{tRfp("type_buy")}</SelectItem>
+                    <SelectItem value="sell">{tRfp("type_sell")}</SelectItem>
+                    <SelectItem value="recurring">{tRfp("type_recurring")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -75,7 +78,7 @@ export default function SettingTab({
             name="priority"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Priority</FormLabel>
+                <FormLabel>{tRfp("priority")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -83,13 +86,13 @@ export default function SettingTab({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
+                      <SelectValue placeholder={tRfp("select_priority")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="high">{tRfp("priority_high")}</SelectItem>
+                    <SelectItem value="medium">{tRfp("priority_medium")}</SelectItem>
+                    <SelectItem value="low">{tRfp("priority_low")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -102,7 +105,7 @@ export default function SettingTab({
             name="portal_duration"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Portal Duration (days)</FormLabel>
+                <FormLabel>{tRfp("portal_duration_days")}</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -121,7 +124,7 @@ export default function SettingTab({
             name="submission_method"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Submission Method</FormLabel>
+                <FormLabel>{tRfp("submission_method")}</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -129,12 +132,12 @@ export default function SettingTab({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select submission method" />
+                      <SelectValue placeholder={tRfp("select_submission_method")} />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="auto">Auto</SelectItem>
-                    <SelectItem value="manual">Manual</SelectItem>
+                    <SelectItem value="auto">{tRfp("method_auto")}</SelectItem>
+                    <SelectItem value="manual">{tRfp("method_manual")}</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -147,7 +150,7 @@ export default function SettingTab({
             name="require_approval"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Require Approval</FormLabel>
+                <FormLabel>{tRfp("require_approval")}</FormLabel>
                 <div className="flex items-center gap-2 h-10">
                   <FormControl>
                     <Switch
@@ -157,7 +160,7 @@ export default function SettingTab({
                     />
                   </FormControl>
                   <span className="text-sm text-muted-foreground">
-                    {field.value ? "Enabled" : "Disabled"}
+                    {field.value ? tRfp("enabled") : tRfp("disabled")}
                   </span>
                 </div>
               </FormItem>
@@ -169,7 +172,7 @@ export default function SettingTab({
             name="auto_reminder"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Auto Reminder</FormLabel>
+                <FormLabel>{tRfp("auto_reminder")}</FormLabel>
                 <div className="flex items-center gap-2 h-10">
                   <FormControl>
                     <Switch
@@ -179,7 +182,7 @@ export default function SettingTab({
                     />
                   </FormControl>
                   <span className="text-sm text-muted-foreground">
-                    {field.value ? "Enabled" : "Disabled"}
+                    {field.value ? tRfp("enabled") : tRfp("disabled")}
                   </span>
                 </div>
               </FormItem>
@@ -192,12 +195,12 @@ export default function SettingTab({
           name="instructions"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Instructions</FormLabel>
+              <FormLabel>{tRfp("instructions")}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   disabled={isViewMode}
-                  placeholder="Enter instructions for vendors"
+                  placeholder={tRfp("instructions_placeholder")}
                   rows={3}
                   className="resize-none"
                 />
@@ -212,7 +215,7 @@ export default function SettingTab({
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Reminders
+            {tRfp("reminders")}
           </h2>
           {!isViewMode && (
             <Button
@@ -229,14 +232,14 @@ export default function SettingTab({
                 });
               }}
             >
-              Add Reminder
+              {tRfp("add_reminder")}
             </Button>
           )}
         </div>
 
         {reminderFields.length === 0 ? (
           <div className="text-sm text-muted-foreground text-center py-8 border-t border-border">
-            No reminders configured
+            {tRfp("no_reminders_configured")}
           </div>
         ) : (
           <div className="space-y-2">
@@ -244,7 +247,7 @@ export default function SettingTab({
               <div key={field.id} className="bg-muted/50 p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-medium text-muted-foreground">
-                    REMINDER #{index + 1}
+                    {tRfp("reminder_number")} #{index + 1}
                   </span>
                   {!isViewMode && (
                     <Button
@@ -265,7 +268,7 @@ export default function SettingTab({
                     name={`reminders.${index}.type`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs">Type</FormLabel>
+                        <FormLabel className="text-xs">{tRfp("type")}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -277,8 +280,8 @@ export default function SettingTab({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="before_deadline">Before Deadline</SelectItem>
-                            <SelectItem value="after_deadline">After Deadline</SelectItem>
+                            <SelectItem value="before_deadline">{tRfp("type_before_deadline")}</SelectItem>
+                            <SelectItem value="after_deadline">{tRfp("type_after_deadline")}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -291,7 +294,7 @@ export default function SettingTab({
                     name={`reminders.${index}.days`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs">Days</FormLabel>
+                        <FormLabel className="text-xs">{tRfp("days")}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -311,7 +314,7 @@ export default function SettingTab({
                     name={`reminders.${index}.enabled`}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel className="text-xs">Status</FormLabel>
+                        <FormLabel className="text-xs">{tRfp("status")}</FormLabel>
                         <div className="flex items-center gap-2 h-9">
                           <FormControl>
                             <Switch
@@ -321,7 +324,7 @@ export default function SettingTab({
                             />
                           </FormControl>
                           <span className="text-xs text-muted-foreground">
-                            {field.value ? "Active" : "Inactive"}
+                            {field.value ? tRfp("active") : tRfp("inactive")}
                           </span>
                         </div>
                       </FormItem>
@@ -334,7 +337,7 @@ export default function SettingTab({
                   name={`reminders.${index}.message`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Message</FormLabel>
+                      <FormLabel className="text-xs">{tRfp("message")}</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
@@ -357,7 +360,7 @@ export default function SettingTab({
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Escalations
+            {tRfp("escalations")}
           </h2>
           {!isViewMode && (
             <Button
@@ -374,14 +377,14 @@ export default function SettingTab({
                 });
               }}
             >
-              Add Escalation
+              {tRfp("add_escalation")}
             </Button>
           )}
         </div>
 
         {escalationFields.length === 0 ? (
           <div className="text-sm text-muted-foreground text-center py-8 border-t border-border">
-            No escalations configured
+            {tRfp("no_escalations_configured")}
           </div>
         ) : (
           <div className="space-y-2">
@@ -389,7 +392,7 @@ export default function SettingTab({
               <div key={field.id} className="bg-muted/50 p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-xs font-medium text-muted-foreground">
-                    ESCALATION #{index + 1}
+                    {tRfp("escalation_number")} #{index + 1}
                   </span>
                   {!isViewMode && (
                     <Button
@@ -410,7 +413,7 @@ export default function SettingTab({
                     name={`escalations.${index}.type`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs">Type</FormLabel>
+                        <FormLabel className="text-xs">{tRfp("type")}</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -422,8 +425,8 @@ export default function SettingTab({
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="before_deadline">Before Deadline</SelectItem>
-                            <SelectItem value="after_deadline">After Deadline</SelectItem>
+                            <SelectItem value="before_deadline">{tRfp("type_before_deadline")}</SelectItem>
+                            <SelectItem value="after_deadline">{tRfp("type_after_deadline")}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -436,7 +439,7 @@ export default function SettingTab({
                     name={`escalations.${index}.days`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs">Days</FormLabel>
+                        <FormLabel className="text-xs">{tRfp("days")}</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
@@ -456,7 +459,7 @@ export default function SettingTab({
                     name={`escalations.${index}.enabled`}
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel className="text-xs">Status</FormLabel>
+                        <FormLabel className="text-xs">{tRfp("status")}</FormLabel>
                         <div className="flex items-center gap-2 h-9">
                           <FormControl>
                             <Switch
@@ -466,7 +469,7 @@ export default function SettingTab({
                             />
                           </FormControl>
                           <span className="text-xs text-muted-foreground">
-                            {field.value ? "Active" : "Inactive"}
+                            {field.value ? tRfp("active") : tRfp("inactive")}
                           </span>
                         </div>
                       </FormItem>
@@ -479,7 +482,7 @@ export default function SettingTab({
                   name={`escalations.${index}.message`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-xs">Message</FormLabel>
+                      <FormLabel className="text-xs">{tRfp("message")}</FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
