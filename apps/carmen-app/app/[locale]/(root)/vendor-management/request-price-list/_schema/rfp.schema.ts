@@ -13,14 +13,14 @@ export const reminderRuleSchema = z.object({
   enabled: z.boolean(),
 });
 
-export const campaignFormSchema = z.object({
+export const rfpFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   status: z.enum(["active", "inactive", "draft", "submit", "completed"]),
   description: z.string().optional(),
   valid_period: z.number().min(1, "Valid period must be at least 1 day"),
   template_id: z.string().optional(),
   portal_duration: z.number().min(1),
-  campaign_type: z.enum(["buy", "sell", "recurring"]),
+  rfp_type: z.enum(["buy", "sell", "recurring"]),
   submission_method: z.enum(["auto", "manual"]),
   require_approval: z.boolean(),
   auto_reminder: z.boolean(),
@@ -31,4 +31,4 @@ export const campaignFormSchema = z.object({
   vendors: z.array(z.string()).optional(),
 });
 
-export type CampaignFormValues = z.infer<typeof campaignFormSchema>;
+export type RfpFormValues = z.infer<typeof rfpFormSchema>;

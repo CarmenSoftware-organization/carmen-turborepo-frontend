@@ -1,6 +1,6 @@
-import { CampaignFormValues } from "../_schema/campaign.schema";
-import { CampaignCreateDto, CampaignUpdateDto } from "@/dtos/campaign.dto";
-export const transformToCreateDto = (data: CampaignFormValues): CampaignCreateDto => {
+import { RfpFormValues } from "../_schema/rfp.schema";
+import { RfpCreateDto, RfpUpdateDto } from "@/dtos/rfp.dto";
+export const transformToCreateDto = (data: RfpFormValues): RfpCreateDto => {
   return {
     name: data.name,
     status: data.status,
@@ -14,7 +14,7 @@ export const transformToCreateDto = (data: CampaignFormValues): CampaignCreateDt
     template_id: data.template_id,
     settings: {
       portal_duration: data.portal_duration,
-      campaign_type: data.campaign_type,
+      rfp_type: data.rfp_type,
       submission_method: data.submission_method,
       require_approval: data.require_approval,
       auto_reminder: data.auto_reminder,
@@ -27,11 +27,11 @@ export const transformToCreateDto = (data: CampaignFormValues): CampaignCreateDt
 };
 
 export const transformToUpdateDto = (
-  data: CampaignFormValues,
+  data: RfpFormValues,
   vendorsToAdd: string[],
   vendorsToUpdate: string[],
   vendorsToRemove: string[]
-): CampaignUpdateDto => {
+): RfpUpdateDto => {
   return {
     name: data.name,
     status: data.status,
@@ -45,7 +45,7 @@ export const transformToUpdateDto = (
     template_id: data.template_id,
     settings: {
       portal_duration: data.portal_duration,
-      campaign_type: data.campaign_type,
+      rfp_type: data.rfp_type,
       submission_method: data.submission_method,
       require_approval: data.require_approval,
       auto_reminder: data.auto_reminder,

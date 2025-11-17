@@ -10,7 +10,7 @@ import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
 
-interface CampaignDtoPL {
+interface RfpDtoPL {
   id: string;
   name: string;
   status: "active" | "inactive" | "draft" | "submit" | "completed";
@@ -22,14 +22,14 @@ interface CampaignDtoPL {
 }
 
 interface Props {
-  campaigns: CampaignDtoPL[];
+  rfps: RfpDtoPL[];
 }
 
-export default function TabCampaigns({ campaigns }: Props) {
+export default function TabCampaigns({ rfps }: Props) {
   const tStatus = useTranslations("Status");
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
-  const columns = useMemo<ColumnDef<CampaignDtoPL>[]>(
+  const columns = useMemo<ColumnDef<RfpDtoPL>[]>(
     () => [
       {
         id: "no",
@@ -47,18 +47,18 @@ export default function TabCampaigns({ campaigns }: Props) {
         header: () => (
           <div className="flex items-center gap-2">
             <Megaphone className="h-4 w-4" />
-            <span>Campaign Name</span>
+            <span>RFP Name</span>
           </div>
         ),
         cell: ({ row }) => {
-          const campaign = row.original;
+          const rfp = row.original;
           return (
             <div className="max-w-[300px] truncate ellipsis">
               <Link
-                href={`/vendor-management/campaign/${campaign.id}`}
+                href={`/vendor-management/rfp/${rfp.id}`}
                 className="hover:underline text-primary"
               >
-                {campaign.name}
+                {rfp.name}
               </Link>
             </div>
           );
@@ -176,7 +176,7 @@ export default function TabCampaigns({ campaigns }: Props) {
   );
 
   const table = useReactTable({
-    data: campaigns,
+    data: rfps,
     columns,
     getCoreRowModel: getCoreRowModel(),
     enableRowSelection: false,
@@ -187,35 +187,35 @@ export default function TabCampaigns({ campaigns }: Props) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Linked Campaigns
+            Linked RFPs
           </h2>
-          {campaigns.length > 0 && (
+          {rfps.length > 0 && (
             <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-              {campaigns.length}
+              {rfps.length}
             </span>
           )}
         </div>
 
         <p className="text-sm text-muted-foreground">
-          These campaigns are currently using this price list template. This is a read-only view.
-          Campaigns are linked from the campaign module.
+          These RFPs are currently using this price list template. This is a read-only view.
+          RFPs are linked from the RFP module.
         </p>
 
-        {campaigns.length === 0 ? (
+        {rfps.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Megaphone className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <h3 className="text-sm font-medium mb-1">No campaigns linked</h3>
+            <h3 className="text-sm font-medium mb-1">No RFPs linked</h3>
             <p className="text-xs text-muted-foreground max-w-sm">
-              This template is not currently being used by any campaigns
+              This template is not currently being used by any RFPs
             </p>
           </div>
         ) : (
           <DataGrid
             table={table}
-            recordCount={campaigns.length}
+            recordCount={rfps.length}
             isLoading={false}
             loadingMode="skeleton"
-            emptyMessage="No campaigns found"
+            emptyMessage="No RFPs found"
             tableLayout={{
               headerSticky: false,
               dense: true,

@@ -1,8 +1,8 @@
 // Status Types
-export type StatusCampaign = "active" | "inactive" | "draft" | "submit" | "completed";
+export type StatusRfp = "active" | "inactive" | "draft" | "submit" | "completed";
 export type StatusVendor = "completed" | "pending" | "in_progress";
 export type PriorityType = "high" | "medium" | "low";
-export type CampaignType = "buy" | "sell" | "recurring";
+export type RfpType = "buy" | "sell" | "recurring";
 export type SubmitMethodType = "auto" | "manual";
 
 // Vendor Operations
@@ -13,9 +13,9 @@ export interface VendorOperations {
 }
 
 // Base Interface
-interface BaseCampaignDto {
+interface BaseRfpDto {
   name: string;
-  status: StatusCampaign;
+  status: StatusRfp;
   description?: string;
   valid_period: number; // days
   create_date: Date;
@@ -24,7 +24,7 @@ interface BaseCampaignDto {
 }
 
 // List DTO
-export interface CampaignDto extends BaseCampaignDto {
+export interface RfpDto extends BaseRfpDto {
   id: string;
 }
 
@@ -52,9 +52,9 @@ export interface ReminderRule {
 }
 
 // Settings
-export interface CampaignSettings {
+export interface RfpSettings {
   portal_duration: number;
-  campaign_type: CampaignType;
+  rfp_type: RfpType;
   submission_method: SubmitMethodType;
   require_approval: boolean;
   auto_reminder: boolean;
@@ -65,7 +65,7 @@ export interface CampaignSettings {
 }
 
 // Detail DTO with full information
-export interface CampaignDetailDto extends CampaignDto {
+export interface RfpDetailDto extends RfpDto {
   template: {
     id: string;
     name: string;
@@ -83,16 +83,16 @@ export interface CampaignDetailDto extends CampaignDto {
     submission: string; // "1/3", "2/10" - submitted count / total count
   };
   vendor?: VendorStatus[];
-  settings: CampaignSettings;
+  settings: RfpSettings;
 }
 
 // Request DTOs for API calls
-export interface CampaignCreateDto extends Omit<BaseCampaignDto, "create_date" | "update_date"> {
+export interface RfpCreateDto extends Omit<BaseRfpDto, "create_date" | "update_date"> {
   template_id?: string;
-  settings: CampaignSettings;
+  settings: RfpSettings;
 }
 
-export interface CampaignUpdateDto extends Omit<BaseCampaignDto, "create_date" | "update_date"> {
+export interface RfpUpdateDto extends Omit<BaseRfpDto, "create_date" | "update_date"> {
   template_id?: string;
-  settings: CampaignSettings;
+  settings: RfpSettings;
 }

@@ -1,13 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CampaignDetailDto } from "@/dtos/campaign.dto";
+import { RfpDetailDto } from "@/dtos/rfp.dto";
 import { formType } from "@/dtos/form.dto";
 import { useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
-import { useCreateCampaign, useUpdateCampaign } from "@/hooks/use-campaign";
+import { useCreateRfp, useUpdateRfp } from "@/hooks/use-rfp";
 import { useAuth } from "@/context/AuthContext";
 import { useVendor } from "@/hooks/use-vendor";
 import {
@@ -18,47 +18,47 @@ import {
 } from "@/components/animate-ui/components/radix/tabs";
 import SettingTab from "./SettingTab";
 import OverviewTab from "./OverviewTab";
-import { campaignFormSchema, CampaignFormValues } from "../../_schema/campaign.schema";
+import { rfpFormSchema, RfpFormValues } from "../../_schema/rfp.schema";
 import {
   transformToCreateDto,
   transformToUpdateDto,
   calculateVendorOperations,
-} from "../../_helper/transform-campaign-form";
-import { createCampaign } from "../../_handlers/campaign-create.handlers";
-import { updateCampaign } from "../../_handlers/campaign-update.handlers";
+} from "../../_helper/transform-rfp-form";
+import { createRfp } from "../../_handlers/rfp-create.handlers";
+import { updateRfp } from "../../_handlers/rfp-update.handlers";
 import { ChevronLeft, PenBoxIcon, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import VendorTab from "./VendorTab";
 
 interface Props {
-  readonly campaignData?: CampaignDetailDto;
+  readonly rfpData?: RfpDetailDto;
   readonly mode: formType;
 }
 
-export default function MainForm({ campaignData, mode }: Props) {
+export default function MainForm({ rfpData, mode }: Props) {
   const router = useRouter();
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, buCode } = useAuth();
   const { vendors } = useVendor(token, buCode);
 
-  const form = useForm<CampaignFormValues>({
-    resolver: zodResolver(campaignFormSchema),
+  const form = useForm<RfpFormValues>({
+    resolver: zodResolver(rfpFormSchema),
     defaultValues: {
-      name: campaignData?.name || "",
-      status: campaignData?.status || "draft",
-      description: campaignData?.description || "",
-      valid_period: campaignData?.valid_period || 90,
-      template_id: campaignData?.template?.id || "",
-      portal_duration: campaignData?.settings?.portal_duration || 14,
-      campaign_type: campaignData?.settings?.campaign_type || "buy",
-      submission_method: campaignData?.settings?.submission_method || "auto",
-      require_approval: campaignData?.settings?.require_approval || false,
-      auto_reminder: campaignData?.settings?.auto_reminder || false,
-      priority: campaignData?.settings?.priority || "medium",
-      instructions: campaignData?.settings?.instructions || "",
-      reminders: campaignData?.settings?.reminders || [],
-      escalations: campaignData?.settings?.escalations || [],
-      vendors: campaignData?.vendor?.map((v) => v.id) || [],
+      name: rfpData?.name || "",
+      status: rfpData?.status || "draft",
+      description: rfpData?.description || "",
+      valid_period: rfpData?.valid_period || 90,
+      template_id: rfpData?.template?.id || "",
+      portal_duration: rfpData?.settings?.portal_duration || 14,
+      rfp_type: rfpData?.settings?.rfp_type || "buy",
+      submission_method: rfpData?.settings?.submission_method || "auto",
+      require_approval: rfpData?.settings?.require_approval || false,
+      auto_reminder: rfpData?.settings?.auto_reminder || false,
+      priority: rfpData?.settings?.priority || "medium",
+      instructions: rfpData?.settings?.instructions || "",
+      reminders: rfpData?.settings?.reminders || [],
+      escalations: rfpData?.settings?.escalations || [],
+      vendors: rfpData?.vendor?.map((v) => v.id) || [],
     },
   });
 
@@ -80,24 +80,24 @@ export default function MainForm({ campaignData, mode }: Props) {
     name: "escalations",
   });
 
-  const createMutation = useCreateCampaign(token, buCode);
-  const updateMutation = useUpdateCampaign(token, buCode, campaignData?.id || "");
+  const createMutation = useCreateRfp(token, buCode);
+  const updateMutation = useUpdateRfp(token, buCode, rfpData?.id || "");
 
-  const onSubmit = async (data: CampaignFormValues): Promise<void> => {
+  const onSubmit = async (data: RfpFormValues): Promise<void> => {
     const isCreating = currentMode === formType.ADD;
 
     if (isCreating) {
       const createDto = transformToCreateDto(data);
-      await createCampaign(createDto, createMutation, form, data, () => {
+      await createRfp(createDto, createMutation, form, data, () => {
         setCurrentMode(formType.VIEW);
       });
     } else {
-      const originalVendors = campaignData?.vendor?.map((v) => v.id) || [];
+      const originalVendors = rfpData?.vendor?.map((v) => v.id) || [];
       const newVendors = data.vendors || [];
       const { add, update, remove } = calculateVendorOperations(originalVendors, newVendors);
 
       const updateDto = transformToUpdateDto(data, add, update, remove);
-      await updateCampaign(updateDto, updateMutation, form, () => {
+      await updateRfp(updateDto, updateMutation, form, () => {
         setCurrentMode(formType.VIEW);
       });
     }
@@ -110,7 +110,7 @@ export default function MainForm({ campaignData, mode }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => router.push("/vendor-management/campaign")}
+            onClick={() => router.push("/vendor-management/rfp")}
             variant={"outlinePrimary"}
             size={"sm"}
             className="h-8 w-8"
@@ -119,13 +119,13 @@ export default function MainForm({ campaignData, mode }: Props) {
           </Button>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              {currentMode === formType.ADD && "Create New Campaign"}
-              {currentMode === formType.EDIT && "Edit Campaign"}
-              {currentMode === formType.VIEW && campaignData?.name}
+              {currentMode === formType.ADD && "Create New Request for Pricing"}
+              {currentMode === formType.EDIT && "Edit Request for Pricing"}
+              {currentMode === formType.VIEW && rfpData?.name}
             </h1>
-            {campaignData && (
+            {rfpData && (
               <p className="text-sm text-muted-foreground">
-                Last updated: {new Date(campaignData.update_date).toLocaleDateString()}
+                Last updated: {new Date(rfpData.update_date).toLocaleDateString()}
               </p>
             )}
           </div>
@@ -149,7 +149,7 @@ export default function MainForm({ campaignData, mode }: Props) {
               >
                 <X />
               </Button>
-              <Button type="submit" form="campaign-form" size="sm">
+              <Button type="submit" form="rfp-form" size="sm">
                 <Save />
               </Button>
             </>
@@ -159,8 +159,8 @@ export default function MainForm({ campaignData, mode }: Props) {
               <Button type="button" variant="outline" onClick={() => form.reset()}>
                 Clear Form
               </Button>
-              <Button type="submit" form="campaign-form">
-                Create Campaign
+              <Button type="submit" form="rfp-form">
+                Create RFP
               </Button>
             </>
           )}
@@ -168,7 +168,7 @@ export default function MainForm({ campaignData, mode }: Props) {
       </div>
       <div className="flex-1 overflow-hidden mt-4">
         <Form {...form}>
-          <form id="campaign-form" onSubmit={form.handleSubmit(onSubmit)} className="h-full">
+          <form id="rfp-form" onSubmit={form.handleSubmit(onSubmit)} className="h-full">
             <Tabs defaultValue="overview" className="flex h-full flex-col">
               <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -177,7 +177,7 @@ export default function MainForm({ campaignData, mode }: Props) {
               </TabsList>
               <div className="flex-1 overflow-y-auto">
                 <TabsContent value="overview" className="mt-0 h-full">
-                  <OverviewTab form={form} isViewMode={isViewMode} campaignData={campaignData} />
+                  <OverviewTab form={form} isViewMode={isViewMode} rfpData={rfpData} />
                 </TabsContent>
                 <TabsContent value="vendor" className="mt-0 h-full">
                   <VendorTab form={form} isViewMode={isViewMode} vendors={vendors} />

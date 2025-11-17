@@ -159,8 +159,8 @@ export const moduleItems: ModuleItem[] = [
         icon: File,
       },
       {
-        labelKey: "Modules.VendorManagement.campaign",
-        href: "/vendor-management/campaign",
+        labelKey: "Modules.VendorManagement.request_for_price_list",
+        href: "/vendor-management/request-price-list",
         icon: FileSpreadsheet,
       },
       // {

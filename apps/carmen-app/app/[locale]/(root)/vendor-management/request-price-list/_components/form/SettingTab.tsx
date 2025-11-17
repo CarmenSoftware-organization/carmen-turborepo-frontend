@@ -36,19 +36,19 @@ export default function SettingTab({
 }: Props) {
   return (
     <div className="space-y-8 mt-4">
-      {/* Campaign Settings */}
+      {/* RFP Settings */}
       <div className="space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          Campaign Settings
+          RFP Settings
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <FormField
             control={form.control}
-            name="campaign_type"
+            name="rfp_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Campaign Type</FormLabel>
+                <FormLabel>RFP Type</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
@@ -56,7 +56,7 @@ export default function SettingTab({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select campaign type" />
+                      <SelectValue placeholder="Select RFP type" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

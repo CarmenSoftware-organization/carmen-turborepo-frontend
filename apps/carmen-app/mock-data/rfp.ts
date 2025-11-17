@@ -1,6 +1,6 @@
-import { CampaignDto, CampaignDetailDto } from "@/dtos/campaign.dto";
+import { RfpDto, RfpDetailDto } from "@/dtos/rfp.dto";
 
-export const mockCampaigns: CampaignDto[] = [
+export const mockRfps: RfpDto[] = [
   {
     id: "rpl-001",
     name: "Q1 2025 Beverage Price Request",
@@ -76,7 +76,7 @@ export const mockCampaigns: CampaignDto[] = [
 // ============================================================================
 // Mock Data - Detail View (Array of Full Details)
 // ============================================================================
-export const mockCampaignDetails: CampaignDetailDto[] = [
+export const mockRfpDetails: RfpDetailDto[] = [
   // Detail #1 - Q1 2025 Beverage
   {
     id: "rpl-001",
@@ -138,7 +138,7 @@ export const mockCampaignDetails: CampaignDetailDto[] = [
     ],
     settings: {
       portal_duration: 14,
-      campaign_type: "buy",
+      rfp_type: "buy",
       submission_method: "auto",
       require_approval: true,
       auto_reminder: true,
@@ -257,7 +257,7 @@ export const mockCampaignDetails: CampaignDetailDto[] = [
     ],
     settings: {
       portal_duration: 21,
-      campaign_type: "recurring",
+      rfp_type: "recurring",
       submission_method: "manual",
       require_approval: true,
       auto_reminder: true,
@@ -358,7 +358,7 @@ export const mockCampaignDetails: CampaignDetailDto[] = [
     ],
     settings: {
       portal_duration: 14,
-      campaign_type: "buy",
+      rfp_type: "buy",
       submission_method: "auto",
       require_approval: false,
       auto_reminder: true,
@@ -423,7 +423,7 @@ export const mockCampaignDetails: CampaignDetailDto[] = [
     ],
     settings: {
       portal_duration: 4,
-      campaign_type: "buy",
+      rfp_type: "buy",
       submission_method: "auto",
       require_approval: false,
       auto_reminder: true,
@@ -520,7 +520,7 @@ export const mockCampaignDetails: CampaignDetailDto[] = [
     ],
     settings: {
       portal_duration: 30,
-      campaign_type: "recurring",
+      rfp_type: "recurring",
       submission_method: "manual",
       require_approval: true,
       auto_reminder: true,
@@ -565,6 +565,6 @@ export const mockCampaignDetails: CampaignDetailDto[] = [
 // ============================================================================
 // Helper Function - Get Mock Detail by ID
 // ============================================================================
-export const getMockCampaignById = (id: string): CampaignDetailDto | undefined => {
-  return mockCampaignDetails.find((detail) => detail.id === id);
+export const getMockRfpById = (id: string): RfpDetailDto | undefined => {
+  return mockRfpDetails.find((detail) => detail.id === id);
 };

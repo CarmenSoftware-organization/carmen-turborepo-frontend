@@ -15,20 +15,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CampaignDetailDto } from "@/dtos/campaign.dto";
+import { RfpDetailDto } from "@/dtos/rfp.dto";
 
 interface Props {
   // @ts-ignore
   form: UseFormReturn<any>;
   isViewMode: boolean;
-  campaignData?: CampaignDetailDto;
+  rfpData?: RfpDetailDto;
 }
 
-export default function OverviewTab({ form, isViewMode, campaignData }: Props) {
+export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
   return (
     <div className="space-y-8 mt-4">
       {/* Performance Metrics - View Only */}
-      {campaignData?.performance && isViewMode && (
+      {rfpData?.performance && isViewMode && (
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Performance Metrics
@@ -36,24 +36,24 @@ export default function OverviewTab({ form, isViewMode, campaignData }: Props) {
           <div className="grid gap-3 md:grid-cols-4">
             <div className="bg-muted/30 p-4 space-y-2">
               <p className="text-xs text-muted-foreground uppercase">Response Rate</p>
-              <p className="text-2xl font-bold">{campaignData.performance.res_rate}%</p>
+              <p className="text-2xl font-bold">{rfpData.performance.res_rate}%</p>
               <p className="text-xs text-muted-foreground">
-                {campaignData.performance.submission} submissions
+                {rfpData.performance.submission} submissions
               </p>
             </div>
             <div className="bg-muted/30 p-4 space-y-2">
               <p className="text-xs text-muted-foreground uppercase">Avg Response Time</p>
-              <p className="text-2xl font-bold">{campaignData.performance.avg_time}</p>
+              <p className="text-2xl font-bold">{rfpData.performance.avg_time}</p>
               <p className="text-xs text-muted-foreground">days to respond</p>
             </div>
             <div className="bg-muted/30 p-4 space-y-2">
               <p className="text-xs text-muted-foreground uppercase">Completion Rate</p>
-              <p className="text-2xl font-bold">{campaignData.performance.comp_rate}%</p>
+              <p className="text-2xl font-bold">{rfpData.performance.comp_rate}%</p>
               <p className="text-xs text-muted-foreground">of total vendors</p>
             </div>
             <div className="bg-muted/30 p-4 space-y-2">
               <p className="text-xs text-muted-foreground uppercase">Total Submissions</p>
-              <p className="text-2xl font-bold">{campaignData.performance.submission}</p>
+              <p className="text-2xl font-bold">{rfpData.performance.submission}</p>
               <p className="text-xs text-muted-foreground">completed / total</p>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function OverviewTab({ form, isViewMode, campaignData }: Props) {
       {/* Basic Information */}
       <div className="space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          Campaign Information
+          RFP Information
         </h2>
 
         <div className="space-y-4">
@@ -74,7 +74,7 @@ export default function OverviewTab({ form, isViewMode, campaignData }: Props) {
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Campaign Name</FormLabel>
+                  <FormLabel>RFP Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -178,7 +178,7 @@ export default function OverviewTab({ form, isViewMode, campaignData }: Props) {
       </div>
 
       {/* Template Information (View Only) */}
-      {campaignData?.template && isViewMode && (
+      {rfpData?.template && isViewMode && (
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Template Information
@@ -187,16 +187,16 @@ export default function OverviewTab({ form, isViewMode, campaignData }: Props) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Template Name</p>
-                <p className="text-sm font-medium">{campaignData.template.name}</p>
+                <p className="text-sm font-medium">{rfpData.template.name}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Created By</p>
-                <p className="text-sm">{campaignData.template.created.user}</p>
+                <p className="text-sm">{rfpData.template.created.user}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Created Date</p>
                 <p className="text-sm">
-                  {new Date(campaignData.template.created.date).toLocaleDateString()}
+                  {new Date(rfpData.template.created.date).toLocaleDateString()}
                 </p>
               </div>
             </div>

@@ -135,7 +135,7 @@
       "priceLists": "ราคาสินค้า",
       "priceComparisons": "เปรียบเทียบราคา",
       "priceListtemplate": "แม่แบบราคาสินค้า",
-      "campaign": "แคมเปญ"
+      "request_for_price_list": "ขอราคาสินค้า"
     },
     "storeOperations": "การดำเนินการร้านค้า",
     "StoreOperations": {

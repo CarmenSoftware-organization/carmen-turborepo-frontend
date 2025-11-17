@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useCampaigns } from "@/hooks/use-campaign";
+import { useRfps } from "@/hooks/use-rfp";
 import { useURL } from "@/hooks/useURL";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -13,13 +13,13 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import SignInDialog from "@/components/SignInDialog";
-import CampaignList from "./CampaignList";
-import CampaignGrid from "./CampaignGrid";
+import RfpList from "./RfpList";
+import RfpGrid from "./RfpGrid";
 import { VIEW } from "@/constants/enum";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
-export default function Campaign() {
+export default function Rfp() {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function Campaign() {
 
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { data, isLoading, isUnauthorized } = useCampaigns(token, buCode);
+  const { data, isLoading, isUnauthorized } = useRfps(token, buCode);
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -38,23 +38,23 @@ export default function Campaign() {
     }
   }, [isUnauthorized]);
 
-  const title = "Campaign";
+  const title = "Request for Pricing (RFP)";
 
   const actionButtons = (
     <TooltipProvider>
-      <div className="action-btn-container" data-id="campaign-action-buttons">
+      <div className="action-btn-container" data-id="rfp-action-buttons">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               size={"sm"}
               onClick={() => {
-                router.push("/vendor-management/campaign/new");
+                router.push("/vendor-management/request-price-list/new");
               }}
             >
               <Plus className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Add Campaign</TooltipContent>
+          <TooltipContent>Add Request for Pricing</TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -63,7 +63,7 @@ export default function Campaign() {
               variant="outlinePrimary"
               className="group"
               size={"sm"}
-              data-id="campaign-list-export-button"
+              data-id="rfp-list-export-button"
             >
               <FileDown className="h-4 w-4" />
             </Button>
@@ -73,7 +73,7 @@ export default function Campaign() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size={"sm"} data-id="campaign-list-print-button">
+            <Button variant="outlinePrimary" size={"sm"} data-id="rfp-list-print-button">
               <Printer className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
@@ -160,14 +160,14 @@ export default function Campaign() {
   const content = (
     <>
       <div className="block lg:hidden">
-        <CampaignGrid campaigns={data ?? []} isLoading={isLoading} />
+        <RfpGrid rfps={data ?? []} isLoading={isLoading} />
       </div>
 
       <div className="hidden lg:block">
         {view === VIEW.LIST ? (
-          <CampaignList campaigns={data ?? []} isLoading={isLoading} />
+          <RfpList rfps={data ?? []} isLoading={isLoading} />
         ) : (
-          <CampaignGrid campaigns={data ?? []} isLoading={isLoading} />
+          <RfpGrid rfps={data ?? []} isLoading={isLoading} />
         )}
       </div>
     </>

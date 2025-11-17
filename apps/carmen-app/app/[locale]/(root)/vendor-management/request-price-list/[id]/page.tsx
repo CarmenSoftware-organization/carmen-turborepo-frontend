@@ -2,19 +2,19 @@
 
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { useAuth } from "@/context/AuthContext";
-import { useCampaignById } from "@/hooks/use-campaign";
+import { useRfpById } from "@/hooks/use-rfp";
 import { useParams } from "next/navigation";
 import MainForm from "../_components/form/MainForm";
 import { formType } from "@/dtos/form.dto";
 
-export default function IdCampaignPage() {
+export default function IdRfpPage() {
   const { token, buCode } = useAuth();
   const params = useParams();
   const id = params.id as string;
 
-  const { data, isLoading } = useCampaignById(token, buCode, id);
+  const { data, isLoading } = useRfpById(token, buCode, id);
 
   if (isLoading) return <DetailLoading />;
 
-  return <MainForm campaignData={data} mode={formType.VIEW} />;
+  return <MainForm rfpData={data} mode={formType.VIEW} />;
 }

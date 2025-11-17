@@ -1,6 +1,6 @@
 "use client";
 
-import { CampaignDto } from "@/dtos/campaign.dto";
+import { RfpDto } from "@/dtos/rfp.dto";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,8 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
 
-interface CampaignListProps {
-  readonly campaigns: CampaignDto[];
+interface RfpListProps {
+  readonly rfps: RfpDto[];
   readonly isLoading: boolean;
   readonly sort?: { field: string; direction: "asc" | "desc" } | null;
   readonly onSort?: (sortString: string) => void;
@@ -34,14 +34,14 @@ interface CampaignListProps {
   readonly canDelete?: boolean;
 }
 
-export default function CampaignList({
-  campaigns,
+export default function RfpList({
+  rfps,
   isLoading,
   sort,
   onSort,
   canUpdate = true,
   canDelete = true,
-}: CampaignListProps) {
+}: RfpListProps) {
   const tStatus = useTranslations("Status");
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
@@ -50,7 +50,7 @@ export default function CampaignList({
 
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
-  const columns = useMemo<ColumnDef<CampaignDto>[]>(
+  const columns = useMemo<ColumnDef<RfpDto>[]>(
     () => [
       {
         id: "select",
@@ -77,20 +77,20 @@ export default function CampaignList({
           <DataGridColumnHeader column={column} title="Name" icon={<List className="h-4 w-4" />} />
         ),
         cell: ({ row }) => {
-          const campaign = row.original;
+          const rfp = row.original;
           if (canUpdate) {
             return (
               <div className="max-w-[350px] truncate ellipsis">
                 <Link
-                  href={`/vendor-management/campaign/${campaign.id}`}
+                  href={`/vendor-management/request-price-list/${rfp.id}`}
                   className="hover:underline text-primary"
                 >
-                  {campaign.name}
+                  {rfp.name}
                 </Link>
               </div>
             );
           }
-          return <span>{campaign.name}</span>;
+          return <span>{rfp.name}</span>;
         },
         enableSorting: true,
         size: 250,
@@ -177,7 +177,7 @@ export default function CampaignList({
         id: "action",
         header: () => <span className="text-right">Action</span>,
         cell: ({ row }) => {
-          const campaign = row.original;
+          const rfp = row.original;
 
           // Hide action menu if no permissions
           if (!canDelete) return null;
@@ -195,7 +195,7 @@ export default function CampaignList({
                   {canDelete && (
                     <DropdownMenuItem
                       className="text-destructive cursor-pointer hover:bg-transparent"
-                      onClick={() => console.log(campaign.id)}
+                      onClick={() => console.log(rfp.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete
@@ -219,7 +219,7 @@ export default function CampaignList({
 
   // Initialize table
   const table = useReactTable({
-    data: campaigns,
+    data: rfps,
     columns,
     getRowId: (row) => row.id ?? "",
     state: {
@@ -246,7 +246,7 @@ export default function CampaignList({
   return (
     <DataGrid
       table={table}
-      recordCount={campaigns.length}
+      recordCount={rfps.length}
       isLoading={isLoading}
       loadingMode="skeleton"
       emptyMessage="No data"

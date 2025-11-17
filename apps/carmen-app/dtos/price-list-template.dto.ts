@@ -20,7 +20,7 @@ interface ProductDto {
   code: string;
 }
 
-interface CampaignDtoPL {
+interface RfpDtoPL {
   id: string;
   name: string;
   status: StatusPriceListTemplate;
@@ -38,5 +38,5 @@ export interface PriceListTemplateListDto extends BasePriceListTemplateDto {
 export interface PriceListTemplateDetailsDto extends PriceListTemplateListDto {
   currency: CurrencyDto;
   products: ProductDto[];
-  campaigns: CampaignDtoPL[];
+  rfps: RfpDtoPL[];
 }

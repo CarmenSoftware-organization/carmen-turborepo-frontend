@@ -1,22 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { mockCampaigns, getMockCampaignById } from "@/mock-data/campaign"; // remove when use api
+import { mockRfps, getMockRfpById } from "@/mock-data/rfp"; // remove when use api
 import {
-  CampaignDto,
-  CampaignDetailDto,
-  CampaignCreateDto,
-  CampaignUpdateDto,
-} from "@/dtos/campaign.dto";
+  RfpDto,
+  RfpDetailDto,
+  RfpCreateDto,
+  RfpUpdateDto,
+} from "@/dtos/rfp.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 
 // remove when use api
 const delay = (ms: number = 500) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // ============================================================================
-// GET All Campaigns
+// GET All RFPs
 // ============================================================================
-export const useCampaigns = (token: string, buCode: string, params?: ParamsGetDto) => {
+export const useRfps = (token: string, buCode: string, params?: ParamsGetDto) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["campaigns", buCode, params],
+    queryKey: ["rfps", buCode, params],
     queryFn: async () => {
       await delay(300); // remove when use api
 
@@ -24,7 +24,7 @@ export const useCampaigns = (token: string, buCode: string, params?: ParamsGetDt
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
-      return mockCampaigns; // remove when use api
+      return mockRfps; // remove when use api
     },
     enabled: !!token && !!buCode,
   });
@@ -40,11 +40,11 @@ export const useCampaigns = (token: string, buCode: string, params?: ParamsGetDt
 };
 
 // ============================================================================
-// GET Campaign by ID
+// GET RFP by ID
 // ============================================================================
-export const useCampaignById = (token: string, buCode: string, id: string) => {
+export const useRfpById = (token: string, buCode: string, id: string) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["campaign", buCode, id],
+    queryKey: ["rfp", buCode, id],
     queryFn: async () => {
       await delay(300); // remove when use api
 
@@ -53,13 +53,13 @@ export const useCampaignById = (token: string, buCode: string, id: string) => {
       }
 
       // remove when use api
-      const campaign = getMockCampaignById(id);
+      const rfp = getMockRfpById(id);
 
-      if (!campaign) {
-        throw new Error("Campaign not found");
+      if (!rfp) {
+        throw new Error("RFP not found");
       }
 
-      return campaign;
+      return rfp;
     },
     enabled: !!token && !!buCode && !!id,
   });
@@ -75,13 +75,13 @@ export const useCampaignById = (token: string, buCode: string, id: string) => {
 };
 
 // ============================================================================
-// CREATE Campaign
+// CREATE RFP
 // ============================================================================
-export const useCreateCampaign = (token: string, buCode: string) => {
+export const useCreateRfp = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CampaignCreateDto) => {
+    mutationFn: async (data: RfpCreateDto) => {
       await delay(500); // remove when use api
 
       if (!token || !buCode) {
@@ -89,9 +89,9 @@ export const useCreateCampaign = (token: string, buCode: string) => {
       }
 
       // remove when use api
-      const newId = `rpl-${String(mockCampaigns.length + 1).padStart(3, "0")}`;
+      const newId = `rfp-${String(mockRfps.length + 1).padStart(3, "0")}`;
 
-      const newCampaign: CampaignDto = {
+      const newRfp: RfpDto = {
         id: newId,
         name: data.name,
         status: data.status,
@@ -102,22 +102,22 @@ export const useCreateCampaign = (token: string, buCode: string) => {
         vendors: data.vendors,
       };
 
-      return newCampaign;
+      return newRfp;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["campaigns", buCode] });
+      queryClient.invalidateQueries({ queryKey: ["rfps", buCode] });
     },
   });
 };
 
 // ============================================================================
-// UPDATE Campaign
+// UPDATE RFP
 // ============================================================================
-export const useUpdateCampaign = (token: string, buCode: string, id: string) => {
+export const useUpdateRfp = (token: string, buCode: string, id: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: CampaignUpdateDto) => {
+    mutationFn: async (data: RfpUpdateDto) => {
       await delay(500); // remove when use api
 
       if (!token || !buCode || !id) {
@@ -125,40 +125,40 @@ export const useUpdateCampaign = (token: string, buCode: string, id: string) => 
       }
 
       // remove when use api
-      const existingCampaign = getMockCampaignById(id);
+      const existingRfp = getMockRfpById(id);
 
-      if (!existingCampaign) {
-        throw new Error("Campaign not found");
+      if (!existingRfp) {
+        throw new Error("RFP not found");
       }
 
-      const updatedCampaign: CampaignDetailDto = {
-        ...existingCampaign,
+      const updatedRfp: RfpDetailDto = {
+        ...existingRfp,
         name: data.name,
         status: data.status,
         description: data.description,
         valid_period: data.valid_period,
         vendors: data.vendors,
         template: data.template_id
-          ? { ...existingCampaign.template, id: data.template_id }
-          : existingCampaign.template,
+          ? { ...existingRfp.template, id: data.template_id }
+          : existingRfp.template,
         settings: data.settings,
         id,
         update_date: new Date(),
       };
 
-      return updatedCampaign;
+      return updatedRfp;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["campaigns", buCode] });
-      queryClient.invalidateQueries({ queryKey: ["campaign", buCode, id] });
+      queryClient.invalidateQueries({ queryKey: ["rfps", buCode] });
+      queryClient.invalidateQueries({ queryKey: ["rfp", buCode, id] });
     },
   });
 };
 
 // ============================================================================
-// DELETE Campaign
+// DELETE RFP
 // ============================================================================
-export const useDeleteCampaign = (token: string, buCode: string) => {
+export const useDeleteRfp = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -170,16 +170,16 @@ export const useDeleteCampaign = (token: string, buCode: string) => {
       }
 
       // remove when use api
-      const campaign = getMockCampaignById(id);
+      const rfp = getMockRfpById(id);
 
-      if (!campaign) {
-        throw new Error("Campaign not found");
+      if (!rfp) {
+        throw new Error("RFP not found");
       }
 
       return { id };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["campaigns", buCode] });
+      queryClient.invalidateQueries({ queryKey: ["rfps", buCode] });
     },
   });
 };

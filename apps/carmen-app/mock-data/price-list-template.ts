@@ -107,7 +107,7 @@ export const mockPriceListTemplateDetails: PriceListTemplateDetailsDto[] = [
         code: "BEV-WATER-500",
       },
     ],
-    campaigns: [
+    rfps: [
       {
         id: "rpl-001",
         name: "Q1 2025 Beverage Price Request",
@@ -171,7 +171,7 @@ export const mockPriceListTemplateDetails: PriceListTemplateDetailsDto[] = [
         code: "FISH-BASS-WHL",
       },
     ],
-    campaigns: [
+    rfps: [
       {
         id: "rpl-002",
         name: "Meat & Seafood Special Campaign",
@@ -225,7 +225,7 @@ export const mockPriceListTemplateDetails: PriceListTemplateDetailsDto[] = [
         code: "DRY-PASTA-5",
       },
     ],
-    campaigns: [
+    rfps: [
       {
         id: "rpl-003",
         name: "Monthly Dry Goods Pricing",
@@ -289,7 +289,7 @@ export const mockPriceListTemplateDetails: PriceListTemplateDetailsDto[] = [
         code: "PROD-PEP-MIX",
       },
     ],
-    campaigns: [
+    rfps: [
       {
         id: "rpl-004",
         name: "Fresh Produce Weekly Update",
@@ -343,7 +343,7 @@ export const mockPriceListTemplateDetails: PriceListTemplateDetailsDto[] = [
         code: "DAIRY-CRM-35-1L",
       },
     ],
-    campaigns: [
+    rfps: [
       {
         id: "rpl-005",
         name: "Annual Contract Renewal - Dairy",
@@ -397,7 +397,7 @@ export const mockPriceListTemplateDetails: PriceListTemplateDetailsDto[] = [
         code: "FRUIT-LON-1",
       },
     ],
-    campaigns: [
+    rfps: [
       {
         id: "rpl-008",
         name: "Winter Fruit Campaign 2025",

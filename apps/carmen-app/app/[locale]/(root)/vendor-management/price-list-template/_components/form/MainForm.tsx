@@ -207,7 +207,7 @@ export default function MainForm({ templateData, mode }: Props) {
               <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="products">Products</TabsTrigger>
-                {templateData && <TabsTrigger value="campaigns">Campaigns</TabsTrigger>}
+                {templateData && <TabsTrigger value="rfps">RFPs</TabsTrigger>}
               </TabsList>
               <div className="flex-1 overflow-y-auto">
                 <TabsContent value="overview" className="mt-0">
@@ -221,8 +221,8 @@ export default function MainForm({ templateData, mode }: Props) {
                   />
                 </TabsContent>
                 {templateData && (
-                  <TabsContent value="campaigns" className="mt-0">
-                    <TabCampaigns campaigns={templateData.campaigns || []} />
+                  <TabsContent value="rfps" className="mt-0">
+                    <TabCampaigns rfps={templateData.rfps || []} />
                   </TabsContent>
                 )}
               </div>

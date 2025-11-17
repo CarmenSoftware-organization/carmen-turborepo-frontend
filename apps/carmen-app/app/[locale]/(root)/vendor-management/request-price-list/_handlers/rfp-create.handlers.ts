@@ -1,12 +1,12 @@
 import { UseMutationResult } from "@tanstack/react-query";
-import { CampaignCreateDto, CampaignDto } from "@/dtos/campaign.dto";
+import { RfpCreateDto, RfpDto } from "@/dtos/rfp.dto";
 import { UseFormReturn } from "react-hook-form";
-import { CampaignFormValues } from "../_schema/campaign.schema";
+import { RfpFormValues } from "../_schema/rfp.schema";
 
 export const handleCreateSuccess = async (
-  result: CampaignDto,
-  form: UseFormReturn<CampaignFormValues>,
-  data: CampaignFormValues
+  result: RfpDto,
+  form: UseFormReturn<RfpFormValues>,
+  data: RfpFormValues
 ): Promise<void> => {
   form.reset({
     name: result.name,
@@ -15,7 +15,7 @@ export const handleCreateSuccess = async (
     valid_period: result.valid_period,
     template_id: data.template_id,
     portal_duration: data.portal_duration,
-    campaign_type: data.campaign_type,
+    rfp_type: data.rfp_type,
     submission_method: data.submission_method,
     require_approval: data.require_approval,
     auto_reminder: data.auto_reminder,
@@ -34,17 +34,17 @@ export const handleCreateError = (error: unknown): void => {
   alert(errorMessage);
 };
 
-export const createCampaign = async (
-  createDto: CampaignCreateDto,
-  mutation: UseMutationResult<CampaignDto, Error, CampaignCreateDto>,
-  form: UseFormReturn<CampaignFormValues>,
-  data: CampaignFormValues,
+export const createRfp = async (
+  createDto: RfpCreateDto,
+  mutation: UseMutationResult<RfpDto, Error, RfpCreateDto>,
+  form: UseFormReturn<RfpFormValues>,
+  data: RfpFormValues,
   onSuccess?: () => void
 ): Promise<void> => {
   try {
     const result = await mutation.mutateAsync(createDto);
     await handleCreateSuccess(result, form, data);
-    alert("Campaign created successfully");
+    alert("RFP created successfully");
     onSuccess?.();
   } catch (error) {
     handleCreateError(error);

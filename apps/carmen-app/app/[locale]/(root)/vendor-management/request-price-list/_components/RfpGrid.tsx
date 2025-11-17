@@ -1,6 +1,6 @@
 "use client";
 
-import { CampaignDto } from "@/dtos/campaign.dto";
+import { RfpDto } from "@/dtos/rfp.dto";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,19 +16,19 @@ import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
 
-interface CampaignGridProps {
-  readonly campaigns: CampaignDto[];
+interface RfpGridProps {
+  readonly rfps: RfpDto[];
   readonly isLoading: boolean;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
 }
 
-export default function CampaignGrid({
-  campaigns,
+export default function RfpGrid({
+  rfps,
   isLoading,
   canUpdate = true,
   canDelete = true,
-}: CampaignGridProps) {
+}: RfpGridProps) {
   const tStatus = useTranslations("Status");
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
@@ -51,37 +51,35 @@ export default function CampaignGrid({
     );
   }
 
-  if (campaigns.length === 0) {
+  if (rfps.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <FileText className="h-12 w-12 text-muted-foreground/50 mb-4" />
-        <h3 className="text-lg font-medium mb-1">No campaigns found</h3>
-        <p className="text-sm text-muted-foreground">
-          Get started by creating your first campaign
-        </p>
+        <h3 className="text-lg font-medium mb-1">No RFPs found</h3>
+        <p className="text-sm text-muted-foreground">Get started by creating your first RFP</p>
       </div>
     );
   }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {campaigns.map((campaign) => (
-        <Card key={campaign.id} className="hover:shadow-md transition-shadow">
+      {rfps.map((rfp) => (
+        <Card key={rfp.id} className="hover:shadow-md transition-shadow">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 {canUpdate ? (
-                  <Link href={`/vendor-management/campaign/${campaign.id}`}>
+                  <Link href={`/vendor-management/request-price-list/${rfp.id}`}>
                     <CardTitle className="text-base hover:text-primary transition-colors line-clamp-1">
-                      {campaign.name}
+                      {rfp.name}
                     </CardTitle>
                   </Link>
                 ) : (
-                  <CardTitle className="text-base line-clamp-1">{campaign.name}</CardTitle>
+                  <CardTitle className="text-base line-clamp-1">{rfp.name}</CardTitle>
                 )}
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge variant={campaign.status} className="text-xs">
-                    {getStatusLabel(campaign.status)}
+                  <Badge variant={rfp.status} className="text-xs">
+                    {getStatusLabel(rfp.status)}
                   </Badge>
                 </div>
               </div>
@@ -96,7 +94,7 @@ export default function CampaignGrid({
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
                       className="text-destructive cursor-pointer"
-                      onClick={() => console.log(campaign.id)}
+                      onClick={() => console.log(rfp.id)}
                     >
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete
@@ -107,24 +105,22 @@ export default function CampaignGrid({
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {campaign.description && (
-              <CardDescription className="line-clamp-2 text-xs">
-                {campaign.description}
-              </CardDescription>
+            {rfp.description && (
+              <CardDescription className="line-clamp-2 text-xs">{rfp.description}</CardDescription>
             )}
 
             <div className="space-y-2 pt-2 border-t">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
-                <span>Valid: {campaign.valid_period} days</span>
+                <span>Valid: {rfp.valid_period} days</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
-                <span>Created: {format(new Date(campaign.create_date), "dd/MM/yyyy")}</span>
+                <span>Created: {format(new Date(rfp.create_date), "dd/MM/yyyy")}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
-                <span>Updated: {format(new Date(campaign.update_date), "dd/MM/yyyy")}</span>
+                <span>Updated: {format(new Date(rfp.update_date), "dd/MM/yyyy")}</span>
               </div>
             </div>
           </CardContent>
