@@ -42,7 +42,7 @@
     "no_rpf_linked_desc": "This template is not currently being used by any RFPs"
   },
   "RFP": {
-    "title": "Request for Pricing",
+    "title": "Request for Pricing (Campaign)",
     "add_rfp": "Add Request for Pricing",
     "no_rfps_found": "No RFPs found",
     "get_started": "Get started by creating your first RFP",
