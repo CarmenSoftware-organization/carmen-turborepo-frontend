@@ -23,7 +23,6 @@ import { useTranslations } from "next-intl";
 export default function CurrencyLookup({
   value,
   onValueChange,
-  placeholder = "",
   disabled = false,
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
