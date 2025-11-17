@@ -133,7 +133,16 @@
     "VendorManagement": {
       "manageVendors": "จัดการผู้จัดจำหน่าย",
       "priceLists": "ราคาสินค้า",
-      "priceComparisons": "เปรียบเทียบราคา"
+      "priceComparisons": "เปรียบเทียบราคา",
+      "priceListtemplate": "แม่แบบราคาสินค้า",
+      "request_for_price_list": "ขอราคาสินค้า"
+    },
+    "PriceListTemplate": {
+      "title": "แม่แบบราคาสินค้า",
+      "template_not_found": "ไม่พบแม่แบบราคาสินค้า",
+      "no_templates_available": "ไม่มีแม่แบบราคาสินค้า",
+      "select_template": "เลือกแม่แบบ",
+      "search_template": "ค้นหาแม่แบบ"
     },
     "storeOperations": "การดำเนินการร้านค้า",
     "StoreOperations": {
@@ -253,7 +262,9 @@
     "approved": "อนุมัติ",
     "rejected": "ยกเลิก",
     "submit": "ส่งข้อมูล",
-    "voided": "ยกเลิก"
+    "voided": "ยกเลิก",
+    "active": "ใช้งาน",
+    "inactive": "ไม่ใช้งาน"
   },
   "UserManagement": {
     "title": "การจัดการผู้ใช้งาน"
@@ -425,7 +436,11 @@
     "value": "ค่า",
     "active": "ใช้งาน",
     "inactive": "ไม่ใช้งาน",
-    "local_name": "ชื่อภาษาไทย"
+    "local_name": "ชื่อภาษาไทย",
+    "valid_period": "ระยะเวลาใช้งาน",
+    "create_date": "วันที่สร้าง",
+    "update_date": "วันที่อัพเดต",
+    "days": "วัน"
   },
   "Unit": {
     "title": "หน่วยนับ",
@@ -477,7 +492,11 @@
     "currency_name_required": "กรุณากรอกชื่อสกุลเงิน",
     "currency_symbol_required": "กรุณากรอกสัญลักษณ์สกุลเงิน",
     "currency_symbol_max": "สัญลักษณ์สกุลเงินต้องไม่เกิน 3 ตัวอักษร",
-    "exchange_rate_positive": "อัตราแลกเปลี่ยนต้องมากกว่า 0"
+    "exchange_rate_positive": "อัตราแลกเปลี่ยนต้องมากกว่า 0",
+    "search_placeholder": "ค้นหาสกุลเงิน...",
+    "select_currency": "เลือกสกุลเงิน",
+    "load_more_currencies": "โหลดเพิ่มสกุลเงิน",
+    "load_error": "โหลดข้อมูลไม่สําเร็จ"
   },
   "DeliveryPoint": {
     "title": "จุดส่งสินค้า",

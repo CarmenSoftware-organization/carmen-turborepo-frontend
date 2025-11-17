@@ -19,7 +19,7 @@ import { UnitSelectCell } from "../UnitSelectCell";
 import ExpandedContent from "./ExpandedContent";
 
 interface ColumnConfig {
-  currentFormType: formType;
+  currentMode: formType;
   initValues: PurchaseRequestDetail[];
   addFields: unknown[];
   prStatus?: string;
@@ -72,8 +72,8 @@ export const createPurchaseItemColumns = (
   config: ColumnConfig
 ): ColumnDef<PurchaseRequestDetail>[] => {
   const {
-    currentFormType,
-    initValues,
+    currentMode,
+    initValues: unsortedInitValues,
     addFields,
     prStatus,
     getItemValue,
@@ -88,6 +88,8 @@ export const createPurchaseItemColumns = (
     tHeader,
     tAction,
   } = config;
+
+  const initValues = [...unsortedInitValues].sort((a, b) => a.sequence_no - b.sequence_no);
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
@@ -131,6 +133,7 @@ export const createPurchaseItemColumns = (
             currencyBase={currencyBase}
             token={token}
             buCode={buCode}
+            prStatus={prStatus}
           />
         ),
       },
@@ -146,7 +149,7 @@ export const createPurchaseItemColumns = (
           disabled={table.getRowModel().rows.length === 0}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
-          className="align-[inherit]"
+          className="align-[inherit] mb-0.5"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -159,7 +162,7 @@ export const createPurchaseItemColumns = (
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
-          className="align-[inherit]"
+          className="align-[inherit] mb-1"
         />
       ),
       enableSorting: false,
@@ -183,7 +186,7 @@ export const createPurchaseItemColumns = (
       cell: ({ row }) => {
         const item = row.original;
 
-        return currentFormType === formType.VIEW ? (
+        return currentMode === formType.VIEW ? (
           <span className="font-semibold text-muted-foreground text-xs break-words">
             {item.location_name || "-"}
           </span>
@@ -198,6 +201,7 @@ export const createPurchaseItemColumns = (
                 onItemUpdate(item.id, "product_name", "");
                 onItemUpdate(item.id, "inventory_unit_id", "");
                 onItemUpdate(item.id, "inventory_unit_name", "");
+                onItemUpdate(item.id, "requested_qty", 0);
                 onItemUpdate(item.id, "requested_unit_id", "");
                 onItemUpdate(item.id, "requested_qty", 0);
                 onItemUpdate(item.id, "requested_unit_name", "");
@@ -218,7 +222,7 @@ export const createPurchaseItemColumns = (
         );
       },
       enableSorting: false,
-      size: currentFormType === formType.VIEW ? 120 : 200,
+      size: currentMode === formType.VIEW ? 120 : 200,
       meta: {
         headerTitle: tHeader("location"),
       },
@@ -236,7 +240,7 @@ export const createPurchaseItemColumns = (
           .map((r) => getItemValue(r.original, "product_id") as string)
           .filter(Boolean);
 
-        return currentFormType === formType.VIEW ? (
+        return currentMode === formType.VIEW ? (
           <div>
             <p className="font-semibold text-muted-foreground text-xs break-words">
               {item.product_name || "-"}
@@ -268,7 +272,7 @@ export const createPurchaseItemColumns = (
         );
       },
       enableSorting: false,
-      size: currentFormType === formType.VIEW ? 150 : 250,
+      size: currentMode === formType.VIEW ? 150 : 250,
       meta: {
         headerTitle: tHeader("product"),
       },
@@ -309,7 +313,7 @@ export const createPurchaseItemColumns = (
       cell: ({ row }) => {
         const item = row.original;
 
-        return currentFormType === formType.VIEW ? (
+        return currentMode === formType.VIEW ? (
           <p className="text-xs text-right">
             {item.requested_qty} {item.requested_unit_name || "-"}
           </p>
@@ -320,6 +324,13 @@ export const createPurchaseItemColumns = (
               onChange={(value) => {
                 onItemUpdate(item.id, "requested_qty", value);
                 onItemUpdate(item.id, "approved_qty", value);
+
+                // Auto-calculate requested_base_qty
+                const conversionFactor =
+                  (getItemValue(item, "requested_unit_conversion_factor") as number) || 1;
+                const baseQty = Number(value) * conversionFactor;
+                onItemUpdate(item.id, "requested_base_qty", baseQty);
+                onItemUpdate(item.id, "approved_base_qty", baseQty);
               }}
               classNames="h-7 text-xs bg-background w-16"
               disabled={!getItemValue(item, "product_id")}
@@ -336,7 +347,7 @@ export const createPurchaseItemColumns = (
         );
       },
       enableSorting: false,
-      size: currentFormType === formType.VIEW ? 100 : 180,
+      size: currentMode === formType.VIEW ? 100 : 180,
       meta: {
         headerTitle: tHeader("requested"),
         cellClassName: "text-right",
@@ -354,7 +365,7 @@ export const createPurchaseItemColumns = (
         const item = row.original;
         const isNewItem = !initValues.some((initItem) => initItem.id === item.id);
 
-        if (currentFormType === formType.VIEW) {
+        if (currentMode === formType.VIEW) {
           return (
             <div className="text-right">
               <p className="text-xs text-active">
@@ -402,7 +413,7 @@ export const createPurchaseItemColumns = (
         );
       },
       enableSorting: false,
-      size: currentFormType === formType.VIEW ? 100 : 180,
+      size: currentMode === formType.VIEW ? 100 : 180,
       meta: {
         headerTitle: tHeader("approved"),
         cellClassName: "text-right",
@@ -419,7 +430,7 @@ export const createPurchaseItemColumns = (
       cell: ({ row }) => {
         const item = row.original;
 
-        return currentFormType === formType.VIEW ? (
+        return currentMode === formType.VIEW ? (
           <p className="text-center text-xs">
             {formatDate(item.delivery_date, dateFormat || "yyyy-MM-dd")}
           </p>
@@ -437,7 +448,7 @@ export const createPurchaseItemColumns = (
         );
       },
       enableSorting: false,
-      size: currentFormType === formType.VIEW ? 110 : 155,
+      size: currentMode === formType.VIEW ? 110 : 155,
       meta: {
         headerTitle: tHeader("date_required"),
         cellClassName: "text-center",
@@ -452,7 +463,7 @@ export const createPurchaseItemColumns = (
       cell: ({ row }) => {
         const item = row.original;
 
-        return currentFormType === formType.VIEW ? (
+        return currentMode === formType.VIEW ? (
           <p className="text-xs">{item.delivery_point_name || "-"}</p>
         ) : (
           <div className="min-w-[200px] pr-4">
@@ -466,7 +477,7 @@ export const createPurchaseItemColumns = (
         );
       },
       enableSorting: false,
-      size: currentFormType === formType.VIEW ? 130 : 200,
+      size: currentMode === formType.VIEW ? 130 : 200,
       meta: {
         headerTitle: tHeader("delivery_point"),
       },
@@ -510,7 +521,7 @@ export const createPurchaseItemColumns = (
     {
       id: "action",
       cell: ({ row }) => {
-        if (currentFormType === formType.VIEW) return null;
+        if (currentMode === formType.VIEW) return null;
         const item = row.original;
         const isNewItem = !initValues.some((initItem) => initItem.id === item.id);
         const addIndex = isNewItem
@@ -546,15 +557,12 @@ export const createPurchaseItemColumns = (
     },
   ];
 
-  // Start with base columns
   let filteredColumns = baseColumns;
 
-  // Handle VIEW mode - remove action and select columns
-  if (currentFormType === formType.VIEW) {
+  if (currentMode === formType.VIEW) {
     filteredColumns = filteredColumns.filter((col) => col.id !== "action" && col.id !== "select");
   }
 
-  // Handle prStatus condition - remove select, stage_status, approved_qty, total_price columns
   if (prStatus !== "in_progress") {
     filteredColumns = filteredColumns.filter(
       (col) =>

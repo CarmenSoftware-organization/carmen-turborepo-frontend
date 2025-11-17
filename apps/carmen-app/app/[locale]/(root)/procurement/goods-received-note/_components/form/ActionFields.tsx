@@ -7,6 +7,7 @@ import { formatDate } from "@/utils/format/date";
 import { ChevronLeft, FileDown, Pencil, Printer, Save, Share, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { convertStatus } from "@/utils/status";
 
 interface ActionFieldsProps {
   readonly currentMode: formType;
@@ -32,31 +33,7 @@ export default function ActionFields({
   const tStatus = useTranslations("Status");
   const tCommon = useTranslations("Common");
 
-  const convertStatus = (status: string) => {
-    if (status === "submit") {
-      return tStatus("submit");
-    }
-    if (status === "draft") {
-      return tStatus("draft");
-    }
-    if (status === "Completed") {
-      return tStatus("completed");
-    }
-
-    if (status === "in_progress") {
-      return tStatus("in_progress");
-    }
-    if (status === "approved") {
-      return tStatus("approved");
-    }
-    if (status === "rejected") {
-      return tStatus("rejected");
-    }
-    if (status === "voided") {
-      return tStatus("voided");
-    }
-    return "";
-  };
+  const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   return (
     <TooltipProvider>
@@ -83,7 +60,7 @@ export default function ActionFields({
                 </p>
               </div>
             )}
-            {docStatus && <StatusBadge status={docStatus}>{convertStatus(docStatus)}</StatusBadge>}
+            {docStatus && <StatusBadge status={docStatus}>{getStatusLabel(docStatus)}</StatusBadge>}
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -38,7 +38,7 @@ import { CreatePriceListDto, priceListSchema } from "@/dtos/price-list.dto";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import ProductLookup from "@/components/lookup/ProductLookup";
 import UnitLookup from "@/components/lookup/UnitLookup";
-import { useCreatePriceList } from "@/hooks/usePriceList";
+import { useCreatePriceList } from "@/hooks/use-price-list";
 import { useAuth } from "@/context/AuthContext";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";

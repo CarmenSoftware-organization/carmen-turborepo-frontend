@@ -18,18 +18,20 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { getAllApiRequest } from "@/lib/config.api";
 import { backendApi } from "@/lib/backend-api";
 import { useAuth } from "@/context/AuthContext";
+import { useTranslations } from "next-intl";
 
 export default function CurrencyLookup({
   value,
   onValueChange,
-  placeholder = "Select currency",
   disabled = false,
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
+  const t = useTranslations("Currency");
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const scrollRef = useRef<React.ElementRef<typeof CommandList>>(null);
+  const scrollRef = useRef<React.ComponentRef<typeof CommandList>>(null);
+
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } =
@@ -131,14 +133,14 @@ export default function CurrencyLookup({
           className="w-full justify-between"
           disabled={disabled}
         >
-          {value && selectedCurrencyName ? selectedCurrencyName : placeholder}
+          {value && selectedCurrencyName ? selectedCurrencyName : t("select_currency")}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search currency..."
+            placeholder={t("search_placeholder")}
             className="w-full pr-10"
             value={searchTerm}
             onValueChange={handleSearchChange}
@@ -152,7 +154,7 @@ export default function CurrencyLookup({
               if (error) {
                 return (
                   <div className="flex items-center justify-center py-6 text-red-500">
-                    <span>Error loading currencies. Please try again.</span>
+                    <span>{t("load_error")}</span>
                   </div>
                 );
               }
@@ -167,7 +169,7 @@ export default function CurrencyLookup({
 
               return (
                 <>
-                  <CommandEmpty>No currencies found.</CommandEmpty>
+                  <CommandEmpty>{t("notFoundCurrency")}</CommandEmpty>
                   <CommandGroup>
                     {currenciesData && currenciesData.length > 0 ? (
                       <>
@@ -196,18 +198,17 @@ export default function CurrencyLookup({
                             ref={loadMoreRef}
                             className="h-8 w-full flex items-center justify-center text-xs text-gray-400 border-t border-border"
                           >
-                            📄 Load more currencies...
+                            {t("load_more_currencies")}
                           </div>
                         )}
                         {isFetchingNextPage && (
                           <div className="flex items-center justify-center py-2">
                             <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-                            <span className="ml-2 text-sm text-gray-500">Loading more...</span>
                           </div>
                         )}
                       </>
                     ) : (
-                      <CommandItem disabled>No currencies available.</CommandItem>
+                      <CommandItem disabled>{t("notFoundCurrency")}</CommandItem>
                     )}
                   </CommandGroup>
                 </>

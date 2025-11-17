@@ -7,9 +7,9 @@ import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
+import { convertStatus } from "@/utils/status";
 
 interface ActionFieldsProps {
-  readonly mode: formType;
   readonly currentMode: formType;
   readonly initValues?: PurchaseRequestByIdDto;
   readonly onModeChange: (mode: formType) => void;
@@ -17,12 +17,10 @@ interface ActionFieldsProps {
   readonly hasFormChanges: () => boolean;
   readonly isCreatingPr: boolean;
   readonly prStatus: string;
-  readonly hasFormErrors: boolean;
-  readonly workflowId?: string;
+  readonly isDisabled: boolean;
 }
 
 export default function ActionFields({
-  mode,
   currentMode,
   initValues,
   onModeChange,
@@ -30,41 +28,15 @@ export default function ActionFields({
   hasFormChanges,
   isCreatingPr,
   prStatus,
-  hasFormErrors,
-  workflowId,
+  isDisabled,
 }: ActionFieldsProps) {
   const tPr = useTranslations("PurchaseRequest");
   const router = useRouter();
   const tStatus = useTranslations("Status");
   const tCommon = useTranslations("Common");
   const searchParams = useSearchParams();
-  const isDisabled = isCreatingPr || hasFormErrors || (mode === formType.ADD && !workflowId);
 
-  const convertStatus = (status: string) => {
-    if (status === "submit") {
-      return tStatus("submit");
-    }
-    if (status === "draft") {
-      return tStatus("draft");
-    }
-    if (status === "Completed") {
-      return tStatus("completed");
-    }
-
-    if (status === "in_progress") {
-      return tStatus("in_progress");
-    }
-    if (status === "approved") {
-      return tStatus("approved");
-    }
-    if (status === "rejected") {
-      return tStatus("rejected");
-    }
-    if (status === "voided") {
-      return tStatus("voided");
-    }
-    return "";
-  };
+  const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   const onEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -109,13 +81,13 @@ export default function ActionFields({
           </Tooltip>
 
           <div className="flex items-center gap-2">
-            {mode === formType.ADD ? (
+            {currentMode === formType.ADD ? (
               <p className="text-xl font-bold">{tPr("title")}</p>
             ) : (
               <p className="text-xl font-bold">{initValues?.pr_no}</p>
             )}
             {initValues?.pr_status && (
-              <Badge variant={initValues?.pr_status}>{convertStatus(initValues?.pr_status)}</Badge>
+              <Badge variant={initValues?.pr_status}>{getStatusLabel(initValues?.pr_status)}</Badge>
             )}
           </div>
         </div>

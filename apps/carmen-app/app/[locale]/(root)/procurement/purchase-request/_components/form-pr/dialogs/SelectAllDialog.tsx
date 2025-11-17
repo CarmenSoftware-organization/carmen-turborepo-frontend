@@ -12,7 +12,7 @@ import {
 import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
 import { Table } from "@tanstack/react-table";
 import { useTranslations } from "next-intl";
-import { StagesStatusValue } from "../MainForm";
+import { StagesStatusValue } from "../../../_schemas/purchase-request-form.schema";
 
 interface SelectAllDialogProps {
   open: boolean;

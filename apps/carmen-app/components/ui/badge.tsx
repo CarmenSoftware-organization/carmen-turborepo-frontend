@@ -23,6 +23,8 @@ const badgeVariants = cva(
         in_progress: "bg-yellow-100 text-yellow-800 borde-none",
         product_badge:
           "bg-slate-100 dark:bg-gray-600 dark:text-gray-300 text-slate-800   borde-none",
+        completed: "bg-emerald-400 text-emerald-900 borde-none",
+        submit: "bg-slate-100 dark:bg-gray-600 dark:text-gray-300 text-slate-800   borde-none",
       },
     },
     defaultVariants: {
@@ -39,6 +41,7 @@ export interface BadgeProps
 
 function Badge({ className, variant, ...props }: BadgeProps) {
   const validVariants = [
+    "submit",
     "default",
     "secondary",
     "destructive",
@@ -51,6 +54,7 @@ function Badge({ className, variant, ...props }: BadgeProps) {
     "in_progress",
     "voided",
     "product_badge",
+    "completed",
   ] as const;
 
   type ValidVariant = (typeof validVariants)[number];

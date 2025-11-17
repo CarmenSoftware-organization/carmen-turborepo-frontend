@@ -71,6 +71,10 @@ export const usePurchaseItemManagement = ({
       requested_qty: 0,
       requested_unit_id: undefined,
       delivery_date: undefined,
+      // Auto-set approved same as requested for new items
+      approved_qty: 0,
+      approved_unit_id: undefined,
+      approved_unit_name: undefined,
     };
     addPrepend(newItem);
 
@@ -257,6 +261,7 @@ export const usePurchaseItemManagement = ({
     (item: PurchaseRequestDetail, fieldName: string) => {
       // Check if this is a new item (from addFields)
       const isNewItem = addFields.some((field: any) => field.id === item.id);
+
       if (isNewItem) {
         // Get value directly from form for new items
         const fieldIndex = addFields.findIndex((field: any) => field.id === item.id);

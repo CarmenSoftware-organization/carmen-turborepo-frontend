@@ -20,6 +20,7 @@ import {
   InfoSchema,
   ValidateSchema,
 } from "@/dtos/embedded.dto";
+import { StageStatus } from "@/dtos/purchase-request.dto";
 
 // ========== Zod Schemas with Shared Components ==========
 
@@ -200,6 +201,10 @@ export const CreatePrSchema = z
       });
     }
   });
+
+export type CreatePrDtoType = z.infer<typeof CreatePrSchema>;
+
+export type StagesStatusValue = string | StageStatus[] | undefined;
 
 export const CreatePurchaseRequestSchema = z
   .object({

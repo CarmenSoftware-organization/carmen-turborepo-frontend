@@ -20,7 +20,7 @@ import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";
 
 interface Props {
-  currentFormType: formType;
+  currentMode: formType;
   items: PurchaseRequestDetail[];
   initValues?: PurchaseRequestDetail[];
   addFields: unknown[];
@@ -39,7 +39,7 @@ interface Props {
 }
 
 export default function PurchaseItemDataGrid({
-  currentFormType,
+  currentMode,
   items,
   initValues = [],
   addFields,
@@ -84,7 +84,7 @@ export default function PurchaseItemDataGrid({
   const columns = useMemo(
     () =>
       createPurchaseItemColumns({
-        currentFormType,
+        currentMode,
         initValues,
         addFields,
         prStatus,
@@ -101,7 +101,7 @@ export default function PurchaseItemDataGrid({
         tAction,
       }),
     [
-      currentFormType,
+      currentMode,
       initValues,
       addFields,
       prStatus,
@@ -141,7 +141,7 @@ export default function PurchaseItemDataGrid({
     state: {
       sorting,
     },
-    enableRowSelection: currentFormType !== formType.VIEW,
+    enableRowSelection: currentMode !== formType.VIEW,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
@@ -211,7 +211,7 @@ export default function PurchaseItemDataGrid({
       <div className="flex items-center justify-between">
         <p className="font-semibold text-muted-foreground ">{tPr("items")}</p>
         <div className="flex items-center gap-2">
-          {currentFormType !== formType.VIEW && (
+          {currentMode !== formType.VIEW && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -236,7 +236,7 @@ export default function PurchaseItemDataGrid({
           )}
         </div>
       </div>
-      {selectedRowsCount > 0 && currentFormType !== formType.VIEW && (
+      {selectedRowsCount > 0 && currentMode !== formType.VIEW && (
         <div className="flex items-center gap-2">
           <Button
             onClick={handleBulkActionClick(PR_ITEM_BULK_ACTION.APPROVED)}

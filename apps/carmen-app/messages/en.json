@@ -64,7 +64,9 @@
     "approved": "APPROVED",
     "rejected": "REJECTED",
     "submit": "SUBMIT",
-    "voided": "VOIDED"
+    "voided": "VOIDED",
+    "active": "ACTIVE",
+    "inactive": "INACTIVE"
   },
   "Action": {
     "title": "Action",
@@ -149,7 +151,16 @@
     "VendorManagement": {
       "manageVendors": "Manage Vendors",
       "priceLists": "Price Lists",
-      "priceComparisons": "Price Comparisons"
+      "priceComparisons": "Price Comparisons",
+      "priceListtemplate": "Price List Template",
+      "request_for_price_list": "Request for Pricing (Campaign)"
+    },
+    "PriceListTemplate": {
+      "title": "Price List Template",
+      "template_not_found": "Price List Template Not Found",
+      "no_templates_available": "No Price List Templates Available",
+      "select_template": "Select Template",
+      "search_template": "Search Template"
     },
     "storeOperations": "Store Operations",
     "StoreOperations": {
@@ -346,7 +357,9 @@
     "result": "Result",
     "items": "Items",
     "list_view": "List View",
-    "grid_view": "Grid View"
+    "grid_view": "Grid View",
+    "sort_by": "Sort By",
+    "filter_by_status": "Filter By Status"
   },
   "TableHeader": {
     "all": "All",
@@ -426,7 +439,11 @@
     "inactive": "Inactive",
     "local_name": "Local Name",
     "filter_by_status": "Filter By Status",
-    "sort_by": "Sort By"
+    "sort_by": "Sort By",
+    "valid_period": "Valid Period",
+    "create_date": "Create Date",
+    "update_date": "Update Date",
+    "days": "Days"
   },
   "Unit": {
     "title": "Unit",
@@ -478,7 +495,11 @@
     "currency_name_required": "Please enter currency name",
     "currency_symbol_required": "Please enter currency symbol",
     "currency_symbol_max": "Currency symbol must not exceed 3 characters",
-    "exchange_rate_positive": "Exchange rate must be greater than 0"
+    "exchange_rate_positive": "Exchange rate must be greater than 0",
+    "search_placeholder": "Search Currency...",
+    "select_currency": "Select Currency",
+    "load_more_currencies": "Load More Currencies",
+    "load_error": "Failed to load currencies"
   },
   "DeliveryPoint": {
     "title": "Delivery Point",

@@ -102,7 +102,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
 
         <TabsContent value="info" className="p-4 space-y-3">
           <h3 className="text-xs font-medium">{tVendor("additional_info")}</h3>
-          {vendor?.info && (
+          {/* {vendor?.info && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {vendor.info?.map((item, index) => (
                 <div key={index} className="space-y-1 mt-1">
@@ -111,7 +111,7 @@ export default function VendorDetail({ vendor }: VendorDetailProps) {
                 </div>
               ))}
             </div>
-          )}
+          )} */}
         </TabsContent>
 
         <TabsContent value="address" className="p-4 space-y-3">

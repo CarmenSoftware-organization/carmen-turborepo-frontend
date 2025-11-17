@@ -9,15 +9,11 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-import { usePriceList } from "@/hooks/usePriceList";
+import { usePriceList } from "@/hooks/use-price-list";
 import { PriceListDto } from "@/dtos/price-list.dto";
 
 export default function PriceListLookup({
@@ -60,10 +56,7 @@ export default function PriceListLookup({
             return 0;
           }}
         >
-          <CommandInput
-            placeholder="Search price range..."
-            className="w-full pr-10"
-          />
+          <CommandInput placeholder="Search price range..." className="w-full pr-10" />
           <CommandList>
             {isLoading ? (
               <div className="flex items-center justify-center py-6">
@@ -93,9 +86,7 @@ export default function PriceListLookup({
                       </CommandItem>
                     ))
                   ) : (
-                    <CommandItem disabled>
-                      No price ranges available.
-                    </CommandItem>
+                    <CommandItem disabled>No price ranges available.</CommandItem>
                   )}
                 </CommandGroup>
               </>

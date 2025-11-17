@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { parseSortString } from "@/utils/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { convertStatus } from "@/utils/status";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode } = useAuth();
@@ -40,23 +41,7 @@ export default function PurchaseRequestComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
 
-  const getTypeName = (type: string) => {
-    if (type === "General") {
-      return tPurchaseRequest("general");
-    }
-    return tPurchaseRequest("market_list");
-  };
-
-  const convertStatus = (status: string) => {
-    if (status === "submit") return tStatus("submit");
-    if (status === "draft") return tStatus("draft");
-    if (status === "Completed") return tStatus("completed");
-    if (status === "in_progress") return tStatus("in_progress");
-    if (status === "approved") return tStatus("approved");
-    if (status === "rejected") return tStatus("rejected");
-    if (status === "voided") return tStatus("voided");
-    return "";
-  };
+  const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   const sortFields = [
     { key: "", label: tTableHeader("all") },
@@ -248,7 +233,7 @@ export default function PurchaseRequestComponent() {
           totalPages={totalPages}
           onPageChange={handlePageChange}
           isLoading={isLoading}
-          convertStatus={convertStatus}
+          convertStatus={getStatusLabel}
         />
       </div>
 
@@ -265,7 +250,7 @@ export default function PurchaseRequestComponent() {
             sort={parseSortString(sort)}
             onSort={setSort}
             setPerpage={handleSetPerpage}
-            convertStatus={convertStatus}
+            convertStatus={getStatusLabel}
           />
         ) : (
           <PurchaseRequestGrid
@@ -274,7 +259,7 @@ export default function PurchaseRequestComponent() {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
-            convertStatus={convertStatus}
+            convertStatus={getStatusLabel}
           />
         )}
       </div>

@@ -1,4 +1,5 @@
-import { ProductPriceListCompareDto } from "@/dtos/price-list.dto";
+import { PriceListTemplateListDto, ProductPriceListCompareDto } from "@/dtos/price-list.dto";
+
 export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
   {
     pricelist_detail_id: "001906ce-de66-47fe-9b2e-bb3238d440d1",
@@ -58,5 +59,81 @@ export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
     valid_from: "2025-07-29 01:05:32.281+00",
     valid_to: "2025-08-29 01:05:32.281+00",
     selected: false,
+  },
+];
+
+export const mockPriceListTemplates: PriceListTemplateListDto[] = [
+  {
+    id: "V1StGXR8_Z5jdHi6B-myT",
+    name: "ราคามาตรฐานสำหรับห้องพัก 2025",
+    status: "active",
+    description: "ราคาห้องพักมาตรฐานสำหรับปี 2025 ใช้สำหรับการจองทั่วไป",
+    valid_period: new Date("2025-01-01"),
+    create_date: new Date("2024-11-01T08:30:00"),
+    update_date: new Date("2024-11-10T14:20:00"),
+  },
+  {
+    id: "3FKqm9Zn7pYxR2Qa8sLvC",
+    name: "โปรโมชั่นฤดูร้อน 2025",
+    status: "draft",
+    description: "ราคาพิเศษสำหรับช่วงเดือนเมษายน-พฤษภาคม รอการอนุมัติจากผู้บริหาร",
+    valid_period: new Date("2025-04-01"),
+    create_date: new Date("2024-11-12T10:15:00"),
+    update_date: new Date("2024-11-13T16:45:00"),
+  },
+  {
+    id: "Kp8JmN4wQxDf6yHbR1TsE",
+    name: "ราคาเครื่องดื่มและอาหารว่าง",
+    status: "active",
+    description: "ราคาสำหรับเมนูเครื่องดื่ม ขนม และอาหารว่างที่ Mini Bar และ Room Service",
+    valid_period: new Date("2024-10-01"),
+    create_date: new Date("2024-09-20T13:00:00"),
+    update_date: new Date("2024-10-28T09:30:00"),
+  },
+  {
+    id: "7WmQr2BxLj5NpFh9KvYcG",
+    name: "ราคา Corporate Package",
+    status: "submit",
+    description:
+      "แพ็คเกจสำหรับลูกค้าองค์กร รวมห้องพัก อาหาร และห้องประชุม รอการพิจารณาจากแผนกการเงิน",
+    valid_period: new Date("2025-01-15"),
+    create_date: new Date("2024-11-08T11:20:00"),
+    update_date: new Date("2024-11-14T08:10:00"),
+  },
+  {
+    id: "Ys4DnPx6MzVb8GqTf3WaJ",
+    name: "ราคาช่วงปีใหม่ 2024",
+    status: "inactive",
+    valid_period: new Date("2023-12-20"),
+    create_date: new Date("2023-11-15T14:30:00"),
+    update_date: new Date("2024-01-10T10:00:00"),
+  },
+  {
+    id: "Lt9HxWk2RmJc5PqDn7YvB",
+    name: "ราคาวัตถุดิบสำหรับครัว",
+    status: "active",
+    description: "ราคาอ้างอิงสำหรับการจัดซื้อวัตถุดิบจากซัพพลายเออร์หลัก",
+    valid_period: new Date("2024-11-01"),
+    create_date: new Date("2024-10-25T09:00:00"),
+    update_date: new Date("2024-11-12T15:30:00"),
+  },
+  {
+    id: "Nq6FmCz8XbPr4TsWj2HkL",
+    name: "ราคา Wedding Package Premium",
+    status: "draft",
+    description:
+      "แพ็คเกจจัดงานแต่งงานแบบพรีเมียม รวมห้องจัดเลี้ยง อาหาร และการตแต่ง กำลังปรับปรุงรายละเอียด",
+    valid_period: new Date("2025-02-01"),
+    create_date: new Date("2024-11-13T16:00:00"),
+    update_date: new Date("2024-11-14T11:25:00"),
+  },
+  {
+    id: "Bv3XpGh7KyZs9QwMt5RnD",
+    name: "ราคา Spa และบริการเสริม",
+    status: "active",
+    description: "ราคาบริการสปา นวดแผนไทย และบริการเสริมต่างๆ",
+    valid_period: new Date("2024-09-01"),
+    create_date: new Date("2024-08-20T10:45:00"),
+    update_date: new Date("2024-11-05T14:15:00"),
   },
 ];

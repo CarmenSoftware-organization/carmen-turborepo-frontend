@@ -34,7 +34,7 @@ export function AvailableProductsPanel({
   const renderContent = () => {
     if (rootItems.length === 0) {
       return (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex items-center justify-center">
           <p className="text-sm text-muted-foreground">{tCommon("data_not_found")}</p>
         </div>
       );
@@ -68,7 +68,11 @@ export function AvailableProductsPanel({
             variant={viewMode === "tree" ? "default" : "ghost"}
             data-id="tree-view"
             className="h-7 w-7"
-            onClick={() => setViewMode("tree")}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setViewMode("tree");
+            }}
           >
             <FolderTree />
           </Button>
@@ -77,14 +81,18 @@ export function AvailableProductsPanel({
             variant={viewMode === "list" ? "default" : "ghost"}
             data-id="list-view"
             className="h-7 w-7"
-            onClick={() => setViewMode("list")}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setViewMode("list");
+            }}
           >
             <List />
           </Button>
         </div>
       </div>
       <div>{searchInput}</div>
-      <div className="flex-1 overflow-auto max-h-96 mt-2">{renderContent()}</div>
+      <div className="flex-1 flex flex-col mt-2">{renderContent()}</div>
     </div>
   );
 }

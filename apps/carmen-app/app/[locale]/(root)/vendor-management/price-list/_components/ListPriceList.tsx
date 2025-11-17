@@ -5,7 +5,7 @@ import { PriceListDto } from "@/dtos/price-list.dto";
 import { Calendar, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useDeletePriceList } from "@/hooks/usePriceList";
+import { useDeletePriceList } from "@/hooks/use-price-list";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -79,16 +79,11 @@ export default function ListPriceList({
 
   const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode);
 
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
-
-  // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
 
-  // Pagination state
   const pagination: PaginationState = useMemo(
     () => ({
       pageIndex: currentPage - 1,
@@ -201,7 +196,7 @@ export default function ListPriceList({
       },
       {
         id: "action",
-        header: ActionHeader,
+        header: () => <span className="text-right">{tTableHeader("action")}</span>,
         cell: ({ row }) => {
           const priceList = row.original;
 

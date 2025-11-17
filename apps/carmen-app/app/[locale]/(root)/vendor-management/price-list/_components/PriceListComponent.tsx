@@ -10,7 +10,7 @@ import { useCallback, useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
 import { useAuth } from "@/context/AuthContext";
-import { usePriceList } from "@/hooks/usePriceList";
+import { usePriceList } from "@/hooks/use-price-list";
 import SignInDialog from "@/components/SignInDialog";
 import FormDialogPriceList from "./FormDialogPriceList";
 import { parseSortString } from "@/utils/table";

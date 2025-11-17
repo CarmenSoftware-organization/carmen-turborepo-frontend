@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, memo, useEffect } from "react";
+import { useState, useCallback, useMemo, memo, useEffect, useRef } from "react";
 import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { useProductQuery } from "@/hooks/use-product-query";
@@ -12,6 +12,7 @@ import { buildTreeStructure, getAllItemIds } from "./tree-builder";
 import { useProductSelection } from "./hooks/useProductSelection";
 import { SelectedProductsPanel } from "./_components/SelectedProductsPanel";
 import { AvailableProductsPanel } from "./_components/AvailableProductsPanel";
+import TreeProductLoading from "./TreeProductLoading";
 interface TreeProductLookupProps {
   readonly onSelect?: (productIds: { id: string }[]) => void;
   readonly initialSelectedIds?: string[];
@@ -88,12 +89,7 @@ export default function TreeProductLookup({
   );
 
   if (isLoading) {
-    return (
-      <div className="p-6 space-y-4">
-        {searchInput}
-        <p className="text-muted-foreground">{tCommon("loading")}</p>
-      </div>
-    );
+    return <TreeProductLoading />;
   }
 
   return (
@@ -150,17 +146,37 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
     initialProducts,
   });
 
+  const previousSelectedIdsRef = useRef<string>("");
+  const onSelectRef = useRef(onSelect);
+
+  // Keep onSelectRef in sync with onSelect prop
   useEffect(() => {
-    if (onSelect) {
-      const allProductIds = Array.from(selectedIds)
-        .filter((id) => {
-          const item = items[id] || selectedItemsCache[id];
-          return item?.type === "product";
-        })
-        .map((id) => ({ id: id.replace("product-", "") }));
-      onSelect(allProductIds);
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
+
+  useEffect(() => {
+    if (!onSelectRef.current) return;
+
+    const allProductIds = Array.from(selectedIds)
+      .filter((id) => {
+        const item = items[id] || selectedItemsCache[id];
+        return item?.type === "product";
+      })
+      .map((id) => ({ id: id.replace("product-", "") }));
+
+    // Create a string representation for comparison
+    const currentIdsString = allProductIds
+      .map((p) => p.id)
+      .sort()
+      .join(",");
+
+    // Only call onSelect if the selected products have actually changed
+    if (currentIdsString !== previousSelectedIdsRef.current) {
+      previousSelectedIdsRef.current = currentIdsString;
+      onSelectRef.current(allProductIds);
     }
-  }, [selectedIds, items, selectedItemsCache, onSelect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedIds]);
 
   const tree = useTree<TreeNodeData>({
     rootItemId: "root",
@@ -194,8 +210,11 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
       getChildren: (itemId) => {
         if (itemId === "root") return rootItems;
         const item = items[itemId];
-        if (!item) return [];
-        return item.children ?? [];
+        if (!item) {
+          return [];
+        }
+        const children = item.children ?? [];
+        return children;
       },
     },
     initialState: {
@@ -221,8 +240,8 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
   }, [setSelectedIds, setSelectedItemsCache]);
 
   return (
-    <div>
-      <div className="grid grid-cols-2 gap-4 h-54">
+    <div className="h-full flex flex-col">
+      <div className="grid grid-cols-2 gap-4 flex-1 overflow-hidden">
         <SelectedProductsPanel
           allProducts={allProducts}
           onRemoveProduct={handleRemoveProduct}
