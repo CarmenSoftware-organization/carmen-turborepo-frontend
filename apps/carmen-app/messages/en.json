@@ -437,7 +437,11 @@
     "inactive": "Inactive",
     "local_name": "Local Name",
     "filter_by_status": "Filter By Status",
-    "sort_by": "Sort By"
+    "sort_by": "Sort By",
+    "valid_period": "Valid Period",
+    "create_date": "Create Date",
+    "update_date": "Update Date",
+    "days": "Days"
   },
   "Unit": {
     "title": "Unit",
@@ -489,7 +493,11 @@
     "currency_name_required": "Please enter currency name",
     "currency_symbol_required": "Please enter currency symbol",
     "currency_symbol_max": "Currency symbol must not exceed 3 characters",
-    "exchange_rate_positive": "Exchange rate must be greater than 0"
+    "exchange_rate_positive": "Exchange rate must be greater than 0",
+    "search_placeholder": "Search Currency...",
+    "select_currency": "Select Currency",
+    "load_more_currencies": "Load More Currencies",
+    "load_error": "Failed to load currencies"
   },
   "DeliveryPoint": {
     "title": "Delivery Point",

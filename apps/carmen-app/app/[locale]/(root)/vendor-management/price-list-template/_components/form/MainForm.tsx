@@ -25,9 +25,10 @@ import {
   priceListTemplateFormSchema,
   PriceListTemplateFormValues,
 } from "../../_schema/price-list-template.schema";
-import { ChevronLeft, PenBoxIcon, Save, X } from "lucide-react";
+import { ChevronLeft, PenBoxIcon, Plus, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
-import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;
@@ -36,6 +37,7 @@ interface Props {
 
 export default function MainForm({ templateData, mode }: Props) {
   const router = useRouter();
+  const tPlt = useTranslations("PriceListTemplate");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, buCode } = useAuth();
 
@@ -110,15 +112,15 @@ export default function MainForm({ templateData, mode }: Props) {
     try {
       if (isCreating) {
         await createMutation.mutateAsync(data);
-        toast.success("Price list template created successfully");
+        toastSuccess({ message: tPlt("add_success") });
         router.push("/vendor-management/price-list-template");
       } else {
         await updateMutation.mutateAsync(data);
-        toast.success("Price list template updated successfully");
+        toastSuccess({ message: tPlt("edit_success") });
         setCurrentMode(formType.VIEW);
       }
     } catch (error) {
-      toast.error(isCreating ? "Failed to create template" : "Failed to update template");
+      toastError({ message: tPlt("submit_error") });
       console.error(error);
     }
   };
@@ -139,13 +141,13 @@ export default function MainForm({ templateData, mode }: Props) {
           </Button>
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">
-              {currentMode === formType.ADD && "Create New Price List Template"}
-              {currentMode === formType.EDIT && "Edit Price List Template"}
-              {currentMode === formType.VIEW && templateData?.name}
+              {currentMode === formType.ADD && tPlt("new_template")}
+              {(currentMode === formType.VIEW || currentMode === formType.EDIT) &&
+                templateData?.name}
             </h1>
             {templateData && (
               <p className="text-sm text-muted-foreground">
-                Last updated: {new Date(templateData.update_date).toLocaleDateString()}
+                {tPlt("last_update")}: {new Date(templateData.update_date).toLocaleDateString()}
               </p>
             )}
           </div>
@@ -175,14 +177,9 @@ export default function MainForm({ templateData, mode }: Props) {
             </>
           )}
           {currentMode === formType.ADD && (
-            <>
-              <Button type="button" variant="outline" onClick={() => form.reset()}>
-                Clear Form
-              </Button>
-              <Button type="submit" form="price-list-template-form">
-                Create Template
-              </Button>
-            </>
+            <Button type="submit" form="price-list-template-form">
+              <Plus />
+            </Button>
           )}
         </div>
       </div>
@@ -191,9 +188,9 @@ export default function MainForm({ templateData, mode }: Props) {
           <form id="price-list-template-form" onSubmit={form.handleSubmit(onSubmit)}>
             <Tabs defaultValue="overview" className="flex flex-col">
               <TabsList>
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="products">Products</TabsTrigger>
-                {templateData && <TabsTrigger value="rfps">RFPs</TabsTrigger>}
+                <TabsTrigger value="overview">{tPlt("overview")}</TabsTrigger>
+                <TabsTrigger value="products">{tPlt("product")}</TabsTrigger>
+                {templateData && <TabsTrigger value="rfps">{tPlt("rfp")}</TabsTrigger>}
               </TabsList>
               <div className="flex-1 overflow-y-auto">
                 <TabsContent value="overview" className="mt-0">

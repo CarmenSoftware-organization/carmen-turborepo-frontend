@@ -436,7 +436,11 @@
     "value": "ค่า",
     "active": "ใช้งาน",
     "inactive": "ไม่ใช้งาน",
-    "local_name": "ชื่อภาษาไทย"
+    "local_name": "ชื่อภาษาไทย",
+    "valid_period": "ระยะเวลาใช้งาน",
+    "create_date": "วันที่สร้าง",
+    "update_date": "วันที่อัพเดต",
+    "days": "วัน"
   },
   "Unit": {
     "title": "หน่วยนับ",
@@ -488,7 +492,11 @@
     "currency_name_required": "กรุณากรอกชื่อสกุลเงิน",
     "currency_symbol_required": "กรุณากรอกสัญลักษณ์สกุลเงิน",
     "currency_symbol_max": "สัญลักษณ์สกุลเงินต้องไม่เกิน 3 ตัวอักษร",
-    "exchange_rate_positive": "อัตราแลกเปลี่ยนต้องมากกว่า 0"
+    "exchange_rate_positive": "อัตราแลกเปลี่ยนต้องมากกว่า 0",
+    "search_placeholder": "ค้นหาสกุลเงิน...",
+    "select_currency": "เลือกสกุลเงิน",
+    "load_more_currencies": "โหลดเพิ่มสกุลเงิน",
+    "load_error": "โหลดข้อมูลไม่สําเร็จ"
   },
   "DeliveryPoint": {
     "title": "จุดส่งสินค้า",

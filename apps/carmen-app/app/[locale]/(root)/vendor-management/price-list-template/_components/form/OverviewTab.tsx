@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import { useTranslations } from "next-intl";
 
 interface Props {
   // @ts-ignore
@@ -26,12 +27,14 @@ interface Props {
 }
 
 export default function TabOverview({ form, isViewMode, templateData }: Props) {
+  const tPlt = useTranslations("PriceListTemplate");
+  const tHeader = useTranslations("TableHeader");
   return (
     <div className="space-y-8 mt-4">
       {/* Basic Information */}
       <div className="space-y-4">
         <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          Template Information
+          {tPlt("tmp_info")}
         </h2>
 
         <div className="space-y-4">
@@ -42,12 +45,12 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Template Name</FormLabel>
+                  <FormLabel>{tPlt("tmp_name")}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       disabled={isViewMode}
-                      placeholder="e.g., Q1 2025 Standard Price List"
+                      placeholder={tPlt("tmp_name_placeholder")}
                     />
                   </FormControl>
                   <FormMessage />
@@ -61,7 +64,7 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>{tHeader("status")}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -69,7 +72,7 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue placeholder={tHeader("status")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -91,12 +94,12 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>{tHeader("description")}</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     disabled={isViewMode}
-                    placeholder="Provide a detailed description of this template..."
+                    placeholder={tPlt("tmp_desc_placeholder")}
                     rows={3}
                     className="resize-none"
                   />
@@ -113,7 +116,9 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
               required
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Valid Period (days)</FormLabel>
+                  <FormLabel>
+                    {tHeader("valid_period")} ({tHeader("days")})
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -134,7 +139,7 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
               name="currency_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Currency</FormLabel>
+                  <FormLabel>{tHeader("currency")}</FormLabel>
                   <CurrencyLookup onValueChange={field.onChange} value={field.value} />
                   <FormMessage />
                 </FormItem>
@@ -148,12 +153,12 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
       {templateData?.currency && isViewMode && (
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Currency Details
+            {tPlt("currency_details")}
           </h2>
           <div className="bg-muted/30 p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Currency Code</p>
+                <p className="text-xs text-muted-foreground mb-1">{tPlt("currency_code")}</p>
                 <p className="text-sm font-medium">{templateData.currency.code}</p>
               </div>
             </div>

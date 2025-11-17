@@ -12,6 +12,25 @@
     "template_not_found": "ไม่พบแม่แบบราคาสินค้า",
     "no_templates_available": "ไม่มีแม่แบบราคาสินค้า",
     "select_template": "เลือกแม่แบบ",
-    "search_template": "ค้นหาแม่แบบ"
+    "search_template": "ค้นหาแม่แบบ",
+    "add_price_list_template": "เพิ่มราคาสินค้า",
+    "add_success": "เพิ่มแม่แบบราคาสินค้าสําเร็จ",
+    "edit_success": "แก้ไขแม่แบบราคาสินค้าสําเร็จ",
+    "submit_error": "ไม่สามารถเพิ่มแม่แบบราคาสินค้า",
+    "last_update": "อัพเดตล่าสุด",
+    "new_template": "สร้างแม่แบบราคาสินค้า",
+    "valid_period": "ระยะเวลา",
+    "days": "วัน",
+    "created": "สร้างเมื่อ",
+    "updated": "อัปเดตเมื่อ",
+    "overview": "ภาพรวม",
+    "product": "สินค้า",
+    "rfp": "รายงานขอราคาสินค้า",
+    "tmp_info": "ข้อมูลแม่แบบ",
+    "tmp_name": "ชื่อแม่แบบ",
+    "tmp_name_placeholder": "กรอกชื่อแม่แบบ",
+    "tmp_desc_placeholder": "กรอกรายละเอียด",
+    "currency_details": "รายละเอียดสกุลเงิน",
+    "currency_code": "รหัสสกุลเงิน"
   }
 }

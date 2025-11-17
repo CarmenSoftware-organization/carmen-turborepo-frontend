@@ -43,6 +43,8 @@ export default function PriceListTemplateList({
   canDelete = true,
 }: PriceListTemplateListProps) {
   const tStatus = useTranslations("Status");
+  const tHeader = useTranslations("TableHeader");
+
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
@@ -74,7 +76,11 @@ export default function PriceListTemplateList({
       {
         accessorKey: "name",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title="Name" icon={<List className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("name")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const template = row.original;
@@ -95,16 +101,17 @@ export default function PriceListTemplateList({
         enableSorting: true,
         size: 250,
         meta: {
-          headerTitle: "Name",
+          headerTitle: tHeader("name"),
         },
       },
       {
         accessorKey: "status",
-        header: () => (
-          <div className="flex items-center gap-2 justify-center">
-            <Activity className="h-4 w-4" />
-            <span>Status</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
 
         cell: ({ row }) => {
@@ -124,11 +131,12 @@ export default function PriceListTemplateList({
       },
       {
         accessorKey: "description",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Info className="h-4 w-4" />
-            <span>Description</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("description")}
+            icon={<Info className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[200px] inline-block">{row.original.description}</span>
@@ -138,11 +146,12 @@ export default function PriceListTemplateList({
       },
       {
         accessorKey: "valid_period",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Valid Period</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("valid_period")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => <span>{row.original.valid_period} days</span>,
         enableSorting: false,
@@ -150,11 +159,12 @@ export default function PriceListTemplateList({
       },
       {
         accessorKey: "create_date",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Create Date</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("create_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => <span>{format(new Date(row.original.create_date), "dd/MM/yyyy")}</span>,
         enableSorting: false,
@@ -162,11 +172,12 @@ export default function PriceListTemplateList({
       },
       {
         accessorKey: "update_date",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Update Date</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("update_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => <span>{format(new Date(row.original.update_date), "dd/MM/yyyy")}</span>,
         enableSorting: false,
@@ -175,7 +186,7 @@ export default function PriceListTemplateList({
 
       {
         id: "action",
-        header: () => <span className="text-right">Action</span>,
+        header: () => <span className="text-right">{tHeader("action")}</span>,
         cell: ({ row }) => {
           const template = row.original;
 

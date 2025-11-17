@@ -22,8 +22,8 @@ const sortFields = [{ key: "name", label: "Name" }];
 export default function PriceListTemplate() {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
+  const tPlt = useTranslations("PriceListTemplate");
   const router = useRouter();
-
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function PriceListTemplate() {
     }
   }, [isUnauthorized]);
 
-  const title = "Price List Template";
+  const title = tPlt("title");
 
   const actionButtons = (
     <TooltipProvider>
@@ -54,7 +54,7 @@ export default function PriceListTemplate() {
               <Plus className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>Add Price List Template</TooltipContent>
+          <TooltipContent>{tPlt("add_price_list_template")}</TooltipContent>
         </Tooltip>
 
         <Tooltip>
@@ -73,7 +73,11 @@ export default function PriceListTemplate() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outlinePrimary" size={"sm"} data-id="price-list-template-list-print-button">
+            <Button
+              variant="outlinePrimary"
+              size={"sm"}
+              data-id="price-list-template-list-print-button"
+            >
               <Printer className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
