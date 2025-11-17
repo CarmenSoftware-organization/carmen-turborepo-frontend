@@ -12,6 +12,7 @@ import { buildTreeStructure, getAllItemIds } from "./tree-builder";
 import { useProductSelection } from "./hooks/useProductSelection";
 import { SelectedProductsPanel } from "./_components/SelectedProductsPanel";
 import { AvailableProductsPanel } from "./_components/AvailableProductsPanel";
+import TreeProductLoading from "./TreeProductLoading";
 interface TreeProductLookupProps {
   readonly onSelect?: (productIds: { id: string }[]) => void;
   readonly initialSelectedIds?: string[];
@@ -88,11 +89,7 @@ export default function TreeProductLookup({
   );
 
   if (isLoading) {
-    return (
-      <div className="p-6 space-y-4">
-        <p className="text-muted-foreground">{tCommon("loading")}</p>
-      </div>
-    );
+    return <TreeProductLoading />;
   }
 
   return (

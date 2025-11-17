@@ -1,10 +1,11 @@
+"use client";
+
 import { Tree as TreeStructure, TreeItem, TreeItemLabel } from "@/components/ui/tree";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TreeInstance, ItemInstance } from "@headless-tree/core";
 import { TreeNodeData } from "../types";
-import { useEffect, useState } from "react";
 
 interface TreeViewProps {
   readonly tree: TreeInstance<TreeNodeData>;
@@ -13,16 +14,6 @@ interface TreeViewProps {
 }
 
 export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeViewProps) {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return null;
-  }
-
   const allItems = tree.getItems();
 
   return (
@@ -65,7 +56,7 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
                     <p className="text-xs">
                       {data.name} - {data.local_name}
                     </p>
-                    <Badge>{data.code}</Badge>
+                    <Badge variant={"product_badge"}>{data.code}</Badge>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
