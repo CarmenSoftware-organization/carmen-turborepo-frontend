@@ -5,7 +5,7 @@ import { PriceListDto } from "@/dtos/price-list.dto";
 import { Calendar, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useDeletePriceList } from "@/hooks/usePriceList";
+import { useDeletePriceList } from "@/hooks/use-price-list";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import {
