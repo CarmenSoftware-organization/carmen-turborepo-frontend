@@ -25,7 +25,7 @@ interface Props {
   rfps: RfpDtoPL[];
 }
 
-export default function TabCampaigns({ rfps }: Props) {
+export default function TabRFP({ rfps }: Props) {
   const tStatus = useTranslations("Status");
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
@@ -55,7 +55,7 @@ export default function TabCampaigns({ rfps }: Props) {
           return (
             <div className="max-w-[300px] truncate ellipsis">
               <Link
-                href={`/vendor-management/rfp/${rfp.id}`}
+                href={`/vendor-management/request-price-list/${rfp.id}`}
                 className="hover:underline text-primary"
               >
                 {rfp.name}
@@ -197,8 +197,8 @@ export default function TabCampaigns({ rfps }: Props) {
         </div>
 
         <p className="text-sm text-muted-foreground">
-          These RFPs are currently using this price list template. This is a read-only view.
-          RFPs are linked from the RFP module.
+          These RFPs are currently using this price list template. This is a read-only view. RFPs
+          are linked from the RFP module.
         </p>
 
         {rfps.length === 0 ? (

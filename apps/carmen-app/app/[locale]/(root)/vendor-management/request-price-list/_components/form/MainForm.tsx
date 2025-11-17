@@ -110,7 +110,7 @@ export default function MainForm({ rfpData, mode }: Props) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
-            onClick={() => router.push("/vendor-management/rfp")}
+            onClick={() => router.push("/vendor-management/request-price-list")}
             variant={"outlinePrimary"}
             size={"sm"}
             className="h-8 w-8"

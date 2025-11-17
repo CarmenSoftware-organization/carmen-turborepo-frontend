@@ -235,7 +235,7 @@ export default function SettingTab({
         </div>
 
         {reminderFields.length === 0 ? (
-          <div className="text-sm text-muted-foreground text-center py-8 border-t">
+          <div className="text-sm text-muted-foreground text-center py-8 border-t border-border">
             No reminders configured
           </div>
         ) : (
@@ -380,7 +380,7 @@ export default function SettingTab({
         </div>
 
         {escalationFields.length === 0 ? (
-          <div className="text-sm text-muted-foreground text-center py-8 border-t">
+          <div className="text-sm text-muted-foreground text-center py-8 border-t border-border">
             No escalations configured
           </div>
         ) : (

@@ -20,7 +20,7 @@ import {
 } from "@/components/animate-ui/components/radix/tabs";
 import TabOverview from "./TabOverview";
 import TabProducts from "./TabProducts";
-import TabCampaigns from "./TabCampaigns";
+import TabRFP from "./TabRFP";
 import {
   priceListTemplateFormSchema,
   PriceListTemplateFormValues,
@@ -74,21 +74,13 @@ export default function MainForm({ templateData, mode }: Props) {
 
   const handleTreeProductSelect = useCallback(
     (productIds: { id: string }[]) => {
-      console.log("[MainForm] handleTreeProductSelect called");
-      console.log("  - Received product IDs:", productIds.length);
-
       const currentProductIds = initProductKeys.map((key) => key.toString());
       const newProductIds = productIds.map((p) => p.id);
 
       // Create a string representation for comparison
       const newIdsString = newProductIds.sort().join(",");
 
-      console.log("  - Previous:", previousProductIdsRef.current);
-      console.log("  - New:", newIdsString);
-
-      // Only process if the product IDs have actually changed
       if (newIdsString === previousProductIdsRef.current) {
-        console.log("  -> Same as previous, skipping");
         return;
       }
 
@@ -101,18 +93,12 @@ export default function MainForm({ templateData, mode }: Props) {
         .filter((id) => !newProductIds.includes(id))
         .map((id) => ({ id }));
 
-      console.log("  - To add:", toAdd.length);
-      console.log("  - To remove:", toRemove.length);
-
       // Only update if there are actual changes
       if (toAdd.length > 0 || toRemove.length > 0) {
-        console.log("  -> Updating form.setValue");
         form.setValue("products", {
           add: toAdd,
           remove: toRemove,
         });
-      } else {
-        console.log("  -> No changes to add/remove");
       }
     },
     [initProductKeys, form]
@@ -222,7 +208,7 @@ export default function MainForm({ templateData, mode }: Props) {
                 </TabsContent>
                 {templateData && (
                   <TabsContent value="rfps" className="mt-0">
-                    <TabCampaigns rfps={templateData.rfps || []} />
+                    <TabRFP rfps={templateData.rfps || []} />
                   </TabsContent>
                 )}
               </div>
