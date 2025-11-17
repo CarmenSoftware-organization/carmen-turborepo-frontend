@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TreeInstance, ItemInstance } from "@headless-tree/core";
 import { TreeNodeData } from "../types";
+import { useEffect, useState } from "react";
 
 interface TreeViewProps {
   readonly tree: TreeInstance<TreeNodeData>;
@@ -12,10 +13,20 @@ interface TreeViewProps {
 }
 
 export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeViewProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
+
   const allItems = tree.getItems();
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="flex-1 max-h-[calc(80vh-250px)]">
       <TreeStructure tree={tree} indent={24} toggleIconType="chevron" className="pr-4">
         {allItems.map((item: ItemInstance<TreeNodeData>) => {
           const data = item.getItemData();
@@ -29,12 +40,19 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
               <TreeItemLabel>
                 {data.type === "product" ? (
                   <div className="w-full flex items-center space-x-2 ml-4">
-                    <label
+                    <div
                       className="cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                      role="none"
                     >
                       <Checkbox
                         checked={checkboxState.checked}
@@ -43,7 +61,7 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
                           handleCheckboxChange(data.id, checked === true);
                         }}
                       />
-                    </label>
+                    </div>
                     <p className="text-xs">
                       {data.name} - {data.local_name}
                     </p>
@@ -51,12 +69,19 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
-                    <label
+                    <div
                       className="cursor-pointer"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                       }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }
+                      }}
+                      role="none"
                     >
                       <Checkbox
                         checked={
@@ -67,7 +92,7 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
                           handleCheckboxChange(data.id, checked === true);
                         }}
                       />
-                    </label>
+                    </div>
                     <p className="text-xs">{data.name}</p>
                     <Badge variant="secondary">{data.children?.length || 0}</Badge>
                   </div>

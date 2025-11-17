@@ -90,7 +90,6 @@ export default function TreeProductLookup({
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
-        {searchInput}
         <p className="text-muted-foreground">{tCommon("loading")}</p>
       </div>
     );
@@ -169,20 +168,15 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
       .map((id) => ({ id: id.replace("product-", "") }));
 
     // Create a string representation for comparison
-    const currentIdsString = allProductIds.map((p) => p.id).sort().join(",");
-
-    console.log("[TreeProductLookup] useEffect triggered");
-    console.log("  - Previous IDs:", previousSelectedIdsRef.current);
-    console.log("  - Current IDs:", currentIdsString);
-    console.log("  - selectedIds size:", selectedIds.size);
+    const currentIdsString = allProductIds
+      .map((p) => p.id)
+      .sort()
+      .join(",");
 
     // Only call onSelect if the selected products have actually changed
     if (currentIdsString !== previousSelectedIdsRef.current) {
-      console.log("  -> IDs changed, calling onSelect with", allProductIds.length, "products");
       previousSelectedIdsRef.current = currentIdsString;
       onSelectRef.current(allProductIds);
-    } else {
-      console.log("  -> IDs unchanged, skipping onSelect");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds]);

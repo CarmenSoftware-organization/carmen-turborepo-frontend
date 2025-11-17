@@ -85,7 +85,7 @@ export function SelectedProductsPanel({
                 </Button>
               )}
             </div>
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1 max-h-[calc(80vh-250px)]">
               <div className="space-y-2 pr-4">
                 {filteredSelectedProducts.map((product) => (
                   <div key={product.id} className="flex items-center justify-between px-0">

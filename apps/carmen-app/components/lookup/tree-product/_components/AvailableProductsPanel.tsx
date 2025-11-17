@@ -92,7 +92,7 @@ export function AvailableProductsPanel({
         </div>
       </div>
       <div>{searchInput}</div>
-      <div className="flex-1 overflow-auto mt-2">{renderContent()}</div>
+      <div className="flex-1 flex flex-col mt-2">{renderContent()}</div>
     </div>
   );
 }
