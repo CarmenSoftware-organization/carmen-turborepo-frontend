@@ -34,7 +34,7 @@ export function AvailableProductsPanel({
   const renderContent = () => {
     if (rootItems.length === 0) {
       return (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex items-center justify-center">
           <p className="text-sm text-muted-foreground">{tCommon("data_not_found")}</p>
         </div>
       );
@@ -59,7 +59,7 @@ export function AvailableProductsPanel({
   };
 
   return (
-    <div className="border border-border rounded-lg p-3 flex flex-col h-full">
+    <div className="border border-border rounded-lg p-3 flex flex-col">
       <div className="flex items-center justify-between mb-1">
         <h3 className="text-sm font-semibold">{tCommon("available_products")}</h3>
         <div className="flex items-center gap-2">

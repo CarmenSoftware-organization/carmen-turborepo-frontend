@@ -1,5 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTranslations } from "next-intl";
 import { TreeNodeData } from "../types";
 
@@ -17,9 +18,9 @@ export function ListView({ availableProducts, selectedIds, handleCheckboxChange 
   const someSelected = selectedCount > 0 && selectedCount < availableProducts.length;
 
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between border-b border-border pb-2">
-        <div className="flex items-center gap-2 p-1 mb-1">
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between border-b border-border pb-2 mb-2">
+        <div className="flex items-center gap-2 p-1">
           <Checkbox
             checked={allSelected}
             ref={(el: HTMLButtonElement | null) => {
@@ -49,36 +50,40 @@ export function ListView({ availableProducts, selectedIds, handleCheckboxChange 
         </Badge>
       </div>
 
-      {availableProducts.map((product) => {
-        const productId = product.id;
-        const isSelected = selectedIds.has(productId);
-        return (
-          <label
-            key={product.id}
-            className="flex items-center space-x-2 p-1 hover:bg-muted/50 rounded-sm cursor-pointer"
-          >
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={(checked) => {
-                handleCheckboxChange(productId, checked === true);
-              }}
-            />
-            <div className="flex-1 space-y-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-xs font-medium">
-                  {product.name}
-                  {product.local_name && ` - ${product.local_name}`}
-                </p>
-                {product.code && (
-                  <Badge variant={"product_badge"} className="text-xs">
-                    {product.code}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </label>
-        );
-      })}
+      <ScrollArea className="flex-1 max-h-[calc(80vh-250px)]">
+        <div className="space-y-1 pr-4">
+          {availableProducts.map((product) => {
+            const productId = product.id;
+            const isSelected = selectedIds.has(productId);
+            return (
+              <label
+                key={product.id}
+                className="flex items-center space-x-2 p-1 hover:bg-muted/50 rounded-sm cursor-pointer"
+              >
+                <Checkbox
+                  checked={isSelected}
+                  onCheckedChange={(checked) => {
+                    handleCheckboxChange(productId, checked === true);
+                  }}
+                />
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-xs font-medium">
+                      {product.name}
+                      {product.local_name && ` - ${product.local_name}`}
+                    </p>
+                    {product.code && (
+                      <Badge variant={"product_badge"} className="text-xs">
+                        {product.code}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </label>
+            );
+          })}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

@@ -104,10 +104,11 @@ function TreeItem<T = any>({
   return (
     <TreeContext.Provider value={{ ...parentContext, currentItem: item }}>
       <Comp
+        type={asChild ? undefined : "button"}
         data-slot="tree-item"
         style={mergedStyle}
         className={cn(
-          "z-10 outline-hidden select-none not-last:pb-0.5 focus:z-20 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          "z-10 outline-hidden select-none not-last:pb-0.5 focus:z-20 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_button]:pointer-events-auto [&_label]:pointer-events-auto",
           className
         )}
         data-focus={typeof item.isFocused === "function" ? item.isFocused() || false : undefined}

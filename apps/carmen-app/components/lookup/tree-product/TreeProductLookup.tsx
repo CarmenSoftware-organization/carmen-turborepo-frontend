@@ -151,24 +151,38 @@ const TreeProductLookupContent = memo(function TreeProductLookupContent({
   });
 
   const previousSelectedIdsRef = useRef<string>("");
+  const onSelectRef = useRef(onSelect);
+
+  // Keep onSelectRef in sync with onSelect prop
+  useEffect(() => {
+    onSelectRef.current = onSelect;
+  }, [onSelect]);
 
   useEffect(() => {
-    if (onSelect) {
-      const allProductIds = Array.from(selectedIds)
-        .filter((id) => {
-          const item = items[id] || selectedItemsCache[id];
-          return item?.type === "product";
-        })
-        .map((id) => ({ id: id.replace("product-", "") }));
+    if (!onSelectRef.current) return;
 
-      // Create a string representation for comparison
-      const currentIdsString = allProductIds.map((p) => p.id).sort().join(",");
+    const allProductIds = Array.from(selectedIds)
+      .filter((id) => {
+        const item = items[id] || selectedItemsCache[id];
+        return item?.type === "product";
+      })
+      .map((id) => ({ id: id.replace("product-", "") }));
 
-      // Only call onSelect if the selected products have actually changed
-      if (currentIdsString !== previousSelectedIdsRef.current) {
-        previousSelectedIdsRef.current = currentIdsString;
-        onSelect(allProductIds);
-      }
+    // Create a string representation for comparison
+    const currentIdsString = allProductIds.map((p) => p.id).sort().join(",");
+
+    console.log("[TreeProductLookup] useEffect triggered");
+    console.log("  - Previous IDs:", previousSelectedIdsRef.current);
+    console.log("  - Current IDs:", currentIdsString);
+    console.log("  - selectedIds size:", selectedIds.size);
+
+    // Only call onSelect if the selected products have actually changed
+    if (currentIdsString !== previousSelectedIdsRef.current) {
+      console.log("  -> IDs changed, calling onSelect with", allProductIds.length, "products");
+      previousSelectedIdsRef.current = currentIdsString;
+      onSelectRef.current(allProductIds);
+    } else {
+      console.log("  -> IDs unchanged, skipping onSelect");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedIds]);

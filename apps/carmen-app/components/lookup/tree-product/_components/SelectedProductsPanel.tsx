@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
@@ -58,7 +59,7 @@ export function SelectedProductsPanel({
         />
       </div>
 
-      <div className="flex-1 overflow-auto space-y-2 pt-4">
+      <div className="flex-1 overflow-hidden pt-4">
         {filteredSelectedProducts.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-xs text-muted-foreground">
@@ -66,8 +67,8 @@ export function SelectedProductsPanel({
             </p>
           </div>
         ) : (
-          <div>
-            <div className="flex items-center justify-between border-b border-border pb-2">
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between border-b border-border pb-2 mb-2">
               <Badge variant={"active"} className="text-xs">
                 {tCommon("selected")} {filteredSelectedProducts.length}
               </Badge>
@@ -84,32 +85,36 @@ export function SelectedProductsPanel({
                 </Button>
               )}
             </div>
-            {filteredSelectedProducts.map((product) => (
-              <div key={product.id} className="flex items-center justify-between px-0">
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-xs font-medium">
-                      {product.name}
-                      {product.local_name && ` - ${product.local_name}`}
-                    </p>
-                    {product.code && (
-                      <Badge variant={"product_badge"} className="text-xs">
-                        {product.code}
-                      </Badge>
-                    )}
+            <ScrollArea className="flex-1">
+              <div className="space-y-2 pr-4">
+                {filteredSelectedProducts.map((product) => (
+                  <div key={product.id} className="flex items-center justify-between px-0">
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-xs font-medium">
+                          {product.name}
+                          {product.local_name && ` - ${product.local_name}`}
+                        </p>
+                        {product.code && (
+                          <Badge variant={"product_badge"} className="text-xs">
+                            {product.code}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onRemoveProduct(product.id)}
+                      data-id="remove-selected-product"
+                      className="text-destructive"
+                    >
+                      <Trash2 />
+                    </Button>
                   </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onRemoveProduct(product.id)}
-                  data-id="remove-selected-product"
-                  className="text-destructive"
-                >
-                  <Trash2 />
-                </Button>
+                ))}
               </div>
-            ))}
+            </ScrollArea>
           </div>
         )}
       </div>

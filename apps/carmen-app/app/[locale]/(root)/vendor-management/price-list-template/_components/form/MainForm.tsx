@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
 import { formType } from "@/dtos/form.dto";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -70,10 +70,29 @@ export default function MainForm({ templateData, mode }: Props) {
   const createMutation = useCreatePriceListTemplate(token, buCode);
   const updateMutation = useUpdatePriceListTemplate(token, buCode, templateData?.id || "");
 
+  const previousProductIdsRef = useRef<string>("");
+
   const handleTreeProductSelect = useCallback(
     (productIds: { id: string }[]) => {
+      console.log("[MainForm] handleTreeProductSelect called");
+      console.log("  - Received product IDs:", productIds.length);
+
       const currentProductIds = initProductKeys.map((key) => key.toString());
       const newProductIds = productIds.map((p) => p.id);
+
+      // Create a string representation for comparison
+      const newIdsString = newProductIds.sort().join(",");
+
+      console.log("  - Previous:", previousProductIdsRef.current);
+      console.log("  - New:", newIdsString);
+
+      // Only process if the product IDs have actually changed
+      if (newIdsString === previousProductIdsRef.current) {
+        console.log("  -> Same as previous, skipping");
+        return;
+      }
+
+      previousProductIdsRef.current = newIdsString;
 
       const toAdd = newProductIds
         .filter((id) => !currentProductIds.includes(id))
@@ -82,12 +101,18 @@ export default function MainForm({ templateData, mode }: Props) {
         .filter((id) => !newProductIds.includes(id))
         .map((id) => ({ id }));
 
+      console.log("  - To add:", toAdd.length);
+      console.log("  - To remove:", toRemove.length);
+
       // Only update if there are actual changes
       if (toAdd.length > 0 || toRemove.length > 0) {
+        console.log("  -> Updating form.setValue");
         form.setValue("products", {
           add: toAdd,
           remove: toRemove,
         });
+      } else {
+        console.log("  -> No changes to add/remove");
       }
     },
     [initProductKeys, form]
@@ -115,7 +140,7 @@ export default function MainForm({ templateData, mode }: Props) {
   const isViewMode = currentMode === formType.VIEW;
 
   return (
-    <div className="flex h-full flex-col p-4">
+    <div className="flex flex-col p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Button
@@ -177,22 +202,18 @@ export default function MainForm({ templateData, mode }: Props) {
       </div>
       <div className="flex-1 overflow-hidden mt-4">
         <Form {...form}>
-          <form
-            id="price-list-template-form"
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="h-full"
-          >
-            <Tabs defaultValue="overview" className="flex h-full flex-col">
+          <form id="price-list-template-form" onSubmit={form.handleSubmit(onSubmit)}>
+            <Tabs defaultValue="overview" className="flex flex-col">
               <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="products">Products</TabsTrigger>
                 {templateData && <TabsTrigger value="campaigns">Campaigns</TabsTrigger>}
               </TabsList>
               <div className="flex-1 overflow-y-auto">
-                <TabsContent value="overview" className="mt-0 h-full">
+                <TabsContent value="overview" className="mt-0">
                   <TabOverview form={form} isViewMode={isViewMode} templateData={templateData} />
                 </TabsContent>
-                <TabsContent value="products" className="mt-0 h-full">
+                <TabsContent value="products" className="mt-0">
                   <TabProducts
                     onProductSelect={handleTreeProductSelect}
                     products={templateData?.products}
@@ -200,7 +221,7 @@ export default function MainForm({ templateData, mode }: Props) {
                   />
                 </TabsContent>
                 {templateData && (
-                  <TabsContent value="campaigns" className="mt-0 h-full">
+                  <TabsContent value="campaigns" className="mt-0">
                     <TabCampaigns campaigns={templateData.campaigns || []} />
                   </TabsContent>
                 )}
