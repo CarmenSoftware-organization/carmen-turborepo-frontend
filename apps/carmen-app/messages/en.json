@@ -357,7 +357,9 @@
     "result": "Result",
     "items": "Items",
     "list_view": "List View",
-    "grid_view": "Grid View"
+    "grid_view": "Grid View",
+    "sort_by": "Sort By",
+    "filter_by_status": "Filter By Status"
   },
   "TableHeader": {
     "all": "All",
