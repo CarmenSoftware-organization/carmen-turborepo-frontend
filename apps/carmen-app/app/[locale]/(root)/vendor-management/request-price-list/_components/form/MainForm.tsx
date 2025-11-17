@@ -155,14 +155,9 @@ export default function MainForm({ rfpData, mode }: Props) {
             </>
           )}
           {currentMode === formType.ADD && (
-            <>
-              <Button type="button" variant="outline" onClick={() => form.reset()}>
-                Clear Form
-              </Button>
-              <Button type="submit" form="rfp-form">
-                Create RFP
-              </Button>
-            </>
+            <Button type="submit" size={"sm"} form="rfp-form">
+              Create RFP
+            </Button>
           )}
         </div>
       </div>

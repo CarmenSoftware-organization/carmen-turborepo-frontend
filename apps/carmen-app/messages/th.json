@@ -137,6 +137,13 @@
       "priceListtemplate": "แม่แบบราคาสินค้า",
       "request_for_price_list": "ขอราคาสินค้า"
     },
+    "PriceListTemplate": {
+      "title": "แม่แบบราคาสินค้า",
+      "template_not_found": "ไม่พบแม่แบบราคาสินค้า",
+      "no_templates_available": "ไม่มีแม่แบบราคาสินค้า",
+      "select_template": "เลือกแม่แบบ",
+      "search_template": "ค้นหาแม่แบบ"
+    },
     "storeOperations": "การดำเนินการร้านค้า",
     "StoreOperations": {
       "storeRequisitions": "ขอสินค้าจากร้าน",

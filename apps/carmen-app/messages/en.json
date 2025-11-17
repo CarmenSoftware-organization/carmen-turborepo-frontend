@@ -155,6 +155,13 @@
       "priceListtemplate": "Price List Template",
       "request_for_price_list": "Request for Price List"
     },
+    "PriceListTemplate": {
+      "title": "Price List Template",
+      "template_not_found": "Price List Template Not Found",
+      "no_templates_available": "No Price List Templates Available",
+      "select_template": "Select Template",
+      "search_template": "Search Template"
+    },
     "storeOperations": "Store Operations",
     "StoreOperations": {
       "storeRequisitions": "Store Requisitions",

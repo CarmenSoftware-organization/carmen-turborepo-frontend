@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { RfpDetailDto } from "@/dtos/rfp.dto";
+import LookupPrt from "@/components/lookup/LookupPrt";
 
 interface Props {
   // @ts-ignore
@@ -167,7 +168,7 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
                 <FormItem>
                   <FormLabel>Price List Template</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isViewMode} placeholder="Enter template ID" />
+                    <LookupPrt {...field} disabled={isViewMode} onValueChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
