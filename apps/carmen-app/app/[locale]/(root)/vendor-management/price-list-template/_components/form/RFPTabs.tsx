@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
@@ -9,6 +9,7 @@ import { Link } from "@/lib/navigation";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 
 interface RfpDtoPL {
   id: string;
@@ -27,6 +28,8 @@ interface Props {
 
 export default function TabRFP({ rfps }: Props) {
   const tStatus = useTranslations("Status");
+  const tHeader = useTranslations("TableHeader");
+  const tPlt = useTranslations("PriceListTemplate");
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   const columns = useMemo<ColumnDef<RfpDtoPL>[]>(
@@ -44,11 +47,18 @@ export default function TabRFP({ rfps }: Props) {
       },
       {
         accessorKey: "name",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Megaphone className="h-4 w-4" />
-            <span>RFP Name</span>
-          </div>
+        // header: () => (
+        //   <div className="flex items-center gap-2">
+        //     <Megaphone className="h-4 w-4" />
+        //     <span>RFP Name</span>
+        //   </div>
+        // ),
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tPlt("rpf_name")}
+            icon={<Megaphone className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const rfp = row.original;
@@ -68,11 +78,12 @@ export default function TabRFP({ rfps }: Props) {
       },
       {
         accessorKey: "status",
-        header: () => (
-          <div className="flex items-center gap-2 justify-center">
-            <Activity className="h-4 w-4" />
-            <span>Status</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const status = row.original.status;
@@ -91,11 +102,12 @@ export default function TabRFP({ rfps }: Props) {
       },
       {
         accessorKey: "priority",
-        header: () => (
-          <div className="flex items-center gap-2 justify-center">
-            <Flag className="h-4 w-4" />
-            <span>Priority</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tPlt("priority")}
+            icon={<Flag className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => {
           const priority = row.original.priority;
@@ -121,11 +133,12 @@ export default function TabRFP({ rfps }: Props) {
       },
       {
         accessorKey: "res_rate",
-        header: () => (
-          <div className="flex items-center gap-2 justify-center">
-            <TrendingUp className="h-4 w-4" />
-            <span>Response Rate</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tPlt("res_rate")}
+            icon={<TrendingUp className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="text-center">
@@ -141,11 +154,12 @@ export default function TabRFP({ rfps }: Props) {
       },
       {
         accessorKey: "count_vendors",
-        header: () => (
-          <div className="flex items-center gap-2 justify-center">
-            <Users className="h-4 w-4" />
-            <span>Vendor Count</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tPlt("count_vendor")}
+            icon={<Users className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="text-center">
@@ -161,11 +175,12 @@ export default function TabRFP({ rfps }: Props) {
       },
       {
         accessorKey: "create_date",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>Created Date</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tHeader("create_date")}
+            icon={<Calendar className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => <span>{format(new Date(row.original.create_date), "dd/MM/yyyy")}</span>,
         enableSorting: false,
@@ -185,29 +200,12 @@ export default function TabRFP({ rfps }: Props) {
   return (
     <div className="space-y-8 mt-4">
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Linked RFPs
-          </h2>
-          {rfps.length > 0 && (
-            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-              {rfps.length}
-            </span>
-          )}
-        </div>
-
-        <p className="text-sm text-muted-foreground">
-          These RFPs are currently using this price list template. This is a read-only view. RFPs
-          are linked from the RFP module.
-        </p>
-
+        <p className="text-sm text-muted-foreground">{tPlt("link_rfps_desc")}</p>
         {rfps.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Megaphone className="h-10 w-10 text-muted-foreground/40 mb-3" />
-            <h3 className="text-sm font-medium mb-1">No RFPs linked</h3>
-            <p className="text-xs text-muted-foreground max-w-sm">
-              This template is not currently being used by any RFPs
-            </p>
+            <h3 className="text-sm font-medium mb-1"> {tPlt("no_rpf_linked")}</h3>
+            <p className="text-xs text-muted-foreground max-w-sm">{tPlt("no_rpf_linked_desc")} </p>
           </div>
         ) : (
           <DataGrid
