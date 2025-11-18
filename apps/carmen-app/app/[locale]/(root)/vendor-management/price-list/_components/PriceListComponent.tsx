@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
@@ -11,6 +11,11 @@ import { usePriceLists } from "../_hooks/use-price-list";
 import SignInDialog from "@/components/SignInDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRouter } from "@/lib/navigation";
+import { useURL } from "@/hooks/useURL";
+import SearchInput from "@/components/ui-custom/SearchInput";
+import SortComponent from "@/components/ui-custom/SortComponent";
+
+const sortFields = [{ key: "name", label: "Name" }];
 
 export default function PriceListComponent() {
   const router = useRouter();
@@ -18,6 +23,8 @@ export default function PriceListComponent() {
   const tPriceList = useTranslations("PriceList");
   const { token, buCode } = useAuth();
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [search, setSearch] = useURL("search");
+  const [sort, setSort] = useURL("sort");
 
   const { data: priceLists, isLoading, isUnauthorized } = usePriceLists(token, buCode);
 
@@ -70,6 +77,45 @@ export default function PriceListComponent() {
     </TooltipProvider>
   );
 
+  const filters = (
+    <div className="filter-container" data-id="price-list-list-filters">
+      <SearchInput
+        defaultValue={search}
+        onSearch={setSearch}
+        placeholder={tCommon("search")}
+        data-id="price-list-list-search-input"
+      />
+      <TooltipProvider>
+        <div className="flex items-center gap-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <SortComponent
+                  fieldConfigs={sortFields}
+                  sort={sort}
+                  setSort={setSort}
+                  data-id="price-list-list-sort-dropdown"
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tCommon("sort")}</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size={"sm"}>
+                <Filter className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{tCommon("filter")}</TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
+    </div>
+  );
+
   const content = <ListPriceList priceLists={priceLists} isLoading={isLoading} />;
 
   return (
@@ -77,6 +123,7 @@ export default function PriceListComponent() {
       <DataDisplayTemplate
         content={content}
         title={tPriceList("title")}
+        filters={filters}
         actionButtons={actionButtons}
       />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
