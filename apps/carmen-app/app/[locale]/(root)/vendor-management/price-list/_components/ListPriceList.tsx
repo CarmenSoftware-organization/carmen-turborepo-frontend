@@ -24,13 +24,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatDate } from "@/utils/format/date";
 import { useTranslations } from "next-intl";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import {
   DataGridTable,
@@ -46,10 +41,7 @@ interface ListPriceListProps {
   readonly isLoading?: boolean;
 }
 
-export default function ListPriceList({
-  priceLists = [],
-  isLoading = false,
-}: ListPriceListProps) {
+export default function ListPriceList({ priceLists = [], isLoading = false }: ListPriceListProps) {
   const { token, buCode, dateFormat } = useAuth();
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
@@ -101,9 +93,7 @@ export default function ListPriceList({
       {
         id: "no",
         header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => (
-          <div className="text-center">{row.index + 1}</div>
-        ),
+        cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
         enableSorting: false,
         size: 30,
         meta: {
@@ -116,7 +106,7 @@ export default function ListPriceList({
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title={tTableHeader("no")}
+            title={tTableHeader("price_list_no")}
             icon={<List className="h-4 w-4" />}
           />
         ),
@@ -129,22 +119,19 @@ export default function ListPriceList({
           );
         },
         enableSorting: false,
-        size: 200,
+        size: 180,
       },
       {
         accessorKey: "vendor.name",
         header: ({ column }) => (
-          <DataGridColumnHeader
-            column={column}
-            title={tTableHeader("vendor")}
-          />
+          <DataGridColumnHeader column={column} title={tTableHeader("vendor")} />
         ),
         cell: ({ row }) => {
           const priceList = row.original;
           return <span>{priceList.vendor?.name}</span>;
         },
         enableSorting: false,
-        size: 300,
+        size: 200,
       },
       {
         accessorKey: "effectivePeriod",
@@ -154,29 +141,27 @@ export default function ListPriceList({
             <span>{tTableHeader("effective_period")}</span>
           </div>
         ),
-        cell: ({ row }) => (
-          <span>{row.original.effectivePeriod}</span>
-        ),
+        cell: ({ row }) => <span>{row.original.effectivePeriod}</span>,
         enableSorting: false,
         size: 200,
       },
       {
         accessorKey: "status",
         header: () => <span>{tTableHeader("status")}</span>,
-        cell: ({ row }) => (
-          <span className="capitalize">{row.original.status}</span>
-        ),
+        cell: ({ row }) => <span className="capitalize">{row.original.status}</span>,
         enableSorting: false,
-        size: 120,
+        size: 80,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         accessorKey: "itemsCount",
         header: () => <span className="text-right">{tTableHeader("items")}</span>,
-        cell: ({ row }) => (
-          <span className="text-right block">{row.original.itemsCount}</span>
-        ),
+        cell: ({ row }) => <span className="text-right block">{row.original.itemsCount}</span>,
         enableSorting: false,
-        size: 100,
+        size: 90,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",
@@ -212,7 +197,7 @@ export default function ListPriceList({
           );
         },
         enableSorting: false,
-        size: 80,
+        size: 150,
         meta: {
           cellClassName: "text-right",
           headerClassName: "text-right",

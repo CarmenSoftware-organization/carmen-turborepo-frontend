@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
@@ -14,6 +14,8 @@ import { useRouter } from "@/lib/navigation";
 import { useURL } from "@/hooks/useURL";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
+import { VIEW } from "@/constants/enum";
+import PriceListGrid from "./PriceListGrid";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
@@ -25,6 +27,7 @@ export default function PriceListComponent() {
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
+  const [view, setView] = useState<VIEW>(VIEW.LIST);
 
   const { data: priceLists, isLoading, isUnauthorized } = usePriceLists(token, buCode);
 
@@ -112,11 +115,59 @@ export default function PriceListComponent() {
             <TooltipContent>{tCommon("filter")}</TooltipContent>
           </Tooltip>
         </div>
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+                  size={"sm"}
+                  onClick={() => setView(VIEW.LIST)}
+                  aria-label="List view"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tCommon("list_view")}</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+                  size={"sm"}
+                  onClick={() => setView(VIEW.GRID)}
+                  aria-label="Grid view"
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tCommon("grid_view")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
       </TooltipProvider>
     </div>
   );
 
-  const content = <ListPriceList priceLists={priceLists} isLoading={isLoading} />;
+  const content = (
+    <>
+      <div className="block lg:hidden">
+        <PriceListGrid priceLists={priceLists ?? []} isLoading={isLoading} />
+      </div>
+
+      <div className="hidden lg:block">
+        {view === VIEW.LIST ? (
+          <ListPriceList priceLists={priceLists ?? []} isLoading={isLoading} />
+        ) : (
+          <PriceListGrid priceLists={priceLists ?? []} isLoading={isLoading} />
+        )}
+      </div>
+    </>
+  );
 
   return (
     <>

@@ -361,7 +361,11 @@
     "sort_by": "Sort By",
     "filter_by_status": "Filter By Status",
     "select_status": "Select Status",
-    "last_updated": "Last Updated"
+    "last_updated": "Last Updated",
+    "deleting": "Deleting...",
+    "action_cannot_be_undone": "This action cannot be undone.",
+    "update_success": "Updated successfully",
+    "update_error": "Failed to update"
   },
   "TableHeader": {
     "all": "All",
@@ -447,7 +451,8 @@
     "update_date": "Update Date",
     "days": "Days",
     "effective_period": "Effective Period",
-    "items": "Items"
+    "items": "Items",
+    "price_list_no": "Price List No."
   },
   "Unit": {
     "title": "Unit",
