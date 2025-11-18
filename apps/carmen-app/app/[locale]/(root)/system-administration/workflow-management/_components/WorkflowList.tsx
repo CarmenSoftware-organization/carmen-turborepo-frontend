@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -17,16 +17,19 @@ import { Eye, PlusCircle } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { FieldConfig } from "@/constants/uiConfig";
 import { Badge } from "@/components/ui/badge";
-import { useWorkflow } from "@/hooks/useWorkflow";
+import { useWorkflow } from "@/hooks/use-workflow";
 import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
 import PaginationComponent from "@/components/PaginationComponent";
 import { useTranslations } from "next-intl";
-import SignInDialog from "@/components/SignInDialog";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
+import { useAuth } from "@/context/AuthContext";
+import { useURL } from "@/hooks/useURL";
 
 interface WorkflowListProps {
   id: string;
   name: string;
+  stages: number;
+  rules: number;
   workflow_type: string;
   is_active: string;
 }
@@ -34,6 +37,8 @@ interface WorkflowListProps {
 enum WorkflowField {
   name = "name",
   workflow_type = "workflow_type",
+  stages = "stages",
+  rules = "rules",
   isActive = "is_active",
 }
 
@@ -46,6 +51,8 @@ const sortFields: FieldConfig<WorkflowListProps>[] = [
     type: "badge",
     className: "w-24",
   },
+  { key: WorkflowField.stages, label: `Stages`, className: "w-24" },
+  { key: WorkflowField.rules, label: `Rules`, className: "w-24" },
   // {
   // 	key: WorkflowField.lastModified,
   // 	label: `Last Modified`,
@@ -69,32 +76,38 @@ const renderFieldValue = (field: FieldConfig<WorkflowListProps>, wf: WorkflowLis
         );
       }
       return <Badge>{String(value)}</Badge>;
-
     default:
       return <span className={`text-xs ${field.className || ""}`}>{String(value)}</span>;
   }
 };
 
 const WorkflowList = () => {
+  const { token, buCode, permissions } = useAuth();
+  const [search, setSearch] = useURL("search");
+  const [filter, setFilter] = useURL("filter");
+  const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
+  const [statusOpen, setStatusOpen] = useState(false);
   const tCommon = useTranslations("Common");
-  const {
-    workflows,
-    isLoading,
-    statusOpen,
-    setStatusOpen,
+  const { data, isLoading } = useWorkflow(token, buCode, {
     search,
-    setSearch,
     filter,
-    setFilter,
     sort,
-    setSort,
-    page,
-    totalPages,
-    loginDialogOpen,
-    setLoginDialogOpen,
-    // Functions
-    handlePageChange,
-  } = useWorkflow();
+    page: page ? Number(page) : 1,
+    perpage: perpage ? Number(perpage) : 10,
+  });
+
+  const workflows = Array.isArray(data) ? data : data?.data || [];
+  const totalPages = data?.paginate?.pages ?? 1;
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage.toString());
+  };
+
+  const handlePerpageChange = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
 
   const actionButtons = (
     <div className="flex items-center gap-2">
@@ -126,7 +139,6 @@ const WorkflowList = () => {
           onOpenChange={setStatusOpen}
           data-id="workflow-status-search-dropdown"
         />
-
         <SortComponent
           fieldConfigs={sortFields}
           sort={sort}
@@ -160,8 +172,8 @@ const WorkflowList = () => {
           <TableBodySkeleton rows={fields.length} />
         ) : (
           <TableBody>
-            {workflows &&
-              workflows.map((w, index) => (
+            {data &&
+              workflows.map((w: WorkflowListProps, index: number) => (
                 <TableRow key={w.id}>
                   <TableCell className="font-medium text-xs">{index + 1}</TableCell>
                   {fields.map((field) => (
@@ -208,7 +220,6 @@ const WorkflowList = () => {
         content={content}
         data-id="workflow-list-data-display-template"
       />
-      <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
   );
 };

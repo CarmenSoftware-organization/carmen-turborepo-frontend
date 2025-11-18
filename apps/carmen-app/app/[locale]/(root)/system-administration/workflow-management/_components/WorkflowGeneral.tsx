@@ -1,6 +1,4 @@
 "use client";
-import React from "react";
-import * as Form from "@/components/ui/form";
 import { Control } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,7 +13,14 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { WorkflowCreateModel, workflowTypeField } from "@/dtos/workflows.dto";
-
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 interface WorkflowGeneralProps {
   control: Control<WorkflowCreateModel>;
   isEditing: boolean;
@@ -27,43 +32,44 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
       <CardHeader className="px-6 py-4">
         <CardTitle>General Information</CardTitle>
       </CardHeader>
-      <CardContent className="px-6 py-4">
-        <Form.FormField
-          control={control}
-          name="name"
-          render={({ field }) => (
-            <Form.FormItem>
-              <Form.FormLabel>Workflow Name</Form.FormLabel>
-              <Form.FormControl>
-                <Input
-                  {...field}
-                  value={String(field.value || "")}
-                  placeholder="Enter workflow name"
-                  disabled={!isEditing}
-                />
-              </Form.FormControl>
-              <Form.FormMessage />
-            </Form.FormItem>
-          )}
-        />
-
-        <div>
-          <Form.FormField
+      <CardContent className="space-y-6 px-6 pb-6">
+        <div className="space-y-2">
+          <FormField
+            control={control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Workflow Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    value={String(field.value || "")}
+                    placeholder="Enter workflow name"
+                    disabled={!isEditing}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="space-y-2">
+          <FormField
             control={control}
             name="workflow_type"
             render={({ field }) => (
-              <Form.FormItem>
-                <Form.FormLabel>Type</Form.FormLabel>
+              <FormItem>
+                <FormLabel>Type</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                   disabled={!isEditing}
                 >
-                  <Form.FormControl>
+                  <FormControl>
                     <SelectTrigger id="workflow_type">
                       <SelectValue placeholder="Select Workflow Type" />
                     </SelectTrigger>
-                  </Form.FormControl>
+                  </FormControl>
                   <SelectContent>
                     {workflowTypeField.map(({ label, value }) => (
                       <SelectItem key={value} value={value} className="cursor-pointer">
@@ -72,53 +78,53 @@ const WorkflowGeneral = ({ control, isEditing }: WorkflowGeneralProps) => {
                     ))}
                   </SelectContent>
                 </Select>
-                <Form.FormMessage />
-              </Form.FormItem>
+                <FormMessage />
+              </FormItem>
             )}
           />
         </div>
-        <div>
-          <Form.FormField
+        <div className="space-y-2">
+          <FormField
             control={control}
             name="is_active"
             render={({ field }) => (
-              <Form.FormItem>
-                <Form.FormLabel>Status</Form.FormLabel>
+              <FormItem>
+                <FormLabel>Status</FormLabel>
                 <div className="flex items-center space-x-2">
-                  <Form.FormControl>
+                  <FormControl>
                     <Switch
                       checked={field.value}
                       onCheckedChange={field.onChange}
                       disabled={!isEditing}
                     />
-                  </Form.FormControl>
+                  </FormControl>
                   <Label className="text-sm text-muted-foreground">
                     {field.value ? "Active" : "Inactive"}
                   </Label>
                 </div>
-                <Form.FormMessage />
-              </Form.FormItem>
+                <FormMessage />
+              </FormItem>
             )}
           />
           {/* <div className="flex items-center space-x-2"></div> */}
         </div>
-        <div>
-          <Form.FormField
+        <div className="space-y-2">
+          <FormField
             control={control}
             name="description"
             render={({ field }) => (
-              <Form.FormItem>
-                <Form.FormLabel>Description</Form.FormLabel>
-                <Form.FormControl>
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
                   <Textarea
                     {...field}
                     value={String(field.value || "")}
                     placeholder="Enter description"
                     disabled={!isEditing}
                   />
-                </Form.FormControl>
-                <Form.FormMessage />
-              </Form.FormItem>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
           />
         </div>

@@ -7,15 +7,11 @@ import { Label } from "@/components/ui/label";
 import { Pencil, Save, X, ChevronRight, ChevronDown, Package, Folder } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { Product, WorkflowCreateModel } from "@/dtos/workflows.dto";
+import { UseFormReturn } from "react-hook-form";
 
-interface Product {
-  id: number;
-  name: string;
-  code: string;
-  category: string;
-  subCategory?: string;
-  itemGroup?: string;
-  isAssigned?: boolean;
+interface ProductListWithAssigned extends Product {
+  isAssigned: boolean;
 }
 
 interface TreeNode {
@@ -30,321 +26,61 @@ interface TreeNode {
 }
 
 interface WorkflowProductsProps {
-  products: Product[];
+  form: UseFormReturn<WorkflowCreateModel>;
+  listProduct: Product[];
   isEditing: boolean;
   onSave: (products: Product[]) => void;
 }
 
-const mockProducts: Product[] = [
-  // Guest Room Supplies
-  {
-    id: 1,
-    name: "Bath Towels",
-    code: "BTH",
-    category: "Guest Room Supplies",
-    subCategory: "Linens",
-    itemGroup: "Towels",
-  },
-  {
-    id: 2,
-    name: "Bed Sheets",
-    code: "BDS",
-    category: "Guest Room Supplies",
-    subCategory: "Linens",
-    itemGroup: "Bedding",
-  },
-  {
-    id: 3,
-    name: "Pillows",
-    code: "PLW",
-    category: "Guest Room Supplies",
-    subCategory: "Linens",
-    itemGroup: "Bedding",
-  },
-  {
-    id: 4,
-    name: "Toiletries Set",
-    code: "TLT",
-    category: "Guest Room Supplies",
-    subCategory: "Amenities",
-    itemGroup: "Bathroom",
-  },
-  {
-    id: 5,
-    name: "Coffee & Tea Set",
-    code: "CTS",
-    category: "Guest Room Supplies",
-    subCategory: "Amenities",
-    itemGroup: "Refreshments",
-  },
-  {
-    id: 6,
-    name: "Room Slippers",
-    code: "SLP",
-    category: "Guest Room Supplies",
-    subCategory: "Amenities",
-    itemGroup: "Comfort",
-  },
-
-  // Cleaning & Maintenance
-  {
-    id: 7,
-    name: "All-Purpose Cleaner",
-    code: "APC",
-    category: "Cleaning & Maintenance",
-    subCategory: "Cleaning Supplies",
-    itemGroup: "Chemicals",
-  },
-  {
-    id: 8,
-    name: "Glass Cleaner",
-    code: "GLC",
-    category: "Cleaning & Maintenance",
-    subCategory: "Cleaning Supplies",
-    itemGroup: "Chemicals",
-  },
-  {
-    id: 9,
-    name: "Disinfectant",
-    code: "DSF",
-    category: "Cleaning & Maintenance",
-    subCategory: "Cleaning Supplies",
-    itemGroup: "Chemicals",
-  },
-  {
-    id: 10,
-    name: "Vacuum Bags",
-    code: "VCB",
-    category: "Cleaning & Maintenance",
-    subCategory: "Equipment Supplies",
-    itemGroup: "Accessories",
-  },
-  {
-    id: 11,
-    name: "Mop Heads",
-    code: "MPH",
-    category: "Cleaning & Maintenance",
-    subCategory: "Equipment Supplies",
-    itemGroup: "Accessories",
-  },
-  {
-    id: 12,
-    name: "Cleaning Cloths",
-    code: "CCL",
-    category: "Cleaning & Maintenance",
-    subCategory: "Equipment Supplies",
-    itemGroup: "Accessories",
-  },
-
-  // Kitchen & F&B
-  {
-    id: 13,
-    name: "Cooking Oil",
-    code: "OIL",
-    category: "Kitchen & F&B",
-    subCategory: "Dry Goods",
-    itemGroup: "Cooking",
-  },
-  {
-    id: 14,
-    name: "Rice",
-    code: "RCE",
-    category: "Kitchen & F&B",
-    subCategory: "Dry Goods",
-    itemGroup: "Staples",
-  },
-  {
-    id: 15,
-    name: "Coffee Beans",
-    code: "CFB",
-    category: "Kitchen & F&B",
-    subCategory: "Beverages",
-    itemGroup: "Coffee",
-  },
-  {
-    id: 16,
-    name: "Tea Bags",
-    code: "TEA",
-    category: "Kitchen & F&B",
-    subCategory: "Beverages",
-    itemGroup: "Tea",
-  },
-  {
-    id: 17,
-    name: "Kitchen Towels",
-    code: "KTW",
-    category: "Kitchen & F&B",
-    subCategory: "Kitchen Supplies",
-    itemGroup: "Cleaning",
-  },
-  {
-    id: 18,
-    name: "Food Containers",
-    code: "CNT",
-    category: "Kitchen & F&B",
-    subCategory: "Kitchen Supplies",
-    itemGroup: "Storage",
-  },
-
-  // Office Supplies
-  {
-    id: 19,
-    name: "Printer Paper",
-    code: "PPR",
-    category: "Office Supplies",
-    subCategory: "Paper Products",
-    itemGroup: "Printing",
-  },
-  {
-    id: 20,
-    name: "Ink Cartridges",
-    code: "INK",
-    category: "Office Supplies",
-    subCategory: "Printing Supplies",
-    itemGroup: "Consumables",
-  },
-  {
-    id: 21,
-    name: "Pens",
-    code: "PEN",
-    category: "Office Supplies",
-    subCategory: "Writing Supplies",
-    itemGroup: "Stationery",
-  },
-  {
-    id: 22,
-    name: "Notebooks",
-    code: "NTB",
-    category: "Office Supplies",
-    subCategory: "Writing Supplies",
-    itemGroup: "Stationery",
-  },
-  {
-    id: 23,
-    name: "File Folders",
-    code: "FLD",
-    category: "Office Supplies",
-    subCategory: "Filing",
-    itemGroup: "Organization",
-  },
-  {
-    id: 24,
-    name: "Staplers",
-    code: "STP",
-    category: "Office Supplies",
-    subCategory: "Desktop Items",
-    itemGroup: "Tools",
-  },
-
-  // Engineering & Maintenance
-  {
-    id: 25,
-    name: "Light Bulbs",
-    code: "LBL",
-    category: "Engineering & Maintenance",
-    subCategory: "Electrical",
-    itemGroup: "Lighting",
-  },
-  {
-    id: 26,
-    name: "Air Filters",
-    code: "AFT",
-    category: "Engineering & Maintenance",
-    subCategory: "HVAC",
-    itemGroup: "Filters",
-  },
-  {
-    id: 27,
-    name: "Paint",
-    code: "PNT",
-    category: "Engineering & Maintenance",
-    subCategory: "Building Materials",
-    itemGroup: "Finishing",
-  },
-  {
-    id: 28,
-    name: "Plumbing Parts",
-    code: "PLM",
-    category: "Engineering & Maintenance",
-    subCategory: "Plumbing",
-    itemGroup: "Repairs",
-  },
-
-  // Safety & Security
-  {
-    id: 29,
-    name: "First Aid Kits",
-    code: "FAK",
-    category: "Safety & Security",
-    subCategory: "Safety Equipment",
-    itemGroup: "Medical",
-  },
-  {
-    id: 30,
-    name: "Fire Extinguishers",
-    code: "FEX",
-    category: "Safety & Security",
-    subCategory: "Fire Safety",
-    itemGroup: "Equipment",
-  },
-  {
-    id: 31,
-    name: "Safety Signs",
-    code: "SGN",
-    category: "Safety & Security",
-    subCategory: "Signage",
-    itemGroup: "Information",
-  },
-  {
-    id: 32,
-    name: "Security Badges",
-    code: "BDG",
-    category: "Safety & Security",
-    subCategory: "Access Control",
-    itemGroup: "ID",
-  },
-];
-
-function buildProductTree(products: Product[]): TreeNode[] {
+function buildProductTree(products: ProductListWithAssigned[]): TreeNode[] {
   const categories = new Map<string, TreeNode>();
   const subCategories = new Map<string, TreeNode>();
   const itemGroups = new Map<string, TreeNode>();
 
   products.forEach((product) => {
-    if (!categories.has(product.category)) {
-      categories.set(product.category, {
-        id: `category-${product.category}`,
-        name: product.category,
-        type: "category",
-        children: [],
-        isExpanded: true,
-        isSelected: false,
-      });
+    if (!categories.has(product.product_category.name)) {
+      if (product.product_category.name) {
+        categories.set(product.product_category.name, {
+          id: product.product_category.id,
+          name: product.product_category.name,
+          type: "category",
+          children: [],
+          isExpanded: true,
+          isSelected: false,
+        });
+      }
     }
 
-    const subCategoryKey = `${product.category}-${product.subCategory}`;
-    if (!subCategories.has(subCategoryKey) && product.subCategory) {
-      subCategories.set(subCategoryKey, {
-        id: `subcategory-${subCategoryKey}`,
-        name: product.subCategory,
-        type: "subCategory",
-        children: [],
-        isExpanded: true,
-        isSelected: false,
-      });
-      categories.get(product.category)?.children?.push(subCategories.get(subCategoryKey)!);
+    const subCategoryKey = `${product.product_category.id}-${product.product_sub_category.id}`;
+
+    if (!subCategories.has(subCategoryKey) && product.product_sub_category.name) {
+      if (product.product_sub_category.name) {
+        subCategories.set(subCategoryKey, {
+          id: product.product_sub_category.id,
+          name: product.product_sub_category.name,
+          type: "subCategory",
+          children: [],
+          isExpanded: true,
+          isSelected: false,
+        });
+        categories
+          .get(product.product_category.name)
+          ?.children?.push(subCategories.get(subCategoryKey)!);
+      }
     }
 
-    const itemGroupKey = `${subCategoryKey}-${product.itemGroup}`;
-    if (!itemGroups.has(itemGroupKey) && product.itemGroup) {
-      itemGroups.set(itemGroupKey, {
-        id: `itemgroup-${itemGroupKey}`,
-        name: product.itemGroup,
-        type: "itemGroup",
-        children: [],
-        isExpanded: true,
-        isSelected: false,
-      });
+    const itemGroupKey = `${subCategoryKey}-${product.product_item_group.id}`;
+    if (!itemGroups.has(itemGroupKey) && product.product_item_group.name) {
+      if (product.product_item_group.name) {
+        itemGroups.set(itemGroupKey, {
+          id: product.product_item_group.id,
+          name: product.product_item_group.name,
+          type: "itemGroup",
+          children: [],
+          isExpanded: true,
+          isSelected: false,
+        });
+      }
       subCategories.get(subCategoryKey)?.children?.push(itemGroups.get(itemGroupKey)!);
     }
 
@@ -369,25 +105,21 @@ function updateNodeSelection(node: TreeNode, isSelected: boolean): void {
 }
 
 const WorkflowProducts: React.FC<WorkflowProductsProps> = ({
-  products: initialProducts = [],
-  isEditing: parentIsEditing,
+  form,
+  listProduct,
+  isEditing,
   onSave,
 }: WorkflowProductsProps) => {
+  const initialProducts = form.getValues("data")?.products || [];
+
   const [searchTerm, setSearchTerm] = useState("");
   const [productTree, setProductTree] = useState<TreeNode[]>(() => {
-    const allProducts = mockProducts.map((p) => ({
+    const allProducts = listProduct.map((p) => ({
       ...p,
       isAssigned: initialProducts.some((ip) => ip.id === p.id),
     }));
     return buildProductTree(allProducts);
   });
-  const [isProductEditing, setIsProductEditing] = useState(false);
-
-  useEffect(() => {
-    if (!parentIsEditing) {
-      setIsProductEditing(false);
-    }
-  }, [parentIsEditing]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -399,11 +131,12 @@ const WorkflowProducts: React.FC<WorkflowProductsProps> = ({
   };
 
   const handleNodeSelect = (node: TreeNode) => {
-    if (!isProductEditing) return;
+    if (!isEditing) return;
 
     const newIsSelected = !node.isSelected;
     updateNodeSelection(node, newIsSelected);
     setProductTree([...productTree]);
+    handleSaveProducts();
   };
 
   const handleSaveProducts = () => {
@@ -418,16 +151,14 @@ const WorkflowProducts: React.FC<WorkflowProductsProps> = ({
 
     const selectedProducts = getSelectedProducts(productTree);
     onSave(selectedProducts);
-    setIsProductEditing(false);
   };
 
   const handleCancelProducts = () => {
-    const allProducts = mockProducts.map((p) => ({
+    const allProducts = listProduct.map((p) => ({
       ...p,
       isAssigned: initialProducts.some((ip) => ip.id === p.id),
     }));
     setProductTree(buildProductTree(allProducts));
-    setIsProductEditing(false);
   };
 
   const renderTreeNode = (node: TreeNode, level: number = 0) => {
@@ -454,6 +185,7 @@ const WorkflowProducts: React.FC<WorkflowProductsProps> = ({
         <div className="flex items-center gap-2">
           {node.children && (
             <Button
+              type="button"
               variant="ghost"
               size="sm"
               className="h-4 w-4 p-0"
@@ -469,7 +201,7 @@ const WorkflowProducts: React.FC<WorkflowProductsProps> = ({
           {!node.children && <div className="w-4" />}
           <Checkbox
             checked={node.isSelected}
-            disabled={!isProductEditing}
+            disabled={!isEditing}
             onCheckedChange={() => handleNodeSelect(node)}
             className="data-[state=indeterminate]:bg-primary data-[state=indeterminate]:opacity-80"
             {...(node.isIndeterminate && { "data-state": "indeterminate" })}
@@ -499,24 +231,6 @@ const WorkflowProducts: React.FC<WorkflowProductsProps> = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Assign Products</CardTitle>
-          {parentIsEditing && !isProductEditing && (
-            <Button variant="default" size="sm" onClick={() => setIsProductEditing(true)}>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit Products
-            </Button>
-          )}
-          {isProductEditing && (
-            <div className="flex space-x-2">
-              <Button variant="ghost" size="sm" onClick={handleCancelProducts}>
-                <X className="h-4 w-4 mr-2" />
-                Cancel
-              </Button>
-              <Button size="sm" onClick={handleSaveProducts}>
-                <Save className="h-4 w-4 mr-2" />
-                Save Changes
-              </Button>
-            </div>
-          )}
         </CardHeader>
         <CardContent>
           <div className="space-y-4">

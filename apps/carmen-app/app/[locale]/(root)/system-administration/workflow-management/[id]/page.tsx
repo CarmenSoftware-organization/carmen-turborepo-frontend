@@ -1,55 +1,56 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import WorkflowDetail from "../_components/WorkflowDetail";
-import { WorkflowCreateModel } from "@/dtos/workflows.dto";
-import { getWorkflowId } from "@/services/workflow";
+import { User } from "@/dtos/workflows.dto";
 import { formType } from "@/dtos/form.dto";
 import { useAuth } from "@/context/AuthContext";
 import { useParams } from "next/navigation";
 import SignInDialog from "@/components/SignInDialog";
+import { useUserList } from "@/hooks/useUserList";
+import { DetailLoading } from "@/components/loading/DetailLoading";
+import { useWorkflowDetail } from "../_hook/use-workflow-detail";
+import { useProductQuery } from "@/hooks/use-product-query";
 
 const WorkflowDetailPage = () => {
   const { token, buCode, isLoading: authLoading } = useAuth();
   const params = useParams();
-  const id = typeof params.id === "string" ? params.id : params.id?.[0];
-  const [wfData, setWfdata] = useState<WorkflowCreateModel | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const id = params.id as string;
+  const { userList } = useUserList(token, buCode);
+  const { products } = useProductQuery({
+    token,
+    buCode,
+    params: {
+      perpage: -1,
+    },
+  });
 
-  useEffect(() => {
-    // Only fetch product when token and buCode are available and auth is not loading
-    if (!token || !buCode || authLoading || !id) {
-      return;
-    }
-    const fetchById = async () => {
-      try {
-        const data = await getWorkflowId(token, buCode, id);
-        if (data.statusCode === 401) {
-          setLoginDialogOpen(true);
-          return;
-        }
-        setWfdata(data);
-      } catch (error) {
-        console.error("Error fetching workflow:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchById();
-  }, [token, buCode, id, authLoading]);
+  const listProduct = products?.data ?? [];
+
+  const listUser: User[] = userList?.map((user: User) => ({
+    key: user.user_id,
+    ...user,
+    initials: user.firstname.charAt(0) + user.lastname.charAt(0),
+  }));
+
+  const { data, loading, loginDialogOpen, setLoginDialogOpen } = useWorkflowDetail({
+    token,
+    buCode,
+    id,
+    authLoading,
+  });
 
   if (authLoading || (loading && token && buCode)) {
-    return <div>Loading product information...</div>;
-  }
-
-  if (authLoading || (loading && token && buCode)) {
-    return <div>Loading product information...</div>;
+    return <DetailLoading />;
   }
 
   // eslint-disable-next-line react/react-in-jsx-scope
   return (
     <>
-      <WorkflowDetail mode={formType.EDIT} initialValues={wfData} />
+      <WorkflowDetail
+        mode={formType.EDIT}
+        initialValues={data}
+        listUser={listUser}
+        listProduct={listProduct}
+      />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
   );

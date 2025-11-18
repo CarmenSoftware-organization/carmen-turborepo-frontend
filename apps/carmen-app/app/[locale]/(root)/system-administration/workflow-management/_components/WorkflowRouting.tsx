@@ -1,12 +1,25 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { MultiSelect } from "@/components/ui/multi-select";
-import * as Form from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
 import { Control, useFieldArray, UseFormReturn } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2 } from "lucide-react";
@@ -23,7 +36,7 @@ interface WorkflowRoutingProps {
 }
 
 const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRoutingProps) => {
-  const { fields, append, remove } = useFieldArray({
+  const { fields, insert, remove } = useFieldArray({
     name: "data.routing_rules",
     control: control,
   });
@@ -55,29 +68,24 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
   });
 
   const rules = form.getValues().data?.routing_rules || [];
-  const [selectedRuleName, setSelectedRuleName] = useState<string | null>(null);
-  const selectedRule = rules.find((rule) => rule.name === selectedRuleName);
+  const [selectedRuleIndex, setSelectedRuleIndex] = useState<number | null>(null);
 
-  const handleRuleSelect = (ruleName: string) => {
-    setSelectedRuleName(ruleName);
+  const handleSelectRuleIndex = (index: number | null) => {
+    setSelectedRuleIndex(index ?? null);
   };
 
-  const handleAddRule = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    append({
-      name: `rule ${rules.length + 1}`,
+  const handleAddRule = () => {
+    insert(fields.length, {
+      name: `New Rule ${rules.length + 1}`,
       description: "",
       trigger_stage: stagesName[0] || "",
       condition: { field: "", operator: "eq", value: [] },
       action: { type: "NEXT_STAGE", parameters: { target_stage: "Completed" } },
     });
-
-    setSelectedRuleName(`rule ${rules.length + 1}`);
+    setSelectedRuleIndex(fields.length);
   };
 
-  const handleDeleteRule = (ruleName: string) => {
-    const index = form.getValues().data?.routing_rules.findIndex((rule) => rule.name === ruleName);
+  const handleDeleteRule = (index: number) => {
     remove(index);
   };
 
@@ -90,90 +98,121 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
   return (
     <div className="grid grid-cols-3 gap-6">
       <Card className="col-span-1">
-        <CardHeader>
+        <CardHeader className="pl-4">
           <CardTitle>Routing Rules</CardTitle>
         </CardHeader>
-        <CardContent>
-          <ul className="space-y-2">
-            {rules.map((rule) => (
+        <CardContent className="p-2 pt-0">
+          <ul>
+            {rules.map((rule, index) => (
               <li
                 key={rule.name}
-                className={`p-2 rounded-md cursor-pointer ${selectedRuleName === rule.name ? "bg-secondary" : "hover:bg-secondary/50"
-                  }`}
-                onClick={() => handleRuleSelect(rule.name)}
+                className={`p-2 cursor-pointer ${
+                  selectedRuleIndex === index
+                    ? "bg-gray-100 border-l-4 border-blue-500 text-black"
+                    : "hover:bg-gray-100/50"
+                }`}
+                onClick={() => handleSelectRuleIndex(index)}
               >
                 {rule.name || "Unnamed Rule"}
               </li>
             ))}
           </ul>
-          {isEditing && (
-            <Button className="w-full mt-4" onClick={handleAddRule}>
-              <Plus className="mr-2 h-4 w-4" /> Add Rule
-            </Button>
-          )}
         </CardContent>
+        <div className="p-3 border-t">
+          <Button
+            type="button"
+            onClick={handleAddRule}
+            variant="secondary"
+            className={`w-full ${
+              isEditing
+                ? "text-blue-600 bg-blue-50 hover:bg-blue-100"
+                : "text-gray-400 bg-gray-100 cursor-not-allowed"
+            }`}
+            disabled={!isEditing}
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Rule
+          </Button>
+        </div>
       </Card>
-
-      <Card className="col-span-2">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Rule Details</CardTitle>
-
-          {selectedRule && isEditing && (
-            <div className="flex space-x-2">
-              {rules.length > 1 && (
-                <Button variant="outline" size="sm" onClick={() => handleDeleteRule(selectedRuleName || "")}>
+      {rules.length > 0 && (
+        <Card className="col-span-2">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Rule Details</CardTitle>
+            {isEditing && selectedRuleIndex !== null && (
+              <div className="flex space-x-2">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleDeleteRule(selectedRuleIndex)}
+                >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete Rule
                 </Button>
-              )}
-            </div>
-          )}
-        </CardHeader>
-        <CardContent>
-          {selectedRule ? (
-            <div className="space-y-4">
-              {fields.map((item, index) => (
-                <div key={item.id}>
-                  {item.name === selectedRuleName && (
-                    <>
-                      <Form.FormField
+              </div>
+            )}
+          </CardHeader>
+          <CardContent className="space-y-6 px-6 pb-6">
+            {fields.map((item, index) => (
+              <div key={item.id}>
+                {selectedRuleIndex === index && (
+                  <div className="space-y-2">
+                    <div className="space-y-2">
+                      <FormField
                         control={control}
                         name={`data.routing_rules.${index}.name`}
                         render={({ field }) => (
-                          <Form.FormItem>
-                            <Form.FormLabel>Rule Name</Form.FormLabel>
-                            <Form.FormControl>
-                              <Input {...field} placeholder="Enter rule name" disabled={!isEditing} />
-                            </Form.FormControl>
-                            <Form.FormMessage />
-                          </Form.FormItem>
+                          <FormItem>
+                            <FormLabel>Rule Name</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="Enter rule name"
+                                disabled={!isEditing}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
                         )}
                       />
-                      <Form.FormField
+                    </div>
+                    <div className="space-y-2">
+                      <FormField
                         control={control}
                         name={`data.routing_rules.${index}.description`}
                         render={({ field }) => (
-                          <Form.FormItem>
-                            <Form.FormLabel>Description</Form.FormLabel>
-                            <Form.FormControl>
-                              <Textarea {...field} placeholder="Enter rule description" disabled={!isEditing} />
-                            </Form.FormControl>
-                            <Form.FormMessage />
-                          </Form.FormItem>
+                          <FormItem>
+                            <FormLabel>Description</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                placeholder="Enter rule description"
+                                disabled={!isEditing}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
                         )}
                       />
-                      <Form.FormField
+                    </div>
+                    <div className="space-y-2">
+                      <FormField
                         control={control}
                         name={`data.routing_rules.${index}.trigger_stage`}
                         render={({ field }) => (
-                          <Form.FormItem>
-                            <Form.FormLabel>Trigger Stage</Form.FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isEditing}>
-                              <Form.FormControl>
+                          <FormItem>
+                            <FormLabel>Trigger Stage</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              disabled={!isEditing}
+                            >
+                              <FormControl>
                                 <SelectTrigger id="trigger_stage">
                                   <SelectValue placeholder="Select Trigger Stage" />
                                 </SelectTrigger>
-                              </Form.FormControl>
+                              </FormControl>
                               <SelectContent>
                                 {stagesName.map((stage) => (
                                   <SelectItem key={stage} value={stage}>
@@ -182,238 +221,257 @@ const WorkflowRouting = ({ form, control, stagesName, isEditing }: WorkflowRouti
                                 ))}
                               </SelectContent>
                             </Select>
-                            <Form.FormMessage />
-                          </Form.FormItem>
+                            <FormMessage />
+                          </FormItem>
                         )}
                       />
-                      <div>
-                        <Label>Condition</Label>
-                        <div className="flex flex-col space-y-2 mt-2">
-                          <Form.FormField
+                    </div>
+                    <Label>Condition</Label>
+                    <div className="flex flex-col space-y-2 mt-2">
+                      <FormField
+                        control={control}
+                        name={`data.routing_rules.${index}.condition.field`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <Select
+                              onValueChange={(e) => {
+                                form.setValue(
+                                  `data.routing_rules.${index}.condition.operator`,
+                                  "eq"
+                                );
+                                form.setValue(`data.routing_rules.${index}.condition.value`, []);
+                                field.onChange(e);
+                              }}
+                              defaultValue={field.value}
+                              disabled={!isEditing}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select field" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {fieldList.map((f) => (
+                                  <SelectItem key={f.value} value={f.value}>
+                                    {f.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      {form.watch(`data.routing_rules.${index}.condition.field`) ===
+                        "total_amount" && (
+                        <>
+                          <FormField
                             control={control}
-                            name={`data.routing_rules.${index}.condition.field`}
+                            name={`data.routing_rules.${index}.condition.operator`}
                             render={({ field }) => (
-                              <Form.FormItem>
+                              <FormItem>
                                 <Select
-                                  onValueChange={(e) => {
-                                    form.setValue(`data.routing_rules.${index}.condition.operator`, "eq");
-                                    form.setValue(`data.routing_rules.${index}.condition.value`, []);
-                                    field.onChange(e);
-                                  }}
+                                  onValueChange={field.onChange}
                                   defaultValue={field.value}
                                   disabled={!isEditing}
                                 >
-                                  <Form.FormControl>
+                                  <FormControl>
                                     <SelectTrigger>
-                                      <SelectValue placeholder="Select field" />
+                                      <SelectValue placeholder="Select operator" />
                                     </SelectTrigger>
-                                  </Form.FormControl>
+                                  </FormControl>
                                   <SelectContent>
-                                    {fieldList.map((f) => (
-                                      <SelectItem key={f.value} value={f.value}>
-                                        {f.label}
-                                      </SelectItem>
-                                    ))}
+                                    <SelectItem value="eq">Equals</SelectItem>
+                                    <SelectItem value="gt">Greater than</SelectItem>
+                                    <SelectItem value="lt">Less than</SelectItem>
+                                    <SelectItem value="gte">Greater than or equal</SelectItem>
+                                    <SelectItem value="lte">Less than or equal</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                <Form.FormMessage />
-                              </Form.FormItem>
+                                <FormMessage />
+                              </FormItem>
                             )}
                           />
-                          {form.watch(`data.routing_rules.${index}.condition.field`) === "total_amount" && (
-                            <>
-                              <Form.FormField
-                                control={control}
-                                name={`data.routing_rules.${index}.condition.operator`}
-                                render={({ field }) => (
-                                  <Form.FormItem>
-                                    <Select
-                                      onValueChange={field.onChange}
-                                      defaultValue={field.value}
-                                      disabled={!isEditing}
-                                    >
-                                      <Form.FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select operator" />
-                                        </SelectTrigger>
-                                      </Form.FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="eq">Equals</SelectItem>
-                                        <SelectItem value="gt">Greater than</SelectItem>
-                                        <SelectItem value="lt">Less than</SelectItem>
-                                        <SelectItem value="gte">Greater than or equal</SelectItem>
-                                        <SelectItem value="lte">Less than or equal</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <Form.FormMessage />
-                                  </Form.FormItem>
-                                )}
-                              />
-                              <Form.FormField
-                                control={control}
-                                name={`data.routing_rules.${index}.condition.value`}
-                                render={({ field }) => (
-                                  <Form.FormItem>
-                                    <Form.FormControl>
-                                      <Input {...field} placeholder="Enter value" disabled={!isEditing} />
-                                    </Form.FormControl>
-                                    <Form.FormMessage />
-                                  </Form.FormItem>
-                                )}
-                              />
-                            </>
-                          )}
+                          <FormField
+                            control={control}
+                            name={`data.routing_rules.${index}.condition.value`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Input
+                                    {...field}
+                                    placeholder="Enter value"
+                                    disabled={!isEditing}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      )}
 
-                          {form.watch(`data.routing_rules.${index}.condition.field`) === "department" && (
-                            <>
-                              <Form.FormField
-                                control={control}
-                                name={`data.routing_rules.${index}.condition.operator`}
-                                render={({ field }) => (
-                                  <Form.FormItem>
-                                    <Select
-                                      onValueChange={field.onChange}
-                                      defaultValue={field.value}
-                                      disabled={!isEditing}
-                                    >
-                                      <Form.FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select operator" defaultValue={"eq"} />
-                                        </SelectTrigger>
-                                      </Form.FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="eq">Equals</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <Form.FormMessage />
-                                  </Form.FormItem>
-                                )}
-                              />
-                              <Form.FormField
-                                control={control}
-                                name={`data.routing_rules.${index}.condition.value`}
-                                render={({ field }) => (
-                                  <Form.FormItem>
-                                    <Form.FormControl>
-                                      <MultiSelect
-                                        options={departmentList}
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                        placeholder={`Select ${item.condition.field}`}
-                                        variant="inverted"
-                                      />
-                                    </Form.FormControl>
-                                    <Form.FormMessage />
-                                  </Form.FormItem>
-                                )}
-                              />
-                            </>
-                          )}
-                          {form.watch(`data.routing_rules.${index}.condition.field`) === "category" && (
-                            <>
-                              <Form.FormField
-                                control={control}
-                                name={`data.routing_rules.${index}.condition.operator`}
-                                render={({ field }) => (
-                                  <Form.FormItem>
-                                    <Select
-                                      onValueChange={field.onChange}
-                                      defaultValue={field.value}
-                                      disabled={!isEditing}
-                                    >
-                                      <Form.FormControl>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select operator" defaultValue={"eq"} />
-                                        </SelectTrigger>
-                                      </Form.FormControl>
-                                      <SelectContent>
-                                        <SelectItem value="eq">Equals</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                    <Form.FormMessage />
-                                  </Form.FormItem>
-                                )}
-                              />
-                              <Form.FormField
-                                control={control}
-                                name={`data.routing_rules.${index}.condition.value`}
-                                render={({ field }) => (
-                                  <Form.FormItem>
-                                    <Form.FormControl>
-                                      <MultiSelect
-                                        options={categoryList}
-                                        onValueChange={field.onChange}
-                                        defaultValue={field.value}
-                                        placeholder={`Select ${item.condition.field}`}
-                                        variant="inverted"
-                                      />
-                                    </Form.FormControl>
-                                    <Form.FormMessage />
-                                  </Form.FormItem>
-                                )}
-                              />
-                            </>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <Label>Action</Label>
-                        <div className="space-y-2 mt-2">
-                          <Form.FormField
+                      {form.watch(`data.routing_rules.${index}.condition.field`) ===
+                        "department" && (
+                        <>
+                          <FormField
                             control={control}
-                            name={`data.routing_rules.${index}.action.type`}
+                            name={`data.routing_rules.${index}.condition.operator`}
                             render={({ field }) => (
-                              <Form.FormItem>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isEditing}>
-                                  <Form.FormControl>
+                              <FormItem>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  disabled={!isEditing}
+                                >
+                                  <FormControl>
                                     <SelectTrigger>
-                                      <SelectValue placeholder="Select type" />
+                                      <SelectValue
+                                        placeholder="Select operator"
+                                        defaultValue={"eq"}
+                                      />
                                     </SelectTrigger>
-                                  </Form.FormControl>
+                                  </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="SKIP_STAGE">Skip Stage</SelectItem>
-                                    <SelectItem value="NEXT_STAGE">Next Stage</SelectItem>
+                                    <SelectItem value="eq">Equals</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                <Form.FormMessage />
-                              </Form.FormItem>
+                                <FormMessage />
+                              </FormItem>
                             )}
                           />
-                          <Form.FormField
+                          <FormField
                             control={control}
-                            name={`data.routing_rules.${index}.action.parameters.target_stage`}
+                            name={`data.routing_rules.${index}.condition.value`}
                             render={({ field }) => (
-                              <Form.FormItem>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!isEditing}>
-                                  <Form.FormControl>
+                              <FormItem>
+                                <FormControl>
+                                  <MultiSelect
+                                    options={departmentList}
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    placeholder={`Select ${item.condition.field}`}
+                                    variant="inverted"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      )}
+                      {form.watch(`data.routing_rules.${index}.condition.field`) === "category" && (
+                        <>
+                          <FormField
+                            control={control}
+                            name={`data.routing_rules.${index}.condition.operator`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                  disabled={!isEditing}
+                                >
+                                  <FormControl>
                                     <SelectTrigger>
-                                      <SelectValue placeholder="Select target stage" />
+                                      <SelectValue
+                                        placeholder="Select operator"
+                                        defaultValue={"eq"}
+                                      />
                                     </SelectTrigger>
-                                  </Form.FormControl>
+                                  </FormControl>
                                   <SelectContent>
-                                    {stagesName.map((stage) => (
-                                      <SelectItem key={stage} value={stage}>
-                                        {stage}
-                                      </SelectItem>
-                                    ))}
+                                    <SelectItem value="eq">Equals</SelectItem>
                                   </SelectContent>
                                 </Select>
-                                <Form.FormMessage />
-                              </Form.FormItem>
+                                <FormMessage />
+                              </FormItem>
                             )}
                           />
-                        </div>
+                          <FormField
+                            control={control}
+                            name={`data.routing_rules.${index}.condition.value`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <MultiSelect
+                                    options={categoryList}
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    placeholder={`Select ${item.condition.field}`}
+                                    variant="inverted"
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Action</Label>
+                      <div className="space-y-2 mt-2">
+                        <FormField
+                          control={control}
+                          name={`data.routing_rules.${index}.action.type`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                disabled={!isEditing}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="SKIP_STAGE">Skip Stage</SelectItem>
+                                  <SelectItem value="NEXT_STAGE">Next Stage</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={control}
+                          name={`data.routing_rules.${index}.action.parameters.target_stage`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                disabled={!isEditing}
+                              >
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select target stage" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {stagesName.map((stage) => (
+                                    <SelectItem key={stage} value={stage}>
+                                      {stage}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">Select a rule to view or edit details</p>
-          )}
-        </CardContent>
-      </Card>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

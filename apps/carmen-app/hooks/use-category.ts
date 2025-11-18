@@ -29,8 +29,6 @@ export const useCategoryQuery = ({
 }) => {
   const API_URL = categoryApiUrl(buCode);
 
-  console.log("API_URL", API_URL);
-
   const { data, isLoading, error } = useQuery({
     queryKey: ["category", buCode, params],
     queryFn: async () => {
@@ -53,8 +51,6 @@ export const useCategoryQuery = ({
     },
     [data]
   );
-
-  console.log("data", data);
 
   return { categories: data, isLoading, error, getCategoryName };
 };

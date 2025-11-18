@@ -11,9 +11,9 @@ interface WorkflowHeaderProps {
   form: UseFormReturn<WorkflowCreateModel>;
   mode: formType;
   isEditing: boolean;
-  onEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onCancelEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  onDelete: (e: React.MouseEvent<HTMLButtonElement>, id: string) => void;
+  onEdit: () => void;
+  onCancelEdit: () => void;
+  onDelete: (id: string) => void;
   onSubmit: (wf: WorkflowCreateModel) => void;
 }
 
@@ -65,22 +65,26 @@ const WorkflowHeader: React.FC<WorkflowHeaderProps> = ({
         <div className="flex space-x-2">
           {!isEditing ? (
             <>
-              <Button variant="default" onClick={onEdit}>
+              <Button type="button" variant="default" onClick={onEdit}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </Button>
-              <Button variant="outline">
+              <Button type="button" variant="outline">
                 <Copy className="mr-2 h-4 w-4" />
                 Duplicate
               </Button>
-              <Button variant="outline" onClick={(e) => onDelete(e, form.getValues("id") ?? "")}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onDelete(form.getValues("id") ?? "")}
+              >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
               </Button>
             </>
           ) : (
             <>
-              <Button variant="ghost" onClick={onCancelEdit}>
+              <Button type="button" variant="ghost" onClick={onCancelEdit}>
                 <X className="mr-2 h-4 w-4" />
                 Cancel
               </Button>

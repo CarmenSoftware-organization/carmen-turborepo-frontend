@@ -15,7 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { sampleWorkflows } from "../data/mockData";
+import { initialTemplates } from "../data/mockData";
 import { Template } from "@/dtos/workflows.dto";
 
 // Define variable groups and their items
@@ -48,8 +48,6 @@ const templateVariables = {
     { label: "System URL", value: "{{system.url}}" },
   ],
 };
-
-const initialTemplates = sampleWorkflows[0]?.data.notification_templates || [];
 
 export function WorkflowTemplates() {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -172,7 +170,7 @@ export function WorkflowTemplates() {
           <CardTitle>Template Details</CardTitle>
           {selectedTemplate && !isTemplateEditing && (
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={handleDeleteTemplate}>
+              <Button variant="destructive" size="sm" onClick={handleDeleteTemplate}>
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete Template
               </Button>
