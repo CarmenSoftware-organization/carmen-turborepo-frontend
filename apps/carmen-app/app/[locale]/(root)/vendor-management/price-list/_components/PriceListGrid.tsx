@@ -40,7 +40,6 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tPriceList = useTranslations("PriceList");
-  const tTableHeader = useTranslations("TableHeader");
   const queryClient = useQueryClient();
 
   const [deleteId, setDeleteId] = useState<string>("");

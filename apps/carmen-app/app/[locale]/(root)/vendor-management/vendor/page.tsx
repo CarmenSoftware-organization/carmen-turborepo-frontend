@@ -1,10 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import VendorComponent from "./_components/VendorComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Vendor",
-};
+export const generateMetadata = createMetadata("Vendor", "title");
 
 export default function Vendor() {
-    return <VendorComponent />
+  return <VendorComponent />;
 }

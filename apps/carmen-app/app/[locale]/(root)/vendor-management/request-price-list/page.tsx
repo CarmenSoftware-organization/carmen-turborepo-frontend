@@ -1,9 +1,7 @@
-import { Metadata } from "next";
+import { createMetadata } from "@/utils/metadata";
 import Rfp from "./_components/Rfp";
 
-export const metadata: Metadata = {
-  title: "Request for Pricing (RFP)",
-};
+export const generateMetadata = createMetadata("RFP", "title");
 
 export default function RfpPage() {
   return <Rfp />;

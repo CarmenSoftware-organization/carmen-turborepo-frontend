@@ -1,10 +1,7 @@
-import { Metadata } from "next";
-
+import { createMetadata } from "@/utils/metadata";
 import PriceListTemplate from "./_components/PriceListTemplate";
 
-export const metadata: Metadata = {
-  title: "Price List template",
-};
+export const generateMetadata = createMetadata("PriceListTemplate", "title");
 
 export default function PriceListTemplatePage() {
   return <PriceListTemplate />;

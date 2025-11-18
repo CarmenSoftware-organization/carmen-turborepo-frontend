@@ -1,10 +1,8 @@
-import { Metadata } from "next";
 import VendorPage from "./VendorPage";
+import { createMetadata } from "@/utils/metadata";
 
+export const generateMetadata = createMetadata("VendorManagement", "title");
 
-export const metadata: Metadata = {
-    title: "Vendor Management",
-};
 export default function VendorManagement() {
-    return <VendorPage />
+  return <VendorPage />;
 }
