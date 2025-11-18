@@ -372,7 +372,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     <FormItem className="space-y-0">
                       <FormControl>
                         <NumberInput
-                          value={field.value}
+                          value={field.value ?? 0}
                           onChange={field.onChange}
                           min={0}
                           step={0}
@@ -419,7 +419,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     <FormItem className="space-y-0">
                       <FormControl>
                         <NumberInput
-                          value={field.value}
+                          value={field.value ?? 0}
                           onChange={(value) => {
                             field.onChange(value);
                             handleFieldChange(unit.dataIndex!, "from_unit_qty", value);
@@ -474,7 +474,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     <FormItem className="space-y-0">
                       <FormControl>
                         <NumberInput
-                          value={field.value}
+                          value={field.value ?? 0}
                           onChange={field.onChange}
                           min={0}
                           step={0}
@@ -521,7 +521,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     <FormItem className="space-y-0">
                       <FormControl>
                         <NumberInput
-                          value={field.value}
+                          value={field.value ?? 0}
                           onChange={(value) => {
                             field.onChange(value);
                             handleFieldChange(unit.dataIndex!, "to_unit_qty", value);
@@ -544,7 +544,7 @@ const IngredientUnit = ({ control, currentMode }: IngredientUnitProps) => {
                     <FormItem className="space-y-0">
                       <FormControl>
                         <UnitCombobox
-                          value={field.value}
+                          value={field.value ?? ""}
                           onChange={(value) => {
                             field.onChange(value);
                             handleFieldChange(unit.dataIndex!, "to_unit_id", value);

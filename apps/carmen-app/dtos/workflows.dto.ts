@@ -25,56 +25,97 @@ export enum enum_sla_unit {
   days = "days",
 }
 
+export type Role = "create" | "approve" | "purchase" | "issue";
+export type CreatorAccess = "only_creator" | "all_department";
+
 export type OperatorType = "eq" | "lt" | "gt" | "lte" | "gte";
 export type ActionType = "SKIP_STAGE" | "NEXT_STAGE";
 export type NotificationChannel = "Email" | "System";
-export type NotificationEventTrigger = "onSubmit" | "onApprove" | "onReject" | "onSendBack" | "onSLA";
+export type NotificationEventTrigger =
+  | "onSubmit"
+  | "onApprove"
+  | "onReject"
+  | "onSendBack"
+  | "onSLA";
 
 export type PageMode = "add" | "edit" | "view";
 
 export interface Product {
-  id: number;
-  name: string;
+  id: string;
   code: string;
-  category: string;
-  subCategory?: string;
-  itemGroup?: string;
+  name: string;
+  local_name?: string;
+  description?: string | null;
+  product_status_type?: string;
+  inventory_unit_id: string;
+  inventory_unit_name: string;
+  product_item_group: {
+    id: string;
+    name: string;
+  };
+  product_sub_category: {
+    id: string;
+    name: string;
+  };
+  product_category: {
+    id: string;
+    name: string;
+  };
 }
 
-export interface Recipient {
+export interface Recipients {
   requestor: boolean;
-  current_approve?: boolean;
-  next_step?: boolean;
+  current_approve: boolean;
+  next_step: boolean;
 }
 
-export interface ActionConfig {
+export interface Action {
   is_active: boolean;
-  recipients: Recipient;
+  recipients: Recipients;
+  template?: string;
 }
 
 export interface AvailableActions {
-  submit: ActionConfig;
-  approve: ActionConfig;
-  reject: ActionConfig;
-  sendback: ActionConfig;
+  submit: Action;
+  approve: Action;
+  reject: Action;
+  sendback: Action;
+}
+
+export interface HideFields {
+  price_per_unit: boolean;
+  total_price: boolean;
+}
+
+export interface SLAWarningNotification {
+  recipients: {
+    requestor: boolean;
+    current_approve: boolean;
+  };
+  template?: string;
+}
+
+export interface User {
+  user_id: string;
+  firstname: string;
+  middlename: string;
+  lastname: string;
+  email: string;
+  initials: string;
 }
 
 export interface Stage {
   name: string;
-  description: string;
+  description?: string;
   sla: string;
   sla_unit: string;
+  role: string;
+  creator_access?: string;
   available_actions: AvailableActions;
-  hide_fields: {
-    price_per_unit: boolean;
-    total_price: boolean;
-  };
-  assigned_users: {
-    id: number;
-    name: string;
-    department: string;
-    location: string;
-  }[];
+  hide_fields: HideFields;
+  assigned_users?: User[];
+  is_hod?: boolean;
+  sla_warning_notification?: SLAWarningNotification;
 }
 
 export interface RoutingCondition {
@@ -97,6 +138,24 @@ export interface RoutingRule {
   trigger_stage: string;
   condition: RoutingCondition;
   action: RoutingAction;
+}
+
+export interface Workflow {
+  id: string;
+  name: string;
+  workflow_type: string;
+  data: WorkflowData;
+  is_active: boolean;
+  description: string;
+  note: null;
+  info: {};
+  dimension: {};
+  created_at: string;
+  created_by_id: string | null;
+  updated_at: string;
+  updated_by_id: string | null;
+  deleted_at: string | null;
+  deleted_by_id: string | null;
 }
 
 export interface WorkflowNotification {
@@ -126,28 +185,22 @@ export interface WorkflowData {
   products: Product[];
 }
 
-export interface Workflow {
-  id: string;
-  name: string;
-  workflow_type: string;
-  data: WorkflowData;
-  description: string;
-  is_active: boolean;
-}
-
 export const wfFormSchema = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(1).max(50),
-  workflow_type: z.enum([enum_workflow_type.purchase_request, enum_workflow_type.store_requisition]),
+  workflow_type: z.string(),
+  is_active: z.boolean(),
   data: z
     .object({
       document_reference_pattern: z.string(),
       stages: z.array(
         z.object({
           name: z.string().min(1).max(50),
-          description: z.string(),
+          description: z.string().optional(),
           sla: z.string(),
-          sla_unit: z.enum([enum_sla_unit.minutes, enum_sla_unit.hours, enum_sla_unit.days]),
+          sla_unit: z.string(),
+          role: z.string().optional(),
+          creator_access: z.string().optional(),
           available_actions: z.object({
             submit: z.object({
               is_active: z.boolean(),
@@ -186,14 +239,28 @@ export const wfFormSchema = z.object({
             price_per_unit: z.boolean(),
             total_price: z.boolean(),
           }),
-          assigned_users: z.array(
-            z.object({
-              id: z.number(),
-              name: z.string(),
-              department: z.string(),
-              location: z.string(),
+          assigned_users: z
+            .array(
+              z.object({
+                user_id: z.string(),
+                firstname: z.string(),
+                middlename: z.string(),
+                lastname: z.string(),
+                email: z.string(),
+                initials: z.string(),
+              })
+            )
+            .optional(),
+          is_hod: z.boolean().optional(),
+          sla_warning_notification: z
+            .object({
+              recipients: z.object({
+                requestor: z.boolean(),
+                current_approve: z.boolean(),
+              }),
+              template: z.string().optional(),
             })
-          ),
+            .optional(),
         })
       ),
       routing_rules: z.array(
@@ -216,19 +283,38 @@ export const wfFormSchema = z.object({
       notification_templates: z.array(z.object({})),
       products: z.array(
         z.object({
-          id: z.number(),
-          name: z.string(),
+          id: z.string(),
           code: z.string(),
-          category: z.string(),
-          subCategory: z.string(),
-          itemGroup: z.string(),
-          isAssigned: z.boolean(),
+          name: z.string(),
+          local_name: z.string().optional(),
+          description: z.nullable(z.string()).optional(),
+          product_status_type: z.string().optional(),
+          inventory_unit_id: z.string(),
+          inventory_unit_name: z.string(),
+          isAssigned: z.boolean().optional(),
+          product_item_group: z
+            .object({
+              id: z.string(),
+              name: z.string(),
+            })
+            .optional(),
+          product_sub_category: z
+            .object({
+              id: z.string(),
+              name: z.string(),
+            })
+            .optional(),
+          product_category: z
+            .object({
+              id: z.string(),
+              name: z.string(),
+            })
+            .optional(),
         })
       ),
     })
     .optional(),
-  description: z.string(),
-  is_active: z.boolean(),
+  description: z.string().optional(),
 });
 
 export type WorkflowCreateModel = z.infer<typeof wfFormSchema>;

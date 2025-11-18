@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Form from "@/components/ui/form";
+import { Form } from "@/components/form-custom/form";
 import { useForm } from "react-hook-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import WorkflowHeader from "./WorkflowHeader";
@@ -16,23 +16,36 @@ import { formType } from "@/dtos/form.dto";
 import {
   enum_sla_unit,
   enum_workflow_type,
+  User,
   wfFormSchema,
   WorkflowCreateModel,
 } from "@/dtos/workflows.dto";
 import { deleteWorkflow, handleSubmit } from "@/services/workflow";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { useCreateWorkflowMutation, useUpdateWorkflowMutation } from "@/hooks/use-workflow";
+import { toastSuccess } from "@/components/ui-custom/Toast";
+import { ProductListDto } from "@/dtos/product.dto";
 
 interface WorkflowDetailProps {
   mode: formType;
-  initialValues: WorkflowCreateModel | null;
+  initialValues?: WorkflowCreateModel;
+  listUser: User[];
+  listProduct: ProductListDto[];
 }
 
-const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) => {
+const WorkflowDetail: React.FC<WorkflowDetailProps> = ({
+  mode,
+  initialValues,
+  listUser,
+  listProduct,
+}) => {
   const { token, buCode } = useAuth();
   const router = useRouter();
-
   const [isEditing, setIsEditing] = useState(mode === formType.EDIT ? false : true);
+
+  const createWorkflowMutation = useCreateWorkflowMutation();
+  const updateWorkflowMutation = useUpdateWorkflowMutation();
 
   const form = useForm<WorkflowCreateModel>({
     resolver: zodResolver(wfFormSchema),
@@ -155,13 +168,11 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
     }
   }, [initialValues, form]);
 
-  const handleEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleEdit = () => {
     setIsEditing(!isEditing);
   };
 
-  const handleCancelEdit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleCancelEdit = () => {
     setIsEditing(false);
     if (initialValues) {
       form.reset({ ...initialValues });
@@ -176,8 +187,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
   // 	setIsEditing(false);
   // };
 
-  const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>, id: string) => {
-    e.preventDefault();
+  const handleDelete = async (id: string) => {
     try {
       const response = await deleteWorkflow(token, buCode, id);
       if (response.ok) {
@@ -194,35 +204,56 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
   const stageNames = form.getValues("data")?.stages?.map((stage) => stage?.name) || [];
 
   const onSubmit = async (values: WorkflowCreateModel) => {
+    console.log(values);
     try {
-      const result = await handleSubmit(values, token, buCode, mode);
-      if (result) {
-        form.reset();
-        console.log(
-          mode === formType.ADD ? "Workflow created successfully" : "Workflow updated successfully"
-        );
-        if (mode === formType.ADD && result.id) {
-          router.replace(`/system-administration/workflow-management/${result.id}`);
-          setIsEditing(true);
+      if (mode === formType.ADD) {
+        const result = (await createWorkflowMutation.mutateAsync({
+          token,
+          buCode,
+          workflow: values,
+        })) as { id?: string; data?: { id?: string } };
+
+        toastSuccess({ message: "Workflow created successfully" });
+        setIsEditing(true);
+        const resultId = result?.id || result?.data?.id;
+        if (resultId) {
+          const newUrl = globalThis.location.pathname.replace("/new", `/${resultId}`);
+          router.replace(newUrl);
         } else {
+          console.warn("No ID found in create workflow response, redirecting to list");
+          router.push("/system-administration/workflow-management");
+        }
+      } else {
+        if (!values.id) {
+          throw new Error("Product ID is required for update");
+        }
+
+        const result = (await updateWorkflowMutation.mutateAsync({
+          token,
+          buCode,
+          id: values.id,
+          workflow: values,
+        })) as { id?: string; data?: { id?: string } };
+
+        if (result) {
+          toastSuccess({ message: "Workflow updated successfully" });
           setIsEditing(false);
         }
       }
     } catch (error) {
-      console.error("Error saving vendor:", error);
-      console.log("Failed to save vendor");
+      console.error("Error saving workflow:", error);
+      console.log("Failed to save workflow");
     }
   };
 
   return (
-    <div className="container mx-auto py-6">
+    <>
       <Button variant="ghost" asChild className="mb-4">
         <Link href="/system-administration/workflow-management">
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Workflows
         </Link>
       </Button>
-
-      <Form.Form {...form}>
+      <Form {...form}>
         <form>
           <WorkflowHeader
             form={form}
@@ -233,7 +264,6 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
             onDelete={handleDelete}
             onSubmit={onSubmit}
           />
-
           <Tabs defaultValue="general">
             <TabsList className="mt-2">
               <TabsTrigger value="general">General</TabsTrigger>
@@ -245,7 +275,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
               <WorkflowGeneral control={form.control} isEditing={isEditing} />
             </TabsContent>
             <TabsContent value="stages">
-              <WorkflowStages form={form} control={form.control} isEditing={isEditing} />
+              <WorkflowStages control={form.control} isEditing={isEditing} listUser={listUser} />
             </TabsContent>
             <TabsContent value="routing">
               <WorkflowRouting
@@ -258,21 +288,18 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({ mode, initialValues }) 
 
             <TabsContent value="products">
               <WorkflowProducts
-                products={form.getValues("data")?.products || []}
+                form={form}
+                listProduct={listProduct}
                 isEditing={isEditing}
                 onSave={(products) => {
-                  console.log(products);
-                  // handleSave({
-                  // 	...wfData,
-                  // 	data: { ...form.getValues("data"), products },
-                  // })
+                  form.setValue("data.products", products);
                 }}
               />
             </TabsContent>
           </Tabs>
         </form>
-      </Form.Form>
-    </div>
+      </Form>
+    </>
   );
 };
 

@@ -1,26 +1,27 @@
 "use client";
-import React, { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState } from "react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import * as Form from "@/components/ui/form";
-import { Control, useFieldArray, UseFormReturn } from "react-hook-form";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, Trash2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { users } from "../data/mockUser";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import WorkflowStageNotification from "./WorkflowStageNotification";
-import { enum_sla_unit, WorkflowCreateModel } from "@/dtos/workflows.dto";
-import { slaUnitField } from "@/constants/fields";
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent,
+  DragOverlay,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { Card, CardContent } from "@/components/ui/card";
+import { Control, useFieldArray } from "react-hook-form";
+import { GripVertical } from "lucide-react";
+import { Stage, User, WorkflowCreateModel } from "@/dtos/workflows.dto";
+import StageList from "./StageList";
+import StageDetailPanel from "./StageDetailPanel";
 
 enum enum_available_actions {
   submit = "submit",
@@ -30,66 +31,88 @@ enum enum_available_actions {
 }
 
 interface WorkflowStageProps {
-  form: UseFormReturn<WorkflowCreateModel>;
   control: Control<WorkflowCreateModel>;
   isEditing: boolean;
+  listUser: User[];
 }
 
-const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
-  const { fields, insert, move, remove } = useFieldArray({
+const WorkflowStages = ({ control, isEditing, listUser }: WorkflowStageProps) => {
+  const { fields, insert, move, update, remove } = useFieldArray({
     name: "data.stages",
     control: control,
   });
-  const [selectedStageName, setSelectedStageName] = useState<string | null>(null);
-  const [userFilter, setUserFilter] = useState<"all" | "assigned" | "unassigned">("all");
-  const selectedStage = fields.find((stage) => stage.name === selectedStageName);
+  const [selectedStageIndex, setSelectedStageIndex] = useState(0);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
 
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-  const dragItem = useRef<number | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
-  // Drag-and-drop logic
-  const onDragStart = (idx: number) => {
-    dragItem.current = idx;
-    setDraggedIndex(idx);
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(event.active.id as string);
   };
 
-  const onDragEnter = (idx: number) => {
-    setDragOverIndex(idx);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveDragId(null);
+
+    if (!fields || !over || active.id === over.id) return;
+
+    const oldIndex = fields.findIndex((_, index) => `stage-list-${index}` === active.id);
+    const newIndex = fields.findIndex((_, index) => `stage-list-${index}` === over.id);
+
+    const isFirstOrLast = (index: number) => index === 0 || index === fields.length - 1;
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      if (isFirstOrLast(oldIndex) || isFirstOrLast(newIndex)) {
+        return;
+      }
+
+      move(oldIndex, newIndex);
+
+      if (selectedStageIndex === oldIndex) {
+        setSelectedStageIndex(newIndex);
+      } else if (oldIndex < selectedStageIndex && newIndex >= selectedStageIndex) {
+        setSelectedStageIndex(selectedStageIndex - 1);
+      } else if (oldIndex > selectedStageIndex && newIndex <= selectedStageIndex) {
+        setSelectedStageIndex(selectedStageIndex + 1);
+      }
+    }
   };
 
-  const onDragEnd = () => {
-    setDraggedIndex(null);
-    setDragOverIndex(null);
-    dragItem.current = null;
+  const getActiveDragStage = () => {
+    if (!activeDragId || !fields) return null;
+    const index = parseInt(activeDragId.replace("stage-list-", ""));
+    return fields[index];
   };
 
-  const onDrop = (idx: number) => {
-    if (dragItem.current === null || dragItem.current === idx) return;
-    move(dragItem.current, idx);
-    setDraggedIndex(null);
-    setDragOverIndex(null);
-    dragItem.current = null;
-  };
-
-  const handleStageSelect = (stageName: string) => {
-    setSelectedStageName(stageName);
-  };
-
-  const handleDeleteStage = (stageName: string) => {
-    const index = fields.findIndex((stage) => stage.name === stageName);
-    remove(index);
+  const handleDeleteStage = () => {
+    remove(selectedStageIndex);
     //onSave(updatedStages);
   };
 
-  const handleAddStage = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const dynamicStages = fields.length - 2;
-    insert(fields.length - 1, {
-      name: `Stage ${dynamicStages + 1}`,
+  const handleSelectStageIndex = (index: number) => {
+    setSelectedStageIndex(index);
+  };
+
+  const handleAddStage = () => {
+    let stageName = `New Stage ${fields.length}`;
+    let counter = fields.length;
+    while (fields.some((s) => s.name.toLowerCase() === stageName.toLowerCase())) {
+      counter++;
+      stageName = `New Stage ${counter}`;
+    }
+
+    const newStage: Stage = {
+      name: stageName,
       description: "",
       sla: "24",
-      sla_unit: enum_sla_unit.hours,
+      sla_unit: "hours",
+      role: "approve",
+      creator_access: "only_creator",
       available_actions: {
         submit: {
           is_active: false,
@@ -100,25 +123,25 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
           },
         },
         approve: {
-          is_active: false,
+          is_active: true,
           recipients: {
-            requestor: false,
+            requestor: true,
             current_approve: false,
-            next_step: false,
+            next_step: true,
           },
         },
         reject: {
-          is_active: false,
+          is_active: true,
           recipients: {
-            requestor: false,
+            requestor: true,
             current_approve: false,
             next_step: false,
           },
         },
         sendback: {
-          is_active: false,
+          is_active: true,
           recipients: {
-            requestor: false,
+            requestor: true,
             current_approve: false,
             next_step: false,
           },
@@ -129,488 +152,98 @@ const WorkflowStages = ({ form, control, isEditing }: WorkflowStageProps) => {
         total_price: false,
       },
       assigned_users: [],
-    });
+      sla_warning_notification: {
+        recipients: {
+          current_approve: false,
+          requestor: false,
+        },
+      },
+    };
 
-    setSelectedStageName(`Stage ${dynamicStages + 1}`);
+    insert(fields.length - 1, newStage);
+
+    setSelectedStageIndex(fields.length - 1);
+  };
+
+  const handleUpdateStage = (stage: Stage) => {
+    update(selectedStageIndex, stage);
   };
 
   const handleActionToggle = (action: enum_available_actions) => {
-    if (!selectedStage) return;
-    const updatedStages = fields.map((stage) => {
-      if (stage.name === selectedStage.name) {
-        const updatedActions = { ...stage.available_actions };
-
-        if (updatedActions[action]) {
-          updatedActions[action] = {
-            ...updatedActions[action],
-            is_active: !updatedActions[action].is_active,
-          };
-        }
-
-        return {
-          ...stage,
-          available_actions: updatedActions,
-        };
-      }
-      return stage;
-    });
-    form.setValue("data.stages", updatedStages);
+    // if (!selectedStage) return;
+    // const updatedStages = fields.map((stage) => {
+    //   if (stage.name === selectedStage.name) {
+    //     const updatedActions = { ...stage.available_actions };
+    //     if (updatedActions[action]) {
+    //       updatedActions[action] = {
+    //         ...updatedActions[action],
+    //         is_active: !updatedActions[action].is_active,
+    //       };
+    //     }
+    //     return {
+    //       ...stage,
+    //       available_actions: updatedActions,
+    //     };
+    //   }
+    //   return stage;
+    // });
+    // form.setValue("data.stages", updatedStages);
   };
-
-  const handleAssignUser = (user: {
-    id: number;
-    name: string;
-    department: string;
-    location: string;
-  }) => {
-    if (!selectedStage) return;
-
-    const updatedStages = fields.map((stage) => {
-      if (stage.name === selectedStage.name) {
-        const isUserAssigned = stage.assigned_users.some((u) => u.id === user.id);
-        const updatedUsers = isUserAssigned
-          ? stage.assigned_users.filter((u) => u.id !== user.id)
-          : [...stage.assigned_users, user];
-        return { ...stage, assigned_users: updatedUsers };
-      }
-      return stage;
-    });
-    form.setValue("data.stages", updatedStages);
-  };
-
-  const filteredUsers = users.filter((user) => {
-    const isAssigned = selectedStage?.assigned_users.some((u) => u.id === user.id) ?? false;
-    switch (userFilter) {
-      case "assigned":
-        return isAssigned;
-      case "unassigned":
-        return !isAssigned;
-      default:
-        return true;
-    }
-  });
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Workflow Stages</h2>
-        <p className="text-sm text-muted-foreground">
-          Configure workflow stages and their settings
-        </p>
+      <div className="mb-6">
+        <h2 className="text-xl font-bold mb-1">Workflow Stages</h2>
+        <p className="text-sm text-gray-600">Configure workflow stages and their settings</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Stages</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* <ul className="space-y-2">
-              {stages.map((stage) => (
-                <li
-                  key={stage.name}
-                  className={`p-2 rounded-md cursor-pointer ${
-                    selectedStageName === stage.name ? "bg-secondary" : "hover:bg-secondary/50"
-                  }`}
-                  onClick={() => handleStageSelect(stage.name)}
-                >
-                  {stage.name}
-                </li>
-              ))}
-            </ul> */}
-            <ul className="space-y-2">
-              {fields.map((field, idx) => (
-                <li
-                  key={field.id}
-                  draggable={idx !== fields.length - 1 && idx !== 0}
-                  // can"t drag "Completed" or first
-                  onDragStart={() => {
-                    if (idx !== 0 && idx !== fields.length - 1) onDragStart(idx);
-                  }}
-                  onDragEnter={() => {
-                    if (
-                      draggedIndex !== null &&
-                      idx !== draggedIndex &&
-                      idx !== 0 && // can"t drag over first
-                      idx !== fields.length - 1 // can"t drag over "Completed"
-                    )
-                      onDragEnter(idx);
-                  }}
-                  onDragEnd={onDragEnd}
-                  onDrop={() => {
-                    if (draggedIndex !== null && idx !== 0 && idx !== fields.length - 1)
-                      onDrop(idx);
-                  }}
-                  onDragOver={(e) => {
-                    if (idx !== 0 && idx !== fields.length - 1) e.preventDefault();
-                  }}
-                  className={`
-               p-2 rounded-md flex items-center gap-2 transition
-                ${
-                  draggedIndex === idx
-                    ? "bg-primary text-primary-foreground opacity-80 shadow-lg scale-105 ring-2 ring-primary"
-                    : dragOverIndex === idx
-                      ? "bg-secondary text-secondary-foreground scale-100 shadow-inner"
-                      : "bg-transparent hover:bg-secondary/60 cursor-grab"
-                }
-                select-none
-              `}
-                  style={{
-                    border: draggedIndex === idx ? "2px dashed #1D4ED8" : "",
-                  }}
-                  onClick={() => handleStageSelect(field.name)}
-                >
-                  <span className="flex-1">{field.name}</span>
-                </li>
-              ))}
-            </ul>
-
-            {isEditing && (
-              <Button className="w-full mt-4" onClick={handleAddStage}>
-                <UserPlus className="mr-2 h-4 w-4" /> Add Stage
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="col-span-2">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Stage Details</CardTitle>
-
-            {selectedStage && isEditing && (
-              <div className="flex space-x-2">
-                {selectedStage.name !== "Request Creation" &&
-                  selectedStage.name !== "Completed" && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDeleteStage(selectedStageName || "")}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete Stage
-                    </Button>
-                  )}
-              </div>
-            )}
-          </CardHeader>
-          <CardContent>
-            {selectedStage ? (
-              <Tabs defaultValue="general" className="space-y-4">
-                <TabsList>
-                  <TabsTrigger value="general">General</TabsTrigger>
-                  <TabsTrigger value="notifications">Notifications</TabsTrigger>
-                  <TabsTrigger value="assigned-users">Assigned Users</TabsTrigger>
-                </TabsList>
-                <TabsContent value="general">
-                  {fields.map((field, index) => (
-                    <div key={field.id}>
-                      {field.name === selectedStageName && (
-                        <>
-                          <Form.FormField
-                            control={control}
-                            name={`data.stages.${index}.name`}
-                            render={({ field }) => (
-                              <Form.FormItem>
-                                <Form.FormLabel>Stage Name</Form.FormLabel>
-                                <Form.FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter Stage Name"
-                                    disabled={!isEditing}
-                                  />
-                                </Form.FormControl>
-                              </Form.FormItem>
-                            )}
-                          />
-                          <Form.FormField
-                            control={control}
-                            name={`data.stages.${index}.description`}
-                            render={({ field }) => (
-                              <Form.FormItem>
-                                <Form.FormLabel>Description</Form.FormLabel>
-                                <Form.FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="Enter Description"
-                                    disabled={!isEditing}
-                                  />
-                                </Form.FormControl>
-                              </Form.FormItem>
-                            )}
-                          />
-                          <div className="grid grid-cols-2 gap-4">
-                            <Form.FormField
-                              control={control}
-                              name={`data.stages.${index}.sla`}
-                              render={({ field }) => (
-                                <Form.FormItem>
-                                  <Form.FormLabel>SLA</Form.FormLabel>
-                                  <Form.FormControl>
-                                    <Input
-                                      {...field}
-                                      placeholder="Enter SLA"
-                                      disabled={!isEditing}
-                                    />
-                                  </Form.FormControl>
-                                </Form.FormItem>
-                              )}
-                            />
-                            <Form.FormField
-                              control={control}
-                              name={`data.stages.${index}.sla_unit`}
-                              render={({ field }) => (
-                                <Form.FormItem>
-                                  <Form.FormLabel>SLA Unit</Form.FormLabel>
-                                  <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    disabled={!isEditing}
-                                  >
-                                    <Form.FormControl>
-                                      <SelectTrigger id="sla_unit">
-                                        <SelectValue placeholder="Select SLA Unit" />
-                                      </SelectTrigger>
-                                    </Form.FormControl>
-                                    <SelectContent>
-                                      {slaUnitField.map(({ label, value }) => (
-                                        <SelectItem
-                                          key={value}
-                                          value={value}
-                                          className="cursor-pointer"
-                                        >
-                                          {label}
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                  <Form.FormMessage />
-                                </Form.FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div>
-                            <Label>Available Actions</Label>
-                            <div className="flex flex-wrap gap-2 mt-2">
-                              {selectedStage.name === "Request Creation" ? (
-                                <Button
-                                  variant={
-                                    selectedStage.available_actions[
-                                      enum_available_actions["submit"]
-                                    ]?.is_active
-                                      ? "default"
-                                      : "outline"
-                                  }
-                                  size="sm"
-                                  onClick={() =>
-                                    handleActionToggle(enum_available_actions["submit"])
-                                  }
-                                  disabled={!isEditing}
-                                >
-                                  Submit
-                                </Button>
-                              ) : (
-                                <>
-                                  {(
-                                    Object.keys(enum_available_actions) as Array<
-                                      keyof typeof enum_available_actions
-                                    >
-                                  ).map((action) => (
-                                    <Button
-                                      key={action}
-                                      variant={
-                                        selectedStage.available_actions[
-                                          enum_available_actions[action]
-                                        ]?.is_active
-                                          ? "default"
-                                          : "outline"
-                                      }
-                                      size="sm"
-                                      onClick={() =>
-                                        handleActionToggle(enum_available_actions[action])
-                                      }
-                                      disabled={!isEditing}
-                                    >
-                                      {action}
-                                    </Button>
-                                  ))}
-                                </>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="space-y-3 mt-2">
-                            <Label>Hidden Fields</Label>
-                            <Form.FormField
-                              control={control}
-                              name={`data.stages.${index}.hide_fields.price_per_unit`}
-                              render={({ field }) => (
-                                <Form.FormItem>
-                                  <div className="flex items-center justify-between">
-                                    <Form.FormLabel>Price Per Unit</Form.FormLabel>
-                                    <Form.FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        disabled={!isEditing}
-                                      />
-                                    </Form.FormControl>
-                                  </div>
-                                  <Form.FormMessage />
-                                </Form.FormItem>
-                              )}
-                            />
-                            <Form.FormField
-                              control={control}
-                              name={`data.stages.${index}.hide_fields.total_price`}
-                              render={({ field }) => (
-                                <Form.FormItem>
-                                  <div className="flex items-center justify-between">
-                                    <Form.FormLabel>Total Price</Form.FormLabel>
-                                    <Form.FormControl>
-                                      <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        disabled={!isEditing}
-                                      />
-                                    </Form.FormControl>
-                                  </div>
-                                  <Form.FormMessage />
-                                </Form.FormItem>
-                              )}
-                            />
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </TabsContent>
-
-                <TabsContent value="notifications">
-                  {fields.map((field, index) => (
-                    <div key={field.id}>
-                      {field.name === selectedStageName && (
-                        <WorkflowStageNotification
-                          selectedStage={selectedStage}
-                          index={index}
-                          control={control}
-                          isEditing={isEditing}
-                        />
-                      )}
-                    </div>
-                  ))}
-                </TabsContent>
-
-                <TabsContent value="assigned-users">
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <h2 className="text-lg font-semibold">Stage Users</h2>
-                        <p className="text-sm text-muted-foreground">
-                          Manage users assigned to this stage
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex space-x-4">
-                      <Input
-                        className="flex-grow"
-                        placeholder="Search users..."
-                        onChange={(e) => console.log("Search:", e.target.value)}
-                        disabled={!isEditing}
-                      />
-                      <Select
-                        value={userFilter}
-                        onValueChange={(value: "all" | "assigned" | "unassigned") =>
-                          setUserFilter(value)
-                        }
-                        disabled={!isEditing}
-                      >
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Filter by status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Users</SelectItem>
-                          <SelectItem value="assigned">Assigned</SelectItem>
-                          <SelectItem value="unassigned">Unassigned</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <Card>
-                      <CardContent className="p-6">
-                        <div className="flex justify-between items-center mb-4">
-                          <span className="font-semibold">
-                            Total Users: {selectedStage.assigned_users.length} / {users.length}
-                          </span>
-                        </div>
-
-                        <div className="space-y-4">
-                          {filteredUsers.map((user) => {
-                            const isAssigned = selectedStage.assigned_users.some(
-                              (u) => u.id === user.id
-                            );
-                            return (
-                              <Card
-                                key={user.id}
-                                className={`p-4 ${isAssigned ? "border-primary" : ""}`}
-                              >
-                                <div className="flex items-center space-x-4">
-                                  <Avatar>
-                                    <AvatarImage
-                                      src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.name}`}
-                                    />
-                                    <AvatarFallback>
-                                      {user.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-grow">
-                                    <h4 className="font-semibold">{user.name}</h4>
-                                    <p className="text-sm text-gray-500">
-                                      {user.department} • {user.location}
-                                    </p>
-                                  </div>
-                                  <Button
-                                    variant={isAssigned ? "default" : "outline"}
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      handleAssignUser(user);
-                                    }}
-                                    disabled={!isEditing}
-                                  >
-                                    {isAssigned ? "Assigned" : "Assign"}
-                                  </Button>
-                                </div>
-                              </Card>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-500">Showing all users</span>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm" disabled>
-                          Previous
-                        </Button>
-                        <Button variant="outline" size="sm" disabled>
-                          Next
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
-            ) : (
-              <p className="text-muted-foreground">Select a stage to view or edit details</p>
-            )}
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-12 gap-6">
+        {/* Left Sidebar - Stage List */}
+        <div className="col-span-4">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={fields.map((_, index) => `stage-list-${index}`)}
+              strategy={verticalListSortingStrategy}
+            >
+              <StageList
+                stages={fields}
+                selectedIndex={selectedStageIndex}
+                onSelectStage={handleSelectStageIndex}
+                onAddStage={handleAddStage}
+                isEditing={isEditing}
+              />
+            </SortableContext>
+            <DragOverlay>
+              {activeDragId ? (
+                <Card className="shadow-xl">
+                  <CardContent className="p-3 flex items-center gap-2">
+                    <GripVertical className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm font-medium">{getActiveDragStage()?.name}</span>
+                  </CardContent>
+                </Card>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+        {/* Right Panel - Stage Details */}
+        <div className="col-span-8">
+          <StageDetailPanel
+            stage={fields[selectedStageIndex] as Stage}
+            listUser={listUser}
+            onUpdate={handleUpdateStage}
+            onDelete={handleDeleteStage}
+            isLastStage={selectedStageIndex === (fields.length ?? 0) - 1}
+            isFirstStage={selectedStageIndex === 0}
+            isEditing={isEditing}
+            control={control}
+            selectedStageIndex={selectedStageIndex}
+          />
+        </div>
       </div>
     </div>
   );
