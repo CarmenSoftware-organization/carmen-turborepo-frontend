@@ -113,7 +113,6 @@ export default function PriceListTemplateList({
             icon={<Activity className="h-4 w-4" />}
           />
         ),
-
         cell: ({ row }) => {
           const status = row.original.status;
           return (

@@ -356,7 +356,9 @@
     "list_view": "แสดงผลตาราง",
     "grid_view": "แสดงผลรายการ",
     "filter_by_status": "กรองตามสถานะ",
-    "sort_by": "เรียงตาม"
+    "sort_by": "เรียงตาม",
+    "select_status": "เลือกสถานะ",
+    "last_updated": "อัพเดทล่าสุด"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -440,7 +442,9 @@
     "valid_period": "ระยะเวลาใช้งาน",
     "create_date": "วันที่สร้าง",
     "update_date": "วันที่อัพเดต",
-    "days": "วัน"
+    "days": "วัน",
+    "effective_period": "ระยะเวลาใช้งาน",
+    "items": "รายการ"
   },
   "Unit": {
     "title": "หน่วยนับ",

@@ -1,11 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { PriceListDto } from "@/dtos/price-list.dto";
 import { Calendar, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { useDeletePriceList } from "@/hooks/use-price-list";
+import { useDeletePriceList } from "../_hooks/use-price-list";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -31,8 +30,6 @@ import {
   ColumnDef,
   getCoreRowModel,
   useReactTable,
-  PaginationState,
-  SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import {
@@ -40,34 +37,18 @@ import {
   DataGridTableRowSelect,
   DataGridTableRowSelectAll,
 } from "@/components/ui/data-grid-table";
-import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import type { PriceListDtoList } from "../_dto/price-list-dto";
 
 interface ListPriceListProps {
-  readonly priceLists?: PriceListDto[];
+  readonly priceLists?: PriceListDtoList[];
   readonly isLoading?: boolean;
-  readonly totalItems?: number;
-  readonly totalPages?: number;
-  readonly perpage?: number;
-  readonly currentPage?: number;
-  readonly onPageChange?: (page: number) => void;
-  readonly sort?: { field: string; direction: "asc" | "desc" } | null;
-  readonly onSort?: (sortString: string) => void;
-  readonly setPerpage?: (perpage: number) => void;
 }
 
 export default function ListPriceList({
   priceLists = [],
   isLoading = false,
-  totalItems = 0,
-  totalPages = 1,
-  perpage = 10,
-  currentPage = 1,
-  onPageChange,
-  sort,
-  onSort,
-  setPerpage,
 }: ListPriceListProps) {
   const { token, buCode, dateFormat } = useAuth();
   const tTableHeader = useTranslations("TableHeader");
@@ -75,24 +56,11 @@ export default function ListPriceList({
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState<string>("");
   const [alertOpen, setAlertOpen] = useState(false);
-  const [selectedPriceList, setSelectedPriceList] = useState<PriceListDto | null>(null);
+  const [selectedPriceList, setSelectedPriceList] = useState<PriceListDtoList | null>(null);
 
   const { mutate: deletePriceList, isPending: isDeleting } = useDeletePriceList(token, buCode);
 
-  const sorting: SortingState = useMemo(() => {
-    if (!sort) return [];
-    return [{ id: sort.field, desc: sort.direction === "desc" }];
-  }, [sort]);
-
-  const pagination: PaginationState = useMemo(
-    () => ({
-      pageIndex: currentPage - 1,
-      pageSize: perpage,
-    }),
-    [currentPage, perpage]
-  );
-
-  const handleDeleteClick = (priceList: PriceListDto) => {
+  const handleDeleteClick = (priceList: PriceListDtoList) => {
     setSelectedPriceList(priceList);
     setAlertOpen(true);
   };
@@ -108,7 +76,7 @@ export default function ListPriceList({
         setAlertOpen(false);
         setSelectedPriceList(null);
         // Invalidate and refetch price list data
-        queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
+        queryClient.invalidateQueries({ queryKey: ["price-lists", buCode] });
       },
       onError: () => {
         toastError({ message: "Failed to delete price list" });
@@ -120,7 +88,7 @@ export default function ListPriceList({
   };
 
   // Define columns
-  const columns = useMemo<ColumnDef<PriceListDto>[]>(
+  const columns = useMemo<ColumnDef<PriceListDtoList>[]>(
     () => [
       {
         id: "select",
@@ -134,7 +102,7 @@ export default function ListPriceList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
+          <div className="text-center">{row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -144,11 +112,11 @@ export default function ListPriceList({
         },
       },
       {
-        accessorKey: "vendor.name",
+        accessorKey: "no",
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
-            title={tTableHeader("name")}
+            title={tTableHeader("no")}
             icon={<List className="h-4 w-4" />}
           />
         ),
@@ -156,43 +124,63 @@ export default function ListPriceList({
           const priceList = row.original;
           return (
             <ButtonLink href={`/vendor-management/price-list/${priceList.id}`}>
-              {priceList.vendor?.name}
+              {priceList.no}
             </ButtonLink>
           );
         },
-        enableSorting: true,
-        size: 300,
-        meta: {
-          headerTitle: tTableHeader("name"),
+        enableSorting: false,
+        size: 200,
+      },
+      {
+        accessorKey: "vendor.name",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("vendor")}
+          />
+        ),
+        cell: ({ row }) => {
+          const priceList = row.original;
+          return <span>{priceList.vendor?.name}</span>;
         },
+        enableSorting: false,
+        size: 300,
       },
       {
-        accessorKey: "from_date",
+        accessorKey: "effectivePeriod",
         header: () => (
           <div className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            <span>{tTableHeader("start_date")}</span>
+            <span>{tTableHeader("effective_period")}</span>
           </div>
         ),
         cell: ({ row }) => (
-          <span>{formatDate(row.original.from_date ?? "", dateFormat ?? "dd/MM/yyyy")}</span>
+          <span>{row.original.effectivePeriod}</span>
         ),
         enableSorting: false,
-        size: 150,
+        size: 200,
       },
       {
-        accessorKey: "to_date",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            <span>{tTableHeader("end_date")}</span>
-          </div>
-        ),
+        accessorKey: "status",
+        header: () => <span>{tTableHeader("status")}</span>,
         cell: ({ row }) => (
-          <span>{formatDate(row.original.to_date ?? "", dateFormat ?? "dd/MM/yyyy")}</span>
+          <span className="capitalize">{row.original.status}</span>
         ),
         enableSorting: false,
-        size: 150,
+        size: 120,
+      },
+      {
+        accessorKey: "itemsCount",
+        header: () => <span className="text-right">{tTableHeader("items")}</span>,
+        cell: ({ row }) => (
+          <span className="text-right block">{row.original.itemsCount}</span>
+        ),
+        enableSorting: false,
+        size: 100,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
       },
       {
         id: "action",
@@ -231,52 +219,23 @@ export default function ListPriceList({
         },
       },
     ],
-    [tTableHeader, currentPage, perpage, dateFormat, isDeleting, deleteId]
+    [tTableHeader, dateFormat, isDeleting, deleteId]
   );
 
   // Initialize table
   const table = useReactTable({
     data: priceLists,
     columns,
-    pageCount: totalPages,
     getRowId: (row) => row.id ?? "",
-    state: {
-      pagination,
-      sorting,
-    },
     enableRowSelection: true,
-    onPaginationChange: (updater) => {
-      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
-      if (onPageChange) {
-        onPageChange(newPagination.pageIndex + 1);
-      }
-      if (setPerpage) {
-        setPerpage(newPagination.pageSize);
-      }
-    },
-    onSortingChange: (updater) => {
-      if (!onSort) return;
-
-      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
-
-      if (newSorting.length > 0) {
-        const sortField = newSorting[0].id;
-        const sortDirection = newSorting[0].desc ? "desc" : "asc";
-        onSort(`${sortField}:${sortDirection}`);
-      } else {
-        onSort("");
-      }
-    },
     getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    manualSorting: true,
   });
 
   return (
     <>
       <DataGrid
         table={table}
-        recordCount={totalItems}
+        recordCount={priceLists.length}
         isLoading={isLoading}
         loadingMode="skeleton"
         emptyMessage={tCommon("no_data")}
@@ -296,7 +255,6 @@ export default function ListPriceList({
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </DataGridContainer>
-          <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
         </div>
       </DataGrid>
 

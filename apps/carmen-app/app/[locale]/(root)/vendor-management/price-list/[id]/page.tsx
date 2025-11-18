@@ -1,9 +1,10 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { usePriceListById } from "@/hooks/use-price-list";
+import { usePriceListById } from "../_hooks/use-price-list";
 import { useParams } from "next/navigation";
-import DetailPriceList from "../_components/DetailPriceList";
+import DetailPriceList from "../_components/form/FormDetailPriceList";
+import { formType } from "@/dtos/form.dto";
 
 export default function PriceListDetailPage() {
   const { token, buCode } = useAuth();
@@ -28,5 +29,5 @@ export default function PriceListDetailPage() {
     return <div>Loading...</div>;
   }
 
-  return <DetailPriceList priceList={priceListDetail.data} />;
+  return <DetailPriceList priceList={priceListDetail} mode={formType.VIEW} />;
 }

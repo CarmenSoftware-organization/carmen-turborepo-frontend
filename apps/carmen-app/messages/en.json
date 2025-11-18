@@ -359,7 +359,9 @@
     "list_view": "List View",
     "grid_view": "Grid View",
     "sort_by": "Sort By",
-    "filter_by_status": "Filter By Status"
+    "filter_by_status": "Filter By Status",
+    "select_status": "Select Status",
+    "last_updated": "Last Updated"
   },
   "TableHeader": {
     "all": "All",
@@ -443,7 +445,9 @@
     "valid_period": "Valid Period",
     "create_date": "Create Date",
     "update_date": "Update Date",
-    "days": "Days"
+    "days": "Days",
+    "effective_period": "Effective Period",
+    "items": "Items"
   },
   "Unit": {
     "title": "Unit",
