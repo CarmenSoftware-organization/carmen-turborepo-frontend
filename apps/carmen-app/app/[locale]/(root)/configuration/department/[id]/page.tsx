@@ -2,9 +2,10 @@
 
 import { useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import DepartmentDetail from "../_components/DepartmentDetail";
+import MainForm from "../_components/form/MainForm";
 import { formType } from "@/dtos/form.dto";
 import { useDepartmentByIdQuery } from "@/hooks/use-departments";
+import { DetailSkeleton } from "@/components/loading/DetailSkeleton";
 
 export default function DepartmentIdPage() {
   const { token, buCode } = useAuth();
@@ -13,11 +14,9 @@ export default function DepartmentIdPage() {
 
   const { data: department, isLoading } = useDepartmentByIdQuery(token, buCode, id);
 
-  return (
-    <DepartmentDetail
-      defaultValues={department}
-      isLoading={isLoading}
-      mode={formType.VIEW}
-    />
-  );
+  if (isLoading) {
+    return <DetailSkeleton />;
+  }
+
+  return <MainForm defaultValues={department} mode={formType.VIEW} />;
 }

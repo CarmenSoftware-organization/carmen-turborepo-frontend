@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { KeyboardEvent } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -15,6 +15,7 @@ interface Props {
   readonly containerClassName?: string;
   readonly buttonClassName?: string;
   readonly inputClassName?: string;
+  readonly debounceMs?: number;
 }
 export default function SearchInput({
   defaultValue,
@@ -23,29 +24,61 @@ export default function SearchInput({
   containerClassName = "w-full md:w-[405px]",
   buttonClassName = "absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent hover:text-muted-foreground/80",
   inputClassName = "",
+  debounceMs = 500,
 }: Props) {
   const tCommon = useTranslations("Common");
 
   const [inputValue, setInputValue] = useState(defaultValue);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    setInputValue(defaultValue);
+  }, [defaultValue]);
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
       e.preventDefault();
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
       onSearch(e.currentTarget.value);
     }
   };
 
   const handleSearch = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     onSearch(inputValue);
   };
 
   const handleClear = () => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
     setInputValue("");
     onSearch("");
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
+    const value = event.target.value;
+    setInputValue(value);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      onSearch(value);
+    }, debounceMs);
   };
 
   return (

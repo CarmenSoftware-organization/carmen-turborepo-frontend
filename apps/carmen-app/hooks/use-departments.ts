@@ -111,7 +111,7 @@ export const useDepartmentUpdateMutation = (
       return await updateApiRequest(
         API_ID,
         token,
-        id,
+        data,
         "Error updating department",
         "PATCH"
       );

@@ -1,6 +1,6 @@
-import DepartmentDetail from "../_components/DepartmentDetail";
+import MainForm from "../_components/form/MainForm";
 import { formType } from "@/dtos/form.dto";
 
 export default function DepartmentNewPage() {
-    return <DepartmentDetail mode={formType.ADD} />
+  return <MainForm mode={formType.ADD} />;
 }

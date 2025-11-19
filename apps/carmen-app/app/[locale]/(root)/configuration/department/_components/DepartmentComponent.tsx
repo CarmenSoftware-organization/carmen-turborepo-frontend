@@ -10,16 +10,19 @@ import { useAuth } from "@/context/AuthContext";
 import { useDepartmentsQuery, useDepartmentDeleteMutation } from "@/hooks/use-departments";
 import { useURL } from "@/hooks/useURL";
 import { useRouter } from "@/lib/navigation";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Plus, Printer, List, Grid } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import DepartmentList from "./DepartmentList";
+import DepartmentGrid from "./DepartmentGrid";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
 import { DepartmentGetListDto } from "@/dtos/department.dto";
 import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { VIEW } from "@/constants/enum";
 
 export default function DepartmentComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -41,6 +44,7 @@ export default function DepartmentComponent() {
   const [sort, setSort] = useURL("sort");
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
+  const [view, setView] = useState<VIEW>(VIEW.LIST);
 
   const { departments, isLoading, isUnauthorized } = useDepartmentsQuery(token, buCode, {
     search,
@@ -50,7 +54,7 @@ export default function DepartmentComponent() {
     perpage
   });
 
-  const { mutate: deleteDepartment } = useDepartmentDeleteMutation(token, buCode);
+  const { mutate: deleteDepartment, isPending: isDeleting } = useDepartmentDeleteMutation(token, buCode);
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -83,13 +87,13 @@ export default function DepartmentComponent() {
     if (departmentToDelete?.id) {
       deleteDepartment(departmentToDelete.id, {
         onSuccess: () => {
-          toastSuccess({ message: "Department deleted successfully" });
+          toastSuccess({ message: tDepartment("delete_success") });
           queryClient.invalidateQueries({ queryKey: ["departments", buCode] });
           setDeleteDialogOpen(false);
           setDepartmentToDelete(undefined);
         },
         onError: (error: Error) => {
-          toastError({ message: "Failed to delete department" });
+          toastError({ message: tDepartment("delete_error") });
           console.error("Failed to delete department:", error);
           setDeleteDialogOpen(false);
           setDepartmentToDelete(undefined);
@@ -115,37 +119,53 @@ export default function DepartmentComponent() {
   ];
 
   const actionButtons = (
-    <div
-      className="action-btn-container"
-      data-id="department-list-action-buttons"
-    >
-      <Button
-        size="sm"
-        onClick={handleAdd}
-        data-id="department-add-button"
-        disabled={!departmentPerms.canCreate}
+    <TooltipProvider>
+      <div
+        className="action-btn-container"
+        data-id="department-list-action-buttons"
       >
-        <Plus className="h-4 w-4" />
-        {tCommon("add")}
-      </Button>
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size="sm"
-        data-id="department-export-button"
-      >
-        <FileDown className="h-4 w-4" />
-        {tCommon("export")}
-      </Button>
-      <Button
-        variant="outlinePrimary"
-        size="sm"
-        data-id="department-print-button"
-      >
-        <Printer className="h-4 w-4" />
-        {tCommon("print")}
-      </Button>
-    </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size="sm"
+              onClick={handleAdd}
+              data-id="department-add-button"
+              disabled={!departmentPerms.canCreate}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("add")}</TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size="sm"
+              data-id="department-export-button"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("export")}</TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              size="sm"
+              data-id="department-print-button"
+            >
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("print")}</TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
   );
 
   const filters = (
@@ -156,40 +176,100 @@ export default function DepartmentComponent() {
         placeholder={tCommon("search")}
         data-id="department-list-search-input"
       />
-      <div className="fxr-c gap-2">
-        <StatusSearchDropdown
-          value={filter}
-          onChange={setFilter}
-          open={statusOpen}
-          onOpenChange={setStatusOpen}
-          data-id="department-list-status-search-dropdown"
-        />
-        <SortComponent
-          fieldConfigs={sortFields}
-          sort={sort}
-          setSort={setSort}
-          data-id="department-list-sort-dropdown"
-        />
-      </div>
+      <TooltipProvider>
+        <div className="fxr-c gap-2">
+          <StatusSearchDropdown
+            value={filter}
+            onChange={setFilter}
+            open={statusOpen}
+            onOpenChange={setStatusOpen}
+            data-id="department-list-status-search-dropdown"
+          />
+          <SortComponent
+            fieldConfigs={sortFields}
+            sort={sort}
+            setSort={setSort}
+            data-id="department-list-sort-dropdown"
+          />
+        </div>
+        <div className="hidden lg:block">
+          <div className="flex items-center gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={view === VIEW.LIST ? "default" : "outlinePrimary"}
+                  size="sm"
+                  onClick={() => setView(VIEW.LIST)}
+                  aria-label="List view"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tCommon("list_view")}</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={view === VIEW.GRID ? "default" : "outlinePrimary"}
+                  size="sm"
+                  onClick={() => setView(VIEW.GRID)}
+                  aria-label="Grid view"
+                >
+                  <Grid className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{tCommon("grid_view")}</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </div>
+      </TooltipProvider>
     </div>
   );
 
   const content = (
-    <DepartmentList
-      departments={departments?.data ?? []}
-      isLoading={isLoading}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      totalItems={totalItems}
-      perpage={departments?.paginate.perpage ?? 10}
-      onPageChange={handlePageChange}
-      sort={parseSortString(sort)}
-      onSort={setSort}
-      setPerpage={handleSetPerpage}
-      onDelete={handleDelete}
-      canUpdate={departmentPerms.canUpdate}
-      canDelete={departmentPerms.canDelete}
-    />
+    <>
+      <div className="block lg:hidden">
+        <DepartmentGrid
+          departments={departments?.data ?? []}
+          isLoading={isLoading}
+          onDelete={handleDelete}
+          canUpdate={departmentPerms.canUpdate}
+          canDelete={departmentPerms.canDelete}
+        />
+      </div>
+
+      <div className="hidden lg:block">
+        {view === VIEW.LIST ? (
+          <DepartmentList
+            departments={departments?.data ?? []}
+            isLoading={isLoading}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            perpage={departments?.paginate.perpage ?? 10}
+            onPageChange={handlePageChange}
+            sort={parseSortString(sort)}
+            onSort={setSort}
+            setPerpage={handleSetPerpage}
+            onDelete={handleDelete}
+            canUpdate={departmentPerms.canUpdate}
+            canDelete={departmentPerms.canDelete}
+          />
+        ) : (
+          <DepartmentGrid
+            departments={departments?.data ?? []}
+            isLoading={isLoading}
+            onDelete={handleDelete}
+            canUpdate={departmentPerms.canUpdate}
+            canDelete={departmentPerms.canDelete}
+          />
+        )}
+      </div>
+    </>
   );
 
   return (
@@ -204,8 +284,9 @@ export default function DepartmentComponent() {
         open={deleteDialogOpen}
         onOpenChange={handleCancelDelete}
         onConfirm={handleConfirmDelete}
-        title="Delete Department"
-        description="Are you sure you want to delete this department? This action cannot be undone."
+        title={tDepartment("confirm_delete")}
+        description={tDepartment("confirm_delete_description", { name: departmentToDelete?.name || "" })}
+        isLoading={isDeleting}
       />
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
