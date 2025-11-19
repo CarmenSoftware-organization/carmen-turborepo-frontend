@@ -95,12 +95,18 @@ export interface SLAWarningNotification {
   template?: string;
 }
 
+export interface Department {
+  id: string;
+  name: string;
+}
+
 export interface User {
   user_id: string;
   firstname: string;
   middlename: string;
   lastname: string;
   email: string;
+  department: Department;
   initials: string;
 }
 
@@ -247,6 +253,12 @@ export const wfFormSchema = z.object({
                 middlename: z.string(),
                 lastname: z.string(),
                 email: z.string(),
+                department: z
+                  .object({
+                    id: z.string(),
+                    name: z.string(),
+                  })
+                  .optional(),
                 initials: z.string(),
               })
             )
