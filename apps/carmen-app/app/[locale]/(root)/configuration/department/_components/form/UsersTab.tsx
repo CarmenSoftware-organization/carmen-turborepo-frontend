@@ -3,39 +3,17 @@
 import { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { Transfer } from "@/components/ui-custom/Transfer";
-import { Switch } from "@/components/ui/switch";
 import { DepartmentFormData } from "../../_schemas/department-form.schema";
 import { useCallback } from "react";
-
-interface UserItemProps {
-  item: {
-    key: string | number;
-    title: string;
-  };
-  hodStates: Record<string, boolean>;
-  onHodChange: (key: string, checked: boolean) => void;
-  isViewMode: boolean;
-}
-
-const UserItem = ({ item, hodStates, onHodChange, isViewMode }: UserItemProps) => (
-  <div className="fxb-c w-full gap-4">
-    <span>{item.title}</span>
-    <div className="fxr-c gap-2">
-      <span className="text-muted-foreground">HOD</span>
-      <Switch
-        checked={hodStates[item.key.toString()] || false}
-        onCheckedChange={(checked) => onHodChange(item.key.toString(), checked)}
-        disabled={isViewMode}
-      />
-    </div>
-  </div>
-);
+import { UserDpDto } from "../../_types/users-department.type";
+import UsersDepartment from "./UsersDepartment";
+import UserItem from "./UserItem";
 
 interface UsersTabProps {
   readonly form: UseFormReturn<DepartmentFormData>;
   readonly isViewMode: boolean;
-  readonly availableUsers: { key: string | number; title: string }[];
-  readonly initUsers: Array<{ key: string; title: string; id: string; isHod: boolean }>;
+  readonly availableUsers: UserDpDto[];
+  readonly initUsers: UserDpDto[];
   readonly targetKeys: string[];
   readonly setTargetKeys: (keys: string[]) => void;
   readonly hodStates: Record<string, boolean>;
@@ -64,14 +42,21 @@ export default function UsersTab({
       for (const key of moveKeys) {
         const keyStr = key.toString();
         const existingRemoveIndex = newRemoveArray.findIndex((item) => item.id === keyStr);
+        const isExistingUser = initUsers.some((user) => user.key.toString() === keyStr);
 
         if (existingRemoveIndex >= 0) {
+          // User was marked for removal, remove from remove array
           newRemoveArray.splice(existingRemoveIndex, 1);
-        } else {
-          newAddArray.push({
-            id: keyStr,
-            isHod: hodStates[keyStr] || false,
-          });
+        } else if (!isExistingUser) {
+          // Only add to add array if it's a new user (not in initUsers)
+          // Check if not already in add array to prevent duplicates
+          const alreadyInAddArray = newAddArray.some((user) => user.id === keyStr);
+          if (!alreadyInAddArray) {
+            newAddArray.push({
+              id: keyStr,
+              isHod: hodStates[keyStr] || false,
+            });
+          }
         }
 
         if (!hodStates.hasOwnProperty(keyStr)) {
@@ -82,7 +67,7 @@ export default function UsersTab({
       form.setValue("users.add", newAddArray);
       form.setValue("users.remove", newRemoveArray);
     },
-    [hodStates, form, setHodStates]
+    [hodStates, form, setHodStates, initUsers]
   );
 
   const handleMoveToLeft = useCallback(
@@ -93,11 +78,15 @@ export default function UsersTab({
       for (const key of moveKeys) {
         const keyStr = key.toString();
         const existingAddIndex = newAddArray.findIndex((item) => item.id === keyStr);
+        const isExistingUser = initUsers.some((user) => user.key.toString() === keyStr);
 
         if (existingAddIndex >= 0) {
           newAddArray.splice(existingAddIndex, 1);
-        } else {
-          newRemoveArray.push({ id: keyStr });
+        } else if (isExistingUser) {
+          const alreadyInRemoveArray = newRemoveArray.some((user) => user.id === keyStr);
+          if (!alreadyInRemoveArray) {
+            newRemoveArray.push({ id: keyStr });
+          }
         }
 
         setHodStates((prev) => {
@@ -117,7 +106,7 @@ export default function UsersTab({
       form.setValue("users.remove", newRemoveArray);
       form.setValue("users.update", updatedUpdateArray);
     },
-    [form, setHodStates]
+    [form, setHodStates, initUsers]
   );
 
   const handleTransferChange = (
@@ -163,22 +152,28 @@ export default function UsersTab({
       const isNewUser = currentUsers.add.some((user) => user.id === key);
 
       if (isExistingUser && !isNewUser) {
+        // Handle existing user HOD change
         const currentUpdateArray = currentUsers.update;
         const existingUpdateIndex = currentUpdateArray.findIndex((user) => user.id === key);
         const originalUser = initUsers.find((user) => user.key.toString() === key);
         const originalIsHod = originalUser?.isHod || false;
+
         let updatedUpdateArray;
         if (checked === originalIsHod) {
+          // HOD value same as original, remove from update array
           updatedUpdateArray = currentUpdateArray.filter((user) => user.id !== key);
         } else if (existingUpdateIndex >= 0) {
+          // Update existing entry in update array
           updatedUpdateArray = currentUpdateArray.map((user, index) =>
             index === existingUpdateIndex ? { ...user, isHod: checked } : user
           );
         } else {
+          // Add new entry to update array (no duplicate check needed due to findIndex above)
           updatedUpdateArray = [...currentUpdateArray, { id: key, isHod: checked }];
         }
         form.setValue("users.update", updatedUpdateArray);
       } else if (isNewUser) {
+        // Handle new user HOD change - update in add array
         const currentAddArray = currentUsers.add;
         const updatedAddArray = currentAddArray.map((user) =>
           user.id === key ? { ...user, isHod: checked } : user
@@ -201,49 +196,8 @@ export default function UsersTab({
     [hodStates, handleHodChange, isViewMode]
   );
 
-  const selectedUsers = targetKeys
-    .map((key) => {
-      const user = availableUsers?.find(
-        (u: { key: string | number; title: string }) => u.key.toString() === key
-      );
-      return {
-        key: key,
-        title: user?.title || "",
-        isHod: hodStates[key] || false,
-      };
-    })
-    .filter((user) => user.title !== "");
-
   if (isViewMode) {
-    return (
-      <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-          {tDepartment("users")} ({selectedUsers.length})
-        </h2>
-
-        {selectedUsers.length > 0 ? (
-          <div className="grid gap-3">
-            {selectedUsers.map((user) => (
-              <div
-                key={user.key}
-                className="flex items-center justify-between p-3 bg-muted/30 rounded-md border border-border"
-              >
-                <span className="text-sm font-medium">{user.title}</span>
-                {user.isHod && (
-                  <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-md font-medium">
-                    HOD
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-border rounded-lg bg-muted/10">
-            <p className="text-sm text-muted-foreground">{tDepartment("no_users_assigned")}</p>
-          </div>
-        )}
-      </div>
-    );
+    return <UsersDepartment initUsers={initUsers} />;
   }
 
   return (
@@ -251,7 +205,6 @@ export default function UsersTab({
       <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
         {tDepartment("users")}
       </h2>
-
       <Transfer
         dataSource={availableUsers}
         leftDataSource={initUsers}

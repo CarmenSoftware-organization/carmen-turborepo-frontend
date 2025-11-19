@@ -22,6 +22,7 @@ import { DepartmentGetByIdDto } from "@/dtos/department.dto";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import OverviewTab from "./OverviewTab";
 import UsersTab from "./UsersTab";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface MainFormProps {
   readonly defaultValues?: DepartmentGetByIdDto;
@@ -32,6 +33,7 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
   const router = useRouter();
   const { token, buCode } = useAuth();
   const { userList } = useUserList(token, buCode);
+  const queryClient = useQueryClient();
   const tDepartment = useTranslations("Department");
   const tDataControls = useTranslations("DataControls");
   const tCommon = useTranslations("Common");
@@ -54,13 +56,6 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
     });
   }, [isAddMode, tDepartment]);
 
-  const availableUsers = useMemo(() => {
-    return userList?.map((user: any) => ({
-      key: user.user_id,
-      title: user.firstname + " " + user.lastname,
-    }));
-  }, [userList]);
-
   const initUsers = useMemo(() => {
     return (
       defaultValues?.tb_department_user?.map((user) => ({
@@ -71,6 +66,20 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
       })) || []
     );
   }, [defaultValues?.tb_department_user]);
+
+  const availableUsers = useMemo(() => {
+    if (!userList) return [];
+
+    // Filter out users that are already in the department (initUsers)
+    const initUserIds = new Set(initUsers.map((user) => user.key.toString()));
+
+    return userList
+      .filter((user: any) => !initUserIds.has(user.user_id))
+      .map((user: any) => ({
+        key: user.user_id,
+        title: user.firstname + " " + user.lastname,
+      }));
+  }, [userList, initUsers]);
 
   const [targetKeys, setTargetKeys] = useState<string[]>(
     initUsers.map((user) => user.key.toString())
@@ -185,6 +194,8 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
         onSuccess: (data: unknown) => {
           const response = data as { id: string };
           toastSuccess({ message: tDepartment("add_success") });
+          // Invalidate queries to refresh the department list
+          queryClient.invalidateQueries({ queryKey: ["departments", buCode] });
           router.replace(`/configuration/department/${response.id}`);
         },
         onError: (error: unknown) => {
@@ -196,6 +207,9 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
       updateDepartment(updatedData as any, {
         onSuccess: () => {
           toastSuccess({ message: tDepartment("edit_success") });
+          // Invalidate queries to refresh the department list and detail
+          queryClient.invalidateQueries({ queryKey: ["departments", buCode] });
+          queryClient.invalidateQueries({ queryKey: ["department-id", defaultValues?.id] });
           setMode(formType.VIEW);
         },
         onError: (error: unknown) => {
@@ -250,7 +264,7 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
                 size="sm"
                 disabled={isCreating || isUpdating}
               >
-                <X className="h-4 w-4 mr-2" />
+                <X className="h-4 w-4" />
                 {tDataControls("cancel")}
               </Button>
               <Button
@@ -259,7 +273,7 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
                 size="sm"
                 disabled={isCreating || isUpdating}
               >
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="h-4 w-4" />
                 {isCreating || isUpdating ? tDataControls("saving") : tDataControls("save")}
               </Button>
             </>
@@ -270,7 +284,7 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
       <div className="flex-1 overflow-y-auto">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4 pb-8">
-            <OverviewTab form={form} isViewMode={isViewMode} department={defaultValues} />
+            <OverviewTab form={form} isViewMode={isViewMode} />
             <UsersTab
               form={form}
               isViewMode={isViewMode}
