@@ -1,10 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import CreditNoteComponent from "./_components/CreditNoteComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Credit Note",
-};
+export const generateMetadata = createMetadata("CreditNote", "title");
 
 export default function CreditNotePage() {
-    return <CreditNoteComponent />;
-} 
+  return <CreditNoteComponent />;
+}

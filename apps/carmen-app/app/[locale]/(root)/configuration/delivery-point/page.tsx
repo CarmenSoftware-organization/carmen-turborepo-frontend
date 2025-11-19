@@ -1,10 +1,8 @@
-import { Metadata } from "next";
+import { createMetadata } from "@/utils/metadata";
 import DeliveryPointComponent from "./_components/DeliveryPointComponent";
 
-export const metadata: Metadata = {
-    title: "Delivery Point",
-};
+export const generateMetadata = createMetadata("DeliveryPoint", "title");
 
 export default function DeliveryPointPage() {
-    return <DeliveryPointComponent />
+  return <DeliveryPointComponent />;
 }

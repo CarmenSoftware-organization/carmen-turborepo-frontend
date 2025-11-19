@@ -1,9 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import PurchaseRequestComponent from "./_components/PurchaseRequestComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Purchase Request",
-};
+export const generateMetadata = createMetadata("PurchaseRequest", "title");
+
 export default function PurchaseRequestPage() {
-    return <PurchaseRequestComponent />
+  return <PurchaseRequestComponent />;
 }

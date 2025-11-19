@@ -102,6 +102,9 @@
     "grns": "ใบรับสินค้า",
     "related_docs": "เอกสารที่เกี่ยวข้อง"
   },
+  "GoodsReceivedNote": {
+    "title": "ใบรับสินค้า"
+  },
   "Procurement": {
     "title": "การจัดซื้อ"
   },

@@ -102,6 +102,9 @@
     "grns": "Goods Receipt Notes",
     "related_docs": "Related Documents"
   },
+  "GoodsReceivedNote": {
+    "title": "Goods Received Note"
+  },
   "Procurement": {
     "title": "Procurement"
   },

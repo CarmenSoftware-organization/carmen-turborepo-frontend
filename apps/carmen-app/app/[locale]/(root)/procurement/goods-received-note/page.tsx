@@ -1,9 +1,8 @@
-import { Metadata } from "next";
 import GoodsReceivedNoteComponent from "./_components/GoodsReceivedNoteComponent";
+import { createMetadata } from "@/utils/metadata";
 
-export const metadata: Metadata = {
-    title: "Goods Received Note",
-};
+export const generateMetadata = createMetadata("Modules", "title");
+
 export default function GoodsReceivedNotePage() {
-    return <GoodsReceivedNoteComponent />;
-}  
+  return <GoodsReceivedNoteComponent />;
+}

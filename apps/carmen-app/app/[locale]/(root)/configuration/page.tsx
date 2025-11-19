@@ -1,11 +1,8 @@
-
-import { Metadata } from "next";
 import ConfPage from "./ConfPage";
+import { createMetadata } from "@/utils/metadata";
 
-export const metadata: Metadata = {
-  title: "Configuration",
-};
+export const generateMetadata = createMetadata("Modules", "configuration");
 
 export default function Configuration() {
-  return <ConfPage />
+  return <ConfPage />;
 }

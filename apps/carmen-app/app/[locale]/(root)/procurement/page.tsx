@@ -1,10 +1,8 @@
-import { Metadata } from "next";
+import { createMetadata } from "@/utils/metadata";
 import ProcurementPage from "./ProcurementPage";
 
-export const metadata: Metadata = {
-    title: "Procurement",
-};
+export const generateMetadata = createMetadata("Modules", "procurement");
 
 export default function Procurement() {
-    return <ProcurementPage />
+  return <ProcurementPage />;
 }

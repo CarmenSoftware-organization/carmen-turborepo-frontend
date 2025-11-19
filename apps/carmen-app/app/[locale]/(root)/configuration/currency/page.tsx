@@ -1,10 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import CurrencyComponent from "./_components/CurrencyComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Currency",
-};
+export const generateMetadata = createMetadata("Currency", "title");
 
 export default async function CurrencyPage() {
-    return <CurrencyComponent />
+  return <CurrencyComponent />;
 }

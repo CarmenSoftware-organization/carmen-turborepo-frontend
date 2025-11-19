@@ -1,11 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import LocationComponent from "./_components/LocationComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Locations",
-    description: "Locations",
-};
+export const generateMetadata = createMetadata("StoreLocation", "title");
 
 export default function LocationsPage() {
-    return <LocationComponent />
-};
+  return <LocationComponent />;
+}

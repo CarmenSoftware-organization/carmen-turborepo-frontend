@@ -1,10 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import DepartmentComponent from "./_components/DepartmentComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Department",
-};
+export const generateMetadata = createMetadata("Department", "title");
 
 export default function DepartmentPage() {
-    return <DepartmentComponent />;
+  return <DepartmentComponent />;
 }

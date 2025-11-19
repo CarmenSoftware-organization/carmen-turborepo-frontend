@@ -1,9 +1,7 @@
-import { Metadata } from "next";
+import { createMetadata } from "@/utils/metadata";
 import { TaxProfileComponent } from "./_components/TaxProfileComponent";
 
-export const metadata: Metadata = {
-  title: "Tax Profile",
-};
+export const generateMetadata = createMetadata("TaxProfile", "title");
 
 export default function TaxProfile() {
   return <TaxProfileComponent />;

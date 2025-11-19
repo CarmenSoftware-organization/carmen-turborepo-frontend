@@ -1,10 +1,7 @@
-import { Metadata } from "next";
 import BusinessTypeComponent from "./_components/BuTypeComponent";
+import { createMetadata } from "@/utils/metadata";
 
-export const metadata: Metadata = {
-  title: "Business Type",
-  description: "Business Type",
-};
+export const generateMetadata = createMetadata("BusinessType", "title");
 
 export default function BusinessTypePage() {
   return <BusinessTypeComponent />;
