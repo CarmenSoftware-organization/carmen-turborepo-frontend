@@ -1,10 +1,8 @@
-import { Metadata } from "next";
 import ProductComponent from "./_components/ProductComponent";
+import { createMetadata } from "@/utils/metadata";
 
-export const metadata: Metadata = {
-    title: "Product",
-};
+export const generateMetadata = createMetadata("Products", "title");
 
 export default function Product() {
-    return <ProductComponent />
+  return <ProductComponent />;
 }

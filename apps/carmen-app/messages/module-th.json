@@ -91,11 +91,11 @@
       "costAnalysis": "การวิเคราะห์ต้นทุน",
       "salesAnalysis": "การวิเคราะห์การขาย"
     },
-    "finance": "การกิจการ",
+    "finance": "การบริหารการเงิน",
     "Finance": {
       "accountCodeMapping": "การจัดการรหัสบัญชี",
       "budgetPlanningAndControl": "การวางแผนงบประมาณและควบคุม",
-      "creditTerms": "เงื่อนไขการชำระเงิน",
+      "creditTerms": "ระยะเวลาการชำระเงิน",
       "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
       "vat": "ภาษีมูลค่าเพิ่ม"
     },

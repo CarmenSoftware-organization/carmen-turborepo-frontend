@@ -1,10 +1,8 @@
-import { Metadata } from "next";
+import { createMetadata } from "@/utils/metadata";
 import FinanceComponentPage from "./FinanceComponentPage";
 
-export const metadata: Metadata = {
-    title: "Finance",
-};
+export const generateMetadata = createMetadata("Modules", "finance");
 
 export default function FinancePage() {
-    return <FinanceComponentPage />
+  return <FinanceComponentPage />;
 }
