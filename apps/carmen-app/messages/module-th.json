@@ -1,0 +1,144 @@
+{
+  "Modules": {
+    "dashboard": "แดชบอร์ด",
+    "procurement": "การจัดซื้อ",
+    "configuration": "การตั้งค่า",
+    "configurationTitle": "การตั้งค่า",
+    "Procurement": {
+      "dashboard": "แดชบอร์ด",
+      "myApproval": "การอนุมัติของฉัน",
+      "purchaseOrder": "ใบสั่งซื้อ",
+      "purchaseRequest": "ใบขอซื้อ",
+      "goodsReceivedNote": "ใบรับสินค้า",
+      "purchaseRequestApprovals": "การอนุมัติใบขอซื้อ",
+      "creditNote": "ใบลดหนี้",
+      "purchaseRequestTemplate": "แม่แบบใบขอซื้อ",
+      "vendorComparison": "เปรียบเทียบผู้จัดจำหน่าย"
+    },
+    "productManagement": "การจัดการสินค้า",
+    "ProductManagement": {
+      "product": "สินค้า",
+      "category": "หมวดสินค้า",
+      "report": "รายงาน",
+      "unit": "หน่วยนับ"
+    },
+    "vendorManagement": "การจัดการผู้จัดจำหน่าย",
+    "VendorManagement": {
+      "manageVendors": "จัดการผู้จัดจำหน่าย",
+      "priceLists": "ราคาสินค้า",
+      "priceComparisons": "เปรียบเทียบราคา",
+      "priceListtemplate": "แม่แบบราคาสินค้า",
+      "request_for_price_list": "ขอราคาสินค้า"
+    },
+    "PriceListTemplate": {
+      "title": "แม่แบบราคาสินค้า",
+      "template_not_found": "ไม่พบแม่แบบราคาสินค้า",
+      "no_templates_available": "ไม่มีแม่แบบราคาสินค้า",
+      "select_template": "เลือกแม่แบบ",
+      "search_template": "ค้นหาแม่แบบ"
+    },
+    "storeOperations": "การดำเนินการร้านค้า",
+    "StoreOperations": {
+      "storeRequisitions": "ขอสินค้าจากร้าน",
+      "stockReplenishment": "ซื้อสินค้าเพิ่ม",
+      "wastageReporting": "รายงานสินค้าสูญหาย"
+    },
+    "inventoryManagement": "การจัดการหน่วยนับ",
+    "InventoryManagement": {
+      "storeOperations": "การดำเนินการร้านค้า",
+      "stockOverview": "ตรวจสอบสินค้า",
+      "StockOverview": {
+        "inventoryBalance": "ยอดคงเหลือสินค้า",
+        "inventoryAging": "อายุสินค้า",
+        "stockCard": "บัญชีสินค้า",
+        "slowMoving": "สินค้าชำรุด"
+      },
+      "inventoryAdjustments": "ปรับปรุงสินค้า",
+      "spotCheck": "ตรวจสอบสินค้า",
+      "physicalCountManagement": "ตรวจนับสินค้า",
+      "periodEnd": "สิ้นงวด",
+      "storeRequisition": "ขอสินค้าจากร้าน",
+      "stockReplenishment": "ซื้อสินค้าเพิ่ม"
+    },
+    "operationalPlanning": "การวางแผนการดำเนินงาน",
+    "OperationalPlanning": {
+      "RecipesManagement": {
+        "title": "การจัดการสูตรอาหาร",
+        "recipe": "สูตรอาหาร",
+        "category": "หมวดสูตรอาหาร",
+        "cuisineType": "ประเภทสูตรอาหาร"
+      },
+      "menuEngineering": "การวางแผนการดำเนินงาน",
+      "demandForecasting": "การพยากรณ์ความต้องการ",
+      "inventoryPlanning": "การวางแผนสินค้า",
+      "productionPlanning": "การวางแผนการผลิต",
+      "recipeManagement": "การจัดการสูตรอาหาร",
+      "recipeCuisineTypes": "ประเภทสูตรอาหาร"
+    },
+    "production": "การผลิต",
+    "Production": {
+      "recipeExecution": "การดำเนินการสูตรอาหาร",
+      "batchProduction": "การผลิตสินค้าแบตช์",
+      "wastageTracking": "การตรวจสอบสินค้าสูญหาย",
+      "qualityControl": "การควบคุมคุณภาพ"
+    },
+    "reportingAndAnalytics": "การรายงานและวิเคราะห์",
+    "ReportingAndAnalytics": {
+      "operationalReports": "รายงานการดำเนินงาน",
+      "financialReports": "รายงานการกิจการ",
+      "inventoryReports": "รายงานสินค้า",
+      "vendorPerformance": "การประเมินผู้จัดจำหน่าย",
+      "costAnalysis": "การวิเคราะห์ต้นทุน",
+      "salesAnalysis": "การวิเคราะห์การขาย"
+    },
+    "finance": "การกิจการ",
+    "Finance": {
+      "accountCodeMapping": "การจัดการรหัสบัญชี",
+      "budgetPlanningAndControl": "การวางแผนงบประมาณและควบคุม",
+      "creditTerms": "เงื่อนไขการชำระเงิน",
+      "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
+      "vat": "ภาษีมูลค่าเพิ่ม"
+    },
+    "systemAdministration": "การจัดการระบบ",
+    "Configuration": {
+      "currency": "สกุลเงิน",
+      "exchangeRates": "อัตราแลกเปลี่ยนเงิน",
+      "deliveryPoint": "จุดส่งของ",
+      "storeLocation": "สถานที่เก็บสินค้า",
+      "department": "แผนก",
+      "tax_profile": "ระบบภาษี",
+      "extra_cost": "ค่าใช้จ่ายเพิ่มเติม",
+      "business_type": "ประเภทธุรกิจ"
+    },
+    "SystemAdministration": {
+      "systemAdministration": "การจัดการระบบ",
+      "userManagement": "การจัดการผู้ใช้งาน",
+      "workflowManagement": "การจัดการกระบวนการ",
+      "generalSettings": "การตั้งค่าทั่วไป",
+      "notificationPreferences": "การตั้งค่าการแจ้งเตือน",
+      "licenseManagement": "การจัดการสิทธิ์ใช้งาน",
+      "securitySettings": "การตั้งค่าความปลอดภัย",
+      "dataBackupAndRecovery": "การสำรองข้อมูลและการกู้คืน",
+      "SystemIntegrations": {
+        "title": "การรวมระบบ",
+        "pos": "ระบบสะสมคะแนน"
+      },
+      "cluster": "การจัดการกลุ่ม",
+      "businessUnit": "หน่วยงาน",
+      "user": "ผู้ใช้งาน"
+    },
+    "helpAndSupport": "การสนับสนุน",
+    "HelpAndSupport": {
+      "userManuals": "คู่มือผู้ใช้งาน",
+      "videoTutorials": "วิดีโอการสอน",
+      "faqs": "คำถามที่พบบ่อย",
+      "supportTicketSystem": "ระบบการสนับสนุนการซื้อขาย",
+      "systemUpdatesAndReleaseNotes": "การอัพเดตและบันทึกการปรับปรุง"
+    },
+    "systemIntegration": "การรวมระบบ",
+    "SystemIntegration": {
+      "pos": "ระบบสะสมคะแนน"
+    },
+    "profile": "โปรไฟล์"
+  }
+}

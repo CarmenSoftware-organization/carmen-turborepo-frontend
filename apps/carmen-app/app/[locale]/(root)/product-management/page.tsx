@@ -1,10 +1,8 @@
-import { Metadata } from "next";
+import { createMetadata } from "@/utils/metadata";
 import ProductManagePage from "./ProductManagePage";
 
-export const metadata: Metadata = {
-    title: "Product Management",
-};
+export const generateMetadata = createMetadata("Products", "title");
 
 export default function ProductManagement() {
-    return <ProductManagePage />
+  return <ProductManagePage />;
 }

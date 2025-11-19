@@ -16,6 +16,8 @@ export default getRequestConfig(async ({ locale }) => {
   const productMessage = (await import(`../messages/product-management-${validLocale}.json`))
     .default;
 
+  const moduleMessage = (await import(`../messages/module-${validLocale}.json`)).default;
+
   try {
     const messages = {
       ...mainMessages,
@@ -25,6 +27,7 @@ export default getRequestConfig(async ({ locale }) => {
       ...vendorManagementMessages,
       ...configuration,
       ...productMessage,
+      ...moduleMessage,
     };
 
     return {

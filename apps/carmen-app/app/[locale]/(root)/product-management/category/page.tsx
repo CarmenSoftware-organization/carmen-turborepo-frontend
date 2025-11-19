@@ -1,10 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import CategoryComponent from "./_components/CategoryComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Category",
-};
+export const generateMetadata = createMetadata("Category", "title");
 
 export default function CategoryPage() {
-    return <CategoryComponent />
+  return <CategoryComponent />;
 }

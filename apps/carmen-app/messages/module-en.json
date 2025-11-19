@@ -1,0 +1,144 @@
+{
+  "Modules": {
+    "dashboard": "Dashboard",
+    "procurement": "Procurement",
+    "configuration": "Configuration",
+    "configurationTitle": "Configuration",
+    "Procurement": {
+      "dashboard": "Dashboard",
+      "myApproval": "My Approval",
+      "purchaseOrder": "Purchase Order",
+      "purchaseRequest": "Purchase Request",
+      "goodsReceivedNote": "Goods Received Note",
+      "purchaseRequestApprovals": "Purchase Request Approvals",
+      "creditNote": "Credit Note",
+      "purchaseRequestTemplate": "Purchase Request Template",
+      "vendorComparison": "Vendor Comparison"
+    },
+    "productManagement": "Product Management",
+    "ProductManagement": {
+      "product": "Product",
+      "category": "Category",
+      "report": "Report",
+      "unit": "Unit"
+    },
+    "vendorManagement": "Vendor Management",
+    "VendorManagement": {
+      "manageVendors": "Manage Vendors",
+      "priceLists": "Price Lists",
+      "priceComparisons": "Price Comparisons",
+      "priceListtemplate": "Price List Template",
+      "request_for_price_list": "Request for Pricing (Campaign)"
+    },
+    "PriceListTemplate": {
+      "title": "Price List Template",
+      "template_not_found": "Price List Template Not Found",
+      "no_templates_available": "No Price List Templates Available",
+      "select_template": "Select Template",
+      "search_template": "Search Template"
+    },
+    "storeOperations": "Store Operations",
+    "StoreOperations": {
+      "storeRequisitions": "Store Requisitions",
+      "stockReplenishment": "Stock Replenishment",
+      "wastageReporting": "Wastage Reporting"
+    },
+    "inventoryManagement": "Inventory Management",
+    "InventoryManagement": {
+      "storeOperations": "Store Operations",
+      "stockOverview": "Stock Overview",
+      "inventoryAdjustments": "Inventory Adjustments",
+      "spotCheck": "Spot Check",
+      "physicalCountManagement": "Physical Count Management",
+      "periodEnd": "Period End",
+      "storeRequisition": "Store Requisitions",
+      "stockReplenishment": "Stock Replenishment",
+      "StockOverview": {
+        "inventoryBalance": "Inventory Balance",
+        "inventoryAging": "Inventory Aging",
+        "stockCard": "Stock Card",
+        "slowMoving": "Slow Moving"
+      }
+    },
+    "operationalPlanning": "Operational Planning",
+    "OperationalPlanning": {
+      "RecipesManagement": {
+        "title": "Recipes Management",
+        "recipe": "Recipe",
+        "category": "Category",
+        "cuisineType": "Cuisine Type"
+      },
+      "menuEngineering": "Menu Engineering",
+      "demandForecasting": "Demand Forecasting",
+      "inventoryPlanning": "Inventory Planning",
+      "productionPlanning": "Production Planning",
+      "recipeManagement": "Recipe Management",
+      "recipeCuisineTypes": "Recipe Cuisine Types"
+    },
+    "production": "Production",
+    "Production": {
+      "recipeExecution": "Recipe Execution",
+      "batchProduction": "Batch Production",
+      "wastageTracking": "Wastage Tracking",
+      "qualityControl": "Quality Control"
+    },
+    "reportingAndAnalytics": "Reporting and Analytics",
+    "ReportingAndAnalytics": {
+      "operationalReports": "Operational Reports",
+      "financialReports": "Financial Reports",
+      "inventoryReports": "Inventory Reports",
+      "vendorPerformance": "Vendor Performance",
+      "costAnalysis": "Cost Analysis",
+      "salesAnalysis": "Sales Analysis"
+    },
+    "finance": "Finance",
+    "Finance": {
+      "accountCodeMapping": "Account Code Mapping",
+      "budgetPlanningAndControl": "Budget Planning and Control",
+      "exchangeRates": "Exchange Rates",
+      "creditTerms": "Credit Terms",
+      "vat": "VAT"
+    },
+    "systemAdministration": "System Administration",
+    "Configuration": {
+      "currency": "Currency",
+      "exchangeRates": "Exchange Rates",
+      "deliveryPoint": "Delivery Point",
+      "storeLocation": "Store Location",
+      "department": "Department",
+      "tax_profile": "Tax Profile",
+      "extra_cost": "Extra Cost",
+      "business_type": "Business Type"
+    },
+    "SystemAdministration": {
+      "systemAdministration": "System Administration",
+      "userManagement": "User Management",
+      "workflowManagement": "Workflow Management",
+      "generalSettings": "General Settings",
+      "notificationPreferences": "Notification Preferences",
+      "licenseManagement": "License Management",
+      "securitySettings": "Security Settings",
+      "dataBackupAndRecovery": "Data Backup and Recovery",
+      "SystemIntegrations": {
+        "title": "System Integrations",
+        "pos": "POS Integrations"
+      },
+      "cluster": "Cluster",
+      "businessUnit": "Business Unit",
+      "user": "User"
+    },
+    "helpAndSupport": "Help and Support",
+    "HelpAndSupport": {
+      "userManuals": "User Manuals",
+      "videoTutorials": "Video Tutorials",
+      "faqs": "FAQs",
+      "supportTicketSystem": "Support Ticket System",
+      "systemUpdatesAndReleaseNotes": "System Updates and Release Notes"
+    },
+    "systemIntegration": "System Integration",
+    "SystemIntegration": {
+      "pos": "POS Integrations"
+    },
+    "profile": "Profile"
+  }
+}

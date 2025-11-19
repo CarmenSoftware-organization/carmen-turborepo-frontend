@@ -1,10 +1,8 @@
+import { createMetadata } from "@/utils/metadata";
 import UnitComponent from "./_components/UnitComponent";
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Unit",
-};
+export const generateMetadata = createMetadata("Unit", "title");
 
 export default function UnitPage() {
-    return <UnitComponent />
+  return <UnitComponent />;
 }
