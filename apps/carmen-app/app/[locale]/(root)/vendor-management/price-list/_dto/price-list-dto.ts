@@ -1,5 +1,10 @@
 export type PlStatusType = "active" | "draft" | "submit" | "inactive";
 
+export interface DateRange {
+  from: string;
+  to: string;
+}
+
 export interface VendorDto {
   id: string;
   name: string;
@@ -42,7 +47,7 @@ export interface BasePriceList {
   itemsCount: number;
   currency: CurrencyDto;
   isActive: boolean;
-  effectivePeriod: string;
+  effectivePeriod: DateRange;
   lastUpdate: string;
 }
 
@@ -61,7 +66,7 @@ export interface PriceListCreateDto {
   description?: string;
   status: PlStatusType;
   currencyId: string;
-  effectivePeriod: string;
+  effectivePeriod: DateRange;
 }
 
 export interface PriceListUpdateDto extends PriceListCreateDto {

@@ -166,7 +166,9 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
 
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-4 w-4 shrink-0" />
-                  <span className="truncate">{priceList.effectivePeriod}</span>
+                  <span className="truncate">
+                    {priceList.effectivePeriod.from} - {priceList.effectivePeriod.to}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">

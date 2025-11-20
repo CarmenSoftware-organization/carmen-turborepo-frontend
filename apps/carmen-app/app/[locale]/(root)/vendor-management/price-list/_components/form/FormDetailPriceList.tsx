@@ -43,7 +43,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
       description: "",
       status: "draft",
       currencyId: "",
-      effectivePeriod: "",
+      effectivePeriod: { from: "", to: "" },
       products: [],
     },
   });

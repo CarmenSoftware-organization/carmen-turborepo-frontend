@@ -141,7 +141,11 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
             <span>{tTableHeader("effective_period")}</span>
           </div>
         ),
-        cell: ({ row }) => <span>{row.original.effectivePeriod}</span>,
+        cell: ({ row }) => (
+          <span>
+            {row.original.effectivePeriod.from} - {row.original.effectivePeriod.to}
+          </span>
+        ),
         enableSorting: false,
         size: 200,
       },

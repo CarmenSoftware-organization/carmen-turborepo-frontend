@@ -20,7 +20,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       code: "THB",
     },
     isActive: true,
-    effectivePeriod: "2024-01-01 to 2024-03-31",
+    effectivePeriod: { from: "2024-01-01", to: "2024-03-31" },
     lastUpdate: "2024-01-15T10:30:00Z",
   },
   {
@@ -42,7 +42,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       code: "USD",
     },
     isActive: true,
-    effectivePeriod: "2024-02-01 to 2024-07-31",
+    effectivePeriod: { from: "2024-02-01", to: "2024-07-31" },
     lastUpdate: "2024-02-10T14:20:00Z",
   },
   {
@@ -59,7 +59,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       code: "THB",
     },
     isActive: false,
-    effectivePeriod: "2024-03-01 to 2024-08-31",
+    effectivePeriod: { from: "2024-03-01", to: "2024-08-31" },
     lastUpdate: "2024-02-28T09:15:00Z",
   },
   {
@@ -81,7 +81,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       code: "USD",
     },
     isActive: false,
-    effectivePeriod: "2024-04-01 to 2024-09-30",
+    effectivePeriod: { from: "2024-04-01", to: "2024-09-30" },
     lastUpdate: "2024-03-05T11:45:00Z",
   },
   {
@@ -99,7 +99,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       code: "THB",
     },
     isActive: false,
-    effectivePeriod: "2023-10-01 to 2023-12-31",
+    effectivePeriod: { from: "2023-10-01", to: "2023-12-31" },
     lastUpdate: "2023-12-31T23:59:00Z",
   },
 ];
@@ -124,7 +124,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       code: "THB",
     },
     isActive: true,
-    effectivePeriod: "2024-01-01 to 2024-03-31",
+    effectivePeriod: { from: "2024-01-01", to: "2024-03-31" },
     lastUpdate: "2024-01-15T10:30:00Z",
     products: [
       {
@@ -223,7 +223,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       code: "USD",
     },
     isActive: true,
-    effectivePeriod: "2024-02-01 to 2024-07-31",
+    effectivePeriod: { from: "2024-02-01", to: "2024-07-31" },
     lastUpdate: "2024-02-10T14:20:00Z",
     products: [
       {
@@ -323,7 +323,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       code: "THB",
     },
     isActive: false,
-    effectivePeriod: "2024-03-01 to 2024-08-31",
+    effectivePeriod: { from: "2024-03-01", to: "2024-08-31" },
     lastUpdate: "2024-02-28T09:15:00Z",
     products: [
       {
@@ -393,7 +393,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       code: "USD",
     },
     isActive: false,
-    effectivePeriod: "2024-04-01 to 2024-09-30",
+    effectivePeriod: { from: "2024-04-01", to: "2024-09-30" },
     lastUpdate: "2024-03-05T11:45:00Z",
     products: [
       {
@@ -465,7 +465,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       code: "THB",
     },
     isActive: false,
-    effectivePeriod: "2023-10-01 to 2023-12-31",
+    effectivePeriod: { from: "2023-10-01", to: "2023-12-31" },
     lastUpdate: "2023-12-31T23:59:00Z",
     products: [
       {
