@@ -208,5 +208,8 @@
     "start_adding_vendors": "Start by searching and adding vendors using the search box above",
     "no_vendors_selected_empty": "No vendors selected",
     "priority": "Priority"
+  },
+  "VendorPortal": {
+    "title": "Vendor Portal"
   }
 }

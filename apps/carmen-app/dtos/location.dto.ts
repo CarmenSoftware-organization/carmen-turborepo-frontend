@@ -15,6 +15,7 @@ export interface UserLocationDto {
 export interface ProductLocationDto {
     id: string;
     name: string;
+    code?: string;
 }
 
 export interface LocationByIdDto {

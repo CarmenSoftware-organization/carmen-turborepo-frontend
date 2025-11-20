@@ -163,6 +163,11 @@ export const moduleItems: ModuleItem[] = [
         href: "/vendor-management/request-price-list",
         icon: FileSpreadsheet,
       },
+      {
+        labelKey: "Modules.VendorManagement.vendorPortal",
+        href: "/vendor-management/vendor-portal",
+        icon: Factory,
+      },
       // {
       //   labelKey: "Modules.VendorManagement.priceComparisons",
       //   href: "/vendor-management/price-comparison",

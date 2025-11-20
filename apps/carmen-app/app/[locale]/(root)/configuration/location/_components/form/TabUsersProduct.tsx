@@ -2,12 +2,15 @@ import { ProductLocationDto } from "@/dtos/location.dto";
 import { useTranslations } from "next-intl";
 import { useState, useMemo } from "react";
 import SearchInput from "@/components/ui-custom/SearchInput";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   products: ProductLocationDto[];
 }
 
 export default function TabUsersProduct({ products }: Props) {
+  console.log("products", products);
+
   const tCommon = useTranslations("Common");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -61,7 +64,14 @@ export default function TabUsersProduct({ products }: Props) {
               key={product.id}
               className={`text-xs p-2 hover:bg-muted/50 transition-colors ${index === filteredProducts.length - 1 ? "" : "border-b border-border/50"}`}
             >
-              {highlightText(product.name, searchQuery, product.id)}
+              <div className="flex items-center gap-2">
+                <span>{highlightText(product.name, searchQuery, product.id)}</span>
+                {product.code && (
+                  <Badge variant={"product_badge"} className="text-xs">
+                    {product.code}
+                  </Badge>
+                )}
+              </div>
             </li>
           ))}
         </ul>
