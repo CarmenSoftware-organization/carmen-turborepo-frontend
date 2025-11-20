@@ -105,7 +105,6 @@ export default function PriceListComponent() {
               <p>{tCommon("sort")}</p>
             </TooltipContent>
           </Tooltip>
-
           <Tooltip>
             <TooltipTrigger asChild>
               <Button size={"sm"}>
@@ -114,9 +113,7 @@ export default function PriceListComponent() {
             </TooltipTrigger>
             <TooltipContent>{tCommon("filter")}</TooltipContent>
           </Tooltip>
-        </div>
-        <div className="hidden lg:block">
-          <div className="flex items-center gap-2">
+          <div className="hidden lg:block">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
