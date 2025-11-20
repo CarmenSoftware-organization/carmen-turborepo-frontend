@@ -37,12 +37,9 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
       .map((vendorId: string) => {
         const vendor = vendors.data.find((v: VendorGetDto) => v.id === vendorId);
         if (!vendor) return null;
-
         return {
           id: vendor.id,
           name: vendor.name,
-          email: vendor.email,
-          phone: vendor.phone,
         };
       })
       .filter(Boolean) as VendorTableRow[];
@@ -159,9 +156,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
               placeholder={tRfp("vendor_search_placeholder")}
               disabled={isViewMode}
             />
-            <p className="text-xs text-muted-foreground">
-              {tRfp("selected_vendors_note")}
-            </p>
+            <p className="text-xs text-muted-foreground">{tRfp("selected_vendors_note")}</p>
           </div>
         </div>
       )}
@@ -184,9 +179,7 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
             <User className="h-10 w-10 text-muted-foreground/40 mb-3" />
             <h3 className="text-sm font-medium mb-1">{tRfp("no_vendors_selected")}</h3>
             <p className="text-xs text-muted-foreground max-w-sm">
-              {isViewMode
-                ? tRfp("no_vendors_assigned")
-                : tRfp("start_adding_vendors")}
+              {isViewMode ? tRfp("no_vendors_assigned") : tRfp("start_adding_vendors")}
             </p>
           </div>
         ) : (
