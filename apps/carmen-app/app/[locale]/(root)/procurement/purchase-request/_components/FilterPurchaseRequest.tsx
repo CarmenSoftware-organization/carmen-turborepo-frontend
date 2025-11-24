@@ -93,9 +93,8 @@ export default function FilterPurchaseRequest({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         {children || (
-          <Button size="sm" variant="outline">
-            <Filter className="h-4 w-4 mr-2" />
-            {tDataControls("filter")}
+          <Button size="sm" variant={"outlinePrimary"}>
+            <Filter className="h-4 w-4" />
           </Button>
         )}
       </PopoverTrigger>
@@ -109,11 +108,11 @@ export default function FilterPurchaseRequest({
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal text-xs",
                     !dateRange && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <CalendarIcon className="h-4 w-4" />
                   {getDateRangeDisplay()}
                 </Button>
               </PopoverTrigger>
