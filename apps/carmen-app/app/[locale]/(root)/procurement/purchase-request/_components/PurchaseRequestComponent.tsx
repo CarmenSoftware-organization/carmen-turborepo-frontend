@@ -25,6 +25,7 @@ import {
 import { parseSortString } from "@/utils/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { convertStatus } from "@/utils/status";
+import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurchaseRequest";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode } = useAuth();
@@ -41,6 +42,14 @@ export default function PurchaseRequestComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
 
+  // Filter state using URL params
+  const [filterStatus, setFilterStatus] = useURL("filter_status");
+  const [filterStage, setFilterStage] = useURL("filter_stage");
+  const [filterType, setFilterType] = useURL("filter_type");
+  const [filterDepartment, setFilterDepartment] = useURL("filter_department");
+  const [filterDateFrom, setFilterDateFrom] = useURL("filter_date_from");
+  const [filterDateTo, setFilterDateTo] = useURL("filter_date_to");
+
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
   const sortFields = [
@@ -54,6 +63,25 @@ export default function PurchaseRequestComponent() {
     { key: "department_name", label: tTableHeader("department") },
     { key: "total_amount", label: tTableHeader("amount") },
   ];
+
+  // Get current filter values from URL params
+  const getCurrentFilterValues = (): PurchaseRequestFilterValues => {
+    const dateRange =
+      filterDateFrom || filterDateTo
+        ? {
+            from: filterDateFrom ? new Date(filterDateFrom) : undefined,
+            to: filterDateTo ? new Date(filterDateTo) : undefined,
+          }
+        : undefined;
+
+    return {
+      status: filterStatus || undefined,
+      stage: filterStage || undefined,
+      prType: filterType || undefined,
+      department: filterDepartment || undefined,
+      dateRange,
+    };
+  };
 
   const { data: prs, isLoading } = usePurchaseRequest(token, buCode, {
     page: page ? Number(page) : 1,
@@ -73,6 +101,41 @@ export default function PurchaseRequestComponent() {
 
   const handleSetPerpage = (newPerpage: number) => {
     setPerpage(newPerpage.toString());
+  };
+
+  const handleApplyFilter = (filters: PurchaseRequestFilterValues) => {
+    // Update URL params with filter values
+    setFilterStatus(filters.status || "");
+    setFilterStage(filters.stage || "");
+    setFilterType(filters.prType || "");
+    setFilterDepartment(filters.department || "");
+
+    if (filters.dateRange?.from) {
+      setFilterDateFrom(filters.dateRange.from.toISOString().split("T")[0]);
+    } else {
+      setFilterDateFrom("");
+    }
+
+    if (filters.dateRange?.to) {
+      setFilterDateTo(filters.dateRange.to.toISOString().split("T")[0]);
+    } else {
+      setFilterDateTo("");
+    }
+
+    // Reset to first page when applying filters
+    setPage("");
+  };
+
+  const handleResetFilter = () => {
+    // Clear all filter URL params
+    setFilterStatus("");
+    setFilterStage("");
+    setFilterType("");
+    setFilterDepartment("");
+    setFilterDateFrom("");
+    setFilterDateTo("");
+    // Reset to first page when resetting filters
+    setPage("");
   };
 
   const title = tPurchaseRequest("title");
@@ -170,14 +233,11 @@ export default function PurchaseRequestComponent() {
             </TooltipContent>
           </Tooltip>
 
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size={"sm"}>
-                <Filter className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{tDataControls("filter")}</TooltipContent>
-          </Tooltip>
+          <FilterPurchaseRequest
+            onApply={handleApplyFilter}
+            onReset={handleResetFilter}
+            initialValues={getCurrentFilterValues()}
+          />
 
           <div className="hidden lg:block">
             <div className="flex items-center gap-2">

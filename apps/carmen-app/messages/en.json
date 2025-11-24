@@ -188,7 +188,10 @@
     "deleting": "Deleting...",
     "action_cannot_be_undone": "This action cannot be undone.",
     "update_success": "Updated successfully",
-    "update_error": "Failed to update"
+    "update_error": "Failed to update",
+    "reset": "Reset",
+    "apply": "Apply",
+    "select_date": "Select Date"
   },
   "TableHeader": {
     "all": "All",
@@ -311,6 +314,9 @@
     "myPening": "My Pending",
     "allDoc": "All Document",
     "allStage": "All Stage",
+    "allStatus": "All Status",
+    "allType": "All Type",
+    "allDepartment": "All Department",
     "requestor": "Requestor",
     "department_head_approval": "Department Head Approval",
     "finance_manager_approval": "Finance Manager Approval",

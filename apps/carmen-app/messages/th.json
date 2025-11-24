@@ -185,7 +185,10 @@
     "deleting": "กำลังลบ...",
     "action_cannot_be_undone": "การดำเนินการนี้ไม่สามารถย้อนกลับได้",
     "update_success": "อัพเดทสำเร็จ",
-    "update_error": "อัพเดทไม่สำเร็จ"
+    "update_error": "อัพเดทไม่สำเร็จ",
+    "reset": "รีเซ็ต",
+    "apply": "ใช้งาน",
+    "select_date": "เลือกวันที่"
   },
   "TableHeader": {
     "all": "ทั้งหมด",
@@ -302,6 +305,9 @@
     "myPening": "รายการที่รอการอนุมัติ",
     "allDoc": "รายการทั้งหมด",
     "allStage": "ทั้งหมด",
+    "allStatus": "ทุกสถานะ",
+    "allType": "ทุกประเภท",
+    "allDepartment": "ทุกแผนก",
     "requestor": "ผู้ขอซื้อ",
     "department_head_approval": "การอนุมัติหัวหน้ากลุ่ม",
     "finance_manager_approval": "การอนุมัติผู้ดูแลการเงิน",
