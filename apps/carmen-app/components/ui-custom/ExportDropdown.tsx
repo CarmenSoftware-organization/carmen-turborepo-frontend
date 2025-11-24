@@ -10,24 +10,35 @@ import { useState } from "react";
 
 export type ExportFormat = "excel" | "word" | "pdf";
 
-interface ExportOption {
+export interface ExportOption {
   id: ExportFormat;
   label: string;
   icon: React.ReactNode;
 }
 
-interface Props {
+interface ExportDropdownProps {
   onExport: (format: ExportFormat) => void;
   children?: React.ReactNode;
+  exportOptions?: ExportOption[];
+  title?: string;
+  popoverAlign?: "start" | "center" | "end";
+  disabled?: boolean;
 }
 
-export default function ExportPurchaseRequest({ onExport, children }: Props) {
+export default function ExportDropdown({
+  onExport,
+  children,
+  exportOptions,
+  title,
+  popoverAlign = "end",
+  disabled = false,
+}: ExportDropdownProps) {
   const tCommon = useTranslations("Common");
 
   const [open, setOpen] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat | undefined>(undefined);
 
-  const exportOptions: ExportOption[] = [
+  const defaultExportOptions: ExportOption[] = [
     {
       id: "excel",
       label: "Excel (.xlsx)",
@@ -45,6 +56,9 @@ export default function ExportPurchaseRequest({ onExport, children }: Props) {
     },
   ];
 
+  const options = exportOptions || defaultExportOptions;
+  const displayTitle = title || tCommon("export");
+
   const handleExport = () => {
     if (selectedFormat) {
       onExport(selectedFormat);
@@ -60,22 +74,22 @@ export default function ExportPurchaseRequest({ onExport, children }: Props) {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+      <PopoverTrigger asChild disabled={disabled}>
         {children || (
-          <Button variant="outlinePrimary" size="sm">
+          <Button variant="outlinePrimary" size="sm" disabled={disabled}>
             <FileDown className="h-4 w-4" />
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-[220px] p-0" align="end">
+      <PopoverContent className="w-[220px] p-0" align={popoverAlign}>
         <div className="p-4 space-y-4">
-          <h4 className="font-medium text-xs">{tCommon("export")}</h4>
+          <h4 className="font-medium text-xs">{displayTitle}</h4>
           <RadioGroup
             value={selectedFormat}
             onValueChange={(value) => setSelectedFormat(value as ExportFormat)}
           >
             <div className="space-y-4">
-              {exportOptions.map((option) => (
+              {options.map((option) => (
                 <div key={option.id} className="flex items-center space-x-2">
                   <RadioGroupItem value={option.id} id={option.id} />
                   <Label

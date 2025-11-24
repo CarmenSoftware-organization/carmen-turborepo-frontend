@@ -26,7 +26,7 @@ import { parseSortString } from "@/utils/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { convertStatus } from "@/utils/status";
 import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurchaseRequest";
-import ExportPurchaseRequest, { ExportFormat } from "./ExportPurchaseRequest";
+import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropdown";
 import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
 
 export default function PurchaseRequestComponent() {
@@ -44,7 +44,6 @@ export default function PurchaseRequestComponent() {
   const [page, setPage] = useURL("page");
   const [perpage, setPerpage] = useURL("perpage");
 
-  // Filter state using URL params
   const [filterStatus, setFilterStatus] = useURL("filter_status");
   const [filterStage, setFilterStage] = useURL("filter_stage");
   const [filterType, setFilterType] = useURL("filter_type");
@@ -66,7 +65,6 @@ export default function PurchaseRequestComponent() {
     { key: "total_amount", label: tTableHeader("amount") },
   ];
 
-  // Get current filter values from URL params
   const getCurrentFilterValues = (): PurchaseRequestFilterValues => {
     const dateRange =
       filterDateFrom || filterDateTo
@@ -106,7 +104,6 @@ export default function PurchaseRequestComponent() {
   };
 
   const handleApplyFilter = (filters: PurchaseRequestFilterValues) => {
-    // Update URL params with filter values
     setFilterStatus(filters.status || "");
     setFilterStage(filters.stage || "");
     setFilterType(filters.prType || "");
@@ -123,20 +120,16 @@ export default function PurchaseRequestComponent() {
     } else {
       setFilterDateTo("");
     }
-
-    // Reset to first page when applying filters
     setPage("");
   };
 
   const handleResetFilter = () => {
-    // Clear all filter URL params
     setFilterStatus("");
     setFilterStage("");
     setFilterType("");
     setFilterDepartment("");
     setFilterDateFrom("");
     setFilterDateTo("");
-    // Reset to first page when resetting filters
     setPage("");
   };
 
@@ -146,7 +139,6 @@ export default function PurchaseRequestComponent() {
       return;
     }
 
-    // Prepare export data from current PR data
     const exportData: ExportData = {
       filename: `Purchase_Requests_${new Date().toISOString().split("T")[0]}`,
       headers: [
@@ -171,7 +163,6 @@ export default function PurchaseRequestComponent() {
       ]),
     };
 
-    // Export based on selected format
     switch (format) {
       case "excel":
         exportToExcel(exportData);
@@ -208,7 +199,7 @@ export default function PurchaseRequestComponent() {
         <Tooltip>
           <TooltipTrigger asChild>
             <div>
-              <ExportPurchaseRequest onExport={handleExport}>
+              <ExportDropdown onExport={handleExport}>
                 <Button
                   variant="outlinePrimary"
                   className="group"
@@ -217,7 +208,7 @@ export default function PurchaseRequestComponent() {
                 >
                   <FileDown />
                 </Button>
-              </ExportPurchaseRequest>
+              </ExportDropdown>
             </div>
           </TooltipTrigger>
           <TooltipContent>
