@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Filter, Grid, List, Plus, Printer } from "lucide-react";
+import { FileDown, Grid, List, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { useURL } from "@/hooks/useURL";
@@ -26,6 +26,8 @@ import { parseSortString } from "@/utils/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { convertStatus } from "@/utils/status";
 import FilterPurchaseRequest, { PurchaseRequestFilterValues } from "./FilterPurchaseRequest";
+import ExportPurchaseRequest, { ExportFormat } from "./ExportPurchaseRequest";
+import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
 
 export default function PurchaseRequestComponent() {
   const { token, buCode } = useAuth();
@@ -138,6 +140,51 @@ export default function PurchaseRequestComponent() {
     setPage("");
   };
 
+  const handleExport = (format: ExportFormat) => {
+    if (!prs?.data || prs.data.length === 0) {
+      console.warn("No data to export");
+      return;
+    }
+
+    // Prepare export data from current PR data
+    const exportData: ExportData = {
+      filename: `Purchase_Requests_${new Date().toISOString().split("T")[0]}`,
+      headers: [
+        tTableHeader("pr_no"),
+        tTableHeader("date"),
+        tTableHeader("type"),
+        tTableHeader("status"),
+        tTableHeader("stage"),
+        tTableHeader("requestor"),
+        tTableHeader("department"),
+        tTableHeader("amount"),
+      ],
+      rows: prs.data.map((pr: any) => [
+        pr.pr_no || "-",
+        pr.pr_date || "-",
+        pr.workflow_name || "-",
+        getStatusLabel(pr.pr_status) || "-",
+        pr.workflow_current_stage || "-",
+        pr.requestor_name || "-",
+        pr.department_name || "-",
+        pr.total_amount?.toLocaleString() || "0",
+      ]),
+    };
+
+    // Export based on selected format
+    switch (format) {
+      case "excel":
+        exportToExcel(exportData);
+        break;
+      case "word":
+        exportToWord(exportData);
+        break;
+      case "pdf":
+        exportToPDF(exportData);
+        break;
+    }
+  };
+
   const title = tPurchaseRequest("title");
 
   const handleOpenDialog = () => {
@@ -160,14 +207,18 @@ export default function PurchaseRequestComponent() {
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              variant="outlinePrimary"
-              className="group"
-              size={"sm"}
-              data-id="pr-list-export-button"
-            >
-              <FileDown />
-            </Button>
+            <div>
+              <ExportPurchaseRequest onExport={handleExport}>
+                <Button
+                  variant="outlinePrimary"
+                  className="group"
+                  size={"sm"}
+                  data-id="pr-list-export-button"
+                >
+                  <FileDown />
+                </Button>
+              </ExportPurchaseRequest>
+            </div>
           </TooltipTrigger>
           <TooltipContent>
             <p>{tCommon("export")}</p>
@@ -233,11 +284,20 @@ export default function PurchaseRequestComponent() {
             </TooltipContent>
           </Tooltip>
 
-          <FilterPurchaseRequest
-            onApply={handleApplyFilter}
-            onReset={handleResetFilter}
-            initialValues={getCurrentFilterValues()}
-          />
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <FilterPurchaseRequest
+                  onApply={handleApplyFilter}
+                  onReset={handleResetFilter}
+                  initialValues={getCurrentFilterValues()}
+                />
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tCommon("filter")}</p>
+            </TooltipContent>
+          </Tooltip>
 
           <div className="hidden lg:block">
             <div className="flex items-center gap-2">

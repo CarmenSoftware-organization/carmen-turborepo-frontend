@@ -66,6 +66,8 @@
     "gray-matter": "^4.0.3",
     "import-in-the-middle": "^2.0.0",
     "input-otp": "^1.4.2",
+    "jspdf": "^3.0.4",
+    "jspdf-autotable": "^5.0.2",
     "lucide-react": "^0.548.0",
     "motion": "^12.23.24",
     "multer": "^1.4.5-lts.2",
@@ -89,6 +91,7 @@
     "tiptap-extension-resize-image": "^1.2.1",
     "uuid": "^11.1.0",
     "vaul": "^1.1.2",
+    "xlsx": "^0.18.5",
     "zod": "^3.24.2"
   },
   "devDependencies": {
