@@ -4,7 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronRight, Trash2 } from "lucide-react";
-import { PurchaseRequestDetail, StageStatus } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestDetail, StageStatus, ItemStatus } from "@/dtos/purchase-request.dto";
 import { formType } from "@/dtos/form.dto";
 import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
@@ -42,11 +42,11 @@ interface ColumnConfig {
 }
 
 const getPrItemName = (type: string, tAction: (key: string) => string) => {
-  if (type === "approved") {
+  if (type === ItemStatus.APPROVED) {
     return tAction("approve");
-  } else if (type === "review") {
+  } else if (type === ItemStatus.REVIEW) {
     return tAction("review");
-  } else if (type === "rejected") {
+  } else if (type === ItemStatus.REJECTED) {
     return tAction("reject");
   } else {
     return tAction("pending");
@@ -55,13 +55,13 @@ const getPrItemName = (type: string, tAction: (key: string) => string) => {
 
 const getBadgeVariant = (status: string) => {
   switch (status) {
-    case "approved":
+    case ItemStatus.APPROVED:
       return "active";
-    case "rejected":
+    case ItemStatus.REJECTED:
       return "destructive";
-    case "review":
+    case ItemStatus.REVIEW:
       return "warning";
-    case "pending":
+    case ItemStatus.PENDING:
       return "work_in_process";
     default:
       return "work_in_process";

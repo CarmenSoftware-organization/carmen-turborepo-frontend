@@ -7,6 +7,7 @@ import {
   STAGE_ROLE,
   CreatePurchaseRequestDetailDto,
   UpdatePurchaseRequestDetailDto,
+  ItemStatus,
 } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useMemo, useCallback } from "react";
@@ -149,7 +150,7 @@ export default function MainForm({ mode, initValues }: Props) {
     if (typeof stagesStatusValue === "string") {
       return stagesStatusValue;
     }
-    return "pending";
+    return ItemStatus.PENDING;
   }, []);
 
   const itemsStatusSummary = useMemo(() => {
@@ -175,11 +176,11 @@ export default function MainForm({ mode, initValues }: Props) {
 
         const currentStatus = getCurrentStatus(stagesStatusValue);
 
-        if (currentStatus === "approved" || currentStatus === "approve") {
+        if (currentStatus === ItemStatus.APPROVED || currentStatus === "approve") {
           summary.approved++;
-        } else if (currentStatus === "review") {
+        } else if (currentStatus === ItemStatus.REVIEW) {
           summary.review++;
-        } else if (currentStatus === "rejected" || currentStatus === "reject") {
+        } else if (currentStatus === ItemStatus.REJECTED || currentStatus === "reject") {
           summary.rejected++;
         } else {
           summary.pending++;

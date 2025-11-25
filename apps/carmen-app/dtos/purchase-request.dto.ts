@@ -143,6 +143,13 @@ export interface PriceCalculation {
 }
 
 // ========== Stage Status Interface ==========
+export enum ItemStatus {
+  APPROVED = "approved",
+  REVIEW = "review",
+  REJECTED = "rejected",
+  PENDING = "pending",
+}
+
 export interface StageStatus {
   seq?: number;
   name?: string | null;
