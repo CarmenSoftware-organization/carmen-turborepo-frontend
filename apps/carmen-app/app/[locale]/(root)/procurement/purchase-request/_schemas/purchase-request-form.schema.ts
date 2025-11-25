@@ -80,7 +80,7 @@ export const UpdatePurchaseRequestDetailSchema = z.object({
   // จาก EmbeddedProductSchema
   product_id: ValidateSchema.shape.uuid.optional(),
   // จาก EmbeddedInventoryUnitSchema
-  inventory_unit_id: ValidateSchema.shape.uuid.optional(),
+  inventory_unit_id: z.string().nullable().optional(),
   // จาก EmbeddedLocationSchema + delivery point
   location_id: ValidateSchema.shape.uuid.optional(),
   delivery_point_id: ValidateSchema.shape.uuid,
@@ -98,13 +98,13 @@ export const UpdatePurchaseRequestDetailSchema = z.object({
   approved_unit_conversion_factor: ValidateSchema.shape.price.optional(),
   // จาก PriceSchema
   total_price: ValidateSchema.shape.price.optional(),
-  sub_total_price: z.number().min(0).nullable().optional(),
+  sub_total_price: z.union([z.number(), z.string()]).nullable().optional(),
   net_amount: ValidateSchema.shape.price.optional(),
   price: ValidateSchema.shape.price.optional(),
-  base_sub_total_price: z.number().min(0).nullable().optional(),
+  base_sub_total_price: z.union([z.number(), z.string()]).nullable().optional(),
   base_total_price: ValidateSchema.shape.price.optional(),
   base_net_amount: ValidateSchema.shape.price.optional(),
-  base_price: z.number().min(0).nullable().optional(),
+  base_price: z.union([z.number(), z.string()]).nullable().optional(),
   // จาก EmbeddedTaxSchema (partial)
   tax_profile_id: z.string().uuid().nullable().optional(),
   tax_profile_name: z.string().nullable().optional(),
@@ -132,7 +132,7 @@ export const UpdatePurchaseRequestDetailSchema = z.object({
   foc_unit_conversion_rate: ValidateSchema.shape.price.optional(),
   // Add stages_status field
   stages_status: z
-    .union([z.string(), z.array(z.any())])
+    .union([z.string(), z.array(z.any()), z.record(z.any())])
     .nullable()
     .optional(),
 });

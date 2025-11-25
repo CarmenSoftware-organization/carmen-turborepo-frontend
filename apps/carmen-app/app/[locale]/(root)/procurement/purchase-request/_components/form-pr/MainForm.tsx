@@ -97,6 +97,8 @@ export default function MainForm({ mode, initValues }: Props) {
     mode: "onBlur",
   });
 
+  const { isDirty } = form.formState;
+
   const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
   const { save, submit, approve, purchase, review, reject, sendBack, isPending } = usePrActions(
     token,
@@ -121,8 +123,10 @@ export default function MainForm({ mode, initValues }: Props) {
   const prStatus = initValues?.pr_status;
   const workflowId = form.watch("details.workflow_id");
   const hasFormErrors = Object.keys(form.formState.errors).length > 0;
-  const isDisabled =
-    isCreatingPr || isPending || hasFormErrors || (mode === formType.ADD && !workflowId);
+
+  const isDisabled = useMemo(() => {
+    return isCreatingPr || isPending || hasFormErrors || (mode === formType.ADD && !workflowId);
+  }, [isCreatingPr, isPending, hasFormErrors, mode, workflowId]);
 
   const { data: prevWorkflowData, isLoading: isPrevWorkflowLoading } = usePrevWorkflow({
     token,
@@ -187,26 +191,12 @@ export default function MainForm({ mode, initValues }: Props) {
     getCurrentStatus,
   ]);
 
-  const hasFormChanges = (): boolean => {
-    const currentValues = form.getValues();
-    const bodyValues = currentValues.details;
-
-    const hasMainFieldChanges =
-      bodyValues.pr_date !==
-        (initValues?.pr_date || format(new Date(), dateFormat || "dd/MM/yyyy")) ||
-      bodyValues.description !== (initValues?.description || "") ||
-      bodyValues.workflow_id !== (initValues?.workflow_id || "") ||
-      bodyValues.note !== (initValues?.note || "");
-
-    const hasItemChanges = (bodyValues.purchase_request_detail?.add?.length ?? 0) > 0;
-    return hasMainFieldChanges || hasItemChanges;
-  };
-
   const performCancel = () => {
     if (currentMode === formType.ADD) {
       router.push("/procurement/purchase-request");
     } else {
       setCurrentMode(formType.VIEW);
+      form.reset(); // Reset form to initial values when cancelling edit
     }
   };
 
@@ -245,7 +235,7 @@ export default function MainForm({ mode, initValues }: Props) {
     e.preventDefault();
     e.stopPropagation();
 
-    if (hasFormChanges()) {
+    if (isDirty) {
       setCancelAction({ type, event: e });
       setCancelDialogOpen(true);
       return;
@@ -267,14 +257,17 @@ export default function MainForm({ mode, initValues }: Props) {
     setCancelDialogOpen(false);
   };
 
-  const onSubmitPr = () => {
-    const details = purchaseItemManager.items.map((item) => {
+  const getStageDetails = (action: string, defaultMessage: string) => {
+    return purchaseItemManager.items.map((item) => {
       const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
         item.stages_status) as StagesStatusValue;
       const stageMessage = getLastStageMessage(stagesStatusValue);
-      return createStageDetail(item.id, "submit", stageMessage, "user submitted");
+      return createStageDetail(item.id, action, stageMessage, defaultMessage);
     });
+  };
 
+  const onSubmitPr = () => {
+    const details = getStageDetails("submit", "user submitted");
     submitPurchaseRequest(
       details,
       submit,
@@ -306,13 +299,7 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const onReject = () => {
-    const details = purchaseItemManager.items.map((item) => {
-      const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-        item.stages_status) as StagesStatusValue;
-      const stageMessage = getLastStageMessage(stagesStatusValue);
-      return createStageDetail(item.id, "reject", stageMessage, "rejected");
-    });
-
+    const details = getStageDetails("reject", "rejected");
     rejectPurchaseRequest(
       details,
       reject,
@@ -326,13 +313,7 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const onSendBack = () => {
-    const details = purchaseItemManager.items.map((item) => {
-      const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-        item.stages_status) as StagesStatusValue;
-      const stageMessage = getLastStageMessage(stagesStatusValue);
-      return createStageDetail(item.id, "send_back", stageMessage, "sent back");
-    });
-
+    const details = getStageDetails("send_back", "sent back");
     sendBackPurchaseRequest(
       details,
       sendBack,
@@ -437,7 +418,7 @@ export default function MainForm({ mode, initValues }: Props) {
                   initValues={initValues}
                   onModeChange={setCurrentMode}
                   onCancel={handleCancel}
-                  hasFormChanges={hasFormChanges}
+                  hasFormChanges={() => isDirty}
                   isCreatingPr={isCreatingPr || isPending}
                   prStatus={prStatus ?? ""}
                   isDisabled={isDisabled}
@@ -478,9 +459,6 @@ export default function MainForm({ mode, initValues }: Props) {
                       prStatus={prStatus ?? ""}
                     />
                   </TabsContent>
-                  {/* <TabsContent value="budget" className="mt-2">
-                                        Budget Pr
-                                    </TabsContent> */}
                   <TabsContent value="workflow" className="mt-2">
                     <WorkflowHistory workflow_history={initValues?.workflow_history} />
                   </TabsContent>

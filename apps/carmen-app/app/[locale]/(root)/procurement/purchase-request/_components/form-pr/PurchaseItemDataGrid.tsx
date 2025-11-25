@@ -19,6 +19,8 @@ import { usePurchaseItemTable, PR_ITEM_BULK_ACTION } from "../../_hooks/use-purc
 import BulkActionDialog from "./dialogs/BulkActionDialog";
 import SelectAllDialog from "./dialogs/SelectAllDialog";
 
+const EMPTY_ARRAY: PurchaseRequestDetail[] = [];
+
 interface Props {
   currentMode: formType;
   items: PurchaseRequestDetail[];
@@ -41,7 +43,7 @@ interface Props {
 export default function PurchaseItemDataGrid({
   currentMode,
   items,
-  initValues = [],
+  initValues = EMPTY_ARRAY,
   addFields,
   onItemUpdate,
   onItemRemove,

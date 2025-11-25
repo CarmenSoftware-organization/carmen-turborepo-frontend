@@ -33,9 +33,11 @@ interface UsePurchaseItemManagementReturn {
   getItemValue: (item: PurchaseRequestDetail, fieldName: string) => any;
 }
 
+const EMPTY_ARRAY: PurchaseRequestDetail[] = [];
+
 export const usePurchaseItemManagement = ({
   form,
-  initValues = [],
+  initValues = EMPTY_ARRAY,
 }: UsePurchaseItemManagementProps): UsePurchaseItemManagementReturn => {
   const [state, setState] = useState<PurchaseItemState>({
     updatedItems: {},
@@ -296,25 +298,39 @@ export const usePurchaseItemManagement = ({
     [state.updatedItems, addFields, form]
   );
 
-  return {
-    // State
-    items,
-    updatedItems: state.updatedItems,
-    removedItems: state.removedItems,
+  return useMemo(
+    () => ({
+      // State
+      items,
+      updatedItems: state.updatedItems,
+      removedItems: state.removedItems,
 
-    // Actions
-    addItem,
-    updateItem,
-    removeItem,
+      // Actions
+      addItem,
+      updateItem,
+      removeItem,
 
-    // Field array helpers
-    addFields,
-    appendField: addPrepend,
-    removeField: addRemove,
+      // Field array helpers
+      addFields,
+      appendField: addPrepend,
+      removeField: addRemove,
 
-    // Helper
-    getItemValue,
-  };
+      // Helper
+      getItemValue,
+    }),
+    [
+      items,
+      state.updatedItems,
+      state.removedItems,
+      addItem,
+      updateItem,
+      removeItem,
+      addFields,
+      addPrepend,
+      addRemove,
+      getItemValue,
+    ]
+  );
 };
 
 export type { UsePurchaseItemManagementReturn };
