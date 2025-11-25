@@ -79,10 +79,10 @@ export default function ExpandedContent({
                 onItemUpdate={onItemUpdate}
               />
             </div>
-            <AccordionContent className="flex flex-col gap-2 border-l-4 border-sky-100 mx-3 my-1 -mt-px">
-              <div className="grid grid-cols-1 md:grid-cols-2 border-t border-border mx-4 pt-2 -mt-px">
-                <div>
-                  <Label className="text-muted-foreground/80 text-xs">{tPr("vendor")}</Label>
+            <AccordionContent className="flex flex-col">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                <div className="space-y-1">
+                  <Label className="text-muted-foreground text-xs">{tPr("vendor")}</Label>
                   <Select
                     value={(getItemValue(item, "vendor_id") as string) || ""}
                     onValueChange={(value) => {
@@ -93,7 +93,7 @@ export default function ExpandedContent({
                       }
                     }}
                   >
-                    <SelectTrigger className="h-7 text-xs max-w-[300px]">
+                    <SelectTrigger className="h-7 text-xs w-full">
                       <SelectValue placeholder="Select Vendor" />
                     </SelectTrigger>
                     <SelectContent>
@@ -110,9 +110,9 @@ export default function ExpandedContent({
                   value={(getItemValue(item, "pricelist_no") as string) ?? "-"}
                 />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-1 px-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 px-4 pb-4">
                 <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground/80 text-xs">{tPr("unit_price")}</Label>
+                  <Label className="text-muted-foreground text-xs">{tPr("unit_price")}</Label>
                   <NumberInput
                     value={Number(getItemValue(item, "pricelist_price")) || 0}
                     onChange={(value) => {
@@ -155,7 +155,7 @@ export default function ExpandedContent({
                   position="text-right"
                 />
                 <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground/80 text-xs">{tPr("discount")}</Label>
+                  <Label className="text-muted-foreground text-xs">{tPr("discount")}</Label>
                   <NumberInput
                     value={Number(getItemValue(item, "discount_amount")) || 0}
                     onChange={(value) => {
@@ -193,8 +193,8 @@ export default function ExpandedContent({
                   value={Number(getItemValue(item, "net_amount") ?? item.net_amount).toFixed(2)}
                   position="text-right"
                 />
-                <div className="text-right">
-                  <Label className="text-muted-foreground/80 text-xs">{tPr("tax")}</Label>
+                <div className="space-y-1 text-right">
+                  <Label className="text-muted-foreground text-xs">{tPr("tax")}</Label>
                   <Select
                     value={(getItemValue(item, "tax_profile_id") as string) || ""}
                     onValueChange={(value) => {
@@ -217,7 +217,7 @@ export default function ExpandedContent({
                       }
                     }}
                   >
-                    <SelectTrigger className="h-7 text-xs w-20 text-right justify-end">
+                    <SelectTrigger className="h-7 text-xs w-full text-right justify-end">
                       <SelectValue placeholder="Select Tax" />
                     </SelectTrigger>
                     <SelectContent>
@@ -230,7 +230,7 @@ export default function ExpandedContent({
                   </Select>
                 </div>
                 <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground/80 text-xs">{tPr("total")}</Label>
+                  <Label className="text-muted-foreground text-xs">{tPr("total")}</Label>
                   <p className="font-bold text-sm text-active">
                     {Number(getItemValue(item, "total_price") ?? item.total_price).toFixed(2)}
                   </p>
@@ -243,10 +243,10 @@ export default function ExpandedContent({
 
       <Accordion type="single" collapsible>
         <AccordionItem value="item-2">
-          <AccordionTrigger iconPosition="left" className="px-2">
+          <AccordionTrigger iconPosition="left" className="px-2 border-b border-border">
             <h4 className="font-bold text-xs text-muted-foreground">{tPr("inventory_info")}</h4>
           </AccordionTrigger>
-          <AccordionContent className="space-y-1 flex flex-col gap-2 border-l-4 border-green-100 mx-3 my-1 -mt-px">
+          <AccordionContent className="space-y-1 flex flex-col gap-2 p-4">
             <InventoryInfo item={item} token={token} buCode={buCode} />
             <InventoryProgress item={item} token={token} buCode={buCode} />
           </AccordionContent>
