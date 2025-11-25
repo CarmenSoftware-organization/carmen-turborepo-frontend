@@ -71,16 +71,14 @@ export default function ProductLocationLookup({
       return (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          <span className="truncate text-muted-foreground/90 font-thin">{t("loading")}</span>
+          <span className="truncate text-muted-foreground/90">{t("loading")}</span>
         </>
       );
     }
     if (selectedProduct) {
       return <span className="truncate">{selectedProduct.name}</span>;
     }
-    return (
-      <span className="truncate text-muted-foreground/90 font-thin">{t("select_product")}</span>
-    );
+    return <span className="truncate text-muted-foreground/90">{t("select_product")}</span>;
   };
 
   const getButtonTitle = () => {
@@ -106,9 +104,7 @@ export default function ProductLocationLookup({
         className={cn("justify-between", classNames)}
         title="Error loading data"
       >
-        <span className="truncate  text-muted-foreground/90 font-thin">
-          {t("err_load_product")}
-        </span>
+        <span className="truncate  text-muted-foreground/90">{t("err_load_product")}</span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
     );
@@ -122,9 +118,7 @@ export default function ProductLocationLookup({
         className={cn("justify-between", classNames)}
         title="Please select a location first"
       >
-        <span className="truncate text-muted-foreground/90 font-thin">
-          {t("pls_select_location")}
-        </span>
+        <span className="truncate text-muted-foreground/90">{t("pls_select_location")}</span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </Button>
     );
