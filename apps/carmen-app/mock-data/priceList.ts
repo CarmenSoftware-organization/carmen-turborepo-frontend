@@ -1,5 +1,11 @@
 import { PriceListTemplateListDto, ProductPriceListCompareDto } from "@/dtos/price-list.dto";
 
+export const mockTaxProfileList = [
+  { id: "92cd1c73-0396-4045-9835-c6c9d27f67a9", name: "VAT 7%", tax_rate: 7, is_active: true },
+  { id: "92b86df5-84c1-4ada-9773-38c0a330135b", name: "VAT 10%", tax_rate: 10, is_active: true },
+  { id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62", name: "None", tax_rate: 0, is_active: true },
+];
+
 export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
   {
     pricelist_detail_id: "001906ce-de66-47fe-9b2e-bb3238d440d1",
@@ -7,11 +13,11 @@ export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
     vendor_name: "PAWINEE KHAKHO CO.,LTD.",
     pricelist_price: 100,
     discount_amount: 10,
-    tax_rate: 7,
     is_prefer: true,
     currency_id: "90b2037d-ce80-4c15-bee8-0e5c5bec44be",
     currency_name: "Argentine Peso (Argentina)",
     currency_code: "ARS",
+    exchange_rate_date: "2024-08-07T00:00:00.000Z",
     pricelist_no: "PL-2024-PAW-001",
     pricelist_name: "PAWINEE KHAKHO",
     pricelist_description: "Premium model with extended",
@@ -20,6 +26,9 @@ export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
     valid_from: "2025-07-29 01:05:32.281+00",
     valid_to: "2025-08-29 01:05:32.281+00",
     selected: true,
+    tax_profile_id: "92cd1c73-0396-4045-9835-c6c9d27f67a9",
+    tax_profile_name: "VAT 7%",
+    tax_rate: 7,
   },
   {
     pricelist_detail_id: "e7cb2901-d065-404b-872a-ae86c323969c",
@@ -27,11 +36,11 @@ export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
     vendor_name: "เอทีวี ซีวิว ออน ทัวร์",
     pricelist_price: 250,
     discount_amount: 15,
-    tax_rate: 7,
     is_prefer: false,
     currency_id: "5d5e29b1-c566-413c-93b3-ba2f16ce51d9",
     currency_name: "Thai Baht",
     currency_code: "THB",
+    exchange_rate_date: "2024-08-07T00:00:00.000Z",
     pricelist_no: "3bcd52e1bb",
     rating: 3.8,
     pricelist_unit: "BG",
@@ -39,6 +48,9 @@ export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
     valid_from: "2025-07-29 01:05:32.281+00",
     valid_to: "2025-08-29 01:05:32.281+00",
     selected: false,
+    tax_profile_id: "92b86df5-84c1-4ada-9773-38c0a330135b",
+    tax_profile_name: "VAT 10%",
+    tax_rate: 10,
   },
   {
     pricelist_detail_id: "65c7ede4-0414-4c59-af5c-73bd42480076",
@@ -48,17 +60,20 @@ export const mockProductPriceListCompare: ProductPriceListCompareDto[] = [
     pricelist_description: "ราคาต่อหน่วย",
     pricelist_price: 350,
     discount_amount: 20,
-    tax_rate: 7,
     is_prefer: false,
     currency_id: "db577cbf-ca13-409c-9f17-36a9858f64df",
     currency_name: "Netherlands Antillean Guilder",
     currency_code: "ANG",
+    exchange_rate_date: "2024-08-07T00:00:00.000Z",
     pricelist_unit: "L",
     pricelist_no: "4cde63f2cc",
     rating: 4.2,
     valid_from: "2025-07-29 01:05:32.281+00",
     valid_to: "2025-08-29 01:05:32.281+00",
     selected: false,
+    tax_profile_id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62",
+    tax_profile_name: "None",
+    tax_rate: 0,
   },
 ];
 

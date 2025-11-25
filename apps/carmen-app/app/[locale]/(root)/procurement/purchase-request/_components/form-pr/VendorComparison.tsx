@@ -152,10 +152,42 @@ export default function VendorComparison({
         onItemUpdate(itemId, "pricelist_unit", selectedItem.pricelist_unit);
         onItemUpdate(itemId, "pricelist_price", selectedItem.pricelist_price);
         onItemUpdate(itemId, "discount_amount", selectedItem.discount_amount);
-        onItemUpdate(itemId, "tax_rate", selectedItem.tax_rate);
         onItemUpdate(itemId, "currency_id", selectedItem.currency_id);
         onItemUpdate(itemId, "currency_name", selectedItem.currency_name);
         onItemUpdate(itemId, "currency_code", selectedItem.currency_code);
+        onItemUpdate(itemId, "exchange_rate_date", selectedItem.exchange_rate_date);
+        onItemUpdate(itemId, "tax_rate", selectedItem.tax_rate);
+        onItemUpdate(itemId, "tax_profile_id", selectedItem.tax_profile_id);
+        onItemUpdate(itemId, "tax_profile_name", selectedItem.tax_profile_name);
+
+        // Calculate prices
+        const qty = apv_qty > 0 ? apv_qty : req_qty;
+        const price = selectedItem.pricelist_price || 0;
+        const discount = selectedItem.discount_amount || 0;
+        const subTotal = qty * price;
+        const discountRate = subTotal > 0 ? (discount / subTotal) * 100 : 0;
+        const netAmount = Math.max(0, subTotal - discount);
+        const taxRate = selectedItem.tax_rate || 0;
+        const taxAmount = netAmount * (taxRate / 100);
+        const totalPrice = netAmount + taxAmount;
+
+        onItemUpdate(itemId, "sub_total_price", subTotal);
+        onItemUpdate(itemId, "discount_rate", discountRate);
+        onItemUpdate(itemId, "net_amount", netAmount);
+        onItemUpdate(itemId, "tax_amount", taxAmount);
+        onItemUpdate(itemId, "total_price", totalPrice);
+
+        // Update base values (assuming 1:1 for now if no exchange rate logic available here,
+        // or we should rely on a separate effect to update base values.
+        // But to be safe, let's update them if currency matches or just leave them?
+        // If we don't update them, they might be wrong.
+        // Let's update them with same values for now, assuming base currency or let the user handle exchange rate later.)
+        onItemUpdate(itemId, "base_sub_total_price", subTotal);
+        onItemUpdate(itemId, "base_net_amount", netAmount);
+        onItemUpdate(itemId, "base_tax_amount", taxAmount);
+        onItemUpdate(itemId, "base_total_price", totalPrice);
+        onItemUpdate(itemId, "base_price", price);
+        onItemUpdate(itemId, "base_discount_amount", discount);
       }
     }
     setSelectedVendorId(null);

@@ -16,6 +16,7 @@ interface UsePurchaseItemManagementProps {
 interface UsePurchaseItemManagementReturn {
   // State
   items: PurchaseRequestDetail[];
+  currentItems: PurchaseRequestDetail[];
   updatedItems: Record<string, Partial<PurchaseRequestDetail>>;
   removedItems: Set<string>;
 
@@ -298,10 +299,18 @@ export const usePurchaseItemManagement = ({
     [state.updatedItems, addFields, form]
   );
 
+  const currentItems = useMemo(() => {
+    return items.map((item) => ({
+      ...item,
+      ...(state.updatedItems[item.id] || {}),
+    }));
+  }, [items, state.updatedItems]);
+
   return useMemo(
     () => ({
       // State
       items,
+      currentItems,
       updatedItems: state.updatedItems,
       removedItems: state.removedItems,
 

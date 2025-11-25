@@ -112,7 +112,8 @@ export const validateItemForApproval = (item: PurchaseRequestDetail, index?: num
     logError("discount_rate", item.discount_rate);
     return false;
   }
-  if (Number(item.discount_rate || 0) < 0) {
+  // Validate consistency: if discount amount > 0, rate should be > 0
+  if (Number(item.discount_amount || 0) > 0 && Number(item.discount_rate || 0) <= 0) {
     logError("discount_rate", item.discount_rate);
     return false;
   }

@@ -75,11 +75,14 @@ export type ProductPriceListCompareDto = {
   currency_id: string;
   currency_name: string;
   currency_code: string;
+  exchange_rate_date: string;
   pricelist_no: string;
   rating: number;
   valid_from: string;
   valid_to: string;
   selected: boolean;
+  tax_profile_id: string;
+  tax_profile_name: string;
 };
 
 export interface PriceListTemplateListDto {

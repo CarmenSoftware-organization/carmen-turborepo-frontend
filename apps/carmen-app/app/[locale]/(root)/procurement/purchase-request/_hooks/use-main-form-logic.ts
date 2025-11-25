@@ -82,10 +82,11 @@ export const useMainFormLogic = ({
   const { isDirty } = form.formState;
 
   const isApproveDisabled = useMemo(() => {
-    if (purchaseItemManager.items.length === 0) return true;
-    return !purchaseItemManager.items.every((item, index) => validateItemForApproval(item, index));
-    return false;
-  }, [purchaseItemManager.items]);
+    if (purchaseItemManager.currentItems.length === 0) return true;
+    return !purchaseItemManager.currentItems.every((item, index) =>
+      validateItemForApproval(item, index)
+    );
+  }, [purchaseItemManager.currentItems]);
 
   const isDisabled = useMemo(() => {
     return isCreatingPr || isPending || hasFormErrors || (mode === formType.ADD && !workflowId);
@@ -242,7 +243,10 @@ export const useMainFormLogic = ({
   };
 
   const onApprove = () => {
-    const approveData = preparePurchaseApproveData(purchaseItemManager.items, initValues?.id || "");
+    const approveData = preparePurchaseApproveData(
+      purchaseItemManager.currentItems,
+      initValues?.id || ""
+    );
     approve(approveData, {
       onSuccess: () => {
         toastSuccess({
@@ -297,7 +301,7 @@ export const useMainFormLogic = ({
 
   const onPurchaseApprove = () => {
     const purchaseData = preparePurchaseApproveData(
-      purchaseItemManager.items,
+      purchaseItemManager.currentItems,
       initValues?.id || ""
     );
 

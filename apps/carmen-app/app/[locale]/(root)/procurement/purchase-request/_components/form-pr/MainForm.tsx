@@ -67,6 +67,10 @@ export default function MainForm({ mode, initValues }: Props) {
     mode: "onBlur",
   });
 
+  // console.log("initValues", initValues);
+  // console.log("form", form.getValues());
+  console.log("form err", form.formState.errors);
+
   const purchaseItemManager = usePurchaseItemManagement({
     form,
     initValues: initValues?.purchase_request_detail,
