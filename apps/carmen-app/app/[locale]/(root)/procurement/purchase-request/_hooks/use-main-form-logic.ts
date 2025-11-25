@@ -374,6 +374,9 @@ export const useMainFormLogic = ({
     prevWorkflowData,
     isPrevWorkflowLoading,
     isDirty,
+    departmentName: initValues?.department_name || departments?.name,
+    initValues,
+    purchaseItemManager,
 
     // Handlers
     getCurrentStatus,

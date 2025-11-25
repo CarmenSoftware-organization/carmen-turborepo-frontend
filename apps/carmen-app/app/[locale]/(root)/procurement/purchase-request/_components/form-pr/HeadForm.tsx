@@ -15,28 +15,18 @@ import { enum_workflow_type } from "@/dtos/workflows.dto";
 import { cn } from "@/lib/utils";
 import { Building2, Calendar, CircleCheck, Clock4, FileText, GitBranch, User } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { UseFormReturn } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
+import { usePurchaseRequestContext } from "./PurchaseRequestContext";
 
-interface HeadFormProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly form: UseFormReturn<any>;
-  readonly mode: formType;
-  readonly workflow_id?: string;
-  readonly requestor_name?: string;
-  readonly department_name?: string;
-  readonly workflowStages?: {
-    title: string;
-  }[];
-}
-
-export default function HeadForm({
-  form,
-  mode,
-  workflow_id,
-  requestor_name,
-  department_name,
-  workflowStages,
-}: HeadFormProps) {
+export default function HeadForm() {
+  const { control } = useFormContext();
+  const {
+    currentMode: mode,
+    workflowId: workflow_id,
+    requestorName: requestor_name,
+    departmentName: department_name,
+    workflowStages,
+  } = usePurchaseRequestContext();
   const tPr = useTranslations("PurchaseRequest");
   const lastThreeSteps =
     workflowStages && workflowStages.length > 0 ? workflowStages.slice(-3) : [];
@@ -44,7 +34,7 @@ export default function HeadForm({
   return (
     <div className="grid grid-cols-4 gap-2">
       <FormField
-        control={form.control}
+        control={control}
         name="details.workflow_id"
         required
         icon={<GitBranch className="h-4 w-4 text-muted-foreground" />}
@@ -64,7 +54,7 @@ export default function HeadForm({
         )}
       />
       <FormField
-        control={form.control}
+        control={control}
         name="details.pr_date"
         required
         icon={<Calendar className="h-4 w-4 text-muted-foreground" />}
@@ -97,7 +87,7 @@ export default function HeadForm({
       </div>
 
       <FormField
-        control={form.control}
+        control={control}
         name="details.description"
         icon={<FileText className="h-4 w-4 text-muted-foreground" />}
         render={({ field }) => (

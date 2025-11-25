@@ -21,9 +21,7 @@ export const cleanPurchaseRequestDetail = (
   item: PurchaseRequestDetailInput
 ): Omit<PurchaseRequestDetailInput, "id"> => {
   const { id, ...itemWithoutId } = item;
-  const cleanedItem = removeEmptyFields(itemWithoutId);
-  const convertedItem = convertFieldsToNumbers(cleanedItem, QUANTITY_FIELDS);
-  return convertedItem as Omit<PurchaseRequestDetailInput, "id">;
+  return itemWithoutId as Omit<PurchaseRequestDetailInput, "id">;
 };
 
 /** Check if PR has details to process */

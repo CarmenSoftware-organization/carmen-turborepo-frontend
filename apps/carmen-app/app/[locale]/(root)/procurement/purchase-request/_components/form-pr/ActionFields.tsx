@@ -8,28 +8,19 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 import { convertStatus } from "@/utils/status";
+import { usePurchaseRequestContext } from "./PurchaseRequestContext";
 
-interface ActionFieldsProps {
-  readonly currentMode: formType;
-  readonly initValues?: PurchaseRequestByIdDto;
-  readonly onModeChange: (mode: formType) => void;
-  readonly onCancel: (e: React.MouseEvent<HTMLButtonElement>, type: "back" | "cancel") => void;
-  readonly hasFormChanges: () => boolean;
-  readonly isCreatingPr: boolean;
-  readonly prStatus: string;
-  readonly isDisabled: boolean;
-}
-
-export default function ActionFields({
-  currentMode,
-  initValues,
-  onModeChange,
-  onCancel,
-  hasFormChanges,
-  isCreatingPr,
-  prStatus,
-  isDisabled,
-}: ActionFieldsProps) {
+export default function ActionFields() {
+  const {
+    currentMode,
+    initValues,
+    setCurrentMode: onModeChange,
+    handleCancel: onCancel,
+    isDirty: hasFormChanges,
+    isCreatingPr,
+    prStatus,
+    isDisabled,
+  } = usePurchaseRequestContext();
   const tPr = useTranslations("PurchaseRequest");
   const router = useRouter();
   const tStatus = useTranslations("Status");
@@ -50,7 +41,7 @@ export default function ActionFields({
     const returnUrl = searchParams.get("returnUrl");
     const backUrl = returnUrl || "/procurement/purchase-request";
     if (currentMode === formType.EDIT) {
-      if (hasFormChanges()) {
+      if (hasFormChanges) {
         onCancel(e, "back");
       } else {
         router.push(backUrl);

@@ -29,6 +29,7 @@ import WorkflowHistory from "./WorkflowHistory";
 import ActionButtons from "./ActionButtons";
 import { useTranslations } from "next-intl";
 import { useMainFormLogic } from "../../_hooks/use-main-form-logic";
+import { PurchaseRequestProvider } from "./PurchaseRequestContext";
 import { CreatePrDtoType } from "../../_schemas/purchase-request-form.schema";
 
 interface Props {
@@ -69,6 +70,13 @@ export default function MainForm({ mode, initValues }: Props) {
   const purchaseItemManager = usePurchaseItemManagement({
     form,
     initValues: initValues?.purchase_request_detail,
+  });
+
+  const logic = useMainFormLogic({
+    mode,
+    initValues,
+    form,
+    purchaseItemManager,
   });
 
   const {
@@ -112,12 +120,7 @@ export default function MainForm({ mode, initValues }: Props) {
     onPurchaseApprove,
     onReview,
     handleReviewConfirm,
-  } = useMainFormLogic({
-    mode,
-    initValues,
-    form,
-    purchaseItemManager,
-  });
+  } = logic;
 
   return (
     <>
@@ -125,93 +128,75 @@ export default function MainForm({ mode, initValues }: Props) {
         activityComponent={<ActivityLogComponent initialActivities={mockActivityPr} />}
         commentComponent={<CommentComponent initialComments={mockCommentsPr} />}
       >
-        <div className="space-y-4">
-          <Card className="p-4">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(handleSubmit, () => {
+        <PurchaseRequestProvider value={logic}>
+          <div className="space-y-4">
+            <Card className="p-4">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(handleSubmit, () => {
+                    toastError({
+                      message: tPR("pls_complete_required_fields"),
+                    });
+                  })}
+                >
+                  <ActionFields />
+                  <HeadForm />
+                  <Tabs defaultValue="items">
+                    <TabsList className={"mt-4"}>
+                      <TabsTrigger className={"w-full h-6"} value="items">
+                        {tPR("items")}
+                      </TabsTrigger>
+                      <TabsTrigger className="w-full h-6" value="workflow">
+                        {tPR("workflow")}
+                      </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="items" className="mt-2">
+                      <PurchaseItemDataGrid
+                        currentMode={currentMode}
+                        items={purchaseItemManager.items}
+                        initValues={initValues?.purchase_request_detail}
+                        addFields={purchaseItemManager.addFields}
+                        onItemUpdate={purchaseItemManager.updateItem}
+                        onItemRemove={purchaseItemManager.removeItem}
+                        onAddItem={purchaseItemManager.addItem}
+                        getItemValue={purchaseItemManager.getItemValue}
+                        getCurrentStatus={getCurrentStatus}
+                        workflow_id={workflowId}
+                        prStatus={prStatus ?? ""}
+                      />
+                    </TabsContent>
+                    <TabsContent value="workflow" className="mt-2">
+                      <WorkflowHistory workflow_history={initValues?.workflow_history} />
+                    </TabsContent>
+                  </Tabs>
+                </form>
+              </Form>
+            </Card>
+
+            {prStatus !== "voided" && (
+              <ActionButtons
+                prStatus={prStatus || ""}
+                isNewPr={currentMode === formType.ADD}
+                isDraft={initValues?.pr_status === "draft"}
+                isPending={isPending}
+                isDisabled={isDisabled}
+                isSubmitDisabled={!workflowId}
+                itemsStatusSummary={itemsStatusSummary}
+                onReject={onReject}
+                onSendBack={onSendBack}
+                onReview={onReview}
+                onApprove={onApprove}
+                onPurchaseApprove={onPurchaseApprove}
+                onSubmitPr={onSubmitPr}
+                onSave={form.handleSubmit(handleSubmit, (errors) => {
                   toastError({
                     message: tPR("pls_complete_required_fields"),
                   });
                 })}
-              >
-                <ActionFields
-                  currentMode={currentMode}
-                  initValues={initValues}
-                  onModeChange={setCurrentMode}
-                  onCancel={handleCancel}
-                  hasFormChanges={() => isDirty}
-                  isCreatingPr={isCreatingPr || isPending}
-                  prStatus={prStatus ?? ""}
-                  isDisabled={isDisabled}
-                />
-                <HeadForm
-                  form={form}
-                  mode={currentMode}
-                  workflow_id={initValues?.workflow_id}
-                  requestor_name={
-                    initValues?.requestor_name ? initValues.requestor_name : requestorName
-                  }
-                  department_name={
-                    initValues?.department_name ? initValues.department_name : departments?.name
-                  }
-                  workflowStages={workflowStages}
-                />
-                <Tabs defaultValue="items">
-                  <TabsList className={"mt-4"}>
-                    <TabsTrigger className={"w-full h-6"} value="items">
-                      {tPR("items")}
-                    </TabsTrigger>
-                    <TabsTrigger className="w-full h-6" value="workflow">
-                      {tPR("workflow")}
-                    </TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="items" className="mt-2">
-                    <PurchaseItemDataGrid
-                      currentMode={currentMode}
-                      items={purchaseItemManager.items}
-                      initValues={initValues?.purchase_request_detail}
-                      addFields={purchaseItemManager.addFields}
-                      onItemUpdate={purchaseItemManager.updateItem}
-                      onItemRemove={purchaseItemManager.removeItem}
-                      onAddItem={purchaseItemManager.addItem}
-                      getItemValue={purchaseItemManager.getItemValue}
-                      getCurrentStatus={getCurrentStatus}
-                      workflow_id={workflowId}
-                      prStatus={prStatus ?? ""}
-                    />
-                  </TabsContent>
-                  <TabsContent value="workflow" className="mt-2">
-                    <WorkflowHistory workflow_history={initValues?.workflow_history} />
-                  </TabsContent>
-                </Tabs>
-              </form>
-            </Form>
-          </Card>
-
-          {prStatus !== "voided" && (
-            <ActionButtons
-              prStatus={prStatus || ""}
-              isNewPr={currentMode === formType.ADD}
-              isDraft={initValues?.pr_status === "draft"}
-              isPending={isPending}
-              isDisabled={isDisabled}
-              isSubmitDisabled={!workflowId}
-              itemsStatusSummary={itemsStatusSummary}
-              onReject={onReject}
-              onSendBack={onSendBack}
-              onReview={onReview}
-              onApprove={onApprove}
-              onPurchaseApprove={onPurchaseApprove}
-              onSubmitPr={onSubmitPr}
-              onSave={form.handleSubmit(handleSubmit, (errors) => {
-                toastError({
-                  message: tPR("pls_complete_required_fields"),
-                });
-              })}
-            />
-          )}
-        </div>
+              />
+            )}
+          </div>
+        </PurchaseRequestProvider>
       </DetailsAndComments>
 
       <DeleteConfirmDialog
