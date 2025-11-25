@@ -19,6 +19,7 @@ interface ActionButtonsProps {
   readonly isDisabled: boolean;
   readonly isPending: boolean;
   readonly isSubmitDisabled?: boolean;
+  readonly isApproveDisabled?: boolean;
   readonly itemsStatusSummary?: ItemsStatusSummary;
 
   readonly onReject: () => void;
@@ -37,6 +38,7 @@ export default function ActionButtons({
   isPending,
   isDisabled,
   isSubmitDisabled = false,
+  isApproveDisabled = false,
   itemsStatusSummary,
   onReject,
   onSendBack,
@@ -119,7 +121,7 @@ export default function ActionButtons({
                     e.stopPropagation();
                     onApprove();
                   }}
-                  disabled={isPending}
+                  disabled={isPending || isApproveDisabled}
                 >
                   <CheckCircleIcon className="w-4 h-4" />
                   {tAction("approve")}
@@ -198,7 +200,7 @@ export default function ActionButtons({
                       e.stopPropagation();
                       onApprove();
                     }}
-                    disabled={isPending}
+                    disabled={isPending || isApproveDisabled}
                   >
                     <CheckCircleIcon className="w-4 h-4" />
                     {tAction("approve")}
@@ -212,7 +214,7 @@ export default function ActionButtons({
                       e.stopPropagation();
                       onPurchaseApprove();
                     }}
-                    disabled={isPending}
+                    disabled={isPending || isApproveDisabled}
                   >
                     <ShoppingCart className="w-4 h-4" />
                     {tAction("purchase_approve")}

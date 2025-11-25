@@ -10,7 +10,11 @@ import { CreatePrDtoType, StagesStatusValue } from "../_schemas/purchase-request
 import { usePrMutation } from "@/hooks/use-purchase-request";
 import { usePrActions } from "./use-pr-actions";
 import { usePrevWorkflow } from "./use-prev-workflow";
-import { prepareSubmitData } from "../_utils/purchase-request.utils";
+import {
+  prepareSubmitData,
+  preparePurchaseApproveData,
+  validateItemForApproval,
+} from "../_utils/purchase-request.utils";
 import { prepareStageDetails } from "../_utils/stage.utils";
 import { createPurchaseRequest } from "../_handlers/purchase-request-create.handlers";
 import { updatePurchaseRequest } from "../_handlers/purchase-request-update.handlers";
@@ -76,6 +80,12 @@ export const useMainFormLogic = ({
   const workflowId = form.watch("details.workflow_id");
   const hasFormErrors = Object.keys(form.formState.errors).length > 0;
   const { isDirty } = form.formState;
+
+  const isApproveDisabled = useMemo(() => {
+    if (purchaseItemManager.items.length === 0) return true;
+    return !purchaseItemManager.items.every((item, index) => validateItemForApproval(item, index));
+    return false;
+  }, [purchaseItemManager.items]);
 
   const isDisabled = useMemo(() => {
     return isCreatingPr || isPending || hasFormErrors || (mode === formType.ADD && !workflowId);
@@ -232,21 +242,19 @@ export const useMainFormLogic = ({
   };
 
   const onApprove = () => {
-    approve(
-      {},
-      {
-        onSuccess: () => {
-          toastSuccess({
-            message: tPR("purchase_request_approved"),
-          });
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_approved_failed"),
-          });
-        },
-      }
-    );
+    const approveData = preparePurchaseApproveData(purchaseItemManager.items, initValues?.id || "");
+    approve(approveData, {
+      onSuccess: () => {
+        toastSuccess({
+          message: tPR("purchase_request_approved"),
+        });
+      },
+      onError: () => {
+        toastError({
+          message: tPR("purchase_request_approved_failed"),
+        });
+      },
+    });
   };
 
   const onReject = () => {
@@ -288,21 +296,23 @@ export const useMainFormLogic = ({
   };
 
   const onPurchaseApprove = () => {
-    purchase(
-      {},
-      {
-        onSuccess: () => {
-          toastSuccess({
-            message: tPR("purchase_request_approved_purchase"),
-          });
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_approved_purchase_failed"),
-          });
-        },
-      }
+    const purchaseData = preparePurchaseApproveData(
+      purchaseItemManager.items,
+      initValues?.id || ""
     );
+
+    purchase(purchaseData, {
+      onSuccess: () => {
+        toastSuccess({
+          message: tPR("purchase_request_approved_purchase"),
+        });
+      },
+      onError: () => {
+        toastError({
+          message: tPR("purchase_request_approved_purchase_failed"),
+        });
+      },
+    });
   };
 
   const onReview = () => {
@@ -364,6 +374,7 @@ export const useMainFormLogic = ({
 
     // Computed
     isDisabled,
+    isApproveDisabled,
     itemsStatusSummary,
     isCreatingPr,
     isPending,

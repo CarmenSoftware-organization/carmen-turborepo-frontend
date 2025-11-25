@@ -96,6 +96,7 @@ export default function MainForm({ mode, initValues }: Props) {
 
     // Computed
     isDisabled,
+    isApproveDisabled,
     itemsStatusSummary,
     isCreatingPr,
     isPending,
@@ -181,6 +182,7 @@ export default function MainForm({ mode, initValues }: Props) {
                 isPending={isPending}
                 isDisabled={isDisabled}
                 isSubmitDisabled={!workflowId}
+                isApproveDisabled={isApproveDisabled}
                 itemsStatusSummary={itemsStatusSummary}
                 onReject={onReject}
                 onSendBack={onSendBack}
