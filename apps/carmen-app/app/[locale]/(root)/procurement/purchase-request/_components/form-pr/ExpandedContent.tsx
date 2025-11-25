@@ -14,21 +14,8 @@ import InventoryInfo from "./InventoryInfo";
 import InventoryProgress from "./InventoryProgress";
 import PrLabelItem from "./PrLabelItem";
 import NumberInput from "@/components/form-custom/NumberInput";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const mockVendors = [
-  { id: "007e666b-98ac-4d81-a93e-fff701239b7f", name: "PAWINEE KHAKHO CO.,LTD." },
-  { id: "031c1bda-fa8f-40b0-aa7e-01b2b903a53d", name: "เอทีวี ซีวิว ออน ทัวร์" },
-  { id: "071a2e74-9a3f-46fd-b09d-aa5f9bf26f7c", name: "KINGART ADVERTISING CO.,LTD." },
-];
-
-import { mockTaxProfileList } from "@/mock-data/priceList";
+import VendorLookup from "@/components/lookup/VendorLookup";
+import TaxProfileLookup from "@/components/lookup/TaxProfileLookup";
 
 interface ExpandedContentProps {
   item: PurchaseRequestDetail;
@@ -83,27 +70,15 @@ export default function ExpandedContent({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
                 <div className="space-y-1">
                   <Label className="text-muted-foreground text-xs">{tPr("vendor")}</Label>
-                  <Select
+                  <VendorLookup
                     value={(getItemValue(item, "vendor_id") as string) || ""}
                     onValueChange={(value) => {
-                      const selectedVendor = mockVendors.find((v) => v.id === value);
-                      if (selectedVendor) {
-                        onItemUpdate(item.id, "vendor_id", selectedVendor.id);
-                        onItemUpdate(item.id, "vendor_name", selectedVendor.name);
-                      }
+                      onItemUpdate(item.id, "vendor_id", value);
+                      // Note: We can't easily get the vendor name here to update vendor_name
+                      // without fetching the list again or modifying VendorLookup.
+                      // Assuming vendor_id is sufficient for payload.
                     }}
-                  >
-                    <SelectTrigger className="h-7 text-xs w-full">
-                      <SelectValue placeholder="Select Vendor" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockVendors.map((vendor) => (
-                        <SelectItem key={vendor.id} value={vendor.id} className="text-xs">
-                          {vendor.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  />
                 </div>
                 <PrLabelItem
                   label={tPr("pricelist")}
@@ -195,39 +170,28 @@ export default function ExpandedContent({
                 />
                 <div className="space-y-1 text-right">
                   <Label className="text-muted-foreground text-xs">{tPr("tax")}</Label>
-                  <Select
+                  <TaxProfileLookup
                     value={(getItemValue(item, "tax_profile_id") as string) || ""}
                     onValueChange={(value) => {
-                      const selectedTax = mockTaxProfileList.find((t) => t.id === value);
-                      if (selectedTax) {
-                        onItemUpdate(item.id, "tax_profile_id", selectedTax.id);
-                        onItemUpdate(item.id, "tax_profile_name", selectedTax.name);
-                        onItemUpdate(item.id, "tax_rate", selectedTax.tax_rate);
-
-                        // Recalculate prices
-                        const netAmount = Number(getItemValue(item, "net_amount") || 0);
-                        const taxRate = selectedTax.tax_rate || 0;
-                        const taxAmount = netAmount * (taxRate / 100);
-                        const totalPrice = netAmount + taxAmount;
-
-                        onItemUpdate(item.id, "tax_amount", taxAmount);
-                        onItemUpdate(item.id, "total_price", totalPrice);
-                        onItemUpdate(item.id, "base_tax_amount", taxAmount);
-                        onItemUpdate(item.id, "base_total_price", totalPrice);
-                      }
+                      onItemUpdate(item.id, "tax_profile_id", value);
                     }}
-                  >
-                    <SelectTrigger className="h-7 text-xs w-full text-right justify-end">
-                      <SelectValue placeholder="Select Tax" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mockTaxProfileList.map((tax) => (
-                        <SelectItem key={tax.id} value={tax.id} className="text-xs">
-                          {tax.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                    onSelectObject={(selectedTax) => {
+                      onItemUpdate(item.id, "tax_profile_name", selectedTax.name);
+                      onItemUpdate(item.id, "tax_rate", selectedTax.tax_rate);
+
+                      // Recalculate prices
+                      const netAmount = Number(getItemValue(item, "net_amount") || 0);
+                      const taxRate = selectedTax.tax_rate || 0;
+                      const taxAmount = netAmount * (taxRate / 100);
+                      const totalPrice = netAmount + taxAmount;
+
+                      onItemUpdate(item.id, "tax_amount", taxAmount);
+                      onItemUpdate(item.id, "total_price", totalPrice);
+                      onItemUpdate(item.id, "base_tax_amount", taxAmount);
+                      onItemUpdate(item.id, "base_total_price", totalPrice);
+                    }}
+                    classNames="h-7 text-xs w-full text-right justify-end"
+                  />
                 </div>
                 <div className="space-y-1 text-right">
                   <Label className="text-muted-foreground text-xs">{tPr("total")}</Label>

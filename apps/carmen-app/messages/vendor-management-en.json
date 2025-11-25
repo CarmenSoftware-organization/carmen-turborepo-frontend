@@ -33,7 +33,8 @@
     "vendor_name_required": "Vendor name is required",
     "add_success": "Add vendor successfully",
     "update_success": "Update vendor successfully",
-    "delete_success": "Delete vendor successfully"
+    "delete_success": "Delete vendor successfully",
+    "select_vendor": "Select vendor"
   },
   "VendorManagement": {
     "title": "Vendor Management",

@@ -14,24 +14,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  TaxProfileEditDto,
-  TaxProfileFormData,
-  TaxProfileGetAllDto,
-} from "@/dtos/tax-profile.dto";
+import { TaxProfileEditDto, TaxProfileFormData, TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import { FormTaxProfile } from "./FormTaxProfile";
 import { useTranslations } from "next-intl";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import { useAuth } from "@/context/AuthContext";
+import TaxProfileList from "./TaxProfileList";
+import { configurationPermission } from "@/lib/permission";
 import {
   useDeleteTaxProfile,
   useTaxProfileMutation,
   useTaxProfileQuery,
   useUpdateTaxProfile,
-} from "../_hooks/use-tax-profile";
-import TaxProfileList from "./TaxProfileList";
-import { configurationPermission } from "@/lib/permission";
+} from "@/hooks/use-tax-profile";
 
 export function TaxProfileComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -43,11 +39,7 @@ export function TaxProfileComponent() {
   const tCommon = useTranslations("Common");
   const tTaxProfile = useTranslations("TaxProfile");
 
-  const { taxProfiles: taxProfileData, isLoading } = useTaxProfileQuery(
-    token,
-    buCode,
-    {}
-  );
+  const { taxProfiles: taxProfileData, isLoading } = useTaxProfileQuery(token, buCode);
 
   // Use data directly from query instead of local state
   const taxProfiles = taxProfileData?.data || [];
@@ -56,11 +48,7 @@ export function TaxProfileComponent() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<string | null>(null);
-  const { mutate: updateTaxProfile } = useUpdateTaxProfile(
-    token,
-    buCode,
-    editingProfile ?? ""
-  );
+  const { mutate: updateTaxProfile } = useUpdateTaxProfile(token, buCode, editingProfile ?? "");
 
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
   const { mutate: deleteTaxProfile } = useDeleteTaxProfile(token, buCode);
@@ -73,10 +61,7 @@ export function TaxProfileComponent() {
   };
 
   const actionButtons = (
-    <div
-      className="action-btn-container"
-      data-id="tax-profile-action-buttons"
-    >
+    <div className="action-btn-container" data-id="tax-profile-action-buttons">
       {taxProfilePerms.canCreate && (
         <Button size="sm" onClick={handleAddNew}>
           <Plus className="h-4 w-4" />
@@ -92,17 +77,12 @@ export function TaxProfileComponent() {
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button
-        variant="outlinePrimary"
-        size="sm"
-        data-id="tax-profile-print-button"
-      >
+      <Button variant="outlinePrimary" size="sm" data-id="tax-profile-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>
     </div>
   );
-
 
   const handleEdit = (profileId: string) => {
     setEditingProfile(profileId);
@@ -181,11 +161,7 @@ export function TaxProfileComponent() {
 
   return (
     <>
-      <DataDisplayTemplate
-        title={title}
-        actionButtons={actionButtons}
-        content={content}
-      />
+      <DataDisplayTemplate title={title} actionButtons={actionButtons} content={content} />
       <FormTaxProfile
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}
@@ -198,10 +174,7 @@ export function TaxProfileComponent() {
         onCancel={handleDialogClose}
       />
 
-      <AlertDialog
-        open={deleteProfileId !== null}
-        onOpenChange={handleDeleteCancel}
-      >
+      <AlertDialog open={deleteProfileId !== null} onOpenChange={handleDeleteCancel}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{tTaxProfile("del_tax_profile")}</AlertDialogTitle>
@@ -210,9 +183,7 @@ export function TaxProfileComponent() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleDeleteCancel}>
-              {tCommon("cancel")}
-            </AlertDialogCancel>
+            <AlertDialogCancel onClick={handleDeleteCancel}>{tCommon("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
               className="bg-destructive hover:bg-destructive/90"
