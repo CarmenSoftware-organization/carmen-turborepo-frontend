@@ -7,17 +7,14 @@ interface ErrorHandlerOptions {
   customMessage?: string;
 }
 
-/**
- * Custom hook for centralized error handling
- * Provides consistent error messaging and logging
- */
 export const useErrorHandler = () => {
   const handleError = useCallback((error: Error, options?: ErrorHandlerOptions) => {
     // Log error for debugging
     console.error("Error occurred:", error);
 
     // Display error toast
-    const message = options?.customMessage || error.message || PR_ERROR_MESSAGES.GENERAL.UNKNOWN_ERROR;
+    const message =
+      options?.customMessage || error.message || PR_ERROR_MESSAGES.GENERAL.UNKNOWN_ERROR;
     toastError({ message });
 
     // Call custom error handler if provided
@@ -28,13 +25,16 @@ export const useErrorHandler = () => {
     toastSuccess({ message });
   }, []);
 
-  const handleApiError = useCallback((error: unknown, defaultMessage: string) => {
-    if (error instanceof Error) {
-      handleError(error, { customMessage: error.message || defaultMessage });
-    } else {
-      handleError(new Error(defaultMessage));
-    }
-  }, [handleError]);
+  const handleApiError = useCallback(
+    (error: unknown, defaultMessage: string) => {
+      if (error instanceof Error) {
+        handleError(error, { customMessage: error.message || defaultMessage });
+      } else {
+        handleError(new Error(defaultMessage));
+      }
+    },
+    [handleError]
+  );
 
   return {
     handleError,

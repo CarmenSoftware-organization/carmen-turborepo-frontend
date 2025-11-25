@@ -1,19 +1,10 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import {
-  CreatePrSchema,
-  PurchaseRequestByIdDto,
-  STAGE_ROLE,
-  CreatePurchaseRequestDetailDto,
-  UpdatePurchaseRequestDetailDto,
-  ItemStatus,
-} from "@/dtos/purchase-request.dto";
+import { CreatePrSchema, PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState, useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "../../_hooks/use-purchase-item-management";
-import { usePrevWorkflow } from "../../_hooks/use-prev-workflow";
 import { useAuth } from "@/context/AuthContext";
 import { Form } from "@/components/ui/form";
 import {
@@ -29,33 +20,16 @@ import CancelConfirmDialog from "./dialogs/CancelConfirmDialog";
 import { Card } from "@/components/ui/card";
 import ActionFields from "./ActionFields";
 import HeadForm from "./HeadForm";
-import { useRouter } from "@/lib/navigation";
 import DetailsAndComments from "@/components/DetailsAndComments";
-import { usePrMutation } from "@/hooks/use-purchase-request";
-import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { toastError } from "@/components/ui-custom/Toast";
 import { mockActivityPr, mockCommentsPr } from "./mock-budget";
 import ActivityLogComponent from "@/components/comment-activity/ActivityLogComponent";
 import CommentComponent from "@/components/comment-activity/CommentComponent";
 import WorkflowHistory from "./WorkflowHistory";
 import ActionButtons from "./ActionButtons";
-import { useQueryClient } from "@tanstack/react-query";
-import { usePrActions } from "../../_hooks/use-pr-actions";
 import { useTranslations } from "next-intl";
-import { format } from "date-fns";
-import { prepareSubmitData } from "../../_utils/purchase-request.utils";
-import {
-  getLastStageMessage,
-  createStageDetail,
-  prepareStageDetails,
-} from "../../_utils/stage.utils";
-import { createPurchaseRequest } from "../../_handlers/purchase-request-create.handlers";
-import { updatePurchaseRequest } from "../../_handlers/purchase-request-update.handlers";
-import {
-  submitPurchaseRequest,
-  rejectPurchaseRequest,
-  sendBackPurchaseRequest,
-} from "../../_handlers/purchase-request-actions.handlers";
-import { CreatePrDtoType, StagesStatusValue } from "../../_schemas/purchase-request-form.schema";
+import { useMainFormLogic } from "../../_hooks/use-main-form-logic";
+import { CreatePrDtoType } from "../../_schemas/purchase-request-form.schema";
 
 interface Props {
   mode: formType;
@@ -68,18 +42,8 @@ interface CancelAction {
 }
 
 export default function MainForm({ mode, initValues }: Props) {
-  const router = useRouter();
-  const { token, buCode, user, departments, dateFormat } = useAuth();
+  const { token, buCode, user, departments } = useAuth();
   const tPR = useTranslations("PurchaseRequest");
-  const queryClient = useQueryClient();
-
-  const [currentMode, setCurrentMode] = useState<formType>(mode);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<string | null>(null);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-  const [cancelAction, setCancelAction] = useState<CancelAction>({ type: "cancel", event: null });
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
-  const [selectedStage, setSelectedStage] = useState<string>("");
 
   const form = useForm<CreatePrDtoType>({
     resolver: zodResolver(CreatePrSchema),
@@ -93,309 +57,67 @@ export default function MainForm({ mode, initValues }: Props) {
         description: initValues?.description || "",
         note: initValues?.note || "",
         purchase_request_detail: {
-          add: [] as CreatePurchaseRequestDetailDto[],
-          update: [] as UpdatePurchaseRequestDetailDto[],
-          remove: [] as { id: string }[],
+          add: [],
+          update: [],
+          remove: [],
         },
       },
     },
     mode: "onBlur",
   });
 
-  const { isDirty } = form.formState;
-
-  const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
-  const { save, submit, approve, purchase, review, reject, sendBack, isPending } = usePrActions(
-    token,
-    buCode,
-    initValues?.id || ""
-  );
-
   const purchaseItemManager = usePurchaseItemManagement({
     form,
     initValues: initValues?.purchase_request_detail,
   });
 
-  const requestorName = user?.user_info.firstname + " " + user?.user_info.lastname;
-  const workflowStages = Array.isArray(initValues?.workflow_history)
-    ? initValues.workflow_history.map((item: { current_stage?: string }) => ({
-        title: item.current_stage ?? "",
-      }))
-    : [];
-  const currentStage = workflowStages[workflowStages.length - 1]?.title;
-  const isDraft = initValues?.pr_status === "draft";
-  const isNewPr = currentMode === formType.ADD;
-  const prStatus = initValues?.pr_status;
-  const workflowId = form.watch("details.workflow_id");
-  const hasFormErrors = Object.keys(form.formState.errors).length > 0;
+  const {
+    // State
+    currentMode,
+    setCurrentMode,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
+    itemToDelete,
+    setItemToDelete,
+    cancelDialogOpen,
+    setCancelDialogOpen,
+    reviewDialogOpen,
+    setReviewDialogOpen,
+    selectedStage,
+    setSelectedStage,
 
-  const isDisabled = useMemo(() => {
-    return isCreatingPr || isPending || hasFormErrors || (mode === formType.ADD && !workflowId);
-  }, [isCreatingPr, isPending, hasFormErrors, mode, workflowId]);
+    // Computed
+    isDisabled,
+    itemsStatusSummary,
+    isCreatingPr,
+    isPending,
+    prStatus,
+    workflowStages,
+    requestorName,
+    workflowId,
+    prevWorkflowData,
+    isPrevWorkflowLoading,
+    isDirty,
 
-  const { data: prevWorkflowData, isLoading: isPrevWorkflowLoading } = usePrevWorkflow({
-    token,
-    buCode,
-    workflow_id: initValues?.workflow_id || "",
-    stage: currentStage,
-    enabled: reviewDialogOpen,
-  });
-
-  const getCurrentStatus = useCallback((stagesStatusValue: StagesStatusValue): string => {
-    if (!stagesStatusValue) return "pending";
-    if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
-      const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
-      return lastStage?.status || "pending";
-    }
-    if (typeof stagesStatusValue === "string") {
-      return stagesStatusValue;
-    }
-    return ItemStatus.PENDING;
-  }, []);
-
-  const itemsStatusSummary = useMemo(() => {
-    const summary = {
-      approved: 0,
-      review: 0,
-      rejected: 0,
-      pending: 0,
-      newItems: 0,
-      total: purchaseItemManager.items.length,
-    };
-
-    for (const item of purchaseItemManager.items) {
-      const isNewItem = !initValues?.purchase_request_detail?.some(
-        (initItem) => initItem.id === item.id
-      );
-
-      if (isNewItem) {
-        summary.newItems++;
-      } else {
-        const stagesStatusValue: StagesStatusValue =
-          purchaseItemManager.getItemValue(item, "stages_status") || item.stages_status;
-
-        const currentStatus = getCurrentStatus(stagesStatusValue);
-
-        if (currentStatus === ItemStatus.APPROVED || currentStatus === "approve") {
-          summary.approved++;
-        } else if (currentStatus === ItemStatus.REVIEW) {
-          summary.review++;
-        } else if (currentStatus === ItemStatus.REJECTED || currentStatus === "reject") {
-          summary.rejected++;
-        } else {
-          summary.pending++;
-        }
-      }
-    }
-
-    return summary;
-  }, [
-    purchaseItemManager.items,
-    initValues?.purchase_request_detail,
-    purchaseItemManager,
+    // Handlers
     getCurrentStatus,
-  ]);
-
-  const performCancel = () => {
-    if (currentMode === formType.ADD) {
-      router.push("/procurement/purchase-request");
-    } else {
-      setCurrentMode(formType.VIEW);
-      form.reset(); // Reset form to initial values when cancelling edit
-    }
-  };
-
-  const handleSubmit = (data: CreatePrDtoType): void => {
-    const processedData = prepareSubmitData(data);
-    const isCreating = currentMode === formType.ADD;
-    if (isCreating) {
-      createPurchaseRequest(processedData, createPr, router, tPR, toastSuccess, toastError);
-    } else {
-      updatePurchaseRequest(
-        processedData,
-        save,
-        queryClient,
-        buCode,
-        initValues?.id,
-        setCurrentMode,
-        tPR,
-        toastSuccess,
-        toastError
-      );
-    }
-  };
-
-  const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      const index = Number(itemToDelete);
-      if (index >= 0) {
-        purchaseItemManager.removeField(index);
-      }
-    }
-    setDeleteDialogOpen(false);
-    setItemToDelete(null);
-  };
-
-  const handleCancel = (e: React.MouseEvent<HTMLButtonElement>, type: "back" | "cancel") => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (isDirty) {
-      setCancelAction({ type, event: e });
-      setCancelDialogOpen(true);
-      return;
-    }
-    if (type === "back") {
-      router.push("/procurement/purchase-request");
-      return;
-    }
-
-    performCancel();
-  };
-
-  const handleConfirmCancel = () => {
-    if (cancelAction.type === "back") {
-      router.push("/procurement/purchase-request");
-    } else {
-      performCancel();
-    }
-    setCancelDialogOpen(false);
-  };
-
-  const onSubmitPr = () => {
-    const details = prepareStageDetails(
-      purchaseItemManager.items,
-      purchaseItemManager.getItemValue,
-      "submit",
-      "user submitted"
-    );
-    submitPurchaseRequest(
-      details,
-      submit,
-      queryClient,
-      buCode,
-      initValues?.id,
-      tPR,
-      toastSuccess,
-      toastError
-    );
-  };
-
-  const onApprove = () => {
-    approve(
-      {},
-      {
-        onSuccess: () => {
-          toastSuccess({
-            message: tPR("purchase_request_approved"),
-          });
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_approved_failed"),
-          });
-        },
-      }
-    );
-  };
-
-  const onReject = () => {
-    const details = prepareStageDetails(
-      purchaseItemManager.items,
-      purchaseItemManager.getItemValue,
-      "reject",
-      "rejected"
-    );
-    rejectPurchaseRequest(
-      details,
-      reject,
-      queryClient,
-      buCode,
-      initValues?.id,
-      tPR,
-      toastSuccess,
-      toastError
-    );
-  };
-
-  const onSendBack = () => {
-    const details = prepareStageDetails(
-      purchaseItemManager.items,
-      purchaseItemManager.getItemValue,
-      "send_back",
-      "sent back"
-    );
-    sendBackPurchaseRequest(
-      details,
-      sendBack,
-      queryClient,
-      buCode,
-      initValues?.id,
-      tPR,
-      toastSuccess,
-      toastError
-    );
-  };
-
-  const onPurchaseApprove = () => {
-    purchase(
-      {},
-      {
-        onSuccess: () => {
-          toastSuccess({
-            message: tPR("purchase_request_approved_purchase"),
-          });
-        },
-        onError: () => {
-          toastError({
-            message: tPR("purchase_request_approved_purchase_failed"),
-          });
-        },
-      }
-    );
-  };
-
-  const onReview = () => {
-    setReviewDialogOpen(true);
-  };
-
-  const handleReviewConfirm = () => {
-    if (!selectedStage) {
-      toastError({
-        message: tPR("please_select_stage"),
-      });
-      return;
-    }
-
-    const reviewData = {
-      state_role: STAGE_ROLE.CREATE,
-      des_stage: selectedStage,
-      details: prepareStageDetails(
-        purchaseItemManager.items,
-        purchaseItemManager.getItemValue,
-        "review",
-        `กลับไป ${selectedStage}`
-      ),
-    };
-
-    review(reviewData, {
-      onSuccess: () => {
-        toastSuccess({
-          message: tPR("purchase_request_reviewed"),
-        });
-        setReviewDialogOpen(false);
-        setSelectedStage("");
-        queryClient.invalidateQueries({
-          queryKey: ["purchase-request", buCode, initValues?.id],
-        });
-      },
-      onError: () => {
-        toastError({
-          message: tPR("purchase_request_reviewed_failed"),
-        });
-      },
-    });
-  };
+    handleSubmit,
+    handleConfirmDelete,
+    handleCancel,
+    handleConfirmCancel,
+    onSubmitPr,
+    onApprove,
+    onReject,
+    onSendBack,
+    onPurchaseApprove,
+    onReview,
+    handleReviewConfirm,
+  } = useMainFormLogic({
+    mode,
+    initValues,
+    form,
+    purchaseItemManager,
+  });
 
   return (
     <>
@@ -470,8 +192,8 @@ export default function MainForm({ mode, initValues }: Props) {
           {prStatus !== "voided" && (
             <ActionButtons
               prStatus={prStatus || ""}
-              isNewPr={isNewPr}
-              isDraft={isDraft}
+              isNewPr={currentMode === formType.ADD}
+              isDraft={initValues?.pr_status === "draft"}
               isPending={isPending}
               isDisabled={isDisabled}
               isSubmitDisabled={!workflowId}
