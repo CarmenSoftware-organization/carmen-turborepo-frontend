@@ -145,9 +145,9 @@ export default function VendorComparison({
         (item) => item.pricelist_detail_id === selectedVendorId
       );
       if (selectedItem) {
-        onItemUpdate(itemId, "pricelist_detail_id", selectedItem.pricelist_detail_id);
         onItemUpdate(itemId, "vendor_id", selectedItem.vendor_id);
         onItemUpdate(itemId, "vendor_name", selectedItem.vendor_name);
+        onItemUpdate(itemId, "pricelist_detail_id", selectedItem.pricelist_detail_id);
         onItemUpdate(itemId, "pricelist_no", selectedItem.pricelist_no);
         onItemUpdate(itemId, "pricelist_unit", selectedItem.pricelist_unit);
         onItemUpdate(itemId, "pricelist_price", selectedItem.pricelist_price);
