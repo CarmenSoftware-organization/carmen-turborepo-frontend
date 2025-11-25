@@ -1,4 +1,4 @@
-import { StageStatus } from "@/dtos/purchase-request.dto";
+import { StageStatus, PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 
 type StagesStatusValue = string | StageStatus[] | undefined;
 
@@ -23,4 +23,21 @@ export const createStageDetail = (
     stage_status: stageStatus,
     stage_message: stageMessage || defaultMessage,
   };
+};
+
+/**
+ * Helper to map purchase items to stage details for workflow actions
+ */
+export const prepareStageDetails = (
+  items: PurchaseRequestDetail[],
+  getItemValue: (item: PurchaseRequestDetail, field: string) => any,
+  action: string,
+  defaultMessage: string
+) => {
+  return items.map((item) => {
+    const stagesStatusValue = (getItemValue(item, "stages_status") ||
+      item.stages_status) as StagesStatusValue;
+    const stageMessage = getLastStageMessage(stagesStatusValue);
+    return createStageDetail(item.id, action, stageMessage, defaultMessage);
+  });
 };

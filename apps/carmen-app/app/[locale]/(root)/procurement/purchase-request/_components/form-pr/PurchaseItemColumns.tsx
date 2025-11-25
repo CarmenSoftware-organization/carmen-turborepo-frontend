@@ -93,8 +93,6 @@ export const createPurchaseItemColumns = (
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
 
-  console.log("init item", initValues);
-
   const baseColumns: ColumnDef<PurchaseRequestDetail>[] = [
     {
       id: "expander",

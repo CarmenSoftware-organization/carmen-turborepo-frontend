@@ -42,7 +42,11 @@ import { usePrActions } from "../../_hooks/use-pr-actions";
 import { useTranslations } from "next-intl";
 import { format } from "date-fns";
 import { prepareSubmitData } from "../../_utils/purchase-request.utils";
-import { getLastStageMessage, createStageDetail } from "../../_utils/stage.utils";
+import {
+  getLastStageMessage,
+  createStageDetail,
+  prepareStageDetails,
+} from "../../_utils/stage.utils";
 import { createPurchaseRequest } from "../../_handlers/purchase-request-create.handlers";
 import { updatePurchaseRequest } from "../../_handlers/purchase-request-update.handlers";
 import {
@@ -257,17 +261,13 @@ export default function MainForm({ mode, initValues }: Props) {
     setCancelDialogOpen(false);
   };
 
-  const getStageDetails = (action: string, defaultMessage: string) => {
-    return purchaseItemManager.items.map((item) => {
-      const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-        item.stages_status) as StagesStatusValue;
-      const stageMessage = getLastStageMessage(stagesStatusValue);
-      return createStageDetail(item.id, action, stageMessage, defaultMessage);
-    });
-  };
-
   const onSubmitPr = () => {
-    const details = getStageDetails("submit", "user submitted");
+    const details = prepareStageDetails(
+      purchaseItemManager.items,
+      purchaseItemManager.getItemValue,
+      "submit",
+      "user submitted"
+    );
     submitPurchaseRequest(
       details,
       submit,
@@ -299,7 +299,12 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const onReject = () => {
-    const details = getStageDetails("reject", "rejected");
+    const details = prepareStageDetails(
+      purchaseItemManager.items,
+      purchaseItemManager.getItemValue,
+      "reject",
+      "rejected"
+    );
     rejectPurchaseRequest(
       details,
       reject,
@@ -313,7 +318,12 @@ export default function MainForm({ mode, initValues }: Props) {
   };
 
   const onSendBack = () => {
-    const details = getStageDetails("send_back", "sent back");
+    const details = prepareStageDetails(
+      purchaseItemManager.items,
+      purchaseItemManager.getItemValue,
+      "send_back",
+      "sent back"
+    );
     sendBackPurchaseRequest(
       details,
       sendBack,
@@ -359,23 +369,12 @@ export default function MainForm({ mode, initValues }: Props) {
     const reviewData = {
       state_role: STAGE_ROLE.CREATE,
       des_stage: selectedStage,
-      details:
-        purchaseItemManager.items.map((item) => {
-          const stagesStatusValue = (purchaseItemManager.getItemValue(item, "stages_status") ||
-            item.stages_status) as StagesStatusValue;
-
-          let stageMessage = "";
-          if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {
-            const lastStage = stagesStatusValue[stagesStatusValue.length - 1];
-            stageMessage = lastStage?.message || "";
-          }
-
-          return {
-            id: item.id,
-            stage_status: "review",
-            stage_message: stageMessage || `กลับไป ${selectedStage}`,
-          };
-        }) || [],
+      details: prepareStageDetails(
+        purchaseItemManager.items,
+        purchaseItemManager.getItemValue,
+        "review",
+        `กลับไป ${selectedStage}`
+      ),
     };
 
     review(reviewData, {
