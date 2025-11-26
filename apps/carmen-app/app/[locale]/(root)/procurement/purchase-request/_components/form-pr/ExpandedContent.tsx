@@ -119,6 +119,8 @@ export default function ExpandedContent({
     onItemUpdate(item.id, "base_total_price", totalPrice);
   };
 
+  const isPriceValid = Number(getItemValue(item, "pricelist_price")) > 0;
+
   return (
     <Card className="m-2 rounded-md">
       {prStatus === "in_progress" && (
@@ -156,7 +158,7 @@ export default function ExpandedContent({
                   value={(getItemValue(item, "pricelist_no") as string) ?? "-"}
                 />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 pb-4">
+              <div className="grid grid-cols-7 gap-6 px-4 pb-4">
                 <div className="space-y-1 text-right">
                   <Label className="text-muted-foreground text-xs">Currency</Label>
                   <CurrencyLookup
@@ -167,7 +169,7 @@ export default function ExpandedContent({
                     onSelectObject={(selectedCurrency) => {
                       onItemUpdate(item.id, "currency_code", selectedCurrency.code);
                     }}
-                    classNames="h-7"
+                    classNames="h-7 justify-end text-right"
                   />
                 </div>
                 <div className="space-y-1 text-right">
@@ -197,7 +199,8 @@ export default function ExpandedContent({
                         // For now just toggle and recalculate based on current values
                         recalculateAll({ is_discount_adjustment: Boolean(checked) });
                       }}
-                      className="h-3 w-3"
+                      className="h-3.5 w-3.5"
+                      disabled={!isPriceValid}
                     />
                   </div>
                   <div className="relative">
@@ -219,6 +222,7 @@ export default function ExpandedContent({
                         "h-7 text-xs w-full text-right bg-background",
                         !Boolean(getItemValue(item, "is_discount_adjustment")) && "pr-6"
                       )}
+                      disabled={!isPriceValid}
                     />
                     {!Boolean(getItemValue(item, "is_discount_adjustment")) && (
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
@@ -248,7 +252,8 @@ export default function ExpandedContent({
                       onCheckedChange={(checked) => {
                         recalculateAll({ is_tax_adjustment: Boolean(checked) });
                       }}
-                      className="h-3 w-3"
+                      className="h-3.5 w-3.5"
+                      disabled={!isPriceValid}
                     />
                   </div>
                   {Boolean(getItemValue(item, "is_tax_adjustment")) ? (
@@ -258,6 +263,7 @@ export default function ExpandedContent({
                         recalculateAll({ tax_amount: Number(value) });
                       }}
                       classNames="h-7 text-xs w-full text-right bg-background"
+                      disabled={!isPriceValid}
                     />
                   ) : (
                     <TaxProfileLookup
@@ -274,6 +280,7 @@ export default function ExpandedContent({
                         });
                       }}
                       classNames="h-7 text-xs w-full text-right justify-end"
+                      disabled={!isPriceValid}
                     />
                   )}
                   <p className="text-[10px] text-muted-foreground">
