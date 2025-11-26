@@ -32,6 +32,7 @@ import { useTranslations } from "next-intl";
 import { useMainFormLogic } from "../../_hooks/use-main-form-logic";
 import { PurchaseRequestProvider } from "./PurchaseRequestContext";
 import { CreatePrDtoType } from "../../_schemas/purchase-request-form.schema";
+import { PR_STATUS } from "../../_constants/pr-status";
 
 interface Props {
   mode: formType;
@@ -124,6 +125,8 @@ export default function MainForm({ mode, initValues }: Props) {
     handleReviewConfirm,
   } = logic;
 
+  const isShowActionButtons = prStatus !== PR_STATUS.VOIDED && prStatus !== PR_STATUS.APPROVED;
+
   return (
     <>
       <DetailsAndComments
@@ -175,7 +178,7 @@ export default function MainForm({ mode, initValues }: Props) {
               </Form>
             </Card>
 
-            {prStatus !== "voided" && (
+            {isShowActionButtons && (
               <ActionButtons
                 prStatus={prStatus || ""}
                 isNewPr={currentMode === formType.ADD}

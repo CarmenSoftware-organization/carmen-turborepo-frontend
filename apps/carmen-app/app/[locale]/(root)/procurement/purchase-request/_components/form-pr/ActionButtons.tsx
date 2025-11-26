@@ -2,6 +2,7 @@ import { X, ArrowLeftIcon, Eye, CheckCircleIcon, ShoppingCart, SendIcon, Save } 
 import { Button } from "@/components/ui/button";
 import { MotionDiv } from "@/components/framer-motion/MotionWrapper";
 import { useTranslations } from "next-intl";
+import { PR_STATUS } from "../../_constants/pr-status";
 
 interface ItemsStatusSummary {
   approved: number;
@@ -224,7 +225,7 @@ export default function ActionButtons({
             </>
           )}
 
-          {(prStatus === "draft" || prStatus !== "in_progress") && (
+          {(prStatus === PR_STATUS.DRAFT || prStatus !== PR_STATUS.IN_PROGRESS) && (
             <Button
               size="sm"
               type="button"

@@ -17,6 +17,7 @@ import DateInput from "@/components/form-custom/DateInput";
 import { DeliveryPointSelectLookup } from "@/components/lookup/DeliveryPointSelectLookup";
 import { UnitSelectCell } from "../UnitSelectCell";
 import ExpandedContent from "./ExpandedContent";
+import { PR_STATUS } from "../../_constants/pr-status";
 
 interface ColumnConfig {
   currentMode: formType;
@@ -532,7 +533,7 @@ export const createPurchaseItemColumns = (
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+            className="h-7 w-7 pr-2 text-muted-foreground hover:text-destructive hover:bg-variant"
             onMouseDown={(e) => {
               e.stopPropagation();
             }}
@@ -563,7 +564,7 @@ export const createPurchaseItemColumns = (
     filteredColumns = filteredColumns.filter((col) => col.id !== "action" && col.id !== "select");
   }
 
-  if (prStatus !== "in_progress") {
+  if (prStatus !== PR_STATUS.IN_PROGRESS) {
     filteredColumns = filteredColumns.filter(
       (col) =>
         col.id !== "select" &&

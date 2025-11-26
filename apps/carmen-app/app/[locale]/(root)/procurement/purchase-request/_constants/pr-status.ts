@@ -4,7 +4,7 @@ export const PR_STATUS = {
   IN_PROGRESS: "in_progress",
   APPROVED: "approved",
   REJECTED: "rejected",
-  COMPLETED: "Completed",
+  COMPLETED: "completed",
   VOIDED: "voided",
 } as const;
 

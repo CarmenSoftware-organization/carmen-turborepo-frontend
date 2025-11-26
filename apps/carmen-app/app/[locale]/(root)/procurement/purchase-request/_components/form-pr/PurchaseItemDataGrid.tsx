@@ -161,11 +161,9 @@ export default function PurchaseItemDataGrid({
         | StageStatus[]
         | undefined;
 
-      // Create new stages_status by appending new status to array
       let newStagesStatus: StageStatus[];
 
       if (Array.isArray(currentStagesStatus)) {
-        // If already array, append to it
         newStagesStatus = [
           ...currentStagesStatus,
           {
@@ -176,7 +174,6 @@ export default function PurchaseItemDataGrid({
           },
         ];
       } else {
-        // If not array or is string, create new array
         newStagesStatus = [
           {
             seq: 1,
@@ -283,7 +280,9 @@ export default function PurchaseItemDataGrid({
         <div className="w-full space-y-2">
           <DataGridContainer className="">
             <ScrollArea>
-              <DataGridTable />
+              <div className="pb-3">
+                <DataGridTable />
+              </div>
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </DataGridContainer>
