@@ -51,10 +51,14 @@ export const UnitSelectCell = ({
       onItemUpdate(item.id, "requested_unit_id", firstUnit.id);
       onItemUpdate(item.id, "requested_unit_name", firstUnit.name);
       onItemUpdate(item.id, "requested_unit_conversion_factor", firstUnit.conversion);
+
       onItemUpdate(item.id, "approved_unit_id", firstUnit.id);
       onItemUpdate(item.id, "approved_unit_name", firstUnit.name);
       onItemUpdate(item.id, "approved_unit_conversion_factor", firstUnit.conversion);
 
+      onItemUpdate(item.id, "foc_unit_id", firstUnit.id);
+      onItemUpdate(item.id, "foc_unit_name", firstUnit.name);
+      onItemUpdate(item.id, "foc_unit_conversion_factor", firstUnit.conversion);
       // Calculate initial base quantities
       const requestedQty = item.requested_qty || 0;
       const approvedQty = item.approved_qty || 0;
@@ -94,6 +98,11 @@ export const UnitSelectCell = ({
           onItemUpdate(item.id, "approved_unit_id", selectedUnit.id);
           onItemUpdate(item.id, "approved_unit_conversion_factor", selectedUnit.conversion);
           onItemUpdate(item.id, "approved_base_qty", approvedQty * selectedUnit.conversion);
+
+          // foc
+          onItemUpdate(item.id, "foc_unit_name", selectedUnit.name);
+          onItemUpdate(item.id, "foc_unit_id", selectedUnit.id);
+          onItemUpdate(item.id, "foc_unit_conversion_factor", selectedUnit.conversion);
         }
         setOpen(false);
       }}
