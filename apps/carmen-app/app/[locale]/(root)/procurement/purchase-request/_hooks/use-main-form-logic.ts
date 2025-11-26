@@ -83,9 +83,9 @@ export const useMainFormLogic = ({
 
   const isApproveDisabled = useMemo(() => {
     if (purchaseItemManager.currentItems.length === 0) return true;
-    return !purchaseItemManager.currentItems.every((item, index) =>
-      validateItemForApproval(item, index)
-    );
+    // return !purchaseItemManager.currentItems.every((item, index) =>
+    //   validateItemForApproval(item, index)
+    // );
   }, [purchaseItemManager.currentItems]);
 
   const isDisabled = useMemo(() => {
@@ -100,7 +100,6 @@ export const useMainFormLogic = ({
     enabled: reviewDialogOpen,
   });
 
-  // Helpers
   const getCurrentStatus = useCallback((stagesStatusValue: StagesStatusValue): string => {
     if (!stagesStatusValue) return ItemStatus.PENDING;
     if (Array.isArray(stagesStatusValue) && stagesStatusValue.length > 0) {

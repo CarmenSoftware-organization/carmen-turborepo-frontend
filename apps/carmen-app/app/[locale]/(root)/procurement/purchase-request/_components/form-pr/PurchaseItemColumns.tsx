@@ -362,6 +362,7 @@ export const createPurchaseItemColumns = (
       cell: ({ row }) => {
         const item = row.original;
         const isNewItem = !initValues.some((initItem) => initItem.id === item.id);
+        console.log("item", item);
 
         if (currentMode === formType.VIEW) {
           return (

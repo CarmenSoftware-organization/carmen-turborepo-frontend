@@ -17,6 +17,8 @@ import NumberInput from "@/components/form-custom/NumberInput";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import TaxProfileLookup from "@/components/lookup/TaxProfileLookup";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 interface ExpandedContentProps {
   item: PurchaseRequestDetail;
@@ -83,13 +85,16 @@ export default function ExpandedContent({
                   value={(getItemValue(item, "pricelist_no") as string) ?? "-"}
                 />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 px-4 pb-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4 pb-4">
                 <div className="space-y-1 text-right">
                   <Label className="text-muted-foreground text-xs">Currency</Label>
                   <CurrencyLookup
                     value={(getItemValue(item, "currency_id") as string) || ""}
                     onValueChange={(value) => {
                       onItemUpdate(item.id, "currency_id", value);
+                    }}
+                    onSelectObject={(selectedCurrency) => {
+                      onItemUpdate(item.id, "currency_code", selectedCurrency.code);
                     }}
                     classNames="h-7"
                   />
@@ -138,38 +143,83 @@ export default function ExpandedContent({
                   position="text-right"
                 />
                 <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground text-xs">{tPr("discount")}</Label>
-                  <NumberInput
-                    value={Number(getItemValue(item, "discount_amount")) || 0}
-                    onChange={(value) => {
-                      const newDiscount = Number(value);
-                      onItemUpdate(item.id, "discount_amount", newDiscount);
-                      onItemUpdate(item.id, "base_discount_amount", newDiscount);
+                  <div className="flex items-center justify-end gap-2">
+                    <Label className="text-muted-foreground text-xs">{tPr("discount")}</Label>
+                    <Checkbox
+                      checked={Boolean(getItemValue(item, "is_discount_adjustment"))}
+                      onCheckedChange={(checked) => {
+                        onItemUpdate(item.id, "is_discount_adjustment", Boolean(checked));
+                      }}
+                      className="h-3 w-3"
+                    />
+                  </div>
+                  <div className="relative">
+                    <NumberInput
+                      value={
+                        Boolean(getItemValue(item, "is_discount_adjustment"))
+                          ? Number(getItemValue(item, "discount_amount")) || 0
+                          : Number(getItemValue(item, "discount_rate")) || 0
+                      }
+                      onChange={(value) => {
+                        const isAdjustment = Boolean(getItemValue(item, "is_discount_adjustment"));
+                        const inputVal = Number(value);
 
-                      // Recalculate
-                      const qty =
-                        (getItemValue(item, "approved_qty") as number) > 0
-                          ? (getItemValue(item, "approved_qty") as number)
-                          : (getItemValue(item, "requested_qty") as number);
-                      const price = Number(getItemValue(item, "pricelist_price") || 0);
-                      const subTotal = qty * price;
+                        const qty =
+                          (getItemValue(item, "approved_qty") as number) > 0
+                            ? (getItemValue(item, "approved_qty") as number)
+                            : (getItemValue(item, "requested_qty") as number);
+                        const price = Number(getItemValue(item, "pricelist_price") || 0);
+                        const subTotal = qty * price;
 
-                      const discountRate = subTotal > 0 ? (newDiscount / subTotal) * 100 : 0;
-                      const netAmount = Math.max(0, subTotal - newDiscount);
-                      const taxRate = Number(getItemValue(item, "tax_rate") || 0);
-                      const taxAmount = netAmount * (taxRate / 100);
-                      const totalPrice = netAmount + taxAmount;
+                        let newDiscountAmount = 0;
+                        let newDiscountRate = 0;
 
-                      onItemUpdate(item.id, "discount_rate", discountRate);
-                      onItemUpdate(item.id, "net_amount", netAmount);
-                      onItemUpdate(item.id, "base_net_amount", netAmount);
-                      onItemUpdate(item.id, "tax_amount", taxAmount);
-                      onItemUpdate(item.id, "base_tax_amount", taxAmount);
-                      onItemUpdate(item.id, "total_price", totalPrice);
-                      onItemUpdate(item.id, "base_total_price", totalPrice);
-                    }}
-                    classNames="h-7 text-xs w-full text-right bg-background"
-                  />
+                        if (isAdjustment) {
+                          // Input is Amount
+                          newDiscountAmount = inputVal;
+                          newDiscountRate = subTotal > 0 ? (newDiscountAmount / subTotal) * 100 : 0;
+                        } else {
+                          // Input is Percentage
+                          newDiscountRate = inputVal;
+                          newDiscountAmount = subTotal * (newDiscountRate / 100);
+                        }
+
+                        onItemUpdate(item.id, "discount_amount", newDiscountAmount);
+                        onItemUpdate(item.id, "base_discount_amount", newDiscountAmount);
+                        onItemUpdate(item.id, "discount_rate", newDiscountRate);
+
+                        // Recalculate Totals
+                        const netAmount = Math.max(0, subTotal - newDiscountAmount);
+                        const taxRate = Number(getItemValue(item, "tax_rate") || 0);
+                        const taxAmount = netAmount * (taxRate / 100);
+                        const totalPrice = netAmount + taxAmount;
+
+                        onItemUpdate(item.id, "net_amount", netAmount);
+                        onItemUpdate(item.id, "base_net_amount", netAmount);
+                        onItemUpdate(item.id, "tax_amount", taxAmount);
+                        onItemUpdate(item.id, "base_tax_amount", taxAmount);
+                        onItemUpdate(item.id, "total_price", totalPrice);
+                        onItemUpdate(item.id, "base_total_price", totalPrice);
+                      }}
+                      classNames={cn(
+                        "h-7 text-xs w-full text-right bg-background",
+                        !Boolean(getItemValue(item, "is_discount_adjustment")) && "pr-6"
+                      )}
+                    />
+                    {!Boolean(getItemValue(item, "is_discount_adjustment")) && (
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                        %
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">
+                    {formatPrice(
+                      Number(getItemValue(item, "discount_amount") || 0),
+                      (getItemValue(item, "currency_code") as string) || "THB",
+                      defaultAmount.locales,
+                      defaultAmount.minimumFractionDigits
+                    )}
+                  </p>
                 </div>
                 <PrLabelItem
                   label={tPr("net_amount")}
@@ -177,34 +227,83 @@ export default function ExpandedContent({
                   position="text-right"
                 />
                 <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground text-xs">{tPr("tax")}</Label>
-                  <TaxProfileLookup
-                    value={(getItemValue(item, "tax_profile_id") as string) || ""}
-                    onValueChange={(value) => {
-                      onItemUpdate(item.id, "tax_profile_id", value);
-                    }}
-                    onSelectObject={(selectedTax) => {
-                      onItemUpdate(item.id, "tax_profile_name", selectedTax.name);
-                      onItemUpdate(item.id, "tax_rate", selectedTax.tax_rate);
+                  <div className="flex items-center justify-end gap-2">
+                    <Label className="text-muted-foreground text-xs">{tPr("tax")}</Label>
+                    <Checkbox
+                      checked={Boolean(getItemValue(item, "is_tax_adjustment"))}
+                      onCheckedChange={(checked) => {
+                        onItemUpdate(item.id, "is_tax_adjustment", Boolean(checked));
+                        // Optional: Reset tax fields when switching?
+                        // For now, let's keep values until changed.
+                      }}
+                      className="h-3 w-3"
+                    />
+                  </div>
+                  {Boolean(getItemValue(item, "is_tax_adjustment")) ? (
+                    <NumberInput
+                      value={Number(getItemValue(item, "tax_amount")) || 0}
+                      onChange={(value) => {
+                        const newTaxAmount = Number(value);
+                        onItemUpdate(item.id, "tax_amount", newTaxAmount);
+                        onItemUpdate(item.id, "base_tax_amount", newTaxAmount);
 
-                      // Recalculate prices
-                      const netAmount = Number(getItemValue(item, "net_amount") || 0);
-                      const taxRate = selectedTax.tax_rate || 0;
-                      const taxAmount = netAmount * (taxRate / 100);
-                      const totalPrice = netAmount + taxAmount;
+                        // Recalculate Total and Rate
+                        const netAmount = Number(getItemValue(item, "net_amount") || 0);
+                        const totalPrice = netAmount + newTaxAmount;
+                        const taxRate = netAmount > 0 ? (newTaxAmount / netAmount) * 100 : 0;
 
-                      onItemUpdate(item.id, "tax_amount", taxAmount);
-                      onItemUpdate(item.id, "total_price", totalPrice);
-                      onItemUpdate(item.id, "base_tax_amount", taxAmount);
-                      onItemUpdate(item.id, "base_total_price", totalPrice);
-                    }}
-                    classNames="h-7 text-xs w-full text-right justify-end"
-                  />
+                        onItemUpdate(item.id, "total_price", totalPrice);
+                        onItemUpdate(item.id, "base_total_price", totalPrice);
+                        onItemUpdate(item.id, "tax_rate", taxRate);
+
+                        // Clear profile if manual?
+                        onItemUpdate(item.id, "tax_profile_id", null);
+                        onItemUpdate(item.id, "tax_profile_name", null);
+                      }}
+                      classNames="h-7 text-xs w-full text-right bg-background"
+                    />
+                  ) : (
+                    <TaxProfileLookup
+                      value={(getItemValue(item, "tax_profile_id") as string) || ""}
+                      onValueChange={(value) => {
+                        onItemUpdate(item.id, "tax_profile_id", value);
+                      }}
+                      onSelectObject={(selectedTax) => {
+                        onItemUpdate(item.id, "tax_profile_name", selectedTax.name);
+                        onItemUpdate(item.id, "tax_rate", selectedTax.tax_rate);
+
+                        // Recalculate prices
+                        const netAmount = Number(getItemValue(item, "net_amount") || 0);
+                        const taxRate = selectedTax.tax_rate || 0;
+                        const taxAmount = netAmount * (taxRate / 100);
+                        const totalPrice = netAmount + taxAmount;
+
+                        onItemUpdate(item.id, "tax_amount", taxAmount);
+                        onItemUpdate(item.id, "total_price", totalPrice);
+                        onItemUpdate(item.id, "base_tax_amount", taxAmount);
+                        onItemUpdate(item.id, "base_total_price", totalPrice);
+                      }}
+                      classNames="h-7 text-xs w-full text-right justify-end"
+                    />
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    {formatPrice(
+                      Number(getItemValue(item, "tax_amount") || 0),
+                      (getItemValue(item, "currency_code") as string) || "THB",
+                      defaultAmount.locales,
+                      defaultAmount.minimumFractionDigits
+                    )}
+                  </p>
                 </div>
                 <div className="space-y-1 text-right">
                   <Label className="text-muted-foreground text-xs">{tPr("total")}</Label>
                   <p className="font-bold text-sm text-active">
-                    {Number(getItemValue(item, "total_price") ?? item.total_price).toFixed(2)}
+                    {formatPrice(
+                      Number(getItemValue(item, "total_price") ?? item.total_price),
+                      (getItemValue(item, "currency_code") as string) || "THB",
+                      defaultAmount.locales,
+                      defaultAmount.minimumFractionDigits
+                    )}
                   </p>
                 </div>
               </div>
