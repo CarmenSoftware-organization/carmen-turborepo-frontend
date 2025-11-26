@@ -13,6 +13,7 @@ export interface VendorDto {
 export interface CurrencyDto {
   id: string;
   code: string;
+  exchangeRateDate: string;
 }
 
 export interface RfpDto {
@@ -38,6 +39,12 @@ export interface ProductPlDto {
   lastUpdate: string;
 }
 
+export interface TaxProfileDto {
+  id: string;
+  name: string;
+  rate: number;
+}
+
 export interface BasePriceList {
   no: string;
   vendor: VendorDto;
@@ -49,6 +56,7 @@ export interface BasePriceList {
   isActive: boolean;
   effectivePeriod: DateRange;
   lastUpdate: string;
+  taxProfile: TaxProfileDto;
 }
 
 export interface PriceListDtoList extends BasePriceList {

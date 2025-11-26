@@ -24,6 +24,7 @@ export default function CurrencyLookup({
   value,
   onValueChange,
   disabled = false,
+  classNames = "",
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
   const t = useTranslations("Currency");
@@ -130,7 +131,7 @@ export default function CurrencyLookup({
         <Button
           variant="outline"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn("w-full justify-between", classNames)}
           disabled={disabled}
         >
           {value && selectedCurrencyName ? selectedCurrencyName : t("select_currency")}

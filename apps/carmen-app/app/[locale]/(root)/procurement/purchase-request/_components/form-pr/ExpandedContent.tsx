@@ -16,6 +16,7 @@ import PrLabelItem from "./PrLabelItem";
 import NumberInput from "@/components/form-custom/NumberInput";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import TaxProfileLookup from "@/components/lookup/TaxProfileLookup";
+import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 
 interface ExpandedContentProps {
   item: PurchaseRequestDetail;
@@ -74,9 +75,6 @@ export default function ExpandedContent({
                     value={(getItemValue(item, "vendor_id") as string) || ""}
                     onValueChange={(value) => {
                       onItemUpdate(item.id, "vendor_id", value);
-                      // Note: We can't easily get the vendor name here to update vendor_name
-                      // without fetching the list again or modifying VendorLookup.
-                      // Assuming vendor_id is sufficient for payload.
                     }}
                   />
                 </div>
@@ -87,6 +85,16 @@ export default function ExpandedContent({
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 px-4 pb-4">
                 <div className="space-y-1 text-right">
+                  <Label className="text-muted-foreground text-xs">Currency</Label>
+                  <CurrencyLookup
+                    value={(getItemValue(item, "currency_id") as string) || ""}
+                    onValueChange={(value) => {
+                      onItemUpdate(item.id, "currency_id", value);
+                    }}
+                    classNames="h-7"
+                  />
+                </div>
+                <div className="space-y-1 text-right">
                   <Label className="text-muted-foreground text-xs">{tPr("unit_price")}</Label>
                   <NumberInput
                     value={Number(getItemValue(item, "pricelist_price")) || 0}
@@ -95,7 +103,7 @@ export default function ExpandedContent({
                       onItemUpdate(item.id, "pricelist_price", newPrice);
                       onItemUpdate(item.id, "base_price", newPrice);
 
-                      // Recalculate everything
+                      // Recalculate
                       const qty =
                         (getItemValue(item, "approved_qty") as number) > 0
                           ? (getItemValue(item, "approved_qty") as number)
@@ -138,7 +146,7 @@ export default function ExpandedContent({
                       onItemUpdate(item.id, "discount_amount", newDiscount);
                       onItemUpdate(item.id, "base_discount_amount", newDiscount);
 
-                      // Recalculate everything
+                      // Recalculate
                       const qty =
                         (getItemValue(item, "approved_qty") as number) > 0
                           ? (getItemValue(item, "approved_qty") as number)

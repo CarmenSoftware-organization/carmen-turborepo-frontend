@@ -18,10 +18,16 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
     effectivePeriod: { from: "2024-01-01", to: "2024-03-31" },
     lastUpdate: "2024-01-15T10:30:00Z",
+    taxProfile: {
+      id: "92cd1c73-0396-4045-9835-c6c9d27f67a9",
+      name: "VAT 7%",
+      rate: 7,
+    },
   },
   {
     id: "pl-002",
@@ -40,10 +46,16 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
     effectivePeriod: { from: "2024-02-01", to: "2024-07-31" },
     lastUpdate: "2024-02-10T14:20:00Z",
+    taxProfile: {
+      id: "92b86df5-84c1-4ada-9773-38c0a330135b",
+      name: "VAT 10%",
+      rate: 10,
+    },
   },
   {
     id: "pl-003",
@@ -57,10 +69,16 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
     effectivePeriod: { from: "2024-03-01", to: "2024-08-31" },
     lastUpdate: "2024-02-28T09:15:00Z",
+    taxProfile: {
+      id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62",
+      name: "None",
+      rate: 0,
+    },
   },
   {
     id: "pl-004",
@@ -79,10 +97,16 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
     effectivePeriod: { from: "2024-04-01", to: "2024-09-30" },
     lastUpdate: "2024-03-05T11:45:00Z",
+    taxProfile: {
+      id: "92b86df5-84c1-4ada-9773-38c0a330135b",
+      name: "VAT 10%",
+      rate: 10,
+    },
   },
   {
     id: "pl-005",
@@ -97,10 +121,16 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
     effectivePeriod: { from: "2023-10-01", to: "2023-12-31" },
     lastUpdate: "2023-12-31T23:59:00Z",
+    taxProfile: {
+      id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62",
+      name: "None",
+      rate: 0,
+    },
   },
 ];
 
@@ -122,10 +152,16 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
     effectivePeriod: { from: "2024-01-01", to: "2024-03-31" },
     lastUpdate: "2024-01-15T10:30:00Z",
+    taxProfile: {
+      id: "92cd1c73-0396-4045-9835-c6c9d27f67a9",
+      name: "VAT 7%",
+      rate: 7,
+    },
     products: [
       {
         id: "prod-001",
@@ -221,10 +257,16 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
     effectivePeriod: { from: "2024-02-01", to: "2024-07-31" },
     lastUpdate: "2024-02-10T14:20:00Z",
+    taxProfile: {
+      id: "92b86df5-84c1-4ada-9773-38c0a330135b",
+      name: "VAT 10%",
+      rate: 10,
+    },
     products: [
       {
         id: "prod-101",
@@ -281,7 +323,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       {
         id: "prod-103",
         code: "MON-DELL-27",
-        name: "Dell 27\" 4K UHD Monitor (P2723DE)",
+        name: 'Dell 27" 4K UHD Monitor (P2723DE)',
         moqs: [
           {
             minQuantity: 1,
@@ -321,10 +363,16 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
     effectivePeriod: { from: "2024-03-01", to: "2024-08-31" },
     lastUpdate: "2024-02-28T09:15:00Z",
+    taxProfile: {
+      id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62",
+      name: "None",
+      rate: 0,
+    },
     products: [
       {
         id: "prod-201",
@@ -391,10 +439,16 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
     effectivePeriod: { from: "2024-04-01", to: "2024-09-30" },
     lastUpdate: "2024-03-05T11:45:00Z",
+    taxProfile: {
+      id: "92b86df5-84c1-4ada-9773-38c0a330135b",
+      name: "VAT 10%",
+      rate: 10,
+    },
     products: [
       {
         id: "prod-301",
@@ -463,10 +517,16 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
     effectivePeriod: { from: "2023-10-01", to: "2023-12-31" },
     lastUpdate: "2023-12-31T23:59:00Z",
+    taxProfile: {
+      id: "92b86df5-84c1-4ada-9773-38c0a330135b",
+      name: "VAT 10%",
+      rate: 10,
+    },
     products: [
       {
         id: "prod-401",
