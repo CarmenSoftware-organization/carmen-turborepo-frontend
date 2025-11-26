@@ -119,15 +119,14 @@ export default function DetailsAndComments({
             </MotionDiv>
           </ScrollArea>
         </MotionDiv>
-        <div
-          className={cn("flex flex-col gap-2 border-l border-border", openLog ? "px-2" : "pl-2")}
-        >
+        <div className={cn("flex flex-col gap-2", openLog ? "px-2" : "pl-2")}>
           <MotionDiv variants={buttonVariants} whileHover="hover" whileTap="tap">
             <Button
               onClick={() => handleOpenPanel("activity")}
               variant="outlinePrimary"
               size="sm"
               aria-label="Open Activity Log"
+              className="h-8 w-8"
             >
               <Activity className="h-3 w-3" />
             </Button>
@@ -138,6 +137,7 @@ export default function DetailsAndComments({
               variant="outlinePrimary"
               size="sm"
               aria-label="Open Comments"
+              className="h-8 w-8"
             >
               <MessageSquare className="h-3 w-3" />
             </Button>
