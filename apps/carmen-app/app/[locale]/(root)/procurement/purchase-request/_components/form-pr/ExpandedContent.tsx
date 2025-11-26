@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestDetail } from "@/dtos/purchase-request.dto";
 import { useTranslations } from "next-intl";
 import { formatPrice } from "@/utils/format/currency";
@@ -35,6 +36,7 @@ interface ExpandedContentProps {
   token: string;
   buCode: string;
   prStatus?: string;
+  currentMode: formType;
 }
 
 export default function ExpandedContent({
@@ -45,6 +47,7 @@ export default function ExpandedContent({
   token,
   buCode,
   prStatus,
+  currentMode,
 }: ExpandedContentProps) {
   const tPr = useTranslations("PurchaseRequest");
 
@@ -134,15 +137,17 @@ export default function ExpandedContent({
                   {tPr("vendor_and_price_info")}
                 </h4>
               </AccordionTrigger>
-              <VendorComparison
-                req_qty={item.requested_qty}
-                req_unit={item.requested_unit_name ?? "-"}
-                apv_qty={item.approved_qty}
-                apv_unit={item.approved_unit_name ?? "-"}
-                pricelist_detail_id={item.pricelist_detail_id ?? ""}
-                itemId={item.id}
-                onItemUpdate={onItemUpdate}
-              />
+              {currentMode === formType.EDIT && (
+                <VendorComparison
+                  req_qty={item.requested_qty}
+                  req_unit={item.requested_unit_name ?? "-"}
+                  apv_qty={item.approved_qty}
+                  apv_unit={item.approved_unit_name ?? "-"}
+                  pricelist_detail_id={item.pricelist_detail_id ?? ""}
+                  itemId={item.id}
+                  onItemUpdate={onItemUpdate}
+                />
+              )}
             </div>
             <AccordionContent>
               <div className="grid grid-cols-2 gap-4 px-3 py-2">
@@ -156,6 +161,7 @@ export default function ExpandedContent({
                       onItemUpdate(item.id, "vendor_id", value);
                     }}
                     classNames="h-7 text-xs"
+                    disabled={currentMode !== formType.EDIT}
                   />
                 </div>
                 <PrLabelItem
@@ -177,6 +183,7 @@ export default function ExpandedContent({
                       onItemUpdate(item.id, "currency_code", selectedCurrency.code);
                     }}
                     classNames="h-7 justify-end text-right text-xs"
+                    disabled={currentMode !== formType.EDIT}
                   />
                 </div>
                 <div className="space-y-0.5 text-right">
@@ -189,6 +196,7 @@ export default function ExpandedContent({
                       recalculateAll({ pricelist_price: Number(value) });
                     }}
                     classNames="h-7 text-xs w-full text-right bg-background"
+                    disabled={currentMode !== formType.EDIT}
                   />
                 </div>
                 <PrLabelItem
@@ -218,7 +226,7 @@ export default function ExpandedContent({
                               recalculateAll({ is_discount_adjustment: Boolean(checked) });
                             }}
                             className="h-3.5 w-3.5"
-                            disabled={!isPriceValid}
+                            disabled={!isPriceValid || currentMode !== formType.EDIT}
                           />
                         </TooltipTrigger>
                         <TooltipContent>
@@ -246,7 +254,7 @@ export default function ExpandedContent({
                         "h-7 text-xs w-full text-right bg-background",
                         !Boolean(getItemValue(item, "is_discount_adjustment")) && "pr-6"
                       )}
-                      disabled={!isPriceValid}
+                      disabled={!isPriceValid || currentMode !== formType.EDIT}
                     />
                     {!Boolean(getItemValue(item, "is_discount_adjustment")) && (
                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
@@ -277,7 +285,7 @@ export default function ExpandedContent({
                               recalculateAll({ is_tax_adjustment: Boolean(checked) });
                             }}
                             className="h-3.5 w-3.5"
-                            disabled={!isPriceValid}
+                            disabled={!isPriceValid || currentMode !== formType.EDIT}
                           />
                         </TooltipTrigger>
                         <TooltipContent>
@@ -293,7 +301,7 @@ export default function ExpandedContent({
                         recalculateAll({ tax_amount: Number(value) });
                       }}
                       classNames="h-7 text-xs w-full text-right bg-background"
-                      disabled={!isPriceValid}
+                      disabled={!isPriceValid || currentMode !== formType.EDIT}
                     />
                   ) : (
                     <TaxProfileLookup
@@ -305,12 +313,10 @@ export default function ExpandedContent({
                         recalculateAll({
                           tax_profile_name: selectedTax.name,
                           tax_rate: selectedTax.tax_rate,
-                          // When selecting profile, we are setting rate, so calculate amount
-                          // But recalculateAll handles this based on isTaxAdjustment=false (which it is here)
                         });
                       }}
                       classNames="h-7 text-xs w-full text-right justify-end"
-                      disabled={!isPriceValid}
+                      disabled={!isPriceValid || currentMode !== formType.EDIT}
                     />
                   )}
                   <p className="text-[10px] text-muted-foreground">

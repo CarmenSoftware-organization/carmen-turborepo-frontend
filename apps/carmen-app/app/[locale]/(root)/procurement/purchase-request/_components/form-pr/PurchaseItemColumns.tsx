@@ -132,6 +132,7 @@ export const createPurchaseItemColumns = (
             token={token}
             buCode={buCode}
             prStatus={prStatus}
+            currentMode={currentMode}
           />
         ),
       },
