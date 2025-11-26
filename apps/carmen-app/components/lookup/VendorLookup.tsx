@@ -66,7 +66,7 @@ export default function VendorLookup({
               </div>
             ) : (
               <>
-                <CommandEmpty>{tCommon("no_vendor_found")}</CommandEmpty>
+                <CommandEmpty>{tVendor("no_vendor_found")}</CommandEmpty>
                 <CommandGroup>
                   {vendorsData && vendorsData.length > 0 ? (
                     vendorsData.map((vendor: VendorGetDto) => (
@@ -90,7 +90,7 @@ export default function VendorLookup({
                       </CommandItem>
                     ))
                   ) : (
-                    <CommandItem disabled>{tCommon("no_vendor_available")}</CommandItem>
+                    <CommandItem disabled>{tVendor("no_vendor_available")}</CommandItem>
                   )}
                 </CommandGroup>
               </>

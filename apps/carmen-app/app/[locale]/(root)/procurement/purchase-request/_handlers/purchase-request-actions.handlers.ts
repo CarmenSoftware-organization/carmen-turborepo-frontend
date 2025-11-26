@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { STAGE_ROLE } from "@/dtos/purchase-request.dto";
+import { PR_ERROR_MESSAGES } from "../_constants/error-messages";
 
 type ToastConfig = {
   message: string;
@@ -67,9 +68,9 @@ export const submitPurchaseRequest = (
         prId,
         tPR,
         toastSuccess,
-        "purchase_request_submitted"
+        PR_ERROR_MESSAGES.SUCCESS.SUBMITTED
       ),
-    onError: () => handleActionError(tPR, toastError, "purchase_request_submitted_failed"),
+    onError: () => handleActionError(tPR, toastError, PR_ERROR_MESSAGES.API.SUBMIT_FAILED),
   });
 };
 
@@ -97,9 +98,9 @@ export const rejectPurchaseRequest = (
         prId,
         tPR,
         toastSuccess,
-        "purchase_request_rejected"
+        PR_ERROR_MESSAGES.SUCCESS.REJECTED
       ),
-    onError: () => handleActionError(tPR, toastError, "purchase_request_rejected_failed"),
+    onError: () => handleActionError(tPR, toastError, PR_ERROR_MESSAGES.API.REJECT_FAILED),
   });
 };
 
@@ -127,8 +128,8 @@ export const sendBackPurchaseRequest = (
         prId,
         tPR,
         toastSuccess,
-        "purchase_request_sent_back"
+        PR_ERROR_MESSAGES.SUCCESS.SENT_BACK
       ),
-    onError: () => handleActionError(tPR, toastError, "purchase_request_sent_back_failed"),
+    onError: () => handleActionError(tPR, toastError, PR_ERROR_MESSAGES.API.SEND_BACK_FAILED),
   });
 };

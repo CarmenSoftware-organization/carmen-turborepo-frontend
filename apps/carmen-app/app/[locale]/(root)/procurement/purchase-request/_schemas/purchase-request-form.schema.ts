@@ -1,8 +1,3 @@
-/**
- * Purchase Request Form Schemas - Zod validation schemas
- * Pure TypeScript interfaces moved to: dtos/purchase-request.dto.ts
- */
-
 import { z } from "zod";
 import {
   EmbeddedDepartmentSchema,
@@ -20,9 +15,7 @@ import {
   InfoSchema,
   ValidateSchema,
 } from "@/dtos/embedded.dto";
-import { StageStatus } from "@/dtos/purchase-request.dto";
-
-// ========== Zod Schemas with Shared Components ==========
+import { StageStatus, STAGE_ROLE } from "@/dtos/purchase-request.dto";
 
 export const CreatePurchaseRequestDetailSchema = z
   .object({
@@ -61,17 +54,8 @@ export const CreatePurchaseRequestDetailSchema = z
   )
   .merge(InfoSchema);
 
-export enum STAGE_ROLE {
-  CREATE = "create",
-  APPROVE = "approve",
-  PURCHASE = "purchase",
-  ISSUE = "issue",
-  VIEW_ONLY = "view_only",
-}
-
 export const StageRoleSchema = z.nativeEnum(STAGE_ROLE);
 
-// แก้ไข: สร้าง UpdatePurchaseRequestDetailSchema แยกแทนการ extend เพื่อลด type complexity
 export const UpdatePurchaseRequestDetailSchema = z.object({
   id: z.string().uuid(),
   description: z.string().optional().nullable(),

@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { formType } from "@/dtos/form.dto";
+import { PR_ERROR_MESSAGES } from "../_constants/error-messages";
 
 type ToastConfig = {
   message: string;
@@ -22,7 +23,7 @@ export const handleUpdateSuccess = (
   tPR: (key: string) => string,
   toastSuccess: (config: ToastConfig) => void
 ): void => {
-  toastSuccess({ message: tPR("purchase_request_updated") });
+  toastSuccess({ message: tPR(PR_ERROR_MESSAGES.SUCCESS.UPDATED) });
 
   queryClient.invalidateQueries({
     queryKey: ["purchase-request", buCode, prId],
@@ -38,7 +39,7 @@ export const handleUpdateError = (
   toastError: (config: ToastConfig) => void
 ): void => {
   console.error("[UpdatePR] Update failed:", error);
-  toastError({ message: tPR("purchase_request_updated_failed") });
+  toastError({ message: tPR(PR_ERROR_MESSAGES.API.UPDATE_FAILED) });
 };
 
 /** Update PR with success/error callbacks */
@@ -54,7 +55,8 @@ export const updatePurchaseRequest = (
   toastError: (config: ToastConfig) => void
 ): void => {
   save(data, {
-    onSuccess: () => handleUpdateSuccess(queryClient, buCode, prId, setCurrentFormType, tPR, toastSuccess),
+    onSuccess: () =>
+      handleUpdateSuccess(queryClient, buCode, prId, setCurrentFormType, tPR, toastSuccess),
     onError: (error: Error) => handleUpdateError(error, tPR, toastError),
   });
 };

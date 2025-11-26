@@ -1,7 +1,8 @@
 "use client";
 
 import { formType } from "@/dtos/form.dto";
-import { CreatePrSchema, PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
+import { PurchaseRequestByIdDto, STAGE_ROLE } from "@/dtos/purchase-request.dto";
+import { CreatePrSchema } from "../../_schemas/purchase-request-form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { usePurchaseItemManagement } from "../../_hooks/use-purchase-item-management";

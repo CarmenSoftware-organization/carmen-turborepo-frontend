@@ -34,7 +34,9 @@
     "add_success": "Add vendor successfully",
     "update_success": "Update vendor successfully",
     "delete_success": "Delete vendor successfully",
-    "select_vendor": "Select vendor"
+    "select_vendor": "Select vendor",
+    "no_vendor_available": "No vendor available",
+    "no_vendor_found": "No vendor found"
   },
   "VendorManagement": {
     "title": "Vendor Management",

@@ -34,7 +34,9 @@
     "add_success": "เพิ่มผู้จัดจำหน่ายสําเร็จ",
     "update_success": "แก้ไขผู้จัดจำหน่ายสําเร็จ",
     "delete_success": "ลบผู้จัดจำหน่ายสําเร็จ",
-    "select_vendor": "เลือกผู้จัดจำหน่าย"
+    "select_vendor": "เลือกผู้จัดจำหน่าย",
+    "no_vendor_available": "ไม่พบผู้จัดจำหน่าย",
+    "no_vendor_found": "ไม่พบผู้จัดจำหน่าย"
   },
   "VendorManagement": {
     "title": "การจัดการผู้จัดจำหน่าย",

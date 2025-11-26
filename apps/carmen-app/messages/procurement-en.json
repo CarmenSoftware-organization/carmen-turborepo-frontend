@@ -39,22 +39,7 @@
     "restock": "Restock",
     "need_reorder": "Need Reorder",
     "stock_level": "Stock Level",
-    "purchase_request_created": "Purchase Request created successfully",
-    "purchase_request_created_failed": "Purchase Request created failed",
-    "purchase_request_updated": "Purchase Request updated successfully",
-    "purchase_request_updated_failed": "Purchase Request updated failed",
-    "purchase_request_submitted": "Purchase Request submitted successfully",
-    "purchase_request_submitted_failed": "Purchase Request submitted failed",
-    "purchase_request_approved": "Purchase Request approved successfully",
-    "purchase_request_approved_failed": "Purchase Request approved failed",
-    "purchase_request_rejected": "Purchase Request rejected successfully",
-    "purchase_request_rejected_failed": "Purchase Request rejected failed",
-    "purchase_request_sent_back": "Purchase Request sent back successfully",
-    "purchase_request_sent_back_failed": "Purchase Request sent back failed",
-    "purchase_request_approved_purchase": "Purchase Request approved purchase successfully",
-    "purchase_request_approved_purchase_failed": "Purchase Request approved purchase failed",
-    "purchase_request_reviewed": "Purchase Request reviewed successfully",
-    "purchase_request_reviewed_failed": "Purchase Request reviewed failed",
+
     "review_reason": "Reason for Review",
     "reject_reason": "Reason for Rejection",
     "select_stage_for_review": "Select Stage for Review",
@@ -77,7 +62,53 @@
     "select_only_pending_status": "Select Only Purchase Request Status Pending",
     "pls_complete_required_fields": "Please complete all required fields",
     "adjustment_discount": "Adjustment Discount",
-    "adjustment_tax": "Adjustment Tax"
+    "adjustment_tax": "Adjustment Tax",
+    "currency": "Currency",
+    "errors": {
+      "validation": {
+        "required_fields": "Please fill in all required fields",
+        "location_required": "Location is required",
+        "product_required": "Product is required",
+        "quantity_required": "Quantity is required",
+        "quantity_invalid": "Quantity must be a valid number and not negative",
+        "unit_required": "Unit is required"
+      },
+      "api": {
+        "create_failed": "Failed to create purchase request",
+        "update_failed": "Failed to update purchase request",
+        "submit_failed": "Failed to submit purchase request",
+        "approve_failed": "Failed to approve purchase request",
+        "reject_failed": "Failed to reject purchase request",
+        "review_failed": "Failed to review purchase request",
+        "send_back_failed": "Failed to send back purchase request",
+        "purchase_failed": "Failed to process purchase",
+        "fetch_failed": "Failed to fetch purchase request data"
+      },
+      "success": {
+        "created": "Purchase request created successfully",
+        "updated": "Purchase request updated successfully",
+        "submitted": "Purchase request submitted successfully",
+        "approved": "Purchase request approved successfully",
+        "rejected": "Purchase request rejected successfully",
+        "reviewed": "Purchase request reviewed successfully",
+        "sent_back": "Purchase request sent back successfully",
+        "purchased": "Purchase processed successfully"
+      },
+      "workflow": {
+        "stage_required": "Please select a stage for review",
+        "stage_fetch_failed": "Failed to fetch workflow stages"
+      },
+      "item": {
+        "delete_failed": "Failed to delete item",
+        "add_failed": "Failed to add item",
+        "update_failed": "Failed to update item"
+      },
+      "general": {
+        "unauthorized": "Unauthorized access",
+        "network_error": "Network error. Please check your connection",
+        "unknown_error": "An unexpected error occurred"
+      }
+    }
   },
   "PurchaseOrder": {
     "title": "Purchase Order",

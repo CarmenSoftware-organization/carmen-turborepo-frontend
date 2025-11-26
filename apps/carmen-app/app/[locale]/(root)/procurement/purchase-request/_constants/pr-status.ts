@@ -1,7 +1,3 @@
-/**
- * Purchase Request Status Constants
- */
-
 export const PR_STATUS = {
   DRAFT: "draft",
   SUBMIT: "submit",
@@ -14,9 +10,6 @@ export const PR_STATUS = {
 
 export type PrStatus = (typeof PR_STATUS)[keyof typeof PR_STATUS];
 
-/**
- * Purchase Request Item Status Constants
- */
 export const PR_ITEM_STATUS = {
   PENDING: "pending",
   APPROVED: "approved",
@@ -30,9 +23,6 @@ export const PR_ITEM_STATUS = {
 
 export type PrItemStatus = (typeof PR_ITEM_STATUS)[keyof typeof PR_ITEM_STATUS];
 
-/**
- * Field Names Constants
- */
 export const PR_FIELD_NAMES = {
   LOCATION_ID: "location_id",
   PRODUCT_ID: "product_id",

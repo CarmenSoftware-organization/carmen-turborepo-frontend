@@ -39,22 +39,7 @@
     "restock": "ต้องการซื้ออีก",
     "need_reorder": "ต้องการซื้ออีก",
     "stock_level": "ระดับสินค้า",
-    "purchase_request_created": "ใบขอซื้อสร้างเรียบร้อย",
-    "purchase_request_created_failed": "ใบขอซื้อสร้างไม่สำเร็จ",
-    "purchase_request_updated": "ใบขอซื้ออัพเดตเรียบร้อย",
-    "purchase_request_updated_failed": "ใบขอซื้ออัพเดตไม่สำเร็จ",
-    "purchase_request_submitted": "ใบขอซื้อส่งอนุมัติเรียบร้อย",
-    "purchase_request_submitted_failed": "ใบขอซื้อส่งอนุมัติไม่สำเร็จ",
-    "purchase_request_approved": "ใบขอซื้ออนุมัติเรียบร้อย",
-    "purchase_request_approved_failed": "ใบขอซื้ออนุมัติไม่สำเร็จ",
-    "purchase_request_rejected": "ใบขอซื้อยกเลิกเรียบร้อย",
-    "purchase_request_rejected_failed": "ใบขอซื้อยกเลิกไม่สำเร็จ",
-    "purchase_request_sent_back": "ใบขอซื้อส่งกลับเรียบร้อย",
-    "purchase_request_sent_back_failed": "ใบขอซื้อส่งกลับไม่สำเร็จ",
-    "purchase_request_approved_purchase": "ใบขอซื้ออนุมัติซื้อเรียบร้อย",
-    "purchase_request_approved_purchase_failed": "ใบขอซื้ออนุมัติซื้อไม่สำเร็จ",
-    "purchase_request_reviewed": "ใบขอซื้อทำการตรวจสอบเรียบร้อย",
-    "purchase_request_reviewed_failed": "ใบขอซื้อทำการตรวจสอบไม่สำเร็จ",
+
     "review_reason": "เหตุผลในการส่ง Review",
     "reject_reason": "เหตุผลในการ Reject",
     "select_stage_for_review": "เลือก Stage สำหรับ Review",
@@ -77,7 +62,53 @@
     "select_only_pending_status": "เลือกรายการใบขอซื้อเฉพาะสถานะรอการอนุมัติ",
     "pls_complete_required_fields": "กรุณากรอกข้อมูลที่จําเป็น",
     "adjustment_discount": "ปรับประเภทส่วนลด",
-    "adjustment_tax": "ปรับประเภทภาษี"
+    "adjustment_tax": "ปรับประเภทภาษี",
+    "currency": "สกุลเงิน",
+    "errors": {
+      "validation": {
+        "required_fields": "กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน",
+        "location_required": "กรุณาระบุสถานที่",
+        "product_required": "กรุณาระบุสินค้า",
+        "quantity_required": "กรุณาระบุจำนวน",
+        "quantity_invalid": "จำนวนต้องเป็นตัวเลขและไม่ติดลบ",
+        "unit_required": "กรุณาระบุหน่วยนับ"
+      },
+      "api": {
+        "create_failed": "สร้างใบขอซื้อไม่สำเร็จ",
+        "update_failed": "อัปเดตใบขอซื้อไม่สำเร็จ",
+        "submit_failed": "ส่งใบขอซื้อไม่สำเร็จ",
+        "approve_failed": "อนุมัติใบขอซื้อไม่สำเร็จ",
+        "reject_failed": "ปฏิเสธใบขอซื้อไม่สำเร็จ",
+        "review_failed": "ส่งตรวจสอบใบขอซื้อไม่สำเร็จ",
+        "send_back_failed": "ส่งกลับใบขอซื้อไม่สำเร็จ",
+        "purchase_failed": "ดำเนินการสั่งซื้อไม่สำเร็จ",
+        "fetch_failed": "ดึงข้อมูลใบขอซื้อไม่สำเร็จ"
+      },
+      "success": {
+        "created": "สร้างใบขอซื้อสำเร็จ",
+        "updated": "อัปเดตใบขอซื้อสำเร็จ",
+        "submitted": "ส่งใบขอซื้อสำเร็จ",
+        "approved": "อนุมัติใบขอซื้อสำเร็จ",
+        "rejected": "ปฏิเสธใบขอซื้อสำเร็จ",
+        "reviewed": "ส่งตรวจสอบใบขอซื้อสำเร็จ",
+        "sent_back": "ส่งกลับใบขอซื้อสำเร็จ",
+        "purchased": "ดำเนินการสั่งซื้อสำเร็จ"
+      },
+      "workflow": {
+        "stage_required": "กรุณาเลือกขั้นตอนสำหรับการตรวจสอบ",
+        "stage_fetch_failed": "ดึงข้อมูลขั้นตอนการทำงานไม่สำเร็จ"
+      },
+      "item": {
+        "delete_failed": "ลบรายการไม่สำเร็จ",
+        "add_failed": "เพิ่มรายการไม่สำเร็จ",
+        "update_failed": "อัปเดตรายการไม่สำเร็จ"
+      },
+      "general": {
+        "unauthorized": "ไม่มีสิทธิ์เข้าถึง",
+        "network_error": "เกิดข้อผิดพลาดของเครือข่าย กรุณาตรวจสอบการเชื่อมต่อ",
+        "unknown_error": "เกิดข้อผิดพลาดที่ไม่คาดคิด"
+      }
+    }
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",

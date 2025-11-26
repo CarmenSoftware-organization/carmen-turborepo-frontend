@@ -2,6 +2,8 @@ import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "@/lib/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
+import { PR_ERROR_MESSAGES } from "../_constants/error-messages";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { UseFormReturn } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
@@ -249,12 +251,12 @@ export const useMainFormLogic = ({
     approve(approveData, {
       onSuccess: () => {
         toastSuccess({
-          message: tPR("purchase_request_approved"),
+          message: tPR(PR_ERROR_MESSAGES.SUCCESS.APPROVED),
         });
       },
       onError: () => {
         toastError({
-          message: tPR("purchase_request_approved_failed"),
+          message: tPR(PR_ERROR_MESSAGES.API.APPROVE_FAILED),
         });
       },
     });
@@ -307,12 +309,12 @@ export const useMainFormLogic = ({
     purchase(purchaseData, {
       onSuccess: () => {
         toastSuccess({
-          message: tPR("purchase_request_approved_purchase"),
+          message: tPR(PR_ERROR_MESSAGES.SUCCESS.PURCHASED),
         });
       },
       onError: () => {
         toastError({
-          message: tPR("purchase_request_approved_purchase_failed"),
+          message: tPR(PR_ERROR_MESSAGES.API.PURCHASE_FAILED),
         });
       },
     });
@@ -344,7 +346,7 @@ export const useMainFormLogic = ({
     review(reviewData, {
       onSuccess: () => {
         toastSuccess({
-          message: tPR("purchase_request_reviewed"),
+          message: tPR(PR_ERROR_MESSAGES.SUCCESS.REVIEWED),
         });
         setReviewDialogOpen(false);
         setSelectedStage("");
@@ -354,7 +356,7 @@ export const useMainFormLogic = ({
       },
       onError: () => {
         toastError({
-          message: tPR("purchase_request_reviewed_failed"),
+          message: tPR(PR_ERROR_MESSAGES.API.REVIEW_FAILED),
         });
       },
     });

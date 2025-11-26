@@ -1,5 +1,6 @@
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { UseMutateFunction } from "@tanstack/react-query";
+import { PR_ERROR_MESSAGES } from "../_constants/error-messages";
 
 type ToastConfig = {
   message: string;
@@ -23,7 +24,7 @@ export const handleCreateSuccess = (
   }
 
   router.replace(`/procurement/purchase-request/${purchaseRequestId}`);
-  toastSuccess({ message: tPR("purchase_request_created") });
+  toastSuccess({ message: tPR(PR_ERROR_MESSAGES.SUCCESS.CREATED) });
 };
 
 /** Handle PR creation error */
@@ -33,7 +34,7 @@ export const handleCreateError = (
   toastError: (config: ToastConfig) => void
 ): void => {
   console.error("[CreatePR] Creation failed:", error);
-  toastError({ message: tPR("purchase_request_created_failed") });
+  toastError({ message: tPR(PR_ERROR_MESSAGES.API.CREATE_FAILED) });
 };
 
 /** Create PR with success/error callbacks */
@@ -46,7 +47,8 @@ export const createPurchaseRequest = (
   toastError: (config: ToastConfig) => void
 ): void => {
   createPr(data, {
-    onSuccess: (responseData: unknown) => handleCreateSuccess(responseData, router, tPR, toastSuccess),
+    onSuccess: (responseData: unknown) =>
+      handleCreateSuccess(responseData, router, tPR, toastSuccess),
     onError: (error: Error) => handleCreateError(error, tPR, toastError),
   });
 };

@@ -1,12 +1,11 @@
-/**
- * Purchase Request DTO - Pure TypeScript interfaces
- * Zod schemas moved to: app/.../purchase-request/_schemas/purchase-request-form.schema.ts
- */
+export enum STAGE_ROLE {
+  CREATE = "create",
+  APPROVE = "approve",
+  PURCHASE = "purchase",
+  ISSUE = "issue",
+  VIEW_ONLY = "view_only",
+}
 
-// Import STAGE_ROLE enum for use in interfaces
-import { STAGE_ROLE } from "@/app/[locale]/(root)/procurement/purchase-request/_schemas/purchase-request-form.schema";
-
-// ========== Base Interfaces ==========
 export interface AuditInfo {
   doc_version: string;
   created_at: string;
@@ -49,7 +48,6 @@ export interface WorkflowActionInfo {
   last_action_by_name: string | null;
 }
 
-// ========== Simplified Product & Location Interfaces ==========
 export interface ProductInfo {
   product_id: string;
   product_name: string;
@@ -69,7 +67,6 @@ export interface UnitInfo {
   inventory_unit_name: string;
 }
 
-// ========== Vendor & Pricing Interfaces ==========
 export interface VendorInfo {
   vendor_id: string;
   vendor_name: string;
@@ -89,7 +86,6 @@ export interface CurrencyInfo {
   exchange_rate_date: string;
 }
 
-// ========== Quantity Interfaces ==========
 export interface QuantityInfo {
   requested_qty: number;
   requested_unit_id: string;
@@ -114,7 +110,6 @@ export interface FocQuantityInfo {
   foc_base_qty: number;
 }
 
-// ========== Tax & Discount Interfaces ==========
 export interface TaxInfo {
   tax_profile_id: string | null;
   tax_profile_name: string | null;
@@ -131,7 +126,6 @@ export interface DiscountInfo {
   is_discount_adjustment: boolean;
 }
 
-// ========== Price Calculation Interface ==========
 export interface PriceCalculation {
   sub_total_price: number | null;
   net_amount: number;
@@ -142,7 +136,6 @@ export interface PriceCalculation {
   base_total_price: number;
 }
 
-// ========== Stage Status Interface ==========
 export enum ItemStatus {
   APPROVED = "approved",
   REVIEW = "review",
@@ -331,14 +324,3 @@ export type ActionPr =
   | "submit"
   | "purchase"
   | "send_back";
-
-// Re-export Zod schemas for backward compatibility
-export {
-  CreatePurchaseRequestDetailSchema,
-  UpdatePurchaseRequestDetailSchema,
-  STAGE_ROLE,
-  StageRoleSchema,
-  CreatePrSchema,
-  CreatePurchaseRequestSchema,
-  UpdatePurchaseRequestSchema,
-} from "@/app/[locale]/(root)/procurement/purchase-request/_schemas/purchase-request-form.schema";

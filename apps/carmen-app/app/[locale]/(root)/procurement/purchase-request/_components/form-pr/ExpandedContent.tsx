@@ -20,6 +20,7 @@ import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PR_STATUS } from "../../_constants/pr-status";
 
 interface ExpandedContentProps {
   item: PurchaseRequestDetail;
@@ -124,7 +125,7 @@ export default function ExpandedContent({
 
   return (
     <Card className="m-2 rounded-md">
-      {prStatus === "in_progress" && (
+      {prStatus !== PR_STATUS.DRAFT && (
         <Accordion type="single" collapsible defaultValue="item-1">
           <AccordionItem value="item-1">
             <div className="flex items-center justify-between border-b border-border">
@@ -164,7 +165,9 @@ export default function ExpandedContent({
               </div>
               <div className="grid grid-cols-4 gap-4 px-3 pb-2">
                 <div className="space-y-0.5 text-right">
-                  <Label className="text-muted-foreground text-xs font-medium">Currency</Label>
+                  <Label className="text-muted-foreground text-xs font-medium">
+                    {tPr("currency")}
+                  </Label>
                   <CurrencyLookup
                     value={(getItemValue(item, "currency_id") as string) || ""}
                     onValueChange={(value) => {
