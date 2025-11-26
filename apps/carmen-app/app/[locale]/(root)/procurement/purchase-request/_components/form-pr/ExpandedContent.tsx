@@ -19,6 +19,7 @@ import TaxProfileLookup from "@/components/lookup/TaxProfileLookup";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ExpandedContentProps {
   item: PurchaseRequestDetail;
@@ -142,15 +143,18 @@ export default function ExpandedContent({
                 onItemUpdate={onItemUpdate}
               />
             </div>
-            <AccordionContent className="flex flex-col">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
-                <div className="space-y-1">
-                  <Label className="text-muted-foreground text-xs">{tPr("vendor")}</Label>
+            <AccordionContent>
+              <div className="grid grid-cols-2 gap-4 px-3 py-2">
+                <div className="space-y-0.5">
+                  <Label className="text-muted-foreground text-xs font-medium">
+                    {tPr("vendor")}
+                  </Label>
                   <VendorLookup
                     value={(getItemValue(item, "vendor_id") as string) || ""}
                     onValueChange={(value) => {
                       onItemUpdate(item.id, "vendor_id", value);
                     }}
+                    classNames="h-7 text-xs"
                   />
                 </div>
                 <PrLabelItem
@@ -158,9 +162,9 @@ export default function ExpandedContent({
                   value={(getItemValue(item, "pricelist_no") as string) ?? "-"}
                 />
               </div>
-              <div className="grid grid-cols-7 gap-6 px-4 pb-4">
-                <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground text-xs">Currency</Label>
+              <div className="grid grid-cols-4 gap-4 px-3 pb-2">
+                <div className="space-y-0.5 text-right">
+                  <Label className="text-muted-foreground text-xs font-medium">Currency</Label>
                   <CurrencyLookup
                     value={(getItemValue(item, "currency_id") as string) || ""}
                     onValueChange={(value) => {
@@ -169,11 +173,13 @@ export default function ExpandedContent({
                     onSelectObject={(selectedCurrency) => {
                       onItemUpdate(item.id, "currency_code", selectedCurrency.code);
                     }}
-                    classNames="h-7 justify-end text-right"
+                    classNames="h-7 justify-end text-right text-xs"
                   />
                 </div>
-                <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground text-xs">{tPr("unit_price")}</Label>
+                <div className="space-y-0.5 text-right">
+                  <Label className="text-muted-foreground text-xs font-medium">
+                    {tPr("unit_price")}
+                  </Label>
                   <NumberInput
                     value={Number(getItemValue(item, "pricelist_price")) || 0}
                     onChange={(value) => {
@@ -189,19 +195,34 @@ export default function ExpandedContent({
                   ).toFixed(2)}
                   position="text-right"
                 />
-                <div className="space-y-1 text-right">
+
+                <PrLabelItem
+                  label={tPr("net_amount")}
+                  value={Number(getItemValue(item, "net_amount") ?? item.net_amount).toFixed(2)}
+                  position="text-right"
+                />
+                <div className="space-y-0.5 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Label className="text-muted-foreground text-xs">{tPr("discount")}</Label>
-                    <Checkbox
-                      checked={Boolean(getItemValue(item, "is_discount_adjustment"))}
-                      onCheckedChange={(checked) => {
-                        // When toggling, we might want to keep the amount or rate?
-                        // For now just toggle and recalculate based on current values
-                        recalculateAll({ is_discount_adjustment: Boolean(checked) });
-                      }}
-                      className="h-3.5 w-3.5"
-                      disabled={!isPriceValid}
-                    />
+                    <Label className="text-muted-foreground text-xs font-medium">
+                      {tPr("discount")}
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Checkbox
+                            checked={Boolean(getItemValue(item, "is_discount_adjustment"))}
+                            onCheckedChange={(checked) => {
+                              recalculateAll({ is_discount_adjustment: Boolean(checked) });
+                            }}
+                            className="h-3.5 w-3.5"
+                            disabled={!isPriceValid}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{tPr("adjustment_discount")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <div className="relative">
                     <NumberInput
@@ -239,22 +260,28 @@ export default function ExpandedContent({
                     )}
                   </p>
                 </div>
-                <PrLabelItem
-                  label={tPr("net_amount")}
-                  value={Number(getItemValue(item, "net_amount") ?? item.net_amount).toFixed(2)}
-                  position="text-right"
-                />
-                <div className="space-y-1 text-right">
+                <div className="space-y-0.5 text-right">
                   <div className="flex items-center justify-end gap-2">
-                    <Label className="text-muted-foreground text-xs">{tPr("tax")}</Label>
-                    <Checkbox
-                      checked={Boolean(getItemValue(item, "is_tax_adjustment"))}
-                      onCheckedChange={(checked) => {
-                        recalculateAll({ is_tax_adjustment: Boolean(checked) });
-                      }}
-                      className="h-3.5 w-3.5"
-                      disabled={!isPriceValid}
-                    />
+                    <Label className="text-muted-foreground text-xs font-medium">
+                      {tPr("tax")}
+                    </Label>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Checkbox
+                            checked={Boolean(getItemValue(item, "is_tax_adjustment"))}
+                            onCheckedChange={(checked) => {
+                              recalculateAll({ is_tax_adjustment: Boolean(checked) });
+                            }}
+                            className="h-3.5 w-3.5"
+                            disabled={!isPriceValid}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{tPr("adjustment_tax")}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   {Boolean(getItemValue(item, "is_tax_adjustment")) ? (
                     <NumberInput
@@ -292,9 +319,11 @@ export default function ExpandedContent({
                     )}
                   </p>
                 </div>
-                <div className="space-y-1 text-right">
-                  <Label className="text-muted-foreground text-xs">{tPr("total")}</Label>
-                  <p className="font-bold text-sm text-active">
+                <div className="space-y-0.5 text-right">
+                  <Label className="text-muted-foreground text-xs font-medium">
+                    {tPr("total")}
+                  </Label>
+                  <p className="font-bold text-base text-active">
                     {formatPrice(
                       Number(getItemValue(item, "total_price") ?? item.total_price),
                       (getItemValue(item, "currency_code") as string) || "THB",

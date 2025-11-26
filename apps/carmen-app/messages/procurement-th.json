@@ -75,7 +75,9 @@
     "select_pr_items_desc": "เลือกวิธีการเลือกรายการใบขอซื้อจากรายการ",
     "select_all_pr_items": "เลือกรายการใบขอซื้อทั้งหมด",
     "select_only_pending_status": "เลือกรายการใบขอซื้อเฉพาะสถานะรอการอนุมัติ",
-    "pls_complete_required_fields": "กรุณากรอกข้อมูลที่จําเป็น"
+    "pls_complete_required_fields": "กรุณากรอกข้อมูลที่จําเป็น",
+    "adjustment_discount": "ปรับประเภทส่วนลด",
+    "adjustment_tax": "ปรับประเภทภาษี"
   },
   "PurchaseOrder": {
     "title": "ใบสั่งซื้อ",

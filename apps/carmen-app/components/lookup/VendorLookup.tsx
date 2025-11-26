@@ -21,6 +21,7 @@ export default function VendorLookup({
   value,
   onValueChange,
   disabled = false,
+  classNames,
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
@@ -42,7 +43,7 @@ export default function VendorLookup({
         <Button
           variant="outline"
           aria-expanded={open}
-          className="w-full justify-between"
+          className={cn("w-full justify-between", classNames)}
           disabled={disabled}
         >
           {value && selectedVendorName ? selectedVendorName : tVendor("select_vendor")}

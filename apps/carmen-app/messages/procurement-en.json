@@ -75,7 +75,9 @@
     "select_pr_items_desc": "Choose how you want to select purchase request items from the list",
     "select_all_pr_items": "Select All Purchase Request Items",
     "select_only_pending_status": "Select Only Purchase Request Status Pending",
-    "pls_complete_required_fields": "Please complete all required fields"
+    "pls_complete_required_fields": "Please complete all required fields",
+    "adjustment_discount": "Adjustment Discount",
+    "adjustment_tax": "Adjustment Tax"
   },
   "PurchaseOrder": {
     "title": "Purchase Order",
