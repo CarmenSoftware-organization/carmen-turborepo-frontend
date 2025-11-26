@@ -1,7 +1,6 @@
 "use client";
 
-import { TreeProductLookup } from "@/components/lookup/tree-product";
-
+import ProductTreeMoq from "@/components/lookup/product-tree-moq/ProductTreeMoq";
 import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
 
 type ProductDto = PriceListTemplateDetailsDto["products"][0];
@@ -21,7 +20,7 @@ export default function TabProducts({ onProductSelect, products = [], isViewMode
   const initProductKeys = products.map((product) => product.id);
 
   return (
-    <TreeProductLookup
+    <ProductTreeMoq
       onSelect={onProductSelect}
       initialSelectedIds={initProductKeys}
       initialProducts={initProducts}

@@ -13,6 +13,7 @@ import { useProductSelection } from "./hooks/useProductSelection";
 import { SelectedProductsPanel } from "./_components/SelectedProductsPanel";
 import { AvailableProductsPanel } from "./_components/AvailableProductsPanel";
 import TreeProductLoading from "./TreeProductLoading";
+
 interface TreeProductLookupProps {
   readonly onSelect?: (productIds: { id: string }[]) => void;
   readonly initialSelectedIds?: string[];
