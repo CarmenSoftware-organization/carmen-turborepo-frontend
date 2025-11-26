@@ -78,8 +78,6 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
                     <SelectContent>
                       <SelectItem value="draft">Draft</SelectItem>
                       <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="submit">Submit</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
                       <SelectItem value="inactive">Inactive</SelectItem>
                     </SelectContent>
                   </Select>
@@ -100,6 +98,26 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
                     {...field}
                     disabled={isViewMode}
                     placeholder={tPlt("tmp_desc_placeholder")}
+                    rows={3}
+                    className="resize-none"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="vendor_instruction"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{tPlt("vendor_instruction")}</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    disabled={isViewMode}
+                    placeholder={tPlt("vendor_instruction_placeholder")}
                     rows={3}
                     className="resize-none"
                   />

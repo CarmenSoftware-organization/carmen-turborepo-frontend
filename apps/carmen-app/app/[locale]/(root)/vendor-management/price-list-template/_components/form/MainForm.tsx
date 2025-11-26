@@ -22,18 +22,31 @@ import OverviewTab from "./OverviewTab";
 import ProductsTab from "./ProductsTab";
 import RFPTabs from "./RFPTabs";
 import {
-  priceListTemplateFormSchema,
-  PriceListTemplateFormValues,
+  CreatePriceTemplateRequestSchema,
+  UpdatePriceTemplateRequestSchema,
+  PriceTemplateStatusEnum,
 } from "../../_schema/price-list-template.schema";
 import { ChevronLeft, PenBoxIcon, Plus, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { z } from "zod";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;
   readonly mode: formType;
 }
+
+// Define a form schema that covers both create and update scenarios
+const FormSchema = CreatePriceTemplateRequestSchema.extend({
+  products: z.object({
+    add: z.array(z.any()), // Use any for now as UI handles complex objects, validation can be refined
+    update: z.array(z.any()).optional(),
+    remove: z.array(z.any()).optional(),
+  }),
+});
+
+type FormValues = z.infer<typeof FormSchema>;
 
 export default function MainForm({ templateData, mode }: Props) {
   const router = useRouter();
@@ -41,16 +54,18 @@ export default function MainForm({ templateData, mode }: Props) {
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, buCode } = useAuth();
 
-  const form = useForm<PriceListTemplateFormValues>({
-    resolver: zodResolver(priceListTemplateFormSchema),
+  const form = useForm<FormValues>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       name: templateData?.name || "",
       status: templateData?.status || "draft",
       description: templateData?.description || "",
+      vendor_instruction: templateData?.vendor_instruction || "",
       valid_period: templateData?.valid_period || 90,
       currency_id: templateData?.currency?.id || "",
       products: {
         add: [],
+        update: [],
         remove: [],
       },
     },
@@ -90,32 +105,58 @@ export default function MainForm({ templateData, mode }: Props) {
 
       const toAdd = newProductIds
         .filter((id) => !currentProductIds.includes(id))
-        .map((id) => ({ id }));
+        .map((id) => ({ product_id: id })); // Map to product_id for new items
       const toRemove = currentProductIds
         .filter((id) => !newProductIds.includes(id))
         .map((id) => ({ id }));
 
       // Only update if there are actual changes
       if (toAdd.length > 0 || toRemove.length > 0) {
+        // Preserve existing updates if any
+        const currentUpdates = form.getValues("products.update") || [];
+
         form.setValue("products", {
           add: toAdd,
           remove: toRemove,
+          update: currentUpdates,
         });
       }
     },
     [initProductKeys, form]
   );
 
-  const onSubmit = async (data: PriceListTemplateFormValues): Promise<void> => {
+  const onSubmit = async (data: FormValues): Promise<void> => {
     const isCreating = currentMode === formType.ADD;
 
     try {
       if (isCreating) {
-        await createMutation.mutateAsync(data);
+        await createMutation.mutateAsync({
+          name: data.name,
+          status: data.status,
+          description: data.description,
+          valid_period: data.valid_period,
+          vendor_instruction: data.vendor_instruction,
+          currency_id: data.currency_id,
+          products: {
+            add: data.products.add,
+          },
+        });
         toastSuccess({ message: tPlt("add_success") });
         router.push("/vendor-management/price-list-template");
       } else {
-        await updateMutation.mutateAsync(data);
+        await updateMutation.mutateAsync({
+          name: data.name,
+          status: data.status,
+          description: data.description,
+          valid_period: data.valid_period,
+          vendor_instruction: data.vendor_instruction,
+          currency_id: data.currency_id,
+          products: {
+            add: data.products.add,
+            update: data.products.update,
+            remove: data.products.remove,
+          },
+        });
         toastSuccess({ message: tPlt("edit_success") });
         setCurrentMode(formType.VIEW);
       }

@@ -2,11 +2,9 @@
 
 import { TreeProductLookup } from "@/components/lookup/tree-product";
 
-interface ProductDto {
-  id: string;
-  name: string;
-  code: string;
-}
+import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
+
+type ProductDto = PriceListTemplateDetailsDto["products"][0];
 
 interface Props {
   onProductSelect?: (productIds: { id: string }[]) => void;

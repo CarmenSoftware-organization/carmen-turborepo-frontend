@@ -80,13 +80,17 @@ export const usePriceListTemplateById = (token: string, buCode: string, id: stri
 // ============================================================================
 interface CreatePriceListTemplateDto {
   name: string;
-  status: "active" | "inactive" | "draft" | "submit" | "completed";
+  status: "active" | "inactive" | "draft";
   description?: string;
   valid_period: number;
-  currency_id?: string;
+  vendor_instruction?: string;
+  currency_id: string;
   products: {
-    add: { id: string }[];
-    remove: { id: string }[];
+    add: {
+      product_id: string;
+      default_order?: { unit_id: string; unit_name: string };
+      moq?: { unit_id: string; unit_name: string; qty: number; note?: string }[];
+    }[];
   };
 }
 
@@ -109,6 +113,7 @@ export const useCreatePriceListTemplate = (token: string, buCode: string) => {
         name: data.name,
         status: data.status,
         description: data.description,
+        vendor_instruction: data.vendor_instruction,
         valid_period: data.valid_period,
         create_date: new Date(),
         update_date: new Date(),
@@ -126,14 +131,24 @@ export const useCreatePriceListTemplate = (token: string, buCode: string) => {
 // UPDATE Price List Template
 // ============================================================================
 interface UpdatePriceListTemplateDto {
-  name: string;
-  status: "active" | "inactive" | "draft" | "submit" | "completed";
+  name?: string;
+  status?: "active" | "inactive" | "draft";
   description?: string;
-  valid_period: number;
+  valid_period?: number;
+  vendor_instruction?: string;
   currency_id?: string;
-  products: {
-    add: { id: string }[];
-    remove: { id: string }[];
+  products?: {
+    add?: {
+      product_id: string;
+      default_order?: { unit_id: string; unit_name: string };
+      moq?: { unit_id: string; unit_name: string; qty: number; note?: string }[];
+    }[];
+    update?: {
+      id: string;
+      default_order?: { unit_id: string; unit_name: string };
+      moq?: { unit_id: string; unit_name: string; qty: number; note?: string }[];
+    }[];
+    remove?: { id: string }[];
   };
 }
 
@@ -157,10 +172,11 @@ export const useUpdatePriceListTemplate = (token: string, buCode: string, id: st
 
       const updatedTemplate: PriceListTemplateDetailsDto = {
         ...existingTemplate,
-        name: data.name,
-        status: data.status,
-        description: data.description,
-        valid_period: data.valid_period,
+        name: data.name ?? existingTemplate.name,
+        status: data.status ?? existingTemplate.status,
+        description: data.description ?? existingTemplate.description,
+        valid_period: data.valid_period ?? existingTemplate.valid_period,
+        vendor_instruction: data.vendor_instruction ?? existingTemplate.vendor_instruction,
         update_date: new Date(),
       };
 

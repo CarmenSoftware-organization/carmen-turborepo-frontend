@@ -111,7 +111,9 @@
     "link_rfps": "Link RFPs",
     "link_rfps_desc": " These RFPs are currently using this price list template. This is a read-only view. RFPsare linked from the RFP module.",
     "no_rpf_linked": "No RFPs Linked",
-    "no_rpf_linked_desc": "This template is not currently being used by any RFPs"
+    "no_rpf_linked_desc": "This template is not currently being used by any RFPs",
+    "vendor_instruction": "Vendor Instruction",
+    "vendor_instruction_placeholder": "Enter vendor instruction"
   },
   "RFP": {
     "title": "Request for Pricing (Campaign)",
