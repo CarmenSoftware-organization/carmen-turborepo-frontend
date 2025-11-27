@@ -113,7 +113,9 @@
     "no_rpf_linked": "No RFPs Linked",
     "no_rpf_linked_desc": "This template is not currently being used by any RFPs",
     "vendor_instruction": "Vendor Instruction",
-    "vendor_instruction_placeholder": "Enter vendor instruction"
+    "vendor_instruction_placeholder": "Enter vendor instruction",
+    "product_name": "Product Name",
+    "product_code": "Product Code"
   },
   "RFP": {
     "title": "Request for Pricing (Campaign)",

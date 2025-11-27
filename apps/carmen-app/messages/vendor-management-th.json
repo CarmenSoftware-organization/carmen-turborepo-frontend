@@ -113,7 +113,9 @@
     "no_rpf_linked": "ไม่มีรายงานขอราคาสินค้าที่เชื่อมต่อ",
     "no_rpf_linked_desc": "แม่แบบนี้ไม่ได้เชื่อมต่อกับรายงานขอราคาสินค้า",
     "vendor_instruction": "คำแนะนำผู้จัดจำหน่าย",
-    "vendor_instruction_placeholder": "กรอกคำแนะนำผู้จัดจำหน่าย"
+    "vendor_instruction_placeholder": "กรอกคำแนะนำผู้จัดจำหน่าย",
+    "product_name": "ชื่อสินค้า",
+    "product_code": "โค้ดสินค้า"
   },
   "RFP": {
     "title": "รายงานขอราคาสินค้า (แคมเปญ)",
