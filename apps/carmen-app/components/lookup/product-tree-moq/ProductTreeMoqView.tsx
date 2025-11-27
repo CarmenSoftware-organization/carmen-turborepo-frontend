@@ -51,7 +51,7 @@ export function ProductTreeMoqView({
                         <p className="text-sm">
                           {data.name} {data.local_name ? `- ${data.local_name}` : ""}
                         </p>
-                        <Badge variant="outline">{data.code}</Badge>
+                        <Badge variant="product_badge">{data.code}</Badge>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 w-full">
@@ -72,7 +72,7 @@ export function ProductTreeMoqView({
                           />
                         </div>
                         <p className="text-sm font-medium">{data.name}</p>
-                        <Badge variant="secondary">{data.children?.length || 0}</Badge>
+                        <Badge variant="product_badge">{data.children?.length || 0}</Badge>
                       </div>
                     )}
                   </TreeItemLabel>
