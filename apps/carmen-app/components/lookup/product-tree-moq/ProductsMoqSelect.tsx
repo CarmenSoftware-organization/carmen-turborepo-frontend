@@ -89,7 +89,7 @@ export function ProductsMoqSelect({
                 </Button>
               )}
             </div>
-            <ScrollArea className="flex-1 max-h-[calc(80vh-250px)]">
+            <ScrollArea className="flex-1 max-h-[calc(100vh-250px)]">
               <div className="space-y-2 pr-4">
                 {filteredSelectedProducts.map((product) => (
                   <div

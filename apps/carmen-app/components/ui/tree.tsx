@@ -125,7 +125,7 @@ function TreeItem<T = any>({
         aria-expanded={item.isExpanded()}
         {...otherProps}
       >
-        <>{children}</>
+        {children}
       </Comp>
     </TreeContext.Provider>
   );
@@ -147,7 +147,6 @@ function TreeItemLabel<T = any>({
   const item = propItem || currentItem;
 
   if (!item) {
-    console.warn("TreeItemLabel: No item provided via props or context");
     return null;
   }
 

@@ -5,8 +5,8 @@ import { useTree } from "@headless-tree/react";
 import { syncDataLoaderFeature, hotkeysCoreFeature } from "@headless-tree/core";
 import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
-import { TreeNodeData } from "../tree-product/types";
-import { buildTreeStructure } from "../tree-product/tree-builder";
+import { TreeNodeData } from "./types";
+import { buildTreeStructure } from "./tree-builder";
 import { Tree as TreeStructure, TreeItem, TreeItemLabel } from "@/components/ui/tree";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -42,8 +42,6 @@ export default function ProductTreeMoq({
     },
   });
 
-  console.log("products", products);
-
   // 2. Build Tree Structure
   const { items, rootItems } = useMemo(() => {
     if (isLoading || !products?.data) {
@@ -54,6 +52,45 @@ export default function ProductTreeMoq({
     return buildTreeStructure(products.data, products.data, [], false);
   }, [products?.data, isLoading]);
 
+  if (isLoading) {
+    return <TreeProductLoading />;
+  }
+
+  return (
+    <ProductTreeMoqContent
+      items={items}
+      rootItems={rootItems}
+      onSelect={onSelect}
+      selectedIds={selectedIds}
+      setSelectedIds={setSelectedIds}
+      selectedItemsCache={selectedItemsCache}
+      setSelectedItemsCache={setSelectedItemsCache}
+      initialProducts={initialProducts}
+    />
+  );
+}
+
+interface ProductTreeMoqContentProps {
+  items: Record<string, TreeNodeData>;
+  rootItems: string[];
+  onSelect?: (productIds: { id: string }[]) => void;
+  selectedIds: Set<string>;
+  setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+  selectedItemsCache: Record<string, TreeNodeData>;
+  setSelectedItemsCache: React.Dispatch<React.SetStateAction<Record<string, TreeNodeData>>>;
+  initialProducts: { key: string; title: string }[];
+}
+
+function ProductTreeMoqContent({
+  items,
+  rootItems,
+  onSelect,
+  selectedIds,
+  setSelectedIds,
+  selectedItemsCache,
+  setSelectedItemsCache,
+  initialProducts,
+}: ProductTreeMoqContentProps) {
   // 3. Handle Selection Logic
   const { handleCheckboxChange, getCheckboxState, allProducts } = useProductSelection({
     items,
@@ -141,14 +178,10 @@ export default function ProductTreeMoq({
     setSelectedItemsCache({});
   }, [setSelectedIds, setSelectedItemsCache]);
 
-  if (isLoading) {
-    return <TreeProductLoading />;
-  }
-
   const allItems = tree.getItems();
 
   return (
-    <div className="h-[500px] flex flex-col">
+    <div className="flex flex-col">
       <div className="grid grid-cols-2 gap-4 flex-1 overflow-hidden">
         {/* Left Panel: Selected Products */}
         <ProductsMoqSelect
@@ -161,7 +194,7 @@ export default function ProductTreeMoq({
         {/* Right Panel: Tree View */}
         <div className="border rounded-md p-4 flex flex-col h-full">
           <h3 className="font-semibold mb-4">Product Tree (MOQ)</h3>
-          <ScrollArea className="flex-1">
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
             <TreeStructure tree={tree} indent={24} toggleIconType="chevron" className="pr-4">
               {allItems.map((item: ItemInstance<TreeNodeData>) => {
                 const data = item.getItemData();
@@ -169,54 +202,56 @@ export default function ProductTreeMoq({
                 const checkboxState = getCheckboxState(data.id);
 
                 return (
-                  <TreeItem key={item.getId()} item={item}>
-                    <TreeItemLabel>
-                      {data.type === "product" ? (
-                        <div className="flex items-center space-x-2 ml-4 w-full">
-                          <div
-                            className="cursor-pointer"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                            }}
-                          >
-                            <Checkbox
-                              checked={checkboxState.checked}
-                              onCheckedChange={(checked) => {
-                                handleCheckboxChange(data.id, checked === true);
+                  <TreeItem key={item.getId()} item={item} asChild>
+                    <div className="w-full cursor-pointer">
+                      <TreeItemLabel>
+                        {data.type === "product" ? (
+                          <div className="flex items-center space-x-2 ml-4 w-full">
+                            <div
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                               }}
-                            />
+                            >
+                              <Checkbox
+                                checked={checkboxState.checked}
+                                onCheckedChange={(checked) => {
+                                  handleCheckboxChange(data.id, checked === true);
+                                }}
+                              />
+                            </div>
+                            <p className="text-sm">
+                              {data.name} {data.local_name ? `- ${data.local_name}` : ""}
+                            </p>
+                            <Badge variant="outline">{data.code}</Badge>
                           </div>
-                          <p className="text-sm">
-                            {data.name} {data.local_name ? `- ${data.local_name}` : ""}
-                          </p>
-                          <Badge variant="outline">{data.code}</Badge>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 w-full">
-                          <div
-                            className="cursor-pointer"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                            }}
-                          >
-                            <Checkbox
-                              checked={
-                                checkboxState.indeterminate
-                                  ? "indeterminate"
-                                  : checkboxState.checked
-                              }
-                              onCheckedChange={(checked) => {
-                                handleCheckboxChange(data.id, checked === true);
+                        ) : (
+                          <div className="flex items-center gap-2 w-full">
+                            <div
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                               }}
-                            />
+                            >
+                              <Checkbox
+                                checked={
+                                  checkboxState.indeterminate
+                                    ? "indeterminate"
+                                    : checkboxState.checked
+                                }
+                                onCheckedChange={(checked) => {
+                                  handleCheckboxChange(data.id, checked === true);
+                                }}
+                              />
+                            </div>
+                            <p className="text-sm font-medium">{data.name}</p>
+                            <Badge variant="secondary">{data.children?.length || 0}</Badge>
                           </div>
-                          <p className="text-sm font-medium">{data.name}</p>
-                          <Badge variant="secondary">{data.children?.length || 0}</Badge>
-                        </div>
-                      )}
-                    </TreeItemLabel>
+                        )}
+                      </TreeItemLabel>
+                    </div>
                   </TreeItem>
                 );
               })}
