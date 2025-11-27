@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
+import { ProductCard } from "./ProductCard";
 
 interface SelectedProduct {
   id: string;
@@ -92,42 +93,7 @@ export function ProductsMoqSelect({
             <ScrollArea className="flex-1 max-h-[calc(100vh-250px)]">
               <div className="space-y-2 pr-4">
                 {filteredSelectedProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className="flex items-start justify-between p-3 border rounded-md bg-card"
-                  >
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-medium">
-                          {product.name}
-                          {product.local_name && ` - ${product.local_name}`}
-                        </p>
-                        {product.code && (
-                          <Badge variant={"product_badge"} className="text-xs">
-                            {product.code}
-                          </Badge>
-                        )}
-                        {product.inventory_unit_name && (
-                          <Badge variant="outline" className="text-xs">
-                            {product.inventory_unit_name}
-                          </Badge>
-                        )}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {product.product_category?.name} {">"} {product.product_sub_category?.name}{" "}
-                        {">"} {product.product_item_group?.name}
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onRemoveProduct(product.id)}
-                      data-id="remove-selected-product"
-                      className="text-destructive h-8 w-8 p-0"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  <ProductCard key={product.id} product={product} onRemove={onRemoveProduct} />
                 ))}
               </div>
             </ScrollArea>
