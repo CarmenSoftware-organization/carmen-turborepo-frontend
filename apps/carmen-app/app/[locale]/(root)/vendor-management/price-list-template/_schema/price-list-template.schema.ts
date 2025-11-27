@@ -58,7 +58,7 @@ export type ProductAddInput = z.infer<typeof ProductAddInputSchema>;
 
 // Product for PATCH update operation
 export const ProductUpdateInputSchema = z.object({
-  id: z.string().uuid(),
+  product_id: z.string().uuid(),
   default_order: DefaultOrderSchema.optional(),
   moq: z.array(MOQItemSchema).optional(),
 });

@@ -26,7 +26,7 @@ import {
   UpdatePriceTemplateRequestSchema,
   PriceTemplateStatusEnum,
 } from "../../_schema/price-list-template.schema";
-import { ChevronLeft, PenBoxIcon, Plus, Save, X } from "lucide-react";
+import { ChevronLeft, Loader2, PenBoxIcon, Plus, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
@@ -40,9 +40,35 @@ interface Props {
 // Define a form schema that covers both create and update scenarios
 const FormSchema = CreatePriceTemplateRequestSchema.extend({
   products: z.object({
-    add: z.array(z.any()), // Use any for now as UI handles complex objects, validation can be refined
-    update: z.array(z.any()).optional(),
-    remove: z.array(z.any()).optional(),
+    add: z.array(
+      z.object({
+        product_id: z.string(),
+        moq: z.array(
+          z.object({
+            unit_id: z.string(),
+            unit_name: z.string(),
+            note: z.string().optional(),
+            qty: z.number(),
+          })
+        ),
+      })
+    ),
+    update: z
+      .array(
+        z.object({
+          product_id: z.string(),
+          moq: z.array(
+            z.object({
+              unit_id: z.string(),
+              unit_name: z.string(),
+              note: z.string().optional(),
+              qty: z.number(),
+            })
+          ),
+        })
+      )
+      .optional(),
+    remove: z.array(z.object({ id: z.string() })).optional(),
   }),
 });
 
@@ -51,6 +77,7 @@ type FormValues = z.infer<typeof FormSchema>;
 export default function MainForm({ templateData, mode }: Props) {
   const router = useRouter();
   const tPlt = useTranslations("PriceListTemplate");
+  const tCommon = useTranslations("Common");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const { token, buCode } = useAuth();
 
@@ -185,11 +212,9 @@ export default function MainForm({ templateData, mode }: Props) {
 
   const isViewMode = currentMode === formType.VIEW;
 
-  console.log("form watch", form.watch());
-
   return (
-    <div className="flex flex-col p-4">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col p-4 max-w-4xl mx-auto">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button
             onClick={() => router.push("/vendor-management/price-list-template")}
@@ -215,7 +240,8 @@ export default function MainForm({ templateData, mode }: Props) {
         <div className="flex items-center gap-2">
           {currentMode === formType.VIEW && (
             <Button size="sm" onClick={() => setCurrentMode(formType.EDIT)}>
-              <PenBoxIcon />
+              <PenBoxIcon className="h-4 w-4" />
+              {tCommon("edit")}
             </Button>
           )}
           {currentMode === formType.EDIT && (
@@ -228,17 +254,38 @@ export default function MainForm({ templateData, mode }: Props) {
                   form.reset();
                   setCurrentMode(formType.VIEW);
                 }}
+                disabled={form.formState.isSubmitting}
               >
-                <X />
+                <X className="h-4 w-4" />
+                {tCommon("cancel")}
               </Button>
-              <Button type="submit" form="price-list-template-form" size="sm">
-                <Save />
+              <Button
+                type="submit"
+                form="price-list-template-form"
+                size="sm"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Save className="h-4 w-4" />
+                )}
+                {tCommon("save")}
               </Button>
             </>
           )}
           {currentMode === formType.ADD && (
-            <Button type="submit" form="price-list-template-form">
-              <Plus />
+            <Button
+              type="submit"
+              form="price-list-template-form"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
+              {tCommon("save")}
             </Button>
           )}
         </div>

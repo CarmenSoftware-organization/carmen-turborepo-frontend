@@ -144,7 +144,7 @@ interface UpdatePriceListTemplateDto {
       moq?: { unit_id: string; unit_name: string; qty: number; note?: string }[];
     }[];
     update?: {
-      id: string;
+      product_id: string;
       default_order?: { unit_id: string; unit_name: string };
       moq?: { unit_id: string; unit_name: string; qty: number; note?: string }[];
     }[];
