@@ -21,58 +21,16 @@ import {
 import OverviewTab from "./OverviewTab";
 import ProductsTab from "./ProductsTab";
 import RFPTabs from "./RFPTabs";
-import {
-  CreatePriceTemplateRequestSchema,
-  UpdatePriceTemplateRequestSchema,
-  PriceTemplateStatusEnum,
-} from "../../_schema/price-list-template.schema";
+import { FormValues, FormSchema } from "../../_schema/price-list-template.schema";
 import { ChevronLeft, Loader2, PenBoxIcon, Plus, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { z } from "zod";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;
   readonly mode: formType;
 }
-
-// Define a form schema that covers both create and update scenarios
-const FormSchema = CreatePriceTemplateRequestSchema.extend({
-  products: z.object({
-    add: z.array(
-      z.object({
-        product_id: z.string(),
-        moq: z.array(
-          z.object({
-            unit_id: z.string(),
-            unit_name: z.string(),
-            note: z.string().optional(),
-            qty: z.number(),
-          })
-        ),
-      })
-    ),
-    update: z
-      .array(
-        z.object({
-          product_id: z.string(),
-          moq: z.array(
-            z.object({
-              unit_id: z.string(),
-              unit_name: z.string(),
-              note: z.string().optional(),
-              qty: z.number(),
-            })
-          ),
-        })
-      )
-      .optional(),
-    remove: z.array(z.object({ id: z.string() })).optional(),
-  }),
-});
-
-type FormValues = z.infer<typeof FormSchema>;
 
 export default function MainForm({ templateData, mode }: Props) {
   const router = useRouter();

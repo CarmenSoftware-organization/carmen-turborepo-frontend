@@ -171,3 +171,39 @@ export type PriceTemplateAPI = {
     response: DeletePriceTemplateResponse;
   };
 };
+
+export const FormSchema = CreatePriceTemplateRequestSchema.extend({
+  products: z.object({
+    add: z.array(
+      z.object({
+        product_id: z.string(),
+        moq: z.array(
+          z.object({
+            unit_id: z.string(),
+            unit_name: z.string(),
+            note: z.string().optional(),
+            qty: z.number(),
+          })
+        ),
+      })
+    ),
+    update: z
+      .array(
+        z.object({
+          product_id: z.string(),
+          moq: z.array(
+            z.object({
+              unit_id: z.string(),
+              unit_name: z.string(),
+              note: z.string().optional(),
+              qty: z.number(),
+            })
+          ),
+        })
+      )
+      .optional(),
+    remove: z.array(z.object({ id: z.string() })).optional(),
+  }),
+});
+
+export type FormValues = z.infer<typeof FormSchema>;
