@@ -14,7 +14,6 @@ export interface TreeNodeData {
 }
 
 export interface MoqItem {
-  id: string;
   unit_id: string;
   unit_name: string;
   note: string;

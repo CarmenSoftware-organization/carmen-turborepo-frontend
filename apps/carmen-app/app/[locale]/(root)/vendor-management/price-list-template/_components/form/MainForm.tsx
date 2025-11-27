@@ -76,10 +76,7 @@ export default function MainForm({ templateData, mode }: Props) {
       templateData?.products?.map((product) => ({
         key: product.id,
         title: product.name,
-        moq: product.moq?.map((m: any) => ({
-          ...m,
-          id: m.id || crypto.randomUUID(),
-        })),
+        moq: product.moq || [],
       })) || []
     );
   }, [templateData?.products]);
@@ -105,15 +102,11 @@ export default function MainForm({ templateData, mode }: Props) {
       const currentProductIds = initProductKeys.map((key) => key.toString());
       const newProductIds = products.map((p) => p.id);
 
-      const stripMoqIds = (moq: any[]) => {
-        return moq.map(({ id, ...rest }: any) => rest);
-      };
-
       const toAdd = products
         .filter((p) => !currentProductIds.includes(p.id))
         .map((p) => ({
           product_id: p.id,
-          moq: stripMoqIds(p.moq || []),
+          moq: p.moq || [],
         }));
 
       const toRemove = currentProductIds
@@ -126,14 +119,14 @@ export default function MainForm({ templateData, mode }: Props) {
           const initialProduct = initProducts.find((ip) => ip.key === p.id);
           if (!initialProduct) return false;
 
-          // Compare MOQ (ignoring IDs)
-          const initialMoq = stripMoqIds(initialProduct.moq || []);
-          const currentMoq = stripMoqIds(p.moq || []);
+          // Compare MOQ
+          const initialMoq = initialProduct.moq || [];
+          const currentMoq = p.moq || [];
           return JSON.stringify(initialMoq) !== JSON.stringify(currentMoq);
         })
         .map((p) => ({
           product_id: p.id,
-          moq: stripMoqIds(p.moq || []),
+          moq: p.moq || [],
         }));
 
       form.setValue("products", {
@@ -188,7 +181,7 @@ export default function MainForm({ templateData, mode }: Props) {
 
   const isViewMode = currentMode === formType.VIEW;
 
-  console.log("form value", form.watch());
+  console.log("form watch", form.watch());
 
   return (
     <div className="flex flex-col p-4">

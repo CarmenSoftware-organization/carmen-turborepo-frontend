@@ -33,7 +33,6 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
     onChange([
       ...items,
       {
-        id: crypto.randomUUID(),
         unit_id: "",
         unit_name: defaultUnitName,
         note: "",
@@ -42,12 +41,12 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
     ]);
   };
 
-  const handleRemoveItem = (id: string) => {
-    onChange(items.filter((item) => item.id !== id));
+  const handleRemoveItem = (index: number) => {
+    onChange(items.filter((_, i) => i !== index));
   };
 
-  const handleUpdateItem = (id: string, field: keyof MoqItem, value: string | number) => {
-    onChange(items.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  const handleUpdateItem = (index: number, field: keyof MoqItem, value: string | number) => {
+    onChange(items.map((item, i) => (i === index ? { ...item, [field]: value } : item)));
   };
 
   return (
@@ -59,12 +58,12 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
         </Button>
       </div>
       <div className="space-y-2">
-        {items.map((item) => (
-          <div key={item.id} className="flex items-start gap-2 text-xs">
+        {items.map((item, index) => (
+          <div key={index} className="flex items-start gap-2 text-xs">
             <div className="w-[80px]">
               <Select
                 value={item.unit_name}
-                onValueChange={(val) => handleUpdateItem(item.id, "unit_name", val)}
+                onValueChange={(val) => handleUpdateItem(index, "unit_name", val)}
               >
                 <SelectTrigger className="h-7 text-xs">
                   <SelectValue />
@@ -79,7 +78,7 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
                 classNames="h-7 text-xs"
                 placeholder="Qty"
                 value={item.qty}
-                onChange={(value) => handleUpdateItem(item.id, "qty", value)}
+                onChange={(value) => handleUpdateItem(index, "qty", value)}
               />
             </div>
             <div className="flex-1">
@@ -87,7 +86,7 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
                 className="h-7 text-xs"
                 placeholder="Note"
                 value={item.note}
-                onChange={(e) => handleUpdateItem(item.id, "note", e.target.value)}
+                onChange={(e) => handleUpdateItem(index, "note", e.target.value)}
               />
             </div>
             <AlertDialog>
@@ -105,7 +104,7 @@ export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqI
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => handleRemoveItem(item.id)}>
+                  <AlertDialogAction onClick={() => handleRemoveItem(index)}>
                     Continue
                   </AlertDialogAction>
                 </AlertDialogFooter>
