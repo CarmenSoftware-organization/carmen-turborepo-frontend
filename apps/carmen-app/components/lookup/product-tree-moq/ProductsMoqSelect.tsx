@@ -18,6 +18,8 @@ import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { ProductCard } from "./ProductCard";
 
+import { MoqItem } from "./types";
+
 interface SelectedProduct {
   id: string;
   name: string;
@@ -35,6 +37,8 @@ interface Props {
   readonly onRemoveProduct: (productId: string) => void;
   readonly onRemoveAll: () => void;
   readonly hasSelectedProducts: boolean;
+  readonly moqData: Record<string, MoqItem[]>;
+  readonly onMoqChange: (productId: string, items: MoqItem[]) => void;
 }
 
 export function ProductsMoqSelect({
@@ -42,6 +46,8 @@ export function ProductsMoqSelect({
   onRemoveProduct,
   onRemoveAll,
   hasSelectedProducts,
+  moqData,
+  onMoqChange,
 }: Props) {
   const [selectedSearchQuery, setSelectedSearchQuery] = useState("");
   const tCommon = useTranslations("Common");
@@ -119,7 +125,13 @@ export function ProductsMoqSelect({
             <ScrollArea className="flex-1 max-h-[calc(100vh-250px)]">
               <div className="space-y-2 pr-4">
                 {filteredSelectedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} onRemove={onRemoveProduct} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onRemove={onRemoveProduct}
+                    moqItems={moqData[product.id] || []}
+                    onMoqChange={(items) => onMoqChange(product.id, items)}
+                  />
                 ))}
               </div>
             </ScrollArea>

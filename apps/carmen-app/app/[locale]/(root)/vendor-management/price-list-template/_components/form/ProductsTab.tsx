@@ -6,24 +6,26 @@ import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
 type ProductDto = PriceListTemplateDetailsDto["products"][0];
 
 interface Props {
-  onProductSelect?: (productIds: { id: string }[]) => void;
+  onProductSelect?: (products: { id: string; moq?: any[] }[]) => void;
   products?: ProductDto[];
+  initialProducts?: { key: string; title: string; moq?: any[] }[];
   isViewMode?: boolean;
 }
 
-export default function TabProducts({ onProductSelect, products = [], isViewMode = false }: Props) {
-  const initProducts = products.map((product) => ({
-    key: product.id,
-    title: product.name,
-  }));
-
-  const initProductKeys = products.map((product) => product.id);
+export default function ProductsTab({
+  onProductSelect,
+  products,
+  initialProducts = [],
+  isViewMode,
+}: Props) {
+  const initProductKeys = initialProducts.map((product) => product.key);
 
   return (
     <ProductTreeMoq
+      key={initProductKeys.join("-")}
       onSelect={onProductSelect}
       initialSelectedIds={initProductKeys}
-      initialProducts={initProducts}
+      initialProducts={initialProducts}
     />
   );
 }

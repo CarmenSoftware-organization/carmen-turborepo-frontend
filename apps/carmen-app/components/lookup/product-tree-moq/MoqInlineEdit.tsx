@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -21,25 +20,18 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-interface MoqItem {
-  id: string; // internal id for key
-  unit_id: string;
-  unit_name: string;
-  note: string;
-  qty: number;
-}
+import { MoqItem } from "./types";
 
 interface MoqInlineEditProps {
-  defaultUnitName?: string;
+  readonly defaultUnitName?: string;
+  readonly items: MoqItem[];
+  readonly onChange: (items: MoqItem[]) => void;
 }
 
-export function MoqInlineEdit({ defaultUnitName = "pcs" }: MoqInlineEditProps) {
-  const [items, setItems] = useState<MoqItem[]>([]);
-
+export function MoqInlineEdit({ defaultUnitName = "pcs", items, onChange }: MoqInlineEditProps) {
   const handleAddItem = () => {
-    setItems((prev) => [
-      ...prev,
+    onChange([
+      ...items,
       {
         id: crypto.randomUUID(),
         unit_id: "",
@@ -51,11 +43,11 @@ export function MoqInlineEdit({ defaultUnitName = "pcs" }: MoqInlineEditProps) {
   };
 
   const handleRemoveItem = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    onChange(items.filter((item) => item.id !== id));
   };
 
   const handleUpdateItem = (id: string, field: keyof MoqItem, value: string | number) => {
-    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+    onChange(items.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
   };
 
   return (

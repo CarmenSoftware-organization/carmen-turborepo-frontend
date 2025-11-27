@@ -76,6 +76,10 @@ export default function MainForm({ templateData, mode }: Props) {
       templateData?.products?.map((product) => ({
         key: product.id,
         title: product.name,
+        moq: product.moq?.map((m: any) => ({
+          ...m,
+          id: m.id || crypto.randomUUID(),
+        })),
       })) || []
     );
   }, [templateData?.products]);
@@ -87,42 +91,58 @@ export default function MainForm({ templateData, mode }: Props) {
   const createMutation = useCreatePriceListTemplate(token, buCode);
   const updateMutation = useUpdatePriceListTemplate(token, buCode, templateData?.id || "");
 
-  const previousProductIdsRef = useRef<string>("");
+  const previousDataRef = useRef<string>("");
 
   const handleTreeProductSelect = useCallback(
-    (productIds: { id: string }[]) => {
-      const currentProductIds = initProductKeys.map((key) => key.toString());
-      const newProductIds = productIds.map((p) => p.id);
-
-      // Create a string representation for comparison
-      const newIdsString = newProductIds.sort().join(",");
-
-      if (newIdsString === previousProductIdsRef.current) {
+    (products: { id: string; moq?: any[] }[]) => {
+      // Deep compare to avoid infinite loops
+      const currentDataString = JSON.stringify(products);
+      if (currentDataString === previousDataRef.current) {
         return;
       }
+      previousDataRef.current = currentDataString;
 
-      previousProductIdsRef.current = newIdsString;
+      const currentProductIds = initProductKeys.map((key) => key.toString());
+      const newProductIds = products.map((p) => p.id);
 
-      const toAdd = newProductIds
-        .filter((id) => !currentProductIds.includes(id))
-        .map((id) => ({ product_id: id })); // Map to product_id for new items
+      const stripMoqIds = (moq: any[]) => {
+        return moq.map(({ id, ...rest }: any) => rest);
+      };
+
+      const toAdd = products
+        .filter((p) => !currentProductIds.includes(p.id))
+        .map((p) => ({
+          product_id: p.id,
+          moq: stripMoqIds(p.moq || []),
+        }));
+
       const toRemove = currentProductIds
         .filter((id) => !newProductIds.includes(id))
         .map((id) => ({ id }));
 
-      // Only update if there are actual changes
-      if (toAdd.length > 0 || toRemove.length > 0) {
-        // Preserve existing updates if any
-        const currentUpdates = form.getValues("products.update") || [];
+      const toUpdate = products
+        .filter((p) => {
+          if (!currentProductIds.includes(p.id)) return false;
+          const initialProduct = initProducts.find((ip) => ip.key === p.id);
+          if (!initialProduct) return false;
 
-        form.setValue("products", {
-          add: toAdd,
-          remove: toRemove,
-          update: currentUpdates,
-        });
-      }
+          // Compare MOQ (ignoring IDs)
+          const initialMoq = stripMoqIds(initialProduct.moq || []);
+          const currentMoq = stripMoqIds(p.moq || []);
+          return JSON.stringify(initialMoq) !== JSON.stringify(currentMoq);
+        })
+        .map((p) => ({
+          product_id: p.id,
+          moq: stripMoqIds(p.moq || []),
+        }));
+
+      form.setValue("products", {
+        add: toAdd,
+        remove: toRemove,
+        update: toUpdate,
+      });
     },
-    [initProductKeys, form]
+    [initProductKeys, initProducts, form]
   );
 
   const onSubmit = async (data: FormValues): Promise<void> => {
@@ -167,6 +187,8 @@ export default function MainForm({ templateData, mode }: Props) {
   };
 
   const isViewMode = currentMode === formType.VIEW;
+
+  console.log("form value", form.watch());
 
   return (
     <div className="flex flex-col p-4">
@@ -241,6 +263,7 @@ export default function MainForm({ templateData, mode }: Props) {
                   <ProductsTab
                     onProductSelect={handleTreeProductSelect}
                     products={templateData?.products}
+                    initialProducts={initProducts}
                     isViewMode={isViewMode}
                   />
                 </TabsContent>

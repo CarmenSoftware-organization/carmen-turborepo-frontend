@@ -3,15 +3,15 @@
 import { useState, useMemo } from "react";
 import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
-import { TreeNodeData } from "./types";
+import { TreeNodeData, MoqItem } from "./types";
 import { buildTreeStructure } from "./tree-builder";
 import TreeProductLoading from "./TreeProductLoading";
 import ProductTreeMoqContent from "./ProductTreeMoqContent";
 
 interface Props {
-  onSelect?: (productIds: { id: string }[]) => void;
+  onSelect?: (products: { id: string; moq?: MoqItem[] }[]) => void;
   initialSelectedIds?: string[];
-  initialProducts?: { key: string; title: string }[];
+  initialProducts?: { key: string; title: string; moq?: MoqItem[] }[];
 }
 
 export default function ProductTreeMoq({
@@ -23,7 +23,19 @@ export default function ProductTreeMoq({
   const [selectedIds, setSelectedIds] = useState<Set<string>>(
     new Set(initialSelectedIds.map((id) => `product-${id}`))
   );
-  const [selectedItemsCache, setSelectedItemsCache] = useState<Record<string, TreeNodeData>>({});
+  const [selectedItemsCache, setSelectedItemsCache] = useState<Record<string, TreeNodeData>>(() => {
+    const cache: Record<string, TreeNodeData> = {};
+    initialProducts.forEach((p) => {
+      const id = `product-${p.key}`;
+      cache[id] = {
+        id,
+        name: p.title,
+        type: "product",
+        children: [],
+      } as TreeNodeData;
+    });
+    return cache;
+  });
 
   // 1. Fetch Data
   const { products, isLoading } = useProductQuery({

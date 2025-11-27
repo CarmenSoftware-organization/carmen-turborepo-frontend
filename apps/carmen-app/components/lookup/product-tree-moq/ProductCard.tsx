@@ -22,25 +22,25 @@ import {
 import { useState } from "react";
 import { MoqInlineEdit } from "./MoqInlineEdit";
 import { cn } from "@/lib/utils";
-
-interface SelectedProduct {
-  id: string;
-  name: string;
-  local_name?: string;
-  code?: string;
-  isInitial: boolean;
-  product_category?: { id: string; name: string };
-  product_sub_category?: { id: string; name: string };
-  product_item_group?: { id: string; name: string };
-  inventory_unit_name?: string;
-}
+import { MoqItem } from "./types";
 
 interface ProductCardProps {
-  product: SelectedProduct;
-  onRemove: (id: string) => void;
+  readonly product: {
+    id: string;
+    name: string;
+    local_name?: string;
+    code?: string;
+    product_category?: { id: string; name: string };
+    product_sub_category?: { id: string; name: string };
+    product_item_group?: { id: string; name: string };
+    inventory_unit_name?: string;
+  };
+  readonly onRemove: (productId: string) => void;
+  readonly moqItems: MoqItem[];
+  readonly onMoqChange: (items: MoqItem[]) => void;
 }
 
-export function ProductCard({ product, onRemove }: ProductCardProps) {
+export function ProductCard({ product, onRemove, moqItems, onMoqChange }: ProductCardProps) {
   const [showMoq, setShowMoq] = useState(false);
 
   return (
@@ -90,10 +90,10 @@ export function ProductCard({ product, onRemove }: ProductCardProps) {
 
       {/* Category Path */}
       <div className="flex items-center gap-1.5 mt-1 overflow-hidden">
-        <div className="text-xs text-muted-foreground/70 truncate">
+        <span className="text-xs text-muted-foreground/70 truncate">
           {product.product_category?.name} / {product.product_sub_category?.name} /{" "}
           {product.product_item_group?.name}
-        </div>
+        </span>
       </div>
 
       {/* Controls: Unit & MOQ */}
@@ -137,7 +137,11 @@ export function ProductCard({ product, onRemove }: ProductCardProps) {
       {/* Inline MOQ Edit */}
       {showMoq && (
         <div className="animate-in slide-in-from-top-1 duration-200">
-          <MoqInlineEdit defaultUnitName={product.inventory_unit_name} />
+          <MoqInlineEdit
+            defaultUnitName={product.inventory_unit_name}
+            items={moqItems}
+            onChange={onMoqChange}
+          />
         </div>
       )}
     </div>
