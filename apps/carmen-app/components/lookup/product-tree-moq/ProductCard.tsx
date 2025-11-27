@@ -8,6 +8,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { MoqInlineEdit } from "./MoqInlineEdit";
 import { cn } from "@/lib/utils";
@@ -52,14 +63,30 @@ export function ProductCard({ product, onRemove }: ProductCardProps) {
       </div>
 
       {/* Delete Button (Absolute) */}
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => onRemove(product.id)}
-        className="absolute top-1 right-1 h-6 w-6 text-muted-foreground/50 hover:text-destructive hover:bg-transparent opacity-0 group-hover:opacity-100 transition-opacity"
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-      </Button>
+      {/* Delete Button (Absolute) */}
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute top-1 right-1 h-6 w-6 text-muted-foreground/50 hover:text-destructive hover:bg-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will remove the product from the selection.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => onRemove(product.id)}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Category Path */}
       <div className="flex items-center gap-1.5 mt-1 overflow-hidden">

@@ -10,6 +10,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import NumberInput from "@/components/form-custom/NumberInput";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface MoqItem {
   id: string; // internal id for key
@@ -87,14 +98,27 @@ export function MoqInlineEdit({ defaultUnitName = "pcs" }: MoqInlineEditProps) {
                 onChange={(e) => handleUpdateItem(item.id, "note", e.target.value)}
               />
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 text-destructive"
-              onClick={() => handleRemoveItem(item.id)}
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive">
+                  <Trash2 className="h-3 w-3" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will remove the MOQ item.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => handleRemoveItem(item.id)}>
+                    Continue
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         ))}
       </div>

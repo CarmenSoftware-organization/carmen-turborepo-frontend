@@ -1,5 +1,16 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Trash2 } from "lucide-react";
@@ -78,16 +89,31 @@ export function ProductsMoqSelect({
                 {tCommon("selected")} {filteredSelectedProducts.length}
               </Badge>
               {hasSelectedProducts && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  data-id="remove-all-selected-products"
-                  onClick={onRemoveAll}
-                  className="text-destructive"
-                >
-                  <Trash2 />
-                  {tCommon("un_select_all")}
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      data-id="remove-all-selected-products"
+                      className="text-destructive"
+                    >
+                      <Trash2 />
+                      {tCommon("un_select_all")}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will remove all selected products.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={onRemoveAll}>Continue</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
             <ScrollArea className="flex-1 max-h-[calc(100vh-250px)]">
