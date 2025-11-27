@@ -1,8 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  mockPriceListList,
-  getMockPriceListById,
-} from "../_mock/price-list-mock"; // remove when use real api
+import { mockPriceListList, getMockPriceListById } from "../_mock/price-list-mock"; // remove when use real api
 import type {
   PriceListDtoList,
   PriceListDetailDto,
@@ -103,6 +100,7 @@ export const useCreatePriceList = (token: string, buCode: string) => {
         ?.currency || {
         id: data.currencyId,
         code: "THB",
+        exchangeRateDate: new Date().toISOString(),
       };
 
       const rfp = data.rfpId
@@ -124,6 +122,11 @@ export const useCreatePriceList = (token: string, buCode: string) => {
         isActive: data.status === "active",
         effectivePeriod: data.effectivePeriod,
         lastUpdate: new Date().toISOString(),
+        taxProfile: {
+          id: "tp-001",
+          name: "VAT 7%",
+          rate: 7,
+        },
       };
 
       return newPriceList;
@@ -164,6 +167,7 @@ export const useUpdatePriceList = (token: string, buCode: string, id: string) =>
         ?.currency || {
         id: data.currencyId,
         code: "THB",
+        exchangeRateDate: new Date().toISOString(),
       };
 
       const rfp = data.rfpId

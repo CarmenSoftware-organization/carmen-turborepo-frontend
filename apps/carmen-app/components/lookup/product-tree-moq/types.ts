@@ -26,3 +26,20 @@ export interface InitialProduct {
   code?: string;
   moq?: MoqItem[];
 }
+
+export interface ProductData {
+  id: string;
+  name: string;
+  local_name?: string;
+  code?: string;
+  description?: string;
+  product_category?: { id: string; name: string };
+  product_sub_category?: { id: string; name: string };
+  product_item_group?: { id: string; name: string };
+  inventory_unit_name?: string;
+}
+
+export interface TreeStructure {
+  items: Record<string, TreeNodeData>;
+  rootItems: string[];
+}
