@@ -134,18 +134,18 @@ export function useProductSelection({
         const item = items[id] || selectedItemsCache[id];
         return {
           id: id.replace("product-", ""),
-          name: item.name,
-          local_name: item.local_name,
-          code: item.code,
+          name: item?.name || "",
+          local_name: item?.local_name,
+          code: item?.code,
           isInitial: false,
-          product_category: item.product_category,
-          product_sub_category: item.product_sub_category,
-          product_item_group: item.product_item_group,
-          inventory_unit_name: item.inventory_unit_name,
+          product_category: item?.product_category,
+          product_sub_category: item?.product_sub_category,
+          product_item_group: item?.product_item_group,
+          inventory_unit_name: item?.inventory_unit_name,
         };
       });
 
-    return [...initial, ...newlySelected];
+    return [...newlySelected.reverse(), ...initial];
   }, [selectedIds, items, selectedItemsCache, initialProducts]);
 
   return {

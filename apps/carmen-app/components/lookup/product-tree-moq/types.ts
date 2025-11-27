@@ -3,9 +3,14 @@ export interface TreeNodeData {
   name: string;
   local_name?: string;
   code?: string;
-  type: "category" | "product";
+  description?: string;
+  type: "category" | "product" | "subcategory" | "itemgroup";
   children: string[];
   productData?: any; // To store full product data if needed
+  product_category?: { id: string; name: string };
+  product_sub_category?: { id: string; name: string };
+  product_item_group?: { id: string; name: string };
+  inventory_unit_name?: string;
 }
 
 export interface MoqItem {
