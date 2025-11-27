@@ -17,7 +17,6 @@ import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import { ProductCard } from "./ProductCard";
-
 import { MoqItem } from "./types";
 
 interface SelectedProduct {
@@ -116,14 +115,14 @@ export function ProductsMoqSelect({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={onRemoveAll}>Continue</AlertDialogAction>
+                      <AlertDialogAction onClick={onRemoveAll}>Confirm</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
               )}
             </div>
             <ScrollArea className="flex-1 max-h-[calc(100vh-250px)]">
-              <div className="space-y-2 pr-4">
+              <div className="space-y-2">
                 {filteredSelectedProducts.map((product) => (
                   <ProductCard
                     key={product.id}

@@ -74,15 +74,19 @@ export default function MainForm({ templateData, mode }: Props) {
   const initProducts = useMemo(() => {
     return (
       templateData?.products?.map((product) => ({
-        key: product.id,
-        title: product.name,
-        moq: product.moq || [],
+        id: product.id,
+        name: product.name,
+        moq:
+          product.moq?.map((m) => ({
+            ...m,
+            note: m.note || "",
+          })) || [],
       })) || []
     );
   }, [templateData?.products]);
 
   const initProductKeys = useMemo(() => {
-    return initProducts.map((product) => product.key);
+    return initProducts.map((product) => product.id);
   }, [initProducts]);
 
   const createMutation = useCreatePriceListTemplate(token, buCode);
@@ -116,7 +120,7 @@ export default function MainForm({ templateData, mode }: Props) {
       const toUpdate = products
         .filter((p) => {
           if (!currentProductIds.includes(p.id)) return false;
-          const initialProduct = initProducts.find((ip) => ip.key === p.id);
+          const initialProduct = initProducts.find((ip) => ip.id === p.id);
           if (!initialProduct) return false;
 
           // Compare MOQ
@@ -255,7 +259,6 @@ export default function MainForm({ templateData, mode }: Props) {
                 <TabsContent value="products" className="mt-0">
                   <ProductsTab
                     onProductSelect={handleTreeProductSelect}
-                    products={templateData?.products}
                     initialProducts={initProducts}
                     isViewMode={isViewMode}
                   />

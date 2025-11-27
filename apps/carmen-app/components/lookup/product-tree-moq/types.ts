@@ -19,3 +19,10 @@ export interface MoqItem {
   note: string;
   qty: number;
 }
+
+export interface InitialProduct {
+  id: string;
+  name: string;
+  code?: string;
+  moq?: MoqItem[];
+}

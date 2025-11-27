@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from "react";
-import { TreeNodeData } from "../types";
+import { InitialProduct, TreeNodeData } from "../types";
 import { getAllProductIds } from "../tree-builder";
 
 interface UseProductSelectionProps {
@@ -8,7 +8,7 @@ interface UseProductSelectionProps {
   selectedItemsCache: Record<string, TreeNodeData>;
   setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   setSelectedItemsCache: React.Dispatch<React.SetStateAction<Record<string, TreeNodeData>>>;
-  initialProducts: { key: string; title: string }[];
+  initialProducts: InitialProduct[];
 }
 
 export function useProductSelection({
@@ -106,12 +106,12 @@ export function useProductSelection({
   const allProducts = useMemo(() => {
     // Convert initial products - only show if still selected
     const initial = initialProducts
-      .filter((p) => selectedIds.has(`product-${p.key}`))
+      .filter((p) => selectedIds.has(`product-${p.id}`))
       .map((p) => {
-        const item = items[`product-${p.key}`] || selectedItemsCache[`product-${p.key}`];
+        const item = items[`product-${p.id}`] || selectedItemsCache[`product-${p.id}`];
         return {
-          id: p.key,
-          name: item?.name || p.title,
+          id: p.id,
+          name: item?.name || p.name,
           local_name: item?.local_name,
           code: item?.code,
           isInitial: true,
@@ -123,7 +123,7 @@ export function useProductSelection({
       });
 
     // Get newly selected products (not in initial)
-    const initialIds = new Set(initialProducts.map((p) => p.key));
+    const initialIds = new Set(initialProducts.map((p) => p.id));
     const newlySelected = Array.from(selectedIds)
       .filter((id) => {
         const item = items[id] || selectedItemsCache[id];

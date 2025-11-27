@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useProductSelection } from "./hooks/useProductSelection";
-import { TreeNodeData, MoqItem } from "./types";
+import { TreeNodeData, MoqItem, InitialProduct } from "./types";
 import { useTree } from "@headless-tree/react";
 import { ProductsMoqSelect } from "./ProductsMoqSelect";
 import { ProductTreeMoqView } from "./ProductTreeMoqView";
@@ -14,7 +14,7 @@ interface ProductTreeMoqContentProps {
   setSelectedIds: React.Dispatch<React.SetStateAction<Set<string>>>;
   selectedItemsCache: Record<string, TreeNodeData>;
   setSelectedItemsCache: React.Dispatch<React.SetStateAction<Record<string, TreeNodeData>>>;
-  initialProducts: { key: string; title: string; moq?: MoqItem[] }[];
+  initialProducts: InitialProduct[];
 }
 
 export default function ProductTreeMoqContent({
@@ -40,7 +40,7 @@ export default function ProductTreeMoqContent({
     const data: Record<string, MoqItem[]> = {};
     initialProducts.forEach((p) => {
       if (p.moq) {
-        data[p.key] = p.moq;
+        data[p.id] = p.moq;
       }
     });
     return data;

@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
-import { TreeNodeData, MoqItem } from "./types";
+import { TreeNodeData, MoqItem, InitialProduct } from "./types";
 import { buildTreeStructure } from "./tree-builder";
 import TreeProductLoading from "./TreeProductLoading";
 import ProductTreeMoqContent from "./ProductTreeMoqContent";
@@ -11,7 +11,7 @@ import ProductTreeMoqContent from "./ProductTreeMoqContent";
 interface Props {
   onSelect?: (products: { id: string; moq?: MoqItem[] }[]) => void;
   initialSelectedIds?: string[];
-  initialProducts?: { key: string; title: string; moq?: MoqItem[] }[];
+  initialProducts?: InitialProduct[];
 }
 
 export default function ProductTreeMoq({
@@ -26,10 +26,10 @@ export default function ProductTreeMoq({
   const [selectedItemsCache, setSelectedItemsCache] = useState<Record<string, TreeNodeData>>(() => {
     const cache: Record<string, TreeNodeData> = {};
     initialProducts.forEach((p) => {
-      const id = `product-${p.key}`;
+      const id = `product-${p.id}`;
       cache[id] = {
         id,
-        name: p.title,
+        name: p.name,
         type: "product",
         children: [],
       } as TreeNodeData;
