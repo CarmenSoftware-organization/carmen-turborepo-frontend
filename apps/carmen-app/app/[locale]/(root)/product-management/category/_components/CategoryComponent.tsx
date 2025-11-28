@@ -413,7 +413,9 @@ export default function CategoryComponent() {
     return (
       <div className="flex flex-col h-screen">
         <div className="sticky top-0 z-10 bg-background space-y-4 pb-4">
-          <h1 className="text-2xl font-bold">{tCategory("title")}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-primary/90 hover:text-primary transition-colors">
+            {tCategory("title")}
+          </h1>
           <div className="flex items-center justify-between">
             <div className="relative w-72">
               <Search className="absolute inset-y-0 left-0 my-auto ml-2 text-gray-400" size={16} />

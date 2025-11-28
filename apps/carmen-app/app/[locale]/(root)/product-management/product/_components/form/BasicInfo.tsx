@@ -141,9 +141,9 @@ export default function BasicInfo({
                   {watch("code") || "N/A"} - {watch("name") || "Untitled Product"}
                 </h1>
                 {status && (
-                  <StatusCustom is_active={status === "active"}>
+                  <Badge variant={status}>
                     {status === "active" ? tCommon("active") : tCommon("inactive")}
-                  </StatusCustom>
+                  </Badge>
                 )}
               </div>
             ) : (
@@ -424,9 +424,7 @@ export default function BasicInfo({
                     {defaultUnit.from_unit_name}
                   </Badge>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
-                    {currentMode === formType.VIEW ? "-" : tProducts("no_order_unit_set")}
-                  </p>
+                  <p className="text-sm text-muted-foreground">{tProducts("no_order_unit_set")}</p>
                 )}
               </div>
             </div>
