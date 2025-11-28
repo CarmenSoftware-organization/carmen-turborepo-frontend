@@ -14,12 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form-custom/form";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FormBoolean from "@/components/form-custom/form-boolean";
@@ -44,9 +39,10 @@ export const FormBuTypeDialog = ({
   const tBusinessType = useTranslations("BusinessType");
 
   const buTypeFormSchema = useMemo(
-    () => createBuTypeFormSchema({
-      nameRequired: tBusinessType("bu_name_require"),
-    }),
+    () =>
+      createBuTypeFormSchema({
+        nameRequired: tBusinessType("bu_name_require"),
+      }),
     [tBusinessType]
   );
 
@@ -65,8 +61,8 @@ export const FormBuTypeDialog = ({
       if (editingProfile) {
         form.reset({
           name: editingProfile.name,
-          description: editingProfile.description,
-          note: editingProfile.note,
+          description: editingProfile.description || "",
+          note: editingProfile.note || "",
           is_active: editingProfile.is_active,
         });
       } else {
@@ -101,10 +97,7 @@ export const FormBuTypeDialog = ({
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleSubmit)}
-            className="space-y-2"
-          >
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
             <FormField
               control={form.control}
               name="name"
@@ -129,6 +122,7 @@ export const FormBuTypeDialog = ({
                   <FormControl>
                     <Textarea
                       {...field}
+                      value={field.value || ""}
                       placeholder={tCommon("description")}
                       maxLength={200}
                     />
@@ -147,6 +141,7 @@ export const FormBuTypeDialog = ({
                   <FormControl>
                     <Textarea
                       {...field}
+                      value={field.value || ""}
                       placeholder={tCommon("note")}
                       maxLength={200}
                     />
@@ -177,9 +172,7 @@ export const FormBuTypeDialog = ({
               <Button type="button" variant="outline" onClick={handleCancel}>
                 {tCommon("cancel")}
               </Button>
-              <Button type="submit">
-                {editingProfile ? tCommon("save") : tCommon("add")}
-              </Button>
+              <Button type="submit">{editingProfile ? tCommon("save") : tCommon("add")}</Button>
             </div>
           </form>
         </Form>

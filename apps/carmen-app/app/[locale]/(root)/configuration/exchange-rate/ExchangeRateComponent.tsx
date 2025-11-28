@@ -284,7 +284,9 @@ export default function ExchangeRateComponent() {
     return (
       <div className="w-full p-4">
         <div className=" justify-between">
-          <p className="text-xl font-semibold">{tExchangeRate("title")}</p>
+          <p className="text-2xl font-semibold tracking-tight text-primary/90 hover:text-primary transition-colors">
+            {tExchangeRate("title")}
+          </p>
           <Button onClick={handleRefresh} variant="outline" className="fxr-c gap-2">
             <RefreshCw className="h-4 w-4" />
             Retry
@@ -303,7 +305,9 @@ export default function ExchangeRateComponent() {
   return (
     <div className="w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-        <p className="text-2xl font-semibold">{tExchangeRate("title")}</p>
+        <p className="text-2xl font-semibold tracking-tight text-primary/90 hover:text-primary transition-colors">
+          {tExchangeRate("title")}
+        </p>
         <div className="flex flex-col sm:flex-row items-end sm:items-center gap-4 w-full sm:w-auto">
           <div className="fxr-c gap-1.5 ml-auto">
             <Button

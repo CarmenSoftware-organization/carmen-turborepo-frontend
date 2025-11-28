@@ -23,6 +23,7 @@ import {
   createExtraCostFormSchema,
   createExtraCostUpdateSchema,
 } from "../_schemas/extra-cost-form.schema";
+import { formatJsonValue } from "@/utils/format";
 
 interface ExtraCostDialogProps {
   open: boolean;
@@ -75,8 +76,8 @@ export default function ExtraCostDialog({
           ...extraCost,
           description: extraCost.description || "",
           note: extraCost.note || "",
-          info: extraCost.info || "",
-          dimension: extraCost.dimension || "",
+          info: formatJsonValue(extraCost.info),
+          dimension: formatJsonValue(extraCost.dimension),
         });
       } else if (mode === formType.ADD) {
         form.reset({

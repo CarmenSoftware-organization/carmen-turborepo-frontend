@@ -4,7 +4,12 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { useExtraCostTypeQuery, useCreateExtraCostType, useUpdateExtraCostType, useDeleteExtraCostType } from "@/hooks/use-extra-cost-type";
+import {
+  useExtraCostTypeQuery,
+  useCreateExtraCostType,
+  useUpdateExtraCostType,
+  useDeleteExtraCostType,
+} from "@/hooks/use-extra-cost-type";
 import { useURL } from "@/hooks/useURL";
 import { FileDown, Plus, Printer } from "lucide-react";
 import { useState } from "react";
@@ -41,26 +46,30 @@ export default function ExtraCostComponent() {
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<formType>(formType.ADD);
-  const [selectedExtraCost, setSelectedExtraCost] = useState<ExtraCostTypeDto | undefined>(undefined);
+  const [selectedExtraCost, setSelectedExtraCost] = useState<ExtraCostTypeDto | undefined>(
+    undefined
+  );
 
   // Delete confirmation dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [extraCostToDelete, setExtraCostToDelete] = useState<ExtraCostTypeDto | undefined>(undefined);
-
-  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(
-    token,
-    buCode,
-    {
-      search,
-      filter,
-      sort,
-      page: page ? Number(page) : 1,
-      perpage: perpage ? Number(perpage) : 10,
-    }
+  const [extraCostToDelete, setExtraCostToDelete] = useState<ExtraCostTypeDto | undefined>(
+    undefined
   );
 
+  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(token, buCode, {
+    search,
+    filter,
+    sort,
+    page: page ? Number(page) : 1,
+    perpage: perpage ? Number(perpage) : 10,
+  });
+
   const { mutate: createExtraCost } = useCreateExtraCostType(token, buCode);
-  const { mutate: updateExtraCost } = useUpdateExtraCostType(token, buCode, selectedExtraCost?.id ?? "");
+  const { mutate: updateExtraCost } = useUpdateExtraCostType(
+    token,
+    buCode,
+    selectedExtraCost?.id ?? ""
+  );
   const { mutate: deleteExtraCost } = useDeleteExtraCostType(token, buCode);
 
   const extraCostData = Array.isArray(extraCostTypes) ? extraCostTypes : extraCostTypes?.data || [];
@@ -105,7 +114,7 @@ export default function ExtraCostComponent() {
         onError: (error: Error) => {
           toastError({ message: tExtraCost("delete_error") });
           console.error("Failed to delete extra cost:", error);
-        }
+        },
       });
     }
   };
@@ -122,7 +131,7 @@ export default function ExtraCostComponent() {
         onError: (error: Error) => {
           toastError({ message: tExtraCost("create_error") });
           console.error("Failed to create extra cost:", error);
-        }
+        },
       });
     } else if (dialogMode === formType.EDIT && selectedExtraCost) {
       const updateData = { ...data, id: selectedExtraCost.id };
@@ -136,7 +145,7 @@ export default function ExtraCostComponent() {
         onError: (error: Error) => {
           toastError({ message: tExtraCost("update_error") });
           console.error("Failed to update extra cost:", error);
-        }
+        },
       });
     }
   };
@@ -155,10 +164,7 @@ export default function ExtraCostComponent() {
   const title = tConfig("extra_cost");
 
   const actionButtons = (
-    <div
-      className="action-btn-container"
-      data-id="extra-cost-list-action-buttons"
-    >
+    <div className="action-btn-container" data-id="extra-cost-list-action-buttons">
       {extraCostPerms.canCreate && (
         <Button size="sm" onClick={handleAdd}>
           <Plus className="h-4 w-4" />
@@ -174,11 +180,7 @@ export default function ExtraCostComponent() {
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button
-        variant="outlinePrimary"
-        size="sm"
-        data-id="extra-cost-print-button"
-      >
+      <Button variant="outlinePrimary" size="sm" data-id="extra-cost-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>
@@ -249,8 +251,8 @@ export default function ExtraCostComponent() {
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
         onConfirm={handleConfirmDelete}
-        title={tExtraCost("delete_extra_cost")}
-        description={tExtraCost("delete_extra_cost_description")}
+        title={tExtraCost("del_extra_cost")}
+        description={tExtraCost("del_extra_cost_description")}
         isLoading={isLoading}
       />
     </>
