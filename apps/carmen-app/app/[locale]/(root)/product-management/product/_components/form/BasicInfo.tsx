@@ -6,7 +6,7 @@ import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
 import { useItemGroup } from "@/hooks/use-item-group";
 import { ItemGroupDto } from "@/dtos/category.dto";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
@@ -127,9 +127,9 @@ export default function BasicInfo({
   };
 
   return (
-    <Card>
-      <CardHeader className="p-2">
-        <div className="flex items-center justify-between p-2">
+    <div className="space-y-4">
+      <div className="pb-4 border-b border-border">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Button variant={"outline"} size={"sm"} className="w-8 h-8" onClick={onBack}>
               <ChevronLeft className="h-4 w-4" />
@@ -213,8 +213,8 @@ export default function BasicInfo({
             )}
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-2 pt-0">
+      </div>
+      <div className="space-y-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
           <FormField
             control={control}
@@ -399,7 +399,10 @@ export default function BasicInfo({
                         }}
                         placeholder={tProducts("inventory_unit")}
                         disabled={currentMode === formType.VIEW}
-                        classNames={cn("h-9 text-xs", currentMode === formType.VIEW && "bg-muted")}
+                        classNames={cn(
+                          "h-9 w-full text-xs",
+                          currentMode === formType.VIEW && "bg-muted"
+                        )}
                       />
                     </FormControl>
                     <FormMessage />
@@ -416,7 +419,7 @@ export default function BasicInfo({
                 {defaultUnit ? (
                   <Badge
                     variant="outline"
-                    className="h-9 bg-muted border-border text-muted-foreground rounded-md"
+                    className="h-9 w-full bg-muted border-border text-muted-foreground rounded-md"
                   >
                     {defaultUnit.from_unit_name}
                   </Badge>
@@ -429,7 +432,7 @@ export default function BasicInfo({
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

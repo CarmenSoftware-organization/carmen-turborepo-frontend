@@ -314,24 +314,24 @@ export default function LocationInfo({ control, currentMode, productData }: Loca
         enableSorting: false,
         size: 150,
       },
-      {
-        id: "description",
-        header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tProducts("description")} />
-        ),
-        cell: ({ row }) => {
-          const location = row.original;
-          const storeLocation = storeLocationsMap.get(location.location_id);
+      // {
+      //   id: "description",
+      //   header: ({ column }) => (
+      //     <DataGridColumnHeader column={column} title={tProducts("description")} />
+      //   ),
+      //   cell: ({ row }) => {
+      //     const location = row.original;
+      //     const storeLocation = storeLocationsMap.get(location.location_id);
 
-          return (
-            <span className="truncate max-w-[200px] inline-block text-xs">
-              {storeLocation?.description || "-"}
-            </span>
-          );
-        },
-        enableSorting: false,
-        size: 150,
-      },
+      //     return (
+      //       <span className="truncate max-w-[200px] inline-block text-xs">
+      //         {storeLocation?.description || "-"}
+      //       </span>
+      //     );
+      //   },
+      //   enableSorting: false,
+      //   size: 150,
+      // },
       {
         id: "delivery_point",
         header: ({ column }) => (
