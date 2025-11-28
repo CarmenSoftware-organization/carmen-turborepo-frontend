@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
 import { formType } from "@/dtos/form.dto";
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
@@ -22,10 +22,12 @@ import OverviewTab from "./OverviewTab";
 import ProductsTab from "./ProductsTab";
 import RFPTabs from "./RFPTabs";
 import { FormValues, FormSchema } from "../../_schema/price-list-template.schema";
+import { useProductSelection } from "../../_hooks/useProductSelection";
 import { ChevronLeft, Loader2, PenBoxIcon, Plus, Save, X } from "lucide-react";
 import { useRouter } from "@/lib/navigation";
 import { useTranslations } from "next-intl";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   readonly templateData?: PriceListTemplateDetailsDto;
@@ -56,76 +58,10 @@ export default function MainForm({ templateData, mode }: Props) {
     },
   });
 
-  const initProducts = useMemo(() => {
-    return (
-      templateData?.products?.map((product) => ({
-        id: product.id,
-        name: product.name,
-        moq:
-          product.moq?.map((m) => ({
-            ...m,
-            note: m.note || "",
-          })) || [],
-      })) || []
-    );
-  }, [templateData?.products]);
-
-  const initProductKeys = useMemo(() => {
-    return initProducts.map((product) => product.id);
-  }, [initProducts]);
+  const { initProducts, handleTreeProductSelect } = useProductSelection(templateData, form);
 
   const createMutation = useCreatePriceListTemplate(token, buCode);
   const updateMutation = useUpdatePriceListTemplate(token, buCode, templateData?.id || "");
-
-  const previousDataRef = useRef<string>("");
-
-  const handleTreeProductSelect = useCallback(
-    (products: { id: string; moq?: any[] }[]) => {
-      // Deep compare to avoid infinite loops
-      const currentDataString = JSON.stringify(products);
-      if (currentDataString === previousDataRef.current) {
-        return;
-      }
-      previousDataRef.current = currentDataString;
-
-      const currentProductIds = initProductKeys.map((key) => key.toString());
-      const newProductIds = products.map((p) => p.id);
-
-      const toAdd = products
-        .filter((p) => !currentProductIds.includes(p.id))
-        .map((p) => ({
-          product_id: p.id,
-          moq: p.moq || [],
-        }));
-
-      const toRemove = currentProductIds
-        .filter((id) => !newProductIds.includes(id))
-        .map((id) => ({ id }));
-
-      const toUpdate = products
-        .filter((p) => {
-          if (!currentProductIds.includes(p.id)) return false;
-          const initialProduct = initProducts.find((ip) => ip.id === p.id);
-          if (!initialProduct) return false;
-
-          // Compare MOQ
-          const initialMoq = initialProduct.moq || [];
-          const currentMoq = p.moq || [];
-          return JSON.stringify(initialMoq) !== JSON.stringify(currentMoq);
-        })
-        .map((p) => ({
-          product_id: p.id,
-          moq: p.moq || [],
-        }));
-
-      form.setValue("products", {
-        add: toAdd,
-        remove: toRemove,
-        update: toUpdate,
-      });
-    },
-    [initProductKeys, initProducts, form]
-  );
 
   const onSubmit = async (data: FormValues): Promise<void> => {
     const isCreating = currentMode === formType.ADD;
@@ -177,21 +113,27 @@ export default function MainForm({ templateData, mode }: Props) {
           <Button
             onClick={() => router.push("/vendor-management/price-list-template")}
             variant={"outlinePrimary"}
-            size={"sm"}
-            className="h-8 w-8"
+            size={"icon"}
+            className="h-8 w-8 hover:bg-muted"
           >
-            <ChevronLeft />
+            <ChevronLeft className="h-5 w-5 text-muted-foreground" />
           </Button>
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">
               {currentMode === formType.ADD && tPlt("new_template")}
               {(currentMode === formType.VIEW || currentMode === formType.EDIT) &&
                 templateData?.name}
             </h1>
             {templateData && (
-              <p className="text-sm text-muted-foreground">
-                {tPlt("last_update")}: {new Date(templateData.update_date).toLocaleDateString()}
-              </p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Badge variant={templateData.status} className="px-2 py-0.5 font-medium">
+                  {templateData.status.toUpperCase()}
+                </Badge>
+                <span>•</span>
+                <span>
+                  {tPlt("last_update")}: {new Date(templateData.update_date).toLocaleDateString()}
+                </span>
+              </div>
             )}
           </div>
         </div>
@@ -252,12 +194,14 @@ export default function MainForm({ templateData, mode }: Props) {
         <Form {...form}>
           <form id="price-list-template-form" onSubmit={form.handleSubmit(onSubmit)}>
             <Tabs defaultValue="overview" className="flex flex-col">
-              <TabsList>
-                <TabsTrigger value="overview">{tPlt("overview")}</TabsTrigger>
-                <TabsTrigger value="products">{tPlt("product")}</TabsTrigger>
-                {templateData && <TabsTrigger value="rfps">{tPlt("rfp")}</TabsTrigger>}
-              </TabsList>
-              <div className="flex-1 overflow-y-auto">
+              <div className="border-b border-border/40 mb-6">
+                <TabsList className="bg-transparent p-0 h-auto gap-6">
+                  <TabsTrigger value="overview">{tPlt("overview")}</TabsTrigger>
+                  <TabsTrigger value="products">{tPlt("product")}</TabsTrigger>
+                  {templateData && <TabsTrigger value="rfps">{tPlt("rfp")}</TabsTrigger>}
+                </TabsList>
+              </div>
+              <div className="flex-1 overflow-y-auto min-h-[500px]">
                 <TabsContent value="overview" className="mt-0">
                   <OverviewTab form={form} isViewMode={isViewMode} templateData={templateData} />
                 </TabsContent>
