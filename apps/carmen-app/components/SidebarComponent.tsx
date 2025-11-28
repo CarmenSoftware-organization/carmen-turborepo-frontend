@@ -308,8 +308,10 @@ const SidebarContent = () => {
               isActuallyCollapsed && "hidden"
             )}
           >
-            {Icon && <Icon className="h-5 w-5 text-primary" />}
-            <h2 className="font-bold text-lg tracking-tight truncate">{t(moduleKey)}</h2>
+            {Icon && <Icon className="h-5 w-5 text-muted-foreground" />}
+            <h2 className="font-bold text-muted-foreground text-lg tracking-tight truncate">
+              {t(moduleKey)}
+            </h2>
           </MotionDiv>
 
           <Button
