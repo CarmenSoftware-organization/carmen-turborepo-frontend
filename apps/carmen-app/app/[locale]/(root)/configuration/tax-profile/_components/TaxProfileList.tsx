@@ -2,15 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { TaxProfileGetAllDto } from "@/dtos/tax-profile.dto";
-import { Activity, List, Trash2 } from "lucide-react";
+import { Activity, List, Trash2, Percent } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -41,11 +37,7 @@ export default function TaxProfileList({
       {
         id: "no",
         header: () => <div className="text-center">#</div>,
-        cell: ({ row }) => (
-          <div className="text-center">
-            {row.index + 1}
-          </div>
-        ),
+        cell: ({ row }) => <div className="text-center">{row.index + 1}</div>,
         enableSorting: false,
         size: 20,
         meta: {
@@ -66,11 +58,7 @@ export default function TaxProfileList({
           if (canUpdate) {
             return (
               <div className="max-w-[300px] truncate">
-                <button
-                  type="button"
-                  className="btn-dialog"
-                  onClick={() => onEdit(taxProfile.id)}
-                >
+                <button type="button" className="btn-dialog" onClick={() => onEdit(taxProfile.id)}>
                   {taxProfile.name}
                 </button>
               </div>
@@ -79,7 +67,23 @@ export default function TaxProfileList({
           return <span className="max-w-[300px] truncate inline-block">{taxProfile.name}</span>;
         },
         enableSorting: false,
-        size: 300,
+        size: 100,
+      },
+      {
+        accessorKey: "tax_rate",
+        header: () => (
+          <div className="flex items-center justify-end gap-2">
+            <Percent className="h-4 w-4" />
+            {t("rate")}
+          </div>
+        ),
+        cell: ({ row }) => <div className="text-right">{row.original.tax_rate}%</div>,
+        enableSorting: false,
+        size: 100,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
       },
       {
         accessorKey: "is_active",
@@ -123,25 +127,6 @@ export default function TaxProfileList({
                   <Trash2 className="h-4 w-4" />
                 </Button>
               )}
-
-              {/* <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-7 w-7">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {canDelete && (
-                    <DropdownMenuItem
-                      className="text-destructive cursor-pointer hover:bg-transparent"
-                      onClick={() => onDelete(taxProfile.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      {tCommon("delete")}
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu> */}
             </div>
           );
         },
