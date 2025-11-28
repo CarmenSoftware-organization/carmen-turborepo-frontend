@@ -61,7 +61,9 @@ export function GenericMenuPage({
 }) {
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">{title}</h1>
+      <h1 className="text-4xl font-extrabold mb-6 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent inline-block tracking-tight">
+        {title}
+      </h1>
       <MenuCardGrid items={subMenu} />
     </div>
   );

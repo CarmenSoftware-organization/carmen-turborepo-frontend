@@ -5,7 +5,7 @@ import { moduleItems } from "@/constants/modules-list";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { usePathname } from "next/navigation";
-import { AlertCircle, ChevronRight, PanelLeftClose } from "lucide-react";
+import { AlertCircle, ChevronRight, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { MotionDiv, AnimatePresence } from "./framer-motion/MotionWrapper";
@@ -157,7 +157,9 @@ const SidebarContent = () => {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                {renderSubMenu(item.children!, level + 1)}
+                <div className="relative border-l border-border/50 ml-4 my-1">
+                  {renderSubMenu(item.children!, level + 1)}
+                </div>
               </MotionDiv>
             )}
           </AnimatePresence>
@@ -227,18 +229,35 @@ const SidebarContent = () => {
       <Link
         href={item.href}
         className={cn(
-          "fxb-c link-item",
-          !isActive && "link-item-inactive",
-          isActive ? "item-active" : "item-hover",
-          level > 0 && !isActuallyCollapsed && `pl-${4 * (level + 1)}`,
+          "fxb-c link-item group relative transition-all duration-200",
+          !isActive && "link-item-inactive hover:bg-primary/5 hover:text-primary",
+          isActive ? "bg-primary/10 text-primary font-semibold shadow-sm" : "text-muted-foreground",
+          level > 0 && !isActuallyCollapsed && `pl-${4}`,
           isActuallyCollapsed && "justify-center"
         )}
         title={isActuallyCollapsed ? t(`${section}.${subItem}`) : undefined}
       >
-        <div className={cn("flex items-center", isActuallyCollapsed ? "justify-center" : "gap-2")}>
-          {item.icon && <item.icon className="h-4 w-4" />}
+        {isActive && !isActuallyCollapsed && (
+          <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-r-full shadow-[0_0_8px_rgba(var(--primary),0.5)]" />
+        )}
+        <div className={cn("flex items-center", isActuallyCollapsed ? "justify-center" : "gap-3")}>
+          {item.icon && (
+            <item.icon
+              className={cn(
+                "h-4 w-4 transition-colors",
+                isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"
+              )}
+            />
+          )}
           {!isActuallyCollapsed && (
-            <span className="font-medium">{t(`${section}.${subItem}`)}</span>
+            <span
+              className={cn(
+                "font-medium transition-colors",
+                isActive ? "text-primary" : "group-hover:text-primary"
+              )}
+            >
+              {t(`${section}.${subItem}`)}
+            </span>
           )}
         </div>
       </Link>
@@ -279,27 +298,37 @@ const SidebarContent = () => {
       aria-label="Sidebar Navigation"
     >
       <div className="flex-1 overflow-y-auto p-4 space-y-1">
-        <Button
-          variant={"ghost"}
-          onClick={handleToggleCollapse}
-          className={cn(
-            // "sidebar-toggle-button",
-            "bg-muted mb-4 border border-border",
-            isActuallyCollapsed ? "w-8 " : "w-full"
-          )}
-          aria-label={isActuallyCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          <PanelLeftClose className="h-4 w-4 text-muted-foreground" />
-        </Button>
-        <MotionDiv
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className={cn("sidebar-header ml-2", isActuallyCollapsed && "justify-center ml-0")}
-        >
-          {Icon && <Icon className="h-5 w-5" />}
-          {!isActuallyCollapsed && <h2 className="module-name">{t(moduleKey)}</h2>}
-        </MotionDiv>
+        <div className="flex items-center justify-between px-2 py-4 mb-2 border-b border-border/40">
+          <MotionDiv
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className={cn(
+              "flex items-center gap-2 overflow-hidden",
+              isActuallyCollapsed && "hidden"
+            )}
+          >
+            {Icon && <Icon className="h-5 w-5 text-primary" />}
+            <h2 className="font-bold text-lg tracking-tight truncate">{t(moduleKey)}</h2>
+          </MotionDiv>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleToggleCollapse}
+            className={cn(
+              "h-8 w-8 text-muted-foreground hover:text-foreground",
+              isActuallyCollapsed && "mx-auto"
+            )}
+            aria-label={isActuallyCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {isActuallyCollapsed ? (
+              <PanelLeftOpen className="h-4 w-4" />
+            ) : (
+              <PanelLeftClose className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
 
         <div className="space-y-1">
           {activeModuleData.children && renderSubMenu(activeModuleData.children)}
