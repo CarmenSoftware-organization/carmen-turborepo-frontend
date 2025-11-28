@@ -98,8 +98,12 @@ export default function FilterPurchaseRequest({
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-[260px] p-0" align="end">
+      <PopoverContent className="w-[320px] p-0" align="end">
         <div className="p-4 space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-border/50">
+            <h4 className="font-semibold text-sm">Filter Options</h4>
+            <span className="text-[10px] text-muted-foreground">Select criteria to filter</span>
+          </div>
           {/* Date Range Filter */}
           <div className="flex flex-col gap-2">
             <Label>{tTableHeader("date")}</Label>
@@ -108,11 +112,11 @@ export default function FilterPurchaseRequest({
                 <Button
                   variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-normal text-xs",
+                    "w-full justify-start text-left font-normal text-xs h-9 bg-muted/30 hover:bg-muted/50 border-border/60",
                     !dateRange && "text-muted-foreground"
                   )}
                 >
-                  <CalendarIcon className="h-4 w-4" />
+                  <CalendarIcon className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
                   {getDateRangeDisplay()}
                 </Button>
               </PopoverTrigger>
@@ -132,7 +136,7 @@ export default function FilterPurchaseRequest({
           <div className="flex flex-col gap-2">
             <Label>{tTableHeader("status")}</Label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger>
+              <SelectTrigger className="h-9 text-xs bg-muted/30 hover:bg-muted/50 border-border/60">
                 <SelectValue placeholder={tDataControls("allStatus")} />
               </SelectTrigger>
               <SelectContent>
@@ -150,7 +154,7 @@ export default function FilterPurchaseRequest({
           <div className="flex flex-col gap-2">
             <Label>{tTableHeader("stage")}</Label>
             <Select value={stage} onValueChange={setStage}>
-              <SelectTrigger>
+              <SelectTrigger className="h-9 text-xs bg-muted/30 hover:bg-muted/50 border-border/60">
                 <SelectValue placeholder={tDataControls("allStage")} />
               </SelectTrigger>
               <SelectContent>
@@ -168,7 +172,7 @@ export default function FilterPurchaseRequest({
           <div className="flex flex-col gap-2">
             <Label>{tTableHeader("type")}</Label>
             <Select value={prType} onValueChange={setPrType}>
-              <SelectTrigger>
+              <SelectTrigger className="h-9 text-xs bg-muted/30 hover:bg-muted/50 border-border/60">
                 <SelectValue placeholder={tDataControls("allType")} />
               </SelectTrigger>
               <SelectContent>
@@ -183,7 +187,7 @@ export default function FilterPurchaseRequest({
           <div className="flex flex-col gap-2">
             <Label>{tTableHeader("department")}</Label>
             <Select value={department} onValueChange={setDepartment}>
-              <SelectTrigger>
+              <SelectTrigger className="h-9 text-xs bg-muted/30 hover:bg-muted/50 border-border/60">
                 <SelectValue placeholder={tDataControls("allDepartment")} />
               </SelectTrigger>
               <SelectContent>
@@ -194,7 +198,7 @@ export default function FilterPurchaseRequest({
           </div>
 
           {/* Action Buttons */}
-          <Separator className="my-2" />
+          <Separator className="my-2 mt-6" />
           <div className="flex justify-end gap-2">
             <Button variant={"outline"} size={"sm"} onClick={handleReset}>
               {tCommon("reset")}

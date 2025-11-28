@@ -18,7 +18,7 @@ export default function RootLayout({
           <aside className="hidden md:block z-30 relative overflow-y-auto">
             <SidebarComponent />
           </aside>
-          <main className="h-full overflow-auto p-4 relative z-0">{children}</main>
+          <main className="h-full overflow-auto m-4 relative z-0">{children}</main>
         </div>
       </div>
     </ProtectedRoute>
