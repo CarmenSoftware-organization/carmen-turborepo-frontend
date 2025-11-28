@@ -157,7 +157,7 @@ const SidebarContent = () => {
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
-                <div className="relative border-l border-border/50 ml-4 my-1">
+                <div className="relative border-l border-border/50 my-1">
                   {renderSubMenu(item.children!, level + 1)}
                 </div>
               </MotionDiv>
@@ -297,8 +297,8 @@ const SidebarContent = () => {
       className={cn("motion-wrapper")}
       aria-label="Sidebar Navigation"
     >
-      <div className="flex-1 overflow-y-auto p-4 space-y-1">
-        <div className="flex items-center justify-between px-2 py-4 mb-2 border-b border-border/40">
+      <div className="flex-1 overflow-y-auto p-3 space-y-1">
+        <div className="flex items-center justify-between p-1 mb-2 border-b border-border/40">
           <MotionDiv
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
@@ -317,8 +317,8 @@ const SidebarContent = () => {
             size="icon"
             onClick={handleToggleCollapse}
             className={cn(
-              "h-8 w-8 text-muted-foreground hover:text-foreground",
-              isActuallyCollapsed && "mx-auto"
+              "h-8 w-8 text-muted-foreground hover:text-foreground bg-foreground/10",
+              isActuallyCollapsed && "mx-auto bg-background"
             )}
             aria-label={isActuallyCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           >

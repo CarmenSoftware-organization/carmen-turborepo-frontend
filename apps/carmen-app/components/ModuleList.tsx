@@ -38,12 +38,12 @@ export default function ModuleList() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-8 h-8">
-          <LayoutGrid className="h-5 w-5" strokeWidth={0.95} />
+        <Button variant="outline" className="w-8 h-8 hover:bg-muted/80 transition-colors">
+          <LayoutGrid className="h-5 w-5 text-muted-foreground" strokeWidth={1.5} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="max-w-fit">
-        <div className="grid grid-cols-3 gap-2">
+      <PopoverContent className="w-80 p-4" align="end" sideOffset={8}>
+        <div className="grid grid-cols-3 gap-3">
           {moduleItems.map((module) => {
             const key = module.labelKey.split(".").pop() ?? "";
             const Icon = module.icon;
@@ -52,16 +52,28 @@ export default function ModuleList() {
             return (
               <button
                 key={module.labelKey}
-                className={`w-full h-fit text-left cursor-pointer rounded-md p-2 ${
-                  isActive ? "bg-accent border-primary" : "hover:bg-accent/50 border-gray-200"
+                className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl transition-all duration-200 group aspect-square ${
+                  isActive
+                    ? "bg-primary/10 text-primary shadow-inner ring-1 ring-primary/20"
+                    : "hover:bg-muted text-muted-foreground hover:text-foreground hover:shadow-sm hover:-translate-y-0.5"
                 }`}
                 onClick={() => handleModuleClick(module.href)}
                 aria-label={t(key)}
               >
-                <div className="flex flex-col items-center justify-center gap-2">
-                  {Icon && <Icon className="h-7 w-7" />}
-                  <span className="text-xs text-center">{t(key)}</span>
-                </div>
+                {Icon && (
+                  <div
+                    className={`p-2 rounded-lg transition-colors duration-200 ${
+                      isActive ? "bg-primary/20" : "bg-muted group-hover:bg-background"
+                    }`}
+                  >
+                    <Icon
+                      className={`h-6 w-6 ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-primary"}`}
+                    />
+                  </div>
+                )}
+                <span className="text-[11px] font-medium text-center leading-tight line-clamp-2">
+                  {t(key)}
+                </span>
               </button>
             );
           })}
