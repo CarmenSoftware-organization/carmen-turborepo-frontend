@@ -49,7 +49,11 @@ const itemsPlayground = [
   {
     title: "Product Lookup",
     href: "/playground/product-lookup",
-  }
+  },
+  {
+    title: "AI",
+    href: "/playground/ai",
+  },
 ];
 
 export default function Playground() {
