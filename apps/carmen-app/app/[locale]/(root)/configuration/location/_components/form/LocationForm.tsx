@@ -75,14 +75,18 @@ export default function LocationForm({
   const isPending = createMutation.isPending || updateMutation.isPending;
   const isViewMode = mode === formType.VIEW;
 
-  const formLocationSchema = useMemo(
-    () =>
-      createLocationFormSchema({
-        nameRequired: tLocation("location_name_required"),
-        deliveryPointRequired: tLocation("delivery_point_required"),
-      }),
-    [tLocation]
-  );
+  const formLocationSchema = useMemo(() => {
+    const schema = createLocationFormSchema({
+      nameRequired: tLocation("location_name_required"),
+      deliveryPointRequired: tLocation("delivery_point_required"),
+    });
+
+    if (mode === formType.ADD) {
+      return schema.omit({ id: true });
+    }
+
+    return schema;
+  }, [tLocation, mode]);
 
   const initUsers = useMemo(() => {
     return (
