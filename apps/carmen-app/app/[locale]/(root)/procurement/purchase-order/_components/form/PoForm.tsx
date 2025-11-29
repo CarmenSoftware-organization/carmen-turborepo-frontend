@@ -27,34 +27,45 @@ export default function PoForm({ poData, mode }: PoFormProps) {
 
   return (
     <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPo />}>
-      <Card className="p-4 space-y-4">
+      <Card className="p-8 space-y-8 shadow-sm border-border/60">
         <ActionFields
           currentMode={currentMode}
           setCurrentMode={setCurrentMode}
           title={poData.po_number}
         />
-        <HeadPoForm poData={poData} />
-        <Tabs defaultValue="items">
-          <TabsList className="w-full">
-            <TabsTrigger className="w-full" value="items">
+        <HeadPoForm poData={poData} mode={currentMode} />
+        <Tabs defaultValue="items" className="w-full">
+          <TabsList className="w-full justify-start border-b border-border/50 bg-transparent p-0 h-auto rounded-none space-x-6">
+            <TabsTrigger
+              className="w-auto px-0 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-muted-foreground data-[state=active]:text-foreground transition-all"
+              value="items"
+            >
               {tPurchaseOrder("items")}
             </TabsTrigger>
-            <TabsTrigger className="w-full" value="grn">
+            <TabsTrigger
+              className="w-auto px-0 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-muted-foreground data-[state=active]:text-foreground transition-all"
+              value="grn"
+            >
               {tPurchaseOrder("grn")}
             </TabsTrigger>
-            <TabsTrigger className="w-full" value="docs">
+            <TabsTrigger
+              className="w-auto px-0 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-muted-foreground data-[state=active]:text-foreground transition-all"
+              value="docs"
+            >
               {tPurchaseOrder("docs")}
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="items">
-            <PoItems items={poData.items} />
-          </TabsContent>
-          <TabsContent value="grn">
-            <Grns grns={poData.grns} />
-          </TabsContent>
-          <TabsContent value="docs">
-            <Docs docs={poData.documents} />
-          </TabsContent>
+          <div className="mt-6">
+            <TabsContent value="items" className="mt-0">
+              <PoItems items={poData.items} />
+            </TabsContent>
+            <TabsContent value="grn" className="mt-0">
+              <Grns grns={poData.grns} />
+            </TabsContent>
+            <TabsContent value="docs" className="mt-0">
+              <Docs docs={poData.documents} />
+            </TabsContent>
+          </div>
         </Tabs>
       </Card>
     </DetailsAndComments>
