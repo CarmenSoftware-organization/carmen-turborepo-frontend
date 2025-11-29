@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 interface UseAiGenerateReturn {
   generate: (prompt: string) => Promise<string | null>;
@@ -8,42 +9,26 @@ interface UseAiGenerateReturn {
 }
 
 export function useAiGenerate(): UseAiGenerateReturn {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<string | null>(null);
+  const mutation = useMutation({
+    mutationFn: async (prompt: string) => {
+      const { data } = await axios.post("/api/generate", { prompt });
+      return data.text;
+    },
+  });
 
   const generate = async (prompt: string): Promise<string | null> => {
-    setLoading(true);
-    setError(null);
-    setData(null);
-
     try {
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
-      });
-
-      if (!res.ok) {
-        throw new Error(`API Error: ${res.status}`);
-      }
-
-      const result = await res.json();
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      setData(result.text);
-      return result.text;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
-      setError(errorMessage);
+      return await mutation.mutateAsync(prompt);
+    } catch (error) {
+      console.error("AI Generation Error:", error);
       return null;
-    } finally {
-      setLoading(false);
     }
   };
 
-  return { generate, loading, error, data };
+  return {
+    generate,
+    loading: mutation.isPending,
+    error: mutation.error ? (mutation.error as Error).message : null,
+    data: mutation.data ?? null,
+  };
 }
