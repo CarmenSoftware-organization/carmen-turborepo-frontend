@@ -1,9 +1,24 @@
 "use client";
 
 import { PurchaseOrderlDto } from "@/dtos/procurement.dto";
-import { Building2, Calendar, DollarSign, FileDown, FileText, MoreHorizontal, Printer, TagIcon, Trash2 } from "lucide-react";
+import {
+  Building2,
+  Calendar,
+  DollarSign,
+  FileDown,
+  FileText,
+  MoreHorizontal,
+  Printer,
+  TagIcon,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import ButtonLink from "@/components/ButtonLink";
 import { StatusBadge } from "@/components/ui-custom/StatusBadge";
 import { useMemo } from "react";
@@ -15,7 +30,11 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
-import { DataGridTable, DataGridTableRowSelect, DataGridTableRowSelectAll } from "@/components/ui/data-grid-table";
+import {
+  DataGridTable,
+  DataGridTableRowSelect,
+  DataGridTableRowSelectAll,
+} from "@/components/ui/data-grid-table";
 import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -34,6 +53,11 @@ interface PurchaseOrderListProps {
   readonly setPerpage: (perpage: number) => void;
 }
 
+const ActionHeader = () => {
+  const tTableHeader = useTranslations("TableHeader");
+  return <div className="text-right">{tTableHeader("action")}</div>;
+};
+
 export default function PurchaseOrderList({
   purchaseOrders,
   currentPage,
@@ -48,9 +72,6 @@ export default function PurchaseOrderList({
 }: PurchaseOrderListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-
-  // Action header component
-  const ActionHeader = () => <div className="text-right">{tTableHeader("action")}</div>;
 
   // Convert sort to TanStack Table format
   const sorting: SortingState = useMemo(() => {
@@ -82,9 +103,7 @@ export default function PurchaseOrderList({
         id: "no",
         header: () => <div className="text-center">#</div>,
         cell: ({ row }) => (
-          <div className="text-center">
-            {(currentPage - 1) * perpage + row.index + 1}
-          </div>
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
         ),
         enableSorting: false,
         size: 30,
@@ -96,7 +115,11 @@ export default function PurchaseOrderList({
       {
         accessorKey: "po_number",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("po_number")} icon={<FileText className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("po_number")}
+            icon={<FileText className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <ButtonLink href={`/procurement/purchase-order/${row.original.id}`}>
@@ -112,13 +135,13 @@ export default function PurchaseOrderList({
       {
         accessorKey: "vendor",
         header: ({ column }) => (
-          <DataGridColumnHeader column={column} title={tTableHeader("vendor")} icon={<Building2 className="h-4 w-4" />} />
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("vendor")}
+            icon={<Building2 className="h-4 w-4" />}
+          />
         ),
-        cell: ({ row }) => (
-          <span>
-            {row.original.vendor ?? "-"}
-          </span>
-        ),
+        cell: ({ row }) => <span>{row.original.vendor ?? "-"}</span>,
         enableSorting: true,
         size: 200,
         meta: {
@@ -129,12 +152,14 @@ export default function PurchaseOrderList({
         accessorKey: "date_created",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("date")} icon={<Calendar className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("date")}
+              icon={<Calendar className="h-4 w-4" />}
+            />
           </div>
         ),
-        cell: ({ row }) => (
-          <div className="text-center">{row.original.date_created}</div>
-        ),
+        cell: ({ row }) => <div className="text-center">{row.original.date_created}</div>,
         enableSorting: false,
         size: 120,
         meta: {
@@ -147,12 +172,14 @@ export default function PurchaseOrderList({
         accessorKey: "delivery_date",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("delivery_date")} icon={<Calendar className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("delivery_date")}
+              icon={<Calendar className="h-4 w-4" />}
+            />
           </div>
         ),
-        cell: ({ row }) => (
-          <div className="text-center">{row.original.delivery_date}</div>
-        ),
+        cell: ({ row }) => <div className="text-center">{row.original.delivery_date}</div>,
         enableSorting: false,
         size: 120,
         meta: {
@@ -165,12 +192,14 @@ export default function PurchaseOrderList({
         accessorKey: "currency",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("currency")} icon={<DollarSign className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("currency")}
+              icon={<DollarSign className="h-4 w-4" />}
+            />
           </div>
         ),
-        cell: ({ row }) => (
-          <div className="text-center">{row.original.currency}</div>
-        ),
+        cell: ({ row }) => <div className="text-center">{row.original.currency}</div>,
         enableSorting: false,
         size: 100,
         meta: {
@@ -183,7 +212,11 @@ export default function PurchaseOrderList({
         accessorKey: "net_amount",
         header: ({ column }) => (
           <div className="flex justify-end">
-            <DataGridColumnHeader column={column} title={tTableHeader("net_amount")} icon={<DollarSign className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("net_amount")}
+              icon={<DollarSign className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
@@ -203,7 +236,11 @@ export default function PurchaseOrderList({
         accessorKey: "tax_amount",
         header: ({ column }) => (
           <div className="flex justify-end">
-            <DataGridColumnHeader column={column} title={tTableHeader("tax_amount")} icon={<DollarSign className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("tax_amount")}
+              icon={<DollarSign className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
@@ -223,7 +260,11 @@ export default function PurchaseOrderList({
         accessorKey: "amount",
         header: ({ column }) => (
           <div className="flex justify-end">
-            <DataGridColumnHeader column={column} title={tTableHeader("amount")} icon={<DollarSign className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("amount")}
+              icon={<DollarSign className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
@@ -243,15 +284,17 @@ export default function PurchaseOrderList({
         accessorKey: "status",
         header: ({ column }) => (
           <div className="flex justify-center">
-            <DataGridColumnHeader column={column} title={tTableHeader("status")} icon={<TagIcon className="h-4 w-4" />} />
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("status")}
+              icon={<TagIcon className="h-4 w-4" />}
+            />
           </div>
         ),
         cell: ({ row }) => (
           <div className="flex justify-center">
             {row.original.status && (
-              <StatusBadge status={row.original.status}>
-                {row.original.status}
-              </StatusBadge>
+              <StatusBadge status={row.original.status}>{row.original.status}</StatusBadge>
             )}
           </div>
         ),
@@ -334,8 +377,7 @@ export default function PurchaseOrderList({
     },
     enableRowSelection: true,
     onPaginationChange: (updater) => {
-      const newPagination =
-        typeof updater === "function" ? updater(pagination) : updater;
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
       onPageChange(newPagination.pageIndex + 1);
       setPerpage(newPagination.pageSize);
     },

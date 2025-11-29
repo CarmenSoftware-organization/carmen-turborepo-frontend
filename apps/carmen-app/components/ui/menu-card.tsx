@@ -33,17 +33,16 @@ export function MenuCard({ item, className }: MenuCardProps) {
   return (
     <Link
       href={item.href}
-      className={cn("block", className)}
+      className={cn("block group focus:outline-none", className)}
       aria-label={`Navigate to ${item.name}`}
-      tabIndex={0}
     >
-      <Card className="h-full transition-all duration-300 hover:shadow-xl hover:border-primary/50 hover:-translate-y-1 group relative overflow-hidden border-muted/60">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <Card className="h-full transition-all duration-300 group-hover:shadow-xl group-focus-visible:shadow-xl group-hover:border-primary/50 group-focus-visible:border-primary/50 group-hover:-translate-y-1 group-focus-visible:-translate-y-1 relative overflow-hidden border-muted/60 group-focus-visible:ring-2 group-focus-visible:ring-ring group-focus-visible:ring-offset-2">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-300" />
         <CardContent className="flex flex-col items-center justify-center p-8 space-y-4 relative z-10">
-          <div className="p-4 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-sm">
+          <div className="p-4 rounded-full bg-primary/10 text-primary group-hover:bg-primary group-focus-visible:bg-primary group-hover:text-primary-foreground group-focus-visible:text-primary-foreground transition-all duration-300 shadow-sm">
             <item.icon className="h-8 w-8" />
           </div>
-          <h2 className="text-lg font-semibold text-muted-foreground group-hover:text-primary transition-colors duration-300 text-center tracking-tight">
+          <h2 className="text-lg font-semibold text-muted-foreground group-hover:text-primary group-focus-visible:text-primary transition-colors duration-300 text-center tracking-tight">
             {item.name}
           </h2>
         </CardContent>

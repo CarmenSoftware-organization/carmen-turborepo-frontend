@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 
+import { PurchaseOrderItemDto } from "@/dtos/procurement.dto";
+
 interface PoItemsProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly items: any[];
+  readonly items: PurchaseOrderItemDto[];
 }
 
 export default function PoItems({ items }: PoItemsProps) {

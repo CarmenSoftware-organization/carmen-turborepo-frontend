@@ -118,7 +118,7 @@
     "product_code": "Product Code"
   },
   "RFP": {
-    "title": "Request for Pricing (Campaign)",
+    "title": "Request for Pricing",
     "new_rfp_meta": "New Request for Pricing",
     "id_rfp_meta": "Request for Pricing Details",
     "add_rfp": "Add Request for Pricing",

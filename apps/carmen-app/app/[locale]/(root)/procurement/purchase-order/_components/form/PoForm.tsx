@@ -14,57 +14,49 @@ import Docs from "./Docs";
 import ActivityLog from "../ActivityLog";
 import CommentPo from "../CommentPo";
 
+import { PurchaseOrderDetailDto } from "@/dtos/procurement.dto";
+
 interface PoFormProps {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly poData: any;
-    readonly mode: formType;
+  readonly poData: PurchaseOrderDetailDto;
+  readonly mode: formType;
 }
 
 export default function PoForm({ poData, mode }: PoFormProps) {
-    const tPurchaseOrder = useTranslations("PurchaseOrder");
-    const [currentMode, setCurrentMode] = useState(mode);
+  const tPurchaseOrder = useTranslations("PurchaseOrder");
+  const [currentMode, setCurrentMode] = useState(mode);
 
-    return (
-        <DetailsAndComments
-            activityComponent={<ActivityLog />}
-            commentComponent={<CommentPo />}
-        >
-            <Card className="p-4 space-y-4">
-                <ActionFields
-                    currentMode={currentMode}
-                    setCurrentMode={setCurrentMode}
-                    title={poData.po_number}
-                />
-                <HeadPoForm poData={poData} />
-                <Tabs defaultValue="items">
-                    <TabsList className="w-full">
-                        <TabsTrigger className="w-full" value="items">
-                            {tPurchaseOrder("items")}
-                        </TabsTrigger>
-                        <TabsTrigger
-                            className="w-full"
-                            value="grn"
-                        >
-                            {tPurchaseOrder("grn")}
-                        </TabsTrigger>
-                        <TabsTrigger
-                            className="w-full"
-                            value="docs"
-                        >
-                            {tPurchaseOrder("docs")}
-                        </TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="items">
-                        <PoItems items={poData.items} />
-                    </TabsContent>
-                    <TabsContent value="grn">
-                        <Grns grns={poData.grns} />
-                    </TabsContent>
-                    <TabsContent value="docs">
-                        <Docs docs={poData.documents} />
-                    </TabsContent>
-                </Tabs>
-            </Card>
-        </DetailsAndComments>
-    )
+  return (
+    <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPo />}>
+      <Card className="p-4 space-y-4">
+        <ActionFields
+          currentMode={currentMode}
+          setCurrentMode={setCurrentMode}
+          title={poData.po_number}
+        />
+        <HeadPoForm poData={poData} />
+        <Tabs defaultValue="items">
+          <TabsList className="w-full">
+            <TabsTrigger className="w-full" value="items">
+              {tPurchaseOrder("items")}
+            </TabsTrigger>
+            <TabsTrigger className="w-full" value="grn">
+              {tPurchaseOrder("grn")}
+            </TabsTrigger>
+            <TabsTrigger className="w-full" value="docs">
+              {tPurchaseOrder("docs")}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="items">
+            <PoItems items={poData.items} />
+          </TabsContent>
+          <TabsContent value="grn">
+            <Grns grns={poData.grns} />
+          </TabsContent>
+          <TabsContent value="docs">
+            <Docs docs={poData.documents} />
+          </TabsContent>
+        </Tabs>
+      </Card>
+    </DetailsAndComments>
+  );
 }
