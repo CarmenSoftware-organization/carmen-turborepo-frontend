@@ -30,9 +30,9 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
             <TreeItem key={item.getId()} item={item}>
               <TreeItemLabel>
                 {data.type === "product" ? (
-                  <div className="w-full flex items-center space-x-2 ml-4">
+                  <div className="w-full flex items-start space-x-2 text-left">
                     <div
-                      className="cursor-pointer"
+                      className="cursor-pointer mt-0.5"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -53,10 +53,12 @@ export function TreeView({ tree, getCheckboxState, handleCheckboxChange }: TreeV
                         }}
                       />
                     </div>
-                    <p className="text-xs">
-                      {data.name} - {data.local_name}
-                    </p>
-                    <Badge variant={"product_badge"}>{data.code}</Badge>
+                    <div className="flex flex-wrap items-center gap-2 text-xs">
+                      <span>
+                        {data.name} - {data.local_name}{" "}
+                        <Badge variant={"product_badge"}>{data.code}</Badge>
+                      </span>
+                    </div>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
