@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useTranslations } from "next-intl";
+import { Badge } from "../ui/badge";
 
 interface InventoryUnit {
   id: string;
@@ -23,6 +24,7 @@ interface InventoryUnit {
 interface ProductLocation {
   id: string;
   name: string;
+  code?: string;
   inventory_unit?: InventoryUnit;
 }
 
@@ -47,7 +49,9 @@ export default function ProductLocationLookup({
   const [open, setOpen] = useState(false);
   const t = useTranslations("Products");
 
-  const { productLocation, isLoading, error } = useProductLocation(token, buCode, location_id);
+  const { productLocation, isLoading, error } = useProductLocation(token, buCode, location_id, {
+    perpage: -1,
+  });
 
   const allProducts: ProductLocation[] = productLocation?.data?.data || [];
 
@@ -139,7 +143,7 @@ export default function ProductLocationLookup({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0" align="start">
+      <PopoverContent className="w-[400px] p-0" align="start">
         <Command>
           <CommandInput placeholder={t("search_product")} />
           <CommandList>
@@ -148,16 +152,17 @@ export default function ProductLocationLookup({
               {productLocationData.map((productLocationItem: ProductLocation) => (
                 <CommandItem
                   key={productLocationItem.id}
-                  value={productLocationItem.name}
+                  value={`${productLocationItem.code || ""} ${productLocationItem.name}`}
                   onSelect={() => handleValueChange(productLocationItem.id)}
                 >
+                  {productLocationItem.name} -
+                  <Badge variant="product_badge">{productLocationItem.code}</Badge>
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
                       value === productLocationItem.id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {productLocationItem.name}
                 </CommandItem>
               ))}
             </CommandGroup>
