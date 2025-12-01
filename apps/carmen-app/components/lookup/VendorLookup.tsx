@@ -31,6 +31,8 @@ export default function VendorLookup({
 
   const vendorsData = useMemo(() => vendors?.data ?? [], [vendors?.data]);
 
+  console.log("vendorsData", vendorsData);
+
   const selectedVendorName = useMemo(() => {
     if (!value || !vendorsData || !Array.isArray(vendorsData)) return null;
     const found = vendorsData?.find((vendor: VendorGetDto) => vendor.id === value);
@@ -72,7 +74,7 @@ export default function VendorLookup({
                     vendorsData.map((vendor: VendorGetDto) => (
                       <CommandItem
                         key={vendor.id}
-                        value={vendor.name}
+                        value={`${vendor.code} ${vendor.name}`}
                         onSelect={() => {
                           if (vendor.id) {
                             onValueChange(vendor.id);
@@ -80,7 +82,7 @@ export default function VendorLookup({
                           setOpen(false);
                         }}
                       >
-                        {vendor.name}
+                        {vendor.code} - {vendor.name}
                         <Check
                           className={cn(
                             "ml-auto h-4 w-4",
