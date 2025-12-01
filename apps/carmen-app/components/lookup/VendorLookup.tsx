@@ -31,8 +31,6 @@ export default function VendorLookup({
 
   const vendorsData = useMemo(() => vendors?.data ?? [], [vendors?.data]);
 
-  console.log("vendorsData", vendorsData);
-
   const selectedVendorName = useMemo(() => {
     if (!value || !vendorsData || !Array.isArray(vendorsData)) return null;
     const found = vendorsData?.find((vendor: VendorGetDto) => vendor.id === value);
