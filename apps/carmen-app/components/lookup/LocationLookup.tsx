@@ -30,7 +30,7 @@ export default function LocationLookup({
   const [open, setOpen] = useState(false);
   const { token, buCode } = useAuth();
   const t = useTranslations("StoreLocation");
-  const { data, isLoading } = useLocationQuery(token, buCode);
+  const { data, isLoading } = useLocationQuery(token, buCode, { perpage: -1 });
 
   const storeLocations = data?.data;
 
@@ -86,7 +86,7 @@ export default function LocationLookup({
                           setOpen(false);
                         }}
                       >
-                        {storeLocation.name}
+                        {storeLocation.code} - {storeLocation.name}
                         <Check
                           className={cn(
                             "ml-auto h-4 w-4",
