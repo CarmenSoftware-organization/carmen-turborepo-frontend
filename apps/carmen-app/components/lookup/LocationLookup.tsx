@@ -78,7 +78,7 @@ export default function LocationLookup({
                     storeLocations.map((storeLocation: StoreLocationDto) => (
                       <CommandItem
                         key={storeLocation.id}
-                        value={storeLocation.name}
+                        value={`${storeLocation.code || ""} ${storeLocation.name}`}
                         onSelect={() => {
                           if (storeLocation.id) {
                             onValueChange(storeLocation.id, storeLocation);
