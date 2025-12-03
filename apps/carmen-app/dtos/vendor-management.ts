@@ -8,35 +8,41 @@ const InfoItemSchema = z.object({
   data_type: DataTypeEnum,
 });
 
-const AddressSchema = z.object({
-  line_1: z.string().optional(),
-  line_2: z.string().optional(),
-  sub_district: z.string().optional(),
-  district: z.string().optional(),
-  province: z.string().optional(),
-  postal_code: z.string().optional(),
-  country: z.string().optional(),
-});
-
 const VendorContactSchema = z.object({
   contact_type: z.string(),
   description: z.string(),
   info: z.array(InfoItemSchema),
 });
 
+const VendorAddressDataSchema = z.object({
+  address_line1: z.string(),
+  address_line2: z.string().optional(),
+  district: z.string(),
+  province: z.string(),
+  postal_code: z.string(),
+  country: z.string(),
+});
+
 const VendorAddressSchema = z.object({
-  address_type: z.literal("contact_address"),
-  address: AddressSchema,
+  address_type: z.string(),
+  data: VendorAddressDataSchema,
 });
 
 const VendorFormSchemaValue = z.object({
   id: z.string().optional(),
   name: z.string(),
+  code: z.string(),
   description: z.string().optional(),
+  business_type: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+    })
+  ),
   info: z.array(InfoItemSchema),
   vendor_address: z.array(VendorAddressSchema),
   vendor_contact: z.array(VendorContactSchema),
-  is_active: z.boolean(),
+  is_active: z.boolean().optional(),
 });
 // DTO สำหรับส่งข้อมูลทั่วไป
 export type VendorFormDto = z.infer<typeof VendorFormSchemaValue>;
@@ -57,7 +63,11 @@ export interface VendorGetDto {
   tax_profile_name: string | null;
   tax_rate: number | null;
   is_active: boolean;
-  info: Record<string, any>;
+  info: {
+    label: string;
+    value: string;
+    data_type: "string" | "date" | "datetime" | "number" | "boolean" | "dataset";
+  }[];
   dimension: Record<string, any>;
   created_at?: string;
   created_by_id?: string;
@@ -65,10 +75,10 @@ export interface VendorGetDto {
   updated_by_id?: string | null;
   vendor_address?: {
     id: string;
-    address_type: "contact_address";
-    address: {
-      line_1?: string;
-      line_2?: string;
+    address_type: string;
+    data: {
+      address_line1?: string;
+      address_line2?: string;
       sub_district?: string;
       district?: string;
       province?: string;

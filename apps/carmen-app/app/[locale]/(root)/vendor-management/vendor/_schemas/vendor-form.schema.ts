@@ -30,6 +30,12 @@ export const createVendorFormSchema = (messages: { nameRequired: string; codeReq
     name: z.string().min(1, messages.nameRequired),
     code: z.string().min(1, messages.codeRequired),
     description: z.string().nullish(),
+    business_type: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+      })
+    ),
     info: z.array(infoItemSchema),
     vendor_address: z.array(addressSchema),
     vendor_contact: z.array(contactSchema),

@@ -28,12 +28,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form-custom/form";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { useBuTypeQuery } from "@/app/[locale]/(root)/configuration/business-type/_hooks/use-bu-type";
+import { BuTypeGetAllDto } from "@/dtos/bu-type.dto";
 
 const defaultValues: VendorFormValues = {
   id: "",
   name: "",
   code: "",
   description: "",
+  business_type: [],
   info: [],
   vendor_address: [],
   vendor_contact: [],
@@ -45,17 +49,25 @@ interface VendorFormProps {
 }
 
 export default function VendorForm({ mode, initData }: VendorFormProps) {
-  const [currentMode, setCurrentMode] = useState<formType>(mode);
-  const router = useRouter();
   const { token, buCode } = useAuth();
+  const router = useRouter();
   const queryClient = useQueryClient();
-
   const { mutate: createVendor, isPending: isCreating } = useVendorMutation(token, buCode);
   const { mutate: updateVendor, isPending: isUpdating } = useUpdateVendor(
     token,
     buCode,
     initData?.id ?? ""
   );
+
+  const { buTypes } = useBuTypeQuery(token, buCode);
+
+  const BUSINESS_TYPE_OPTIONS =
+    buTypes?.data?.map((item: BuTypeGetAllDto) => ({
+      label: item.name,
+      value: item.id,
+    })) || [];
+
+  const [currentMode, setCurrentMode] = useState<formType>(mode);
 
   const isSubmitting = isCreating || isUpdating;
 
@@ -112,6 +124,14 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     }
   };
 
+  const onCancel = () => {
+    if (currentMode === formType.ADD) {
+      router.back();
+    } else {
+      setCurrentMode(formType.VIEW);
+    }
+  };
+
   return (
     <Card className="p-4">
       <Form {...form}>
@@ -128,26 +148,24 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/vendor-management/vendor">
-                  <X />
-                </Link>
+              <Button variant="outline" size="sm" onClick={onCancel}>
+                <X />
               </Button>
               <Button type="submit" size={"sm"} disabled={isSubmitting}>
                 <Save />
               </Button>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-12 gap-4">
             <FormField
               control={form.control}
               name="code"
               required
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="col-span-3">
                   <FormLabel className="text-xs font-medium">Code</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} maxLength={4} />
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -158,7 +176,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
               name="name"
               required
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="col-span-5">
                   <FormLabel className="text-xs font-medium">Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
@@ -167,20 +185,49 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="business_type"
+              render={({ field }) => (
+                <FormItem className="col-span-4">
+                  <FormLabel className="text-xs font-medium">Business Type</FormLabel>
+                  <FormControl>
+                    <MultiSelect
+                      options={BUSINESS_TYPE_OPTIONS}
+                      onValueChange={(values: string[]) => {
+                        const selectedTypes = values.map((val: string) => {
+                          const option = BUSINESS_TYPE_OPTIONS.find(
+                            (opt: { label: string; value: string }) => opt.value === val
+                          );
+                          return { id: val, name: option?.label || "" };
+                        });
+                        field.onChange(selectedTypes);
+                      }}
+                      defaultValue={field.value.map((v) => v.id)}
+                      placeholder="Select business types"
+                      variant="inverted"
+                      animation={2}
+                      maxCount={3}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="col-span-12">
+                  <FormLabel className="text-xs font-medium">Description</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} value={field.value ?? ""} className="min-h-[80px]" />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
           </div>
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium">Description</FormLabel>
-                <FormControl>
-                  <Textarea {...field} value={field.value ?? ""} />
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
 
           <Tabs defaultValue="info" className="w-full">
             <TabsList className="w-full grid grid-cols-3 h-9 rounded-none">

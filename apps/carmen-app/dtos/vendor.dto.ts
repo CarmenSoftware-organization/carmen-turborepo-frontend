@@ -54,6 +54,7 @@ export interface VendorFormValues {
   name: string;
   code: string;
   description?: string | null;
+  business_type: { id: string; name: string }[];
   info: InfoItemDto[];
   vendor_address: AddressDto[];
   vendor_contact: ContactDto[];
@@ -68,17 +69,18 @@ export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
     name: data.name,
     code: data.code,
     description: data.description ?? "",
-    info: data.info ?? [],
+    business_type: data.business_type ?? [],
+    info: Array.isArray(data.info) ? data.info : [],
     vendor_address:
       data.vendor_address?.map((addr) => ({
         address_type: addr.address_type,
         data: {
-          address_line1: addr.address.line_1 ?? "",
-          address_line2: addr.address.line_2 ?? "",
-          district: addr.address.sub_district ?? "",
-          province: addr.address.province ?? "",
-          postal_code: addr.address.postal_code ?? "",
-          country: addr.address.country ?? "",
+          address_line1: addr.data.address_line1 ?? "",
+          address_line2: addr.data.address_line2 ?? "",
+          district: addr.data.district ?? "",
+          province: addr.data.province ?? "",
+          postal_code: addr.data.postal_code ?? "",
+          country: addr.data.country ?? "",
         },
       })) || [],
     vendor_contact:
