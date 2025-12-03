@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Activity, Building, Info, List, MoreHorizontal, Trash2 } from "lucide-react";
 import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import { useMemo } from "react";
@@ -130,38 +131,78 @@ export default function VendorList({
         },
       },
       {
-        accessorKey: "description",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Info className="h-4 w-4" />
-            <span>{tTableHeader("description")}</span>
+        accessorKey: "code",
+        header: ({ column }) => (
+          <div className="flex justify-center">
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("code")}
+              icon={<List className="h-4 w-4" />}
+            />
           </div>
+        ),
+        cell: ({ row }) => <div>{row.original.code}</div>,
+        enableSorting: true,
+        size: 200,
+        meta: {
+          headerTitle: tTableHeader("code"),
+          size: 120,
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "description",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("description")}
+            icon={<List className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <span className="truncate max-w-[200px] inline-block">{row.original.description}</span>
         ),
-        enableSorting: false,
+        enableSorting: true,
         size: 200,
+        meta: {
+          headerTitle: tTableHeader("description"),
+        },
       },
       {
-        accessorKey: "business_type_name",
-        header: () => (
-          <div className="flex items-center gap-2">
-            <Building className="h-4 w-4" />
-            <span>{tTableHeader("business_type")}</span>
+        accessorKey: "business_type",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("business_type")}
+            icon={<Building className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            {row.original.business_type.map((b) => (
+              <Badge
+                className="rounded-lg bg-gray-700 hover:bg-gray-600 text-primary-foreground"
+                key={b.id}
+              >
+                {b.name}
+              </Badge>
+            ))}
           </div>
         ),
-        cell: ({ row }) => <span>{row.original.business_type_name}</span>,
-        enableSorting: false,
         size: 200,
+        meta: {
+          headerTitle: tTableHeader("business_type"),
+        },
       },
       {
         accessorKey: "is_active",
-        header: () => (
-          <div className="flex items-center gap-2 justify-center">
-            <Activity className="h-4 w-4" />
-            <span>{tTableHeader("status")}</span>
-          </div>
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("status")}
+            icon={<Activity className="h-4 w-4" />}
+          />
         ),
         cell: ({ row }) => (
           <div className="flex justify-center">
@@ -170,7 +211,6 @@ export default function VendorList({
             </StatusCustom>
           </div>
         ),
-        enableSorting: false,
         size: 120,
         meta: {
           cellClassName: "text-center",

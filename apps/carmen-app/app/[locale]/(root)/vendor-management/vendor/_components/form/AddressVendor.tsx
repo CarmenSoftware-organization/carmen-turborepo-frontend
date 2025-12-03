@@ -14,16 +14,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { VendorFormValues } from "@/dtos/vendor.dto";
-import { useTranslations } from "next-intl";
 
 interface AddressVendorProps {
   form: UseFormReturn<VendorFormValues>;
 }
 
 export default function AddressVendor({ form }: AddressVendorProps) {
-  const tVendor = useTranslations("Vendor");
-  const tAction = useTranslations("Action");
-
   const {
     fields: addressFields,
     append: appendAddress,
@@ -36,7 +32,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xs font-medium text-foreground">{tVendor("address")}</h3>
+        <h3 className="text-xs font-medium text-foreground">Address</h3>
         <Button
           type="button"
           variant="outline"
@@ -57,7 +53,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
           className="h-7 text-xs"
         >
           <Plus className="h-3 w-3" />
-          {tVendor("add_address")}
+          Add Address
         </Button>
       </div>
 
@@ -70,7 +66,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   htmlFor={`vendor_address.${index}.address_type`}
                   className="text-xs font-medium text-foreground"
                 >
-                  {tVendor("address_type")}
+                  Address Type
                 </Label>
                 <Select
                   onValueChange={(value) =>
@@ -86,13 +82,16 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="mailing_address" className="text-xs">
-                      {tVendor("mailing_address")}
+                      Mailing Address
                     </SelectItem>
                     <SelectItem value="billing_address" className="text-xs">
-                      {tVendor("billing_address")}
+                      Billing Address
                     </SelectItem>
                     <SelectItem value="shipping_address" className="text-xs">
-                      {tVendor("shipping_address")}
+                      Shipping Address
+                    </SelectItem>
+                    <SelectItem value="contact_address" className="text-xs">
+                      Contact Address
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -106,7 +105,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                 className="h-7 w-7 p-0"
               >
                 <Trash2 className="h-3 w-3 text-muted-foreground" />
-                <span className="sr-only">{tAction("delete")}</span>
+                <span className="sr-only">Delete</span>
               </Button>
             </div>
 
@@ -116,7 +115,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   htmlFor={`vendor_address.${index}.data.address_line1`}
                   className="text-xs font-medium text-foreground"
                 >
-                  {tVendor("address_line1")}
+                  Address Line 1
                 </Label>
                 <Input
                   id={`vendor_address.${index}.data.address_line1`}
@@ -129,7 +128,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   htmlFor={`vendor_address.${index}.data.address_line2`}
                   className="text-xs font-medium text-foreground"
                 >
-                  {tVendor("address_line2")}
+                  Address Line 2
                 </Label>
                 <Input
                   id={`vendor_address.${index}.data.address_line2`}
@@ -142,7 +141,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   htmlFor={`vendor_address.${index}.data.district`}
                   className="text-xs font-medium text-foreground"
                 >
-                  {tVendor("district")}
+                  District
                 </Label>
                 <Input
                   id={`vendor_address.${index}.data.district`}
@@ -155,7 +154,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   htmlFor={`vendor_address.${index}.data.province`}
                   className="text-xs font-medium text-foreground"
                 >
-                  {tVendor("province")}
+                  Province
                 </Label>
                 <Input
                   id={`vendor_address.${index}.data.province`}
@@ -168,7 +167,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   htmlFor={`vendor_address.${index}.data.postal_code`}
                   className="text-xs font-medium text-foreground"
                 >
-                  {tVendor("postal_code")}
+                  Postal Code
                 </Label>
                 <Input
                   id={`vendor_address.${index}.data.postal_code`}
@@ -181,7 +180,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   htmlFor={`vendor_address.${index}.data.country`}
                   className="text-xs font-medium text-foreground"
                 >
-                  {tVendor("country")}
+                  Country
                 </Label>
                 <Input
                   id={`vendor_address.${index}.data.country`}

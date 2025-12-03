@@ -42,19 +42,23 @@ const VendorFormSchemaValue = z.object({
 export type VendorFormDto = z.infer<typeof VendorFormSchemaValue>;
 export const VendorFormUpdateSchema = VendorFormSchemaValue.omit({ id: true });
 export type VendorFormUpdateDto = z.infer<typeof VendorFormUpdateSchema>;
+
 export interface VendorGetDto {
   id: string;
   name: string;
   code: string;
-  description: string;
-  business_type_id: string;
-  business_type_name: string;
-  info: {
-    label: string;
-    value: string;
-    data_type: "string" | "date" | "datetime" | "number" | "boolean" | "dataset";
+  description: string | null;
+  note: string | null;
+  business_type: {
+    id: string;
+    name: string;
   }[];
+  tax_profile_id: string | null;
+  tax_profile_name: string | null;
+  tax_rate: number | null;
   is_active: boolean;
+  info: Record<string, any>;
+  dimension: Record<string, any>;
   created_at?: string;
   created_by_id?: string;
   updated_at?: string;

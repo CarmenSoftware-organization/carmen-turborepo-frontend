@@ -1,45 +1,38 @@
 import { z } from "zod";
 
 export const infoItemSchema = z.object({
-  label: z.string().optional(),
-  value: z.string().optional(),
-  data_type: z
-    .enum(["string", "number", "date", "datetime", "boolean", "dataset"])
-    .optional(),
+  label: z.string(),
+  value: z.string(),
+  data_type: z.enum(["string", "number", "date", "datetime", "boolean", "dataset"]),
 });
 
-const addressSchema = z
-  .object({
-    address_type: z.string().optional(),
-    data: z
-      .object({
-        address_line1: z.string().optional(),
-        address_line2: z.string().optional(),
-        district: z.string().optional(),
-        province: z.string().optional(),
-        postal_code: z.string().optional(),
-        country: z.string().optional(),
-      })
-      .optional(),
-  })
-  .optional();
+const addressSchema = z.object({
+  address_type: z.string(),
+  data: z.object({
+    address_line1: z.string(),
+    address_line2: z.string(),
+    district: z.string(),
+    province: z.string(),
+    postal_code: z.string(),
+    country: z.string(),
+  }),
+});
 
 export const contactSchema = z.object({
-  contact_type: z.string().optional(),
-  description: z.string().optional(),
-  info: z.array(infoItemSchema).optional(),
+  contact_type: z.string(),
+  description: z.string(),
+  info: z.array(infoItemSchema),
 });
 
-export const createVendorFormSchema = (messages: {
-  nameRequired: string;
-}) =>
+export const createVendorFormSchema = (messages: { nameRequired: string; codeRequired: string }) =>
   z.object({
     id: z.string().optional(),
     name: z.string().min(1, messages.nameRequired),
+    code: z.string().min(1, messages.codeRequired),
     description: z.string().nullish(),
-    info: z.array(infoItemSchema).nullish(),
-    vendor_address: z.array(addressSchema).nullish(),
-    vendor_contact: z.array(contactSchema).nullish(),
+    info: z.array(infoItemSchema),
+    vendor_address: z.array(addressSchema),
+    vendor_contact: z.array(contactSchema),
   });
 
 export type VendorFormData = z.infer<ReturnType<typeof createVendorFormSchema>>;

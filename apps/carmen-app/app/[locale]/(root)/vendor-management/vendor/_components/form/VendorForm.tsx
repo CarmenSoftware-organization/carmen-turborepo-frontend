@@ -17,7 +17,6 @@ import { VendorFormValues } from "@/dtos/vendor.dto";
 import { createVendorFormSchema } from "../../_schemas/vendor-form.schema";
 import { useRouter, Link } from "@/lib/navigation";
 import { Card } from "@/components/ui/card";
-import { useTranslations } from "next-intl";
 import InfoVendor from "./InfoVendor";
 import AddressVendor from "./AddressVendor";
 import ContactVendor from "./ContactVendor";
@@ -33,6 +32,7 @@ import {
 const defaultValues: VendorFormValues = {
   id: "",
   name: "",
+  code: "",
   description: "",
   info: [],
   vendor_address: [],
@@ -45,8 +45,6 @@ interface VendorFormProps {
 }
 
 export default function VendorForm({ mode, initData }: VendorFormProps) {
-  const tVendor = useTranslations("Vendor");
-  const tCommon = useTranslations("Common");
   const [currentMode, setCurrentMode] = useState<formType>(mode);
   const router = useRouter();
   const { token, buCode } = useAuth();
@@ -64,9 +62,10 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   const vendorFormSchema = useMemo(
     () =>
       createVendorFormSchema({
-        nameRequired: tVendor("vendor_name_required"),
+        nameRequired: "Vendor name is required",
+        codeRequired: "Code is required",
       }),
-    [tVendor]
+    []
   );
 
   const form = useForm<VendorFormValues>({
@@ -84,7 +83,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     if (currentMode === formType.ADD) {
       createVendor(data, {
         onSuccess: (response: any) => {
-          toastSuccess({ message: tVendor("add_success") });
+          toastSuccess({ message: "Vendor added successfully" });
           queryClient.invalidateQueries({ queryKey: ["vendor", buCode] });
           const vendorId = response?.data?.id || response?.id;
           if (vendorId) {
@@ -94,20 +93,20 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
         },
         onError: (error: Error) => {
           console.error("Error creating vendor:", error);
-          toastError({ message: tVendor("add_error") });
+          toastError({ message: "Failed to add vendor" });
         },
       });
     } else if (currentMode === formType.EDIT && initData?.id) {
       const submitData = { ...data, id: initData.id };
       updateVendor(submitData, {
         onSuccess: () => {
-          toastSuccess({ message: tVendor("update_success") });
+          toastSuccess({ message: "Vendor updated successfully" });
           queryClient.invalidateQueries({ queryKey: ["vendor", buCode, initData.id] });
           setCurrentMode(formType.VIEW);
         },
         onError: (error: Error) => {
           console.error("Error updating vendor:", error);
-          toastError({ message: tVendor("update_error") });
+          toastError({ message: "Failed to update vendor" });
         },
       });
     }
@@ -125,7 +124,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 </Link>
               </Button>
               <h1 className="text-lg font-medium text-foreground">
-                {mode === formType.ADD ? tVendor("add_vendor") : tVendor("edit_vendor")}
+                {mode === formType.ADD ? "Add Vendor" : "Edit Vendor"}
               </h1>
             </div>
             <div className="flex items-center gap-2">
@@ -139,26 +138,42 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
               </Button>
             </div>
           </div>
-          <FormField
-            control={form.control}
-            name="name"
-            required
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-xs font-medium">{tVendor("title")}</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage className="text-xs" />
-              </FormItem>
-            )}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="code"
+              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-medium">Code</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              required
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-medium">Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+          </div>
           <FormField
             control={form.control}
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs font-medium">{tCommon("description")}</FormLabel>
+                <FormLabel className="text-xs font-medium">Description</FormLabel>
                 <FormControl>
                   <Textarea {...field} value={field.value ?? ""} />
                 </FormControl>
@@ -170,13 +185,13 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
           <Tabs defaultValue="info" className="w-full">
             <TabsList className="w-full grid grid-cols-3 h-9 rounded-none">
               <TabsTrigger value="info" className="text-xs">
-                {tVendor("info")}
+                Info
               </TabsTrigger>
               <TabsTrigger value="address" className="text-xs">
-                {tVendor("address")}
+                Address
               </TabsTrigger>
               <TabsTrigger value="contact" className="text-xs">
-                {tVendor("contact")}
+                Contact
               </TabsTrigger>
             </TabsList>
 

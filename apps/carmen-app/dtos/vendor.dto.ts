@@ -8,39 +8,42 @@ import { VendorGetDto } from "./vendor-management";
 /**
  * Info Item DTO
  */
+/**
+ * Info Item DTO
+ */
 export interface InfoItemDto {
-  label?: string;
-  value?: string;
-  data_type?: "string" | "number" | "date" | "datetime" | "boolean" | "dataset";
+  label: string;
+  value: string;
+  data_type: "string" | "number" | "date" | "datetime" | "boolean" | "dataset";
 }
 
 /**
  * Address Data DTO
  */
 export interface AddressDataDto {
-  address_line1?: string;
-  address_line2?: string;
-  district?: string;
-  province?: string;
-  postal_code?: string;
-  country?: string;
+  address_line1: string;
+  address_line2: string;
+  district: string;
+  province: string;
+  postal_code: string;
+  country: string;
 }
 
 /**
  * Address DTO
  */
 export interface AddressDto {
-  address_type?: string;
-  data?: AddressDataDto;
+  address_type: string;
+  data: AddressDataDto;
 }
 
 /**
  * Contact DTO
  */
 export interface ContactDto {
-  contact_type?: string;
-  description?: string;
-  info?: InfoItemDto[];
+  contact_type: string;
+  description: string;
+  info: InfoItemDto[];
 }
 
 /**
@@ -49,10 +52,11 @@ export interface ContactDto {
 export interface VendorFormValues {
   id?: string;
   name: string;
+  code: string;
   description?: string | null;
-  info?: InfoItemDto[] | null;
-  vendor_address?: (AddressDto | undefined)[] | null;
-  vendor_contact?: ContactDto[] | null;
+  info: InfoItemDto[];
+  vendor_address: AddressDto[];
+  vendor_contact: ContactDto[];
 }
 
 /**
@@ -62,6 +66,7 @@ export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
   return {
     id: data.id,
     name: data.name,
+    code: data.code,
     description: data.description ?? "",
     info: data.info ?? [],
     vendor_address:

@@ -23,17 +23,12 @@ import {
   infoItemSchema,
   contactSchema,
 } from "@/app/[locale]/(root)/vendor-management/vendor/_schemas/vendor-form.schema";
-import { useTranslations } from "next-intl";
 
 interface ContactVendorProps {
   form: UseFormReturn<VendorFormValues>;
 }
 
 export default function ContactVendor({ form }: ContactVendorProps) {
-  const tVendor = useTranslations("Vendor");
-  const tCommon = useTranslations("Common");
-  const tAction = useTranslations("Action");
-
   // Helper function to add contact info field
   const addContactInfoField = (contactIndex: number) => {
     const currentInfo = form.getValues(`vendor_contact.${contactIndex}.info`) || [];
@@ -59,7 +54,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xs font-medium text-foreground">{tVendor("contact_info")}</h3>
+        <h3 className="text-xs font-medium text-foreground">Contact Info</h3>
         <Button
           type="button"
           variant="outline"
@@ -78,7 +73,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
           className="h-7 text-xs"
         >
           <Plus className="h-3 w-3" />
-          {tVendor("add_contact")}
+          Add Contact
         </Button>
       </div>
 
@@ -95,7 +90,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                     htmlFor={`vendor_contact.${contactIndex}.contact_type`}
                     className="text-xs font-medium text-foreground"
                   >
-                    {tVendor("contact_type")}
+                    Contact Type
                   </Label>
                   <Select
                     onValueChange={(value) =>
@@ -114,16 +109,16 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="phone_number" className="text-xs">
-                        {tCommon("phone")}
+                        Phone
                       </SelectItem>
                       <SelectItem value="email_address" className="text-xs">
-                        {tCommon("email")}
+                        Email
                       </SelectItem>
                       <SelectItem value="website" className="text-xs">
-                        {tCommon("website")}
+                        Website
                       </SelectItem>
                       <SelectItem value="other" className="text-xs">
-                        {tCommon("other")}
+                        Other
                       </SelectItem>
                     </SelectContent>
                   </Select>
@@ -133,12 +128,12 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                     htmlFor={`vendor_contact.${contactIndex}.description`}
                     className="text-xs font-medium text-foreground"
                   >
-                    {tCommon("description")}
+                    Description
                   </Label>
                   <Input
                     id={`vendor_contact.${contactIndex}.description`}
                     {...form.register(`vendor_contact.${contactIndex}.description`)}
-                    placeholder={tVendor("vendor_contact_placeholder")}
+                    placeholder="e.g. Sales Department"
                     className="h-7 text-xs"
                   />
                 </div>
@@ -158,16 +153,14 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                     className="h-7 w-7 p-0"
                   >
                     <Trash2 className="h-3 w-3 text-muted-foreground" />
-                    <span className="sr-only">{tAction("delete")}</span>
+                    <span className="sr-only">Delete</span>
                   </Button>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-medium text-foreground">
-                    {tVendor("contact_details")}
-                  </h4>
+                  <h4 className="text-xs font-medium text-foreground">Contact Details</h4>
                   <Button
                     type="button"
                     variant="outline"
@@ -176,7 +169,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                     className="h-6 text-xs"
                   >
                     <Plus className="h-3 w-3" />
-                    {tVendor("add_detail")}
+                    Add Detail
                   </Button>
                 </div>
 
@@ -190,7 +183,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.label`}
                         className="text-xs font-medium text-foreground"
                       >
-                        {tCommon("label")}
+                        Label
                       </Label>
                       <Input
                         id={`vendor_contact.${contactIndex}.info.${infoIndex}.label`}
@@ -203,7 +196,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.value`}
                         className="text-xs font-medium text-foreground"
                       >
-                        {tCommon("value")}
+                        Value
                       </Label>
                       {form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`) ===
                       "date" ? (
@@ -272,7 +265,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`}
                         className="text-xs font-medium text-foreground"
                       >
-                        {tVendor("detail_type")}
+                        Type
                       </Label>
                       <Select
                         onValueChange={(value) =>
@@ -291,22 +284,22 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="string" className="text-xs">
-                            {tCommon("text")}
+                            Text
                           </SelectItem>
                           <SelectItem value="number" className="text-xs">
-                            {tCommon("number")}
+                            Number
                           </SelectItem>
                           <SelectItem value="date" className="text-xs">
-                            {tCommon("date")}
+                            Date
                           </SelectItem>
                           <SelectItem value="datetime" className="text-xs">
-                            {tCommon("datetime")}
+                            Datetime
                           </SelectItem>
                           <SelectItem value="boolean" className="text-xs">
-                            {tCommon("boolean")}
+                            Boolean
                           </SelectItem>
                           <SelectItem value="dataset" className="text-xs">
-                            {tCommon("dataset")}
+                            Dataset
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -321,7 +314,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         className="h-7 w-7 p-0"
                       >
                         <Trash2 className="h-3 w-3 text-muted-foreground" />
-                        <span className="sr-only">{tAction("delete")}</span>
+                        <span className="sr-only">Delete</span>
                       </Button>
                     </div>
                   </div>

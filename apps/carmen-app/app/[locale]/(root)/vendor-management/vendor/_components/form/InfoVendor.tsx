@@ -20,16 +20,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { VendorFormValues } from "@/dtos/vendor.dto";
 import { infoItemSchema } from "@/app/[locale]/(root)/vendor-management/vendor/_schemas/vendor-form.schema";
-import { useTranslations } from "next-intl";
 
 interface InfoVendorProps {
   form: UseFormReturn<VendorFormValues>;
 }
 
 export default function InfoVendor({ form }: InfoVendorProps) {
-  const tVendor = useTranslations("Vendor");
-  const tCommon = useTranslations("Common");
-
   const {
     fields: infoFields,
     append: appendInfo,
@@ -42,7 +38,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xs font-medium text-foreground">{tVendor("additional_info")}</h3>
+        <h3 className="text-xs font-medium text-foreground">Additional Info</h3>
         <Button
           type="button"
           variant="outline"
@@ -51,7 +47,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
           className="h-7 text-xs"
         >
           <Plus className="h-3 w-3" />
-          {tVendor("add_info")}
+          Add Info
         </Button>
       </div>
 
@@ -66,7 +62,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                 htmlFor={`info.${index}.label`}
                 className="text-xs font-medium text-foreground"
               >
-                {tCommon("label")}
+                Label
               </Label>
               <Input
                 id={`info.${index}.label`}
@@ -79,7 +75,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                 htmlFor={`info.${index}.value`}
                 className="text-xs font-medium text-foreground"
               >
-                {tCommon("value")}
+                Value
               </Label>
               {form.watch(`info.${index}.data_type`) === "date" ? (
                 <Popover>
@@ -126,7 +122,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                 htmlFor={`info.${index}.data_type`}
                 className="text-xs font-medium text-foreground"
               >
-                {tCommon("data_type")}
+                Type
               </Label>
               <Select
                 onValueChange={(value) =>
@@ -142,22 +138,22 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="string" className="text-xs">
-                    {tCommon("text")}
+                    Text
                   </SelectItem>
                   <SelectItem value="number" className="text-xs">
-                    {tCommon("number")}
+                    Number
                   </SelectItem>
                   <SelectItem value="date" className="text-xs">
-                    {tCommon("date")}
+                    Date
                   </SelectItem>
                   <SelectItem value="datetime" className="text-xs">
-                    {tCommon("datetime")}
+                    Datetime
                   </SelectItem>
                   <SelectItem value="boolean" className="text-xs">
-                    {tCommon("boolean")}
+                    Boolean
                   </SelectItem>
                   <SelectItem value="dataset" className="text-xs">
-                    {tCommon("dataset")}
+                    Dataset
                   </SelectItem>
                 </SelectContent>
               </Select>
