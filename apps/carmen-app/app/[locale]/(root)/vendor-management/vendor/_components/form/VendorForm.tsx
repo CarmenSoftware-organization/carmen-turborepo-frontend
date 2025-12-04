@@ -144,50 +144,43 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   const isViewMode = currentMode === formType.VIEW;
 
   return (
-    <div className="max-w-5xl mx-auto space-y-4">
+    <div className="max-w-5xl mx-auto pb-10">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Header */}
-          <div className="flex items-center justify-between bg-card p-4 rounded-lg border shadow-sm sticky top-4 z-10">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
-                <Link href={`/vendor-management/vendor`}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Link>
-              </Button>
-              <div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                  <Link href={`/vendor-management/vendor`}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Link>
+                </Button>
                 <h1 className="text-lg font-semibold text-foreground">
                   {currentMode === formType.ADD ? "New Vendor" : initData?.name || "Vendor Details"}
                 </h1>
-                <p className="text-xs text-muted-foreground">
-                  {currentMode === formType.ADD
-                    ? "Create a new vendor record"
-                    : "Manage vendor information"}
-                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                {isViewMode ? (
+                  <Button type="button" size="sm" onClick={onEdit}>
+                    Edit Vendor
+                  </Button>
+                ) : (
+                  <>
+                    <Button variant="outline" size="sm" onClick={onCancel} type="button">
+                      Cancel
+                    </Button>
+                    <Button type="submit" size="sm" disabled={isSubmitting}>
+                      <Save className="h-4 w-4" />
+                      Save
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              {isViewMode ? (
-                <Button type="button" size="sm" onClick={onEdit}>
-                  Edit Vendor
-                </Button>
-              ) : (
-                <>
-                  <Button variant="outline" size="sm" onClick={onCancel} type="button">
-                    Cancel
-                  </Button>
-                  <Button type="submit" size="sm" disabled={isSubmitting}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Changes
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-
+          </Card>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
             {/* Left Column: General Info */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1">
               <Card className="p-5 space-y-4">
                 <h2 className="text-sm font-semibold text-foreground mb-4">General Information</h2>
 
