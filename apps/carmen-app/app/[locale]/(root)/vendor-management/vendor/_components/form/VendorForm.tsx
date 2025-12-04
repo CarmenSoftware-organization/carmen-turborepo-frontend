@@ -124,144 +124,195 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     }
   };
 
-  const onCancel = () => {
+  console.log("currentMode", currentMode);
+
+  const onEdit = () => {
+    setCurrentMode(formType.EDIT);
+  };
+
+  const onCancel = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (currentMode === formType.ADD) {
       router.back();
     } else {
+      form.reset(initData);
       setCurrentMode(formType.VIEW);
     }
   };
 
+  const isViewMode = currentMode === formType.VIEW;
+
   return (
-    <Card className="p-4">
+    <div className="max-w-5xl mx-auto space-y-4">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" className="h-7 w-7 p-0" asChild>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between bg-card p-4 rounded-lg border shadow-sm sticky top-4 z-10">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
                 <Link href={`/vendor-management/vendor`}>
                   <ChevronLeft className="h-4 w-4" />
                 </Link>
               </Button>
-              <h1 className="text-lg font-medium text-foreground">
-                {mode === formType.ADD ? "Add Vendor" : "Edit Vendor"}
-              </h1>
+              <div>
+                <h1 className="text-lg font-semibold text-foreground">
+                  {currentMode === formType.ADD ? "New Vendor" : initData?.name || "Vendor Details"}
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  {currentMode === formType.ADD
+                    ? "Create a new vendor record"
+                    : "Manage vendor information"}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={onCancel}>
-                <X />
-              </Button>
-              <Button type="submit" size={"sm"} disabled={isSubmitting}>
-                <Save />
-              </Button>
+              {isViewMode ? (
+                <Button type="button" size="sm" onClick={onEdit}>
+                  Edit Vendor
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" onClick={onCancel} type="button">
+                    Cancel
+                  </Button>
+                  <Button type="submit" size="sm" disabled={isSubmitting}>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Changes
+                  </Button>
+                </>
+              )}
             </div>
           </div>
-          <div className="grid grid-cols-12 gap-4">
-            <FormField
-              control={form.control}
-              name="code"
-              required
-              render={({ field }) => (
-                <FormItem className="col-span-3">
-                  <FormLabel className="text-xs font-medium">Code</FormLabel>
-                  <FormControl>
-                    <Input {...field} maxLength={4} disabled={mode === formType.VIEW} />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="name"
-              required
-              render={({ field }) => (
-                <FormItem className="col-span-5">
-                  <FormLabel className="text-xs font-medium">Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} disabled={mode === formType.VIEW} />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="business_type"
-              render={({ field }) => (
-                <FormItem className="col-span-4">
-                  <FormLabel className="text-xs font-medium">Business Type</FormLabel>
-                  <FormControl>
-                    <MultiSelect
-                      options={BUSINESS_TYPE_OPTIONS}
-                      onValueChange={(values: string[]) => {
-                        const selectedTypes = values.map((val: string) => {
-                          const option = BUSINESS_TYPE_OPTIONS.find(
-                            (opt: { label: string; value: string }) => opt.value === val
-                          );
-                          return { id: val, name: option?.label || "" };
-                        });
-                        field.onChange(selectedTypes);
-                      }}
-                      defaultValue={field.value.map((v) => v.id)}
-                      placeholder="Select business types"
-                      variant="inverted"
-                      animation={2}
-                      maxCount={3}
-                      disabled={mode === formType.VIEW}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem className="col-span-12">
-                  <FormLabel className="text-xs font-medium">Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      value={field.value ?? ""}
-                      className="min-h-[80px]"
-                      disabled={mode === formType.VIEW}
-                    />
-                  </FormControl>
-                  <FormMessage className="text-xs" />
-                </FormItem>
-              )}
-            />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            {/* Left Column: General Info */}
+            <div className="lg:col-span-1 space-y-6">
+              <Card className="p-5 space-y-4">
+                <h2 className="text-sm font-semibold text-foreground mb-4">General Information</h2>
+
+                <FormField
+                  control={form.control}
+                  name="code"
+                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-muted-foreground">
+                        Code
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          maxLength={4}
+                          disabled={isViewMode}
+                          className="font-medium"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="name"
+                  required
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-muted-foreground">
+                        Name
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} disabled={isViewMode} className="font-medium" />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="business_type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-muted-foreground">
+                        Business Type
+                      </FormLabel>
+                      <FormControl>
+                        <MultiSelect
+                          options={BUSINESS_TYPE_OPTIONS}
+                          onValueChange={(values: string[]) => {
+                            const selectedTypes = values.map((val: string) => {
+                              const option = BUSINESS_TYPE_OPTIONS.find(
+                                (opt: { label: string; value: string }) => opt.value === val
+                              );
+                              return { id: val, name: option?.label || "" };
+                            });
+                            field.onChange(selectedTypes);
+                          }}
+                          defaultValue={field.value.map((v) => v.id)}
+                          placeholder="Select business types"
+                          variant="inverted"
+                          animation={2}
+                          maxCount={3}
+                          disabled={isViewMode}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-medium text-muted-foreground">
+                        Description
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          value={field.value ?? ""}
+                          className="min-h-[100px] resize-none"
+                          disabled={isViewMode}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+              </Card>
+            </div>
+
+            {/* Right Column: Details Tabs */}
+            <div className="lg:col-span-2">
+              <Card className="p-2">
+                <Tabs defaultValue="info">
+                  <TabsList>
+                    <TabsTrigger value="info">Additional Info</TabsTrigger>
+                    <TabsTrigger value="address">Addresses</TabsTrigger>
+                    <TabsTrigger value="contact">Contacts</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="info">
+                    <InfoVendor form={form} disabled={isViewMode} />
+                  </TabsContent>
+
+                  <TabsContent value="address">
+                    <AddressVendor form={form} disabled={isViewMode} />
+                  </TabsContent>
+
+                  <TabsContent value="contact">
+                    <ContactVendor form={form} disabled={isViewMode} />
+                  </TabsContent>
+                </Tabs>
+              </Card>
+            </div>
           </div>
-
-          <Tabs defaultValue="info" className="w-full">
-            <TabsList className="w-full grid grid-cols-3 h-9 rounded-none">
-              <TabsTrigger value="info" className="text-xs">
-                Info
-              </TabsTrigger>
-              <TabsTrigger value="address" className="text-xs">
-                Address
-              </TabsTrigger>
-              <TabsTrigger value="contact" className="text-xs">
-                Contact
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="info" className="p-3 space-y-3">
-              <InfoVendor form={form} disabled={mode === formType.VIEW} />
-            </TabsContent>
-
-            <TabsContent value="address" className="p-3 space-y-3">
-              <AddressVendor form={form} disabled={mode === formType.VIEW} />
-            </TabsContent>
-
-            <TabsContent value="contact" className="p-3 space-y-3">
-              <ContactVendor form={form} disabled={mode === formType.VIEW} />
-            </TabsContent>
-          </Tabs>
         </form>
       </Form>
-    </Card>
+    </div>
   );
 }

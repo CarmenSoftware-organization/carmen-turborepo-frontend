@@ -2,7 +2,7 @@
 
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { CalendarIcon, Plus, Trash2 } from "lucide-react";
+import { CalendarIcon, Plus, Trash2, Phone, Mail, Globe, HelpCircle } from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -23,11 +23,25 @@ import {
   infoItemSchema,
   contactSchema,
 } from "@/app/[locale]/(root)/vendor-management/vendor/_schemas/vendor-form.schema";
+import { Card } from "@/components/ui/card";
 
 interface ContactVendorProps {
   form: UseFormReturn<VendorFormValues>;
   disabled?: boolean;
 }
+
+const getContactIcon = (type: string) => {
+  switch (type) {
+    case "phone_number":
+      return <Phone className="h-4 w-4" />;
+    case "email_address":
+      return <Mail className="h-4 w-4" />;
+    case "website":
+      return <Globe className="h-4 w-4" />;
+    default:
+      return <HelpCircle className="h-4 w-4" />;
+  }
+};
 
 export default function ContactVendor({ form, disabled }: ContactVendorProps) {
   // Helper function to add contact info field
@@ -53,99 +67,79 @@ export default function ContactVendor({ form, disabled }: ContactVendorProps) {
   const contactFields = form.watch("vendor_contact") || [];
 
   return (
-    <div className="space-y-3">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xs font-medium text-foreground">Contact Info</h3>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            const currentContacts = form.getValues("vendor_contact") || [];
-            form.setValue("vendor_contact", [
-              ...currentContacts,
-              {
-                contact_type: "phone_number",
-                description: "",
-                info: [{ label: "Contact", value: "", data_type: "string" }],
-              },
-            ]);
-          }}
-          className="h-7 text-xs"
-          disabled={disabled}
-        >
-          <Plus className="h-3 w-3" />
-          Add Contact
-        </Button>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-sm font-medium text-foreground">Contact List</h3>
+        {!disabled && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const currentContacts = form.getValues("vendor_contact") || [];
+              form.setValue("vendor_contact", [
+                ...currentContacts,
+                {
+                  contact_type: "phone_number",
+                  description: "",
+                  info: [{ label: "Contact", value: "", data_type: "string" }],
+                },
+              ]);
+            }}
+            className="h-8 text-xs"
+          >
+            <Plus className="h-3 w-3 mr-1" />
+            Add Contact
+          </Button>
+        )}
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {contactFields.map((field, contactIndex) => {
           // Get the current contact info fields from form values
           const contactInfoFields = form.watch(`vendor_contact.${contactIndex}.info`) || [];
 
           return (
-            <div key={`contact-${contactIndex}`} className="border border-border rounded p-2">
-              <div className="grid grid-cols-12 gap-2 mb-2">
-                <div className="col-span-5 space-y-1">
-                  <Label
-                    htmlFor={`vendor_contact.${contactIndex}.contact_type`}
-                    className="text-xs font-medium text-foreground"
-                  >
-                    Contact Type
-                  </Label>
-                  <Select
-                    onValueChange={(value) =>
-                      form.setValue(
-                        `vendor_contact.${contactIndex}.contact_type`,
-                        value as z.infer<typeof contactSchema>["contact_type"]
-                      )
-                    }
-                    defaultValue={field.contact_type}
-                    disabled={disabled}
-                  >
-                    <SelectTrigger
-                      id={`vendor_contact.${contactIndex}.contact_type`}
-                      className="h-7 text-xs"
+            <Card key={`contact-${contactIndex}`} className="p-4 space-y-4 relative group">
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-muted rounded-full">
+                    {getContactIcon(
+                      form.watch(`vendor_contact.${contactIndex}.contact_type`) || "other"
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Type</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        form.setValue(
+                          `vendor_contact.${contactIndex}.contact_type`,
+                          value as z.infer<typeof contactSchema>["contact_type"]
+                        )
+                      }
+                      defaultValue={field.contact_type}
+                      disabled={disabled}
                     >
-                      <SelectValue placeholder="Select contact type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="phone_number" className="text-xs">
-                        Phone
-                      </SelectItem>
-                      <SelectItem value="email_address" className="text-xs">
-                        Email
-                      </SelectItem>
-                      <SelectItem value="website" className="text-xs">
-                        Website
-                      </SelectItem>
-                      <SelectItem value="other" className="text-xs">
-                        Other
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                      <SelectTrigger
+                        id={`vendor_contact.${contactIndex}.contact_type`}
+                        className="h-7 w-[140px] text-xs border-none shadow-none p-0 h-auto font-semibold focus:ring-0"
+                      >
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="phone_number">Phone</SelectItem>
+                        <SelectItem value="email_address">Email</SelectItem>
+                        <SelectItem value="website">Website</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="col-span-6 space-y-1">
-                  <Label
-                    htmlFor={`vendor_contact.${contactIndex}.description`}
-                    className="text-xs font-medium text-foreground"
-                  >
-                    Description
-                  </Label>
-                  <Input
-                    id={`vendor_contact.${contactIndex}.description`}
-                    {...form.register(`vendor_contact.${contactIndex}.description`)}
-                    placeholder="e.g. Sales Department"
-                    className="h-7 text-xs"
-                    disabled={disabled}
-                  />
-                </div>
-                <div className="col-span-1 flex justify-end items-end">
+                {!disabled && (
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={() => {
                       const currentContacts = form.getValues("vendor_contact") || [];
                       if (currentContacts.length <= 1) return;
@@ -153,185 +147,171 @@ export default function ContactVendor({ form, disabled }: ContactVendorProps) {
                       newContacts.splice(contactIndex, 1);
                       form.setValue("vendor_contact", newContacts);
                     }}
-                    disabled={disabled || contactFields.length <= 1}
-                    className="h-7 w-7 p-0"
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <Trash2 className="h-3 w-3 text-muted-foreground" />
-                    <span className="sr-only">Delete</span>
+                    <Trash2 className="h-4 w-4" />
                   </Button>
-                </div>
+                )}
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">
+                  Description
+                </Label>
+                <Input
+                  id={`vendor_contact.${contactIndex}.description`}
+                  {...form.register(`vendor_contact.${contactIndex}.description`)}
+                  placeholder="e.g. Sales Department"
+                  className="h-8 text-sm"
+                  disabled={disabled}
+                />
+              </div>
+
+              <div className="space-y-2 pt-2 border-t">
                 <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-medium text-foreground">Contact Details</h4>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addContactInfoField(contactIndex)}
-                    className="h-6 text-xs"
-                    disabled={disabled}
-                  >
-                    <Plus className="h-3 w-3" />
-                    Add Detail
-                  </Button>
+                  <h4 className="text-xs font-medium text-muted-foreground">Details</h4>
+                  {!disabled && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => addContactInfoField(contactIndex)}
+                      className="h-6 text-[10px] px-2"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Add Detail
+                    </Button>
+                  )}
                 </div>
 
-                {contactInfoFields.map((infoField, infoIndex) => (
-                  <div
-                    key={`contact-${contactIndex}-info-${infoIndex}`}
-                    className="grid grid-cols-12 gap-2 items-center border border-border rounded p-1 bg-background"
-                  >
-                    <div className="col-span-4 space-y-1">
-                      <Label
-                        htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.label`}
-                        className="text-xs font-medium text-foreground"
-                      >
-                        Label
-                      </Label>
-                      <Input
-                        id={`vendor_contact.${contactIndex}.info.${infoIndex}.label`}
-                        {...form.register(`vendor_contact.${contactIndex}.info.${infoIndex}.label`)}
-                        className="h-7 text-xs"
-                        disabled={disabled}
-                      />
-                    </div>
-                    <div className="col-span-5 space-y-1">
-                      <Label
-                        htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.value`}
-                        className="text-xs font-medium text-foreground"
-                      >
-                        Value
-                      </Label>
-                      {form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`) ===
-                      "date" ? (
-                        <Popover>
-                          <PopoverTrigger asChild disabled={disabled}>
-                            <Button
-                              variant="outline"
-                              className={cn(
-                                "w-full justify-start text-left font-normal h-7 text-xs",
-                                !form.watch(
-                                  `vendor_contact.${contactIndex}.info.${infoIndex}.value`
-                                ) && "text-muted-foreground"
-                              )}
-                              disabled={disabled}
-                            >
-                              <CalendarIcon className="mr-1 h-3 w-3" />
-                              {(() => {
-                                const value = form.watch(
-                                  `vendor_contact.${contactIndex}.info.${infoIndex}.value`
-                                );
-                                return value ? (
-                                  format(new Date(value), "PP")
-                                ) : (
-                                  <span>Pick a date</span>
-                                );
-                              })()}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <Calendar
-                              mode="single"
-                              selected={(() => {
-                                const value = form.watch(
-                                  `vendor_contact.${contactIndex}.info.${infoIndex}.value`
-                                );
-                                return value ? new Date(value) : undefined;
-                              })()}
-                              onSelect={(date) =>
-                                form.setValue(
-                                  `vendor_contact.${contactIndex}.info.${infoIndex}.value`,
-                                  date ? date.toISOString() : ""
-                                )
-                              }
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      ) : (
+                <div className="space-y-2">
+                  {contactInfoFields.map((infoField, infoIndex) => (
+                    <div
+                      key={`contact-${contactIndex}-info-${infoIndex}`}
+                      className="grid grid-cols-12 gap-2 items-start"
+                    >
+                      <div className="col-span-4">
                         <Input
-                          id={`vendor_contact.${contactIndex}.info.${infoIndex}.value`}
-                          type={
-                            form.watch(
-                              `vendor_contact.${contactIndex}.info.${infoIndex}.data_type`
-                            ) === "number"
-                              ? "number"
-                              : "text"
-                          }
                           {...form.register(
-                            `vendor_contact.${contactIndex}.info.${infoIndex}.value`
+                            `vendor_contact.${contactIndex}.info.${infoIndex}.label`
                           )}
                           className="h-7 text-xs"
+                          placeholder="Label"
                           disabled={disabled}
                         />
-                      )}
+                      </div>
+                      <div className="col-span-7">
+                        {form.watch(
+                          `vendor_contact.${contactIndex}.info.${infoIndex}.data_type`
+                        ) === "date" ? (
+                          <Popover>
+                            <PopoverTrigger asChild disabled={disabled}>
+                              <Button
+                                variant="outline"
+                                className={cn(
+                                  "w-full justify-start text-left font-normal h-7 text-xs",
+                                  !form.watch(
+                                    `vendor_contact.${contactIndex}.info.${infoIndex}.value`
+                                  ) && "text-muted-foreground"
+                                )}
+                                disabled={disabled}
+                              >
+                                <CalendarIcon className="mr-1 h-3 w-3" />
+                                {(() => {
+                                  const value = form.watch(
+                                    `vendor_contact.${contactIndex}.info.${infoIndex}.value`
+                                  );
+                                  return value ? (
+                                    format(new Date(value), "PP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  );
+                                })()}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                              <Calendar
+                                mode="single"
+                                selected={(() => {
+                                  const value = form.watch(
+                                    `vendor_contact.${contactIndex}.info.${infoIndex}.value`
+                                  );
+                                  return value ? new Date(value) : undefined;
+                                })()}
+                                onSelect={(date) =>
+                                  form.setValue(
+                                    `vendor_contact.${contactIndex}.info.${infoIndex}.value`,
+                                    date ? date.toISOString() : ""
+                                  )
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        ) : (
+                          <Input
+                            type={
+                              form.watch(
+                                `vendor_contact.${contactIndex}.info.${infoIndex}.data_type`
+                              ) === "number"
+                                ? "number"
+                                : "text"
+                            }
+                            {...form.register(
+                              `vendor_contact.${contactIndex}.info.${infoIndex}.value`
+                            )}
+                            className="h-7 text-xs"
+                            placeholder="Value"
+                            disabled={disabled}
+                          />
+                        )}
+                      </div>
+                      <div className="col-span-1 flex justify-end">
+                        {!disabled && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeContactInfoField(contactIndex, infoIndex)}
+                            disabled={contactInfoFields.length <= 1}
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div className="col-span-2 space-y-1">
-                      <Label
-                        htmlFor={`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`}
-                        className="text-xs font-medium text-foreground"
-                      >
-                        Type
-                      </Label>
-                      <Select
-                        onValueChange={(value) =>
-                          form.setValue(
-                            `vendor_contact.${contactIndex}.info.${infoIndex}.data_type`,
-                            value as z.infer<typeof infoItemSchema>["data_type"]
-                          )
-                        }
-                        defaultValue={infoField.data_type}
-                        disabled={disabled}
-                      >
-                        <SelectTrigger
-                          id={`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`}
-                          className="h-7 text-xs"
-                        >
-                          <SelectValue placeholder="Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="string" className="text-xs">
-                            Text
-                          </SelectItem>
-                          <SelectItem value="number" className="text-xs">
-                            Number
-                          </SelectItem>
-                          <SelectItem value="date" className="text-xs">
-                            Date
-                          </SelectItem>
-                          <SelectItem value="datetime" className="text-xs">
-                            Datetime
-                          </SelectItem>
-                          <SelectItem value="boolean" className="text-xs">
-                            Boolean
-                          </SelectItem>
-                          <SelectItem value="dataset" className="text-xs">
-                            Dataset
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="col-span-1 flex justify-end items-end h-full">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeContactInfoField(contactIndex, infoIndex)}
-                        disabled={disabled || contactInfoFields.length <= 1}
-                        className="h-7 w-7 p-0"
-                      >
-                        <Trash2 className="h-3 w-3 text-muted-foreground" />
-                        <span className="sr-only">Delete</span>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            </Card>
           );
         })}
+        {contactFields.length === 0 && (
+          <div className="col-span-full flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg text-muted-foreground bg-muted/20">
+            <Phone className="h-8 w-8 mb-2 opacity-50" />
+            <p className="text-sm">No contacts added yet</p>
+            {!disabled && (
+              <Button
+                variant="link"
+                onClick={() => {
+                  const currentContacts = form.getValues("vendor_contact") || [];
+                  form.setValue("vendor_contact", [
+                    ...currentContacts,
+                    {
+                      contact_type: "phone_number",
+                      description: "",
+                      info: [{ label: "Contact", value: "", data_type: "string" }],
+                    },
+                  ]);
+                }}
+                className="text-primary"
+              >
+                Add your first contact
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
