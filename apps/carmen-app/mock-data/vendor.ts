@@ -3,10 +3,15 @@ import { VendorGetDto } from "@/dtos/vendor-management";
 export const mockVendors: VendorGetDto[] = [
   {
     id: "vendor-001",
+    code: "V-001",
+    note: null,
+    tax_profile_id: null,
+    tax_profile_name: null,
+    tax_rate: null,
+    dimension: {},
     name: "ABC Industrial Supplies",
     description: "Industrial supplies and equipment",
-    business_type_id: "bt-001",
-    business_type_name: "Industrial Supplier",
+    business_type: [{ id: "bt-001", name: "Industrial Supplier" }],
     info: [
       { label: "Email", value: "contact@abc-supplies.com", data_type: "string" },
       { label: "Phone", value: "+66 2 123 4567", data_type: "string" },
@@ -19,8 +24,8 @@ export const mockVendors: VendorGetDto[] = [
       {
         id: "addr-001",
         address_type: "contact_address",
-        address: {
-          line_1: "123 Industrial Road",
+        data: {
+          address_line1: "123 Industrial Road",
           district: "Bangkok",
           province: "Bangkok",
           country: "Thailand",
@@ -44,10 +49,15 @@ export const mockVendors: VendorGetDto[] = [
   },
   {
     id: "vendor-002",
+    code: "V-002",
+    note: null,
+    tax_profile_id: null,
+    tax_profile_name: null,
+    tax_rate: null,
+    dimension: {},
     name: "Global Tech Solutions",
     description: "Technology solutions and services",
-    business_type_id: "bt-002",
-    business_type_name: "Technology Provider",
+    business_type: [{ id: "bt-002", name: "Technology Provider" }],
     info: [
       { label: "Email", value: "info@globaltech.com", data_type: "string" },
       { label: "Phone", value: "+66 2 234 5678", data_type: "string" },
@@ -60,8 +70,8 @@ export const mockVendors: VendorGetDto[] = [
       {
         id: "addr-002",
         address_type: "contact_address",
-        address: {
-          line_1: "456 Technology Plaza",
+        data: {
+          address_line1: "456 Technology Plaza",
           district: "Bangkok",
           province: "Bangkok",
           country: "Thailand",
@@ -85,10 +95,15 @@ export const mockVendors: VendorGetDto[] = [
   },
   {
     id: "vendor-003",
+    code: "V-003",
+    note: null,
+    tax_profile_id: null,
+    tax_profile_name: null,
+    tax_rate: null,
+    dimension: {},
     name: "Prime Manufacturing Co.",
     description: "Manufacturing and production",
-    business_type_id: "bt-003",
-    business_type_name: "Manufacturer",
+    business_type: [{ id: "bt-003", name: "Manufacturer" }],
     info: [
       { label: "Email", value: "sales@primemfg.com", data_type: "string" },
       { label: "Phone", value: "+66 2 345 6789", data_type: "string" },
@@ -101,8 +116,8 @@ export const mockVendors: VendorGetDto[] = [
       {
         id: "addr-003",
         address_type: "contact_address",
-        address: {
-          line_1: "789 Manufacturing Ave",
+        data: {
+          address_line1: "789 Manufacturing Ave",
           district: "Samut Prakan",
           province: "Samut Prakan",
           country: "Thailand",
@@ -126,10 +141,15 @@ export const mockVendors: VendorGetDto[] = [
   },
   {
     id: "vendor-004",
+    code: "V-004",
+    note: null,
+    tax_profile_id: null,
+    tax_profile_name: null,
+    tax_rate: null,
+    dimension: {},
     name: "Eastern Logistics Ltd.",
     description: "Logistics and transportation",
-    business_type_id: "bt-004",
-    business_type_name: "Logistics",
+    business_type: [{ id: "bt-004", name: "Logistics" }],
     info: [
       { label: "Email", value: "contact@easternlogistics.com", data_type: "string" },
       { label: "Phone", value: "+66 2 456 7890", data_type: "string" },
@@ -142,8 +162,8 @@ export const mockVendors: VendorGetDto[] = [
       {
         id: "addr-004",
         address_type: "contact_address",
-        address: {
-          line_1: "321 Logistics Center",
+        data: {
+          address_line1: "321 Logistics Center",
           district: "Chonburi",
           province: "Chonburi",
           country: "Thailand",
@@ -167,10 +187,15 @@ export const mockVendors: VendorGetDto[] = [
   },
   {
     id: "vendor-005",
+    code: "V-005",
+    note: null,
+    tax_profile_id: null,
+    tax_profile_name: null,
+    tax_rate: null,
+    dimension: {},
     name: "Quality Parts International",
     description: "Parts and components supplier",
-    business_type_id: "bt-005",
-    business_type_name: "Parts Supplier",
+    business_type: [{ id: "bt-005", name: "Parts Supplier" }],
     info: [
       { label: "Email", value: "info@qualityparts.com", data_type: "string" },
       { label: "Phone", value: "+66 2 567 8901", data_type: "string" },
@@ -183,8 +208,8 @@ export const mockVendors: VendorGetDto[] = [
       {
         id: "addr-005",
         address_type: "contact_address",
-        address: {
-          line_1: "654 Parts Boulevard",
+        data: {
+          address_line1: "654 Parts Boulevard",
           district: "Bangkok",
           province: "Bangkok",
           country: "Thailand",
@@ -208,10 +233,15 @@ export const mockVendors: VendorGetDto[] = [
   },
   {
     id: "vendor-006",
+    code: "V-006",
+    note: null,
+    tax_profile_id: null,
+    tax_profile_name: null,
+    tax_rate: null,
+    dimension: {},
     name: "Superior Equipment Corp.",
     description: "Equipment and machinery",
-    business_type_id: "bt-006",
-    business_type_name: "Equipment Supplier",
+    business_type: [{ id: "bt-006", name: "Equipment Supplier" }],
     info: [
       { label: "Email", value: "sales@superiorequip.com", data_type: "string" },
       { label: "Phone", value: "+66 2 678 9012", data_type: "string" },
@@ -224,8 +254,8 @@ export const mockVendors: VendorGetDto[] = [
       {
         id: "addr-006",
         address_type: "contact_address",
-        address: {
-          line_1: "987 Equipment Road",
+        data: {
+          address_line1: "987 Equipment Road",
           district: "Rayong",
           province: "Rayong",
           country: "Thailand",

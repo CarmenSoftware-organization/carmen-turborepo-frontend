@@ -23,9 +23,10 @@ import { infoItemSchema } from "@/app/[locale]/(root)/vendor-management/vendor/_
 
 interface InfoVendorProps {
   form: UseFormReturn<VendorFormValues>;
+  disabled?: boolean;
 }
 
-export default function InfoVendor({ form }: InfoVendorProps) {
+export default function InfoVendor({ form, disabled }: InfoVendorProps) {
   const {
     fields: infoFields,
     append: appendInfo,
@@ -45,6 +46,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
           size="sm"
           onClick={() => appendInfo({ label: "", value: "", data_type: "string" })}
           className="h-7 text-xs"
+          disabled={disabled}
         >
           <Plus className="h-3 w-3" />
           Add Info
@@ -68,6 +70,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                 id={`info.${index}.label`}
                 {...form.register(`info.${index}.label`)}
                 className="h-7 text-xs"
+                disabled={disabled}
               />
             </div>
             <div className="col-span-5 space-y-1">
@@ -79,13 +82,14 @@ export default function InfoVendor({ form }: InfoVendorProps) {
               </Label>
               {form.watch(`info.${index}.data_type`) === "date" ? (
                 <Popover>
-                  <PopoverTrigger asChild>
+                  <PopoverTrigger asChild disabled={disabled}>
                     <Button
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal h-7 text-xs",
                         !form.watch(`info.${index}.value`) && "text-muted-foreground"
                       )}
+                      disabled={disabled}
                     >
                       <CalendarIcon className="mr-1 h-3 w-3" />
                       {(() => {
@@ -114,6 +118,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                   type={form.watch(`info.${index}.data_type`) === "number" ? "number" : "text"}
                   {...form.register(`info.${index}.value`)}
                   className="h-7 text-xs"
+                  disabled={disabled}
                 />
               )}
             </div>
@@ -132,6 +137,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                   )
                 }
                 defaultValue={field.data_type}
+                disabled={disabled}
               >
                 <SelectTrigger id={`info.${index}.data_type`} className="h-7 text-xs">
                   <SelectValue placeholder="Type" />
@@ -164,7 +170,7 @@ export default function InfoVendor({ form }: InfoVendorProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => removeInfo(index)}
-                disabled={infoFields.length === 1}
+                disabled={disabled || infoFields.length === 1}
                 className="h-7 w-7 p-0"
               >
                 <Trash2 className="h-3 w-3 text-muted-foreground" />

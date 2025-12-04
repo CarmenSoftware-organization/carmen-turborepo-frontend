@@ -17,9 +17,10 @@ import { VendorFormValues } from "@/dtos/vendor.dto";
 
 interface AddressVendorProps {
   form: UseFormReturn<VendorFormValues>;
+  disabled?: boolean;
 }
 
-export default function AddressVendor({ form }: AddressVendorProps) {
+export default function AddressVendor({ form, disabled }: AddressVendorProps) {
   const {
     fields: addressFields,
     append: appendAddress,
@@ -51,6 +52,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
             })
           }
           className="h-7 text-xs"
+          disabled={disabled}
         >
           <Plus className="h-3 w-3" />
           Add Address
@@ -73,6 +75,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                     form.setValue(`vendor_address.${index}.address_type`, value)
                   }
                   defaultValue={field.address_type}
+                  disabled={disabled}
                 >
                   <SelectTrigger
                     id={`vendor_address.${index}.address_type`}
@@ -101,7 +104,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => removeAddress(index)}
-                disabled={addressFields.length === 1}
+                disabled={disabled || addressFields.length === 1}
                 className="h-7 w-7 p-0"
               >
                 <Trash2 className="h-3 w-3 text-muted-foreground" />
@@ -121,6 +124,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   id={`vendor_address.${index}.data.address_line1`}
                   {...form.register(`vendor_address.${index}.data.address_line1`)}
                   className="h-7 text-xs"
+                  disabled={disabled}
                 />
               </div>
               <div className="col-span-12 space-y-1">
@@ -134,6 +138,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   id={`vendor_address.${index}.data.address_line2`}
                   {...form.register(`vendor_address.${index}.data.address_line2`)}
                   className="h-7 text-xs"
+                  disabled={disabled}
                 />
               </div>
               <div className="col-span-6 space-y-1">
@@ -147,6 +152,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   id={`vendor_address.${index}.data.district`}
                   {...form.register(`vendor_address.${index}.data.district`)}
                   className="h-7 text-xs"
+                  disabled={disabled}
                 />
               </div>
               <div className="col-span-6 space-y-1">
@@ -160,6 +166,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   id={`vendor_address.${index}.data.province`}
                   {...form.register(`vendor_address.${index}.data.province`)}
                   className="h-7 text-xs"
+                  disabled={disabled}
                 />
               </div>
               <div className="col-span-6 space-y-1">
@@ -173,6 +180,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   id={`vendor_address.${index}.data.postal_code`}
                   {...form.register(`vendor_address.${index}.data.postal_code`)}
                   className="h-7 text-xs"
+                  disabled={disabled}
                 />
               </div>
               <div className="col-span-6 space-y-1">
@@ -186,6 +194,7 @@ export default function AddressVendor({ form }: AddressVendorProps) {
                   id={`vendor_address.${index}.data.country`}
                   {...form.register(`vendor_address.${index}.data.country`)}
                   className="h-7 text-xs"
+                  disabled={disabled}
                 />
               </div>
             </div>

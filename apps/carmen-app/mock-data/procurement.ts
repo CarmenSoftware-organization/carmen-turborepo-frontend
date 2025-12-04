@@ -517,7 +517,7 @@ export const mockPoDetail = {
   items: [
     {
       id: "po-item-001",
-      no: "POI-001",
+      no: 1,
       name: "Office Chairs",
       description: "Office Chairs",
       order_qty: 10,
@@ -530,7 +530,7 @@ export const mockPoDetail = {
     },
     {
       id: "po-item-002",
-      no: "POI-002",
+      no: 2,
       name: "Table",
       description: "Table",
       order_qty: 1,
@@ -543,7 +543,7 @@ export const mockPoDetail = {
     },
     {
       id: "po-item-003",
-      no: "POI-003",
+      no: 3,
       name: "Printer",
       description: "Printer",
       order_qty: 1,
@@ -556,7 +556,7 @@ export const mockPoDetail = {
     },
     {
       id: "po-item-004",
-      no: "POI-004",
+      no: 4,
       name: "Laptop",
       description: "Laptop",
       order_qty: 1,

@@ -109,6 +109,7 @@ export interface PurchaseOrderItemDto {
   description: string;
   order_qty: number;
   unit: string;
+  price: number;
   tax: number;
   net: number;
   discount: number;

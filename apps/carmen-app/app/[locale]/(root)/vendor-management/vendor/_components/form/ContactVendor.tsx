@@ -26,9 +26,10 @@ import {
 
 interface ContactVendorProps {
   form: UseFormReturn<VendorFormValues>;
+  disabled?: boolean;
 }
 
-export default function ContactVendor({ form }: ContactVendorProps) {
+export default function ContactVendor({ form, disabled }: ContactVendorProps) {
   // Helper function to add contact info field
   const addContactInfoField = (contactIndex: number) => {
     const currentInfo = form.getValues(`vendor_contact.${contactIndex}.info`) || [];
@@ -71,6 +72,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
             ]);
           }}
           className="h-7 text-xs"
+          disabled={disabled}
         >
           <Plus className="h-3 w-3" />
           Add Contact
@@ -100,6 +102,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                       )
                     }
                     defaultValue={field.contact_type}
+                    disabled={disabled}
                   >
                     <SelectTrigger
                       id={`vendor_contact.${contactIndex}.contact_type`}
@@ -135,6 +138,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                     {...form.register(`vendor_contact.${contactIndex}.description`)}
                     placeholder="e.g. Sales Department"
                     className="h-7 text-xs"
+                    disabled={disabled}
                   />
                 </div>
                 <div className="col-span-1 flex justify-end items-end">
@@ -149,7 +153,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                       newContacts.splice(contactIndex, 1);
                       form.setValue("vendor_contact", newContacts);
                     }}
-                    disabled={contactFields.length <= 1}
+                    disabled={disabled || contactFields.length <= 1}
                     className="h-7 w-7 p-0"
                   >
                     <Trash2 className="h-3 w-3 text-muted-foreground" />
@@ -167,6 +171,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                     size="sm"
                     onClick={() => addContactInfoField(contactIndex)}
                     className="h-6 text-xs"
+                    disabled={disabled}
                   >
                     <Plus className="h-3 w-3" />
                     Add Detail
@@ -189,6 +194,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         id={`vendor_contact.${contactIndex}.info.${infoIndex}.label`}
                         {...form.register(`vendor_contact.${contactIndex}.info.${infoIndex}.label`)}
                         className="h-7 text-xs"
+                        disabled={disabled}
                       />
                     </div>
                     <div className="col-span-5 space-y-1">
@@ -201,7 +207,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                       {form.watch(`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`) ===
                       "date" ? (
                         <Popover>
-                          <PopoverTrigger asChild>
+                          <PopoverTrigger asChild disabled={disabled}>
                             <Button
                               variant="outline"
                               className={cn(
@@ -210,6 +216,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                                   `vendor_contact.${contactIndex}.info.${infoIndex}.value`
                                 ) && "text-muted-foreground"
                               )}
+                              disabled={disabled}
                             >
                               <CalendarIcon className="mr-1 h-3 w-3" />
                               {(() => {
@@ -257,6 +264,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                             `vendor_contact.${contactIndex}.info.${infoIndex}.value`
                           )}
                           className="h-7 text-xs"
+                          disabled={disabled}
                         />
                       )}
                     </div>
@@ -275,6 +283,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                           )
                         }
                         defaultValue={infoField.data_type}
+                        disabled={disabled}
                       >
                         <SelectTrigger
                           id={`vendor_contact.${contactIndex}.info.${infoIndex}.data_type`}
@@ -310,7 +319,7 @@ export default function ContactVendor({ form }: ContactVendorProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => removeContactInfoField(contactIndex, infoIndex)}
-                        disabled={contactInfoFields.length <= 1}
+                        disabled={disabled || contactInfoFields.length <= 1}
                         className="h-7 w-7 p-0"
                       >
                         <Trash2 className="h-3 w-3 text-muted-foreground" />

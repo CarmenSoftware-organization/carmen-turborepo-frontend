@@ -165,7 +165,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 <FormItem className="col-span-3">
                   <FormLabel className="text-xs font-medium">Code</FormLabel>
                   <FormControl>
-                    <Input {...field} maxLength={4} />
+                    <Input {...field} maxLength={4} disabled={mode === formType.VIEW} />
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -179,7 +179,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 <FormItem className="col-span-5">
                   <FormLabel className="text-xs font-medium">Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} disabled={mode === formType.VIEW} />
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -208,6 +208,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                       variant="inverted"
                       animation={2}
                       maxCount={3}
+                      disabled={mode === formType.VIEW}
                     />
                   </FormControl>
                   <FormMessage className="text-xs" />
@@ -221,7 +222,12 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 <FormItem className="col-span-12">
                   <FormLabel className="text-xs font-medium">Description</FormLabel>
                   <FormControl>
-                    <Textarea {...field} value={field.value ?? ""} className="min-h-[80px]" />
+                    <Textarea
+                      {...field}
+                      value={field.value ?? ""}
+                      className="min-h-[80px]"
+                      disabled={mode === formType.VIEW}
+                    />
                   </FormControl>
                   <FormMessage className="text-xs" />
                 </FormItem>
@@ -243,15 +249,15 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
             </TabsList>
 
             <TabsContent value="info" className="p-3 space-y-3">
-              <InfoVendor form={form} />
+              <InfoVendor form={form} disabled={mode === formType.VIEW} />
             </TabsContent>
 
             <TabsContent value="address" className="p-3 space-y-3">
-              <AddressVendor form={form} />
+              <AddressVendor form={form} disabled={mode === formType.VIEW} />
             </TabsContent>
 
             <TabsContent value="contact" className="p-3 space-y-3">
-              <ContactVendor form={form} />
+              <ContactVendor form={form} disabled={mode === formType.VIEW} />
             </TabsContent>
           </Tabs>
         </form>
