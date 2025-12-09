@@ -91,9 +91,15 @@ export default function FooterSection() {
             <Link href="/" aria-label="go home" className="block size-fit">
               Carmen
             </Link>
+            <div className="text-muted-foreground mt-4 text-sm">
+              <p>CARMEN SOFTWARE CO., LTD.</p>
+              <p>891/24-25 Rama 3 Road,</p>
+              <p>Bang Phongphang, Yan Nawa,</p>
+              <p>Bangkok 10120</p>
+            </div>
           </div>
 
-          <div className="col-span-3 grid grid-cols-3 gap-6">
+          <div className="col-span-3 grid grid-cols-2 gap-6 md:grid-cols-3">
             {links.map((link, index) => (
               <div key={index} className="space-y-4">
                 <span className="block font-medium">{link.group}</span>

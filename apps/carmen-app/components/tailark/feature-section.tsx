@@ -23,16 +23,16 @@ export default function FeaturesSection() {
         <div className="mx-auto w-full max-w-5xl px-6">
           <div>
             <h2 className="text-foreground max-w-2xl text-balance text-4xl font-semibold">
-              Streamline your hotel inventory management
+              Comprehensive Hotel Management Solutions
             </h2>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card className="overflow-hidden p-6">
               <Target className="text-primary size-5" />
-              <h3 className="text-foreground mt-5 text-lg font-semibold">Procurement Management</h3>
+              <h3 className="text-foreground mt-5 text-lg font-semibold">Financial Management</h3>
               <p className="text-muted-foreground mt-3 text-balance">
-                Efficiently manage purchase requests, orders, and vendor relationships with
-                comprehensive tracking.
+                Complete financial control including Income Audit, AR, AP, General Ledger, and
+                flexible financial reporting.
               </p>
 
               <MeetingIllustration />
@@ -40,22 +40,20 @@ export default function FeaturesSection() {
 
             <Card className="group overflow-hidden px-6 pt-6">
               <CalendarCheck className="text-primary size-5" />
-              <h3 className="text-foreground mt-5 text-lg font-semibold">
-                Real-time Stock Control
-              </h3>
+              <h3 className="text-foreground mt-5 text-lg font-semibold">Inventory & Purchasing</h3>
               <p className="text-muted-foreground mt-3 text-balance">
-                Track inventory levels, manage goods receipts, and monitor stock movements across
-                all departments.
+                Streamline procurement with comprehensive modules for Purchasing, Receiving,
+                Inventory, and Recipe Management.
               </p>
 
               <CodeReviewIllustration />
             </Card>
             <Card className="group overflow-hidden px-6 pt-6">
               <Sparkles className="text-primary size-5" />
-              <h3 className="text-foreground mt-5 text-lg font-semibold">Multi-tenant Support</h3>
+              <h3 className="text-foreground mt-5 text-lg font-semibold">Seamless Integrations</h3>
               <p className="text-muted-foreground mt-3 text-balance">
-                Manage multiple hotel properties with isolated data and seamless business unit
-                switching.
+                Connect effortlessly with major Property Management Systems (PMS) like Opera,
+                Hotelogix, and more.
               </p>
 
               <div className="mask-b-from-50 -mx-2 -mt-2 px-2 pt-2">
@@ -78,9 +76,9 @@ const MeetingIllustration = () => {
         </div>
         <div className="h-10 w-8 rounded-md border bg-gradient-to-b from-zinc-100 to-zinc-200"></div>
       </div>
-      <div className="mb-0.5 text-sm font-semibold">Procurement Planning</div>
+      <div className="mb-0.5 text-sm font-semibold">Financial Reporting</div>
       <div className="mb-4 flex gap-2 text-sm">
-        <span className="text-muted-foreground">2:30 - 3:45 PM</span>
+        <span className="text-muted-foreground">Monthly P&L Review</span>
       </div>
       <div className="mb-2 flex -space-x-1.5">
         <div className="flex -space-x-1.5">
@@ -106,7 +104,7 @@ const MeetingIllustration = () => {
           ))}
         </div>
       </div>
-      <div className="text-muted-foreground text-sm font-medium">Inventory Review Meeting</div>
+      <div className="text-muted-foreground text-sm font-medium">Consolidated Financials</div>
     </Card>
   );
 };
@@ -126,22 +124,21 @@ const CodeReviewIllustration = () => {
               width="460"
             />
           </div>
-          <span className="text-muted-foreground text-sm font-medium">Méschac Irung</span>
+          <span className="text-muted-foreground text-sm font-medium">Head Chef</span>
 
-          <span className="text-muted-foreground/75 text-xs">2m</span>
+          <span className="text-muted-foreground/75 text-xs">Now</span>
         </div>
 
         <div className="ml-8 space-y-2">
           <div className="bg-foreground/10 h-2 rounded-full"></div>
           <div className="bg-foreground/10 h-2 w-3/5 rounded-full"></div>
-          <div className="bg-foreground/10 h-2 w-1/2 rounded-full"></div>
         </div>
 
         <Signature className="ml-8 mt-3 size-5" />
       </Card>
       <Card className="aspect-3/5 absolute -top-4 right-0 flex w-2/5 translate-y-4 p-2 transition-transform duration-200 ease-in-out group-hover:rotate-3">
         <div className="bg-foreground/5 m-auto flex size-10 rounded-full">
-          <Play className="fill-foreground/50 stroke-foreground/50 m-auto size-4" />
+          <Plus className="fill-foreground/50 stroke-foreground/50 m-auto size-4" />
         </div>
       </Card>
     </div>
@@ -157,11 +154,11 @@ const AIAssistantIllustration = () => {
       <div className="w-fit">
         <Sparkles className="size-3.5 fill-purple-300 stroke-purple-300" />
         <p className="mt-2 line-clamp-2 text-sm">
-          How can I track inventory movements between departments and generate stock reports?
+          Integrate with Opera, Hotelogix, and other PMS systems.
         </p>
       </div>
       <div className="bg-foreground/5 -mx-3 -mb-3 mt-3 space-y-3 rounded-lg p-3">
-        <div className="text-muted-foreground text-sm">Search Inventory</div>
+        <div className="text-muted-foreground text-sm">PMS Connectivity</div>
 
         <div className="flex justify-between">
           <div className="flex gap-2">

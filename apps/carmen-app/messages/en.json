@@ -1,5 +1,10 @@
 {
   "HomePage": {
+    "hero": {
+      "title": "Hotel Financial Management Software",
+      "description": "Comprehensive financial software solutions designed specifically for the hotel industry. Trusted by leading hotels worldwide.",
+      "requestDemo": "Request a Demo"
+    },
     "title": "Home Page",
     "welcome": "Welcome to the home page!",
     "CarmenSoftware": "Carmen Software",

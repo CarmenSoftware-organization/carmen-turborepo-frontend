@@ -49,11 +49,11 @@ export default function HeroSection() {
               </div>
 
               <div className="mt-10">
-                <p className="text-muted-foreground">Trusted by hotel at :</p>
-                <div className="mt-6 grid max-w-sm grid-cols-3 gap-6">
-                  <div className="flex">Dusit Thani</div>
-                  <div className="flex">Four Season</div>
-                  <div className="flex">Marriott</div>
+                <p className="text-muted-foreground">Certified Integration Partner with :</p>
+                <div className="mt-6 flex flex-wrap gap-6 font-semibold text-muted-foreground">
+                  <div className="flex">Oracle OPERA</div>
+                  <div className="flex">Amadeus</div>
+                  <div className="flex">Hotelogix</div>
                 </div>
               </div>
             </div>
