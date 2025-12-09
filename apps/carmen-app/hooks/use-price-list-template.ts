@@ -8,24 +8,27 @@ import {
   PriceListTemplateDetailsDto,
 } from "@/dtos/price-list-template.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
+import { backendApi } from "@/lib/backend-api";
+import { getAllApiRequest } from "@/lib/config.api";
 
-// remove when use api
-const delay = (ms: number = 500) => new Promise((resolve) => setTimeout(resolve, ms));
+const priceListTemplateApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/${buCode}/price-list-template`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
 
-// ============================================================================
-// GET All Price List Templates
-// ============================================================================
 export const usePriceListTemplates = (token: string, buCode: string, params?: ParamsGetDto) => {
   const { data, isLoading, error } = useQuery({
     queryKey: ["price-list-templates", buCode, params],
     queryFn: async () => {
-      await delay(300); // remove when use api
-
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
-
-      return mockPriceListTemplates; // remove when use api
+      return await getAllApiRequest(
+        priceListTemplateApiUrl(buCode),
+        token,
+        "Error fetching price list templates",
+        params ?? {}
+      );
     },
     enabled: !!token && !!buCode,
   });
@@ -47,8 +50,6 @@ export const usePriceListTemplateById = (token: string, buCode: string, id: stri
   const { data, isLoading, error } = useQuery({
     queryKey: ["price-list-template", buCode, id],
     queryFn: async () => {
-      await delay(300); // remove when use api
-
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
@@ -99,8 +100,6 @@ export const useCreatePriceListTemplate = (token: string, buCode: string) => {
 
   return useMutation({
     mutationFn: async (data: CreatePriceListTemplateDto) => {
-      await delay(500); // remove when use api
-
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
@@ -157,8 +156,6 @@ export const useUpdatePriceListTemplate = (token: string, buCode: string, id: st
 
   return useMutation({
     mutationFn: async (data: UpdatePriceListTemplateDto) => {
-      await delay(500); // remove when use api
-
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
@@ -197,8 +194,6 @@ export const useDeletePriceListTemplate = (token: string, buCode: string) => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await delay(500); // remove when use api
-
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
