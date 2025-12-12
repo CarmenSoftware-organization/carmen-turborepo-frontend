@@ -177,7 +177,12 @@ export default function MainForm({ rfpData, mode }: Props) {
                   <OverviewTab form={form} isViewMode={isViewMode} rfpData={rfpData} />
                 </TabsContent>
                 <TabsContent value="vendor" className="mt-0 h-full">
-                  <VendorTab form={form} isViewMode={isViewMode} vendors={vendors} />
+                  <VendorTab
+                    form={form}
+                    isViewMode={isViewMode}
+                    vendors={vendors}
+                    defaultVendors={rfpData?.vendor}
+                  />
                 </TabsContent>
                 <TabsContent value="setting" className="mt-0 h-full">
                   <SettingTab

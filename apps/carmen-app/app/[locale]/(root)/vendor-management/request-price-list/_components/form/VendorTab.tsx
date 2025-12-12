@@ -7,43 +7,54 @@ import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Trash2, User } from "lucide-react";
+import { Trash2, User, Clock, Send, Check, X, Mail } from "lucide-react";
 import { VendorGetDto } from "@/dtos/vendor-management";
 import { useTranslations } from "next-intl";
+import { VendorStatus, StatusVendor } from "@/dtos/rfp.dto";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface Props {
   form: UseFormReturn<any>;
   isViewMode: boolean;
   // @ts-ignore
   vendors?: any; // รอ type
+  defaultVendors?: VendorStatus[];
 }
 
-interface VendorTableRow {
-  id: string;
-  name: string;
-  email?: string;
-  phone?: string;
-}
-
-export default function VendorTab({ form, isViewMode, vendors }: Props) {
+export default function VendorTab({ form, isViewMode, vendors, defaultVendors = [] }: Props) {
   const tRfp = useTranslations("RFP");
   const selectedVendorIds = form.watch("vendors") || [];
 
-  // Map selected vendor IDs to full vendor objects
-  const selectedVendors: VendorTableRow[] = useMemo(() => {
-    if (!vendors?.data) return [];
+  console.log("defaultVendors", defaultVendors);
 
+  // Map selected vendor IDs to full vendor objects
+  const selectedVendors: VendorStatus[] = useMemo(() => {
     return selectedVendorIds
       .map((vendorId: string) => {
-        const vendor = vendors.data.find((v: VendorGetDto) => v.id === vendorId);
-        if (!vendor) return null;
+        // Try to find in full list first
+        const vendorMaster = vendors?.data?.find((v: VendorGetDto) => v.id === vendorId);
+
+        // Find in defaultVendors to get status/progress info
+        const defaultVendor = defaultVendors?.find((v: VendorStatus) => v.id === vendorId);
+
+        if (!vendorMaster && !defaultVendor) return null;
+
+        // Merge data, defaulting to 'pending'/'0' if new vendor
         return {
-          id: vendor.id,
-          name: vendor.name,
+          id: vendorId,
+          name: vendorMaster?.name || defaultVendor?.name || "Unknown Vendor",
+          email:
+            defaultVendor?.email ||
+            (vendorMaster && "email" in vendorMaster ? vendorMaster.email : "-"),
+          status: defaultVendor?.status || "pending",
+          progress: defaultVendor?.progress || 0,
+          last_activity: defaultVendor?.last_activity || new Date(),
+          is_send: defaultVendor?.is_send || false,
         };
       })
-      .filter(Boolean) as VendorTableRow[];
-  }, [selectedVendorIds, vendors?.data]);
+      .filter(Boolean) as VendorStatus[];
+  }, [selectedVendorIds, vendors?.data, defaultVendors]);
 
   const handleRemoveVendor = (vendorId: string) => {
     const currentVendors = form.getValues("vendors") || [];
@@ -53,7 +64,31 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
     );
   };
 
-  const columns = useMemo<ColumnDef<VendorTableRow>[]>(
+  const getStatusBadge = (status: StatusVendor) => {
+    switch (status) {
+      case "completed":
+        return (
+          <Badge variant="success" className="rounded-sm">
+            Completed
+          </Badge>
+        );
+      case "in_progress":
+        return (
+          <Badge variant="warning" className="rounded-sm">
+            In Progress
+          </Badge>
+        );
+      case "pending":
+      default:
+        return (
+          <Badge variant="secondary" className="rounded-sm">
+            Pending
+          </Badge>
+        );
+    }
+  };
+
+  const columns = useMemo<ColumnDef<VendorStatus>[]>(
     () => [
       {
         id: "no",
@@ -74,27 +109,83 @@ export default function VendorTab({ form, isViewMode, vendors }: Props) {
             <span>{tRfp("vendor_name")}</span>
           </div>
         ),
-        cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+        cell: ({ row }) => (
+          <div className="flex flex-col">
+            <span className="font-medium">{row.original.name}</span>
+            <span className="text-xs text-muted-foreground">{row.original.email || "-"}</span>
+          </div>
+        ),
         enableSorting: false,
         size: 250,
       },
       {
-        accessorKey: "email",
-        header: () => <span>{tRfp("email")}</span>,
-        cell: ({ row }) => (
-          <span className="text-muted-foreground">{row.original.email || "-"}</span>
-        ),
+        accessorKey: "status",
+        header: () => <span>{tRfp("status") || "Status"}</span>,
+        cell: ({ row }) => getStatusBadge(row.original.status),
         enableSorting: false,
-        size: 200,
+        size: 120,
       },
       {
-        accessorKey: "phone",
-        header: () => <span>{tRfp("phone")}</span>,
+        accessorKey: "progress",
+        header: () => <span>Progress</span>,
         cell: ({ row }) => (
-          <span className="text-muted-foreground">{row.original.phone || "-"}</span>
+          <div className="flex items-center gap-2 w-full max-w-[140px]">
+            <Progress value={row.original.progress} className="h-2 flex-1" />
+            <span className="text-xs text-muted-foreground w-8 text-right">
+              {row.original.progress}%
+            </span>
+          </div>
         ),
         enableSorting: false,
+        size: 180,
+      },
+      {
+        accessorKey: "last_activity",
+        header: () => (
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4" />
+            <span>Last Activity</span>
+          </div>
+        ),
+        cell: ({ row }) => {
+          const date = new Date(row.original.last_activity);
+          return <span className="text-muted-foreground text-sm">{date.toLocaleDateString()}</span>;
+        },
+        enableSorting: false,
         size: 150,
+      },
+      {
+        accessorKey: "is_send",
+        header: () => (
+          <div className="flex items-center gap-2">
+            <Send className="h-4 w-4" />
+            <span>Sent</span>
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <Button
+              size="sm"
+              variant={row.original.is_send ? "outline" : "default"}
+              className="h-6 text-xs"
+              disabled={row.original.is_send}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                console.log("vendorId", row.original.id);
+              }}
+            >
+              <Mail className="h-4 w-4" />
+              {row.original.is_send ? "Completed" : "Send Reminder"}
+            </Button>
+          </div>
+        ),
+        enableSorting: false,
+        size: 80,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
       },
       {
         id: "action",

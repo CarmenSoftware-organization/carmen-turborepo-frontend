@@ -124,7 +124,7 @@ export const mockRfpDetails: RfpDetailDto[] = [
         status: "in_progress",
         progress: 65,
         last_activity: new Date("2025-01-15"),
-        is_send: true,
+        is_send: false,
       },
       {
         id: "vendor-003",
@@ -133,7 +133,7 @@ export const mockRfpDetails: RfpDetailDto[] = [
         status: "pending",
         progress: 0,
         last_activity: new Date("2025-01-10"),
-        is_send: true,
+        is_send: false,
       },
     ],
     settings: {
