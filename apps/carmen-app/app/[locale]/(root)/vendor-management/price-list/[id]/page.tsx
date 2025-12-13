@@ -29,5 +29,5 @@ export default function PriceListDetailPage() {
     return <div>Loading...</div>;
   }
 
-  return <DetailPriceList priceList={priceListDetail} mode={formType.VIEW} />;
+  return <DetailPriceList priceList={priceListDetail.data} mode={formType.VIEW} />;
 }

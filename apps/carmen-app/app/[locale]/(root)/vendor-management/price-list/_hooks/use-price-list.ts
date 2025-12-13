@@ -15,7 +15,7 @@ import {
   requestHeaders,
   updateApiRequest,
 } from "@/lib/config.api";
-import { CreatePriceListDto, UpdatePriceListDto } from "@/dtos/price-list.dto";
+
 import axios from "axios";
 
 const queryKey = "price-list";
@@ -72,21 +72,16 @@ export const usePriceListById = (token: string, buCode: string, id: string) => {
 export const useCreatePriceList = (token: string, buCode: string) => {
   const API_URL = priceListApiUrl(buCode);
   return useMutation({
-    mutationFn: async (dataPriceList: CreatePriceListDto) => {
+    mutationFn: async (dataPriceList: PriceListCreateDto) => {
       return postApiRequest(API_URL, token, dataPriceList, "Failed to create price list");
     },
   });
 };
 
-export const useUpdatePriceList = (
-  token: string,
-  buCode: string,
-  id: string,
-  dataPriceList: UpdatePriceListDto
-) => {
+export const useUpdatePriceList = (token: string, buCode: string, id: string) => {
   const API_URL_BY_ID = priceListApiUrl(buCode, id);
-  const { data, error, isPending } = useMutation({
-    mutationFn: async () => {
+  return useMutation({
+    mutationFn: async (dataPriceList: PriceListUpdateDto) => {
       return updateApiRequest(
         API_URL_BY_ID,
         token,
@@ -96,8 +91,6 @@ export const useUpdatePriceList = (
       );
     },
   });
-
-  return { data, error, isPending };
 };
 
 export const useDeletePriceList = (token: string, buCode: string) => {

@@ -22,7 +22,22 @@ interface ProductsSectionProps {
 export default function ProductsSection({ form, priceList, isViewMode }: ProductsSectionProps) {
   const tPriceList = useTranslations("PriceList");
 
-  const products = priceList?.products || [];
+  const rawProducts =
+    // @ts-ignore
+    priceList?.pricelist_detail || priceList?.products || [];
+
+  const products: ProductPlDto[] = useMemo(() => {
+    return rawProducts.map((p: any) => ({
+      id: p.id,
+      code: p.code || p.tb_product?.code || "",
+      name: p.name || p.tb_product?.name || "",
+      moqs: p.moqs || [],
+      taxRate: p.taxRate ?? p.tax_rate ?? 0,
+      totalAmount: p.totalAmount ?? p.total_amount ?? 0,
+      priceChange: p.priceChange ?? p.price_change ?? 0,
+      lastUpdate: p.lastUpdate || p.last_update || "",
+    }));
+  }, [rawProducts]);
 
   const columns = useMemo<ColumnDef<ProductPlDto>[]>(
     () => [

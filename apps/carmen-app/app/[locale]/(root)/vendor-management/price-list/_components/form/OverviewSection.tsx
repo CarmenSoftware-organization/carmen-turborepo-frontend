@@ -90,7 +90,8 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
               <FormControl>
                 {isViewMode ? (
                   <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm">
-                    {priceList?.vendor?.name || "-"}
+                    {/* @ts-ignore */}
+                    {priceList?.vendor?.name || priceList?.vender?.name || "-"}
                   </div>
                 ) : (
                   <Input {...field} disabled placeholder={tPriceList("select_vendor")} />
@@ -111,7 +112,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
               <FormControl>
                 {isViewMode ? (
                   <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm">
-                    {priceList?.currency?.code || "-"}
+                    {priceList?.currency?.name || "-"}
                   </div>
                 ) : (
                   // <Input {...field} disabled placeholder={tPriceList("select_currency")} />
@@ -149,9 +150,10 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
           control={form.control}
           name="effectivePeriod"
           render={({ field }) => {
-            const dateRange = field.value?.from && field.value?.to
-              ? { from: new Date(field.value.from), to: new Date(field.value.to) }
-              : undefined;
+            const dateRange =
+              field.value?.from && field.value?.to
+                ? { from: new Date(field.value.from), to: new Date(field.value.to) }
+                : undefined;
 
             return (
               <FormItem>
@@ -169,7 +171,8 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
                       >
                         {dateRange ? (
                           <>
-                            {format(dateRange.from, "LLL dd, y")} - {format(dateRange.to, "LLL dd, y")}
+                            {format(dateRange.from, "LLL dd, y")} -{" "}
+                            {format(dateRange.to, "LLL dd, y")}
                           </>
                         ) : (
                           <span>{tPriceList("enter_effective_period")}</span>
@@ -229,29 +232,33 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
           </FormItem>
         )}
       />
+      <FormField
+        control={form.control}
+        name="note"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{tCommon("note")}</FormLabel>
+            <FormControl>
+              <Textarea
+                {...field}
+                disabled={isViewMode}
+                placeholder={tPriceList("enter_note")}
+                rows={3}
+                className="resize-none"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
-      {/* Currency Details - View Only */}
-      {isViewMode && priceList && (
-        <div className="space-y-4">
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            {tPriceList("currency_details")}
-          </h2>
-          <div className="bg-muted/30 p-4 rounded-md">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">{tPriceList("currency_code")}</p>
-                <p className="text-sm font-medium">{priceList.currency?.code || "-"}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">{tPriceList("active_status")}</p>
-                <p className="text-sm font-medium">
-                  {priceList.isActive ? tCommon("yes") : tCommon("no")}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <div>
+        <p className="text-xs text-muted-foreground mb-1">{tPriceList("active_status")}</p>
+        <p className="text-sm font-medium">
+          {/* @ts-ignore */}
+          {priceList.isActive || priceList.is_active ? tCommon("yes") : tCommon("no")}
+        </p>
+      </div>
     </div>
   );
 }

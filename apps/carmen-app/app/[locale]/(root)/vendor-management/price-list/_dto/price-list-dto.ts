@@ -13,6 +13,7 @@ export interface VendorDto {
 export interface CurrencyDto {
   id: string;
   code: string;
+  name: string;
   exchangeRateDate: string;
 }
 

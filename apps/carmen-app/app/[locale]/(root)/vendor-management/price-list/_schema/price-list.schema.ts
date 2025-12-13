@@ -10,6 +10,7 @@ export const priceListSchema = z.object({
   vendorId: z.string().min(1, "Vendor is required"),
   rfpId: z.string().optional(),
   description: z.string().optional(),
+  note: z.string().optional(),
   status: z.enum(["active", "draft", "submit", "inactive"]),
   currencyId: z.string().min(1, "Currency is required"),
   effectivePeriod: dateRangeSchema,

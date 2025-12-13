@@ -12,15 +12,15 @@ import { Form } from "@/components/ui/form";
 import { Badge } from "@/components/ui/badge";
 import { formType } from "@/dtos/form.dto";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
-import { useUpdatePriceList } from "../../_hooks/use-price-list";
 import { priceListSchema, type PriceListFormData } from "../../_schema/price-list.schema";
 import type { PriceListDetailDto } from "../../_dto/price-list-dto";
 import OverviewSection from "./OverviewSection";
 import ProductsSection from "./ProductsSection";
 import { formatDate } from "@/utils/format/date";
+import { useUpdatePriceList } from "../../_hooks/use-price-list";
 
 interface DetailPriceListProps {
-  readonly priceList?: PriceListDetailDto;
+  readonly priceList?: any;
   mode: formType;
 }
 
@@ -34,6 +34,8 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
   const isViewMode = mode === formType.VIEW;
   const isEditMode = mode === formType.EDIT;
 
+  console.log("priceList", priceList);
+
   const form = useForm<PriceListFormData>({
     resolver: zodResolver(priceListSchema),
     defaultValues: {
@@ -41,6 +43,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
       vendorId: "",
       rfpId: "",
       description: "",
+      note: "",
       status: "draft",
       currencyId: "",
       effectivePeriod: { from: "", to: "" },
@@ -56,15 +59,26 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
 
   useEffect(() => {
     if (priceList) {
+      const getEffectivePeriod = (period: any) => {
+        if (typeof period === "string") {
+          const [from, to] = period.split(" - ");
+          return { from: from || "", to: to || "" };
+        }
+        return period || { from: "", to: "" };
+      };
+
       form.reset({
         no: priceList.no,
-        vendorId: priceList.vendor.id,
+        // @ts-ignore
+        vendorId: priceList.vender?.id || priceList.vendor?.id,
         rfpId: priceList.rfp?.id || "",
         description: priceList.description || "",
+        note: priceList.note || "",
         status: priceList.status,
-        currencyId: priceList.currency.id,
-        effectivePeriod: priceList.effectivePeriod,
-        products: priceList.products.map((p) => ({
+        currencyId: priceList.currency?.id,
+        effectivePeriod: getEffectivePeriod(priceList.effectivePeriod),
+        // @ts-ignore
+        products: (priceList.pricelist_detail || priceList.products || []).map((p: any) => ({
           id: p.id,
           moqs: p.moqs,
         })),
@@ -78,15 +92,25 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
 
   const handleCancel = () => {
     if (priceList) {
+      const getEffectivePeriod = (period: any) => {
+        if (typeof period === "string") {
+          const [from, to] = period.split(" - ");
+          return { from: from || "", to: to || "" };
+        }
+        return period || { from: "", to: "" };
+      };
+
       form.reset({
         no: priceList.no,
-        vendorId: priceList.vendor.id,
+        // @ts-ignore
+        vendorId: priceList.vender?.id || priceList.vendor?.id,
         rfpId: priceList.rfp?.id || "",
         description: priceList.description || "",
         status: priceList.status,
-        currencyId: priceList.currency.id,
-        effectivePeriod: priceList.effectivePeriod,
-        products: priceList.products.map((p) => ({
+        currencyId: priceList.currency?.id,
+        effectivePeriod: getEffectivePeriod(priceList.effectivePeriod),
+        // @ts-ignore
+        products: (priceList.pricelist_detail || priceList.products || []).map((p: any) => ({
           id: p.id,
           moqs: p.moqs,
         })),
