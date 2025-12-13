@@ -26,8 +26,6 @@ export default function VendorTab({ form, isViewMode, vendors, defaultVendors = 
   const tRfp = useTranslations("RFP");
   const selectedVendorIds = form.watch("vendors") || [];
 
-  console.log("defaultVendors", defaultVendors);
-
   // Map selected vendor IDs to full vendor objects
   const selectedVendors: VendorStatus[] = useMemo(() => {
     return selectedVendorIds

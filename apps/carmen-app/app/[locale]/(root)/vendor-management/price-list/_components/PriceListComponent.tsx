@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
 import ListPriceList from "./ListPriceList";
 import { useAuth } from "@/context/AuthContext";
-import { usePriceLists } from "../_hooks/use-price-list";
 import SignInDialog from "@/components/SignInDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRouter } from "@/lib/navigation";
@@ -16,6 +15,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { VIEW } from "@/constants/enum";
 import PriceListGrid from "./PriceListGrid";
+import { usePriceList } from "../_hooks/use-price-list";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
@@ -29,7 +29,7 @@ export default function PriceListComponent() {
   const [sort, setSort] = useURL("sort");
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { data: priceLists, isLoading, isUnauthorized } = usePriceLists(token, buCode);
+  const { data: priceLists, isLoading, isUnauthorized } = usePriceList(token, buCode);
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -113,7 +113,7 @@ export default function PriceListComponent() {
             </TooltipTrigger>
             <TooltipContent>{tCommon("filter")}</TooltipContent>
           </Tooltip>
-          <div className="hidden lg:block">
+          <div className="hidden lg:flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
@@ -153,14 +153,14 @@ export default function PriceListComponent() {
   const content = (
     <>
       <div className="block lg:hidden">
-        <PriceListGrid priceLists={priceLists ?? []} isLoading={isLoading} />
+        <PriceListGrid priceLists={priceLists?.data ?? []} isLoading={isLoading} />
       </div>
 
       <div className="hidden lg:block">
         {view === VIEW.LIST ? (
-          <ListPriceList priceLists={priceLists ?? []} isLoading={isLoading} />
+          <ListPriceList priceLists={priceLists?.data ?? []} isLoading={isLoading} />
         ) : (
-          <PriceListGrid priceLists={priceLists ?? []} isLoading={isLoading} />
+          <PriceListGrid priceLists={priceLists?.data ?? []} isLoading={isLoading} />
         )}
       </div>
     </>

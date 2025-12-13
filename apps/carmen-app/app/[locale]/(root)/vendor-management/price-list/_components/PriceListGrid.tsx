@@ -30,14 +30,16 @@ import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import CardLoading from "@/components/loading/CardLoading";
 
+import { formatDate } from "@/utils/format/date";
+
 interface PriceListGridProps {
-  priceLists: PriceListDtoList[];
+  priceLists: any[];
   isLoading: boolean;
 }
 
 export default function PriceListGrid({ priceLists, isLoading }: PriceListGridProps) {
   const router = useRouter();
-  const { token, buCode } = useAuth();
+  const { token, buCode, dateFormat } = useAuth();
   const tCommon = useTranslations("Common");
   const tPriceList = useTranslations("PriceList");
   const queryClient = useQueryClient();
@@ -72,21 +74,6 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
         setSelectedPriceList(null);
       },
     });
-  };
-
-  const getStatusVariant = (status: string) => {
-    switch (status) {
-      case "active":
-        return "success";
-      case "draft":
-        return "secondary";
-      case "submit":
-        return "warning";
-      case "inactive":
-        return "destructive";
-      default:
-        return "default";
-    }
   };
 
   const handleCardClick = (id: string) => {
@@ -125,14 +112,11 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                     {priceList.no}
                   </CardTitle>
                   <CardDescription className="text-sm mt-1 truncate">
-                    {priceList.vendor.name}
+                    {priceList.vender?.name || priceList.vendor?.name}
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge
-                    variant={getStatusVariant(priceList.status)}
-                    className="capitalize shrink-0"
-                  >
+                  <Badge variant={priceList.status} className="capitalize text-xs">
                     {priceList.status}
                   </Badge>
                   <DropdownMenu>
@@ -167,7 +151,17 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Calendar className="h-4 w-4 shrink-0" />
                   <span className="truncate">
-                    {priceList.effectivePeriod.from} - {priceList.effectivePeriod.to}
+                    {(() => {
+                      const period = priceList.effectivePeriod;
+                      if (typeof period === "string") {
+                        const [start, end] = period.split(" - ");
+                        if (start && end) {
+                          return `${formatDate(start, dateFormat || "yyyy-MM-dd")} - ${formatDate(end, dateFormat || "yyyy-MM-dd")}`;
+                        }
+                        return period;
+                      }
+                      return `${formatDate(period?.from, dateFormat || "yyyy-MM-dd")} - ${formatDate(period?.to, dateFormat || "yyyy-MM-dd")}`;
+                    })()}
                   </span>
                 </div>
 
@@ -175,10 +169,13 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <List className="h-4 w-4 shrink-0" />
                     <span className="text-xs">
-                      {priceList.itemsCount} {tPriceList("items")}
+                      {priceList.pricelist_detail?.length || priceList.itemsCount || 0}{" "}
+                      {tPriceList("items")}
                     </span>
                   </div>
-                  <div className="text-xs text-muted-foreground">{priceList.currency.code}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {priceList.currency?.code || priceList.currency?.name}
+                  </div>
                 </div>
 
                 {priceList.rfp && (

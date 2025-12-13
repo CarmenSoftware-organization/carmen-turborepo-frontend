@@ -35,9 +35,11 @@ import {
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import type { PriceListDtoList } from "../_dto/price-list-dto";
+import { formatDate } from "@/utils/format/date";
+import { Badge } from "@/components/ui/badge";
 
 interface ListPriceListProps {
-  readonly priceLists?: PriceListDtoList[];
+  readonly priceLists?: any[];
   readonly isLoading?: boolean;
 }
 
@@ -80,7 +82,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
   };
 
   // Define columns
-  const columns = useMemo<ColumnDef<PriceListDtoList>[]>(
+  const columns = useMemo<ColumnDef<any>[]>(
     () => [
       {
         id: "select",
@@ -127,8 +129,10 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
           <DataGridColumnHeader column={column} title={tTableHeader("vendor")} />
         ),
         cell: ({ row }) => {
+          // @ts-ignore
           const priceList = row.original;
-          return <span>{priceList.vendor?.name}</span>;
+          // @ts-ignore
+          return <span>{priceList.vender?.name || priceList.vendor?.name}</span>;
         },
         enableSorting: false,
         size: 200,
@@ -141,18 +145,39 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
             <span>{tTableHeader("effective_period")}</span>
           </div>
         ),
-        cell: ({ row }) => (
-          <span>
-            {row.original.effectivePeriod.from} - {row.original.effectivePeriod.to}
-          </span>
-        ),
+        cell: ({ row }) => {
+          // @ts-ignore
+          const period = row.original.effectivePeriod;
+          if (typeof period === "string") {
+            const [start, end] = period.split(" - ");
+            if (start && end) {
+              return (
+                <div>
+                  {formatDate(start, dateFormat || "yyyy-MM-dd")} -{" "}
+                  {formatDate(end, dateFormat || "yyyy-MM-dd")}
+                </div>
+              );
+            }
+            return <span>{period}</span>;
+          }
+          return (
+            <div>
+              {formatDate(period?.from, dateFormat || "yyyy-MM-dd")} -{" "}
+              {formatDate(period?.to, dateFormat || "yyyy-MM-dd")}
+            </div>
+          );
+        },
         enableSorting: false,
         size: 200,
       },
       {
         accessorKey: "status",
         header: () => <span>{tTableHeader("status")}</span>,
-        cell: ({ row }) => <span className="capitalize">{row.original.status}</span>,
+        cell: ({ row }) => (
+          <Badge variant={row.original.status} className="capitalize text-xs">
+            {row.original.status}
+          </Badge>
+        ),
         enableSorting: false,
         size: 80,
         meta: {
@@ -163,7 +188,10 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
       {
         accessorKey: "itemsCount",
         header: () => <span className="text-right">{tTableHeader("items")}</span>,
-        cell: ({ row }) => <span className="text-right block">{row.original.itemsCount}</span>,
+        // @ts-ignore
+        cell: ({ row }) => (
+          <span className="text-right block">{row.original.pricelist_detail?.length || 0}</span>
+        ),
         enableSorting: false,
         size: 90,
         meta: {

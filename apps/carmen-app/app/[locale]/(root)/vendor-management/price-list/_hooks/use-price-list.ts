@@ -6,240 +6,116 @@ import type {
   PriceListCreateDto,
   PriceListUpdateDto,
 } from "../_dto/price-list-dto";
-import type { ParamsGetDto } from "@/dtos/param.dto";
+import { backendApi } from "@/lib/backend-api";
+import { ParamsGetDto } from "@/dtos/param.dto";
+import {
+  getAllApiRequest,
+  getByIdApiRequest,
+  postApiRequest,
+  requestHeaders,
+  updateApiRequest,
+} from "@/lib/config.api";
+import { CreatePriceListDto, UpdatePriceListDto } from "@/dtos/price-list.dto";
+import axios from "axios";
 
-// remove when use real api
-const delay = (ms: number = 500) => new Promise((resolve) => setTimeout(resolve, ms));
+const queryKey = "price-list";
 
-// ============================================================================
-// GET All Price Lists
-// ============================================================================
-export const usePriceLists = (token: string, buCode: string, params?: ParamsGetDto) => {
+const priceListApiUrl = (buCode: string, id?: string) => {
+  const baseUrl = `${backendApi}/api/config/${buCode}/price-list`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+};
+
+export const usePriceList = (token: string, buCode: string, params?: ParamsGetDto) => {
+  const API_URL = priceListApiUrl(buCode);
+
+  console.log("API_URL", API_URL);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["price-lists", buCode, params],
+    queryKey: [queryKey, buCode, params],
     queryFn: async () => {
-      await delay(300); // remove when use real api
-
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
-
-      return mockPriceListList; // remove when use real api
+      return getAllApiRequest(API_URL, token, "Failed to fetch price list", params);
     },
     enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
+
+  console.log("data", data);
 
   const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
 
-  return {
-    data,
-    isLoading,
-    error,
-    isUnauthorized,
-  };
+  return { data, isLoading, error, isUnauthorized };
 };
 
-// ============================================================================
-// GET Price List by ID
-// ============================================================================
 export const usePriceListById = (token: string, buCode: string, id: string) => {
+  const API_URL_BY_ID = priceListApiUrl(buCode, id);
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ["price-list", buCode, id],
+    queryKey: [queryKey, buCode, id],
     queryFn: async () => {
-      await delay(300); // remove when use real api
-
-      if (!token || !buCode || !id) {
-        throw new Error("Unauthorized: Missing token or buCode");
-      }
-
-      // remove when use real api
-      const priceList = getMockPriceListById(id);
-
-      if (!priceList) {
-        throw new Error("Price list not found");
-      }
-
-      return priceList;
-    },
-    enabled: !!token && !!buCode && !!id,
-  });
-
-  const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
-
-  return {
-    data,
-    isLoading,
-    error,
-    isUnauthorized,
-  };
-};
-
-// ============================================================================
-// CREATE Price List
-// ============================================================================
-export const useCreatePriceList = (token: string, buCode: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (data: PriceListCreateDto) => {
-      await delay(500); // remove when use real api
-
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
-
-      // remove when use real api
-      const newId = `pl-${String(mockPriceListList.length + 1).padStart(3, "0")}`;
-
-      const vendor = mockPriceListList.find((pl) => pl.vendor.id === data.vendorId)?.vendor || {
-        id: data.vendorId,
-        name: "New Vendor",
-      };
-
-      const currency = mockPriceListList.find((pl) => pl.currency.id === data.currencyId)
-        ?.currency || {
-        id: data.currencyId,
-        code: "THB",
-        exchangeRateDate: new Date().toISOString(),
-      };
-
-      const rfp = data.rfpId
-        ? mockPriceListList.find((pl) => pl.rfp?.id === data.rfpId)?.rfp || {
-            id: data.rfpId,
-            name: "New RFP",
-          }
-        : undefined;
-
-      const newPriceList: PriceListDtoList = {
-        id: newId,
-        no: data.no,
-        vendor,
-        rfp,
-        description: data.description,
-        status: data.status,
-        itemsCount: 0,
-        currency,
-        isActive: data.status === "active",
-        effectivePeriod: data.effectivePeriod,
-        lastUpdate: new Date().toISOString(),
-        taxProfile: {
-          id: "tp-001",
-          name: "VAT 7%",
-          rate: 7,
-        },
-      };
-
-      return newPriceList;
+      return getByIdApiRequest(API_URL_BY_ID, token, "Failed to fetch price list");
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["price-lists", buCode] });
+    enabled: !!token && !!buCode,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
+
+  return { data, isLoading, error, isUnauthorized };
+};
+
+export const useCreatePriceList = (token: string, buCode: string) => {
+  const API_URL = priceListApiUrl(buCode);
+  return useMutation({
+    mutationFn: async (dataPriceList: CreatePriceListDto) => {
+      return postApiRequest(API_URL, token, dataPriceList, "Failed to create price list");
     },
   });
 };
 
-// ============================================================================
-// UPDATE Price List
-// ============================================================================
-export const useUpdatePriceList = (token: string, buCode: string, id: string) => {
-  const queryClient = useQueryClient();
+export const useUpdatePriceList = (
+  token: string,
+  buCode: string,
+  id: string,
+  dataPriceList: UpdatePriceListDto
+) => {
+  const API_URL_BY_ID = priceListApiUrl(buCode, id);
+  const { data, error, isPending } = useMutation({
+    mutationFn: async () => {
+      return updateApiRequest(
+        API_URL_BY_ID,
+        token,
+        dataPriceList,
+        "Failed to update price list",
+        "PUT"
+      );
+    },
+  });
 
+  return { data, error, isPending };
+};
+
+export const useDeletePriceList = (token: string, buCode: string) => {
   return useMutation({
-    mutationFn: async (data: PriceListUpdateDto) => {
-      await delay(500); // remove when use real api
-
+    mutationFn: async (id: string) => {
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
-
-      // remove when use real api
-      const existingPriceList = getMockPriceListById(id);
-
-      if (!existingPriceList) {
-        throw new Error("Price list not found");
+      try {
+        const API_URL_BY_ID = priceListApiUrl(buCode, id);
+        const response = await axios.delete(API_URL_BY_ID, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting price list:", error);
+        throw error;
       }
-
-      const vendor = mockPriceListList.find((pl) => pl.vendor.id === data.vendorId)?.vendor || {
-        id: data.vendorId,
-        name: "Updated Vendor",
-      };
-
-      const currency = mockPriceListList.find((pl) => pl.currency.id === data.currencyId)
-        ?.currency || {
-        id: data.currencyId,
-        code: "THB",
-        exchangeRateDate: new Date().toISOString(),
-      };
-
-      const rfp = data.rfpId
-        ? mockPriceListList.find((pl) => pl.rfp?.id === data.rfpId)?.rfp || {
-            id: data.rfpId,
-            name: "Updated RFP",
-          }
-        : undefined;
-
-      const updatedProducts = data.products
-        ? existingPriceList.products.map((product) => {
-            const updatedProduct = data.products?.find((p) => p.id === product.id);
-            if (updatedProduct) {
-              return {
-                ...product,
-                moqs: updatedProduct.moqs,
-                lastUpdate: new Date().toISOString(),
-              };
-            }
-            return product;
-          })
-        : existingPriceList.products;
-
-      const updatedPriceList: PriceListDetailDto = {
-        ...existingPriceList,
-        no: data.no,
-        vendor,
-        rfp,
-        description: data.description,
-        status: data.status,
-        currency,
-        isActive: data.status === "active",
-        effectivePeriod: data.effectivePeriod,
-        products: updatedProducts,
-        itemsCount: updatedProducts.length,
-        lastUpdate: new Date().toISOString(),
-      };
-
-      return updatedPriceList;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["price-lists", buCode] });
-      queryClient.invalidateQueries({ queryKey: ["price-list", buCode, id] });
-    },
-  });
-};
-
-// ============================================================================
-// DELETE Price List
-// ============================================================================
-export const useDeletePriceList = (token: string, buCode: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await delay(500); // remove when use real api
-
-      if (!token || !buCode) {
-        throw new Error("Unauthorized: Missing token or buCode");
-      }
-
-      // remove when use real api
-      const priceList = getMockPriceListById(id);
-
-      if (!priceList) {
-        throw new Error("Price list not found");
-      }
-
-      return { id };
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["price-lists", buCode] });
     },
   });
 };
