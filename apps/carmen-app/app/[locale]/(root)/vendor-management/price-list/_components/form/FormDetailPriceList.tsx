@@ -147,7 +147,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
   };
 
   return (
-    <div className="h-full max-w-3xl mx-auto flex flex-col">
+    <div className="h-full max-w-5xl mx-auto flex flex-col">
       <div className="flex items-center justify-between pb-4 border-b border-border">
         <div className="flex items-center gap-4">
           <Button

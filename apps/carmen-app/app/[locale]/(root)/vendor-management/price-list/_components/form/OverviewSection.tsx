@@ -39,7 +39,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
         {tPriceList("overview")}
       </h2>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         {/* Price List No */}
         <FormField
           control={form.control}
@@ -88,14 +88,12 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             <FormItem>
               <FormLabel>{tPriceList("vendor")}</FormLabel>
               <FormControl>
-                {isViewMode ? (
-                  <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm">
-                    {/* @ts-ignore */}
-                    {priceList?.vendor?.name || priceList?.vender?.name || "-"}
-                  </div>
-                ) : (
-                  <Input {...field} disabled placeholder={tPriceList("select_vendor")} />
-                )}
+                <Input
+                  {...field}
+                  disabled
+                  placeholder={tPriceList("select_vendor")}
+                  value={priceList?.vendor?.name || priceList?.vender?.name || "-"}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,11 +109,13 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
               <FormLabel>{tPriceList("currency")}</FormLabel>
               <FormControl>
                 {isViewMode ? (
-                  <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm">
-                    {priceList?.currency?.name || "-"}
-                  </div>
+                  <Input
+                    {...field}
+                    disabled
+                    placeholder={tPriceList("select_currency")}
+                    value={priceList?.currency?.name || "-"}
+                  />
                 ) : (
-                  // <Input {...field} disabled placeholder={tPriceList("select_currency")} />
                   <CurrencyLookup onValueChange={field.onChange} value={field.value} />
                 )}
               </FormControl>
@@ -132,13 +132,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             <FormItem>
               <FormLabel>{tPriceList("rfp")}</FormLabel>
               <FormControl>
-                {isViewMode ? (
-                  <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm">
-                    {priceList?.rfp?.name || "-"}
-                  </div>
-                ) : (
-                  <Input {...field} disabled placeholder={tPriceList("select_rfp")} />
-                )}
+                <Input {...field} disabled placeholder={tPriceList("select_rfp")} />
               </FormControl>
               <FormMessage />
             </FormItem>
