@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils";
 import type { PriceListFormData } from "../../_schema/price-list.schema";
 import type { PriceListDetailDto } from "../../_dto/price-list-dto";
 import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import VendorLookup from "@/components/lookup/VendorLookup";
 
 interface OverviewSectionProps {
   form: UseFormReturn<PriceListFormData>;
@@ -48,7 +49,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             <FormItem>
               <FormLabel>{tPriceList("no")}</FormLabel>
               <FormControl>
-                <Input {...field} disabled={isViewMode} placeholder={tPriceList("enter_no")} />
+                <Input {...field} disabled placeholder={tPriceList("enter_no")} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,12 +89,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             <FormItem>
               <FormLabel>{tPriceList("vendor")}</FormLabel>
               <FormControl>
-                <Input
-                  {...field}
-                  disabled
-                  placeholder={tPriceList("select_vendor")}
-                  value={priceList?.vendor?.name || priceList?.vender?.name || "-"}
-                />
+                <VendorLookup onValueChange={field.onChange} value={field.value} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -110,7 +106,6 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
               <FormControl>
                 {isViewMode ? (
                   <Input
-                    {...field}
                     disabled
                     placeholder={tPriceList("select_currency")}
                     value={priceList?.currency?.name || "-"}

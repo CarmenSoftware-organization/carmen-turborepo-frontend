@@ -17,13 +17,18 @@ export const priceListSchema = z.object({
   products: z
     .array(
       z.object({
-        id: z.string(),
+        id: z.string(), // This will act as product_id
+        code: z.string().optional(),
+        name: z.string().optional(),
         moqs: z.array(
           z.object({
             minQuantity: z.number().min(0),
-            unit: z.string(),
+            unit: z.string().optional(), // Display unit name
+            unitId: z.string().optional(), // ID for payload
             price: z.number().min(0),
             leadTimeDays: z.number().min(0),
+            taxProfileId: z.string().optional(),
+            taxRate: z.number().optional(),
           })
         ),
       })
