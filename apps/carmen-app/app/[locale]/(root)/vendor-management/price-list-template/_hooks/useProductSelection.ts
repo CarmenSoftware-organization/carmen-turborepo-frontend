@@ -11,7 +11,7 @@ export const useProductSelection = (
     return (
       templateData?.products?.map((product) => ({
         id: product.id,
-        name: product.name,
+        name: product.product_name || "",
         moq:
           product.moq?.map((m) => ({
             ...m,

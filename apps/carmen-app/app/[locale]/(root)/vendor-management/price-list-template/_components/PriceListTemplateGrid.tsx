@@ -104,7 +104,7 @@ export default function PriceListTemplateGrid({
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>
-                  {tPriceListTemplate("valid_period")}: {template.valid_period}{" "}
+                  {tPriceListTemplate("valid_period")}: {template.validity_period}{" "}
                   {tPriceListTemplate("days")}
                 </span>
               </div>
@@ -112,14 +112,14 @@ export default function PriceListTemplateGrid({
                 <Calendar className="h-3.5 w-3.5" />
                 <span>
                   {tPriceListTemplate("created")}:{" "}
-                  {format(new Date(template.create_date), "dd/MM/yyyy")}
+                  {format(new Date(template.created_at), "dd/MM/yyyy")}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>
                   {tPriceListTemplate("updated")}:{" "}
-                  {format(new Date(template.update_date), "dd/MM/yyyy")}
+                  {format(new Date(template.updated_at), "dd/MM/yyyy")}
                 </span>
               </div>
             </div>

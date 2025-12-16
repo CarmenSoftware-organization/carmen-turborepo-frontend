@@ -144,7 +144,7 @@ export default function PriceListTemplateList({
         size: 300,
       },
       {
-        accessorKey: "valid_period",
+        accessorKey: "validity_period",
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
@@ -152,7 +152,7 @@ export default function PriceListTemplateList({
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{row.original.valid_period} days</span>,
+        cell: ({ row }) => <span>{row.original.validity_period} days</span>,
         enableSorting: false,
         size: 150,
       },
@@ -165,7 +165,7 @@ export default function PriceListTemplateList({
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.create_date), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{format(new Date(row.original.created_at), "dd/MM/yyyy")}</span>,
         enableSorting: false,
         size: 150,
       },
@@ -178,7 +178,7 @@ export default function PriceListTemplateList({
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.update_date), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{format(new Date(row.original.updated_at), "dd/MM/yyyy")}</span>,
         enableSorting: false,
         size: 150,
       },

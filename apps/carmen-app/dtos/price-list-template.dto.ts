@@ -4,10 +4,10 @@ interface BasePriceListTemplateDto {
   name: string;
   status: StatusPriceListTemplate;
   description?: string;
-  valid_period: number;
-  vendor_instruction?: string;
-  create_date: Date;
-  update_date: Date;
+  validity_period?: number | null;
+  vendor_instructions?: string | null;
+  created_at: Date;
+  updated_at: Date;
 }
 
 interface CurrencyDto {
@@ -30,19 +30,22 @@ interface MOQItemDto {
 interface ProductDto {
   id: string;
   product_id?: string;
-  name: string;
-  code: string;
+  product_name?: string | null;
+  product_code?: string;
+  doc_version?: number;
+  name?: string; // keeping for compatibility until full migration
+  code?: string; // keeping for compatibility until full migration
   default_order?: DefaultOrderDto;
   moq?: MOQItemDto[];
 }
 
-interface RfpDtoPL {
+export interface RfpDtoPL {
   id: string;
   name: string;
   status: StatusPriceListTemplate | "completed" | "submit"; // Keep legacy statuses for RFP if needed, or align with new enum
   priority: "high" | "medium" | "low";
   description?: string;
-  create_date: Date;
+  created_at: Date;
   res_rate: number;
   count_vendors: number;
 }

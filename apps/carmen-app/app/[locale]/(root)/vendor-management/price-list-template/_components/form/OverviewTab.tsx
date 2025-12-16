@@ -91,7 +91,7 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
           <div className="grid gap-4 md:grid-cols-2">
             <FormField
               control={form.control}
-              name="valid_period"
+              name="validity_period"
               required
               render={({ field }) => (
                 <FormItem>
@@ -121,7 +121,7 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
 
           <FormField
             control={form.control}
-            name="vendor_instruction"
+            name="vendor_instructions"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tPlt("vendor_instruction")}</FormLabel>

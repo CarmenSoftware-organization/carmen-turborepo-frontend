@@ -47,8 +47,8 @@ export default function MainForm({ templateData, mode }: Props) {
       name: templateData?.name || "",
       status: templateData?.status || "draft",
       description: templateData?.description || "",
-      vendor_instruction: templateData?.vendor_instruction || "",
-      valid_period: templateData?.valid_period || 90,
+      vendor_instructions: templateData?.vendor_instructions || "",
+      validity_period: templateData?.validity_period || 90,
       currency_id: templateData?.currency?.id || "",
       products: {
         add: [],
@@ -72,8 +72,8 @@ export default function MainForm({ templateData, mode }: Props) {
           name: data.name,
           status: data.status,
           description: data.description,
-          valid_period: data.valid_period,
-          vendor_instruction: data.vendor_instruction,
+          valid_period: data.validity_period,
+          vendor_instruction: data.vendor_instructions,
           currency_id: data.currency_id,
           products: {
             add: data.products.add,
@@ -86,8 +86,8 @@ export default function MainForm({ templateData, mode }: Props) {
           name: data.name,
           status: data.status,
           description: data.description,
-          valid_period: data.valid_period,
-          vendor_instruction: data.vendor_instruction,
+          valid_period: data.validity_period,
+          vendor_instruction: data.vendor_instructions,
           currency_id: data.currency_id,
           products: {
             add: data.products.add,
@@ -127,11 +127,11 @@ export default function MainForm({ templateData, mode }: Props) {
             {templateData && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Badge variant={templateData.status} className="px-2 py-0.5 font-medium">
-                  {templateData.status.toUpperCase()}
+                  {templateData.status}
                 </Badge>
                 <span>•</span>
                 <span>
-                  {tPlt("last_update")}: {new Date(templateData.update_date).toLocaleDateString()}
+                  {tPlt("last_update")}: {new Date(templateData.updated_at).toLocaleDateString()}
                 </span>
               </div>
             )}

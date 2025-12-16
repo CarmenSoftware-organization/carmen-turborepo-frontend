@@ -1,4 +1,5 @@
 import { use, useMemo } from "react";
+import { RfpDtoPL } from "@/dtos/price-list-template.dto";
 import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
 import { DataGridTable } from "@/components/ui/data-grid-table";
@@ -10,17 +11,6 @@ import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
-
-interface RfpDtoPL {
-  id: string;
-  name: string;
-  status: "active" | "inactive" | "draft" | "submit" | "completed";
-  priority: "high" | "medium" | "low";
-  description?: string;
-  create_date: Date;
-  res_rate: number;
-  count_vendors: number;
-}
 
 interface Props {
   rfps: RfpDtoPL[];
@@ -174,7 +164,7 @@ export default function TabRFP({ rfps }: Props) {
         },
       },
       {
-        accessorKey: "create_date",
+        accessorKey: "created_at",
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
@@ -182,7 +172,7 @@ export default function TabRFP({ rfps }: Props) {
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.create_date), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{format(new Date(row.original.created_at), "dd/MM/yyyy")}</span>,
         enableSorting: false,
         size: 150,
       },

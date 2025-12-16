@@ -30,7 +30,7 @@ export default function PriceListTemplate() {
 
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { data, isLoading, isUnauthorized } = usePriceListTemplates(token, buCode);
+  const { data: templates, isLoading, isUnauthorized } = usePriceListTemplates(token, buCode);
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -164,14 +164,14 @@ export default function PriceListTemplate() {
   const content = (
     <>
       <div className="block lg:hidden">
-        <PriceListTemplateGrid templates={data ?? []} isLoading={isLoading} />
+        <PriceListTemplateGrid templates={templates?.data ?? []} isLoading={isLoading} />
       </div>
 
       <div className="hidden lg:block">
         {view === VIEW.LIST ? (
-          <PriceListTemplateList templates={data ?? []} isLoading={isLoading} />
+          <PriceListTemplateList templates={templates?.data ?? []} isLoading={isLoading} />
         ) : (
-          <PriceListTemplateGrid templates={data ?? []} isLoading={isLoading} />
+          <PriceListTemplateGrid templates={templates?.data ?? []} isLoading={isLoading} />
         )}
       </div>
     </>

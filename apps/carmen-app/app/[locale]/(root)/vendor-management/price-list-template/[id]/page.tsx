@@ -16,5 +16,5 @@ export default function IdPriceListTemplatePage() {
 
   if (isLoading) return <DetailLoading />;
 
-  return <MainForm templateData={data} mode={formType.VIEW} />;
+  return <MainForm templateData={data.data} mode={formType.VIEW} />;
 }
