@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { mockPriceListList, getMockPriceListById } from "../_mock/price-list-mock"; // remove when use real api
+
 import type {
   PriceListDtoList,
   PriceListDetailDto,
@@ -28,8 +28,6 @@ const priceListApiUrl = (buCode: string, id?: string) => {
 export const usePriceList = (token: string, buCode: string, params?: ParamsGetDto) => {
   const API_URL = priceListApiUrl(buCode);
 
-  console.log("API_URL", API_URL);
-
   const { data, isLoading, error } = useQuery({
     queryKey: [queryKey, buCode, params],
     queryFn: async () => {
@@ -41,8 +39,6 @@ export const usePriceList = (token: string, buCode: string, params?: ParamsGetDt
     enabled: !!token && !!buCode,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  console.log("data", data);
 
   const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
 

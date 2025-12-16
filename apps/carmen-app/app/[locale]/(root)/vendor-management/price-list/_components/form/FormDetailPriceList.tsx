@@ -17,7 +17,7 @@ import type { PriceListDetailDto } from "../../_dto/price-list-dto";
 import OverviewSection from "./OverviewSection";
 import ProductsSection from "./ProductsSection";
 import { formatDate } from "@/utils/format/date";
-import { useUpdatePriceList } from "../../_hooks/use-price-list";
+import { useCreatePriceList, useUpdatePriceList } from "../../_hooks/use-price-list";
 
 interface DetailPriceListProps {
   readonly priceList?: any;
@@ -32,7 +32,8 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
   const [mode, setMode] = useState<formType>(initialMode);
 
   const isViewMode = mode === formType.VIEW;
-  const isEditMode = mode === formType.EDIT;
+  const isEditMode = mode === formType.EDIT || mode === formType.ADD;
+  const isAddMode = mode === formType.ADD;
 
   console.log("priceList", priceList);
 
@@ -51,6 +52,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
     },
   });
 
+  const { mutate: createPriceList, isPending: isCreating } = useCreatePriceList(token, buCode);
   const { mutate: updatePriceList, isPending: isUpdating } = useUpdatePriceList(
     token,
     buCode,
@@ -101,6 +103,11 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
   };
 
   const handleCancel = () => {
+    if (mode === formType.ADD) {
+      router.push("/vendor-management/price-list");
+      return;
+    }
+
     if (priceList) {
       const getEffectivePeriod = (period: any) => {
         if (typeof period === "string") {
@@ -164,16 +171,31 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
 
     console.log("Submit Payload:", JSON.stringify(payload, null, 2));
 
-    // @ts-ignore
-    updatePriceList(payload, {
-      onSuccess: () => {
-        toastSuccess({ message: tCommon("update_success") });
-        setMode(formType.VIEW);
-      },
-      onError: (error) => {
-        toastError({ message: error.message || tCommon("update_error") });
-      },
-    });
+    if (priceList?.id) {
+      // @ts-ignore
+      updatePriceList(payload, {
+        onSuccess: () => {
+          toastSuccess({ message: tCommon("update_success") });
+          setMode(formType.VIEW);
+          router.refresh();
+        },
+        onError: (error) => {
+          toastError({ message: error.message || tCommon("update_error") });
+        },
+      });
+    } else {
+      // @ts-ignore
+      createPriceList(payload, {
+        onSuccess: () => {
+          toastSuccess({ message: tCommon("create_success") });
+          router.push("/vendor-management/price-list");
+          router.refresh();
+        },
+        onError: (error) => {
+          toastError({ message: error.message || tCommon("create_error") });
+        },
+      });
+    }
   };
 
   const getStatusVariant = (status: string) => {
@@ -231,9 +253,14 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
             </Button>
           )}
 
-          {isEditMode && (
+          {(isEditMode || isAddMode) && (
             <>
-              <Button onClick={handleCancel} variant="outline" size="sm" disabled={isUpdating}>
+              <Button
+                onClick={handleCancel}
+                variant="outline"
+                size="sm"
+                disabled={isUpdating || isCreating}
+              >
                 <X className="h-4 w-4 mr-2" />
                 {tCommon("cancel")}
               </Button>
@@ -241,10 +268,10 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
                 onClick={form.handleSubmit(onSubmit)}
                 variant="default"
                 size="sm"
-                disabled={isUpdating}
+                disabled={isUpdating || isCreating}
               >
                 <Save className="h-4 w-4 mr-2" />
-                {isUpdating ? tCommon("saving") : tCommon("save")}
+                {isUpdating || isCreating ? tCommon("saving") : tCommon("save")}
               </Button>
             </>
           )}
