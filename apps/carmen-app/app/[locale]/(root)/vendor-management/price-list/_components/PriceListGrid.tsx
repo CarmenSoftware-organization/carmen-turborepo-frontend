@@ -65,7 +65,7 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
         setDeleteId("");
         setAlertOpen(false);
         setSelectedPriceList(null);
-        queryClient.invalidateQueries({ queryKey: ["price-lists", buCode] });
+        queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
       },
       onError: () => {
         toastError({ message: "Failed to delete price list" });

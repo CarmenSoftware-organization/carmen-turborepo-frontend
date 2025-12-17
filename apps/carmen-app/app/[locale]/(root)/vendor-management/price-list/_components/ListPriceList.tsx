@@ -69,8 +69,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         setDeleteId("");
         setAlertOpen(false);
         setSelectedPriceList(null);
-        // Invalidate and refetch price list data
-        queryClient.invalidateQueries({ queryKey: ["price-lists", buCode] });
+        queryClient.invalidateQueries({ queryKey: ["price-list", buCode] });
       },
       onError: () => {
         toastError({ message: "Failed to delete price list" });

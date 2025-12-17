@@ -1,5 +1,18 @@
 "use client";
 
+import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { PriceListTemplateListDto } from "@/dtos/price-list-template.dto";
 import {
   DropdownMenu,
@@ -24,6 +37,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
+import { useDeletePriceListTemplate } from "@/hooks/use-price-list-template";
 
 interface PriceListTemplateListProps {
   readonly templates: PriceListTemplateListDto[];
@@ -44,7 +58,40 @@ export default function PriceListTemplateList({
 }: PriceListTemplateListProps) {
   const tStatus = useTranslations("Status");
   const tHeader = useTranslations("TableHeader");
+  const { token, buCode } = useAuth();
+  const [deleteId, setDeleteId] = useState<string>("");
+  const [templateToDelete, setTemplateToDelete] = useState<PriceListTemplateListDto | null>(null);
+  const [alertOpen, setAlertOpen] = useState(false);
 
+  const { mutate: deleteTemplate, isPending: isDeleting } = useDeletePriceListTemplate(
+    token,
+    buCode
+  );
+
+  const handleDeleteClick = (template: PriceListTemplateListDto) => {
+    setTemplateToDelete(template);
+    setDeleteId(template.id);
+    setAlertOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteId) return;
+
+    deleteTemplate(deleteId, {
+      onSuccess: () => {
+        toastSuccess({ message: "Price list template deleted successfully" });
+        setAlertOpen(false);
+        setDeleteId("");
+        setTemplateToDelete(null);
+      },
+      onError: () => {
+        toastError({ message: "Failed to delete price list template" });
+        setAlertOpen(false);
+        setDeleteId("");
+        setTemplateToDelete(null);
+      },
+    });
+  };
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
@@ -205,7 +252,7 @@ export default function PriceListTemplateList({
                   {canDelete && (
                     <DropdownMenuItem
                       className="text-destructive cursor-pointer hover:bg-transparent"
-                      onClick={() => console.log(template.id)}
+                      onClick={() => handleDeleteClick(template)}
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete
@@ -254,27 +301,51 @@ export default function PriceListTemplateList({
   });
 
   return (
-    <DataGrid
-      table={table}
-      recordCount={templates.length}
-      isLoading={isLoading}
-      loadingMode="skeleton"
-      emptyMessage="No data"
-      tableLayout={{
-        headerSticky: true,
-        dense: false,
-        rowBorder: true,
-        headerBackground: true,
-        headerBorder: true,
-        width: "fixed",
-      }}
-    >
-      <DataGridContainer>
-        <ScrollArea className="max-h-[calc(100vh-250px)]">
-          <DataGridTable />
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </DataGridContainer>
-    </DataGrid>
+    <>
+      <DataGrid
+        table={table}
+        recordCount={templates.length}
+        isLoading={isLoading}
+        loadingMode="skeleton"
+        emptyMessage="No data"
+        tableLayout={{
+          headerSticky: true,
+          dense: false,
+          rowBorder: true,
+          headerBackground: true,
+          headerBorder: true,
+          width: "fixed",
+        }}
+      >
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+      </DataGrid>
+
+      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Price List Template</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{templateToDelete?.name}&quot;? This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
