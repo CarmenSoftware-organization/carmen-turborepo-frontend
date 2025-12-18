@@ -18,6 +18,7 @@ import { DeliveryPointSelectLookup } from "@/components/lookup/DeliveryPointSele
 import { UnitSelectCell } from "../UnitSelectCell";
 import ExpandedContent from "./ExpandedContent";
 import { PR_STATUS } from "../../_constants/pr-status";
+import CurrencyLookup from "@/components/lookup/CurrencyLookup";
 
 interface ColumnConfig {
   currentMode: formType;
@@ -417,6 +418,32 @@ export const createPurchaseItemColumns = (
         headerTitle: tHeader("approved"),
         cellClassName: "text-right",
         headerClassName: "text-right",
+      },
+    },
+    {
+      accessorKey: "currency_id",
+      header: ({ column }) => (
+        <div className="flex justify-center">
+          <DataGridColumnHeader column={column} title={tHeader("currency")} />
+        </div>
+      ),
+      cell: ({ row }) => {
+        const item = row.original;
+
+        return currentMode === formType.VIEW ? (
+          <p className="text-xs">{item.currency_id}</p>
+        ) : (
+          <CurrencyLookup
+            value={(getItemValue(item, "currency_id") as string) || ""}
+            onValueChange={(value) => onItemUpdate(item.id, "currency_id", value)}
+            classNames="h-7 text-xs"
+          />
+        );
+      },
+      enableSorting: false,
+      size: currentMode === formType.VIEW ? 100 : 180,
+      meta: {
+        headerTitle: tHeader("currency"),
       },
     },
     {
