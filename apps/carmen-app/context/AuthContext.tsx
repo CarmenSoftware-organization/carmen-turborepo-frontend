@@ -123,11 +123,15 @@ interface BusinessUnit {
   };
 }
 
-interface User {
+interface UserData {
   id: string;
   email: string;
   user_info: UserInfo;
   business_unit: BusinessUnit[];
+}
+
+interface User {
+  data: UserData;
   permissions: Permissions;
 }
 
@@ -240,9 +244,11 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     quantity,
     recipe,
   } = useMemo(() => {
-    const defaultBu = user?.business_unit?.find((bu: BusinessUnit) => bu.is_default === true);
+    // console.log("user", user);
 
-    const firstBu = user?.business_unit?.[0];
+    const defaultBu = user?.data.business_unit?.find((bu: BusinessUnit) => bu.is_default === true);
+
+    const firstBu = user?.data.business_unit?.[0];
     const selectedBu = defaultBu || firstBu;
 
     return {
@@ -260,9 +266,9 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
-    if (user?.business_unit?.length && isHydrated) {
-      const defaultBu = user.business_unit.find((bu: BusinessUnit) => bu.is_default === true);
-      const firstBu = user.business_unit[0];
+    if (user?.data.business_unit?.length && isHydrated) {
+      const defaultBu = user.data.business_unit.find((bu: BusinessUnit) => bu.is_default === true);
+      const firstBu = user.data.business_unit[0];
       const newTenantId = defaultBu?.id ?? firstBu?.id ?? "";
       const newBuCode = defaultBu?.code ?? firstBu?.code ?? "";
 
@@ -330,7 +336,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
   // ฟังก์ชันจัดการการเปลี่ยน tenant
   const handleChangeTenant = useCallback(
     async (id: string) => {
-      if (!id || !token || !user?.business_unit?.length) return;
+      if (!id || !token || !user?.data.business_unit?.length) return;
 
       // ป้องกันการ trigger ซ้ำเมื่อมาจาก cross-tab sync
       if (isFromStorageEvent) {
@@ -338,7 +344,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       }
 
       // หา business unit ที่เลือกเพื่อดึง bu_code
-      const selectedBu = user.business_unit.find((bu: BusinessUnit) => bu.id === id);
+      const selectedBu = user.data.business_unit.find((bu: BusinessUnit) => bu.id === id);
 
       if (!selectedBu) {
         console.error("Business unit not found for id:", id);
@@ -363,7 +369,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
         }
       );
     },
-    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.business_unit]
+    [token, updateBusinessUnitMutation, isFromStorageEvent, user?.data.business_unit]
   );
 
   // จัดการการล้าง data เมื่อใน sign-in page (แต่ไม่ใช่เมื่อกำลัง login)
@@ -495,6 +501,8 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       buCode,
     ]
   );
+
+  // console.log("value", value);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

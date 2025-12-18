@@ -6,6 +6,10 @@ import { postApiRequest, updateApiRequest, getByIdApiRequest } from "@/lib/confi
 import axios from "axios";
 
 export const usePurchaseRequest = (token: string, buCode: string, params?: ParamsGetDto) => {
+  if (!token || !buCode) {
+    throw new Error("Unauthorized: Missing token or buCode");
+  }
+
   const API_URL = `${backendApi}/api/purchase-request?bu_code=${buCode}`;
 
   const query = new URLSearchParams();
