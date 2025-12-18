@@ -79,3 +79,18 @@ export const useUpdateUPr = (token: string, buCode: string, id: string, action: 
     },
   });
 };
+
+export const useDeletePr = (token: string, buCode: string) => {
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const API_URL_ID = `${backendApi}/api/${buCode}/purchase-request/${id}`;
+      const res = await axios.delete(API_URL_ID, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      return res.data;
+    },
+  });
+};

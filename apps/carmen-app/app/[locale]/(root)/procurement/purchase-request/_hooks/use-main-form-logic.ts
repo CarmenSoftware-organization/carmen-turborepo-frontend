@@ -69,7 +69,7 @@ export const useMainFormLogic = ({
   );
 
   // Derived Values
-  const requestorName = user?.user_info.firstname + " " + user?.user_info.lastname;
+  const requestorName = user?.data.user_info.firstname + " " + user?.data.user_info.lastname;
   const workflowStages = Array.isArray(initValues?.workflow_history)
     ? initValues.workflow_history.map((item: { current_stage?: string }) => ({
         title: item.current_stage ?? "",

@@ -15,6 +15,7 @@ import { VIEW } from "@/constants/enum";
 import SignInDialog from "@/components/SignInDialog";
 import { useAuth } from "@/context/AuthContext";
 import { usePurchaseRequest } from "@/hooks/use-purchase-request";
+import { useDebounce } from "../_hooks/use-debounce";
 import {
   Select,
   SelectContent,
@@ -39,6 +40,15 @@ export default function PurchaseRequestComponent() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [view, setView] = useState<VIEW>(VIEW.LIST);
   const [search, setSearch] = useURL("search");
+  const [keyword, setKeyword] = useState(search || "");
+  const debouncedKeyword = useDebounce(keyword, 500);
+
+  useEffect(() => {
+    if (debouncedKeyword !== search) {
+      setSearch(debouncedKeyword);
+    }
+  }, [debouncedKeyword, search, setSearch]);
+
   const [sort, setSort] = useURL("sort");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [page, setPage] = useURL("page");
@@ -236,6 +246,7 @@ export default function PurchaseRequestComponent() {
         <SearchInput
           defaultValue={search}
           onSearch={setSearch}
+          onInputChange={setKeyword}
           placeholder={tCommon("search")}
           data-id="pr-list-search-input"
         />

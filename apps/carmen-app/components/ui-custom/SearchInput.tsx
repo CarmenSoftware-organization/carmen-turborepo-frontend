@@ -16,6 +16,7 @@ interface Props {
   readonly buttonClassName?: string;
   readonly inputClassName?: string;
   readonly debounceMs?: number;
+  readonly onInputChange?: (value: string) => void;
 }
 export default function SearchInput({
   defaultValue,
@@ -24,6 +25,7 @@ export default function SearchInput({
   containerClassName = "w-full md:w-[405px]",
   buttonClassName = "absolute right-0 top-0 h-full px-3 text-muted-foreground hover:bg-transparent hover:text-muted-foreground/80",
   inputClassName = "",
+  onInputChange,
 }: Props) {
   const tCommon = useTranslations("Common");
 
@@ -46,11 +48,17 @@ export default function SearchInput({
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
+    if (onInputChange) {
+      onInputChange(event.target.value);
+    }
   };
 
   const handleClear = () => {
     setInputValue("");
     onSearch("");
+    if (onInputChange) {
+      onInputChange("");
+    }
   };
 
   return (

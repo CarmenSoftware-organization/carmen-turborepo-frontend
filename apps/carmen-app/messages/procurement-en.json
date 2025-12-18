@@ -64,6 +64,16 @@
     "adjustment_discount": "Adjustment Discount",
     "adjustment_tax": "Adjustment Tax",
     "currency": "Currency",
+    "delete_success": "Delete success",
+    "delete_failed": "Delete failed",
+    "print": "Print",
+    "export": "Export",
+    "delete": "Delete",
+    "no_data": "No data",
+    "confirm_delete": "Confirm Delete",
+    "confirm_delete_message": "Are you sure you want to delete",
+    "cancel": "Cancel",
+    "deleting": "Deleting...",
     "errors": {
       "validation": {
         "required_fields": "Please fill in all required fields",

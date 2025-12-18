@@ -64,6 +64,16 @@
     "adjustment_discount": "ปรับประเภทส่วนลด",
     "adjustment_tax": "ปรับประเภทภาษี",
     "currency": "สกุลเงิน",
+    "delete_success": "ลบสำเร็จ",
+    "delete_failed": "ลบไม่สำเร็จ",
+    "print": "พิมพ์",
+    "export": "ส่งออก",
+    "delete": "ลบ",
+    "no_data": "ไม่พบข้อมูล",
+    "confirm_delete": "ยืนยันการลบ",
+    "confirm_delete_message": "คุณแน่ใจหรือไม่ว่าต้องการลบ",
+    "cancel": "ยกเลิก",
+    "deleting": "กำลังลบ...",
     "errors": {
       "validation": {
         "required_fields": "กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน",

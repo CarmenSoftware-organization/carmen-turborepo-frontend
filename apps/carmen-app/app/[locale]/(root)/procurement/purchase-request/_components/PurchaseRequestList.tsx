@@ -25,7 +25,21 @@ import { PurchaseRequestListDto } from "@/dtos/purchase-request.dto";
 import { useAuth } from "@/context/AuthContext";
 import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
+import { useDeletePr } from "@/hooks/use-purchase-request";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
 import {
   ColumnDef,
   getCoreRowModel,
@@ -77,13 +91,45 @@ export default function PurchaseRequestList({
   convertStatus,
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
-  const tCommon = useTranslations("Common");
+  const tPr = useTranslations("PurchaseRequest");
   const searchParams = useSearchParams();
   const { workflowTypeName } = useWorkflowTypeTranslation();
 
   const { dateFormat, amount, currencyBase } = useAuth();
 
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
+
+  // State for delete dialog
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [prToDelete, setPrToDelete] = useState<PurchaseRequestListDto | null>(null);
+
+  const queryClient = useQueryClient();
+  const { token, buCode } = useAuth();
+
+  const { mutate: deletePr, isPending: isDeleting } = useDeletePr(token, buCode);
+
+  const handleDeleteClick = (pr: PurchaseRequestListDto) => {
+    setPrToDelete(pr);
+    setAlertOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!prToDelete?.id) return;
+
+    deletePr(prToDelete.id, {
+      onSuccess: () => {
+        toastSuccess({ message: tPr("delete_success") });
+        queryClient.invalidateQueries({ queryKey: ["purchase-request"] });
+        setAlertOpen(false);
+        setPrToDelete(null);
+      },
+      onError: (error) => {
+        console.error("Delete error:", error);
+        toastError({ message: tPr("delete_failed") });
+        setAlertOpen(false);
+      },
+    });
+  };
 
   const sorting: SortingState = useMemo(() => {
     if (!sort) return [];
@@ -329,7 +375,7 @@ export default function PurchaseRequestList({
                     }}
                   >
                     <Printer className="h-4 w-4" />
-                    {tCommon("print")}
+                    {tPr("print")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={(e) => {
@@ -338,17 +384,17 @@ export default function PurchaseRequestList({
                     }}
                   >
                     <FileDown className="h-4 w-4" />
-                    {tCommon("export")}
+                    {tPr("export")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log("Delete", pr.id);
+                      handleDeleteClick(pr);
                     }}
                     className="text-destructive cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
-                    {tCommon("delete")}
+                    {tPr("delete")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -363,7 +409,7 @@ export default function PurchaseRequestList({
         },
       },
     ],
-    [tTableHeader, tCommon, currentPage, perpage, dateFormat, amount, currencyBase, convertStatus]
+    [tTableHeader, tPr, currentPage, perpage, dateFormat, amount, currencyBase, convertStatus]
   );
 
   // Initialize table
@@ -401,30 +447,53 @@ export default function PurchaseRequestList({
   });
 
   return (
-    <DataGrid
-      table={table}
-      recordCount={totalItems}
-      isLoading={isLoading}
-      loadingMode="skeleton"
-      emptyMessage={tCommon("no_data")}
-      tableLayout={{
-        headerSticky: true,
-        dense: false,
-        rowBorder: true,
-        headerBackground: true,
-        headerBorder: true,
-        width: "fixed",
-      }}
-    >
-      <div className="w-full space-y-2.5">
-        <DataGridContainer>
-          <ScrollArea className="max-h-[calc(100vh-250px)] pb-2">
-            <DataGridTable />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
-        </DataGridContainer>
-        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
-      </div>
-    </DataGrid>
+    <>
+      <DataGrid
+        table={table}
+        recordCount={totalItems}
+        isLoading={isLoading}
+        loadingMode="skeleton"
+        emptyMessage={tPr("no_data")}
+        tableLayout={{
+          headerSticky: true,
+          dense: false,
+          rowBorder: true,
+          headerBackground: true,
+          headerBorder: true,
+          width: "fixed",
+        }}
+      >
+        <div className="w-full space-y-2.5">
+          <DataGridContainer>
+            <ScrollArea className="max-h-[calc(100vh-250px)] pb-2">
+              <DataGridTable />
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </DataGridContainer>
+          <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+        </div>
+      </DataGrid>
+
+      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{tPr("confirm_delete")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {tPr("confirm_delete_message")} &quot;{prToDelete?.pr_no}&quot;?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>{tPr("cancel")}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isDeleting}
+            >
+              {isDeleting ? tPr("deleting") : tPr("delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
