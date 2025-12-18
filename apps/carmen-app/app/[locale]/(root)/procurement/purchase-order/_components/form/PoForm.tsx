@@ -7,7 +7,12 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import ActionFields from "./ActionFields";
 import HeadPoForm from "./HeadPoForm";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/animate-ui/components/radix/tabs";
 import PoItems from "./PoItems";
 import Grns from "./Grns";
 import Docs from "./Docs";
@@ -27,35 +32,26 @@ export default function PoForm({ poData, mode }: PoFormProps) {
 
   return (
     <DetailsAndComments activityComponent={<ActivityLog />} commentComponent={<CommentPo />}>
-      <Card className="p-8 space-y-8 shadow-sm border-border/60">
+      <Card className="p-4 space-y-4 shadow-sm border-border/60">
         <ActionFields
           currentMode={currentMode}
           setCurrentMode={setCurrentMode}
           title={poData.po_number}
         />
         <HeadPoForm poData={poData} mode={currentMode} />
-        <Tabs defaultValue="items" className="w-full">
-          <TabsList className="w-full justify-start border-b border-border/50 bg-transparent p-0 h-auto rounded-none space-x-6">
-            <TabsTrigger
-              className="w-auto px-0 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-muted-foreground data-[state=active]:text-foreground transition-all"
-              value="items"
-            >
+        <Tabs defaultValue="items">
+          <TabsList className={"mt-4"}>
+            <TabsTrigger className="w-full h-6" value="items">
               {tPurchaseOrder("items")}
             </TabsTrigger>
-            <TabsTrigger
-              className="w-auto px-0 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-muted-foreground data-[state=active]:text-foreground transition-all"
-              value="grn"
-            >
+            <TabsTrigger className="w-full h-6" value="grn">
               {tPurchaseOrder("grn")}
             </TabsTrigger>
-            <TabsTrigger
-              className="w-auto px-0 py-3 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none font-medium text-muted-foreground data-[state=active]:text-foreground transition-all"
-              value="docs"
-            >
+            <TabsTrigger className="w-full h-6" value="docs">
               {tPurchaseOrder("docs")}
             </TabsTrigger>
           </TabsList>
-          <div className="mt-6">
+          <div className="mt-2">
             <TabsContent value="items" className="mt-0">
               <PoItems items={poData.items} />
             </TabsContent>
