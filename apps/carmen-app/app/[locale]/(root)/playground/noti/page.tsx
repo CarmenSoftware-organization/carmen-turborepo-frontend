@@ -55,7 +55,7 @@ export default function NotificationPlayground() {
   };
 
   const handleSendNotification = () => {
-    if (!title || !message || !user?.id) return;
+    if (!title || !message || !user?.data.id) return;
 
     sendNotification(
       {
@@ -63,8 +63,8 @@ export default function NotificationPlayground() {
         message,
         type,
         category: "user-to-user",
-        to_user_id: user.id,
-        from_user_id: user.id,
+        to_user_id: user.data.id,
+        from_user_id: user.data.id,
       },
       {
         onSuccess: handleSuccess,
@@ -91,9 +91,10 @@ export default function NotificationPlayground() {
           {/* User Info */}
           <div className="p-3 bg-muted rounded-lg">
             <p className="text-sm">
-              <span className="font-medium">Logged in as:</span> {user?.email || "Not logged in"}
+              <span className="font-medium">Logged in as:</span>{" "}
+              {user?.data.email || "Not logged in"}
             </p>
-            <p className="text-xs text-muted-foreground mt-1">User ID: {user?.id || "N/A"}</p>
+            <p className="text-xs text-muted-foreground mt-1">User ID: {user?.data.id || "N/A"}</p>
           </div>
 
           {/* Form */}
@@ -157,7 +158,7 @@ export default function NotificationPlayground() {
           <div className="flex gap-2">
             <Button
               onClick={handleSendNotification}
-              disabled={isPending || !user?.id || !title || !message}
+              disabled={isPending || !user?.data.id || !title || !message}
               className="flex-1"
             >
               {isPending ? "Sending..." : "Send Notification"}

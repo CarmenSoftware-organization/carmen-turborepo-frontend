@@ -14,7 +14,7 @@ export default function TenantList() {
   const t = useTranslations("HomePage");
   const { user, tenantId, handleChangeTenant, isLoading } = useAuth();
 
-  if (isLoading || !user?.business_unit?.length) {
+  if (isLoading || !user?.data.business_unit?.length) {
     return null;
   }
 
@@ -25,8 +25,8 @@ export default function TenantList() {
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {user.business_unit.map((bu) => (
-            <SelectItem key={bu.id} value={bu.id} >
+          {user.data.business_unit.map((bu) => (
+            <SelectItem key={bu.id} value={bu.id}>
               {bu.name}
             </SelectItem>
           ))}

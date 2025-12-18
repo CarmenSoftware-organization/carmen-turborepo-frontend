@@ -167,7 +167,7 @@ export default function Notification() {
   const { user } = useAuth();
   const tNoti = useTranslations("Notification");
   const { isConnected, notifications, markAsRead, markAllAsRead } = useNotificationWebSocket(
-    user?.id
+    user?.data.id
   );
 
   const notificationCount = notifications.length;

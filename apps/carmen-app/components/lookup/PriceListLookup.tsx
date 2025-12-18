@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-import { usePriceList } from "@/hooks/use-price-list";
+import { usePriceList } from "@/app/[locale]/(root)/vendor-management/price-list/_hooks/use-price-list";
 import { PriceListDto } from "@/dtos/price-list.dto";
 
 export default function PriceListLookup({

@@ -21,21 +21,21 @@ export default function UserAvatar() {
   const t = useTranslations("Common");
 
   const getInitials = () => {
-    if (!user?.user_info) return "U";
-    const { firstname, lastname } = user.user_info;
+    if (!user?.data.user_info) return "U";
+    const { firstname, lastname } = user.data.user_info;
     return `${firstname?.[0].toUpperCase() || ""}${lastname?.[0].toUpperCase() || ""}`;
   };
 
   const getMiddleName = () => {
-    if (!user?.user_info?.middlename) return "";
-    return `${user.user_info.middlename} `;
+    if (!user?.data.user_info?.middlename) return "";
+    return `${user.data.user_info.middlename} `;
   };
 
-  const fullName = user?.user_info
-    ? `${user.user_info.firstname || ""} ${getMiddleName()}${user.user_info.lastname || ""}`
+  const fullName = user?.data.user_info
+    ? `${user.data.user_info.firstname || ""} ${getMiddleName()}${user.data.user_info.lastname || ""}`
     : "User";
 
-  const email = user?.email ?? "";
+  const email = user?.data.email ?? "";
 
   return (
     <DropdownMenu>

@@ -54,7 +54,7 @@ export default function MainForm({ mode, initValues }: Props) {
       state_role: STAGE_ROLE.CREATE,
       details: {
         pr_date: initValues?.pr_date ? initValues.pr_date : new Date().toISOString(),
-        requestor_id: user?.id || "",
+        requestor_id: user?.data.id || "",
         department_id: departments?.id || "",
         workflow_id: initValues?.workflow_id || "",
         description: initValues?.description || "",

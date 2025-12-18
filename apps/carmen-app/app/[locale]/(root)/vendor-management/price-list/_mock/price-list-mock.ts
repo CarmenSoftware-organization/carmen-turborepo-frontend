@@ -18,6 +18,7 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      name: "Thai Baht",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
@@ -46,6 +47,7 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      name: "US Dollar",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
@@ -69,6 +71,7 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      name: "Thai Baht",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
@@ -97,6 +100,7 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      name: "US Dollar",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
@@ -121,6 +125,7 @@ export const mockPriceListList: PriceListDtoList[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      name: "Thai Baht",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
@@ -152,6 +157,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      name: "Thai Baht",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
@@ -257,6 +263,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      name: "US Dollar",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
@@ -363,6 +370,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      name: "Thai Baht",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
@@ -439,6 +447,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-usd",
       code: "USD",
+      name: "US Dollar",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
@@ -517,6 +526,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
     currency: {
       id: "cur-thb",
       code: "THB",
+      name: "Thai Baht",
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
