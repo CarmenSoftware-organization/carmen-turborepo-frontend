@@ -12,6 +12,8 @@ import { CreatePrDtoType, StagesStatusValue } from "../_schemas/purchase-request
 import { usePrMutation } from "@/hooks/use-purchase-request";
 import { usePrActions } from "./use-pr-actions";
 import { usePrevWorkflow } from "./use-prev-workflow";
+import { useSendNotification } from "@/hooks/useNoti";
+import { EnumNotiType } from "@/dtos/notification.dto";
 import {
   prepareSubmitData,
   preparePurchaseApproveData,
@@ -62,6 +64,7 @@ export const useMainFormLogic = ({
 
   // Queries & Mutations
   const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
+  const { mutate: sendNotification } = useSendNotification(token);
   const { save, submit, approve, purchase, review, reject, sendBack, isPending } = usePrActions(
     token,
     buCode,
@@ -253,6 +256,17 @@ export const useMainFormLogic = ({
         toastSuccess({
           message: tPR(PR_ERROR_MESSAGES.SUCCESS.APPROVED),
         });
+        if (user?.data.id) {
+          sendNotification({
+            title: "Purchase Request Approved",
+            message: `Purchase Request [${initValues?.pr_no || ""}](/procurement/purchase-request/${initValues?.id}) has been approved`,
+            type: EnumNotiType.success,
+            category: "user-to-user",
+            to_user_id: user.data.id,
+            from_user_id: user.data.id,
+            link: `/procurement/purchase-request/${initValues?.id}`,
+          });
+        }
       },
       onError: () => {
         toastError({

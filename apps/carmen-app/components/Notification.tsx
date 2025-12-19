@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { wsUrl, backendApi } from "@/lib/backend-api";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 
 interface Notification {
   id: string;
@@ -14,6 +15,7 @@ interface Notification {
   message: string;
   type: "info" | "error" | "warning" | "success";
   created_at: string;
+  link?: string;
 }
 const getNotificationIcon = (type: Notification["type"]): string => {
   switch (type) {
@@ -37,9 +39,38 @@ interface NotificationItemProps {
 const NotificationItem = ({ notification, onMarkAsRead, tNoti }: NotificationItemProps) => {
   const icon = getNotificationIcon(notification.type);
 
+  const formatMessage = (message: string) => {
+    const parts = message.split(/(\[.*?\]\(.*?\))/g);
+    return parts.map((part, index) => {
+      const match = part.match(/^\[(.*?)\]\((.*?)\)$/);
+      if (match) {
+        return (
+          <Link
+            key={index}
+            href={match[2]}
+            className="font-medium text-foreground underline decoration-primary underline-offset-4 hover:text-primary transition-colors"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {match[1]}
+          </Link>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
-    <div className="p-4 hover:bg-muted/50 transition-colors border-l-2 border-l-primary">
-      <div className="flex items-start gap-3">
+    <div className="p-4 hover:bg-muted/50 transition-colors border-l-2 border-l-primary relative group">
+      {notification.link && (
+        <a
+          href={notification.link}
+          className="absolute inset-0 z-10"
+          onClick={(e) => {
+            // Let the click bubble up if needed, or handle navigation
+          }}
+        />
+      )}
+      <div className="flex items-start gap-3 relative z-20 pointer-events-none">
         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-lg">
           {icon}
         </div>
@@ -50,15 +81,28 @@ const NotificationItem = ({ notification, onMarkAsRead, tNoti }: NotificationIte
               {new Date(notification.created_at).toLocaleTimeString()}
             </span>
           </div>
-          <p className="text-xs text-muted-foreground mt-1 mb-2">{notification.message}</p>
-          <div className="flex justify-between items-center">
+          <p className="text-xs text-muted-foreground mt-1 mb-2">
+            {formatMessage(notification.message)}
+          </p>
+          <div className="flex justify-between items-center pointer-events-auto">
             <span className="text-xs font-medium capitalize">{notification.type}</span>
-            <button
-              onClick={() => onMarkAsRead(notification.id)}
-              className="text-xs px-2 py-1 border rounded hover:bg-muted"
-            >
-              {tNoti("mark_read")}
-            </button>
+            <div className="flex gap-2">
+              {notification.link && (
+                <a
+                  href={notification.link}
+                  className="text-xs px-2 py-1 border rounded hover:bg-muted text-primary decoration-none"
+                >
+                  View
+                </a>
+              )}
+              <button
+                onClick={() => onMarkAsRead(notification.id)}
+                className="text-xs px-2 py-1 border rounded hover:bg-muted"
+                type="button"
+              >
+                {tNoti("mark_read")}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -15,12 +15,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { useSendNotification } from "@/hooks/useNoti";
+import { EnumNotiType } from "@/dtos/notification.dto";
 
 export default function NotificationTest() {
   const { user, token } = useAuth();
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
-  const [type, setType] = useState<"info" | "error" | "warning" | "success">("info");
+  const [type, setType] = useState<EnumNotiType>(EnumNotiType.info);
 
   const {
     mutate: sendNotification,
@@ -34,7 +35,7 @@ export default function NotificationTest() {
     id: string;
     title: string;
     message: string;
-    type: "info" | "error" | "warning" | "success";
+    type: EnumNotiType;
     created_at?: string;
   }) => {
     globalThis.window.dispatchEvent(
@@ -51,7 +52,7 @@ export default function NotificationTest() {
 
     setTitle("");
     setMessage("");
-    setType("info");
+    setType(EnumNotiType.info);
   };
 
   const handleSendNotification = () => {
@@ -75,7 +76,7 @@ export default function NotificationTest() {
   const sendQuickTest = () => {
     setTitle("Test Notification");
     setMessage("This is a test notification from the playground.");
-    setType("info");
+    setType(EnumNotiType.info);
   };
 
   return (
@@ -122,15 +123,15 @@ export default function NotificationTest() {
 
             <div className="space-y-2">
               <Label htmlFor="type">Type</Label>
-              <Select value={type} onValueChange={(value) => setType(value as typeof type)}>
+              <Select value={type} onValueChange={(value) => setType(value as EnumNotiType)}>
                 <SelectTrigger id="type">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="info">📘 Info</SelectItem>
-                  <SelectItem value="success">✅ Success</SelectItem>
-                  <SelectItem value="warning">⚠️ Warning</SelectItem>
-                  <SelectItem value="error">❌ Error</SelectItem>
+                  <SelectItem value={EnumNotiType.info}>Info</SelectItem>
+                  <SelectItem value={EnumNotiType.success}>Success</SelectItem>
+                  <SelectItem value={EnumNotiType.warning}>Warning</SelectItem>
+                  <SelectItem value={EnumNotiType.error}>Error</SelectItem>
                 </SelectContent>
               </Select>
             </div>
