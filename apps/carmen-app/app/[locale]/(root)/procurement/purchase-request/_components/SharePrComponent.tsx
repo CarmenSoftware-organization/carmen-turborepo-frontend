@@ -7,12 +7,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Link } from "@/lib/navigation";
-import {
-  FileText,
-  Mail,
-  MoreHorizontal,
-  Trash2,
-} from "lucide-react";
+import { FileText, Mail, MoreHorizontal, Trash2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 export interface SelectionProps {
   selectedItems: string[];
@@ -41,6 +37,7 @@ export const prStatusColor = (status: string) => {
 };
 
 export const ActionButtons = ({ prId }: { prId: string }) => {
+  const { buCode } = useAuth();
   return (
     <div className="flex items-center justify-end">
       <Button
@@ -51,7 +48,7 @@ export const ActionButtons = ({ prId }: { prId: string }) => {
         data-id={`view-pr-${prId}`}
         asChild
       >
-        <Link href={`/procurement/purchase-request/${prId}`}>
+        <Link href={`/procurement/purchase-request/${buCode}/${prId}`}>
           <FileText className="h-4 w-4" />
         </Link>
       </Button>

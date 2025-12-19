@@ -12,6 +12,7 @@ type MutationFunction = UseMutateFunction<unknown, Error, any, unknown>;
 export const handleCreateSuccess = (
   responseData: unknown,
   router: AppRouterInstance,
+  buCode: string,
   tPR: (key: string) => string,
   toastSuccess: (config: ToastConfig) => void
 ): void => {
@@ -23,7 +24,7 @@ export const handleCreateSuccess = (
     return;
   }
 
-  router.replace(`/procurement/purchase-request/${purchaseRequestId}`);
+  router.replace(`/procurement/purchase-request/${buCode}/${purchaseRequestId}`);
   toastSuccess({ message: tPR(PR_ERROR_MESSAGES.SUCCESS.CREATED) });
 };
 
@@ -42,13 +43,14 @@ export const createPurchaseRequest = (
   data: any,
   createPr: MutationFunction,
   router: AppRouterInstance,
+  buCode: string,
   tPR: (key: string) => string,
   toastSuccess: (config: ToastConfig) => void,
   toastError: (config: ToastConfig) => void
 ): void => {
   createPr(data, {
     onSuccess: (responseData: unknown) =>
-      handleCreateSuccess(responseData, router, tPR, toastSuccess),
+      handleCreateSuccess(responseData, router, buCode, tPR, toastSuccess),
     onError: (error: Error) => handleCreateError(error, tPR, toastError),
   });
 };

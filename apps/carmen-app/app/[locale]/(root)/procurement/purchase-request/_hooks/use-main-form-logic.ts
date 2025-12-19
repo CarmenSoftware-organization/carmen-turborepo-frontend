@@ -174,7 +174,7 @@ export const useMainFormLogic = ({
     const processedData = prepareSubmitData(data);
     const isCreating = currentMode === formType.ADD;
     if (isCreating) {
-      createPurchaseRequest(processedData, createPr, router, tPR, toastSuccess, toastError);
+      createPurchaseRequest(processedData, createPr, router, buCode, tPR, toastSuccess, toastError);
     } else {
       updatePurchaseRequest(
         processedData,
@@ -264,7 +264,7 @@ export const useMainFormLogic = ({
             category: "user-to-user",
             to_user_id: user.data.id,
             from_user_id: user.data.id,
-            link: `/procurement/purchase-request/${initValues?.id}`,
+            link: `/procurement/purchase-request/${buCode}/${initValues?.id}`,
           });
         }
       },

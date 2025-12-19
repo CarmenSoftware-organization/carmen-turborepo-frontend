@@ -180,7 +180,7 @@ export default function PurchaseRequestList({
           <div className="max-w-[200px] truncate">
             <Link
               href={returnUrl(
-                `/procurement/purchase-request/${row.original.id}`,
+                `/procurement/purchase-request/${buCode}/${row.original.id}`,
                 `/procurement/purchase-request`,
                 searchParams
               )}

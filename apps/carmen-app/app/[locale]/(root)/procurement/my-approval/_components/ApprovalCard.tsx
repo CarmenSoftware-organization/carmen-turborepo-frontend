@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { FlaggedDto, PendingApprovalDto } from "@/dtos/procurement.dto";
 import { Link } from "@/lib/navigation";
 import { Eye, ThumbsUp, User } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface ApprovalCardProps {
   readonly approval: PendingApprovalDto | FlaggedDto;
@@ -25,6 +26,7 @@ const statusApprovalColor = (status: string) => {
 export default function ApprovalCard({ approval, type = "pending", onApprove }: ApprovalCardProps) {
   const isFlagged = type === "flagged";
   const flaggedDto = approval as FlaggedDto;
+  const { buCode } = useAuth();
   return (
     <Card className="p-4 mb-2 space-y-1">
       <div className="flex justify-between items-center">
@@ -61,7 +63,7 @@ export default function ApprovalCard({ approval, type = "pending", onApprove }: 
             // onClick={() => router.push(`/procurement/purchase-order/${approval.id}`)}
             asChild
           >
-            <Link href={`/procurement/purchase-request/${approval.id}`}>
+            <Link href={`/procurement/purchase-request/${buCode}/${approval.id}`}>
               <Eye className="w-4 h-4" />
               Detail
             </Link>

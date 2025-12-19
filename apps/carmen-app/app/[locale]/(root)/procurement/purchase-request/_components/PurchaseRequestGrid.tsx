@@ -206,7 +206,7 @@ export default function PurchaseRequestGrid({
               </CardContent>
               <CardFooter className="flex items-center justify-end mt-auto px-3">
                 <Button variant={"ghost"} size={"sm"} asChild>
-                  <Link href={`/procurement/purchase-request/${pr.id}`}>
+                  <Link href={`/procurement/purchase-request/${buCode}/${pr.id}`}>
                     <FileText />
                   </Link>
                 </Button>

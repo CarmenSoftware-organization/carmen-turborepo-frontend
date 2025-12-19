@@ -7,19 +7,21 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { DetailLoading } from "@/components/loading/DetailLoading";
 import { PurchaseRequestByIdDto } from "@/dtos/purchase-request.dto";
-import MainForm from "../_components/form-pr/MainForm";
+import MainForm from "../../_components/form-pr/MainForm";
 import { usePurchaseRequestById } from "@/hooks/use-purchase-request";
 import { useEffect } from "react";
 
 export default function PurchaseRequestIdPage() {
-  const { id } = useParams();
-  const { token, buCode } = useAuth();
+  const { id, bu_code } = useParams();
+  const { token, buCode: authBuCode } = useAuth();
+
+  const currentBuCode = (bu_code as string) || authBuCode;
 
   const {
     purchaseRequest,
     isLoading: isPrLoading,
     error,
-  } = usePurchaseRequestById(token, buCode, id as string);
+  } = usePurchaseRequestById(token, currentBuCode, id as string);
 
   useEffect(() => {
     if (!isPrLoading && error) {
@@ -39,7 +41,7 @@ export default function PurchaseRequestIdPage() {
         purchaseRequest.data.purchase_request_detail.map(async (detail: any) => {
           const inventoryData = await getOnHandOnOrderService(
             token,
-            buCode,
+            currentBuCode,
             detail.location_id,
             detail.product_id
           );
@@ -54,7 +56,7 @@ export default function PurchaseRequestIdPage() {
         purchase_request_detail: detailsWithInventory,
       };
     },
-    enabled: !!purchaseRequest?.data?.purchase_request_detail && !!token && !!buCode,
+    enabled: !!purchaseRequest?.data?.purchase_request_detail && !!token && !!currentBuCode,
   });
 
   if (isPrLoading || isInventoryLoading) return <DetailLoading />;
