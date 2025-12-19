@@ -48,9 +48,8 @@ export default function MainForm({ rfpData, mode }: Props) {
     defaultValues: {
       name: rfpData?.name || "",
       status: rfpData?.status || "draft",
-      description: rfpData?.description || "",
-      valid_period: rfpData?.valid_period || 90,
-      template_id: rfpData?.template?.id || "",
+      custom_message: rfpData?.custom_message || rfpData?.custom_message || "", // Handle both just in case dtop update propagated slowly or mock data mixed
+      template_id: rfpData?.pricelist_template?.id || "",
       portal_duration: rfpData?.settings?.portal_duration || 14,
       rfp_type: rfpData?.settings?.rfp_type || "buy",
       submission_method: rfpData?.settings?.submission_method || "auto",
@@ -60,7 +59,7 @@ export default function MainForm({ rfpData, mode }: Props) {
       instructions: rfpData?.settings?.instructions || "",
       reminders: rfpData?.settings?.reminders || [],
       escalations: rfpData?.settings?.escalations || [],
-      vendors: rfpData?.vendor?.map((v) => v.id) || [],
+      vendors: rfpData?.vendors?.map((v) => v.id) || [], // Map RfpVendorDto[] to string[]
     },
   });
 
@@ -94,7 +93,7 @@ export default function MainForm({ rfpData, mode }: Props) {
         setCurrentMode(formType.VIEW);
       });
     } else {
-      const originalVendors = rfpData?.vendor?.map((v) => v.id) || [];
+      const originalVendors = rfpData?.vendors?.map((v) => v.id) || [];
       const newVendors = data.vendors || [];
       const { add, update, remove } = calculateVendorOperations(originalVendors, newVendors);
 
@@ -125,11 +124,11 @@ export default function MainForm({ rfpData, mode }: Props) {
               {currentMode === formType.EDIT && tRfp("edit")}
               {currentMode === formType.VIEW && rfpData?.name}
             </h1>
-            {rfpData && (
+            {/* {rfpData && (
               <p className="text-sm text-muted-foreground">
                 {tRfp("last_updated")}: {new Date(rfpData.update_date).toLocaleDateString()}
               </p>
-            )}
+            )} */}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -181,7 +180,7 @@ export default function MainForm({ rfpData, mode }: Props) {
                     form={form}
                     isViewMode={isViewMode}
                     vendors={vendors}
-                    defaultVendors={rfpData?.vendor}
+                    defaultVendors={rfpData?.vendors}
                   />
                 </TabsContent>
                 <TabsContent value="setting" className="mt-0 h-full">

@@ -116,7 +116,7 @@ export default function OverviewTab({ form, isViewMode, rfpData }: Props) {
 
           <FormField
             control={form.control}
-            name="description"
+            name="custom_message"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{tRfp("description")}</FormLabel>

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { RfpCreateDto, RfpUpdateDto } from "@/dtos/rfp.dto";
+import { RfpCreateDto, RfpUpdateDto, RfpDto, RfpDetailDto } from "@/dtos/rfp.dto";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
@@ -76,13 +76,18 @@ export const useCreateRfp = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
   const API_URL = rfpApiUrl(buCode);
 
-  return useMutation({
+  return useMutation<RfpDto, Error, RfpCreateDto>({
     mutationFn: async (data: RfpCreateDto) => {
       if (!token || !buCode) {
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
-      return await postApiRequest(API_URL, token, data, "Error creating request price list");
+      return (await postApiRequest(
+        API_URL,
+        token,
+        data,
+        "Error creating request price list"
+      )) as RfpDto;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rfps", buCode] });
@@ -94,19 +99,19 @@ export const useUpdateRfp = (token: string, buCode: string, id: string) => {
   const queryClient = useQueryClient();
   const API_ID = rfpApiUrl(buCode, id);
 
-  return useMutation({
+  return useMutation<RfpDetailDto, Error, RfpUpdateDto>({
     mutationFn: async (data: RfpUpdateDto) => {
       if (!token || !buCode || !id) {
         throw new Error("Unauthorized: Missing required parameters");
       }
 
-      return await updateApiRequest(
+      return (await updateApiRequest(
         API_ID,
         token,
         data,
         "Error updating request price list",
         "PATCH"
-      );
+      )) as RfpDetailDto;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rfps", buCode] });

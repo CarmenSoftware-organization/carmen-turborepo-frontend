@@ -64,6 +64,17 @@ export interface RfpUpdateDto extends RfpCreateDto {
   settings?: any;
 }
 
+// Compat type for VendorTab
+export interface VendorStatus {
+  id: string;
+  name: string;
+  email?: string;
+  status: StatusVendor;
+  progress: number;
+  last_activity: Date;
+  is_send: boolean;
+}
+
 export interface RfpDetailDto extends RfpDto {
   // Add specific detail fields if any, currently extending RfpDto
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,5 +82,11 @@ export interface RfpDetailDto extends RfpDto {
   template?: {
     id: string;
     [key: string]: any;
+  };
+  performance?: {
+    res_rate: number;
+    avg_time: number;
+    comp_rate: number;
+    submission: string;
   };
 }

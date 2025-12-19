@@ -10,7 +10,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Trash2, User, Clock, Send, Check, X, Mail } from "lucide-react";
 import { VendorGetDto } from "@/dtos/vendor-management";
 import { useTranslations } from "next-intl";
-import { VendorStatus, StatusVendor } from "@/dtos/rfp.dto";
+import { VendorStatus, StatusVendor, RfpVendorDto } from "@/dtos/rfp.dto";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 
@@ -19,7 +19,7 @@ interface Props {
   isViewMode: boolean;
   // @ts-ignore
   vendors?: any; // รอ type
-  defaultVendors?: VendorStatus[];
+  defaultVendors?: RfpVendorDto[];
 }
 
 export default function VendorTab({ form, isViewMode, vendors, defaultVendors = [] }: Props) {
@@ -34,21 +34,31 @@ export default function VendorTab({ form, isViewMode, vendors, defaultVendors = 
         const vendorMaster = vendors?.data?.find((v: VendorGetDto) => v.id === vendorId);
 
         // Find in defaultVendors to get status/progress info
-        const defaultVendor = defaultVendors?.find((v: VendorStatus) => v.id === vendorId);
+        // Note: defaultVendors is now RfpVendorDto[] which uses vendor_id or id?
+        // In RfpDto, RfpVendorDto has { id, vendor_id, vendor_name ... }
+        // The form uses vendor ID. If `id` in RfpVendorDto is the relation ID and `vendor_id` is the actual vendor ID,
+        // then we need to match carefully.
+        // Assuming `v.id` from form (selectedVendorIds) matches `RfpVendorDto.vendor_id`?
+        // OR `RfpVendorDto.id`?
+        // In the mock/rfp.ts I wrote: id: "v-001", vendor_id: "vid-001".
+        // The form likely stores master vendor IDs.
+        // Let's assume form stores master vendor IDs.
+        // So we should match `v.vendor_id === vendorId`.
+        const defaultVendor = defaultVendors?.find(
+          (v: RfpVendorDto) => v.vendor_id === vendorId || v.id === vendorId
+        );
 
         if (!vendorMaster && !defaultVendor) return null;
 
-        // Merge data, defaulting to 'pending'/'0' if new vendor
+        // Merge data
         return {
           id: vendorId,
-          name: vendorMaster?.name || defaultVendor?.name || "Unknown Vendor",
-          email:
-            defaultVendor?.email ||
-            (vendorMaster && "email" in vendorMaster ? vendorMaster.email : "-"),
-          status: defaultVendor?.status || "pending",
-          progress: defaultVendor?.progress || 0,
-          last_activity: defaultVendor?.last_activity || new Date(),
-          is_send: defaultVendor?.is_send || false,
+          name: vendorMaster?.name || defaultVendor?.vendor_name || "Unknown Vendor",
+          email: vendorMaster && "email" in vendorMaster ? vendorMaster.email : "-",
+          status: (defaultVendor?.has_submitted ? "completed" : "pending") as StatusVendor,
+          progress: defaultVendor?.has_submitted ? 100 : 0,
+          last_activity: new Date(), // Mock or missing
+          is_send: false, // Mock
         };
       })
       .filter(Boolean) as VendorStatus[];

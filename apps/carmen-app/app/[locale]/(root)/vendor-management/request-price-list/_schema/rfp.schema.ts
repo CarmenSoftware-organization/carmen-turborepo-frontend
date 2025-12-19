@@ -16,7 +16,7 @@ export const reminderRuleSchema = z.object({
 export const rfpFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   status: z.enum(["active", "inactive", "draft", "submit", "completed"]),
-  description: z.string().optional(),
+  custom_message: z.string().optional(),
   valid_period: z.number().min(1, "Valid period must be at least 1 day"),
   template_id: z.string().optional(),
   portal_duration: z.number().min(1),
@@ -28,7 +28,7 @@ export const rfpFormSchema = z.object({
   instructions: z.string().optional(),
   reminders: z.array(reminderRuleSchema).optional(),
   escalations: z.array(reminderRuleSchema).optional(),
-  vendors: z.array(z.string()).optional(),
+  vendors: z.array(z.string()).optional(), // Array of Vendor IDs
 });
 
 export type RfpFormValues = z.infer<typeof rfpFormSchema>;
