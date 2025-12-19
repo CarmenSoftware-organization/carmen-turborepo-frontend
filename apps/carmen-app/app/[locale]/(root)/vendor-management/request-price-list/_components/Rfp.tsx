@@ -31,7 +31,7 @@ export default function Rfp() {
 
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { data, isLoading, isUnauthorized } = useRfps(token, buCode);
+  const { rfps, isLoading, isUnauthorized } = useRfps(token, buCode);
 
   useEffect(() => {
     if (isUnauthorized) {
@@ -161,14 +161,14 @@ export default function Rfp() {
   const content = (
     <>
       <div className="block lg:hidden">
-        <RfpGrid rfps={data ?? []} isLoading={isLoading} />
+        <RfpGrid rfps={rfps ?? []} isLoading={isLoading} />
       </div>
 
       <div className="hidden lg:block">
         {view === VIEW.LIST ? (
-          <RfpList rfps={data ?? []} isLoading={isLoading} />
+          <RfpList rfps={rfps ?? []} isLoading={isLoading} />
         ) : (
-          <RfpGrid rfps={data ?? []} isLoading={isLoading} />
+          <RfpGrid rfps={rfps ?? []} isLoading={isLoading} />
         )}
       </div>
     </>

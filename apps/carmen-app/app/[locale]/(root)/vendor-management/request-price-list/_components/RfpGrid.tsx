@@ -64,11 +64,11 @@ export default function RfpGrid({
                 ) : (
                   <CardTitle className="text-base line-clamp-1">{rfp.name}</CardTitle>
                 )}
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant={rfp.status} className="text-xs">
+                {/* <div className="flex items-center gap-2 mt-2">
+                  <Badge variant={rfp.status as any} className="text-xs">
                     {getStatusLabel(rfp.status)}
                   </Badge>
-                </div>
+                </div> */}
               </div>
               {canDelete && (
                 <DropdownMenu>
@@ -92,27 +92,34 @@ export default function RfpGrid({
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            {rfp.description && (
-              <CardDescription className="line-clamp-2 text-xs">{rfp.description}</CardDescription>
+            {rfp.custom_message && (
+              <CardDescription className="line-clamp-2 text-xs">
+                {rfp.custom_message}
+              </CardDescription>
             )}
 
             <div className="space-y-2 pt-2">
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>
-                  {tRfp("valid")}: {rfp.valid_period} {tRfp("days")}
+                  {tRfp("valid")}:{" "}
+                  {Math.ceil(
+                    (new Date(rfp.end_date).getTime() - new Date(rfp.start_date).getTime()) /
+                      (1000 * 60 * 60 * 24)
+                  )}{" "}
+                  {tRfp("days")}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>
-                  {tRfp("created")}: {format(new Date(rfp.create_date), "dd/MM/yyyy")}
+                  {tRfp("created")}: {format(new Date(rfp.created_at), "dd/MM/yyyy")}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Calendar className="h-3.5 w-3.5" />
                 <span>
-                  {tRfp("updated")}: {format(new Date(rfp.update_date), "dd/MM/yyyy")}
+                  {tRfp("updated")}: {format(new Date(rfp.updated_at), "dd/MM/yyyy")}
                 </span>
               </div>
             </div>

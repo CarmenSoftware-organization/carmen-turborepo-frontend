@@ -105,30 +105,30 @@ export default function RfpList({
           headerTitle: "Name",
         },
       },
-      {
-        accessorKey: "status",
-        header: ({ column }) => (
-          <DataGridColumnHeader
-            column={column}
-            title={tHeader("status")}
-            icon={<Activity className="h-4 w-4" />}
-          />
-        ),
-        cell: ({ row }) => {
-          const status = row.original.status;
-          return (
-            <div className="flex justify-center">
-              <Badge variant={status}>{getStatusLabel(status)}</Badge>
-            </div>
-          );
-        },
-        enableSorting: false,
-        size: 120,
-        meta: {
-          cellClassName: "text-center",
-          headerClassName: "text-center",
-        },
-      },
+      // {
+      //   accessorKey: "status",
+      //   header: ({ column }) => (
+      //     <DataGridColumnHeader
+      //       column={column}
+      //       title={tHeader("status")}
+      //       icon={<Activity className="h-4 w-4" />}
+      //     />
+      //   ),
+      //   cell: ({ row }) => {
+      //     const status = row.original.status;
+      //     return (
+      //       <div className="flex justify-center">
+      //         <Badge variant={status as any}>{getStatusLabel(status)}</Badge>
+      //       </div>
+      //     );
+      //   },
+      //   enableSorting: false,
+      //   size: 120,
+      //   meta: {
+      //     cellClassName: "text-center",
+      //     headerClassName: "text-center",
+      //   },
+      // },
       {
         accessorKey: "description",
         header: ({ column }) => (
@@ -139,13 +139,15 @@ export default function RfpList({
           />
         ),
         cell: ({ row }) => (
-          <span className="truncate max-w-[200px] inline-block">{row.original.description}</span>
+          <span className="truncate max-w-[200px] inline-block">
+            {row.original.custom_message || "-"}
+          </span>
         ),
         enableSorting: false,
         size: 300,
       },
       {
-        accessorKey: "valid_period",
+        accessorKey: "pricelist_template",
         header: ({ column }) => (
           <DataGridColumnHeader
             column={column}
@@ -153,7 +155,16 @@ export default function RfpList({
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{row.original.valid_period} {tRfp("days")}</span>,
+        cell: ({ row }) => {
+          const startDate = new Date(row.original.start_date);
+          const endDate = new Date(row.original.end_date);
+          const days = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+          return (
+            <span>
+              {days} {tRfp("days")}
+            </span>
+          );
+        },
         enableSorting: false,
         size: 150,
       },
@@ -166,7 +177,7 @@ export default function RfpList({
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.create_date), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{format(new Date(row.original.created_at), "dd/MM/yyyy")}</span>,
         enableSorting: false,
         size: 150,
       },
@@ -179,7 +190,7 @@ export default function RfpList({
             icon={<Calendar className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <span>{format(new Date(row.original.update_date), "dd/MM/yyyy")}</span>,
+        cell: ({ row }) => <span>{format(new Date(row.original.updated_at), "dd/MM/yyyy")}</span>,
         enableSorting: false,
         size: 150,
       },
