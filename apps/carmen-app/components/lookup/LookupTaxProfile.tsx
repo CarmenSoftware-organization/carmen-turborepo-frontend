@@ -19,7 +19,7 @@ interface TaxProfileLookupProps extends PropsLookup {
   readonly onSelectObject?: (obj: TaxProfileGetAllDto) => void;
 }
 
-export default function TaxProfileLookup({
+export default function LookupTaxProfile({
   value,
   onValueChange,
   disabled = false,

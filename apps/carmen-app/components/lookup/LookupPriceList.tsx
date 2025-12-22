@@ -16,7 +16,7 @@ import { useAuth } from "@/context/AuthContext";
 import { usePriceList } from "@/app/[locale]/(root)/vendor-management/price-list/_hooks/use-price-list";
 import { PriceListDto } from "@/dtos/price-list.dto";
 
-export default function PriceListLookup({
+export default function LookupPriceList({
   value,
   onValueChange,
   placeholder = "Select price range",

@@ -17,7 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import { VendorGetDto } from "@/dtos/vendor-management";
 import { useTranslations } from "next-intl";
 
-export default function VendorLookup({
+export default function LookupVendor({
   value,
   onValueChange,
   disabled = false,

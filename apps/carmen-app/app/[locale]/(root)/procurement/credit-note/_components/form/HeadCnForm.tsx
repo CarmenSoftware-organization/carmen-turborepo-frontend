@@ -15,7 +15,7 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
-import VendorLookup from "@/components/lookup/VendorLookup";
+import VendorLookup from "@/components/lookup/LookupVendor";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import LookupGrn from "@/components/lookup/LookupGrn";
 import LookupCnReason from "@/components/lookup/LookupCnReason";

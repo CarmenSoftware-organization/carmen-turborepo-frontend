@@ -37,7 +37,7 @@ interface ProductLocationLookupProps {
   readonly excludeProductIds?: string[];
 }
 
-export default function ProductLocationLookup({
+export default function LookupProductLocation({
   location_id,
   value,
   onValueChange,

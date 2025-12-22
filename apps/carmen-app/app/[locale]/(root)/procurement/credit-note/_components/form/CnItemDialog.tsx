@@ -15,9 +15,9 @@ import { nanoid } from "nanoid";
 import { Box } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LookupLocation from "@/components/lookup/LookupLocation";
-import ProductLookup from "@/components/lookup/ProductLookup";
-import UnitLookup from "@/components/lookup/UnitLookup";
-import TaxTypeLookup from "@/components/lookup/TaxTypeLookup";
+import LookupProduct from "@/components/lookup/LookupProduct";
+import UnitLookup from "@/components/lookup/LookupUnit";
+import LookupTaxType from "@/components/lookup/LookupTaxType";
 import { Separator } from "@/components/ui/separator";
 interface CnItemDialogProps {
   readonly open: boolean;
@@ -188,7 +188,7 @@ export default function CnItemDialog({
                   <div>
                     <div className="space-y-2">
                       <label className="text-xs font-medium">Product</label>
-                      <ProductLookup
+                      <LookupProduct
                         value={formData.product_id || ""}
                         onValueChange={(value: string) => {
                           updateFormData({
@@ -336,7 +336,7 @@ export default function CnItemDialog({
                   <div>
                     <div className="space-y-2">
                       <label className="text-xs font-medium">Tax Type</label>
-                      <TaxTypeLookup
+                      <LookupTaxType
                         value={formData.tax_type_inventory_id || ""}
                         onValueChange={(value: string) => {
                           updateFormData({

@@ -19,7 +19,7 @@ import { useUnitQuery } from "@/hooks/use-unit";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 
-export default function UnitLookup({
+export default function LookupUnit({
   value,
   onValueChange,
   placeholder = "",

@@ -15,7 +15,7 @@ import { PropsLookup } from "@/dtos/lookup.dto";
 import { useProductQuery } from "@/hooks/use-product-query";
 import { useAuth } from "@/context/AuthContext";
 
-export default function ProductLookup({
+export default function LookupProduct({
   value,
   onValueChange,
   placeholder = "Select Product",

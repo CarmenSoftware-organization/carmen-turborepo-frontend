@@ -8,18 +8,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PropsLookup } from "@/dtos/lookup.dto";
 import { useAuth } from "@/context/AuthContext";
 
-export default function UserListLookup({
+export default function LookupUserList({
   value,
   onValueChange,
   placeholder = "Select user",

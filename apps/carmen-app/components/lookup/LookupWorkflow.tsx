@@ -24,7 +24,7 @@ interface PropsWorkflowLookup {
   readonly type: enum_workflow_type;
 }
 
-export default function WorkflowLookup({
+export default function LookupWorkflow({
   value,
   onValueChange,
   disabled = false,

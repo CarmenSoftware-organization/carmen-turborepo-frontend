@@ -15,8 +15,8 @@ import InventoryInfo from "./InventoryInfo";
 import InventoryProgress from "./InventoryProgress";
 import PrLabelItem from "./PrLabelItem";
 import NumberInput from "@/components/form-custom/NumberInput";
-import VendorLookup from "@/components/lookup/VendorLookup";
-import TaxProfileLookup from "@/components/lookup/TaxProfileLookup";
+import VendorLookup from "@/components/lookup/LookupVendor";
+import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
@@ -304,7 +304,7 @@ export default function ExpandedContent({
                       disabled={!isPriceValid || currentMode !== formType.EDIT}
                     />
                   ) : (
-                    <TaxProfileLookup
+                    <LookupTaxProfile
                       value={(getItemValue(item, "tax_profile_id") as string) || ""}
                       onValueChange={(value) => {
                         onItemUpdate(item.id, "tax_profile_id", value);

@@ -6,7 +6,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form-custom/form";
-import WorkflowLookup from "@/components/lookup/WorkflowLookup";
+import LookupWorkflow from "@/components/lookup/LookupWorkflow";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,7 +42,7 @@ export default function HeadForm() {
           <FormItem>
             <FormLabel>{tPr("pr_type")}</FormLabel>
             <FormControl>
-              <WorkflowLookup
+              <LookupWorkflow
                 value={field.value || workflow_id || ""}
                 onValueChange={field.onChange}
                 type={enum_workflow_type.purchase_request}

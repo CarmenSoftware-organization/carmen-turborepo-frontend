@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { formType } from "@/dtos/form.dto";
 import { CreateGRNDto } from "@/dtos/grn.dto";
-import VendorLookup from "@/components/lookup/VendorLookup";
+import VendorLookup from "@/components/lookup/LookupVendor";
 import { useVendor } from "@/hooks/use-vendor";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
 import { Label } from "@/components/ui/label";

@@ -10,9 +10,9 @@ import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
 import LookupLocation from "@/components/lookup/LookupLocation";
-import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
+import LookupProductLocation from "@/components/lookup/LookupProductLocation";
 import NumberInput from "@/components/form-custom/NumberInput";
-import UnitLookup from "@/components/lookup/UnitLookup";
+import UnitLookup from "@/components/lookup/LookupUnit";
 import DateInput from "@/components/form-custom/DateInput";
 import { LookupDeliveryPointSelect } from "@/components/lookup/LookupDeliveryPointSelect";
 import { UnitSelectCell } from "../UnitSelectCell";
@@ -252,7 +252,7 @@ export const createPurchaseItemColumns = (
           </div>
         ) : (
           <div className="space-y-1 min-w-[250px] pr-4">
-            <ProductLocationLookup
+            <LookupProductLocation
               location_id={(getItemValue(item, "location_id") as string) || ""}
               value={(getItemValue(item, "product_id") as string) || ""}
               excludeProductIds={usedProductIds}

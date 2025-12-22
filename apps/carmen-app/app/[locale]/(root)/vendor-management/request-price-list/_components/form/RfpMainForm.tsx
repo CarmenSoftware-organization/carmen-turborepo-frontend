@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/select";
 import DateInput from "@/components/form-custom/DateInput";
 import LookupPrt from "@/components/lookup/LookupPrt";
-import VendorLookup from "@/components/lookup/VendorLookup";
+import VendorLookup from "@/components/lookup/LookupVendor";
 import {
   Tabs,
   TabsContent,

@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
 import type { PriceListFormData } from "../../_schema/price-list.schema";
 import type { PriceListDetailDto } from "../../_dto/price-list-dto";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
-import VendorLookup from "@/components/lookup/VendorLookup";
+import VendorLookup from "@/components/lookup/LookupVendor";
 
 interface OverviewSectionProps {
   form: UseFormReturn<PriceListFormData>;

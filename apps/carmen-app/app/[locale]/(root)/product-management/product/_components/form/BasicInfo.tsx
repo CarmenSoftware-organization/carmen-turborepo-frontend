@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import LookupItemGroup from "@/components/lookup/LookupItemGroup";
-import UnitLookup from "@/components/lookup/UnitLookup";
+import UnitLookup from "@/components/lookup/LookupUnit";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";

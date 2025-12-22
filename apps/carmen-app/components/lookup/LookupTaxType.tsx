@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTaxTypeInventoryQuery } from "@/hooks/useTaxTypeInventory";
 
-export default function TaxTypeLookup({
+export default function LookupTaxType({
   value,
   onValueChange,
   placeholder = "Select tax type",
@@ -18,10 +18,7 @@ export default function TaxTypeLookup({
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
 
-  const { data: taxTypeData, isLoading } = useTaxTypeInventoryQuery(
-    token,
-    buCode
-  );
+  const { data: taxTypeData, isLoading } = useTaxTypeInventoryQuery(token, buCode);
 
   if (isLoading) {
     return (
