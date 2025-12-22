@@ -29,8 +29,8 @@ import {
   FormMessage,
 } from "@/components/form-custom/form";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { useBuTypeQuery } from "@/app/[locale]/(root)/configuration/business-type/_hooks/use-bu-type";
 import { BuTypeGetAllDto } from "@/dtos/bu-type.dto";
+import { useBuTypeQuery } from "@/hooks/use-bu-type";
 
 const defaultValues: VendorFormValues = {
   id: "",
@@ -124,8 +124,6 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     }
   };
 
-  console.log("currentMode", currentMode);
-
   const onEdit = () => {
     setCurrentMode(formType.EDIT);
   };
@@ -142,6 +140,10 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   };
 
   const isViewMode = currentMode === formType.VIEW;
+
+  const watchFormValues = form.watch();
+
+  console.log("Watched Form Values:", watchFormValues);
 
   return (
     <div className="max-w-5xl mx-auto pb-10">

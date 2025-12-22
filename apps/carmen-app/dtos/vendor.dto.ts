@@ -54,6 +54,7 @@ export interface VendorFormValues {
   name: string;
   code: string;
   description?: string | null;
+  note?: string | null;
   business_type: { id: string; name: string }[];
   info: InfoItemDto[];
   vendor_address: AddressDto[];

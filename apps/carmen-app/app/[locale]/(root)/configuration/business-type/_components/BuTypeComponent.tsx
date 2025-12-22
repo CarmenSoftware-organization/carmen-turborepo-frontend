@@ -5,11 +5,7 @@ import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import {
-  BuTypeEditDto,
-  BuTypeFormDto,
-  BuTypeGetAllDto,
-} from "@/dtos/bu-type.dto";
+import { BuTypeEditDto, BuTypeFormDto, BuTypeGetAllDto } from "@/dtos/bu-type.dto";
 import { useURL } from "@/hooks/useURL";
 import { Plus, Printer, FileDown } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -29,7 +25,7 @@ import {
   useBuTypeQuery,
   useDeleteBuType,
   useUpdateBuType,
-} from "../_hooks/use-bu-type";
+} from "@/hooks/use-bu-type";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import BuTypeList from "./BuTypeList";
 import { parseSortString } from "@/utils/table";
@@ -50,9 +46,7 @@ export default function BusinessTypeComponent() {
   const [filter, setFilter] = useURL("filter");
   const [statusOpen, setStatusOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingProfile, setEditingProfile] = useState<BuTypeFormDto | null>(
-    null
-  );
+  const [editingProfile, setEditingProfile] = useState<BuTypeFormDto | null>(null);
   const [editingProfileId, setEditingProfileId] = useState<string | null>(null);
   const [deleteProfileId, setDeleteProfileId] = useState<string | null>(null);
 
@@ -61,7 +55,7 @@ export default function BusinessTypeComponent() {
     perpage: perpage,
     search,
     filter,
-    sort
+    sort,
   });
 
   const [buTypesData, setBuTypesData] = useState<BuTypeGetAllDto[]>([]);
@@ -74,11 +68,7 @@ export default function BusinessTypeComponent() {
 
   const { mutate: createBuType } = useBuTypeMutation(token, buCode);
 
-  const { mutate: updateBuType } = useUpdateBuType(
-    token,
-    buCode,
-    editingProfileId ?? ""
-  );
+  const { mutate: updateBuType } = useUpdateBuType(token, buCode, editingProfileId ?? "");
 
   const { mutate: deleteBuType } = useDeleteBuType(token, buCode);
   const title = tBusinessType("title");
@@ -111,30 +101,18 @@ export default function BusinessTypeComponent() {
   };
 
   const actionButtons = (
-    <div
-      className="action-btn-container"
-      data-id="bu-type-list-action-buttons"
-    >
+    <div className="action-btn-container" data-id="bu-type-list-action-buttons">
       {businessTypePerms.canCreate && (
         <Button size="sm" onClick={handleAddNew}>
           <Plus className="h-4 w-4" />
           {tCommon("add")}
         </Button>
       )}
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size="sm"
-        data-id="bu-type-export-button"
-      >
+      <Button variant="outlinePrimary" className="group" size="sm" data-id="bu-type-export-button">
         <FileDown className="h-4 w-4" />
         {tCommon("export")}
       </Button>
-      <Button
-        variant="outlinePrimary"
-        size="sm"
-        data-id="bu-type-print-button"
-      >
+      <Button variant="outlinePrimary" size="sm" data-id="bu-type-print-button">
         <Printer className="h-4 w-4" />
         {tCommon("print")}
       </Button>
@@ -197,9 +175,7 @@ export default function BusinessTypeComponent() {
   };
 
   const updateBuTypeInList = (prev: BuTypeGetAllDto[], updatedData: BuTypeEditDto) => {
-    return prev.map((bu) =>
-      bu.id === updatedData.id ? { ...bu, ...updatedData } : bu
-    );
+    return prev.map((bu) => (bu.id === updatedData.id ? { ...bu, ...updatedData } : bu));
   };
 
   const handleUpdateSuccess = (data: BuTypeEditDto) => {
@@ -250,7 +226,7 @@ export default function BusinessTypeComponent() {
       canUpdate={businessTypePerms.canUpdate}
       canDelete={businessTypePerms.canDelete}
     />
-  )
+  );
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
@@ -287,15 +263,10 @@ export default function BusinessTypeComponent() {
         onCancel={handleDialogClose}
       />
 
-      <AlertDialog
-        open={deleteProfileId !== null}
-        onOpenChange={() => setDeleteProfileId(null)}
-      >
+      <AlertDialog open={deleteProfileId !== null} onOpenChange={() => setDeleteProfileId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              {tBusinessType("confirm_delete")}
-            </AlertDialogTitle>
+            <AlertDialogTitle>{tBusinessType("confirm_delete")}</AlertDialogTitle>
             <AlertDialogDescription>
               {tBusinessType("confirm_delete_description")}
             </AlertDialogDescription>
