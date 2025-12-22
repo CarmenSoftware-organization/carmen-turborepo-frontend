@@ -12,27 +12,21 @@ import {
   DollarSign,
   Hash,
 } from "lucide-react";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { formType } from "@/dtos/form.dto";
 import { CreateGRNDto } from "@/dtos/grn.dto";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import { useVendor } from "@/hooks/use-vendor";
-import CurrencyLookup from "@/components/lookup/CurrencyLookup";
-import CreditTermLookup from "@/components/lookup/CreditTermLookup";
+import LookupCurrency from "@/components/lookup/LookupCurrency";
 import { Label } from "@/components/ui/label";
 import { useCreditTermQuery } from "@/hooks/use-credit-term";
 import { useAuth } from "@/context/AuthContext";
 import CalendarButton from "@/components/form-custom/CalendarButton";
 import DateInput from "@/components/form-custom/DateInput";
 import { useCurrenciesQuery } from "@/hooks/use-currency";
+import LookupCreditTerm from "@/components/lookup/LookupCreditTerm";
 
 interface GrnFormHeaderProps {
   readonly control: Control<CreateGRNDto>;
@@ -110,17 +104,10 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Input
-                  value={getVendorName(field.value ?? "")}
-                  disabled
-                  className="bg-muted"
-                />
+                <Input value={getVendorName(field.value ?? "")} disabled className="bg-muted" />
               ) : (
                 <FormControl>
-                  <VendorLookup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
+                  <VendorLookup onValueChange={field.onChange} value={field.value} />
                 </FormControl>
               )}
               <FormMessage />
@@ -206,17 +193,10 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Input
-                  value={getCurrencyCode(field.value ?? "")}
-                  disabled
-                  className="bg-muted"
-                />
+                <Input value={getCurrencyCode(field.value ?? "")} disabled className="bg-muted" />
               ) : (
                 <FormControl>
-                  <CurrencyLookup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
+                  <LookupCurrency onValueChange={field.onChange} value={field.value} />
                 </FormControl>
               )}
               <FormMessage />
@@ -231,11 +211,7 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
               Exchange Rate
             </div>
           </Label>
-          <Input
-            value={getCurrencyExchangeRate(currencyId ?? "")}
-            disabled
-            className="bg-muted"
-          />
+          <Input value={getCurrencyExchangeRate(currencyId ?? "")} disabled className="bg-muted" />
         </div>
 
         <FormField
@@ -250,17 +226,10 @@ export default function GrnFormHeader({ control, mode }: GrnFormHeaderProps) {
                 </div>
               </FormLabel>
               {mode === formType.VIEW ? (
-                <Input
-                  value={getCreditTermName(field.value ?? "")}
-                  disabled
-                  className="bg-muted"
-                />
+                <Input value={getCreditTermName(field.value ?? "")} disabled className="bg-muted" />
               ) : (
                 <FormControl>
-                  <CreditTermLookup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  />
+                  <LookupCreditTerm onValueChange={field.onChange} value={field.value} />
                 </FormControl>
               )}
               <FormMessage />

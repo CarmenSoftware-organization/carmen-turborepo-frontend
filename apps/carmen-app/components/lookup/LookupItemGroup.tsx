@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useItemGroup } from "@/hooks/use-item-group";
 import { PropsLookup } from "@/dtos/lookup.dto";
 
-export default function ItemGroupLookup({
+export default function LookupItemGroup({
   value,
   onValueChange,
   placeholder = "Select product item group",

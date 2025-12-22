@@ -20,7 +20,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { PriceListFormData } from "../../_schema/price-list.schema";
 import type { PriceListDetailDto } from "../../_dto/price-list-dto";
-import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import LookupCurrency from "@/components/lookup/LookupCurrency";
 import VendorLookup from "@/components/lookup/VendorLookup";
 
 interface OverviewSectionProps {
@@ -111,7 +111,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
                     value={priceList?.currency?.name || "-"}
                   />
                 ) : (
-                  <CurrencyLookup onValueChange={field.onChange} value={field.value} />
+                  <LookupCurrency onValueChange={field.onChange} value={field.value} />
                 )}
               </FormControl>
               <FormMessage />

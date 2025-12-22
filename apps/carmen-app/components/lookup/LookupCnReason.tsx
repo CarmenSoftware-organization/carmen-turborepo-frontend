@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useCnReasonQuery } from "@/hooks/useCnReason";
 
-export default function CnReasonLookup({
+export default function LookupCnReason({
   value,
   onValueChange,
   placeholder = "Select cn reason",

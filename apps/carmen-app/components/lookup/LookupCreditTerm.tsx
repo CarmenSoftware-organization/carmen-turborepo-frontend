@@ -8,19 +8,19 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
-import { useExtraCostTypeQuery } from "@/hooks/use-extra-cost-type";
+import { useCreditTermQuery } from "@/hooks/use-credit-term";
+import { CreditTermGetAllDto } from "@/dtos/credit-term.dto";
 
-export default function ExtraCostTypeLookup({
+export default function LookupCreditTerm({
   value,
   onValueChange,
-  placeholder = "Select extra cost type",
+  placeholder = "Select credit term",
   disabled = false,
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
 
-  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(token, buCode);
-  const extraCostTypesData = extraCostTypes?.data;
+  const { creditTerms, isLoading } = useCreditTermQuery(token, buCode);
+  const creditTermsData = creditTerms;
 
   if (isLoading) {
     return (
@@ -43,8 +43,8 @@ export default function ExtraCostTypeLookup({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {extraCostTypesData && extraCostTypesData.length > 0 ? (
-          extraCostTypesData?.map((item: ExtraCostTypeDto) => (
+        {creditTermsData && creditTermsData.length > 0 ? (
+          creditTermsData?.map((item: CreditTermGetAllDto) => (
             <SelectItem key={item.id} value={item.id}>
               {item.name}
             </SelectItem>

@@ -9,18 +9,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useGrnQuery } from "@/hooks/use-grn";
 import { GoodsReceivedNoteListDto } from "@/dtos/grn.dto";
 import { useAuth } from "@/context/AuthContext";
 
-export default function GrnLookup({
+export default function LookupGrn({
   value,
   onValueChange,
   placeholder = "Select GRN",
@@ -60,10 +56,7 @@ export default function GrnLookup({
             return 0;
           }}
         >
-          <CommandInput
-            placeholder="Search price range..."
-            className="w-full pr-10"
-          />
+          <CommandInput placeholder="Search price range..." className="w-full pr-10" />
           <CommandList>
             {isLoading ? (
               <div className="flex items-center justify-center py-6">
@@ -93,9 +86,7 @@ export default function GrnLookup({
                       </CommandItem>
                     ))
                   ) : (
-                    <CommandItem disabled>
-                      No price ranges available.
-                    </CommandItem>
+                    <CommandItem disabled>No price ranges available.</CommandItem>
                   )}
                 </CommandGroup>
               </>

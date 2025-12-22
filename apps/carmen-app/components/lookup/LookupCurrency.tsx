@@ -20,17 +20,17 @@ import { backendApi } from "@/lib/backend-api";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 
-interface CurrencyLookupProps extends PropsLookup {
+interface LookupCurrencyProps extends PropsLookup {
   readonly onSelectObject?: (obj: CurrencyGetDto) => void;
 }
 
-export default function CurrencyLookup({
+export default function LookupCurrency({
   value,
   onValueChange,
   disabled = false,
   classNames = "",
   onSelectObject,
-}: Readonly<CurrencyLookupProps>) {
+}: Readonly<LookupCurrencyProps>) {
   const { token, buCode } = useAuth();
   const t = useTranslations("Currency");
   const [open, setOpen] = useState(false);

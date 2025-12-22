@@ -17,7 +17,7 @@ import PrLabelItem from "./PrLabelItem";
 import NumberInput from "@/components/form-custom/NumberInput";
 import VendorLookup from "@/components/lookup/VendorLookup";
 import TaxProfileLookup from "@/components/lookup/TaxProfileLookup";
-import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import LookupCurrency from "@/components/lookup/LookupCurrency";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -174,7 +174,7 @@ export default function ExpandedContent({
                   <Label className="text-muted-foreground text-xs font-medium">
                     {tPr("currency")}
                   </Label>
-                  <CurrencyLookup
+                  <LookupCurrency
                     value={(getItemValue(item, "currency_id") as string) || ""}
                     onValueChange={(value) => {
                       onItemUpdate(item.id, "currency_id", value);

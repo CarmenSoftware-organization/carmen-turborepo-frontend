@@ -23,11 +23,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import ClusterLookup from "@/components/lookup/ClusterLookup";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import LookupCluster from "@/components/lookup/LookupCluster";
 
 export default function BusinessUnitPage() {
   const { token } = useAuth();
@@ -78,7 +78,7 @@ export default function BusinessUnitPage() {
                     <FormItem>
                       <FormLabel>Cluster</FormLabel>
                       <FormControl>
-                        <ClusterLookup
+                        <LookupCluster
                           value={field.value}
                           onValueChange={field.onChange}
                           placeholder="Select cluster"

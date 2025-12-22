@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "next-intl";
-import ExchangeRateLookup from "@/components/lookup/ExchangeRateLookup";
+import ExchangeRateLookup from "@/components/lookup/LookupExchangeRate";
 import currenciesIso from "@/constants/currency";
 import { useExchangeRate } from "@/hooks/useExchangeRate";
 import NumberInput from "@/components/form-custom/NumberInput";

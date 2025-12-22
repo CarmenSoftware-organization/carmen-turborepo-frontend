@@ -8,19 +8,19 @@ import {
 } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useCreditTermQuery } from "@/hooks/use-credit-term";
-import { CreditTermGetAllDto } from "@/dtos/credit-term.dto";
+import { ExtraCostTypeDto } from "@/dtos/extra-cost-type.dto";
+import { useExtraCostTypeQuery } from "@/hooks/use-extra-cost-type";
 
-export default function CreditTermLookup({
+export default function LookupExtraCostType({
   value,
   onValueChange,
-  placeholder = "Select credit term",
+  placeholder = "Select extra cost type",
   disabled = false,
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
 
-  const { creditTerms, isLoading } = useCreditTermQuery(token, buCode);
-  const creditTermsData = creditTerms;
+  const { extraCostTypes, isLoading } = useExtraCostTypeQuery(token, buCode);
+  const extraCostTypesData = extraCostTypes?.data;
 
   if (isLoading) {
     return (
@@ -43,15 +43,15 @@ export default function CreditTermLookup({
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {creditTermsData && creditTermsData.length > 0 ? (
-          creditTermsData?.map((item: CreditTermGetAllDto) => (
+        {extraCostTypesData && extraCostTypesData.length > 0 ? (
+          extraCostTypesData?.map((item: ExtraCostTypeDto) => (
             <SelectItem key={item.id} value={item.id}>
               {item.name}
             </SelectItem>
           ))
         ) : (
           <SelectItem value="empty" disabled>
-            No credit terms available.
+            No extra cost type available.
           </SelectItem>
         )}
       </SelectContent>

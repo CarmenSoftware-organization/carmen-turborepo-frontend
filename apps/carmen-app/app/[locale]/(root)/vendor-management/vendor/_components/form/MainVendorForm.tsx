@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import BuTypeLookup from "@/components/lookup/BuTypeLookup";
+import LookupBuType from "@/components/lookup/LookupBuType";
 
 interface MainVendorFormProps {
   readonly mode: formType;
@@ -132,7 +132,7 @@ export default function MainVendorForm({ mode, initData }: MainVendorFormProps) 
               <FormItem>
                 <FormLabel>Business Type</FormLabel>
                 <FormControl>
-                  <BuTypeLookup {...field} onValueChange={field.onChange} />
+                  <LookupBuType {...field} onValueChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

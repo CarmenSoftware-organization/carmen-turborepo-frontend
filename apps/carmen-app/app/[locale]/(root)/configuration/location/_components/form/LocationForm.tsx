@@ -25,7 +25,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useRouter } from "@/lib/navigation";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useLocationMutation, useUpdateLocation } from "@/hooks/use-locations";
-import { LookupDeliveryPoint } from "@/components/lookup/DeliveryPointLookup";
+import { LookupDeliveryPoint } from "@/components/lookup/LookupDeliveryPoint";
 import { Transfer } from "@/components/ui-custom/Transfer";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import FormBoolean from "@/components/form-custom/form-boolean";

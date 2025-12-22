@@ -16,9 +16,9 @@ import {
 } from "@/components/ui/select";
 import { CREDIT_NOTE_TYPE } from "@/constants/enum";
 import VendorLookup from "@/components/lookup/VendorLookup";
-import CurrencyLookup from "@/components/lookup/CurrencyLookup";
-import GrnLookup from "@/components/lookup/GrnLookup";
-import CnReasonLookup from "@/components/lookup/CnReasonLookup";
+import LookupCurrency from "@/components/lookup/LookupCurrency";
+import LookupGrn from "@/components/lookup/LookupGrn";
+import LookupCnReason from "@/components/lookup/LookupCnReason";
 import { useGrnQuery } from "@/hooks/use-grn";
 import DateInput from "@/components/form-custom/DateInput";
 import CalendarButton from "@/components/form-custom/CalendarButton";
@@ -162,7 +162,7 @@ export default function HeadCnForm({
                 <Input value={getCurrencyCode(field.value ?? "")} disabled className="bg-muted" />
               ) : (
                 <FormControl>
-                  <CurrencyLookup onValueChange={field.onChange} value={field.value} />
+                  <LookupCurrency onValueChange={field.onChange} value={field.value} />
                 </FormControl>
               )}
               <FormMessage />
@@ -200,7 +200,7 @@ export default function HeadCnForm({
                     placeholder="Select GRN"
                   />
                 ) : (
-                  <GrnLookup onValueChange={field.onChange} value={field.value ?? ""} />
+                  <LookupGrn onValueChange={field.onChange} value={field.value ?? ""} />
                 )}
               </FormControl>
               <FormMessage />
@@ -248,7 +248,7 @@ export default function HeadCnForm({
                     placeholder="Select reason"
                   />
                 ) : (
-                  <CnReasonLookup onValueChange={field.onChange} value={field.value ?? ""} />
+                  <LookupCnReason onValueChange={field.onChange} value={field.value ?? ""} />
                 )}
               </FormControl>
               <FormMessage />

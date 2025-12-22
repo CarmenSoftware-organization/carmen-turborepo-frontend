@@ -23,7 +23,7 @@ interface BuTypeLookupProps {
   readonly disabled?: boolean;
 }
 
-export default function BuTypeLookup({
+export default function LookupBuType({
   value = [],
   onValueChange,
   placeholder = "Select business type",

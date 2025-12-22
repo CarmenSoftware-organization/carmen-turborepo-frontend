@@ -65,25 +65,22 @@ export function LookupDeliveryPoint({
     []
   );
 
-  const highlightMatch = useCallback(
-    (text: string, searchTerm: string): React.ReactNode => {
-      if (!searchTerm.trim()) return text;
+  const highlightMatch = useCallback((text: string, searchTerm: string): React.ReactNode => {
+    if (!searchTerm.trim()) return text;
 
-      const regex = new RegExp(`(${searchTerm})`, "gi");
-      const parts = text.split(regex);
+    const regex = new RegExp(`(${searchTerm})`, "gi");
+    const parts = text.split(regex);
 
-      return parts.map((part, index) =>
-        regex.test(part) ? (
-          <span key={`${text}-${index}`} className="text-primary font-bold">
-            {part}
-          </span>
-        ) : (
-          part
-        )
-      );
-    },
-    []
-  );
+    return parts.map((part, index) =>
+      regex.test(part) ? (
+        <span key={`${text}-${index}`} className="text-primary font-bold">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  }, []);
 
   const handleInputChange = (inputValue: string): void => {
     setSearchTerm(inputValue);
@@ -119,15 +116,11 @@ export function LookupDeliveryPoint({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < filteredItems.length - 1 ? prev + 1 : 0
-        );
+        setSelectedIndex((prev) => (prev < filteredItems.length - 1 ? prev + 1 : 0));
         break;
       case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredItems.length - 1
-        );
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : filteredItems.length - 1));
         break;
       case "Enter":
         e.preventDefault();
@@ -164,10 +157,7 @@ export function LookupDeliveryPoint({
   const renderDropdownContent = (): React.ReactNode => {
     if (filteredData?.data?.length > 0) {
       return (
-        <div
-          role="listbox"
-          aria-label="Delivery points"
-        >
+        <div role="listbox" aria-label="Delivery points">
           {filteredData.data.map((item: DeliveryPointGetDto, index: number) => (
             <button
               key={`${item.id}-${item.name}`}
@@ -225,10 +215,7 @@ export function LookupDeliveryPoint({
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
         setSelectedIndex(-1);
       }
@@ -277,9 +264,7 @@ export function LookupDeliveryPoint({
                   <div className="text-sm text-gray-500">Loading...</div>
                 </div>
               ) : (
-                <div className="py-1 max-h-60 overflow-y-auto">
-                  {renderDropdownContent()}
-                </div>
+                <div className="py-1 max-h-60 overflow-y-auto">{renderDropdownContent()}</div>
               )}
             </CardContent>
           </Card>
@@ -288,7 +273,8 @@ export function LookupDeliveryPoint({
 
       {/* Hidden description for screen readers */}
       <div id={`${className}-description`} className="sr-only">
-        Type to search for delivery points. Use arrow keys to navigate, Enter to select, Escape to close.
+        Type to search for delivery points. Use arrow keys to navigate, Enter to select, Escape to
+        close.
       </div>
     </div>
   );

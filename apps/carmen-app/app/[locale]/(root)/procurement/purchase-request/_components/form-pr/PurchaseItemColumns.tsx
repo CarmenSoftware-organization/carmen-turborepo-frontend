@@ -9,16 +9,16 @@ import { formType } from "@/dtos/form.dto";
 import { formatDate } from "@/utils/format/date";
 import { formatPrice } from "@/utils/format/currency";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
-import LocationLookup from "@/components/lookup/LocationLookup";
+import LookupLocation from "@/components/lookup/LookupLocation";
 import ProductLocationLookup from "@/components/lookup/ProductLocationLookup";
 import NumberInput from "@/components/form-custom/NumberInput";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import DateInput from "@/components/form-custom/DateInput";
-import { DeliveryPointSelectLookup } from "@/components/lookup/DeliveryPointSelectLookup";
+import { LookupDeliveryPointSelect } from "@/components/lookup/LookupDeliveryPointSelect";
 import { UnitSelectCell } from "../UnitSelectCell";
 import ExpandedContent from "./ExpandedContent";
 import { PR_STATUS } from "../../_constants/pr-status";
-import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import LookupCurrency from "@/components/lookup/LookupCurrency";
 
 interface ColumnConfig {
   currentMode: formType;
@@ -193,7 +193,7 @@ export const createPurchaseItemColumns = (
           </span>
         ) : (
           <div className="min-w-[200px] pr-4">
-            <LocationLookup
+            <LookupLocation
               value={getItemValue(item, "location_id") as string | undefined}
               onValueChange={(value, selectedLocation) => {
                 onItemUpdate(item.id, "location_id", value);
@@ -433,7 +433,7 @@ export const createPurchaseItemColumns = (
         return currentMode === formType.VIEW ? (
           <p className="text-xs">{item.currency_id}</p>
         ) : (
-          <CurrencyLookup
+          <LookupCurrency
             value={(getItemValue(item, "currency_id") as string) || ""}
             onValueChange={(value) => onItemUpdate(item.id, "currency_id", value)}
             classNames="h-7 text-xs"
@@ -493,7 +493,7 @@ export const createPurchaseItemColumns = (
           <p className="text-xs">{item.delivery_point_name || "-"}</p>
         ) : (
           <div className="min-w-[200px] pr-4">
-            <DeliveryPointSelectLookup
+            <LookupDeliveryPointSelect
               value={(getItemValue(item, "delivery_point_id") as string) || ""}
               onValueChange={(value) => onItemUpdate(item.id, "delivery_point_id", value)}
               className="h-7 text-xs w-full"

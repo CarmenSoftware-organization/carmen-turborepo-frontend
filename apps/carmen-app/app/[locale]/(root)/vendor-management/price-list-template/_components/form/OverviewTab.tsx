@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PriceListTemplateDetailsDto } from "@/dtos/price-list-template.dto";
-import CurrencyLookup from "@/components/lookup/CurrencyLookup";
+import LookupCurrency from "@/components/lookup/LookupCurrency";
 import { useTranslations } from "next-intl";
 import NumberInput from "@/components/form-custom/NumberInput";
 
@@ -112,7 +112,7 @@ export default function TabOverview({ form, isViewMode, templateData }: Props) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{tHeader("currency")}</FormLabel>
-                  <CurrencyLookup onValueChange={field.onChange} value={field.value} />
+                  <LookupCurrency onValueChange={field.onChange} value={field.value} />
                   <FormMessage />
                 </FormItem>
               )}

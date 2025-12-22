@@ -11,12 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import ItemGroupLookup from "@/components/lookup/ItemGroupLookup";
+import LookupItemGroup from "@/components/lookup/LookupItemGroup";
 import UnitLookup from "@/components/lookup/UnitLookup";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { useTranslations } from "next-intl";
-import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 import {
   FormControl,
   FormField,
@@ -306,7 +305,7 @@ export default function BasicInfo({
                   <FormItem className="col-span-full">
                     <FormLabel>{tProducts("item_group")}</FormLabel>
                     <FormControl>
-                      <ItemGroupLookup
+                      <LookupItemGroup
                         value={field.value}
                         onValueChange={(value) => {
                           field.onChange(value);
