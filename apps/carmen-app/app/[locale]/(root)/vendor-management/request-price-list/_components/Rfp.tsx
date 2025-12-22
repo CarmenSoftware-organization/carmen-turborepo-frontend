@@ -27,17 +27,32 @@ export default function Rfp() {
 
   const [search, setSearch] = useURL("search");
   const [sort, setSort] = useURL("sort");
+  const [page, setPage] = useURL("page");
+  const [perpage, setPerpage] = useURL("perpage");
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
   const [view, setView] = useState<VIEW>(VIEW.LIST);
 
-  const { rfps, isLoading, isUnauthorized } = useRfps(token, buCode);
+  const { rfps, isLoading, isUnauthorized } = useRfps(token, buCode, {
+    search,
+    sort,
+    page: page ? Number(page) : 1,
+    perpage: perpage ? Number(perpage) : 10,
+  });
 
   useEffect(() => {
     if (isUnauthorized) {
       setLoginDialogOpen(true);
     }
   }, [isUnauthorized]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage.toString());
+  };
+
+  const handlePerpageChange = (newPerpage: number) => {
+    setPerpage(newPerpage.toString());
+  };
 
   const title = tRfp("title");
 
@@ -158,17 +173,38 @@ export default function Rfp() {
     </div>
   );
 
+  const totalItems = rfps?.paginate?.total ?? 0;
+  const totalPages = rfps?.paginate?.pages ?? 1;
+  const currentPage = rfps?.paginate?.page ?? 1;
+  const currentPerpage = rfps?.paginate?.perpage ?? 10;
+
   const content = (
     <>
       <div className="block lg:hidden">
-        <RfpGrid rfps={rfps ?? []} isLoading={isLoading} />
+        <RfpGrid
+          rfps={rfps?.data ?? []} // Updated access to data
+          isLoading={isLoading}
+          // Grid might need pagination props too, but List is priority
+        />
       </div>
 
       <div className="hidden lg:block">
         {view === VIEW.LIST ? (
-          <RfpList rfps={rfps ?? []} isLoading={isLoading} />
+          <RfpList
+            rfps={rfps?.data ?? []} // Updated access to data
+            isLoading={isLoading}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            perpage={currentPerpage}
+            setPerpage={handlePerpageChange}
+          />
         ) : (
-          <RfpGrid rfps={rfps ?? []} isLoading={isLoading} />
+          <RfpGrid
+            rfps={rfps?.data ?? []} // Updated access to data
+            isLoading={isLoading}
+          />
         )}
       </div>
     </>

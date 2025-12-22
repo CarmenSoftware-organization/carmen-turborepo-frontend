@@ -35,11 +35,7 @@ export const getAllApiRequest = async (
   }
 };
 
-export const getByIdApiRequest = async (
-  API_URL: string,
-  token: string,
-  errorContext: string
-) => {
+export const getByIdApiRequest = async (API_URL: string, token: string, errorContext: string) => {
   try {
     const response = await axios.get(API_URL, {
       headers: requestHeaders(token),
@@ -82,9 +78,10 @@ export const updateApiRequest = async <T = unknown, R = unknown>(
       headers: requestHeaders(token),
     };
 
-    const response = method === "PUT"
-      ? await axios.put<R>(API_URL, data, config)
-      : await axios.patch<R>(API_URL, data, config);
+    const response =
+      method === "PUT"
+        ? await axios.put<R>(API_URL, data, config)
+        : await axios.patch<R>(API_URL, data, config);
 
     return response.data;
   } catch (error) {

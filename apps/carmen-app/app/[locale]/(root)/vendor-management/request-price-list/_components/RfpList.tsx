@@ -24,6 +24,8 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 import { convertStatus } from "@/utils/status";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { PaginationState } from "@tanstack/react-table";
 
 interface RfpListProps {
   readonly rfps: RfpDto[];
@@ -32,6 +34,12 @@ interface RfpListProps {
   readonly onSort?: (sortString: string) => void;
   readonly canUpdate?: boolean;
   readonly canDelete?: boolean;
+  readonly currentPage: number;
+  readonly totalPages: number;
+  readonly totalItems: number;
+  readonly perpage: number;
+  readonly onPageChange: (page: number) => void;
+  readonly setPerpage: (perpage: number) => void;
 }
 
 export default function RfpList({
@@ -41,6 +49,12 @@ export default function RfpList({
   onSort,
   canUpdate = true,
   canDelete = true,
+  currentPage,
+  totalPages,
+  totalItems,
+  perpage,
+  onPageChange,
+  setPerpage,
 }: RfpListProps) {
   const tStatus = useTranslations("Status");
   const tHeader = useTranslations("TableHeader");
@@ -50,6 +64,14 @@ export default function RfpList({
     if (!sort) return [];
     return [{ id: sort.field, desc: sort.direction === "desc" }];
   }, [sort]);
+
+  const pagination: PaginationState = useMemo(
+    () => ({
+      pageIndex: currentPage - 1,
+      pageSize: perpage,
+    }),
+    [currentPage, perpage]
+  );
 
   const getStatusLabel = (status: string) => convertStatus(status, tStatus);
 
@@ -237,15 +259,21 @@ export default function RfpList({
     [canUpdate, canDelete, tHeader, tRfp]
   );
 
-  // Initialize table
   const table = useReactTable({
     data: rfps,
     columns,
+    pageCount: totalPages,
     getRowId: (row) => row.id ?? "",
     state: {
+      pagination,
       sorting,
     },
     enableRowSelection: true,
+    onPaginationChange: (updater) => {
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(newPagination.pageIndex + 1);
+      setPerpage(newPagination.pageSize);
+    },
     onSortingChange: (updater) => {
       if (!onSort) return;
 
@@ -260,13 +288,14 @@ export default function RfpList({
       }
     },
     getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
     manualSorting: true,
   });
 
   return (
     <DataGrid
       table={table}
-      recordCount={rfps.length}
+      recordCount={totalItems}
       isLoading={isLoading}
       loadingMode="skeleton"
       emptyMessage={tRfp("no_data")}
@@ -279,12 +308,15 @@ export default function RfpList({
         width: "fixed",
       }}
     >
-      <DataGridContainer>
-        <ScrollArea className="max-h-[calc(100vh-250px)]">
-          <DataGridTable />
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </DataGridContainer>
+      <div className="w-full space-y-2">
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+      </div>
     </DataGrid>
   );
 }

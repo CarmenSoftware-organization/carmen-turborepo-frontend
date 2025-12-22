@@ -37,7 +37,8 @@ export const useRfps = (token: string, buCode: string, params?: ParamsGetDto) =>
   });
 
   const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
-  const rfps = data?.data;
+  // const rfps = data?.data; // OLD
+  const rfps = data; // NEW: Return full response including paginate metadata
 
   return {
     rfps,
