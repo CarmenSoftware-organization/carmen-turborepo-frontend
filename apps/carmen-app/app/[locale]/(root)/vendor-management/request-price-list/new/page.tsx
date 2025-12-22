@@ -1,9 +1,9 @@
 import { formType } from "@/dtos/form.dto";
-import MainForm from "../_components/form/MainForm";
+import RfpMainForm from "../_components/form/RfpMainForm";
 import { createMetadata } from "@/utils/metadata";
 
 export const generateMetadata = createMetadata("RFP", "new_rfp_meta");
 
-export default function NewRfpPage() {
-  return <MainForm mode={formType.ADD} />;
+export default function RfpNewPage() {
+  return <RfpMainForm mode={formType.ADD} />;
 }

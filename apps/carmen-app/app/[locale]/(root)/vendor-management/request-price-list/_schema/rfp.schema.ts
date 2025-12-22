@@ -1,34 +1,37 @@
 import * as z from "zod";
 
-export const reminderRuleSchema = z.object({
-  type: z.enum(["before_deadline", "after_deadline"]),
-  days: z.number().min(1),
-  recipients: z.array(
-    z.object({
-      type: z.enum(["email", "role", "user_id"]),
-      value: z.string(),
-    })
-  ),
-  message: z.string().optional(),
-  enabled: z.boolean(),
-});
-
 export const rfpFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   status: z.enum(["active", "inactive", "draft", "submit", "completed"]),
   custom_message: z.string().optional(),
-  valid_period: z.number().min(1, "Valid period must be at least 1 day"),
-  template_id: z.string().optional(),
-  portal_duration: z.number().min(1),
-  rfp_type: z.enum(["buy", "sell", "recurring"]),
-  submission_method: z.enum(["auto", "manual"]),
-  require_approval: z.boolean(),
-  auto_reminder: z.boolean(),
-  priority: z.enum(["high", "medium", "low"]),
-  instructions: z.string().optional(),
-  reminders: z.array(reminderRuleSchema).optional(),
-  escalations: z.array(reminderRuleSchema).optional(),
-  vendors: z.array(z.string()).optional(), // Array of Vendor IDs
+  start_date: z.string({
+    required_error: "Start date is required",
+  }),
+  end_date: z.string({
+    required_error: "End date is required",
+  }),
+  pricelist_template_id: z.string().optional(),
+  dimension: z.string().optional(),
+  info: z.string().optional(),
+
+  vendors: z
+    .object({
+      add: z
+        .array(
+          z.object({
+            vendor_id: z.string(),
+            vendor_name: z.string(),
+            sequence_no: z.number(),
+            contact_person: z.string().optional(),
+            contact_phone: z.string().optional(),
+            contact_email: z.string().optional(),
+            dimension: z.string().optional(),
+          })
+        )
+        .optional(),
+      remove: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 export type RfpFormValues = z.infer<typeof rfpFormSchema>;
