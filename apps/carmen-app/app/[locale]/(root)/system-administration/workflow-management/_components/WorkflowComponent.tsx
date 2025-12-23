@@ -39,7 +39,7 @@ export default function PurchaseOrderComponent() {
     perpage: perpage || 10,
   });
 
-  const workflows = Array.isArray(data) ? data : data?.data || [];
+  const workflows = data?.data ?? [];
   const totalPages = data?.paginate?.pages ?? 1;
   const totalItems = data?.paginate?.total ?? 0;
 

@@ -54,7 +54,10 @@ export const useWorkflow = (token: string, buCode: string, params?: ParamsGetDto
         rules: item.data.routing_rules.length,
       }));
 
-      return newData;
+      return {
+        data: newData,
+        paginate: data.paginate,
+      };
     },
     enabled: !!token && !!buCode,
   });
