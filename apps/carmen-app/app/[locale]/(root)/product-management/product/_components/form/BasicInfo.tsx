@@ -70,31 +70,39 @@ export default function BasicInfo({
   });
 
   const categoryData = useMemo(() => {
-    if (!categoryResponse) {
+    if (!categoryResponse?.data) {
       return {
-        category: { id: "", name: "" },
-        subCategory: { id: "", name: "" },
+        data: {
+          category: { id: "", name: "" },
+          subCategory: { id: "", name: "" },
+        },
       };
     }
 
     return {
-      category: {
-        id: categoryResponse.category?.id || "",
-        name: categoryResponse.category?.name || "",
-      },
-      subCategory: {
-        id: categoryResponse.sub_category?.id || "",
-        name: categoryResponse.sub_category?.name || "",
+      data: {
+        category: {
+          id: categoryResponse.data.category?.id || "",
+          name: categoryResponse.data.category?.name || "",
+        },
+        subCategory: {
+          id: categoryResponse.data.sub_category?.id || "",
+          name: categoryResponse.data.sub_category?.name || "",
+        },
       },
     };
   }, [categoryResponse]);
 
   useEffect(() => {
     if (categoryResponse && productItemGroupId) {
-      setValue("product_category", categoryData.category, { shouldValidate: false });
-      setValue("product_sub_category", categoryData.subCategory, { shouldValidate: false });
+      setValue("product_category", categoryData.data.category, { shouldValidate: false });
+      setValue("product_sub_category", categoryData.data.subCategory, { shouldValidate: false });
     }
   }, [categoryResponse, categoryData, productItemGroupId, setValue]);
+
+  console.log("productItemGroupId", productItemGroupId);
+  console.log("categoryResponse", categoryResponse);
+  console.log("categoryData", categoryData);
 
   const watchedFields = useWatch({
     control,
@@ -352,7 +360,7 @@ export default function BasicInfo({
               </TooltipProvider>
               <Input
                 placeholder={tProducts("sub_category")}
-                value={isCategoryLoading ? "Loading..." : categoryData.subCategory.name || "-"}
+                value={isCategoryLoading ? "Loading..." : categoryData.data.subCategory.name || "-"}
                 disabled
                 className="bg-muted"
               />
@@ -376,7 +384,7 @@ export default function BasicInfo({
               </TooltipProvider>
               <Input
                 placeholder={tProducts("category")}
-                value={isCategoryLoading ? "Loading..." : categoryData.category.name || "-"}
+                value={isCategoryLoading ? "Loading..." : categoryData.data.category.name || "-"}
                 disabled
                 className="bg-muted"
               />
