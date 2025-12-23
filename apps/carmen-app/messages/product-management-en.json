@@ -105,6 +105,7 @@
     "no_search_results": "No search results found",
     "try_different_keywords": "Try different keywords",
     "name_required": "Please enter name",
-    "code_required": "Please enter code"
+    "code_required": "Please enter code",
+    "tax_profile": "Tax Profile"
   }
 }

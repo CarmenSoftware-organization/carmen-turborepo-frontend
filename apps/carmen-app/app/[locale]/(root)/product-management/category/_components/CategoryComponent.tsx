@@ -192,6 +192,9 @@ export default function CategoryComponent() {
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
+              tax_profile_id: data.tax_profile_id,
+              tax_profile_name: data.tax_profile_name,
+              tax_rate: data.tax_rate,
             };
             result = await submitCategory(categoryDto, dialogMode, categoryDto);
             success = !!result;
@@ -207,6 +210,9 @@ export default function CategoryComponent() {
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
+              tax_profile_id: data.tax_profile_id,
+              tax_profile_name: data.tax_profile_name,
+              tax_rate: data.tax_rate,
             };
             result = await submitSubCategory(subCategoryDto, dialogMode, subCategoryDto);
             success = !!result;
@@ -222,6 +228,9 @@ export default function CategoryComponent() {
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
+              tax_profile_id: data.tax_profile_id,
+              tax_profile_name: data.tax_profile_name,
+              tax_rate: data.tax_rate,
             };
             result = await submitItemGroup(itemGroupDto, dialogMode, itemGroupDto);
             success = !!result;
@@ -242,6 +251,9 @@ export default function CategoryComponent() {
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
+              tax_profile_id: data.tax_profile_id,
+              tax_profile_name: data.tax_profile_name,
+              tax_rate: data.tax_rate,
             };
             result = await submitCategory(categoryDto, dialogMode);
             success = !!result;
@@ -257,6 +269,9 @@ export default function CategoryComponent() {
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
+              tax_profile_id: data.tax_profile_id,
+              tax_profile_name: data.tax_profile_name,
+              tax_rate: data.tax_rate,
             };
             result = await submitSubCategory(subCategoryDto, dialogMode);
             success = !!result;
@@ -272,6 +287,9 @@ export default function CategoryComponent() {
               qty_deviation_limit: data.qty_deviation_limit ?? 0,
               is_used_in_recipe: data.is_used_in_recipe ?? false,
               is_sold_directly: data.is_sold_directly ?? false,
+              tax_profile_id: data.tax_profile_id,
+              tax_profile_name: data.tax_profile_name,
+              tax_rate: data.tax_rate,
             };
             result = await submitItemGroup(itemGroupDto, dialogMode);
             success = !!result;

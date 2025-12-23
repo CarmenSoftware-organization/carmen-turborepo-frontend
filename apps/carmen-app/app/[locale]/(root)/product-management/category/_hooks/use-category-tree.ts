@@ -65,6 +65,9 @@ export const useCategoryTree = ({
           is_used_in_recipe:
             item.is_used_in_recipe ?? parentSubCategory?.is_used_in_recipe ?? false,
           is_sold_directly: item.is_sold_directly ?? parentSubCategory?.is_sold_directly ?? false,
+          tax_profile_id: item.tax_profile_id,
+          tax_profile_name: item.tax_profile_name,
+          tax_rate: Number(item.tax_rate ?? 0),
         }));
     };
 
@@ -86,6 +89,9 @@ export const useCategoryTree = ({
           qty_deviation_limit: sub.qty_deviation_limit,
           is_used_in_recipe: sub.is_used_in_recipe ?? parentCategory?.is_used_in_recipe ?? false,
           is_sold_directly: sub.is_sold_directly ?? parentCategory?.is_sold_directly ?? false,
+          tax_profile_id: sub.tax_profile_id,
+          tax_profile_name: sub.tax_profile_name,
+          tax_rate: Number(sub.tax_rate ?? 0),
         }));
     };
 
@@ -102,6 +108,9 @@ export const useCategoryTree = ({
       qty_deviation_limit: cat.qty_deviation_limit,
       is_used_in_recipe: cat.is_used_in_recipe,
       is_sold_directly: cat.is_sold_directly,
+      tax_profile_id: cat.tax_profile_id,
+      tax_profile_name: cat.tax_profile_name,
+      tax_rate: Number(cat.tax_rate ?? 0),
     }));
   }, [categories, subCategories, itemGroups]);
 

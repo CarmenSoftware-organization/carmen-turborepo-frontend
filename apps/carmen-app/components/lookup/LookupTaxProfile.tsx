@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 
 interface TaxProfileLookupProps extends PropsLookup {
   readonly onSelectObject?: (obj: TaxProfileGetAllDto) => void;
+  readonly displayName?: string;
 }
 
 export default function LookupTaxProfile({
@@ -25,6 +26,7 @@ export default function LookupTaxProfile({
   disabled = false,
   classNames,
   onSelectObject,
+  displayName,
 }: Readonly<TaxProfileLookupProps>) {
   const { token, buCode } = useAuth();
   const tTaxProfile = useTranslations("TaxProfile");
@@ -33,8 +35,21 @@ export default function LookupTaxProfile({
   });
 
   const taxProfiles = useMemo(() => {
-    return (taxProfileData?.data || []) as TaxProfileGetAllDto[];
-  }, [taxProfileData]);
+    const profiles = (taxProfileData?.data || []) as TaxProfileGetAllDto[];
+    if (value && displayName && !profiles.find((p) => p.id === value)) {
+      return [
+        ...profiles,
+        {
+          id: value,
+          name: displayName,
+          tax_rate: 0, // Default or dummy value, strictly for display purposes
+          description: "",
+          is_active: true,
+        } as TaxProfileGetAllDto,
+      ];
+    }
+    return profiles;
+  }, [taxProfileData, value, displayName]);
 
   return (
     <Select

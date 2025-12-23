@@ -27,6 +27,7 @@ import {
   FormMessage,
 } from "@/components/form-custom/form";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
 interface CategoryFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -63,6 +64,9 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
       qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0,
       is_used_in_recipe: selectedNode?.is_used_in_recipe ?? false,
       is_sold_directly: selectedNode?.is_sold_directly ?? false,
+      tax_profile_id: selectedNode?.tax_profile_id ?? "",
+      tax_profile_name: selectedNode?.tax_profile_name ?? "",
+      tax_rate: selectedNode?.tax_rate ?? 0,
     },
   });
 
@@ -210,6 +214,27 @@ export function CategoryForm({ mode, selectedNode, onSubmit, onCancel }: Categor
                 <FormLabel>{tCommon("description")}</FormLabel>
                 <FormControl>
                   <Textarea {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="tax_profile_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{tCategory("tax_profile")}</FormLabel>
+                <FormControl>
+                  <LookupTaxProfile
+                    value={field.value}
+                    displayName={form.watch("tax_profile_name")}
+                    onValueChange={field.onChange}
+                    onSelectObject={(selected) => {
+                      form.setValue("tax_profile_name", selected.name);
+                      form.setValue("tax_rate", Number(selected.tax_rate));
+                    }}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -1,7 +1,8 @@
 import { z } from "zod";
 
 // Schema factory functions that accept custom validation messages
-export const createCategorySchema = (messages?: { codeRequired?: string; nameRequired?: string }) => z.object({
+export const createCategorySchema = (messages?: { codeRequired?: string; nameRequired?: string }) =>
+  z.object({
     id: z.string(),
     code: z.string().min(1, { message: messages?.codeRequired ?? "Code is required" }),
     name: z.string().min(1, { message: messages?.nameRequired ?? "Name is required" }),
@@ -12,9 +13,16 @@ export const createCategorySchema = (messages?: { codeRequired?: string; nameReq
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
     is_edit_type: z.boolean().optional(),
-});
+    tax_profile_id: z.string().optional(),
+    tax_profile_name: z.string().optional(),
+    tax_rate: z.number().optional(),
+  });
 
-export const createSubCategorySchema = (messages?: { codeRequired?: string; nameRequired?: string }) => z.object({
+export const createSubCategorySchema = (messages?: {
+  codeRequired?: string;
+  nameRequired?: string;
+}) =>
+  z.object({
     id: z.string(),
     code: z.string().min(1, { message: messages?.codeRequired ?? "Code is required" }),
     name: z.string().min(1, { message: messages?.nameRequired ?? "Name is required" }),
@@ -26,9 +34,16 @@ export const createSubCategorySchema = (messages?: { codeRequired?: string; name
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
     is_edit_type: z.boolean().optional(),
-});
+    tax_profile_id: z.string().optional(),
+    tax_profile_name: z.string().optional(),
+    tax_rate: z.number().optional(),
+  });
 
-export const createItemGroupSchema = (messages?: { codeRequired?: string; nameRequired?: string }) => z.object({
+export const createItemGroupSchema = (messages?: {
+  codeRequired?: string;
+  nameRequired?: string;
+}) =>
+  z.object({
     id: z.string(),
     code: z.string().min(1, { message: messages?.codeRequired ?? "Code is required" }),
     name: z.string().min(1, { message: messages?.nameRequired ?? "Name is required" }),
@@ -40,7 +55,10 @@ export const createItemGroupSchema = (messages?: { codeRequired?: string; nameRe
     is_used_in_recipe: z.boolean(),
     is_sold_directly: z.boolean(),
     is_edit_type: z.boolean().optional(),
-});
+    tax_profile_id: z.string().optional(),
+    tax_profile_name: z.string().optional(),
+    tax_rate: z.number().optional(),
+  });
 
 // Base schemas for entities (backward compatibility with default messages)
 export const CategorySchema = createCategorySchema();
@@ -54,7 +72,7 @@ export const ItemGroupFormSchema = ItemGroupSchema.omit({ id: true });
 
 // Tree node type enum
 export enum NODE_TYPE {
-    CATEGORY = "category",
-    SUBCATEGORY = "subcategory",
-    ITEM_GROUP = "itemGroup"
+  CATEGORY = "category",
+  SUBCATEGORY = "subcategory",
+  ITEM_GROUP = "itemGroup",
 }

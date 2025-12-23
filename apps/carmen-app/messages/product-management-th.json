@@ -105,6 +105,7 @@
     "no_search_results": "ไม่พบผลลัพธ์ที่ตรงกับคำค้นหา",
     "try_different_keywords": "ลองคำค้นหาอื่น",
     "name_required": "กรุณากรอกชื่อ",
-    "code_required": "กรุณากรอกรหัส"
+    "code_required": "กรุณากรอกรหัส",
+    "tax_profile": "ประเภทภาษี"
   }
 }

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useTranslations } from "next-intl";
 import FormBoolean from "@/components/form-custom/form-boolean";
+import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
 interface SubCategoryFormProps {
   readonly mode: formType;
   readonly selectedNode?: CategoryNode;
@@ -93,6 +94,9 @@ export function SubCategoryForm({
       qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0,
       is_used_in_recipe: selectedNode?.is_used_in_recipe ?? parentNode?.is_used_in_recipe ?? false,
       is_sold_directly: selectedNode?.is_sold_directly ?? parentNode?.is_sold_directly ?? false,
+      tax_profile_id: selectedNode?.tax_profile_id ?? "754acf6d-333b-441d-a7f9-b77f069da933",
+      tax_profile_name: selectedNode?.tax_profile_name ?? "VAT 2%",
+      tax_rate: selectedNode?.tax_rate ?? 2,
     },
   });
 
@@ -266,6 +270,28 @@ export function SubCategoryForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="tax_profile_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{tCategory("tax_profile")}</FormLabel>
+                <FormControl>
+                  <LookupTaxProfile
+                    value={field.value}
+                    displayName={form.watch("tax_profile_name")}
+                    onValueChange={field.onChange}
+                    onSelectObject={(selected) => {
+                      form.setValue("tax_profile_name", selected.name);
+                      form.setValue("tax_rate", Number(selected.tax_rate));
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="is_active"
