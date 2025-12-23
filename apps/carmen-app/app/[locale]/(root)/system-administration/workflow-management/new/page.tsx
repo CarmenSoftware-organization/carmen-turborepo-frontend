@@ -167,7 +167,7 @@ export default function NewWorkflowPage() {
     createWorkflow(values, {
       onSuccess: (response: any) => {
         toastSuccess({ message: tWf("add_success") });
-        queryClient.invalidateQueries({ queryKey: ["workflow", buCode] });
+        queryClient.invalidateQueries({ queryKey: ["workflows", buCode] });
         const wfId = response?.data?.id || response?.id;
         if (wfId) {
           router.replace(`/system-administration/workflow-management/${wfId}`);

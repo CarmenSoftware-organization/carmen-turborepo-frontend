@@ -1,226 +1,300 @@
 "use client";
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-import Link from "next/link";
-import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
-import SortComponent from "@/components/ui-custom/SortComponent";
-import { Eye, PlusCircle } from "lucide-react";
-import SearchInput from "@/components/ui-custom/SearchInput";
-import { FieldConfig } from "@/constants/uiConfig";
-import { Badge } from "@/components/ui/badge";
-import { useWorkflow } from "@/hooks/use-workflow";
-import { TableBodySkeleton } from "@/components/loading/TableBodySkeleton";
-import PaginationComponent from "@/components/PaginationComponent";
+import { Activity, Banknote, Coins } from "lucide-react";
+import { FileDown, FileText, MoreHorizontal, Printer, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
-import { useAuth } from "@/context/AuthContext";
-import { useURL } from "@/hooks/useURL";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import ButtonLink from "@/components/ButtonLink";
+import { useMemo } from "react";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+  PaginationState,
+  SortingState,
+} from "@tanstack/react-table";
+import { DataGrid, DataGridContainer } from "@/components/ui/data-grid";
+import { DataGridTable } from "@/components/ui/data-grid-table";
+import { DataGridPagination } from "@/components/ui/data-grid-pagination";
+import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { WorkflowDto } from "@/dtos/workflows.dto";
+import { StatusCustom } from "@/components/ui-custom/StatusCustom";
 
 interface WorkflowListProps {
-  id: string;
-  name: string;
-  stages: number;
-  rules: number;
-  workflow_type: string;
-  is_active: string;
+  readonly isLoading: boolean;
+  readonly workflows: WorkflowDto[];
+  readonly currentPage: number;
+  readonly totalPages: number;
+  readonly totalItems: number;
+  readonly perpage: number;
+  readonly onPageChange: (page: number) => void;
+  readonly sort?: { field: string; direction: "asc" | "desc" };
+  readonly onSort?: (sortString: string) => void;
+  readonly setPerpage: (perpage: number) => void;
 }
 
-enum WorkflowField {
-  name = "name",
-  workflow_type = "workflow_type",
-  stages = "stages",
-  rules = "rules",
-  isActive = "is_active",
-}
-
-const sortFields: FieldConfig<WorkflowListProps>[] = [
-  { key: WorkflowField.name, label: `Name`, className: "w-40" },
-  { key: WorkflowField.workflow_type, label: `Type`, className: "w-40" },
-  {
-    key: WorkflowField.isActive,
-    label: `Status`,
-    type: "badge",
-    className: "w-24",
-  },
-  { key: WorkflowField.stages, label: `Stages`, className: "w-24" },
-  { key: WorkflowField.rules, label: `Rules`, className: "w-24" },
-  // {
-  // 	key: WorkflowField.lastModified,
-  // 	label: `Last Modified`,
-  // 	className: "w-40",
-  // },
-];
-
-const fields: FieldConfig<WorkflowListProps>[] = [...sortFields];
-
-const renderFieldValue = (field: FieldConfig<WorkflowListProps>, wf: WorkflowListProps) => {
-  if (field.render) {
-    return field.render(wf[field.key], wf);
-  }
-
-  const value = wf[field.key];
-  switch (field.type) {
-    case "badge":
-      if (typeof value === "boolean") {
-        return (
-          <Badge variant={value ? "default" : "destructive"}>{value ? `Active` : `Inactive`}</Badge>
-        );
-      }
-      return <Badge>{String(value)}</Badge>;
-    default:
-      return <span className={`text-xs ${field.className || ""}`}>{String(value)}</span>;
-  }
+const ActionHeader = () => {
+  const tTableHeader = useTranslations("TableHeader");
+  return <div className="text-right">{tTableHeader("action")}</div>;
 };
 
-const WorkflowList = () => {
-  const { token, buCode, permissions } = useAuth();
-  const [search, setSearch] = useURL("search");
-  const [filter, setFilter] = useURL("filter");
-  const [sort, setSort] = useURL("sort");
-  const [page, setPage] = useURL("page");
-  const [perpage, setPerpage] = useURL("perpage");
-  const [statusOpen, setStatusOpen] = useState(false);
+const WorkflowList = ({
+  isLoading,
+  workflows = [],
+  currentPage,
+  totalPages,
+  totalItems,
+  onPageChange,
+  sort,
+  onSort,
+  perpage,
+  setPerpage,
+}: WorkflowListProps) => {
+  const tTableHeader = useTranslations("TableHeader");
   const tCommon = useTranslations("Common");
-  const { data, isLoading } = useWorkflow(token, buCode, {
-    search,
-    filter,
-    sort,
-    page: page ? Number(page) : 1,
-    perpage: perpage ? Number(perpage) : 10,
+
+  // Convert sort to TanStack Table format
+  const sorting: SortingState = useMemo(() => {
+    if (!sort) return [];
+    return [{ id: sort.field, desc: sort.direction === "desc" }];
+  }, [sort]);
+
+  // Pagination state
+  const pagination: PaginationState = useMemo(
+    () => ({
+      pageIndex: currentPage - 1, // TanStack uses 0-based index
+      pageSize: perpage,
+    }),
+    [currentPage, perpage]
+  );
+
+  // Define columns
+
+  const columns = useMemo<ColumnDef<WorkflowDto>[]>(
+    () => [
+      {
+        id: "no",
+        header: () => <div className="text-center">#</div>,
+        cell: ({ row }) => (
+          <div className="text-center">{(currentPage - 1) * perpage + row.index + 1}</div>
+        ),
+        enableSorting: false,
+        size: 30,
+        meta: {
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "name",
+        header: ({ column }) => (
+          <DataGridColumnHeader
+            column={column}
+            title={tTableHeader("name")}
+            icon={<FileText className="h-4 w-4" />}
+          />
+        ),
+        cell: ({ row }) => (
+          <ButtonLink href={`/system-administration/workflow-management/${row.original.id}`}>
+            {row.original.name ?? "-"}
+          </ButtonLink>
+        ),
+        enableSorting: true,
+        size: 200,
+        meta: {
+          headerTitle: tTableHeader("name"),
+        },
+      },
+      {
+        accessorKey: "workflow_type",
+        header: ({ column }) => (
+          <div className="flex justify-center">
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("workflow_type")}
+              icon={<Banknote className="h-4 w-4" />}
+            />
+          </div>
+        ),
+        cell: ({ row }) => <div className="text-center">{row.original.workflow_type}</div>,
+        enableSorting: true,
+        size: 100,
+        meta: {
+          headerTitle: tTableHeader("workflow_type"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "stages",
+        header: ({ column }) => (
+          <div className="flex justify-center">
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("workflow_stages")}
+              icon={<Coins className="h-4 w-4" />}
+            />
+          </div>
+        ),
+        cell: ({ row }) => <div className="text-center">{row.original.stages}</div>,
+        enableSorting: true,
+        size: 120,
+        meta: {
+          headerTitle: tTableHeader("workflow_stages"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        accessorKey: "is_active",
+        header: ({ column }) => (
+          <div className="flex justify-center">
+            <DataGridColumnHeader
+              column={column}
+              title={tTableHeader("status")}
+              icon={<Activity className="h-4 w-4" />}
+            />
+          </div>
+        ),
+        cell: ({ row }) => (
+          <div className="flex justify-center">
+            <StatusCustom is_active={row.original.is_active}>
+              {row.original.is_active ? tCommon("active") : tCommon("inactive")}
+            </StatusCustom>
+          </div>
+        ),
+        enableSorting: true,
+        size: 150,
+        meta: {
+          headerTitle: tTableHeader("status"),
+          cellClassName: "text-center",
+          headerClassName: "text-center",
+        },
+      },
+      {
+        id: "action",
+        header: ActionHeader,
+        cell: ({ row }) => {
+          const po = row.original;
+          return (
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">More options</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Print", po.id);
+                    }}
+                  >
+                    <Printer className="h-4 w-4" />
+                    {tCommon("print")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Export", po.id);
+                    }}
+                  >
+                    <FileDown className="h-4 w-4" />
+                    {tCommon("export")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Delete", po.id);
+                    }}
+                    className="text-destructive cursor-pointer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {tCommon("delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          );
+        },
+        enableSorting: false,
+        size: 120,
+        meta: {
+          cellClassName: "text-right",
+          headerClassName: "text-right",
+        },
+      },
+    ],
+    [tCommon, currentPage, perpage]
+  );
+
+  // Initialize table
+  const table = useReactTable({
+    data: workflows,
+    columns,
+    pageCount: totalPages,
+    getRowId: (row) => row.id,
+    state: {
+      pagination,
+      sorting,
+    },
+    enableRowSelection: true,
+    onPaginationChange: (updater) => {
+      const newPagination = typeof updater === "function" ? updater(pagination) : updater;
+      onPageChange(newPagination.pageIndex + 1);
+      setPerpage(newPagination.pageSize);
+    },
+    onSortingChange: (updater) => {
+      if (!onSort) return;
+
+      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
+
+      if (newSorting.length > 0) {
+        const sortField = newSorting[0].id;
+        const sortDirection = newSorting[0].desc ? "desc" : "asc";
+        onSort(`${sortField}:${sortDirection}`);
+      } else {
+        onSort("");
+      }
+    },
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    manualSorting: true,
   });
-
-  const workflows = Array.isArray(data) ? data : data?.data || [];
-  const totalPages = data?.paginate?.pages ?? 1;
-
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage.toString());
-  };
-
-  const handlePerpageChange = (newPerpage: number) => {
-    setPerpage(newPerpage.toString());
-  };
-
-  const actionButtons = (
-    <div className="flex items-center gap-2">
-      <Button asChild size="sm" data-id="workflow-list-new-workflow-button">
-        <Link
-          href="/system-administration/workflow-management/new"
-          data-id="workflow-list-new-workflow-button"
-        >
-          <PlusCircle className="h-4 w-4" />
-          New Workflow
-        </Link>
-      </Button>
-    </div>
-  );
-
-  const filters = (
-    <div className="filter-container" data-id="user-management-list-filters">
-      <SearchInput
-        defaultValue={search}
-        onSearch={setSearch}
-        placeholder={tCommon("search")}
-        data-id="workflow-list-search-input"
-      />
-      <div className="flex items-center gap-2">
-        <StatusSearchDropdown
-          value={filter}
-          onChange={setFilter}
-          open={statusOpen}
-          onOpenChange={setStatusOpen}
-          data-id="workflow-status-search-dropdown"
-        />
-        <SortComponent
-          fieldConfigs={sortFields}
-          sort={sort}
-          setSort={setSort}
-          data-id="workflow-list-sort-dropdown"
-        />
-      </div>
-    </div>
-  );
-
-  const content = (
-    <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[50px]">#</TableHead>
-            {fields.map((field) => (
-              <TableHead
-                key={field.key as string}
-                className={`text-xs ${field.className || ""}`}
-                style={{ width: field.width }}
-                align={field.align}
-              >
-                {field.label}
-              </TableHead>
-            ))}
-            <TableHead className="text-right">Action</TableHead>
-          </TableRow>
-        </TableHeader>
-        {isLoading ? (
-          <TableBodySkeleton rows={fields.length} />
-        ) : (
-          <TableBody>
-            {data &&
-              workflows.map((w: WorkflowListProps, index: number) => (
-                <TableRow key={w.id}>
-                  <TableCell className="font-medium text-xs">{index + 1}</TableCell>
-                  {fields.map((field) => (
-                    <TableCell
-                      key={field.key as string}
-                      className={`text-xs ${field.className || ""}`}
-                      align={field.align}
-                    >
-                      {renderFieldValue(field, w)}
-                    </TableCell>
-                  ))}
-                  <TableCell className="text-right">
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="sm"
-                      aria-label={`View workflow ${w.id} details`}
-                    >
-                      <Link href={`/system-administration/workflow-management/${w.id}`}>
-                        <Eye className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        )}
-      </Table>
-      <PaginationComponent
-        currentPage={+page}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        perpage={10}
-      />
-    </>
-  );
-
   return (
-    <>
-      <DataDisplayTemplate
-        title="Workflow"
-        actionButtons={actionButtons}
-        filters={filters}
-        content={content}
-        data-id="workflow-list-data-display-template"
-      />
-    </>
+    <DataGrid
+      table={table}
+      recordCount={totalItems}
+      isLoading={isLoading}
+      loadingMode="skeleton"
+      emptyMessage={tCommon("no_data")}
+      tableLayout={{
+        headerSticky: true,
+        dense: false,
+        rowBorder: true,
+        headerBackground: true,
+        headerBorder: true,
+        width: "fixed",
+      }}
+    >
+      <div className="w-full space-y-2.5">
+        <DataGridContainer>
+          <ScrollArea className="max-h-[calc(100vh-250px)]">
+            <DataGridTable />
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
+        </DataGridContainer>
+        <DataGridPagination sizes={[5, 10, 25, 50, 100]} />
+      </div>
+    </DataGrid>
   );
 };
 
