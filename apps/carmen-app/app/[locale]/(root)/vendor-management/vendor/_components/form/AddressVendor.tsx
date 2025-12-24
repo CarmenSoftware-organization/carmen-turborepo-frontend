@@ -61,6 +61,7 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                   address_line2: "",
                   district: "",
                   province: "",
+                  city: "",
                   postal_code: "",
                   country: "",
                 },
@@ -123,13 +124,23 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
               </div>
 
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <div className="space-y-1">
                     <Label className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">
                       District
                     </Label>
                     <Input
                       {...form.register(`vendor_address.${index}.data.district`)}
+                      className="h-8 text-sm"
+                      disabled={disabled}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">
+                      City
+                    </Label>
+                    <Input
+                      {...form.register(`vendor_address.${index}.data.city`)}
                       className="h-8 text-sm"
                       disabled={disabled}
                     />

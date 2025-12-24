@@ -8,7 +8,6 @@ import { useVendorById } from "@/hooks/use-vendor";
 import { useState } from "react";
 import VendorForm from "../_components/form/VendorForm";
 import { formType } from "@/dtos/form.dto";
-import MainVendorForm from "../_components/form/MainVendorForm";
 
 export default function VendorPage() {
   const { token, buCode } = useAuth();
@@ -21,8 +20,7 @@ export default function VendorPage() {
 
   return (
     <>
-      {/* {vendor && <VendorForm mode={formType.VIEW} initData={vendor?.data} />} */}
-      <MainVendorForm mode={formType.VIEW} initData={vendor?.data} />
+      {vendor && <VendorForm mode={formType.VIEW} initData={vendor?.data} />}
       <SignInDialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen} />
     </>
   );

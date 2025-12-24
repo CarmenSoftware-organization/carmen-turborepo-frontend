@@ -9,16 +9,18 @@ const InfoItemSchema = z.object({
 });
 
 const VendorContactSchema = z.object({
-  contact_type: z.string(),
-  description: z.string(),
-  info: z.array(InfoItemSchema),
+  name: z.string(),
+  email: z.string().email().optional().or(z.literal("")),
+  phone: z.string().optional(),
+  is_primary: z.boolean().optional(),
 });
 
 const VendorAddressDataSchema = z.object({
   address_line1: z.string(),
   address_line2: z.string().optional(),
   district: z.string(),
-  province: z.string(),
+  province: z.string().optional(), // Made optional
+  city: z.string().optional(), // Added city
   postal_code: z.string(),
   country: z.string(),
 });
@@ -82,21 +84,17 @@ export interface VendorGetDto {
       sub_district?: string;
       district?: string;
       province?: string;
+      city?: string;
       postal_code?: string;
       country?: string;
     };
     is_active: boolean;
   }[];
   vendor_contact?: {
-    id: string;
-    contact_type: string;
-    description: string;
-    info: {
-      label: string;
-      value: string;
-      data_type: "string" | "date" | "datetime" | "number" | "boolean" | "dataset";
-    }[];
-    is_active: boolean;
+    name: string;
+    email: string;
+    phone: string;
+    is_primary: boolean;
   }[];
 }
 
