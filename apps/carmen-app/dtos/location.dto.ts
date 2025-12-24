@@ -21,6 +21,7 @@ export interface ProductLocationDto {
 export interface LocationByIdDto {
   id: string;
   name: string;
+  code: string;
   location_type: INVENTORY_TYPE;
   physical_count_type: PHYSICAL_COUNT_TYPE;
   description: string;
@@ -35,7 +36,7 @@ export interface LocationByIdDto {
 export interface StoreLocationDto {
   id?: string;
   name: string;
-  code?: string;
+  code: string;
   location_type: INVENTORY_TYPE;
   description?: string;
   is_active: boolean;
@@ -45,6 +46,7 @@ export interface StoreLocationDto {
 export interface FormLocationValues {
   id?: string;
   name: string;
+  code: string;
   location_type: INVENTORY_TYPE;
   description?: string;
   physical_count_type: PHYSICAL_COUNT_TYPE;

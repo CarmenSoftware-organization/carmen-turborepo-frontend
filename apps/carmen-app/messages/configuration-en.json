@@ -94,6 +94,7 @@
     "title": "Store Location",
     "store_location_name": "Store Location Name",
     "store_location_status": "Status",
+    "store_location_code": "Store Location Code",
     "add_store_location": "Add Store Location",
     "edit_store_location": "Edit Store Location",
     "add_store_location_description": "Fill in the details to create a new store location.",
@@ -110,6 +111,7 @@
     "no_locations_available": "No locations available",
     "location_name_required": "Please enter location name",
     "delivery_point_required": "Please select delivery point",
+    "code_required": "Please enter location code",
     "select_location": "Select Location",
     "location_not_found": "Location not found",
     "search_location": "Search Location..."

@@ -94,6 +94,7 @@
     "title": "สถานที่เก็บสินค้า",
     "store_location_name": "ชื่อสถานที่เก็บสินค้า",
     "store_location_status": "สถานะสถานที่เก็บสินค้า",
+    "store_location_code": "รหัสสถานที่เก็บสินค้า",
     "add_store_location": "เพิ่มสถานที่เก็บสินค้า",
     "edit_store_location": "แก้ไขสถานที่เก็บสินค้า",
     "add_store_location_description": "กรอกข้อมูลเพื่อสร้างสถานที่เก็บสินค้าใหม่",
@@ -110,6 +111,7 @@
     "no_locations_available": "ไม่มีสถานที่เก็บสินค้า",
     "location_name_required": "กรุณากรอกชื่อสถานที่",
     "delivery_point_required": "กรุณาเลือกจุดส่งของ",
+    "code_required": "กรุณากรอกรหัสสถานที่",
     "select_location": "เลือกสถานที่เก็บสินค้า",
     "location_not_found": "ไม่พบสถานที่เก็บสินค้า",
     "search_location": "ค้นหาสถานที่เก็บสินค้า..."

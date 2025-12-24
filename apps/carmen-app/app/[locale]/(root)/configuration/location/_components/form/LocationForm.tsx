@@ -79,6 +79,7 @@ export default function LocationForm({
     const schema = createLocationFormSchema({
       nameRequired: tLocation("location_name_required"),
       deliveryPointRequired: tLocation("delivery_point_required"),
+      codeRequired: tLocation("code_required"),
     });
 
     if (mode === formType.ADD) {
@@ -121,6 +122,7 @@ export default function LocationForm({
     defaultValues: {
       id: initialData?.id || "",
       name: initialData?.name || "",
+      code: initialData?.code || "",
       location_type: initialData?.location_type || INVENTORY_TYPE.CONSIGNMENT,
       description: initialData?.description || "",
       physical_count_type: initialData?.physical_count_type || PHYSICAL_COUNT_TYPE.NO,
@@ -260,6 +262,20 @@ export default function LocationForm({
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="code"
+                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tLocation("store_location_code")}</FormLabel>
+                    <FormControl>
+                      <Input {...field} disabled={isViewMode} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -317,20 +333,20 @@ export default function LocationForm({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="col-span-2">
-                    <FormLabel>{tCommon("description")}</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} disabled={isViewMode} rows={3} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>{tCommon("description")}</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} disabled={isViewMode} rows={3} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="space-y-4">
               <FormField
                 control={form.control}
