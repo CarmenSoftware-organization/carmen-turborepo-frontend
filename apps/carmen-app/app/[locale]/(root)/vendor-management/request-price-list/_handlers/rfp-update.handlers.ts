@@ -9,20 +9,13 @@ export const handleUpdateSuccess = async (
 ): Promise<void> => {
   form.reset({
     name: result.name,
-    status: result.status,
-    description: result.description,
-    valid_period: result.valid_period,
-    template_id: result.template?.id,
-    portal_duration: result.settings.portal_duration,
-    rfp_type: result.settings.rfp_type,
-    submission_method: result.settings.submission_method,
-    require_approval: result.settings.require_approval,
-    auto_reminder: result.settings.auto_reminder,
-    priority: result.settings.priority,
-    instructions: result.settings.instructions,
-    reminders: result.settings.reminders,
-    escalations: result.settings.escalations,
-    vendors: result.vendor?.map((v) => v.id) || [],
+    status: result.status || "active", // Default fallback if undefined
+    start_date: result.start_date,
+    end_date: result.end_date,
+    custom_message: result.custom_message,
+    info: result.info,
+    dimension: result.dimension,
+    pricelist_template_id: result.pricelist_template?.id,
   });
 };
 

@@ -10,19 +10,13 @@ export const handleCreateSuccess = async (
 ): Promise<void> => {
   form.reset({
     name: result.name,
-    status: result.status,
-    description: result.description,
-    valid_period: result.valid_period,
-    template_id: data.template_id,
-    portal_duration: data.portal_duration,
-    rfp_type: data.rfp_type,
-    submission_method: data.submission_method,
-    require_approval: data.require_approval,
-    auto_reminder: data.auto_reminder,
-    priority: data.priority,
-    instructions: data.instructions,
-    reminders: data.reminders,
-    escalations: data.escalations,
+    status: result.status || "draft",
+    start_date: result.start_date,
+    end_date: result.end_date,
+    custom_message: result.custom_message,
+    info: result.info,
+    dimension: result.dimension,
+    pricelist_template_id: result.pricelist_template?.id,
     vendors: data.vendors,
   });
 
