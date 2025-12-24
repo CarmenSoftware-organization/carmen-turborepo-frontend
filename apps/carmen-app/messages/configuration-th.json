@@ -181,5 +181,27 @@
     "business_type_updated": "แก้ไขประเภทธุรกิจเรียบร้อย",
     "business_type_deleted": "ลบประเภทธุรกิจเรียบร้อย",
     "bu_name_require": "กรุณากรอกชื่อประเภทธุรกิจ"
+  },
+  "Workflow": {
+    "title": "เวิร์กโฟลว์",
+    "workflow_name": "ชื่อเวิร์กโฟลว์",
+    "workflow_status": "สถานะ",
+    "add_workflow": "เพิ่มเวิร์กโฟลว์",
+    "edit_workflow": "แก้ไขเวิร์กโฟลว์",
+    "add_workflow_description": "กรอกข้อมูลเพื่อสร้างเวิร์กโฟลว์ใหม่.",
+    "edit_workflow_description": "อัปเดตข้อมูลเวิร์กโฟลว์ด้านล่าง.",
+    "no_workflows_available": "ไม่มีเวิร์กโฟลว์ที่ใช้งานได้",
+    "workflow_name_required": "กรุณากรอกชื่อเวิร์กโฟลว์",
+    "select_workflow": "เลือกเวิร์กโฟลว์",
+    "workflow_not_found": "ไม่พบเวิร์กโฟลว์",
+    "search_workflow": "ค้นหาเวิร์กโฟลว์...",
+    "add_success": "เวิร์กโฟลว์สร้างเรียบร้อย",
+    "add_error": "เวิร์กโฟลว์สร้างไม่สำเร็จ",
+    "edit_success": "เวิร์กโฟลว์แก้ไขเรียบร้อย",
+    "edit_error": "เวิร์กโฟลว์แก้ไขไม่สำเร็จ",
+    "delete_success": "เวิร์กโฟลว์ลบเรียบร้อย",
+    "delete_error": "เวิร์กโฟลว์ลบไม่สำเร็จ",
+    "confirm_delete": "ลบเวิร์กโฟลว์",
+    "confirm_delete_description": "คุณแน่ใจหรือไม่ที่จะลบ \"{name}\"? การลบจะไม่สามารถยกเลิกได้"
   }
 }

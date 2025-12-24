@@ -181,5 +181,27 @@
     "business_type_updated": "Business type updated successfully",
     "business_type_deleted": "Business type deleted successfully",
     "bu_name_require": "Please enter business type name"
+  },
+  "Workflow": {
+    "title": "Workflow Management",
+    "workflow_name": "Workflow Name",
+    "workflow_status": "Status",
+    "add_workflow": "Add Workflow",
+    "edit_workflow": "Edit Workflow",
+    "add_workflow_description": "Fill in the details to create a new workflow.",
+    "edit_workflow_description": "Update the workflow information below.",
+    "no_workflows_available": "No workflows available",
+    "workflow_name_required": "Please enter workflow name",
+    "select_workflow": "Select Workflow",
+    "workflow_not_found": "Workflow not found",
+    "search_workflow": "Search Workflow...",
+    "add_success": "Workflow created successfully",
+    "add_error": "Failed to add workflow",
+    "edit_success": "Workflow updated successfully",
+    "edit_error": "Failed to update workflow",
+    "delete_success": "Workflow deleted successfully",
+    "delete_error": "Failed to delete workflow",
+    "confirm_delete": "Delete Workflow",
+    "confirm_delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
   }
 }

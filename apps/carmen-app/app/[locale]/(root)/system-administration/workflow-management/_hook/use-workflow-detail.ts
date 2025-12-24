@@ -40,7 +40,7 @@ export const useWorkflowDetail = ({
   }, [error]);
 
   return {
-    data: data as WorkflowCreateModel | undefined,
+    data: data ? data.data : (data as WorkflowCreateModel | undefined),
     loading: isLoading,
     error: error instanceof Error ? error : null,
     loginDialogOpen,

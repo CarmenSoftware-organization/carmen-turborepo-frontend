@@ -146,6 +146,15 @@ export interface RoutingRule {
   action: RoutingAction;
 }
 
+export interface WorkflowDto {
+  id: string;
+  name: string;
+  stages: number;
+  rules: number;
+  workflow_type: string;
+  is_active: boolean;
+}
+
 export interface Workflow {
   id: string;
   name: string;

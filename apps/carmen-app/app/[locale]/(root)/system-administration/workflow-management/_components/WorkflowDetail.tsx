@@ -26,6 +26,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCreateWorkflowMutation, useUpdateWorkflowMutation } from "@/hooks/use-workflow";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 import { ProductListDto } from "@/dtos/product.dto";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface WorkflowDetailProps {
   mode: formType;
@@ -43,7 +44,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({
   const { token, buCode } = useAuth();
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(mode === formType.EDIT ? false : true);
-
+  const queryClient = useQueryClient();
   const createWorkflowMutation = useCreateWorkflowMutation();
   const updateWorkflowMutation = useUpdateWorkflowMutation();
 
@@ -192,6 +193,7 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({
       const response = await deleteWorkflow(token, buCode, id);
       if (response.ok) {
         console.log("Successfully deleted");
+        queryClient.invalidateQueries({ queryKey: ["workflows", buCode] });
         router.back();
       }
     } catch (error) {
