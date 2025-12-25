@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ChevronLeft, Save, X } from "lucide-react";
+import { ChevronLeft, Plus, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,9 +28,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/form-custom/form";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { BuTypeGetAllDto } from "@/dtos/bu-type.dto";
-import { useBuTypeQuery } from "@/hooks/use-bu-type";
+import { MultiSelectCustom } from "@/components/ui/multi-select-custom";
+import { BuTypeGetAllDto, BuTypeFormDto } from "@/dtos/bu-type.dto";
+import { useBuTypeQuery, useBuTypeMutation } from "@/hooks/use-bu-type";
+import { FormBuTypeDialog } from "@/components/shared/FormBuTypeDialog";
 
 const defaultValues: VendorFormValues = {
   id: "",
@@ -60,6 +61,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   );
 
   const { buTypes } = useBuTypeQuery(token, buCode);
+  const { mutate: createBuType } = useBuTypeMutation(token, buCode);
 
   const BUSINESS_TYPE_OPTIONS =
     buTypes?.data?.map((item: BuTypeGetAllDto) => ({
@@ -68,6 +70,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     })) || [];
 
   const [currentMode, setCurrentMode] = useState<formType>(mode);
+  const [isBuTypeInternalDialogOpen, setIsBuTypeInternalDialogOpen] = useState(false);
 
   const isSubmitting = isCreating || isUpdating;
 
@@ -137,6 +140,20 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
       form.reset(initData);
       setCurrentMode(formType.VIEW);
     }
+  };
+
+  const handleCreateBuType = (data: BuTypeFormDto) => {
+    createBuType(data, {
+      onSuccess: () => {
+        toastSuccess({ message: "Business type created successfully" });
+        setIsBuTypeInternalDialogOpen(false);
+        queryClient.invalidateQueries({ queryKey: ["bu-type", buCode] });
+      },
+      onError: (error: Error) => {
+        console.error("Error creating business type:", error);
+        toastError({ message: "Failed to create business type" });
+      },
+    });
   };
 
   const isViewMode = currentMode === formType.VIEW;
@@ -236,7 +253,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                     </FormLabel>
                     <FormControl>
                       <div className="h-8">
-                        <MultiSelect
+                        <MultiSelectCustom
                           options={BUSINESS_TYPE_OPTIONS}
                           onValueChange={(values: string[]) => {
                             const selectedTypes = values.map((val: string) => {
@@ -253,8 +270,24 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                           animation={2}
                           maxCount={2}
                           disabled={isViewMode}
-                          className="text-sm"
-                        />
+                          className="text-xs"
+                        >
+                          <div className="border-t border-border w-full">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="w-full text-xs justify-start h-8 text-primary hover:text-primary/80 hover:bg-transparent"
+                              onMouseDown={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setIsBuTypeInternalDialogOpen(true);
+                              }}
+                            >
+                              <Plus className="h-3 w-3" />
+                              New Business Type
+                            </Button>
+                          </div>
+                        </MultiSelectCustom>
                       </div>
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -306,6 +339,12 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
           </Card>
         </form>
       </Form>
+      <FormBuTypeDialog
+        open={isBuTypeInternalDialogOpen}
+        onOpenChange={setIsBuTypeInternalDialogOpen}
+        onSubmit={handleCreateBuType}
+        onCancel={() => setIsBuTypeInternalDialogOpen(false)}
+      />
     </div>
   );
 }
