@@ -268,7 +268,7 @@ export default function StageDetailPanel({
                       <FormLabel>Stage Role</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value ?? ""}
+                        value={field.value ?? ""}
                         disabled={!isEditing}
                       >
                         <FormControl>
@@ -356,7 +356,7 @@ export default function StageDetailPanel({
                         <FormLabel>SLA Unit</FormLabel>
                         <Select
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          value={field.value}
                           disabled={!isEditing}
                         >
                           <FormControl>
