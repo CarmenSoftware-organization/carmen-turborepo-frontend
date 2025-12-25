@@ -17,11 +17,9 @@ export default function StoreLocationByIdPage() {
     id: id as string,
   });
 
-
-
   if (isLoading) {
     return <DetailSkeleton />;
   }
 
-  return <LocationView initialData={data} mode={formType.VIEW} />;
+  return <LocationView initialData={data.data} mode={formType.VIEW} />;
 }

@@ -58,7 +58,7 @@ export default function TabUsersProduct({ products }: Props) {
       </div>
 
       {filteredProducts.length > 0 ? (
-        <ul className="h-[300px] w-full overflow-y-auto border border-border rounded-md">
+        <ul className="h-[240px] w-full overflow-y-auto border border-border rounded-md">
           {filteredProducts.map((product, index) => (
             <li
               key={product.id}
@@ -76,7 +76,7 @@ export default function TabUsersProduct({ products }: Props) {
           ))}
         </ul>
       ) : (
-        <div className="h-[300px] border border-border rounded-md flex items-center justify-center">
+        <div className="h-[240px] border border-border rounded-md flex items-center justify-center">
           <p className="text-muted-foreground text-xs">{tCommon("data_not_found")}</p>
         </div>
       )}
