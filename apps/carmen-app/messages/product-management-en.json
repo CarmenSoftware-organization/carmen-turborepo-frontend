@@ -68,7 +68,8 @@
     "err_load_product": "Failed to load product",
     "pls_select_location": "Please select location",
     "loading": "Loading...",
-    "search_product": "Search product..."
+    "search_product": "Search product...",
+    "tax_profile": "Tax Profile"
   },
   "Category": {
     "title": "Category",

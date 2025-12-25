@@ -68,7 +68,8 @@
     "err_load_product": "ไม่สามารถโหลดสินค้าได้",
     "pls_select_location": "กรุณาเลือกสถานที่",
     "loading": "กําลังโหลด...",
-    "search_product": "ค้นหาสินค้า..."
+    "search_product": "ค้นหาสินค้า...",
+    "tax_profile": "ประเภทภาษี"
   },
   "Category": {
     "title": "หมวดสินค้า",

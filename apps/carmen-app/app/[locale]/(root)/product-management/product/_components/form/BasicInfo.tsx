@@ -6,7 +6,6 @@ import { useEffect, useRef, useMemo } from "react";
 import { useCategoryByItemGroupQuery } from "@/hooks/use-product";
 import { useItemGroup } from "@/hooks/use-item-group";
 import { ItemGroupDto } from "@/dtos/category.dto";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Save, X, Edit, Info } from "lucide-react";
@@ -27,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ProductFormValues } from "@/dtos/product.dto";
 import { useRouter } from "@/lib/navigation";
 import { useSearchParams } from "next/navigation";
+import LookupTaxProfile from "@/components/lookup/LookupTaxProfile";
 
 interface BasicInfoProps {
   readonly control: Control<ProductFormValues>;
@@ -413,7 +413,6 @@ export default function BasicInfo({
                 )}
               />
             </div>
-
             <div className="space-y-2">
               <Label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {tProducts("order_unit")}
@@ -430,6 +429,29 @@ export default function BasicInfo({
                   <p className="text-sm text-muted-foreground">{tProducts("no_order_unit_set")}</p>
                 )}
               </div>
+            </div>
+            <div className="space-y-2">
+              <FormField
+                control={control}
+                name="tax_profile_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{tProducts("tax_profile")}</FormLabel>
+                    <FormControl>
+                      <LookupTaxProfile
+                        value={field.value}
+                        displayName={watch("tax_profile_name")}
+                        onValueChange={field.onChange}
+                        onSelectObject={(selected) => {
+                          setValue("tax_profile_name", selected.name);
+                          setValue("tax_rate", Number(selected.tax_rate));
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </div>
         </div>

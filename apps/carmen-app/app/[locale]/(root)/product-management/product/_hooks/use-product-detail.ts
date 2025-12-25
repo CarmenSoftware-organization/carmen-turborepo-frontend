@@ -40,11 +40,13 @@ export const useProductDetail = ({
   }, [error]);
 
   return {
-    product: data as ProductFormValues | undefined,
+    product: (data as { data: ProductFormValues } | undefined)?.data,
     loading: isLoading,
     error: error instanceof Error ? error : null,
     loginDialogOpen,
     setLoginDialogOpen,
-    refetch: () => { refetch(); },
+    refetch: () => {
+      refetch();
+    },
   };
 };

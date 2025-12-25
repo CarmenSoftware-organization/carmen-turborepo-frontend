@@ -13,13 +13,12 @@ export default function ProductIdPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const { product, loading, loginDialogOpen, setLoginDialogOpen } =
-    useProductDetail({
-      token,
-      buCode,
-      id,
-      authLoading,
-    });
+  const { product, loading, loginDialogOpen, setLoginDialogOpen } = useProductDetail({
+    token,
+    buCode,
+    id,
+    authLoading,
+  });
 
   if (authLoading || (loading && token && buCode)) {
     return <DetailLoading />;
