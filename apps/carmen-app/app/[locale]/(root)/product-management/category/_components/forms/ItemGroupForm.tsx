@@ -69,13 +69,15 @@ export function ItemGroupForm({
       description: selectedNode?.description ?? "",
       product_subcategory_id: selectedNode?.product_subcategory_id || parentNode?.id || "",
       is_active: selectedNode?.is_active ?? true,
-      price_deviation_limit: selectedNode?.price_deviation_limit ?? 0,
-      qty_deviation_limit: selectedNode?.qty_deviation_limit ?? 0,
+      price_deviation_limit:
+        selectedNode?.price_deviation_limit ?? parentNode?.price_deviation_limit ?? 0,
+      qty_deviation_limit:
+        selectedNode?.qty_deviation_limit ?? parentNode?.qty_deviation_limit ?? 0,
       is_used_in_recipe: selectedNode?.is_used_in_recipe ?? parentNode?.is_used_in_recipe ?? false,
       is_sold_directly: selectedNode?.is_sold_directly ?? parentNode?.is_sold_directly ?? false,
-      tax_profile_id: selectedNode?.tax_profile_id ?? "754acf6d-333b-441d-a7f9-b77f069da933",
-      tax_profile_name: selectedNode?.tax_profile_name ?? "VAT 2%",
-      tax_rate: selectedNode?.tax_rate ?? 2,
+      tax_profile_id: selectedNode?.tax_profile_id ?? parentNode?.tax_profile_id ?? "",
+      tax_profile_name: selectedNode?.tax_profile_name ?? parentNode?.tax_profile_name ?? "",
+      tax_rate: selectedNode?.tax_rate ?? parentNode?.tax_rate ?? 0,
     },
   });
 
