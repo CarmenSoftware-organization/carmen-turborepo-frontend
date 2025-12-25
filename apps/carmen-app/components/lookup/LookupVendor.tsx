@@ -22,20 +22,41 @@ export default function LookupVendor({
   onValueChange,
   disabled = false,
   classNames,
+  excludeIds = [],
 }: Readonly<PropsLookup>) {
   const { token, buCode } = useAuth();
   const tCommon = useTranslations("Common");
   const tVendor = useTranslations("Vendor");
   const { vendors, isLoading } = useVendor(token, buCode, { perpage: -1 });
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
-  const vendorsData = useMemo(() => vendors?.data ?? [], [vendors?.data]);
+  const vendorsData = useMemo(() => {
+    const data = vendors?.data ?? [];
+    if (excludeIds.length > 0) {
+      return data.filter((v: VendorGetDto) => !excludeIds.includes(v.id));
+    }
+    return data;
+  }, [vendors?.data, excludeIds]);
 
   const selectedVendorName = useMemo(() => {
     if (!value || !vendorsData || !Array.isArray(vendorsData)) return null;
     const found = vendorsData?.find((vendor: VendorGetDto) => vendor.id === value);
     return found?.name ?? null;
   }, [value, vendorsData]);
+
+  const filteredVendors = useMemo(() => {
+    if (!vendorsData) return [];
+    if (!search) return vendorsData.slice(0, 50);
+
+    const lowerSearch = search.toLowerCase();
+    return vendorsData
+      .filter(
+        (v: VendorGetDto) =>
+          v.name.toLowerCase().includes(lowerSearch) || v.code.toLowerCase().includes(lowerSearch)
+      )
+      .slice(0, 50);
+  }, [vendorsData, search]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -51,14 +72,13 @@ export default function LookupVendor({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
-        <Command
-          filter={(value, search) => {
-            if (!search) return 1;
-            if (value.toLowerCase().includes(search.toLowerCase())) return 1;
-            return 0;
-          }}
-        >
-          <CommandInput placeholder={tCommon("search")} className="w-full pr-10" />
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder={tCommon("search")}
+            className="w-full pr-10"
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList>
             {isLoading ? (
               <div className="flex items-center justify-center py-6">
@@ -66,31 +86,34 @@ export default function LookupVendor({
               </div>
             ) : (
               <>
-                <CommandEmpty>{tVendor("no_vendor_found")}</CommandEmpty>
+                {filteredVendors.length === 0 && (
+                  <CommandEmpty>{tVendor("no_vendor_found")}</CommandEmpty>
+                )}
                 <CommandGroup>
-                  {vendorsData && vendorsData.length > 0 ? (
-                    vendorsData.map((vendor: VendorGetDto) => (
-                      <CommandItem
-                        key={vendor.id}
-                        value={`${vendor.code} ${vendor.name}`}
-                        onSelect={() => {
-                          if (vendor.id) {
-                            onValueChange(vendor.id);
-                          }
-                          setOpen(false);
-                        }}
-                      >
-                        {vendor.code} - {vendor.name}
-                        <Check
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            value === vendor.id ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                      </CommandItem>
-                    ))
-                  ) : (
-                    <CommandItem disabled>{tVendor("no_vendor_available")}</CommandItem>
+                  {filteredVendors.map((vendor: VendorGetDto) => (
+                    <CommandItem
+                      key={vendor.id}
+                      value={vendor.id} // Use ID as value since we manage filtering
+                      onSelect={() => {
+                        if (vendor.id) {
+                          onValueChange(vendor.id);
+                        }
+                        setOpen(false);
+                      }}
+                    >
+                      {vendor.code} - {vendor.name}
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          value === vendor.id ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                  {vendorsData.length > 50 && filteredVendors.length === 50 && (
+                    <div className="p-2 text-xs text-center text-muted-foreground">
+                      {search ? "Keep typing for more results..." : "Type to search..."}
+                    </div>
                   )}
                 </CommandGroup>
               </>

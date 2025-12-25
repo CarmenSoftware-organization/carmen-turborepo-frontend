@@ -17,7 +17,7 @@ export const transformToCreateDto = (
     contact_phone: v.contact_phone || "",
     contact_email: v.contact_email || "",
     sequence_no: index + 1,
-    dimension: data.dimension || "Nationwide",
+    dimension: data.dimension,
     id: "", // Relation ID
   }));
 
@@ -27,9 +27,9 @@ export const transformToCreateDto = (
     start_date: data.start_date,
     end_date: data.end_date,
     custom_message: data.custom_message,
-    email_template_id: "e4220b22-861d-4c31-8930-74673322748a",
-    info: data.info || "Photovoltaic panels, hybrid inverters, and battery storage solutions.",
-    dimension: data.dimension || "Green Energy Sector",
+    email_template_id: data.email_template_id,
+    info: data.info,
+    dimension: data.dimension,
     vendors: {
       add: vendorsPayload as any[],
     },
@@ -38,16 +38,15 @@ export const transformToCreateDto = (
 
 export const transformToUpdateDto = (
   data: RfpFormValues,
-  vendorsToAdd: string[],
-  vendorsToUpdate: string[],
-  vendorsToRemove: string[],
-  availableVendors: any[] = []
+  availableVendors: any[] = [],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  originalVendorIds: string[] = []
 ): RfpUpdateDto => {
   const baseDto = transformToCreateDto(data, availableVendors);
 
   return {
     ...baseDto,
-    // Add specific update logic if needed, e.g. handling removed vendors if DTO supports it
+    // Add specific update logic if needed
   };
 };
 

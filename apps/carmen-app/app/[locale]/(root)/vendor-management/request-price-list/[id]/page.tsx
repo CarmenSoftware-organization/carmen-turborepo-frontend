@@ -11,9 +11,9 @@ export default function RfpEditPage() {
   const params = useParams();
   const id = params.id as string;
   const { token, buCode } = useAuth();
-  const { data: rfp, isLoading } = useRfpById(token, buCode, id);
+  const { data, isLoading } = useRfpById(token, buCode, id);
 
   if (isLoading) return <DetailLoading />;
 
-  return <RfpMainForm mode={formType.VIEW} rfpData={rfp} />;
+  return <RfpMainForm mode={formType.VIEW} rfpData={data?.data} />;
 }

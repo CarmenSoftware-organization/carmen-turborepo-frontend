@@ -1,0 +1,194 @@
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/form-custom/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { UseFormReturn } from "react-hook-form";
+// import { RfpFormValues } from "../../_schema/rfp.schema"; // Adjust import path as needed
+
+interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  form: UseFormReturn<any>;
+  isViewMode: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  templates: any;
+  tRfp: (key: string) => string;
+}
+
+export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props) {
+  return (
+    <div className="space-y-4">
+      {/* Overview Fields */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <FormField
+          control={form.control}
+          name="pricelist_template_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{tRfp("template")}</FormLabel>
+              <FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value || ""}
+                  disabled={isViewMode}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={tRfp("select_template")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {templates?.data?.map((template: any) => (
+                      <SelectItem key={template.id} value={template.id}>
+                        {template.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>RFP Name</FormLabel>
+              <FormControl>
+                <Input {...field} disabled={isViewMode} placeholder="Enter RFP Name" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                value={field.value || ""}
+                disabled={isViewMode}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="draft">Draft</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="submit">Submitted</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="start_date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Validity Period</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                      disabled={isViewMode}
+                    >
+                      {field.value && form.getValues("end_date") ? (
+                        <>
+                          {format(new Date(field.value), "LLL dd, y")} -{" "}
+                          {format(new Date(form.getValues("end_date")), "LLL dd, y")}
+                        </>
+                      ) : (
+                        <span>Pick a date range</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto" align="start">
+                  <Calendar
+                    mode="range"
+                    selected={{
+                      from: field.value ? new Date(field.value) : undefined,
+                      to: form.getValues("end_date")
+                        ? new Date(form.getValues("end_date"))
+                        : undefined,
+                    }}
+                    onSelect={(range) => {
+                      if (range?.from) {
+                        form.setValue("start_date", range.from.toISOString(), {
+                          shouldDirty: true,
+                        });
+                      } else {
+                        // Clear start date if implicitly cleared
+                        form.setValue("start_date", "", { shouldDirty: true });
+                      }
+
+                      if (range?.to) {
+                        form.setValue("end_date", range.to.toISOString(), {
+                          shouldDirty: true,
+                        });
+                      } else {
+                        // Clear end date if it's not selected yet (e.g. only start date picked)
+                        // This prevents "previous end date" from persisting with "new start date"
+                        form.setValue("end_date", "", { shouldDirty: true });
+                      }
+                    }}
+                    disabled={(date) => date < new Date("1900-01-01")}
+                    numberOfMonths={2}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <FormField
+        control={form.control}
+        name="custom_message"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <Textarea {...field} disabled={isViewMode} className="resize-none" rows={3} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+}

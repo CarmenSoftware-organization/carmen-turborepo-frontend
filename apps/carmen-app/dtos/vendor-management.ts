@@ -96,6 +96,15 @@ export interface VendorGetDto {
     phone: string;
     is_primary: boolean;
   }[];
+  tb_vendor_contact?: {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    is_primary: boolean;
+    description: string | null;
+    info: any;
+  }[];
 }
 
 export const PriceListSchema = z.object({

@@ -33,13 +33,13 @@ export const createRfp = async (
   mutation: UseMutationResult<RfpDto, Error, RfpCreateDto>,
   form: UseFormReturn<RfpFormValues>,
   data: RfpFormValues,
-  onSuccess?: () => void
+  onSuccess?: (result?: any) => void
 ): Promise<void> => {
   try {
     const result = await mutation.mutateAsync(createDto);
     await handleCreateSuccess(result, form, data);
     alert("RFP created successfully");
-    onSuccess?.();
+    onSuccess?.(result);
   } catch (error) {
     handleCreateError(error);
   }

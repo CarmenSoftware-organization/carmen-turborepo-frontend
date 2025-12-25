@@ -28,13 +28,12 @@ export const updateRfp = async (
   updateDto: RfpUpdateDto,
   mutation: UseMutationResult<RfpDetailDto, Error, RfpUpdateDto>,
   form: UseFormReturn<RfpFormValues>,
-  onSuccess?: () => void
+  onSuccess?: (result?: any) => void
 ): Promise<void> => {
   try {
     const result = await mutation.mutateAsync(updateDto);
     await handleUpdateSuccess(result, form);
-    alert("RFP updated successfully");
-    onSuccess?.();
+    onSuccess?.(result);
   } catch (error) {
     handleUpdateError(error);
   }
