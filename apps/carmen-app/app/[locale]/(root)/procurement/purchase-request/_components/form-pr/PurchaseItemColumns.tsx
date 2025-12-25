@@ -196,6 +196,7 @@ export const createPurchaseItemColumns = (
             <LookupLocation
               value={getItemValue(item, "location_id") as string | undefined}
               onValueChange={(value, selectedLocation) => {
+                console.log("selectedLocation", selectedLocation);
                 onItemUpdate(item.id, "location_id", value);
                 // Reset product and related fields when location changes
                 onItemUpdate(item.id, "product_id", "");

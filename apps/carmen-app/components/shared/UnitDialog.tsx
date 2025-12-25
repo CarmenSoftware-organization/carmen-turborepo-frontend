@@ -83,7 +83,10 @@ export default function UnitDialog({
     form.reset(newDefaultValues);
   }, [mode, unit, open, form, getFormDefaultValues]);
 
-  const handleSubmit = async (formData: CreateUnitDto) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>, formData: CreateUnitDto) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log("handleSubmit", formData);
     try {
       const validatedData = unitSchema.parse(formData);
       onSubmit(validatedData);
@@ -109,7 +112,7 @@ export default function UnitDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={(e) => handleSubmit(e, form.getValues())} className="space-y-4">
             <FormField
               control={form.control}
               name="name"

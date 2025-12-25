@@ -100,10 +100,6 @@ export default function BasicInfo({
     }
   }, [categoryResponse, categoryData, productItemGroupId, setValue]);
 
-  console.log("productItemGroupId", productItemGroupId);
-  console.log("categoryResponse", categoryResponse);
-  console.log("categoryData", categoryData);
-
   const watchedFields = useWatch({
     control,
     name: ["name", "code", "local_name", "inventory_unit_id", "product_info.product_item_group_id"],

@@ -36,17 +36,6 @@ export default function LookupWorkflow({
 
   let selectContent;
 
-  console.log("workflows", workflows);
-
-  const getTypeName = (type: string) => {
-    if (type === "General") {
-      return t("general");
-    } else if (type === "Market list") {
-      return t("market_list");
-    }
-    return type;
-  };
-
   if (isLoading) {
     selectContent = (
       <SelectItem value="loading" disabled>
@@ -64,7 +53,7 @@ export default function LookupWorkflow({
   } else {
     selectContent = workflows?.data.map((workflow: WorkflowDto) => (
       <SelectItem key={workflow.id} value={workflow.id}>
-        {getTypeName(workflow.name)}
+        {workflow.name}
       </SelectItem>
     ));
   }
