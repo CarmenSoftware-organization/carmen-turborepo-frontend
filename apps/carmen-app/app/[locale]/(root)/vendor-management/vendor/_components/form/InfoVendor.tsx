@@ -37,46 +37,47 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
   });
 
   return (
-    <div className="space-y-3">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-xs font-medium text-foreground">Additional Info</h3>
+    <div className="space-y-2">
+      <div className="flex justify-between items-center mb-1">
+        <h3 className="text-xs font-semibold text-foreground">Additional Info</h3>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => appendInfo({ label: "", value: "", data_type: "string" })}
-          className="h-7 text-xs"
+          className="h-6 text-[10px] px-2"
           disabled={disabled}
         >
-          <Plus className="h-3 w-3" />
+          <Plus className="h-3 w-3 mr-1" />
           Add Info
         </Button>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-1">
         {infoFields.map((field, index) => (
           <div
             key={field.id}
-            className="grid grid-cols-12 gap-2 items-center border border-border rounded p-2"
+            className="grid grid-cols-12 gap-1 items-end border border-border/50 rounded bg-muted/10 p-1.5"
           >
-            <div className="col-span-4 space-y-1">
+            <div className="col-span-4 space-y-0.5">
               <Label
                 htmlFor={`info.${index}.label`}
-                className="text-xs font-medium text-foreground"
+                className="text-[10px] uppercase font-bold text-muted-foreground"
               >
                 Label
               </Label>
               <Input
                 id={`info.${index}.label`}
                 {...form.register(`info.${index}.label`)}
-                className="h-7 text-xs"
+                className="h-7 text-xs bg-background"
+                placeholder="Label"
                 disabled={disabled}
               />
             </div>
-            <div className="col-span-5 space-y-1">
+            <div className="col-span-5 space-y-0.5">
               <Label
                 htmlFor={`info.${index}.value`}
-                className="text-xs font-medium text-foreground"
+                className="text-[10px] uppercase font-bold text-muted-foreground"
               >
                 Value
               </Label>
@@ -86,7 +87,7 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal h-7 text-xs",
+                        "w-full justify-start text-left font-normal h-7 text-xs bg-background",
                         !form.watch(`info.${index}.value`) && "text-muted-foreground"
                       )}
                       disabled={disabled}
@@ -117,15 +118,16 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                   id={`info.${index}.value`}
                   type={form.watch(`info.${index}.data_type`) === "number" ? "number" : "text"}
                   {...form.register(`info.${index}.value`)}
-                  className="h-7 text-xs"
+                  className="h-7 text-xs bg-background"
+                  placeholder="Value"
                   disabled={disabled}
                 />
               )}
             </div>
-            <div className="col-span-2 space-y-1">
+            <div className="col-span-2 space-y-0.5">
               <Label
                 htmlFor={`info.${index}.data_type`}
-                className="text-xs font-medium text-foreground"
+                className="text-[10px] uppercase font-bold text-muted-foreground"
               >
                 Type
               </Label>
@@ -139,7 +141,7 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                 defaultValue={field.data_type}
                 disabled={disabled}
               >
-                <SelectTrigger id={`info.${index}.data_type`} className="h-7 text-xs">
+                <SelectTrigger id={`info.${index}.data_type`} className="h-7 text-xs bg-background">
                   <SelectValue placeholder="Type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -164,16 +166,16 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                 </SelectContent>
               </Select>
             </div>
-            <div className="col-span-1 flex justify-end items-end h-full">
+            <div className="col-span-1 flex justify-center pb-1">
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => removeInfo(index)}
                 disabled={disabled || infoFields.length === 1}
-                className="h-7 w-7 p-0"
+                className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
               >
-                <Trash2 className="h-3 w-3 text-muted-foreground" />
+                <Trash2 className="h-3 w-3" />
                 <span className="sr-only">Delete</span>
               </Button>
             </div>

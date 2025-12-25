@@ -30,8 +30,8 @@ import { toastSuccess } from "@/components/ui-custom/Toast";
 import BuTypeList from "./BuTypeList";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
-import { FormBuTypeDialog } from "./FormBuTypeDialog";
 import { configurationPermission } from "@/lib/permission";
+import { FormBuTypeDialog } from "@/components/shared/FormBuTypeDialog";
 
 export default function BusinessTypeComponent() {
   const { token, buCode, permissions } = useAuth();

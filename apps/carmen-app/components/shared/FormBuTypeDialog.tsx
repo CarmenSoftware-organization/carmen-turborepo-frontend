@@ -1,7 +1,6 @@
 "use client";
 
 import { BuTypeFormDto } from "@/dtos/bu-type.dto";
-import { createBuTypeFormSchema } from "../_schemas/bu-type-form.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo } from "react";
@@ -19,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import FormBoolean from "@/components/form-custom/form-boolean";
 import { Button } from "@/components/ui/button";
+import { createBuTypeFormSchema } from "@/dtos/bu-type-form.dto";
 
 interface FormBuTypeProps {
   open: boolean;
