@@ -206,7 +206,6 @@ const WorkflowDetail: React.FC<WorkflowDetailProps> = ({
   const stageNames = form.getValues("data")?.stages?.map((stage) => stage?.name) || [];
 
   const onSubmit = async (values: WorkflowCreateModel) => {
-    console.log(values);
     try {
       if (mode === formType.ADD) {
         const result = (await createWorkflowMutation.mutateAsync({

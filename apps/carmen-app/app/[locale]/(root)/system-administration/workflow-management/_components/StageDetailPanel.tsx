@@ -131,7 +131,7 @@ export default function StageDetailPanel({
   };
 
   const toggleUserAssignment = (userId: string) => {
-    const currentAssigned = stage.assigned_users ?? [];
+    const currentAssigned = editedStage.assigned_users ?? [];
     const isAssigned = currentAssigned.some((u) => u.user_id === userId);
     const updatedUsers = isAssigned
       ? currentAssigned.filter((u) => u.user_id !== userId)
@@ -1015,7 +1015,7 @@ export default function StageDetailPanel({
                       <CardContent className="p-0">
                         <div className="divide-y">
                           {filteredUsers.map((user) => {
-                            const isAssigned = stage.assigned_users?.some(
+                            const isAssigned = editedStage.assigned_users?.some(
                               (u) => u.user_id === user.user_id
                             );
                             return (
