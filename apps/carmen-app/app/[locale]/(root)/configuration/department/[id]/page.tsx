@@ -12,11 +12,11 @@ export default function DepartmentIdPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const { data: department, isLoading } = useDepartmentByIdQuery(token, buCode, id);
+  const { data, isLoading } = useDepartmentByIdQuery(token, buCode, id);
 
   if (isLoading) {
     return <DetailSkeleton />;
   }
 
-  return <MainForm defaultValues={department} mode={formType.VIEW} />;
+  return <MainForm defaultValues={data?.data} mode={formType.VIEW} />;
 }

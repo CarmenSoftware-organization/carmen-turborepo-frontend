@@ -176,6 +176,7 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
 
     const updatedData = {
       ...data,
+      id: defaultValues?.id ?? "",
       users: {
         add: currentUsers.add.map((user) => ({
           ...user,
@@ -190,13 +191,13 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
     };
 
     if (isAddMode) {
-      createDepartment(updatedData as any, {
-        onSuccess: (data: unknown) => {
-          const response = data as { id: string };
+      createDepartment(updatedData, {
+        onSuccess: (data) => {
+          const response = data as { data: { id: string } };
           toastSuccess({ message: tDepartment("add_success") });
           // Invalidate queries to refresh the department list
           queryClient.invalidateQueries({ queryKey: ["departments", buCode] });
-          router.replace(`/configuration/department/${response.id}`);
+          router.replace(`/configuration/department/${response.data.id}`);
         },
         onError: (error: unknown) => {
           console.error("Error creating department:", error);
@@ -204,7 +205,7 @@ export default function MainForm({ defaultValues, mode: initialMode }: MainFormP
         },
       });
     } else {
-      updateDepartment(updatedData as any, {
+      updateDepartment(updatedData, {
         onSuccess: () => {
           toastSuccess({ message: tDepartment("edit_success") });
           // Invalidate queries to refresh the department list and detail
