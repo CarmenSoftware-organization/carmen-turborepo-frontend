@@ -264,8 +264,8 @@ export const wfFormSchema = z.object({
                 email: z.string(),
                 department: z
                   .object({
-                    id: z.string(),
-                    name: z.string(),
+                    id: z.string().optional(),
+                    name: z.string().optional(),
                   })
                   .optional(),
                 initials: z.string(),
