@@ -277,25 +277,6 @@ export default function BasicInfo({
               </FormItem>
             )}
           />
-
-          <FormField
-            control={control}
-            name="description"
-            render={({ field }) => (
-              <FormItem className="col-span-full">
-                <FormLabel>{tProducts("description")}</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder={tProducts("description")}
-                    {...field}
-                    disabled={currentMode === formType.VIEW}
-                    className={cn(currentMode === formType.VIEW && "bg-muted")}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
         </div>
 
         <div>
@@ -325,6 +306,12 @@ export default function BasicInfo({
                               },
                               { shouldValidate: false }
                             );
+
+                            if (selectedItemGroup.tax_profile_id) {
+                              setValue("tax_profile_id", selectedItemGroup.tax_profile_id);
+                              setValue("tax_profile_name", selectedItemGroup.tax_profile_name);
+                              setValue("tax_rate", selectedItemGroup.tax_rate ?? 0);
+                            }
                           }
                         }}
                         disabled={currentMode === formType.VIEW}
@@ -453,6 +440,24 @@ export default function BasicInfo({
                 )}
               />
             </div>
+            <FormField
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <FormItem className="col-span-full">
+                  <FormLabel>{tProducts("description")}</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder={tProducts("description")}
+                      {...field}
+                      disabled={currentMode === formType.VIEW}
+                      className={cn(currentMode === formType.VIEW && "bg-muted")}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </div>
       </div>
