@@ -228,38 +228,40 @@ export default function LocationForm({
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <Link href="/configuration/location">Location</Link>
+                  <Link className="text-xs" href="/configuration/location">
+                    Location
+                  </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               {mode === formType.EDIT && initialData ? (
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="font-semibold">{initialData.name}</BreadcrumbPage>
+                  <BreadcrumbPage className="text-xs font-bold">{initialData.name}</BreadcrumbPage>
                 </BreadcrumbItem>
               ) : (
                 <BreadcrumbItem>
-                  <BreadcrumbPage className="font-semibold">
+                  <BreadcrumbPage className="text-xs font-bold">
                     {tLocation("add_store_location")}
                   </BreadcrumbPage>
                 </BreadcrumbItem>
               )}
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={onCancel}>
-              <X className="w-4 h-4" />
-              {tCommon("cancel")}
-            </Button>
-            <Button
-              size="sm"
-              onClick={form.handleSubmit(handleSubmit)}
-              disabled={isPending || isViewMode}
-            >
-              <Save className="w-4 h-4" />
-              {tCommon("save")}
-            </Button>
-          </div>
         </div>
+      </div>
+      <div className="flex items-center justify-end gap-2 pt-4">
+        <Button variant="outline" size="sm" onClick={onCancel}>
+          <X className="w-4 h-4" />
+          {tCommon("cancel")}
+        </Button>
+        <Button
+          size="sm"
+          onClick={form.handleSubmit(handleSubmit)}
+          disabled={isPending || isViewMode}
+        >
+          <Save className="w-4 h-4" />
+          {tCommon("save")}
+        </Button>
       </div>
       <div className="flex-1 overflow-y-auto">
         <FormProvider {...form}>

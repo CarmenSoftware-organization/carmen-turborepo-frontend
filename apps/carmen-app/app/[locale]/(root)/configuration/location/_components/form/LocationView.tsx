@@ -73,12 +73,16 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <Button onClick={handleEditMode} size="sm" className="h-7 w-7">
-              <SquarePen className="w-4 h-4" />
-            </Button>
           </div>
 
           <Separator />
+
+          <div className="flex items-center justify-end">
+            <Button onClick={handleEditMode} size="sm" className="h-7">
+              <SquarePen className="w-4 h-4" />
+              {tCommon("edit")}
+            </Button>
+          </div>
 
           <dl className="grid grid-cols-[160px_1fr] gap-y-2 gap-x-4 text-sm">
             <dt className="font-medium text-muted-foreground">{tHeader("name")}</dt>
