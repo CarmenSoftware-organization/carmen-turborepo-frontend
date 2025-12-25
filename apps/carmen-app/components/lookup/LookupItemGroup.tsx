@@ -25,8 +25,6 @@ export default function LookupItemGroup({
   const { itemGroups, isPending: isLoading } = useItemGroup();
   const [open, setOpen] = useState(false);
 
-  console.log("itemGroups", itemGroups);
-
   // ใช้ useMemo เพื่อหาชื่อกลุ่มที่เลือก และป้องกันการคำนวณซ้ำ
   const selectedItemName = useMemo(() => {
     if (!value || !itemGroups || !Array.isArray(itemGroups)) return null;
