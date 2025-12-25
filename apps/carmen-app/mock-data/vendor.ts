@@ -35,15 +35,10 @@ export const mockVendors: VendorGetDto[] = [
     ],
     vendor_contact: [
       {
-        id: "contact-001",
-        contact_type: "Primary",
-        description: "Main contact person",
-        info: [
-          { label: "Name", value: "John Smith", data_type: "string" },
-          { label: "Email", value: "john@abc-supplies.com", data_type: "string" },
-          { label: "Phone", value: "+66 81 234 5678", data_type: "string" },
-        ],
-        is_active: true,
+        name: "John Smith",
+        email: "john@abc-supplies.com",
+        phone: "+66 81 234 5678",
+        is_primary: true,
       },
     ],
   },
@@ -81,15 +76,10 @@ export const mockVendors: VendorGetDto[] = [
     ],
     vendor_contact: [
       {
-        id: "contact-002",
-        contact_type: "Primary",
-        description: "Main contact person",
-        info: [
-          { label: "Name", value: "Jane Doe", data_type: "string" },
-          { label: "Email", value: "jane@globaltech.com", data_type: "string" },
-          { label: "Phone", value: "+66 81 345 6789", data_type: "string" },
-        ],
-        is_active: true,
+        name: "Jane Doe",
+        email: "jane@globaltech.com",
+        phone: "+66 81 345 6789",
+        is_primary: true,
       },
     ],
   },
@@ -127,15 +117,10 @@ export const mockVendors: VendorGetDto[] = [
     ],
     vendor_contact: [
       {
-        id: "contact-003",
-        contact_type: "Primary",
-        description: "Main contact person",
-        info: [
-          { label: "Name", value: "Bob Johnson", data_type: "string" },
-          { label: "Email", value: "bob@primemfg.com", data_type: "string" },
-          { label: "Phone", value: "+66 81 456 7890", data_type: "string" },
-        ],
-        is_active: true,
+        name: "Bob Johnson",
+        email: "bob@primemfg.com",
+        phone: "+66 81 456 7890",
+        is_primary: true,
       },
     ],
   },
@@ -173,15 +158,10 @@ export const mockVendors: VendorGetDto[] = [
     ],
     vendor_contact: [
       {
-        id: "contact-004",
-        contact_type: "Primary",
-        description: "Main contact person",
-        info: [
-          { label: "Name", value: "Alice Wong", data_type: "string" },
-          { label: "Email", value: "alice@easternlogistics.com", data_type: "string" },
-          { label: "Phone", value: "+66 81 567 8901", data_type: "string" },
-        ],
-        is_active: true,
+        name: "Alice Wong",
+        email: "alice@easternlogistics.com",
+        phone: "+66 81 567 8901",
+        is_primary: true,
       },
     ],
   },
@@ -219,15 +199,10 @@ export const mockVendors: VendorGetDto[] = [
     ],
     vendor_contact: [
       {
-        id: "contact-005",
-        contact_type: "Primary",
-        description: "Main contact person",
-        info: [
-          { label: "Name", value: "Michael Chen", data_type: "string" },
-          { label: "Email", value: "michael@qualityparts.com", data_type: "string" },
-          { label: "Phone", value: "+66 81 678 9012", data_type: "string" },
-        ],
-        is_active: true,
+        name: "Michael Chen",
+        email: "michael@qualityparts.com",
+        phone: "+66 81 678 9012",
+        is_primary: true,
       },
     ],
   },
@@ -265,15 +240,10 @@ export const mockVendors: VendorGetDto[] = [
     ],
     vendor_contact: [
       {
-        id: "contact-006",
-        contact_type: "Primary",
-        description: "Main contact person",
-        info: [
-          { label: "Name", value: "Sarah Lee", data_type: "string" },
-          { label: "Email", value: "sarah@superiorequip.com", data_type: "string" },
-          { label: "Phone", value: "+66 81 789 0123", data_type: "string" },
-        ],
-        is_active: true,
+        name: "Sarah Lee",
+        email: "sarah@superiorequip.com",
+        phone: "+66 81 789 0123",
+        is_primary: true,
       },
     ],
   },
