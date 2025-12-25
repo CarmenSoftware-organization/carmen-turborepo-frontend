@@ -107,8 +107,9 @@ export const usePurchaseItemManagement = ({
 
     return {
       product_name: selectedProduct.name,
-      inventory_unit_id: selectedProduct.inventory_unit_id,
-      inventory_unit_name: selectedProduct.inventory_unit_name,
+      inventory_unit_id: selectedProduct.inventory_unit_id || selectedProduct.inventory_unit?.id,
+      inventory_unit_name:
+        selectedProduct.inventory_unit_name || selectedProduct.inventory_unit?.name,
     };
   }, []);
 

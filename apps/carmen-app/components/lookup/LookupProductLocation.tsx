@@ -53,7 +53,7 @@ export default function LookupProductLocation({
     perpage: -1,
   });
 
-  const allProducts: ProductLocation[] = productLocation?.data?.data || [];
+  const allProducts: ProductLocation[] = productLocation?.data || [];
 
   // Filter out excluded products, but keep current selected product
   const productLocationData = allProducts.filter(

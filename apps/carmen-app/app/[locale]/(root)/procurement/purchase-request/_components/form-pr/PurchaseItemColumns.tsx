@@ -259,8 +259,13 @@ export const createPurchaseItemColumns = (
               excludeProductIds={usedProductIds}
               onValueChange={(value, selectedProduct) => {
                 onItemUpdate(item.id, "product_id", value, selectedProduct);
-                onItemUpdate(item.id, "inventory_unit_id", selectedProduct?.inventory_unit?.id);
-                onItemUpdate(item.id, "inventory_unit_name", selectedProduct?.inventory_unit?.name);
+                if (selectedProduct?.inventory_unit) {
+                  onItemUpdate(item.id, "inventory_unit_id", selectedProduct.inventory_unit.id);
+                  onItemUpdate(item.id, "inventory_unit_name", selectedProduct.inventory_unit.name);
+                } else {
+                  onItemUpdate(item.id, "inventory_unit_id", "");
+                  onItemUpdate(item.id, "inventory_unit_name", "");
+                }
                 onItemUpdate(item.id, "requested_unit_id", "");
                 onItemUpdate(item.id, "requested_unit_name", "");
               }}
