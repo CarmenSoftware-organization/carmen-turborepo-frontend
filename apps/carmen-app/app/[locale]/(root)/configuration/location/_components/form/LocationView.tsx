@@ -16,6 +16,14 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TabUsersLocation from "./TabUsersLocation";
 import TabUsersProduct from "./TabUsersProduct";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface LocationViewProps {
   readonly initialData?: LocationByIdDto;
@@ -52,14 +60,19 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
       {currentMode === formType.VIEW ? (
         <div className="space-y-2 mx-auto max-w-3xl">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild className="hover:bg-transparent h-7 w-7">
-                <Link href={`/configuration/location`}>
-                  <ChevronLeft className="w-4 h-4" />
-                </Link>
-              </Button>
-              <h1 className="text-xl font-semibold">{initialData?.name}</h1>
-            </div>
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link href="/configuration/location">Location</Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-semibold">{initialData?.name}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
             <Button onClick={handleEditMode} size="sm" className="h-7 w-7">
               <SquarePen className="w-4 h-4" />
             </Button>
@@ -68,6 +81,12 @@ export default function LocationView({ initialData, mode }: LocationViewProps) {
           <Separator />
 
           <dl className="grid grid-cols-[160px_1fr] gap-y-2 gap-x-4 text-sm">
+            <dt className="font-medium text-muted-foreground">{tHeader("name")}</dt>
+            <dd>{initialData?.name}</dd>
+
+            <dt className="font-medium text-muted-foreground">{tHeader("code")}</dt>
+            <dd>{initialData?.code}</dd>
+
             <dt className="font-medium text-muted-foreground">{tHeader("delivery_point")}</dt>
             <dd>{getDeliveryPointName(initialData?.delivery_point.id ?? "")}</dd>
 

@@ -41,7 +41,8 @@ const LookupExchangeRate = forwardRef<HTMLButtonElement, ExchangeRateLookupProps
 
     const { token, buCode } = useAuth();
     const { currencies } = useCurrenciesQuery(token, buCode, {
-      page: -1,
+      page: 1,
+      perpage: 999,
     });
 
     const [open, setOpen] = useState(false);
@@ -56,7 +57,7 @@ const LookupExchangeRate = forwardRef<HTMLButtonElement, ExchangeRateLookupProps
       if (!currenciesIso) return [];
 
       const existingCodes = new Set(
-        currencies?.map((currency: CurrencyGetDto) => currency.code) || []
+        currencies?.data?.map((currency: CurrencyGetDto) => currency.code) || []
       );
 
       return [...currenciesIso]

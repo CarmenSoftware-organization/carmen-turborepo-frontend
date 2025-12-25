@@ -7,11 +7,13 @@ import { formType } from "@/dtos/form.dto";
 import { useRfpById } from "@/hooks/use-rfp";
 import RfpMainForm from "../_components/form/RfpMainForm";
 
-export default function RfpEditPage({ params }: { params: { id: string } }) {
+export default function RfpEditPage() {
+  const params = useParams();
+  const id = params.id as string;
   const { token, buCode } = useAuth();
-  const { data: rfp, isLoading } = useRfpById(token, buCode, params.id);
+  const { data: rfp, isLoading } = useRfpById(token, buCode, id);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <DetailLoading />;
 
   return <RfpMainForm mode={formType.VIEW} rfpData={rfp} />;
 }

@@ -8,7 +8,7 @@ import {
 import { createLocationFormSchema } from "../../_schemas/location-form.schema";
 import { formType } from "@/dtos/form.dto";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Save, X } from "lucide-react";
+import { Save, X } from "lucide-react";
 import { INVENTORY_TYPE } from "@/constants/enum";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,6 +42,14 @@ import {
 } from "@/components/form-custom/form";
 import { TreeProductLookup } from "@/components/lookup/tree-product";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 interface LocationFormProps {
   readonly initialData?: LocationByIdDto;
@@ -216,18 +224,27 @@ export default function LocationForm({
     <div className="max-w-4xl mx-auto pb-10">
       <div className="sticky top-0 z-20 bg-background border-b border-border">
         <div className="flex items-center justify-between mb-2 pb-2">
-          <div className="flex items-center gap-2">
-            <Button size={"sm"} variant={"outline"} className="h-7 w-7" asChild>
-              <Link href="/configuration/location">
-                <ArrowLeft />
-              </Link>
-            </Button>
-            <h1 className="text-xl font-semibold">
-              {mode === formType.EDIT
-                ? tLocation("edit_store_location")
-                : tLocation("add_store_location")}
-            </h1>
-          </div>
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/configuration/location">Location</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              {mode === formType.EDIT && initialData ? (
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-semibold">{initialData.name}</BreadcrumbPage>
+                </BreadcrumbItem>
+              ) : (
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-semibold">
+                    {tLocation("add_store_location")}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              )}
+            </BreadcrumbList>
+          </Breadcrumb>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={onCancel}>
               <X className="w-4 h-4" />

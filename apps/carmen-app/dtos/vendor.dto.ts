@@ -22,9 +22,10 @@ export interface InfoItemDto {
  */
 export interface AddressDataDto {
   address_line1: string;
-  address_line2: string;
+  address_line2?: string;
   district: string;
-  province: string;
+  province?: string;
+  city?: string;
   postal_code: string;
   country: string;
 }
@@ -41,9 +42,10 @@ export interface AddressDto {
  * Contact DTO
  */
 export interface ContactDto {
-  contact_type: string;
-  description: string;
-  info: InfoItemDto[];
+  name: string;
+  email?: string;
+  phone?: string;
+  is_primary?: boolean;
 }
 
 /**
@@ -79,16 +81,18 @@ export const transformVendorData = (data: VendorGetDto): VendorFormValues => {
           address_line1: addr.data.address_line1 ?? "",
           address_line2: addr.data.address_line2 ?? "",
           district: addr.data.district ?? "",
-          province: addr.data.province ?? "",
+          province: addr.data.province,
+          city: addr.data.city,
           postal_code: addr.data.postal_code ?? "",
           country: addr.data.country ?? "",
         },
       })) || [],
     vendor_contact:
       data.vendor_contact?.map((contact) => ({
-        contact_type: contact.contact_type,
-        description: contact.description || "",
-        info: contact.info || [],
+        name: contact.name,
+        email: contact.email,
+        phone: contact.phone,
+        is_primary: contact.is_primary ?? false,
       })) || [],
   };
 };

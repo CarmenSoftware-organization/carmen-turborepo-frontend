@@ -1,10 +1,10 @@
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { backendApi } from "@/lib/backend-api";
 import {
-    getAllApiRequest,
-    postApiRequest,
-    updateApiRequest,
-    requestHeaders,
+  getAllApiRequest,
+  postApiRequest,
+  updateApiRequest,
+  requestHeaders,
 } from "@/lib/config.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
@@ -12,124 +12,96 @@ import { CurrencyCreateDto, CurrencyGetDto, CurrencyUpdateDto } from "@/dtos/cur
 import axios from "axios";
 
 const currencyApiUrl = (buCode: string, id?: string) => {
-    const baseUrl = `${backendApi}/api/config/${buCode}/currencies`;
-    return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
+  const baseUrl = `${backendApi}/api/config/${buCode}/currencies`;
+  return id ? `${baseUrl}/${id}` : `${baseUrl}/`;
 };
 
-export const useCurrenciesQuery = (
-    token: string,
-    buCode: string,
-    params?: ParamsGetDto
-) => {
+export const useCurrenciesQuery = (token: string, buCode: string, params?: ParamsGetDto) => {
+  const API_URL = currencyApiUrl(buCode);
 
-    const API_URL = currencyApiUrl(buCode);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["currencies", buCode, params],
+    queryFn: async () => {
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
+      }
+      return await getAllApiRequest(API_URL, token, "Error fetching currency", params ?? {});
+    },
+    enabled: !!token && !!buCode,
+  });
 
-    const { data, isLoading, error } = useQuery({
-        queryKey: ["currencies", buCode, params],
-        queryFn: async () => {
-            if (!token || !buCode) {
-                throw new Error("Unauthorized: Missing token or buCode");
-            }
-            return await getAllApiRequest(
-                API_URL,
-                token,
-                "Error fetching currency",
-                params ?? {}
-            );
-        },
-        enabled: !!token && !!buCode,
-    });
+  const currencies = data;
 
-    const currencies = data;
+  const isUnauthorized = error instanceof Error && error.message.includes("Unauthorized");
 
-    const isUnauthorized =
-        error instanceof Error && error.message.includes("Unauthorized");
+  const getCurrencyName = useCallback(
+    (currencyId: string) => {
+      const currency = currencies?.find((c: CurrencyGetDto) => c.id === currencyId);
+      return currency?.name ?? "";
+    },
+    [currencies]
+  );
 
-    const getCurrencyName = useCallback(
-        (currencyId: string) => {
-            const currency = currencies?.find(
-                (c: CurrencyGetDto) => c.id === currencyId
-            );
-            return currency?.name ?? "";
-        },
-        [currencies]
-    );
+  const getCurrencyCode = useCallback(
+    (currencyId: string) => {
+      const currency = currencies?.data?.find((c: CurrencyGetDto) => c.id === currencyId);
+      return currency?.code ?? "";
+    },
+    [currencies]
+  );
 
-    const getCurrencyCode = useCallback(
-        (currencyId: string) => {
-            const currency = currencies?.data?.find(
-                (c: CurrencyGetDto) => c.id === currencyId
-            );
-            return currency?.code ?? "";
-        },
-        [currencies]
-    );
+  const getCurrencyExchangeRate = useCallback(
+    (currencyId: string) => {
+      const currency = currencies?.data?.find((c: CurrencyGetDto) => c.id === currencyId);
+      return currency?.exchange_rate ?? 0;
+    },
+    [currencies]
+  );
 
-    const getCurrencyExchangeRate = useCallback(
-        (currencyId: string) => {
-            const currency = currencies?.data?.find(
-                (c: CurrencyGetDto) => c.id === currencyId
-            );
-            return currency?.exchange_rate ?? 0;
-        },
-        [currencies]
-    );
-
-    return {
-        currencies,
-        getCurrencyName,
-        getCurrencyCode,
-        getCurrencyExchangeRate,
-        isLoading,
-        isUnauthorized,
-    };
+  return {
+    currencies,
+    getCurrencyName,
+    getCurrencyCode,
+    getCurrencyExchangeRate,
+    isLoading,
+    isUnauthorized,
+  };
 };
 
 export const useCurrencyMutation = (token: string, buCode: string) => {
-    const API_URL = currencyApiUrl(buCode);
-    return useMutation({
-        mutationFn: async (data: CurrencyCreateDto) => {
-            return await postApiRequest(
-                API_URL,
-                token,
-                data,
-                "Error creating currency"
-            );
-        },
-    });
+  const API_URL = currencyApiUrl(buCode);
+  return useMutation({
+    mutationFn: async (data: CurrencyCreateDto) => {
+      return await postApiRequest(API_URL, token, data, "Error creating currency");
+    },
+  });
 };
 
 export const useCurrencyUpdateMutation = (token: string, buCode: string, id: string) => {
-    const API_URL_BY_ID = currencyApiUrl(buCode, id);
-    return useMutation({
-        mutationFn: async (data: CurrencyUpdateDto) => {
-            return await updateApiRequest(
-                API_URL_BY_ID,
-                token,
-                data,
-                "Error updating currency",
-                "PATCH"
-            );
-        },
-    });
+  const API_URL_BY_ID = currencyApiUrl(buCode, id);
+  return useMutation({
+    mutationFn: async (data: CurrencyUpdateDto) => {
+      return await updateApiRequest(API_URL_BY_ID, token, data, "Error updating currency", "PATCH");
+    },
+  });
 };
 
 export const useCurrencyDeleteMutation = (token: string, buCode: string) => {
-    return useMutation({
-        mutationFn: async (id: string) => {
-            if (!token || !buCode || !id) {
-                throw new Error("Unauthorized: Missing required parameters");
-            }
-            try {
-                const API_URL_BY_ID = currencyApiUrl(buCode, id);
-                const response = await axios.delete(API_URL_BY_ID, {
-                    headers: requestHeaders(token),
-                });
-                return response.data;
-            } catch (error) {
-                console.error("Error deleting currency:", error);
-                throw error;
-            }
-        },
-    });
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!token || !buCode || !id) {
+        throw new Error("Unauthorized: Missing required parameters");
+      }
+      try {
+        const API_URL_BY_ID = currencyApiUrl(buCode, id);
+        const response = await axios.delete(API_URL_BY_ID, {
+          headers: requestHeaders(token),
+        });
+        return response.data;
+      } catch (error) {
+        console.error("Error deleting currency:", error);
+        throw error;
+      }
+    },
+  });
 };
