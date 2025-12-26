@@ -15,6 +15,7 @@ export interface RfpVendorDto {
   contact_person: string;
   contact_phone: string;
   contact_email: string;
+  url_token?: string;
   has_submitted?: boolean; // Optional as not in json but might be computed
 }
 

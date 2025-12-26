@@ -23,7 +23,7 @@ import {
   TabsTrigger,
 } from "@/components/animate-ui/components/radix/tabs";
 import { usePriceListTemplates } from "@/hooks/use-price-list-template";
-import { toastSuccess } from "@/components/ui-custom/Toast";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import OverviewTab from "./OverviewTab";
 import VendorsTab from "./VendorsTab";
 
@@ -56,7 +56,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
     mode: "onChange",
     defaultValues: {
       name: rfpData?.name || "",
-      status: rfpData?.status,
+      status: rfpData?.status || "draft",
       start_date: rfpData?.start_date,
       end_date: rfpData?.end_date,
       custom_message: rfpData?.custom_message || "",
@@ -74,7 +74,7 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
     if (rfpData) {
       form.reset({
         name: rfpData.name || "",
-        status: rfpData.status,
+        status: rfpData.status || "draft",
         start_date: rfpData.start_date,
         end_date: rfpData.end_date,
         custom_message: rfpData.custom_message || "",
@@ -97,24 +97,31 @@ export default function RfpMainForm({ rfpData, mode }: Props) {
       const dto = transformToCreateDto(data, vendors?.data || []);
       await createRfp(dto, createMutation, form, data, (result) => {
         const newId = result?.data?.id || result?.id;
-        if (newId) {
+        if (result.success) {
           toastSuccess({
             message: "RFP created successfully",
           });
           router.replace(`/vendor-management/request-price-list/${newId}`);
-        } else {
           setCurrentMode(formType.VIEW);
+        } else {
+          toastError({
+            message: result.message,
+          });
         }
       });
     } else {
       const originalVendorIds = rfpData?.vendors?.map((v) => v.vendor_id) || [];
       const dto = transformToUpdateDto(data, vendors?.data || [], originalVendorIds);
       await updateRfp(dto, updateMutation, form, (result) => {
-        if (result) {
+        if (result.success) {
           toastSuccess({
             message: "RFP updated successfully",
           });
           setCurrentMode(formType.VIEW);
+        } else {
+          toastError({
+            message: result.message,
+          });
         }
       });
     }

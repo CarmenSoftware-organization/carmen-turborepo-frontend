@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import axios from "axios";
 import { UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, X, Mail } from "lucide-react";
@@ -14,6 +15,7 @@ import { VendorGetDto } from "@/dtos/vendor-management";
 import { RfpDetailDto } from "@/dtos/rfp.dto";
 import { RfpFormValues } from "../../_schema/rfp.schema";
 import { nanoid } from "nanoid";
+import { backendApi } from "@/lib/backend-api";
 
 interface VendorDisplay {
   id: string;
@@ -21,6 +23,7 @@ interface VendorDisplay {
   contact_email: string;
   vendor_id?: string;
   isPlaceholder?: boolean;
+  url_token?: string;
 }
 
 interface Props {
@@ -42,6 +45,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         id: v.vendor_id,
         name: v.vendor_name || "",
         contact_email: v.contact_email || "",
+        url_token: v.url_token,
       }));
 
     const added: VendorDisplay[] = addedVendors.map((v) => ({
@@ -75,6 +79,16 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
     } else {
       const currentRemove = form.getValues("vendors.remove") || [];
       form.setValue("vendors.remove", [...currentRemove, vendorId], { shouldDirty: true });
+    }
+  };
+
+  const checkPriceList = async (url_token: string) => {
+    try {
+      console.log("Checking price list for token:", url_token);
+      const res = await axios.post(`${backendApi}/api/check-price-list/${url_token}`);
+      console.log("Check price list result:", res.data);
+    } catch (error) {
+      console.error("Failed to check price list:", error);
     }
   };
 
@@ -148,7 +162,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
             <Button
               size={"sm"}
               variant="outline"
-              onClick={() => console.log(row.original.contact_email)}
+              onClick={() => checkPriceList(row.original.url_token ?? "")}
             >
               <Mail />
               {row.original.contact_email}

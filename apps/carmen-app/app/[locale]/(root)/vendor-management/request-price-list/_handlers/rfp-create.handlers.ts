@@ -37,8 +37,10 @@ export const createRfp = async (
 ): Promise<void> => {
   try {
     const result = await mutation.mutateAsync(createDto);
-    await handleCreateSuccess(result, form, data);
-    alert("RFP created successfully");
+    // Only reset form if creation is successful
+    if ((result as any).success !== false) {
+      await handleCreateSuccess(result, form, data);
+    }
     onSuccess?.(result);
   } catch (error) {
     handleCreateError(error);

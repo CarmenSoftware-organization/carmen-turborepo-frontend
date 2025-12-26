@@ -32,7 +32,10 @@ export const updateRfp = async (
 ): Promise<void> => {
   try {
     const result = await mutation.mutateAsync(updateDto);
-    await handleUpdateSuccess(result, form);
+    // Only reset form if update is successful
+    if ((result as any).success !== false) {
+      await handleUpdateSuccess(result, form);
+    }
     onSuccess?.(result);
   } catch (error) {
     handleUpdateError(error);

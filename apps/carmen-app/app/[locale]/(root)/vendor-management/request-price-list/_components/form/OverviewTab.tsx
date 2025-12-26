@@ -19,7 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, isSameDay } from "date-fns";
 import { UseFormReturn } from "react-hook-form";
 // import { RfpFormValues } from "../../_schema/rfp.schema"; // Adjust import path as needed
 
@@ -33,6 +33,8 @@ interface Props {
 }
 
 export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props) {
+  const endDate = form.watch("end_date");
+
   return (
     <div className="space-y-4">
       {/* Overview Fields */}
@@ -123,10 +125,10 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
                       )}
                       disabled={isViewMode}
                     >
-                      {field.value && form.getValues("end_date") ? (
+                      {field.value && endDate ? (
                         <>
                           {format(new Date(field.value), "LLL dd, y")} -{" "}
-                          {format(new Date(form.getValues("end_date")), "LLL dd, y")}
+                          {format(new Date(endDate), "LLL dd, y")}
                         </>
                       ) : (
                         <span>Pick a date range</span>
@@ -138,29 +140,48 @@ export default function OverviewTab({ form, isViewMode, templates, tRfp }: Props
                 <PopoverContent className="w-auto" align="start">
                   <Calendar
                     mode="range"
+                    defaultMonth={field.value ? new Date(field.value) : undefined}
                     selected={{
                       from: field.value ? new Date(field.value) : undefined,
-                      to: form.getValues("end_date")
-                        ? new Date(form.getValues("end_date"))
-                        : undefined,
+                      to: endDate ? new Date(endDate) : undefined,
                     }}
-                    onSelect={(range) => {
-                      if (range?.from) {
+                    onSelect={(range, selectedDay) => {
+                      console.log("onSelect range:", range);
+                      console.log("onSelect selectedDay:", selectedDay);
+                      const currentStart = form.getValues("start_date");
+                      console.log("currentStart:", currentStart);
+
+                      if (!range) {
+                        if (
+                          currentStart &&
+                          selectedDay &&
+                          isSameDay(new Date(currentStart), selectedDay)
+                        ) {
+                          console.log("SAME DAY DETECTED - Setting end date");
+                          form.setValue("end_date", selectedDay.toISOString(), {
+                            shouldDirty: true,
+                          });
+                        } else {
+                          console.log("CLEARING DATES");
+                          form.setValue("start_date", "", { shouldDirty: true });
+                          form.setValue("end_date", "", { shouldDirty: true });
+                        }
+                        return;
+                      }
+
+                      if (range.from) {
                         form.setValue("start_date", range.from.toISOString(), {
                           shouldDirty: true,
                         });
                       } else {
-                        // Clear start date if implicitly cleared
                         form.setValue("start_date", "", { shouldDirty: true });
                       }
 
-                      if (range?.to) {
+                      if (range.to) {
                         form.setValue("end_date", range.to.toISOString(), {
                           shouldDirty: true,
                         });
                       } else {
-                        // Clear end date if it's not selected yet (e.g. only start date picked)
-                        // This prevents "previous end date" from persisting with "new start date"
                         form.setValue("end_date", "", { shouldDirty: true });
                       }
                     }}
