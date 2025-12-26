@@ -25,7 +25,7 @@ export interface VendorItemDto {
   moqTiers: MoqTierDto[]; // ช่วงราคาตามปริมาณ
 }
 
-export interface VendorPortalDto {
+export interface VendorEntryDto {
   id: string;
   vendorId: string;
   vendorName: string;

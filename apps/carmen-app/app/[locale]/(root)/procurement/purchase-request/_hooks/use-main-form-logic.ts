@@ -9,7 +9,7 @@ import { UseFormReturn } from "react-hook-form";
 import { formType } from "@/dtos/form.dto";
 import { PurchaseRequestByIdDto, STAGE_ROLE, ItemStatus } from "@/dtos/purchase-request.dto";
 import { CreatePrDtoType, StagesStatusValue } from "../_schemas/purchase-request-form.schema";
-import { usePrMutation } from "@/hooks/use-purchase-request";
+import { useCreatePr } from "@/hooks/use-purchase-request";
 import { usePrActions } from "./use-pr-actions";
 import { usePrevWorkflow } from "./use-prev-workflow";
 import { useSendNotification } from "@/hooks/useNoti";
@@ -63,7 +63,7 @@ export const useMainFormLogic = ({
   const [selectedStage, setSelectedStage] = useState<string>("");
 
   // Queries & Mutations
-  const { mutate: createPr, isPending: isCreatingPr } = usePrMutation(token, buCode);
+  const { mutate: createPr, isPending: isCreatingPr } = useCreatePr(token, buCode);
   const { mutate: sendNotification } = useSendNotification(token);
   const { save, submit, approve, purchase, review, reject, sendBack, isPending } = usePrActions(
     token,

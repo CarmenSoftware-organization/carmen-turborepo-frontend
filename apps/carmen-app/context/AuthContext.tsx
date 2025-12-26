@@ -157,6 +157,7 @@ interface AuthContextType {
   quantity: NonNullable<BusinessUnit["config"]>["quantity"] | null;
   recipe: NonNullable<BusinessUnit["config"]>["recipe"] | null;
   buCode: string;
+  businessUnits: BusinessUnit[] | null;
 }
 
 // Create context with a default value
@@ -182,6 +183,7 @@ export const AuthContext = createContext<AuthContextType>({
   quantity: null,
   recipe: null,
   buCode: "",
+  businessUnits: null,
 });
 
 // ฟังก์ชันช่วยสำหรับดึง token ฝั่ง client
@@ -244,8 +246,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
     quantity,
     recipe,
   } = useMemo(() => {
-    // console.log("user", user);
-
     const defaultBu = user?.data.business_unit?.find((bu: BusinessUnit) => bu.is_default === true);
 
     const firstBu = user?.data.business_unit?.[0];
@@ -477,6 +477,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }) {
       quantity,
       recipe,
       buCode,
+      businessUnits: user?.data.business_unit || null,
     }),
     [
       hasToken,

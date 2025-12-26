@@ -1,6 +1,6 @@
-import { VendorPortalDto } from "../_dto/vendor-portal.dto";
+import { VendorEntryDto } from "../_dto/vendor-entry.dto";
 
-export const mockVendorPortal: VendorPortalDto = {
+export const mockVendorEntry: VendorEntryDto = {
   id: "vp-001",
   vendorId: "vendor-001",
   vendorName: "ABC Industrial Supplies",

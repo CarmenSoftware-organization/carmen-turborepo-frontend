@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { parseSortString } from "@/utils/table";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { convertStatus } from "@/utils/status";
@@ -31,7 +32,7 @@ import ExportDropdown, { ExportFormat } from "@/components/ui-custom/ExportDropd
 import { exportToExcel, exportToPDF, exportToWord, ExportData } from "@/utils/export";
 
 export default function PurchaseRequestComponent() {
-  const { token, buCode } = useAuth();
+  const { token, buCode, businessUnits } = useAuth();
   const tCommon = useTranslations("Common");
   const tTableHeader = useTranslations("TableHeader");
   const tPurchaseRequest = useTranslations("PurchaseRequest");
@@ -42,6 +43,9 @@ export default function PurchaseRequestComponent() {
   const [search, setSearch] = useURL("search");
   const [keyword, setKeyword] = useState(search || "");
   const debouncedKeyword = useDebounce(keyword, 500);
+
+  const buCodes = businessUnits?.map((bu) => bu.code).join(",") || buCode;
+  // console.log("buCodes", buCodes);
 
   useEffect(() => {
     if (debouncedKeyword !== search) {
@@ -93,7 +97,7 @@ export default function PurchaseRequestComponent() {
     };
   };
 
-  const { data: prs, isLoading } = usePurchaseRequest(token, buCode, {
+  const { prs, isLoading } = usePurchaseRequest(token, buCodes, {
     page: page ? Number(page) : 1,
     sort,
     search,
@@ -102,6 +106,8 @@ export default function PurchaseRequestComponent() {
 
   const totalItems = prs?.paginate?.total ?? 0;
   const totalPages = prs?.paginate?.pages ?? 1;
+
+  console.log("prs", prs);
 
   useEffect(() => {
     if (search) {
@@ -161,16 +167,18 @@ export default function PurchaseRequestComponent() {
         tTableHeader("department"),
         tTableHeader("amount"),
       ],
-      rows: prs.data.map((pr: any) => [
-        pr.pr_no || "-",
-        pr.pr_date || "-",
-        pr.workflow_name || "-",
-        getStatusLabel(pr.pr_status) || "-",
-        pr.workflow_current_stage || "-",
-        pr.requestor_name || "-",
-        pr.department_name || "-",
-        pr.total_amount?.toLocaleString() || "0",
-      ]),
+      rows: (prs?.data || [])
+        .flatMap((bu: any) => bu.data || [])
+        .map((pr: any) => [
+          pr.pr_no || "-",
+          pr.pr_date || "-",
+          pr.workflow_name || "-",
+          getStatusLabel(pr.pr_status) || "-",
+          pr.workflow_current_stage || "-",
+          pr.requestor_name || "-",
+          pr.department_name || "-",
+          pr.total_amount?.toLocaleString() || "0",
+        ]),
     };
 
     switch (format) {
@@ -347,45 +355,57 @@ export default function PurchaseRequestComponent() {
   const currentPageNumber = Number(page || "1");
 
   const content = (
-    <>
-      <div className="block lg:hidden">
-        <PurchaseRequestGrid
-          purchaseRequests={prs?.data}
-          currentPage={currentPageNumber}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          isLoading={isLoading}
-          convertStatus={getStatusLabel}
-        />
-      </div>
+    <Tabs defaultValue={buCodes?.split(",")[0] || ""}>
+      <TabsList className="mb-4">
+        {prs?.data?.map((bu: any) => (
+          <TabsTrigger key={bu.bu_code} value={bu.bu_code}>
+            {bu.bu_code}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+      {prs?.data?.map((bu: any) => (
+        <TabsContent key={bu.bu_code} value={bu.bu_code}>
+          <div className="block lg:hidden">
+            <PurchaseRequestGrid
+              purchaseRequests={bu.data}
+              currentPage={bu.paginate?.page ?? currentPageNumber}
+              totalPages={bu.paginate?.pages ?? 1}
+              onPageChange={handlePageChange}
+              isLoading={isLoading}
+              convertStatus={getStatusLabel}
+            />
+          </div>
 
-      <div className="hidden lg:block">
-        {view === VIEW.LIST ? (
-          <PurchaseRequestList
-            purchaseRequests={prs?.data || []}
-            currentPage={currentPageNumber}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            perpage={prs?.paginate?.perpage ?? 10}
-            onPageChange={handlePageChange}
-            isLoading={isLoading}
-            sort={parseSortString(sort)}
-            onSort={setSort}
-            setPerpage={handleSetPerpage}
-            convertStatus={getStatusLabel}
-          />
-        ) : (
-          <PurchaseRequestGrid
-            purchaseRequests={prs?.data}
-            currentPage={currentPageNumber}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            isLoading={isLoading}
-            convertStatus={getStatusLabel}
-          />
-        )}
-      </div>
-    </>
+          <div className="hidden lg:block">
+            {view === VIEW.LIST ? (
+              <PurchaseRequestList
+                purchaseRequests={bu.data || []}
+                currentPage={bu.paginate?.page ?? currentPageNumber}
+                totalPages={bu.paginate?.pages ?? 1}
+                totalItems={bu.paginate?.total ?? 0}
+                perpage={bu.paginate?.perpage ?? 10}
+                onPageChange={handlePageChange}
+                isLoading={isLoading}
+                sort={parseSortString(sort)}
+                onSort={setSort}
+                setPerpage={handleSetPerpage} // Note: global perpage change
+                convertStatus={getStatusLabel}
+                buCode={bu.bu_code}
+              />
+            ) : (
+              <PurchaseRequestGrid
+                purchaseRequests={bu.data}
+                currentPage={bu.paginate?.page ?? currentPageNumber}
+                totalPages={bu.paginate?.pages ?? 1}
+                onPageChange={handlePageChange}
+                isLoading={isLoading}
+                convertStatus={getStatusLabel}
+              />
+            )}
+          </div>
+        </TabsContent>
+      ))}
+    </Tabs>
   );
 
   return (

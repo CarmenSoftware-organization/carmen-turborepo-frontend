@@ -217,7 +217,7 @@
     "no_vendors_selected_empty": "ไม่มีผู้จัดจำหน่ายที่เลือก",
     "priority": "ความสําคัญ"
   },
-  "VendorPortal": {
+  "vendorEntry": {
     "title": "พอร์ทัลผู้จัดจำหน่าย"
   }
 }

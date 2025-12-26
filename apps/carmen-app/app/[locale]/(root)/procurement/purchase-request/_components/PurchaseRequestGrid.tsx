@@ -33,7 +33,6 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 import { useDeletePr } from "@/hooks/use-purchase-request";
-import { useWorkflowTypeTranslation } from "@/utils/workflow-helpers";
 
 interface PurchaseRequestGridProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -58,7 +57,6 @@ export default function PurchaseRequestGrid({
   const tPr = useTranslations("PurchaseRequest");
   const defaultAmount = { locales: "en-US", minimumFractionDigits: 2 };
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
-  const { workflowTypeName } = useWorkflowTypeTranslation();
 
   // State for delete dialog
   const [alertOpen, setAlertOpen] = useState(false);
@@ -162,7 +160,7 @@ export default function PurchaseRequestGrid({
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">{tTableHeader("type")}</p>
                     <p className="text-sm font-medium text-muted-foreground">
-                      {workflowTypeName(pr.workflow_name ?? "-")}
+                      {pr.workflow_name ?? "-"}
                     </p>
                   </div>
                   <div className="space-y-1">

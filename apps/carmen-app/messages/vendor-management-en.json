@@ -217,7 +217,7 @@
     "no_vendors_selected_empty": "No vendors selected",
     "priority": "Priority"
   },
-  "VendorPortal": {
-    "title": "Vendor Portal"
+  "vendorEntry": {
+    "title": "Vendor Entry"
   }
 }

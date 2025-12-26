@@ -28,7 +28,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import type { MoqTierDto } from "../_dto/vendor-portal.dto";
+import type { MoqTierDto } from "../_dto/vendor-entry.dto";
 import { formatNumberWithLocale } from "@/utils/format/number";
 import { toastSuccess } from "@/components/ui-custom/Toast";
 

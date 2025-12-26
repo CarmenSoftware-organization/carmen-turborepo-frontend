@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { VendorItemDto, CreateVendorItemDto } from "../_dto/vendor-portal.dto";
-import { mockVendorPortal } from "../_mock/vp.data";
+import type { VendorItemDto, CreateVendorItemDto } from "../_dto/vendor-entry.dto";
+import { mockVendorEntry } from "../_mock/vp.data";
 
 // remove when use real api
 const delay = (ms: number = 500) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -8,9 +8,9 @@ const delay = (ms: number = 500) => new Promise((resolve) => setTimeout(resolve,
 // ============================================================================
 // GET Vendor Portal
 // ============================================================================
-export const useVendorPortal = (token: string, buCode: string) => {
+export const useVendorEntry = (token: string, buCode: string) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["vendor-portal", buCode],
+    queryKey: ["vendor-entry", buCode],
     queryFn: async () => {
       await delay(300); // remove when use real api
 
@@ -18,7 +18,7 @@ export const useVendorPortal = (token: string, buCode: string) => {
         throw new Error("Unauthorized: Missing token or buCode");
       }
 
-      return mockVendorPortal; // remove when use real api
+      return mockVendorEntry; // remove when use real api
     },
     enabled: !!token && !!buCode,
   });
@@ -36,9 +36,9 @@ export const useVendorPortal = (token: string, buCode: string) => {
 // ============================================================================
 // GET Vendor Portal Item by ID
 // ============================================================================
-export const useVendorPortalItemById = (token: string, buCode: string, id: string) => {
+export const useVendorEntryItemById = (token: string, buCode: string, id: string) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["vendor-portal-item", buCode, id],
+    queryKey: ["vendor-entry-item", buCode, id],
     queryFn: async () => {
       await delay(300); // remove when use real api
 
@@ -47,10 +47,10 @@ export const useVendorPortalItemById = (token: string, buCode: string, id: strin
       }
 
       // remove when use real api
-      const item = mockVendorPortal.items.find((item: VendorItemDto) => item.id === id);
+      const item = mockVendorEntry.items.find((item: VendorItemDto) => item.id === id);
 
       if (!item) {
-        throw new Error("Vendor portal item not found");
+        throw new Error("Vendor entry item not found");
       }
 
       return item;
@@ -71,7 +71,7 @@ export const useVendorPortalItemById = (token: string, buCode: string, id: strin
 // ============================================================================
 // CREATE Vendor Portal Item
 // ============================================================================
-export const useCreateVendorPortalItem = (token: string, buCode: string) => {
+export const useCreateVendorEntryItem = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -83,7 +83,7 @@ export const useCreateVendorPortalItem = (token: string, buCode: string) => {
       }
 
       // remove when use real api
-      const newId = `vp-${String(mockVendorPortal.items.length + 1).padStart(3, "0")}`;
+      const newId = `vp-${String(mockVendorEntry.items.length + 1).padStart(3, "0")}`;
 
       // remove when use real api
       const newItem: VendorItemDto = {
@@ -113,7 +113,7 @@ export const useCreateVendorPortalItem = (token: string, buCode: string) => {
 // ============================================================================
 // UPDATE Vendor Portal Item
 // ============================================================================
-export const useUpdateVendorPortalItem = (token: string, buCode: string, id: string) => {
+export const useUpdateVendorEntryItem = (token: string, buCode: string, id: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -125,10 +125,10 @@ export const useUpdateVendorPortalItem = (token: string, buCode: string, id: str
       }
 
       // remove when use real api
-      const existingItem = mockVendorPortal.items.find((item: VendorItemDto) => item.id === id);
+      const existingItem = mockVendorEntry.items.find((item: VendorItemDto) => item.id === id);
 
       if (!existingItem) {
-        throw new Error("Vendor portal item not found");
+        throw new Error("Vendor entry item not found");
       }
 
       // remove when use real api
@@ -154,8 +154,8 @@ export const useUpdateVendorPortalItem = (token: string, buCode: string, id: str
       return updatedItem;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vendor-portal", buCode] });
-      queryClient.invalidateQueries({ queryKey: ["vendor-portal-item", buCode, id] });
+      queryClient.invalidateQueries({ queryKey: ["vendor-entry", buCode] });
+      queryClient.invalidateQueries({ queryKey: ["vendor-entry-item", buCode, id] });
     },
   });
 };
@@ -163,7 +163,7 @@ export const useUpdateVendorPortalItem = (token: string, buCode: string, id: str
 // ============================================================================
 // DELETE Vendor Portal Item
 // ============================================================================
-export const useDeleteVendorPortalItem = (token: string, buCode: string) => {
+export const useDeleteVendorEntryItem = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -175,16 +175,16 @@ export const useDeleteVendorPortalItem = (token: string, buCode: string) => {
       }
 
       // remove when use real api
-      const item = mockVendorPortal.items.find((item: VendorItemDto) => item.id === id);
+      const item = mockVendorEntry.items.find((item: VendorItemDto) => item.id === id);
 
       if (!item) {
-        throw new Error("Vendor portal item not found");
+        throw new Error("Vendor entry item not found");
       }
 
       return { id };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vendor-portal", buCode] });
+      queryClient.invalidateQueries({ queryKey: ["vendor-entry", buCode] });
     },
   });
 };
@@ -192,7 +192,7 @@ export const useDeleteVendorPortalItem = (token: string, buCode: string) => {
 // ============================================================================
 // SUBMIT Vendor Portal
 // ============================================================================
-export const useSubmitVendorPortal = (token: string, buCode: string) => {
+export const useSubmitVendorEntry = (token: string, buCode: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -204,12 +204,12 @@ export const useSubmitVendorPortal = (token: string, buCode: string) => {
       }
 
       // remove when use real api
-      mockVendorPortal.status = "submitted";
+      mockVendorEntry.status = "submitted";
 
-      return mockVendorPortal;
+      return mockVendorEntry;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["vendor-portal", buCode] });
+      queryClient.invalidateQueries({ queryKey: ["vendor-entry", buCode] });
     },
   });
 };

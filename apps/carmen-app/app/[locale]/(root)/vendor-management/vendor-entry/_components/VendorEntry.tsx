@@ -21,21 +21,21 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Save, Send, SquareMinus, SquarePlus } from "lucide-react";
-import { useVendorPortal, useSubmitVendorPortal } from "../_hooks/use-vendor-portal";
-import type { VendorItemDto, MoqTierDto } from "../_dto/vendor-portal.dto";
+import type { VendorItemDto, MoqTierDto } from "../_dto/vendor-entry.dto";
 import { formatNumberWithLocale } from "@/utils/format/number";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import MoqTiersSubTable from "./MoqTiersSubTable";
-import { mockVendorPortal } from "../_mock/vp.data";
+import { mockVendorEntry } from "../_mock/vp.data";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSubmitVendorEntry, useVendorEntry } from "../_hooks/use-vendor-entry";
 
-export default function VendorPortal() {
+export default function VendorEntry() {
   const { token, buCode } = useAuth();
-  const { data: vendorPortal, isLoading } = useVendorPortal(token, buCode);
-  const submitMutation = useSubmitVendorPortal(token, buCode);
+  const { data: vendorEntry, isLoading } = useVendorEntry(token, buCode);
+  const submitMutation = useSubmitVendorEntry(token, buCode);
   const queryClient = useQueryClient();
 
-  const vendorItems = vendorPortal?.items || [];
+  const vendorItems = vendorEntry?.items || [];
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -78,9 +78,9 @@ export default function VendorPortal() {
       // Update mock data directly
       // remove when use real api
       for (const [vendorItemId, updatedTiers] of itemsToUpdate) {
-        const itemIndex = mockVendorPortal.items.findIndex((item) => item.id === vendorItemId);
+        const itemIndex = mockVendorEntry.items.findIndex((item) => item.id === vendorItemId);
         if (itemIndex !== -1) {
-          mockVendorPortal.items[itemIndex].moqTiers = updatedTiers;
+          mockVendorEntry.items[itemIndex].moqTiers = updatedTiers;
         }
       }
 
@@ -115,7 +115,7 @@ export default function VendorPortal() {
   };
 
   const hasPendingChanges = Object.keys(pendingUpdates).length > 0;
-  const isSubmitted = vendorPortal?.status === "submitted";
+  const isSubmitted = vendorEntry?.status === "submitted";
 
   const columns = useMemo<ColumnDef<VendorItemDto>[]>(
     () => [
@@ -274,15 +274,15 @@ export default function VendorPortal() {
     <div className="w-full space-y-4">
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
         <div className="flex items-start justify-between">
-          <h1 className="text-2xl font-bold text-foreground">{vendorPortal?.vendorName}</h1>
-          <Badge className="text-sm px-3 py-1">{vendorPortal?.status}</Badge>
+          <h1 className="text-2xl font-bold text-foreground">{vendorEntry?.vendorName}</h1>
+          <Badge className="text-sm px-3 py-1">{vendorEntry?.status}</Badge>
         </div>
 
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Currency:</span>
             <Badge variant="outline" className="font-mono">
-              {vendorPortal?.currency.code}
+              {vendorEntry?.currency.code}
             </Badge>
           </div>
           <div className="flex items-center gap-2">

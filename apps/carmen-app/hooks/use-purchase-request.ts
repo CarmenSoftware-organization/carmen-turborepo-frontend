@@ -2,50 +2,34 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { ParamsGetDto } from "@/dtos/param.dto";
 import { ActionPr, CreatePrDto, PurchaseRequestUpdateFormDto } from "@/dtos/purchase-request.dto";
 import { backendApi } from "@/lib/backend-api";
-import { postApiRequest, updateApiRequest, getByIdApiRequest } from "@/lib/config.api";
+import {
+  getAllApiRequest,
+  postApiRequest,
+  updateApiRequest,
+  getByIdApiRequest,
+} from "@/lib/config.api";
 import axios from "axios";
 
 export const usePurchaseRequest = (token: string, buCode: string, params?: ParamsGetDto) => {
-  if (!token || !buCode) {
-    throw new Error("Unauthorized: Missing token or buCode");
-  }
-
-  const API_URL = `${backendApi}/api/purchase-request?bu_code=${buCode}`;
-
-  const query = new URLSearchParams();
-
-  Object.entries(params ?? {}).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      query.append(key, String(value));
-    }
-  });
-
-  const queryString = query.toString();
-  const URL = queryString ? `${API_URL}&${queryString}` : API_URL;
+  const API_URL = `${backendApi}/api/purchase-request`;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["purchase-request", buCode, params],
     queryFn: async () => {
-      try {
-        const res = await axios.get(URL, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        // API returns array of BU data, find the one matching current buCode
-        const buData = res.data.find((item: { bu_code: string }) => item.bu_code === buCode);
-        return buData || { data: [], paginate: { total: 0, page: 1, perpage: 10, pages: 0 } };
-      } catch (error) {
-        console.log("error", error);
-        throw error;
+      if (!token || !buCode) {
+        throw new Error("Unauthorized: Missing token or buCode");
       }
+
+      const queryParams = { ...params, bu_code: buCode };
+
+      return await getAllApiRequest(API_URL, token, "Error fetching PRs", queryParams);
     },
     enabled: !!token && !!buCode,
-    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
-  return { data, isLoading, error };
+  const prs = data;
+
+  return { prs, isLoading, error };
 };
 
 export const usePurchaseRequestById = (token: string, buCode: string, id: string) => {
@@ -62,7 +46,7 @@ export const usePurchaseRequestById = (token: string, buCode: string, id: string
   return { purchaseRequest, isLoading, error };
 };
 
-export const usePrMutation = (token: string, buCode: string) => {
+export const useCreatePr = (token: string, buCode: string) => {
   const API_URL = `${backendApi}/api/${buCode}/purchase-request`;
   return useMutation({
     mutationFn: async (payload: CreatePrDto) => {
@@ -71,11 +55,22 @@ export const usePrMutation = (token: string, buCode: string) => {
   });
 };
 
-export const useUpdateUPr = (token: string, buCode: string, id: string, action: ActionPr) => {
-  const API_URL_ID = `${backendApi}/api/${buCode}/purchase-request/${id}/${action}`;
+export const useUpdatePr = (token: string, buCode: string) => {
   return useMutation({
-    mutationFn: async (data: PurchaseRequestUpdateFormDto) => {
-      return await updateApiRequest(API_URL_ID, token, data, "Error updating PR", "PATCH");
+    mutationFn: async ({
+      id,
+      data,
+      action,
+    }: {
+      id: string;
+      data: PurchaseRequestUpdateFormDto;
+      action?: ActionPr;
+    }) => {
+      let API_URL_ID = `${backendApi}/api/${buCode}/purchase-request/${id}`;
+      if (action) {
+        API_URL_ID += `/${action}`;
+      }
+      return await updateApiRequest(API_URL_ID, token, data, "Error updating PR", "PUT");
     },
   });
 };
@@ -91,6 +86,18 @@ export const useDeletePr = (token: string, buCode: string) => {
         },
       });
       return res.data;
+    },
+  });
+};
+
+export const useUpdateUPr = (token: string, buCode: string, id: string, action?: ActionPr) => {
+  return useMutation({
+    mutationFn: async (data: PurchaseRequestUpdateFormDto) => {
+      let API_URL_ID = `${backendApi}/api/${buCode}/purchase-request/${id}`;
+      if (action) {
+        API_URL_ID += `/${action}`;
+      }
+      return await updateApiRequest(API_URL_ID, token, data, "Error updating PR", "PUT");
     },
   });
 };

@@ -164,8 +164,8 @@ export const moduleItems: ModuleItem[] = [
         icon: FileSpreadsheet,
       },
       {
-        labelKey: "Modules.VendorManagement.vendorPortal",
-        href: "/vendor-management/vendor-portal",
+        labelKey: "Modules.VendorManagement.vendorEntry",
+        href: "/vendor-management/vendor-entry",
         icon: Factory,
       },
       // {

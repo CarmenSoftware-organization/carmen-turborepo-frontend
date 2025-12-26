@@ -61,7 +61,6 @@ import { Link } from "@/lib/navigation";
 import { Badge } from "@/components/ui/badge";
 import { useSearchParams } from "next/navigation";
 import { returnUrl } from "@/utils/url";
-import { useWorkflowTypeTranslation } from "@/utils/workflow-helpers";
 
 interface PurchaseRequestListProps {
   readonly purchaseRequests: PurchaseRequestListDto[];
@@ -75,6 +74,7 @@ interface PurchaseRequestListProps {
   readonly onSort?: (sortString: string) => void;
   readonly setPerpage: (perpage: number) => void;
   readonly convertStatus: (status: string) => string;
+  readonly buCode: string;
 }
 
 export default function PurchaseRequestList({
@@ -89,11 +89,11 @@ export default function PurchaseRequestList({
   onSort,
   setPerpage,
   convertStatus,
+  buCode,
 }: PurchaseRequestListProps) {
   const tTableHeader = useTranslations("TableHeader");
   const tPr = useTranslations("PurchaseRequest");
   const searchParams = useSearchParams();
-  const { workflowTypeName } = useWorkflowTypeTranslation();
 
   const { dateFormat, amount, currencyBase } = useAuth();
 
@@ -104,7 +104,7 @@ export default function PurchaseRequestList({
   const [prToDelete, setPrToDelete] = useState<PurchaseRequestListDto | null>(null);
 
   const queryClient = useQueryClient();
-  const { token, buCode } = useAuth();
+  const { token } = useAuth();
 
   const { mutate: deletePr, isPending: isDeleting } = useDeletePr(token, buCode);
 
@@ -225,7 +225,7 @@ export default function PurchaseRequestList({
             icon={<TypeIcon className="h-4 w-4" />}
           />
         ),
-        cell: ({ row }) => <p>{workflowTypeName(row.original.workflow_name)}</p>,
+        cell: ({ row }) => <p>{row.original.workflow_name}</p>,
         enableSorting: true,
         size: 120,
         meta: {
@@ -409,7 +409,17 @@ export default function PurchaseRequestList({
         },
       },
     ],
-    [tTableHeader, tPr, currentPage, perpage, dateFormat, amount, currencyBase, convertStatus]
+    [
+      tTableHeader,
+      tPr,
+      currentPage,
+      perpage,
+      dateFormat,
+      amount,
+      currencyBase,
+      convertStatus,
+      buCode,
+    ]
   );
 
   // Initialize table
