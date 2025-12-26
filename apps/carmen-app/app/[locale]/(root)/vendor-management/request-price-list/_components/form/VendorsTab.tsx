@@ -45,7 +45,7 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
         id: v.vendor_id,
         name: v.vendor_name || "",
         contact_email: v.contact_email || "",
-        url_token: v.url_token,
+        url_token: v.url_token ?? "",
       }));
 
     const added: VendorDisplay[] = addedVendors.map((v) => ({
