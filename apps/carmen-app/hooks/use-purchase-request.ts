@@ -97,7 +97,7 @@ export const useUpdateUPr = (token: string, buCode: string, id: string, action?:
       if (action) {
         API_URL_ID += `/${action}`;
       }
-      return await updateApiRequest(API_URL_ID, token, data, "Error updating PR", "PUT");
+      return await updateApiRequest(API_URL_ID, token, data, "Error updating PR", "PATCH");
     },
   });
 };

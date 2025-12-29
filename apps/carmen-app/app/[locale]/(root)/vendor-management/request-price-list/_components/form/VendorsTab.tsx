@@ -16,6 +16,7 @@ import { RfpDetailDto } from "@/dtos/rfp.dto";
 import { RfpFormValues } from "../../_schema/rfp.schema";
 import { nanoid } from "nanoid";
 import { backendApi } from "@/lib/backend-api";
+import { toastError, toastSuccess } from "@/components/ui-custom/Toast";
 
 interface VendorDisplay {
   id: string;
@@ -84,11 +85,12 @@ export default function VendorsTab({ form, isViewMode, rfpData, vendors }: Props
 
   const checkPriceList = async (url_token: string) => {
     try {
-      console.log("Checking price list for token:", url_token);
       const res = await axios.post(`${backendApi}/api/check-price-list/${url_token}`);
-      console.log("Check price list result:", res.data);
-    } catch (error) {
-      console.error("Failed to check price list:", error);
+      if (res.data.success) {
+        toastSuccess({ message: "Price list checked successfully" });
+      }
+    } catch (error: any) {
+      toastError({ message: error.response?.data?.message || "Failed to check price list" });
     }
   };
 

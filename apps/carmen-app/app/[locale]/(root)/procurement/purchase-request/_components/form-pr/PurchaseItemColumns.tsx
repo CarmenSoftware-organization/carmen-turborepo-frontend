@@ -19,6 +19,8 @@ import { UnitSelectCell } from "../UnitSelectCell";
 import ExpandedContent from "./ExpandedContent";
 import { PR_STATUS } from "../../_constants/pr-status";
 import LookupCurrency from "@/components/lookup/LookupCurrency";
+import { Input } from "@/components/ui/input";
+import { useCurrenciesQuery } from "@/hooks/use-currency";
 
 interface ColumnConfig {
   currentMode: formType;
@@ -90,6 +92,8 @@ export const createPurchaseItemColumns = (
     tHeader,
     tAction,
   } = config;
+
+  const { getCurrencyCode } = useCurrenciesQuery(token, buCode);
 
   const initValues = [...unsortedInitValues].sort((a, b) => a.sequence_no - b.sequence_no);
 
@@ -437,7 +441,7 @@ export const createPurchaseItemColumns = (
         const item = row.original;
 
         return currentMode === formType.VIEW ? (
-          <p className="text-xs">{item.currency_id}</p>
+          <Input value={getCurrencyCode(item.currency_id ?? "")} disabled className="bg-muted" />
         ) : (
           <LookupCurrency
             value={(getItemValue(item, "currency_id") as string) || ""}
