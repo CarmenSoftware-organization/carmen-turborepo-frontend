@@ -12,9 +12,9 @@ export interface VendorDto {
 
 export interface CurrencyDto {
   id: string;
-  code: string;
   name: string;
-  exchangeRateDate: string;
+  code?: string;
+  exchangeRateDate?: string;
 }
 
 export interface RfpDto {
@@ -46,30 +46,48 @@ export interface TaxProfileDto {
   rate: number;
 }
 
+export interface PriceListDetailItemDto {
+  id: string;
+  sequence_no: number;
+  moq_qty: number;
+  unit_id: string;
+  unit_name: string | null;
+  lead_time_days: number;
+  price_without_tax: number;
+  tax_amt: number;
+  price: number;
+  tax_profile_id: string;
+  is_active: boolean;
+  note: string | null;
+  info: Record<string, any>;
+  product_id: string;
+  product_name: string;
+  tax_profile: TaxProfileDto;
+}
+
 export interface BasePriceList {
-  no: string;
-  vendor: VendorDto;
-  rfp?: RfpDto;
-  description?: string;
+  id: string;
+  no?: string;
+  name: string;
   status: PlStatusType;
-  itemsCount: number;
+  description?: string;
+  vender: VendorDto;
   currency: CurrencyDto;
-  isActive: boolean;
-  effectivePeriod: DateRange;
-  lastUpdate: string;
-  taxProfile: TaxProfileDto;
+  effectivePeriod: string;
+  note?: string;
 }
 
 export interface PriceListDtoList extends BasePriceList {
-  id: string;
+  // id is now in BasePriceList
 }
 
-export interface PriceListDetailDto extends PriceListDtoList {
-  products: ProductPlDto[];
+export interface PriceListDetailDto extends BasePriceList {
+  pricelist_detail: PriceListDetailItemDto[];
 }
 
 export interface PriceListCreateDto {
-  no: string;
+  no?: string;
+  name: string;
   vendorId: string;
   rfpId?: string;
   description?: string;

@@ -123,15 +123,13 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         size: 180,
       },
       {
-        accessorKey: "vendor.name",
+        accessorKey: "vender.name",
         header: ({ column }) => (
           <DataGridColumnHeader column={column} title={tTableHeader("vendor")} />
         ),
         cell: ({ row }) => {
-          // @ts-ignore
           const priceList = row.original;
-          // @ts-ignore
-          return <span>{priceList.vender?.name || priceList.vendor?.name}</span>;
+          return <span>{priceList.vender?.name}</span>;
         },
         enableSorting: false,
         size: 200,
@@ -145,8 +143,9 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
           </div>
         ),
         cell: ({ row }) => {
-          // @ts-ignore
           const period = row.original.effectivePeriod;
+          if (!period) return <span>-</span>;
+
           if (typeof period === "string") {
             const [start, end] = period.split(" - ");
             if (start && end) {
@@ -159,12 +158,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
             }
             return <span>{period}</span>;
           }
-          return (
-            <div>
-              {formatDate(period?.from, dateFormat || "yyyy-MM-dd")} -{" "}
-              {formatDate(period?.to, dateFormat || "yyyy-MM-dd")}
-            </div>
-          );
+          return <span>{period}</span>;
         },
         enableSorting: false,
         size: 200,
@@ -185,12 +179,14 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
         },
       },
       {
-        accessorKey: "itemsCount",
+        accessorKey: "itemsCount", // Accessor key might be virtual or mapped, keeping it for now but cell uses pricelist_detail
         header: () => <span className="text-right">{tTableHeader("items")}</span>,
-        // @ts-ignore
-        cell: ({ row }) => (
-          <span className="text-right block">{row.original.pricelist_detail?.length || 0}</span>
-        ),
+        cell: ({ row }) => {
+          // @ts-ignore - pricelist_detail might not be directly on the type inferred by row.original types if not fully updated in usage, but is in DTO
+          return (
+            <span className="text-right block">{row.original.pricelist_detail?.length || 0}</span>
+          );
+        },
         enableSorting: false,
         size: 90,
         meta: {
@@ -280,7 +276,7 @@ export default function ListPriceList({ priceLists = [], isLoading = false }: Li
             <AlertDialogTitle>Delete Price List</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this price list for &quot;
-              {selectedPriceList?.vendor?.name}&quot;? This action cannot be undone.
+              {selectedPriceList?.vender?.name}&quot;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -35,12 +35,11 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
   const isEditMode = mode === formType.EDIT || mode === formType.ADD;
   const isAddMode = mode === formType.ADD;
 
-  console.log("priceList", priceList);
-
   const form = useForm<PriceListFormData>({
     resolver: zodResolver(priceListSchema),
     defaultValues: {
       no: "",
+      name: "",
       vendorId: "",
       rfpId: "",
       description: "",
@@ -48,7 +47,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
       status: "draft",
       currencyId: "",
       effectivePeriod: { from: "", to: "" },
-      products: [],
+      pricelist_detail: [],
     },
   });
 
@@ -70,29 +69,24 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
       };
 
       form.reset({
-        no: priceList.no,
-        // @ts-ignore
-        vendorId: priceList.vender?.id || priceList.vendor?.id,
+        no: priceList.no || "",
+        name: priceList.name || "",
+        vendorId: priceList.vender?.id,
         rfpId: priceList.rfp?.id || "",
         description: priceList.description || "",
         note: priceList.note || "",
         status: priceList.status,
         currencyId: priceList.currency?.id,
         effectivePeriod: getEffectivePeriod(priceList.effectivePeriod),
-        // @ts-ignore
-        products: (priceList.pricelist_detail || priceList.products || []).map((p: any) => ({
-          id: p.product_id || p.id,
-          code: p.code || p.tb_product?.code,
-          name: p.name || p.tb_product?.name,
-          moqs: (p.moqs || []).map((m: any) => ({
-            minQuantity: m.minQuantity,
-            unit: m.unit,
-            unitId: m.unitId || m.unit_id,
-            price: m.price,
-            leadTimeDays: m.leadTimeDays,
-            taxProfileId: m.taxProfileId || m.tax_profile_id,
-            taxRate: m.taxRate || m.tax_rate,
-          })),
+        pricelist_detail: (priceList.pricelist_detail || []).map((p: any) => ({
+          sequence_no: p.sequence_no,
+          product_id: p.product_id,
+          unit_id: p.unit_id,
+          tax_profile_id: p.tax_profile_id,
+          tax_rate: p.tax_rate,
+          moq_qty: p.moq_qty,
+          price: p.price,
+          lead_time_days: p.lead_time_days,
         })),
       });
     }
@@ -118,28 +112,23 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
       };
 
       form.reset({
-        no: priceList.no,
-        // @ts-ignore
-        vendorId: priceList.vender?.id || priceList.vendor?.id,
+        no: priceList.no || "",
+        name: priceList.name || "",
+        vendorId: priceList.vender?.id,
         rfpId: priceList.rfp?.id || "",
         description: priceList.description || "",
         status: priceList.status,
         currencyId: priceList.currency?.id,
         effectivePeriod: getEffectivePeriod(priceList.effectivePeriod),
-        // @ts-ignore
-        products: (priceList.pricelist_detail || priceList.products || []).map((p: any) => ({
-          id: p.product_id || p.id,
-          code: p.code || p.tb_product?.code,
-          name: p.name || p.tb_product?.name,
-          moqs: (p.moqs || []).map((m: any) => ({
-            minQuantity: m.minQuantity,
-            unit: m.unit,
-            unitId: m.unitId || m.unit_id,
-            price: m.price,
-            leadTimeDays: m.leadTimeDays,
-            taxProfileId: m.taxProfileId || m.tax_profile_id,
-            taxRate: m.taxRate || m.tax_rate,
-          })),
+        pricelist_detail: (priceList.pricelist_detail || []).map((p: any) => ({
+          sequence_no: p.sequence_no,
+          product_id: p.product_id,
+          unit_id: p.unit_id,
+          tax_profile_id: p.tax_profile_id,
+          tax_rate: p.tax_rate,
+          moq_qty: p.moq_qty,
+          price: p.price,
+          lead_time_days: p.lead_time_days,
         })),
       });
     }
@@ -149,24 +138,33 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
   const onSubmit = (data: PriceListFormData) => {
     const payload = {
       vendor_id: data.vendorId,
-      name: data.no, // Mapping 'no' to 'name' as requested
+      name: data.name,
       description: data.description,
       status: data.status,
       currency_id: data.currencyId,
-      effective_from_date: `${data.effectivePeriod.from}T00:00:00+07:00`,
-      effective_to_date: `${data.effectivePeriod.to}T23:59:59+07:00`,
+      from_date: data.effectivePeriod.from,
+      to_date: data.effectivePeriod.to,
       note: data.note,
-      pricelist_detail: (data.products || []).flatMap((product) =>
-        product.moqs.map((moq, index) => ({
-          sequence_no: index + 1,
-          product_id: product.id,
-          unit_id: moq.unitId || "566c45dd-d5fa-4820-99d6-29b24ef06289", // Fallback or from form
-          tax_profile_id: moq.taxProfileId || "92cd1c73-0396-4045-9835-c6c9d27f67a9", // Fallback or from form
-          tax_rate: moq.taxRate || 7,
-          moq_qty: moq.minQuantity,
-          price: moq.price,
-        }))
-      ),
+      pricelist_detail: {
+        create: (data.pricelist_detail || []).map((item) => {
+          const taxRate = item.tax_rate || 0;
+          const price = Number(item.price) || 0;
+          const taxAmt = (price * taxRate) / 100;
+
+          return {
+            sequence_no: item.sequence_no,
+            product_id: item.product_id,
+            unit_id: item.unit_id,
+            tax_profile_id: item.tax_profile_id,
+            tax_rate: taxRate,
+            moq_qty: Number(item.moq_qty) || 0,
+            price: price, // Assuming form input is the base price
+            price_without_tax: price,
+            tax_amt: taxAmt,
+            lead_time_days: Number(item.lead_time_days) || 0,
+          };
+        }),
+      },
     };
 
     console.log("Submit Payload:", JSON.stringify(payload, null, 2));

@@ -42,14 +42,32 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
 
       <div className="grid gap-4 md:grid-cols-3">
         {/* Price List No */}
+
+        {isViewMode && (
+          <FormField
+            control={form.control}
+            name="no"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{tPriceList("no")}</FormLabel>
+                <FormControl>
+                  <Input {...field} disabled placeholder={tPriceList("enter_no")} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {/* Name */}
         <FormField
           control={form.control}
-          name="no"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{tPriceList("no")}</FormLabel>
+              <FormLabel>{tPriceList("pl_name")}</FormLabel>
               <FormControl>
-                <Input {...field} disabled placeholder={tPriceList("enter_no")} />
+                <Input {...field} placeholder={tPriceList("enter_pl_name")} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -89,7 +107,15 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             <FormItem>
               <FormLabel>{tPriceList("vendor")}</FormLabel>
               <FormControl>
-                <VendorLookup onValueChange={field.onChange} value={field.value} />
+                {isViewMode ? (
+                  <Input
+                    disabled
+                    placeholder={tPriceList("select_vendor")}
+                    value={priceList?.vender?.name || "-"}
+                  />
+                ) : (
+                  <VendorLookup onValueChange={field.onChange} value={field.value} />
+                )}
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -127,7 +153,7 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
             <FormItem>
               <FormLabel>{tPriceList("rfp")}</FormLabel>
               <FormControl>
-                <Input {...field} disabled placeholder={tPriceList("select_rfp")} />
+                <Input {...field} placeholder={tPriceList("select_rfp")} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -240,14 +266,6 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
           </FormItem>
         )}
       />
-
-      <div>
-        <p className="text-xs text-muted-foreground mb-1">{tPriceList("active_status")}</p>
-        <p className="text-sm font-medium">
-          {/* @ts-ignore */}
-          {priceList.isActive || priceList.is_active ? tCommon("yes") : tCommon("no")}
-        </p>
-      </div>
     </div>
   );
 }

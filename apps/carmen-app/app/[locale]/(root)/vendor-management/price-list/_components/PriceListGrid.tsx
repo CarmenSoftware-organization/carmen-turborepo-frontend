@@ -112,7 +112,7 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                     {priceList.no}
                   </CardTitle>
                   <CardDescription className="text-sm mt-1 truncate">
-                    {priceList.vender?.name || priceList.vendor?.name}
+                    {priceList.vender?.name}
                   </CardDescription>
                 </div>
                 <div className="flex items-center gap-2">
@@ -153,6 +153,8 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                   <span className="truncate">
                     {(() => {
                       const period = priceList.effectivePeriod;
+                      if (!period) return "-";
+                      // Assuming period is string from now on
                       if (typeof period === "string") {
                         const [start, end] = period.split(" - ");
                         if (start && end) {
@@ -160,7 +162,7 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                         }
                         return period;
                       }
-                      return `${formatDate(period?.from, dateFormat || "yyyy-MM-dd")} - ${formatDate(period?.to, dateFormat || "yyyy-MM-dd")}`;
+                      return "-";
                     })()}
                   </span>
                 </div>
@@ -169,13 +171,10 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <List className="h-4 w-4 shrink-0" />
                     <span className="text-xs">
-                      {priceList.pricelist_detail?.length || priceList.itemsCount || 0}{" "}
-                      {tPriceList("items")}
+                      {priceList.pricelist_detail?.length || 0} {tPriceList("items")}
                     </span>
                   </div>
-                  <div className="text-xs text-muted-foreground">
-                    {priceList.currency?.code || priceList.currency?.name}
-                  </div>
+                  <div className="text-xs text-muted-foreground">{priceList.currency?.name}</div>
                 </div>
 
                 {priceList.rfp && (
@@ -192,7 +191,7 @@ export default function PriceListGrid({ priceLists, isLoading }: PriceListGridPr
           <AlertDialogHeader>
             <AlertDialogTitle>{tPriceList("delete_price_list")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {tPriceList("delete_price_list_confirmation")} &quot;{selectedPriceList?.vendor?.name}
+              {tPriceList("delete_price_list_confirmation")} &quot;{selectedPriceList?.vender?.name}
               &quot;? {tCommon("action_cannot_be_undone")}
             </AlertDialogDescription>
           </AlertDialogHeader>

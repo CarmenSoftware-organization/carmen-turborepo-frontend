@@ -78,7 +78,9 @@
     "no_price_lists_description": "No price lists found. Start by creating your first price list.",
     "delete_price_list": "Delete Price List",
     "delete_price_list_confirmation": "Are you sure you want to delete this price list for",
-    "enter_note": "Enter note"
+    "enter_note": "Enter note",
+    "pl_name": "Name",
+    "enter_pl_name": "Enter name"
   },
   "PriceListTemplate": {
     "title": "Price List Template",
