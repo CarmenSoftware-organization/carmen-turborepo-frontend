@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { Plus, Trash2, MapPin } from "lucide-react";
 
@@ -11,7 +12,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { VendorFormValues } from "@/dtos/vendor.dto";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -20,7 +20,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
 
 interface AddressVendorProps {
   form: UseFormReturn<VendorFormValues>;
@@ -28,6 +27,8 @@ interface AddressVendorProps {
 }
 
 export default function AddressVendor({ form, disabled }: AddressVendorProps) {
+  const t = useTranslations("Vendor");
+
   const {
     fields: addressFields,
     append: appendAddress,
@@ -40,7 +41,7 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center">
-        <h3 className="text-sm font-semibold">Addresses</h3>
+        <h3 className="text-sm font-semibold">{t("addresses")}</h3>
         {!disabled && (
           <Button
             type="button"
@@ -59,10 +60,10 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                 },
               })
             }
-            className="h-6 text-[10px] px-2"
+            className="h-9 text-xs px-2"
           >
-            <Plus className="h-3 w-3 mr-1" />
-            Add Address
+            <Plus className="h-4 w-4 mr-1" />
+            {t("add_address")}
           </Button>
         )}
       </div>
@@ -71,10 +72,10 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead className="w-[150px]">Type</TableHead>
-              <TableHead className="min-w-[250px]">Address</TableHead>
-              <TableHead className="w-[200px]">Locality</TableHead>
-              <TableHead className="w-[180px]">Region</TableHead>
+              <TableHead className="w-[150px]">{t("address_type")}</TableHead>
+              <TableHead className="min-w-[250px]">{t("address")}</TableHead>
+              <TableHead className="w-[200px]">{t("locality")}</TableHead>
+              <TableHead className="w-[180px]">{t("region")}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -90,14 +91,14 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                       defaultValue={field.address_type}
                       disabled={disabled}
                     >
-                      <SelectTrigger className="h-7 text-xs w-full">
-                        <SelectValue placeholder="Select type" />
+                      <SelectTrigger className="h-9 text-xs w-full">
+                        <SelectValue placeholder={t("select_type")} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="mailing_address">Mailing Address</SelectItem>
-                        <SelectItem value="billing_address">Billing Address</SelectItem>
-                        <SelectItem value="shipping_address">Shipping Address</SelectItem>
-                        <SelectItem value="contact_address">Contact Address</SelectItem>
+                        <SelectItem value="mailing_address">{t("mailing_address")}</SelectItem>
+                        <SelectItem value="billing_address">{t("billing_address")}</SelectItem>
+                        <SelectItem value="shipping_address">{t("shipping_address")}</SelectItem>
+                        <SelectItem value="contact_address">{t("contact_address")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </TableCell>
@@ -105,14 +106,14 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                     <div className="space-y-1.5">
                       <Input
                         {...form.register(`vendor_address.${index}.data.address_line1`)}
-                        className="h-7 text-xs"
-                        placeholder="Address Line 1"
+                        className="h-9 text-xs"
+                        placeholder={t("address_line1")}
                         disabled={disabled}
                       />
                       <Input
                         {...form.register(`vendor_address.${index}.data.address_line2`)}
-                        className="h-7 text-xs"
-                        placeholder="Address Line 2 (Optional)"
+                        className="h-9 text-xs"
+                        placeholder={t("address_line2")}
                         disabled={disabled}
                       />
                     </div>
@@ -121,20 +122,20 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                     <div className="space-y-1.5">
                       <Input
                         {...form.register(`vendor_address.${index}.data.district`)}
-                        className="h-7 text-xs"
-                        placeholder="District"
+                        className="h-9 text-xs"
+                        placeholder={t("district")}
                         disabled={disabled}
                       />
                       <Input
                         {...form.register(`vendor_address.${index}.data.city`)}
-                        className="h-7 text-xs"
-                        placeholder="City"
+                        className="h-9 text-xs"
+                        placeholder={t("city")}
                         disabled={disabled}
                       />
                       <Input
                         {...form.register(`vendor_address.${index}.data.province`)}
-                        className="h-7 text-xs"
-                        placeholder="Province"
+                        className="h-9 text-xs"
+                        placeholder={t("province")}
                         disabled={disabled}
                       />
                     </div>
@@ -143,14 +144,14 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                     <div className="space-y-1.5">
                       <Input
                         {...form.register(`vendor_address.${index}.data.postal_code`)}
-                        className="h-7 text-xs"
-                        placeholder="Postal Code"
+                        className="h-9 text-xs"
+                        placeholder={t("zip_code")}
                         disabled={disabled}
                       />
                       <Input
                         {...form.register(`vendor_address.${index}.data.country`)}
-                        className="h-7 text-xs"
-                        placeholder="Country"
+                        className="h-9 text-xs"
+                        placeholder={t("country")}
                         disabled={disabled}
                       />
                     </div>
@@ -175,7 +176,7 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                 <TableCell colSpan={5} className="h-16 text-center">
                   <div className="flex flex-col items-center justify-center text-muted-foreground/50 text-muted-foreground p-2">
                     <MapPin className="h-6 w-6 mb-1 opacity-20" />
-                    <p className="text-xs">No addresses added</p>
+                    <p className="text-xs">{t("no_addresses")}</p>
                     {!disabled && (
                       <Button
                         variant="link"
@@ -195,7 +196,7 @@ export default function AddressVendor({ form, disabled }: AddressVendorProps) {
                         }
                         className="text-primary h-auto p-0 font-normal text-xs"
                       >
-                        Add address
+                        {t("add_address")}
                       </Button>
                     )}
                   </div>

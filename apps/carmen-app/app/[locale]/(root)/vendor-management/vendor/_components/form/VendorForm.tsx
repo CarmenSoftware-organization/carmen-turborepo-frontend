@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ChevronLeft, Plus, Save, X } from "lucide-react";
@@ -60,6 +61,10 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     initData?.id ?? ""
   );
 
+  const t = useTranslations("Vendor");
+  // const tCommon = useTranslations("Common"); // If we want to reuse common submit/cancel strings. But new keys were added to Vendor namespace as per execution.
+  // Using t("Vendor.save") etc.
+
   const { buTypes } = useBuTypeQuery(token, buCode);
   const { mutate: createBuType } = useBuTypeMutation(token, buCode);
 
@@ -77,10 +82,12 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   const vendorFormSchema = useMemo(
     () =>
       createVendorFormSchema({
-        nameRequired: "Vendor name is required",
-        codeRequired: "Code is required",
+        nameRequired: t("name_required"),
+        codeRequired: t("code_required"),
+        contactNameRequired: t("contact_name_required"),
+        emailInvalid: t("email_invalid"),
       }),
-    []
+    [t]
   );
 
   const form = useForm<VendorFormValues>({
@@ -98,7 +105,7 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
     if (currentMode === formType.ADD) {
       createVendor(data, {
         onSuccess: (response: any) => {
-          toastSuccess({ message: "Vendor added successfully" });
+          toastSuccess({ message: t("add_success") });
           queryClient.invalidateQueries({ queryKey: ["vendor", buCode] });
           const vendorId = response?.data?.id || response?.id;
           if (vendorId) {
@@ -108,20 +115,20 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
         },
         onError: (error: Error) => {
           console.error("Error creating vendor:", error);
-          toastError({ message: "Failed to add vendor" });
+          toastError({ message: t("add_error") });
         },
       });
     } else if (currentMode === formType.EDIT && initData?.id) {
       const submitData = { ...data, id: initData.id };
       updateVendor(submitData, {
         onSuccess: () => {
-          toastSuccess({ message: "Vendor updated successfully" });
+          toastSuccess({ message: t("update_success") });
           queryClient.invalidateQueries({ queryKey: ["vendor", buCode, initData.id] });
           setCurrentMode(formType.VIEW);
         },
         onError: (error: Error) => {
           console.error("Error updating vendor:", error);
-          toastError({ message: "Failed to update vendor" });
+          toastError({ message: t("update_error") });
         },
       });
     }
@@ -145,15 +152,25 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
   const handleCreateBuType = (data: BuTypeFormDto) => {
     createBuType(data, {
       onSuccess: () => {
-        toastSuccess({ message: "Business type created successfully" });
+        toastSuccess({ message: t("create_bu_type_success") });
         setIsBuTypeInternalDialogOpen(false);
         queryClient.invalidateQueries({ queryKey: ["bu-type", buCode] });
       },
       onError: (error: Error) => {
         console.error("Error creating business type:", error);
-        toastError({ message: "Failed to create business type" });
+        toastError({ message: t("create_bu_type_error") });
       },
     });
+  };
+
+  const handleBusinessTypeChange = (values: string[], onChange: (value: any) => void) => {
+    const selectedTypes = values.map((val: string) => {
+      const option = BUSINESS_TYPE_OPTIONS.find(
+        (opt: { label: string; value: string }) => opt.value === val
+      );
+      return { id: val, name: option?.label || "" };
+    });
+    onChange(selectedTypes);
   };
 
   const isViewMode = currentMode === formType.VIEW;
@@ -173,13 +190,15 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                   </Link>
                 </Button>
                 <h1 className="text-lg font-semibold text-foreground">
-                  {currentMode === formType.ADD ? "New Vendor" : initData?.name || "Vendor Details"}
+                  {currentMode === formType.ADD
+                    ? t("new_vendor")
+                    : initData?.name || t("vendor_details")}
                 </h1>
               </div>
               <div className="flex items-center gap-2">
                 {isViewMode ? (
-                  <Button type="button" size="sm" onClick={onEdit} className="h-8 text-xs">
-                    Edit Vendor
+                  <Button type="button" size="sm" onClick={onEdit} className="h-9 text-sm">
+                    {t("edit_vendor")}
                   </Button>
                 ) : (
                   <>
@@ -188,13 +207,13 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                       size="sm"
                       onClick={onCancel}
                       type="button"
-                      className="h-8 text-xs"
+                      className="h-9 text-sm"
                     >
-                      Cancel
+                      {t("cancel")}
                     </Button>
-                    <Button type="submit" size="sm" disabled={isSubmitting} className="h-8 text-xs">
+                    <Button type="submit" size="sm" disabled={isSubmitting} className="h-9 text-sm">
                       <Save className="h-4 w-4 mr-1" />
-                      Save
+                      {isSubmitting ? t("saving") : t("save")}
                     </Button>
                   </>
                 )}
@@ -202,7 +221,9 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
             </div>
           </Card>
           <Card className="p-3 space-y-3">
-            <h2 className="text-sm font-semibold text-foreground mb-2">General Information</h2>
+            <h2 className="text-base font-semibold text-foreground mb-4">
+              {t("general_information")}
+            </h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               <FormField
                 control={form.control}
@@ -210,15 +231,15 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 required
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel className="text-xs font-medium text-muted-foreground">
-                      Code
+                    <FormLabel className="text-sm font-medium text-muted-foreground">
+                      {t("code")}
                     </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         maxLength={4}
                         disabled={isViewMode}
-                        className="h-8 text-sm font-medium"
+                        className="h-10 text-sm font-medium"
                       />
                     </FormControl>
                     <FormMessage className="text-xs" />
@@ -232,11 +253,15 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
                 required
                 render={({ field }) => (
                   <FormItem className="space-y-1">
-                    <FormLabel className="text-xs font-medium text-muted-foreground">
-                      Name
+                    <FormLabel className="text-sm font-medium text-muted-foreground">
+                      {t("name")}
                     </FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={isViewMode} className="h-8 text-sm font-medium" />
+                      <Input
+                        {...field}
+                        disabled={isViewMode}
+                        className="h-10 text-sm font-medium"
+                      />
                     </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -248,43 +273,37 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
               name="business_type"
               render={({ field }) => (
                 <FormItem className="space-y-1">
-                  <FormLabel className="text-xs font-medium text-muted-foreground">
-                    Business Type
+                  <FormLabel className="text-sm font-medium text-muted-foreground">
+                    {t("business_type")}
                   </FormLabel>
                   <FormControl>
-                    <div className="h-8">
+                    <div className="h-10">
                       <MultiSelectCustom
                         options={BUSINESS_TYPE_OPTIONS}
-                        onValueChange={(values: string[]) => {
-                          const selectedTypes = values.map((val: string) => {
-                            const option = BUSINESS_TYPE_OPTIONS.find(
-                              (opt: { label: string; value: string }) => opt.value === val
-                            );
-                            return { id: val, name: option?.label || "" };
-                          });
-                          field.onChange(selectedTypes);
-                        }}
+                        onValueChange={(values: string[]) =>
+                          handleBusinessTypeChange(values, field.onChange)
+                        }
                         defaultValue={field.value.map((v) => v.id)}
                         placeholder="Select types"
                         variant="inverted"
                         animation={2}
                         maxCount={2}
                         disabled={isViewMode}
-                        className="text-xs"
+                        className="text-sm"
                       >
                         <div className="border-t border-border w-full">
                           <Button
                             type="button"
                             variant="ghost"
-                            className="w-full text-xs justify-start h-8 text-primary hover:text-primary/80 hover:bg-transparent"
+                            className="w-full text-sm justify-start h-9 text-primary hover:text-primary/80 hover:bg-transparent"
                             onMouseDown={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                               setIsBuTypeInternalDialogOpen(true);
                             }}
                           >
-                            <Plus className="h-3 w-3" />
-                            New Business Type
+                            <Plus className="h-4 w-4 mr-1" />
+                            {t("new_business_type")}
                           </Button>
                         </div>
                       </MultiSelectCustom>
@@ -299,14 +318,14 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
               name="description"
               render={({ field }) => (
                 <FormItem className="space-y-1">
-                  <FormLabel className="text-xs font-medium text-muted-foreground">
-                    Description
+                  <FormLabel className="text-sm font-medium text-muted-foreground">
+                    {t("description")}
                   </FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       value={field.value ?? ""}
-                      className="min-h-[60px] h-[60px] resize-none text-sm"
+                      className="min-h-[80px] h-[80px] resize-none text-sm"
                       disabled={isViewMode}
                     />
                   </FormControl>
@@ -318,9 +337,9 @@ export default function VendorForm({ mode, initData }: VendorFormProps) {
           <Card className="p-2">
             <Tabs defaultValue="info">
               <TabsList>
-                <TabsTrigger value="info">Additional Info</TabsTrigger>
-                <TabsTrigger value="address">Addresses</TabsTrigger>
-                <TabsTrigger value="contact">Contacts</TabsTrigger>
+                <TabsTrigger value="info">{t("additional_info")}</TabsTrigger>
+                <TabsTrigger value="address">{t("addresses")}</TabsTrigger>
+                <TabsTrigger value="contact">{t("contact")}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="info">

@@ -19,14 +19,20 @@ const addressSchema = z.object({
   }),
 });
 
-export const contactSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
-  phone: z.string().optional().or(z.literal("")),
-  is_primary: z.boolean().optional(),
-});
+export const createContactSchema = (messages: { nameRequired: string; emailInvalid: string }) =>
+  z.object({
+    name: z.string().min(1, messages.nameRequired),
+    email: z.string().email(messages.emailInvalid).optional().or(z.literal("")),
+    phone: z.string().optional().or(z.literal("")),
+    is_primary: z.boolean().optional(),
+  });
 
-export const createVendorFormSchema = (messages: { nameRequired: string; codeRequired: string }) =>
+export const createVendorFormSchema = (messages: {
+  nameRequired: string;
+  codeRequired: string;
+  contactNameRequired: string;
+  emailInvalid: string;
+}) =>
   z
     .object({
       id: z.string().optional(),
@@ -41,7 +47,12 @@ export const createVendorFormSchema = (messages: { nameRequired: string; codeReq
       ),
       info: z.array(infoItemSchema),
       vendor_address: z.array(addressSchema),
-      vendor_contact: z.array(contactSchema),
+      vendor_contact: z.array(
+        createContactSchema({
+          nameRequired: messages.contactNameRequired,
+          emailInvalid: messages.emailInvalid,
+        })
+      ),
     })
     .transform((data) => {
       // Remove id if it is an empty string

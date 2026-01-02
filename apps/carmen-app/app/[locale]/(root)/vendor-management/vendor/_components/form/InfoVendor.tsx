@@ -1,4 +1,4 @@
-"use client";
+import { useTranslations } from "next-intl";
 
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
@@ -27,6 +27,7 @@ interface InfoVendorProps {
 }
 
 export default function InfoVendor({ form, disabled }: InfoVendorProps) {
+  const t = useTranslations("Vendor");
   const {
     fields: infoFields,
     append: appendInfo,
@@ -39,17 +40,17 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center mb-1">
-        <h3 className="text-xs font-semibold text-foreground">Additional Info</h3>
+        <h3 className="text-sm font-semibold text-foreground">{t("additional_info")}</h3>
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => appendInfo({ label: "", value: "", data_type: "string" })}
-          className="h-6 text-[10px] px-2"
+          className="h-9 text-xs px-2"
           disabled={disabled}
         >
-          <Plus className="h-3 w-3 mr-1" />
-          Add Info
+          <Plus className="h-4 w-4 mr-1" />
+          {t("add_info")}
         </Button>
       </div>
 
@@ -62,24 +63,24 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
             <div className="col-span-4 space-y-0.5">
               <Label
                 htmlFor={`info.${index}.label`}
-                className="text-[10px] uppercase font-bold text-muted-foreground"
+                className="text-xs uppercase font-bold text-muted-foreground"
               >
-                Label
+                {t("label")}
               </Label>
               <Input
                 id={`info.${index}.label`}
                 {...form.register(`info.${index}.label`)}
-                className="h-7 text-xs bg-background"
-                placeholder="Label"
+                className="h-9 text-xs bg-background"
+                placeholder={t("label")}
                 disabled={disabled}
               />
             </div>
             <div className="col-span-5 space-y-0.5">
               <Label
                 htmlFor={`info.${index}.value`}
-                className="text-[10px] uppercase font-bold text-muted-foreground"
+                className="text-xs uppercase font-bold text-muted-foreground"
               >
-                Value
+                {t("value")}
               </Label>
               {form.watch(`info.${index}.data_type`) === "date" ? (
                 <Popover>
@@ -87,15 +88,19 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal h-7 text-xs bg-background",
+                        "w-full justify-start text-left font-normal h-9 text-xs bg-background",
                         !form.watch(`info.${index}.value`) && "text-muted-foreground"
                       )}
                       disabled={disabled}
                     >
-                      <CalendarIcon className="mr-1 h-3 w-3" />
+                      <CalendarIcon className="mr-1 h-3.5 w-3.5" />
                       {(() => {
                         const value = form.watch(`info.${index}.value`);
-                        return value ? format(new Date(value), "PP") : <span>Pick a date</span>;
+                        return value ? (
+                          format(new Date(value), "PP")
+                        ) : (
+                          <span>{t("pick_date")}</span>
+                        );
                       })()}
                     </Button>
                   </PopoverTrigger>
@@ -118,8 +123,8 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                   id={`info.${index}.value`}
                   type={form.watch(`info.${index}.data_type`) === "number" ? "number" : "text"}
                   {...form.register(`info.${index}.value`)}
-                  className="h-7 text-xs bg-background"
-                  placeholder="Value"
+                  className="h-9 text-xs bg-background"
+                  placeholder={t("value")}
                   disabled={disabled}
                 />
               )}
@@ -127,9 +132,9 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
             <div className="col-span-2 space-y-0.5">
               <Label
                 htmlFor={`info.${index}.data_type`}
-                className="text-[10px] uppercase font-bold text-muted-foreground"
+                className="text-xs uppercase font-bold text-muted-foreground"
               >
-                Type
+                {t("type")}
               </Label>
               <Select
                 onValueChange={(value) =>
@@ -141,27 +146,27 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                 defaultValue={field.data_type}
                 disabled={disabled}
               >
-                <SelectTrigger id={`info.${index}.data_type`} className="h-7 text-xs bg-background">
-                  <SelectValue placeholder="Type" />
+                <SelectTrigger id={`info.${index}.data_type`} className="h-9 text-xs bg-background">
+                  <SelectValue placeholder={t("type")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="string" className="text-xs">
-                    Text
+                    {t("text")}
                   </SelectItem>
                   <SelectItem value="number" className="text-xs">
-                    Number
+                    {t("number")}
                   </SelectItem>
                   <SelectItem value="date" className="text-xs">
-                    Date
+                    {t("date")}
                   </SelectItem>
                   <SelectItem value="datetime" className="text-xs">
-                    Datetime
+                    {t("datetime")}
                   </SelectItem>
                   <SelectItem value="boolean" className="text-xs">
-                    Boolean
+                    {t("boolean")}
                   </SelectItem>
                   <SelectItem value="dataset" className="text-xs">
-                    Dataset
+                    {t("dataset")}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -176,7 +181,7 @@ export default function InfoVendor({ form, disabled }: InfoVendorProps) {
                 className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
               >
                 <Trash2 className="h-3 w-3" />
-                <span className="sr-only">Delete</span>
+                <span className="sr-only">{t("delete")}</span>
               </Button>
             </div>
           </div>
