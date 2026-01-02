@@ -26,6 +26,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toastSuccess, toastError } from "@/components/ui-custom/Toast";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { configurationPermission } from "@/lib/permission";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function CurrencyComponent() {
   const { token, buCode, permissions } = useAuth();
@@ -177,27 +178,47 @@ export default function CurrencyComponent() {
   const title = tCurrency("title");
 
   const actionButtons = (
-    <div className="action-btn-container" data-id="currency-list-action-buttons">
-      {currencyPerms.canCreate && (
-        <Button size={"sm"} onClick={handleAdd}>
-          <Plus className="h-4 w-4" />
-          {tCommon("add")}
-        </Button>
-      )}
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size={"sm"}
-        data-id="delivery-point-export-button"
-      >
-        <FileDown className="h-4 w-4" />
-        {tCommon("export")}
-      </Button>
-      <Button variant="outline" size={"sm"} data-id="delivery-point-print-button">
-        <Printer className="h-4 w-4" />
-        {tCommon("print")}
-      </Button>
-    </div>
+    <TooltipProvider>
+      <div className="action-btn-container" data-id="purchase-request-action-buttons">
+        {currencyPerms.canCreate && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size={"sm"} onClick={handleAdd}>
+                <Plus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{tCommon("add")}</TooltipContent>
+          </Tooltip>
+        )}
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size={"sm"}
+              data-id="delivery-point-export-button"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tCommon("export")}</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size={"sm"} data-id="delivery-point-print-button">
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tCommon("print")}</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
   );
 
   const filters = (
@@ -209,19 +230,35 @@ export default function CurrencyComponent() {
         data-id="unit-list-search-input"
       />
       <div className="fxr-c gap-2">
-        <StatusSearchDropdown
-          value={filter}
-          onChange={setFilter}
-          open={statusOpen}
-          onOpenChange={setStatusOpen}
-          data-id="product-list-status-search-dropdown"
-        />
-        <SortComponent
-          fieldConfigs={sortFields}
-          sort={sort}
-          setSort={setSort}
-          data-id="product-list-sort-dropdown"
-        />
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <StatusSearchDropdown
+                value={filter}
+                onChange={setFilter}
+                open={statusOpen}
+                onOpenChange={setStatusOpen}
+                data-id="product-list-status-search-dropdown"
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tCommon("filter")}</p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <SortComponent
+                fieldConfigs={sortFields}
+                sort={sort}
+                setSort={setSort}
+                data-id="product-list-sort-dropdown"
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{tCommon("sort")}</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

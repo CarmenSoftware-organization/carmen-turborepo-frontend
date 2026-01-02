@@ -22,7 +22,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
-    effectivePeriod: { from: "2024-01-01", to: "2024-03-31" },
+    effectivePeriod: "2024-01-01 - 2024-03-31",
     lastUpdate: "2024-01-15T10:30:00Z",
     taxProfile: {
       id: "92cd1c73-0396-4045-9835-c6c9d27f67a9",
@@ -51,7 +51,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
-    effectivePeriod: { from: "2024-02-01", to: "2024-07-31" },
+    effectivePeriod: "2024-02-01 - 2024-07-31",
     lastUpdate: "2024-02-10T14:20:00Z",
     taxProfile: {
       id: "92b86df5-84c1-4ada-9773-38c0a330135b",
@@ -75,7 +75,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
-    effectivePeriod: { from: "2024-03-01", to: "2024-08-31" },
+    effectivePeriod: "2024-03-01 - 2024-08-31",
     lastUpdate: "2024-02-28T09:15:00Z",
     taxProfile: {
       id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62",
@@ -104,7 +104,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
-    effectivePeriod: { from: "2024-04-01", to: "2024-09-30" },
+    effectivePeriod: "2024-04-01 - 2024-09-30",
     lastUpdate: "2024-03-05T11:45:00Z",
     taxProfile: {
       id: "92b86df5-84c1-4ada-9773-38c0a330135b",
@@ -129,7 +129,7 @@ export const mockPriceListList: PriceListDtoList[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
-    effectivePeriod: { from: "2023-10-01", to: "2023-12-31" },
+    effectivePeriod: "2023-10-01 - 2023-12-31",
     lastUpdate: "2023-12-31T23:59:00Z",
     taxProfile: {
       id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62",
@@ -161,7 +161,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
-    effectivePeriod: { from: "2024-01-01", to: "2024-03-31" },
+    effectivePeriod: "2024-01-01 - 2024-03-31",
     lastUpdate: "2024-01-15T10:30:00Z",
     taxProfile: {
       id: "92cd1c73-0396-4045-9835-c6c9d27f67a9",
@@ -267,7 +267,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: true,
-    effectivePeriod: { from: "2024-02-01", to: "2024-07-31" },
+    effectivePeriod: "2024-02-01 - 2024-07-31",
     lastUpdate: "2024-02-10T14:20:00Z",
     taxProfile: {
       id: "92b86df5-84c1-4ada-9773-38c0a330135b",
@@ -374,7 +374,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
-    effectivePeriod: { from: "2024-03-01", to: "2024-08-31" },
+    effectivePeriod: "2024-03-01 - 2024-08-31",
     lastUpdate: "2024-02-28T09:15:00Z",
     taxProfile: {
       id: "f1d0a3f8-e092-4ec3-9cb3-407bc310ce62",
@@ -451,7 +451,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
-    effectivePeriod: { from: "2024-04-01", to: "2024-09-30" },
+    effectivePeriod: "2024-04-01 - 2024-09-30",
     lastUpdate: "2024-03-05T11:45:00Z",
     taxProfile: {
       id: "92b86df5-84c1-4ada-9773-38c0a330135b",
@@ -530,7 +530,7 @@ export const mockPriceListDetails: PriceListDetailDto[] = [
       exchangeRateDate: "2024-08-07T00:00:00.000Z",
     },
     isActive: false,
-    effectivePeriod: { from: "2023-10-01", to: "2023-12-31" },
+    effectivePeriod: "2023-10-01 - 2023-12-31",
     lastUpdate: "2023-12-31T23:59:00Z",
     taxProfile: {
       id: "92b86df5-84c1-4ada-9773-38c0a330135b",
