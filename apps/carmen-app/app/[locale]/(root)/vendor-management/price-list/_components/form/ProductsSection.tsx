@@ -53,13 +53,6 @@ export default function ProductsSection({ form, priceList, isViewMode }: Product
       },
       {
         accessorKey: "code",
-        // header: () => (
-        //   <div className="flex items-center gap-2">
-        //     <Package className="h-4 w-4" />
-        //     <span>{tPriceList("product_code")}</span>
-        //   </div>
-
-        // ),
         header: ({ column }) => (
           <DataGridColumnHeader column={column} title={tPriceList("product_code")} />
         ),

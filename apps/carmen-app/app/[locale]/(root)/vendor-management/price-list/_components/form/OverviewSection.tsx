@@ -161,71 +161,71 @@ export default function OverviewSection({ form, priceList, isViewMode }: Overvie
         />
 
         {/* Effective Period */}
-        <FormField
-          control={form.control}
-          name="effectivePeriod"
-          render={({ field }) => {
-            const dateRange =
-              field.value?.from && field.value?.to
-                ? { from: new Date(field.value.from), to: new Date(field.value.to) }
-                : undefined;
-
-            return (
-              <FormItem>
-                <FormLabel>{tPriceList("effective_period")}</FormLabel>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <FormControl>
-                      <Button
-                        variant="outline"
-                        disabled={isViewMode}
-                        className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !dateRange && "text-muted-foreground"
-                        )}
-                      >
-                        {dateRange ? (
-                          <>
-                            {format(dateRange.from, "LLL dd, y")} -{" "}
-                            {format(dateRange.to, "LLL dd, y")}
-                          </>
-                        ) : (
-                          <span>{tPriceList("enter_effective_period")}</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
-                    </FormControl>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="range"
-                      defaultMonth={dateRange?.from}
-                      selected={dateRange}
-                      onSelect={(range) => {
-                        if (range?.from && range?.to) {
-                          field.onChange({
-                            from: format(range.from, "yyyy-MM-dd"),
-                            to: format(range.to, "yyyy-MM-dd"),
-                          });
-                        } else if (range?.from) {
-                          field.onChange({
-                            from: format(range.from, "yyyy-MM-dd"),
-                            to: format(range.from, "yyyy-MM-dd"),
-                          });
-                        }
-                      }}
-                      disabled={isViewMode}
-                      initialFocus
-                      numberOfMonths={2}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
-        />
       </div>
+      <FormField
+        control={form.control}
+        name="effectivePeriod"
+        render={({ field }) => {
+          const dateRange =
+            field.value?.from && field.value?.to
+              ? { from: new Date(field.value.from), to: new Date(field.value.to) }
+              : undefined;
+
+          return (
+            <FormItem>
+              <FormLabel>{tPriceList("effective_period")}</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      disabled={isViewMode}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !dateRange && "text-muted-foreground"
+                      )}
+                    >
+                      {dateRange ? (
+                        <>
+                          {format(dateRange.from, "LLL dd, y")} -{" "}
+                          {format(dateRange.to, "LLL dd, y")}
+                        </>
+                      ) : (
+                        <span>{tPriceList("enter_effective_period")}</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="range"
+                    defaultMonth={dateRange?.from}
+                    selected={dateRange}
+                    onSelect={(range) => {
+                      if (range?.from && range?.to) {
+                        field.onChange({
+                          from: format(range.from, "yyyy-MM-dd"),
+                          to: format(range.to, "yyyy-MM-dd"),
+                        });
+                      } else if (range?.from) {
+                        field.onChange({
+                          from: format(range.from, "yyyy-MM-dd"),
+                          to: format(range.from, "yyyy-MM-dd"),
+                        });
+                      }
+                    }}
+                    disabled={isViewMode}
+                    initialFocus
+                    numberOfMonths={2}
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          );
+        }}
+      />
 
       {/* Description */}
       <FormField

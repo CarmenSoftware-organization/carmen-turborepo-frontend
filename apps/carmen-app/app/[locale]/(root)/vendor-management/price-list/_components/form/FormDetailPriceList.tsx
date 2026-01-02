@@ -18,7 +18,7 @@ import OverviewSection from "./OverviewSection";
 import ProductsSection from "./ProductsSection";
 import { formatDate } from "@/utils/format/date";
 import { useCreatePriceList, useUpdatePriceList } from "../../_hooks/use-price-list";
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 interface DetailPriceListProps {
   readonly priceList?: any;
   mode: formType;
@@ -158,7 +158,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
             tax_profile_id: item.tax_profile_id,
             tax_rate: taxRate,
             moq_qty: Number(item.moq_qty) || 0,
-            price: price, // Assuming form input is the base price
+            price: price,
             price_without_tax: price,
             tax_amt: taxAmt,
             lead_time_days: Number(item.lead_time_days) || 0,
@@ -212,7 +212,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
   };
 
   return (
-    <div className="h-full max-w-5xl mx-auto flex flex-col">
+    <div className="h-full max-w-3xl mx-auto flex flex-col">
       <div className="flex items-center justify-between pb-4 border-b border-border">
         <div className="flex items-center gap-4">
           <Button
@@ -259,7 +259,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
                 size="sm"
                 disabled={isUpdating || isCreating}
               >
-                <X className="h-4 w-4 mr-2" />
+                <X className="h-4 w-4" />
                 {tCommon("cancel")}
               </Button>
               <Button
@@ -268,7 +268,7 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
                 size="sm"
                 disabled={isUpdating || isCreating}
               >
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="h-4 w-4" />
                 {isUpdating || isCreating ? tCommon("saving") : tCommon("save")}
               </Button>
             </>
@@ -279,8 +279,18 @@ export default function DetailPriceList({ priceList, mode: initialMode }: Detail
       <div className="flex-1 overflow-y-auto">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4 pb-8">
-            <OverviewSection form={form} priceList={priceList} isViewMode={isViewMode} />
-            <ProductsSection form={form} priceList={priceList} isViewMode={isViewMode} />
+            <Tabs defaultValue="account">
+              <TabsList>
+                <TabsTrigger value="overview">{tPriceList("overview")}</TabsTrigger>
+                <TabsTrigger value="products">{tPriceList("products")}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview">
+                <OverviewSection form={form} priceList={priceList} isViewMode={isViewMode} />
+              </TabsContent>
+              <TabsContent value="products">
+                <ProductsSection form={form} priceList={priceList} isViewMode={isViewMode} />
+              </TabsContent>
+            </Tabs>
           </form>
         </Form>
       </div>
