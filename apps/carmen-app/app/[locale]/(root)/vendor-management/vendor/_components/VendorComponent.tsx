@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { FileDown, Plus, Printer } from "lucide-react";
+import { FileDown, Filter, Plus, Printer } from "lucide-react";
 import SearchInput from "@/components/ui-custom/SearchInput";
 import SortComponent from "@/components/ui-custom/SortComponent";
 import DataDisplayTemplate from "@/components/templates/DataDisplayTemplate";
@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { parseSortString } from "@/utils/table";
 import StatusSearchDropdown from "@/components/form-custom/StatusSearchDropdown";
 import { vendorManagementPermission } from "@/lib/permission";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const sortFields = [{ key: "name", label: "Name" }];
 
@@ -66,29 +67,43 @@ export default function VendorComponent() {
 
   const actionButtons = (
     <div className="action-btn-container" data-id="vendor-action-buttons">
-      <Button
-        size={"sm"}
-        disabled={!vendorPerms.canCreate}
-        onClick={() => {
-          router.push("/vendor-management/vendor/new");
-        }}
-      >
-        <Plus className="h-4 w-4" />
-        {tVendor("add_vendor")}
-      </Button>
-      <Button
-        variant="outlinePrimary"
-        className="group"
-        size={"sm"}
-        data-id="vendor-list-export-button"
-      >
-        <FileDown className="h-4 w-4" />
-        {tCommon("export")}
-      </Button>
-      <Button variant="outlinePrimary" size={"sm"} data-id="vendor-list-print-button">
-        <Printer className="h-4 w-4" />
-        {tCommon("print")}
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              size={"sm"}
+              disabled={!vendorPerms.canCreate}
+              onClick={() => {
+                router.push("/vendor-management/vendor/new");
+              }}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent> {tVendor("add_vendor")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="outlinePrimary"
+              className="group"
+              size="sm"
+              data-id="vendor-export-button"
+            >
+              <FileDown className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("export")}</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outlinePrimary" size="sm" data-id="vendor-print-button">
+              <Printer className="h-4 w-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{tCommon("print")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 
@@ -114,7 +129,9 @@ export default function VendorComponent() {
           setSort={setSort}
           data-id="vendor-list-sort-dropdown"
         />
-        <Button size={"sm"}>{tAction("filter")}</Button>
+        <Button size={"sm"}>
+          <Filter className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
